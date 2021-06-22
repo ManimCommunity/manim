@@ -270,10 +270,10 @@ class OpenGLRenderer:
 
     def render_mobject(self, mobject):
         if isinstance(mobject, OpenGLVMobject):
-            if config["use_projection_fill_shaders"] and mobject.has_fill():
+            if config["use_projection_fill_shaders"]:
                 render_opengl_vectorized_mobject_fill(self, mobject)
 
-            if config["use_projection_stroke_shaders"] and mobject.has_stroke():
+            if config["use_projection_stroke_shaders"]:
                 render_opengl_vectorized_mobject_stroke(self, mobject)
 
         shader_wrapper_list = mobject.get_shader_wrapper_list()

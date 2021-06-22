@@ -956,11 +956,12 @@ class OpenGLVMobject(OpenGLMobject):
             mob.needs_new_triangulation = True
         return self
 
-    def get_triangulation(self):
+    def get_triangulation(self, normal_vector=None):
         # Figure out how to triangulate the interior to know
         # how to send the points as to the vertex shader.
         # First triangles come directly from the points
-        normal_vector = self.get_unit_normal()
+        if normal_vector is None:
+            normal_vector = self.get_unit_normal()
 
         if not self.needs_new_triangulation:
             return self.triangulation
@@ -992,7 +993,6 @@ class OpenGLVMobject(OpenGLMobject):
         end_of_loop[-1] = True
 
         concave_parts = convexities < 0
-        convex_parts = convexities > 0
 
         # These are the vertices to which we'll apply a polygon triangulation
         inner_vert_indices = np.hstack(
@@ -1011,21 +1011,7 @@ class OpenGLVMobject(OpenGLMobject):
             earclip_triangulation(inner_verts, rings)
         ]
 
-        bezier_triangle_indices = np.reshape(indices, (-1, 3))
-        concave_triangle_indices = np.reshape(
-            bezier_triangle_indices[concave_parts], (-1)
-        )
-        convex_triangle_indices = np.reshape(
-            bezier_triangle_indices[convex_parts], (-1)
-        )
-
-        tri_indices = np.hstack(
-            [
-                concave_triangle_indices,
-                convex_triangle_indices,
-                inner_tri_indices,
-            ]
-        )
+        tri_indices = np.hstack([indices, inner_tri_indices])
         self.triangulation = tri_indices
         self.needs_new_triangulation = False
         return tri_indices

@@ -3,12 +3,11 @@
 uniform vec3 manim_unit_normal;
 uniform mat4 u_model_view_matrix;
 uniform mat4 u_projection_matrix;
-uniform float stroke_width;
-uniform vec4 color;
 
 in vec3[3] current_curve;
 in vec2 tile_coordinate;
 in vec4 in_color;
+in float in_width;
 
 out float v_degree;
 out float v_thickness;
@@ -113,7 +112,7 @@ void main() {
     vec3 tile_y_vec = tile_y_unit * dot(tile_y_unit, bounding_box_vec);
 
     // Expand the tile according to the line's thickness.
-    v_thickness = thickness_multiplier * stroke_width;
+    v_thickness = thickness_multiplier * in_width;
     tile_origin = current_curve[0] - v_thickness * (tile_x_unit + tile_y_unit);
     tile_x_vec += 2 * v_thickness * tile_x_unit;
     tile_y_vec += 2 * v_thickness * tile_y_unit;

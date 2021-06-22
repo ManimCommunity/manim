@@ -220,6 +220,8 @@ class OpenGLArc(OpenGLTipableVMobject):
                 n_components=self.n_components,
             )
         )
+        # To maintain proper orientation for fill shaders.
+        self.reverse_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 

@@ -132,7 +132,6 @@ def triangulate_mobject(mob):
 
 def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     shader = Shader(renderer.context, "vectorized_mobject_stroke")
-    shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
 
     shader.set_uniform("u_model_view_matrix", renderer.camera.get_view_matrix())
     shader.set_uniform(
@@ -142,6 +141,7 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
 
     points = np.empty((0, 3))
     colors = np.empty((0, 4))
+    widths = np.empty((0))
     for submob in mobject.family_members_with_points():
         points = np.append(points, submob.data["points"], axis=0)
         colors = np.append(
@@ -150,6 +150,10 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
                 submob.data["stroke_rgba"], submob.data["points"].shape[0], axis=0
             ),
             axis=0,
+        )
+        widths = np.append(
+            widths,
+            np.repeat(submob.data["stroke_width"], submob.data["points"].shape[0]),
         )
 
     stroke_data = np.zeros(
@@ -160,10 +164,12 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
             # ("next_curve", np.float32, (3, 3)),
             ("tile_coordinate", np.float32, (2,)),
             ("in_color", np.float32, (4,)),
+            ("in_width", np.float32),
         ],
     )
 
     stroke_data["in_color"] = colors
+    stroke_data["in_width"] = widths
     curves = np.reshape(points, (-1, 3, 3))
     # stroke_data["previous_curve"] = np.repeat(np.roll(curves, 1, axis=0), 3, axis=0)
     stroke_data["current_curve"] = np.repeat(curves, 3, axis=0)
@@ -194,7 +200,6 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     )
 
     shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
-    shader.set_uniform("stroke_width", mobject.data["stroke_width"])
     shader.set_uniform("manim_unit_normal", tuple(-mobject.data["unit_normal"][0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
