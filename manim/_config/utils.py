@@ -870,7 +870,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def format(self):
-        """File format; "png", "gif", "mp4", or "mov"."""
+        """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
     @format.setter
@@ -879,8 +879,12 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "format",
             val,
-            [None, "png", "gif", "mp4", "mov"],
+            [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        if self.format == "webm":
+            logging.getLogger("manim").warning(
+                "Output format set as webm, this can be slower than other formats"
+            )
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
@@ -1014,9 +1018,9 @@ class ManimConfig(MutableMapping):
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
-            "movie_file_extension", val, [".mp4", ".mov"]
+            "movie_file_extension", val, [".mp4", ".mov", ".webm"]
         ),
-        doc="Either .mp4 or .mov (no flag).",
+        doc="Either .mp4, .webm or .mov.",
     )
 
     background_opacity = property(
@@ -1062,12 +1066,11 @@ class ManimConfig(MutableMapping):
     def transparent(self, val: bool) -> None:
         if val:
             self.png_mode = "RGBA"
-            self.movie_file_extension = ".mov"
             self.background_opacity = 0.0
         else:
             self.png_mode = "RGB"
-            self.movie_file_extension = ".mp4"
             self.background_opacity = 1.0
+        self.resolve_movie_file_extension(val)
 
     @property
     def dry_run(self):
@@ -1152,6 +1155,16 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
     )
+
+    def resolve_movie_file_extension(self, is_transparent):
+        if is_transparent:
+            self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
+        elif self.format == "webm":
+            self.movie_file_extension = ".webm"
+        elif self.format == "mov":
+            self.movie_file_extension = ".mov"
+        else:
+            self.movie_file_extension = ".mp4"
 
     enable_gui = property(
         lambda self: self._d["enable_gui"],

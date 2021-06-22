@@ -779,6 +779,23 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
+    """
+
+    Examples
+    --------
+
+    .. manim:: ExampleSector
+        :save_last_frame:
+
+        class ExampleSector(Scene):
+            def construct(self):
+                sector = Sector(outer_radius=2, inner_radius=1)
+                sector2 = Sector(outer_radius=2.5, inner_radius=0.8).move_to([-3, 0, 0])
+                sector.set_color(RED)
+                sector2.set_color(PINK)
+                self.add(sector, sector2)
+    """
+
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
@@ -1482,6 +1499,21 @@ class DoubleArrow(Arrow):
                 d_arrow_2 = DoubleArrow(tip_shape_end=ArrowCircleFilledTip, tip_shape_start=ArrowCircleFilledTip)
                 group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
                 self.add(group)
+
+
+    .. manim:: DoubleArrowExample2
+        :save_last_frame:
+
+        class DoubleArrowExample2(Scene):
+            def construct(self):
+                box = Square()
+                p1 = box.get_left()
+                p2 = box.get_right()
+                d1 = DoubleArrow(p1, p2, buff=0)
+                d2 = DoubleArrow(p1, p2, buff=0, tip_length=0.2, color=YELLOW)
+                d3 = DoubleArrow(p1, p2, buff=0, tip_length=0.4, color=BLUE)
+                Group(d1, d2, d3).arrange(DOWN)
+                self.add(box, d1, d2, d3)
 
     See Also
     --------
