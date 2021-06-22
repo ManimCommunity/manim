@@ -42,7 +42,7 @@ class RhomboidTest(Scene):
 
     def construct(self):
         rhomboid = SVGMobject(get_svg_resource("rhomboid.svg")).scale(0.5)
-        rhomboid_fill = rhomboid.copy().set_fill(color=WHITE, opacity=1).shift(UP * 2)
+        rhomboid_fill = rhomboid.copy().set_fill(opacity=1).shift(UP * 2)
         rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).shift(DOWN * 2)
 
         self.add(rhomboid, rhomboid_fill, rhomboid_no_fill)
