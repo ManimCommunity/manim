@@ -68,12 +68,13 @@ from colour import Color
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
 from ..constants import *
-from ..mobject.geometry import Line
+from ..mobject.geometry import Line, Polygon
 from ..mobject.numbers import DecimalNumber, Integer
+from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.text_mobject import Paragraph, Text
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import WHITE
+from ..utils.color import WHITE, YELLOW, Colors
 
 
 class Tabular(VGroup):
@@ -156,7 +157,7 @@ class Tabular(VGroup):
         arrange_in_grid_config: Optional[dict] = {},
         line_config: Optional[dict] = {},
         **kwargs,
-    ) -> VGroup:
+    ):
         """
         Parameters
         ----------
@@ -443,7 +444,7 @@ class Tabular(VGroup):
         """
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
-    def set_column_colors(self, *colors: List[Color]) -> "Tabular":
+    def set_column_colors(self, *colors: List[Colors]) -> "Tabular":
         """Set individual colors for each column of the table.
 
         Parameters
@@ -547,11 +548,15 @@ class Tabular(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            if self.top_left_entry is not None:
-                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
-                return self.elements[index]
+            if self.row_labels is not None and self.col_labels is not None:
+                if self.top_left_entry is not None:
+                    index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
+                    return self.elements[index]
+                else:
+                    index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
+                    return self.elements[index]
             else:
-                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
+                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
                 return self.elements[index]
         else:
             return self.elements
@@ -705,6 +710,103 @@ class Tabular(VGroup):
         for mob in self.get_entries():
             mob.add_background_rectangle()
         return self
+
+    def get_cell(self, pos: Tuple[int, int] = (1, 1), **kwargs) -> "Polygon":
+        """Return one specific single cell as a rectangular :class:`~.Polygon` without the entry.
+
+        Parameters
+        ----------
+        pos
+            The desired position of the cell as an iterable tuple, (1,1) being the top left entry
+            of the table.
+        kwargs : Any
+            Additional arguments to be passed to :class:`~.Polygon`.
+
+        Returns
+        --------
+        :class:`~.Polygon`
+            Polygon mimicing one specific cell of the tabular.
+
+        Examples
+        --------
+
+        .. manim:: GetCellExample
+            :save_last_frame:
+
+            class GetCellExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    cell = table.get_cell((2,2), color=RED)
+                    self.add(table, cell)
+        """
+        row = self.get_rows()[pos[0] - 1]
+        col = self.get_columns()[pos[1] - 1]
+        edge_UL = [
+            col.get_left()[0] - self.h_buff / 2,
+            row.get_top()[1] + self.v_buff / 2,
+            0,
+        ]
+        edge_UR = [
+            col.get_right()[0] + self.h_buff / 2,
+            row.get_top()[1] + self.v_buff / 2,
+            0,
+        ]
+        edge_DL = [
+            col.get_left()[0] - self.h_buff / 2,
+            row.get_bottom()[1] - self.v_buff / 2,
+            0,
+        ]
+        edge_DR = [
+            col.get_right()[0] + self.h_buff / 2,
+            row.get_bottom()[1] - self.v_buff / 2,
+            0,
+        ]
+        rec = Polygon(edge_UL, edge_UR, edge_DR, edge_DL, **kwargs)
+        return rec
+
+    def get_highlighted_cell(
+        self, pos: Tuple[int, int] = (1, 1), color: Colors = YELLOW, **kwargs
+    ) -> "BackgroundRectangle":
+        """Return one highlighter of one cell.
+
+        Parameters
+        ----------
+        pos
+            The desired position of the cell as an iterable tuple, (1,1) being the top left entry
+            of the table.
+        color
+            The color used to highlight the cell.
+        kwargs : Any
+            Additional arguments to be passed to :meth:`~.add_background_rectangle`.
+
+        Returns
+        --------
+        :class:`~.BackgroundRectangle`
+            Background rectangle of the given cell.
+
+        Examples
+        --------
+
+        .. manim:: GetHighlightedCellExample
+            :save_last_frame:
+
+            class GetHighlightedCellExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    h_cell = table.get_highlighted_cell((2,2), color=GREEN)
+                    self.add(table, h_cell)
+        """
+        cell = self.get_cell(pos)
+        cell.add_background_rectangle(color=color, **kwargs)
+        return cell[1].set_z_index(-1)
 
     def create(
         self,
@@ -869,7 +971,7 @@ class MobjectTabular(Tabular):
         table
             A 2d array or list of lists. Content of the table have to be of type :class:`~.Mobject`.
         element_to_mobject
-            Element to mobject, here set as identity `lambda m: m`.
+            Element to mobject, here set as the identity `lambda m: m`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
