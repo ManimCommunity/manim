@@ -2,6 +2,10 @@
 
 __all__ = ["SampleSpace", "BarChart"]
 
+
+import typing
+from typing import Iterable, List
+
 import numpy as np
 
 from ..constants import *
@@ -175,23 +179,83 @@ class SampleSpace(Rectangle):
 
 
 class BarChart(VGroup):
+    """This is a class for Bar Charts.
+
+    Parameters
+    ----------
+    values
+        The values for the bar chart.
+    height
+        The height of the axes.
+    width
+        The width of the axes.
+    n_ticks
+        Number of ticks.
+    tick_width
+        Width of the ticks.
+    label_y_axis
+        Y axis label
+    y_axis_label_height
+        Height of the label.
+    max_value
+        Maximum value of the data.
+    bar_colors
+        The colors of the bars.
+    bar_fill_opacity
+        The opacity of the bars.
+    bar_stroke_width
+        The stroke width of the bars.
+    bar_names
+        The names of each bar.
+    bar_label_scale_val
+        The label size.
+
+    Examples
+    --------
+    .. manim:: BarChartExample
+        :save_last_frame:
+
+        class BarChartExample(Scene):
+            def construct(self):
+                pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
+                versions = [
+                    "v0.1.0",
+                    "v0.1.1",
+                    "v0.2.0",
+                    "v0.3.0",
+                    "v0.4.0",
+                    "v0.5.0",
+                    "v0.6.0",
+                    "v0.7.0",
+                ]
+                colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
+                bar = BarChart(
+                    pull_req,
+                    max_value=max(pull_req),
+                    bar_colors=colors,
+                    bar_names=versions,
+                    bar_label_scale_val=0.3,
+                )
+                self.add(bar)
+    """
+
     def __init__(
         self,
-        values,
-        height=4,
-        width=6,
-        n_ticks=4,
-        tick_width=0.2,
-        label_y_axis=True,
-        y_axis_label_height=0.25,
-        max_value=1,
+        values: Iterable[float],
+        height: float = 4,
+        width: float = 6,
+        n_ticks: int = 4,
+        tick_width: float = 0.2,
+        label_y_axis: bool = True,
+        y_axis_label_height: float = 0.25,
+        max_value: float = 1,
         bar_colors=[BLUE, YELLOW],
-        bar_fill_opacity=0.8,
-        bar_stroke_width=3,
-        bar_names=[],
-        bar_label_scale_val=0.75,
+        bar_fill_opacity: float = 0.8,
+        bar_stroke_width: float = 3,
+        bar_names: List[str] = [],
+        bar_label_scale_val: float = 0.75,
         **kwargs
-    ):
+    ):  # What's the return type?
         VGroup.__init__(self, **kwargs)
         self.n_ticks = n_ticks
         self.tick_width = tick_width
