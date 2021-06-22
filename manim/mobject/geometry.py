@@ -1302,7 +1302,7 @@ class Arrow(Line):
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
-                DR_group.arrange_in_grid(cols=1)
+                DR_group.arrange(DOWN)
                 DR_group.move_to(4 * RIGHT + 2 * DOWN)
 
                 self.add(left_group, middle_group, UR_group, DR_group)
