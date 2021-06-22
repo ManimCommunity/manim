@@ -2,7 +2,7 @@
 Using Text
 ##########
 
-There are two different way by which you can render **Text** in videos.
+There are two different way by which you can render **Text** in videos:
 
 1. Using Pango (:mod:`~.text_mobject`)
 2. Using LaTeX (:mod:`~.tex_mobject`)
@@ -24,7 +24,7 @@ class. It uses the `Pango library`_ to render text. With Pango, you can also
 render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or
 `مرحبا بالعالم`.
 
-Here, is a simple Hello World animation.
+Here is a simple Hello World animation.
 
 .. manim:: HelloWorld 
     :save_last_frame:
@@ -36,7 +36,7 @@ Here, is a simple Hello World animation.
             self.add(text)
 
 You can also use :class:`~.MarkupText` where PangoMarkup (:class:`~.MarkupText`)
-can be used to render text. For example,
+can be used to render text. For example:
 
 .. manim:: SingleLineColor 
     :save_last_frame:
@@ -53,7 +53,7 @@ Working with :class:`~.Text`
 ============================
 
 This section explains the properties of :class:`~.Text` and how can it be used
-in your Animations.
+in your animations.
 
 Using Fonts
 -----------
@@ -112,7 +112,7 @@ Weight specifies the boldness of a font. You can see a list in
 Using Colors
 ------------
 
-You can use Colors using :attr:`~.Text.color`. This would color the whole text.
+You can set the color of the text using :attr:`~.Text.color`.
 
 For example,
 
@@ -124,8 +124,8 @@ For example,
             col = Text("RED COLOR", color=RED)
             self.add(col)
 
-You can use utilities like :attr:`~.Text.t2c` for coloring characters 
-different from others. This may be problematic if your text contain ligatures
+You can use utilities like :attr:`~.Text.t2c` for coloring specific characters 
+from others. This may be problematic if your text contains ligatures
 as explained in :ref:`iterating-text`.
 
 :attr:`~Text.t2c` accepts two types of dictionaries,
@@ -134,9 +134,8 @@ as explained in :ref:`iterating-text`.
   this works similar to how `slicing <https://realpython.com/python-strings/#string-slicing>`_
   works in Python. The values should be the color of the Text from :class:`~.Color`.
   
-  .. note:: Negative indices are also supported.
 
-* The keys contain words or character which should be coloured separately
+* The keys contain words or characters which should be colored separately
   and the values should be the color from :class:`~.Color`.
 
 For example,
@@ -150,17 +149,17 @@ For example,
             t2cwords = Text('World',t2c={'rl':RED}).next_to(t2cindices, RIGHT)
             self.add(t2cindices, t2cwords)
 
-If you want avoid problems when colours(due to ligatures), consider using
+If you want to avoid problems when using colors (due to ligatures), consider using
 :class:`MarkupText`.
 
 
 Using Gradients
 ---------------
 
-You can use Gradient using :attr:`~.Text.gradient`. The value must
-be a Iterable of any Length.
+You can add a gradient using :attr:`~.Text.gradient`. The value must
+be a Iterable of any length.
 
-For example,
+For example:
 
 .. manim:: GradientExample
     :save_last_frame:
@@ -170,9 +169,8 @@ For example,
             t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
             self.add(t)
 
-You can also use :attr:`~.Text.t2g` for using gradients with specific 
-characters of the Text. It has a very similar syntax like 
-:ref:`Using Colors`.
+You can also use :attr:`~.Text.t2g` for gradients with specific 
+characters of the text. It shares a similar syntax to :ref:`Using Colors`.
 
 For example,
 
@@ -199,7 +197,7 @@ Setting Line Spacing
 --------------------
 
 You can set line spacing using :attr:`~.Text.line_spacing`.
-For example,
+For example:
 
 .. manim:: LineSpacing
     :save_last_frame:
@@ -216,18 +214,17 @@ For example,
 Disabling Ligatures
 -------------------
 
-By disabling ligatures you would get a 1-1 mapping between characters and
-submobjects. This would fix coloring issue's. 
+By disabling ligatures you would get a one-to-one mapping between characters and
+submobjects. This would fix some issues with coloring text. 
 
 
 .. warning::
 
-    Be aware that using this method with a text which heavily needs
-    ligatures may not work as expected. For example, when disabling
-    ligatures with Arabic text the output doesn't looks as expected.
+    Be aware that using this method with text that heavily depends on
+    ligatures (Arabic text) may yield unexpected results.
 
-You can disable ligatures by passing ``disable_ligatures`` parameter to 
-:class:`Text`. For example,
+You can disable ligatures by passing ``disable_ligatures`` to 
+:class:`Text`. For example:
 
 .. manim:: DisableLigature
     :save_last_frame:
@@ -243,8 +240,8 @@ You can disable ligatures by passing ``disable_ligatures`` parameter to
 Iterating :class:`~.Text`
 -------------------------
 
-Text objects behave like a VGroup-like iterable of all characters in the given
-text. In particular, slicing is possible.
+Text objects behave like :class`~.VGroup`s. Therefore, you can slice and index
+the text.
 
 For example, you can set each letter to different color by iterating it.
 
@@ -261,8 +258,8 @@ For example, you can set each letter to different color by iterating it.
 .. warning::
 
     Please note that `Ligature`_ can cause problems here. If you need a
-    one-one mapping of characters to submobjects you should use 
-    ``disable_ligatures`` parameter in :class:`~.Text` while rendering.
+    one-to-one mapping of characters to submobjects you should pass
+    the ``disable_ligatures`` parameter to :class:`~.Text`.
     See :ref:`disable-ligatures`
 
 .. _Ligature: https://en.wikipedia.org/wiki/Ligature_(writing)
@@ -271,7 +268,7 @@ Working with :class:`~.MarkupText`
 ==================================
 
 MarkupText is similar to :class:`~.Text`, the only difference between them is 
-that this accepts PangoMarkup(which are similar to html), instead of text.
+that this accepts PangoMarkup (which is similar to html), instead of text.
 
 You can find the reference of PangoMarkup in :class:`~.MarkupText`.
 
@@ -306,15 +303,15 @@ For example,
 
 .. note::
 
-    Note that we are using a raw string (``r'...'``) instead of a regular string (``r'...'``)
+    Note that we are using a raw string (``r'...'``) instead of a regular string (``r'...'``).
     This is because TeX code uses a lot of special characters - like ``\`` for example - that
     have special meaning within a regular python string. An alternative would have been to
-    write \\ as in Tex('\\LaTeX').
+    write \\ : Tex('\\LaTeX').
 
 Working with :class:`~.MathTex`
 ===============================
 
-Everything passed to :class:`~.MathTex` is LaTeX Math Mode by default ie) everything is enclosed
+Everything passed to :class:`~.MathTex` is in Math Mode by default i.e., everything is enclosed
 with ``$`` when passed to LaTeX.
 
 For example,
@@ -327,7 +324,7 @@ For example,
             rtarrow = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
             self.add(rtarrow)
 
-The same can be done using :class:`~.Tex` by adding ``$`` using
+The same can be done using :class:`~.Tex` by adding ``$``:
 ``$\xrightarrow{x^6y^8}$``
 
 
@@ -353,7 +350,7 @@ example the ``mathtt`` math-text type, or the ``looparrowright`` arrow.
             tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
             self.add(tex)
 
-On the manim side, the :class:`~.Tex` class also accepts attributes to 
+On the Manim side, the :class:`~.Tex` class also accepts attributes to 
 change the appearance of the output. This is very similar to the 
 :class:`~.Text` class. For example, the ``color`` keyword changes the
 color of the TeX mobject.
@@ -371,8 +368,8 @@ Extra LaTeX Packages
 
 Some commands require special packages to be loaded into the TeX template. 
 For example, to use the ``mathscr`` script, we need to add the ``mathrsfs``
-package. Since this package isn't loaded into manim's tex template by default,
-we add it manually.
+package. Since this package isn't loaded into Manim's tex template by default,
+we have to add it manually.
 
 .. manim:: AddPackageLatex
     :save_last_frame:
@@ -388,9 +385,9 @@ Substrings and parts
 ====================
 
 The TeX mobject can accept multiple strings as arguments. Afterwards you can
-refer to the individual parts either by their index (like ``tex[1]``), or you
-can look them up by (parts of) the tex code like in this example where we set 
-the color of the ``\bigstar`` using :func:`~.set_color_by_tex`:
+refer to the individual parts either by their index (like ``tex[1]``), or by
+selecting parts of the tex code. In this example, we set the color
+of the ``\bigstar`` using :func:`~.set_color_by_tex`:
 
 .. manim:: LaTeXSubstrings
     :save_last_frame:
@@ -402,8 +399,7 @@ the color of the ``\bigstar`` using :func:`~.set_color_by_tex`:
             self.add(tex)
 
 Note that :func:`~.set_color_by_tex` colors the entire substring containing
-the Tex searched for, not just the specific symbol or Tex expression searched
-for. Consider the following example:
+the Tex, not just the specific symbol or Tex expression. Consider the following example:
 
 .. manim:: IncorrectLaTeXSubstringColoring
     :save_last_frame:
@@ -432,18 +428,17 @@ may be expected. To color only ``x`` yellow, we have to do the following:
             self.add(equation)
 
 By setting ``substring_to_isolate`` to ``x``, we split up the
-:class:`~.MathTex` into substrings automatically and isolate ``x`` components 
+:class:`~.MathTex` into substrings automatically and isolate the ``x`` components 
 into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
-to achieve the desired result
+to achieve the desired result.
 
 LaTeX Maths Fonts - The Template Library
 ========================================
 
 Changing fonts in LaTeX when typesetting mathematical formulae is 
-a little bit more tricky than with regular text. It requires changing
-the template that is used to compile the tex code. Manim comes with a
-collection of :class:`~.TexFontTemplates` ready for you to use. These
-templates will all work in maths mode:
+tricker than regular text. It requires changing the template that is used
+to compile the TeX. Manim comes with acollection of :class:`~.TexFontTemplates` 
+ready for you to use. These templates will all work in math mode:
 
 .. manim:: LaTeXMathFonts
     :save_last_frame:
@@ -455,7 +450,7 @@ templates will all work in maths mode:
 
 Manim also has a :class:`~.TexTemplateLibrary` containing the TeX 
 templates used by 3Blue1Brown. One example is the ctex template,
-used for typesetting Chinese. For this to work, the ctex LaTeX package
+used for typesetting Chinese script. For this to work, the ctex LaTeX package
 must be installed on your system. Furthermore, if you are only 
 typesetting Text, you probably do not need :class:`~.Tex` at all, and 
 should use :class:`~.Text` instead.
