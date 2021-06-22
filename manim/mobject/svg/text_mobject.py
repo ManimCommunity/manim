@@ -56,6 +56,7 @@ from typing import Dict
 
 import manimpango
 import numpy as np
+from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
@@ -64,12 +65,15 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
+from ...utils.deprecation import deprecated_params
 
-TEXT_MOB_SCALE_FACTOR = 1 / 960
+TEXT_MOB_SCALE_FACTOR = 0.05
+DEFAULT_LINE_SPACING_SCALE = 0.3
+DEFAULT_FONT_SIZE = 48
 
 
 def remove_invisible_chars(mobject):
-    """Function to remove unwanted invisible characters from some mobject
+    """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
     ----------
@@ -282,6 +286,9 @@ class Paragraph(VGroup):
             )
 
 
+@deprecated_params(
+    params="size", since="v0.8.0", until="v0.9.0", message="Use font_size instead."
+)
 class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -396,10 +403,9 @@ class Text(SVGMobject):
         self,
         text: str,
         fill_opacity: float = 1.0,
-        stroke_width: int = 0,
-        color: str = WHITE,
-        size: int = 1,
-        font_size=48,
+        stroke_width: float = 0,
+        color: Color = WHITE,
+        font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -419,8 +425,11 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        self.size = size
-        self.font_size = font_size
+        size = kwargs.pop("size", None)
+        if size is not None:
+            self.font_size = size * DEFAULT_FONT_SIZE
+        else:
+            self.font_size = font_size
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -456,9 +465,11 @@ class Text(SVGMobject):
             text_without_tabs = text.replace("\t", " " * self.tab_width)
         self.text = text_without_tabs
         if self.line_spacing == -1:
-            self.line_spacing = self.size + self.size * 0.3
+            self.line_spacing = (
+                self.font_size + self.font_size * DEFAULT_LINE_SPACING_SCALE
+            )
         else:
-            self.line_spacing = self.size + self.size * self.line_spacing
+            self.line_spacing = self.font_size + self.font_size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
         SVGMobject.__init__(
@@ -506,7 +517,7 @@ class Text(SVGMobject):
             self.set_color_by_t2g()
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR * self.font_size)
+            self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
@@ -587,7 +598,7 @@ class Text(SVGMobject):
             "PANGO" + self.font + self.slant + self.weight
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
-        settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.line_spacing) + str(self.font_size)
         settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
@@ -643,8 +654,9 @@ class Text(SVGMobject):
         """Internally used function.
         Convert the text to SVG using Pango
         """
-        size = self.size * 10
-        line_spacing = self.line_spacing * 10
+        size = self.font_size / 4.8
+        line_spacing = self.line_spacing / 4.8
+
         dir_name = config.get_dir("text_dir")
         disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
@@ -653,9 +665,10 @@ class Text(SVGMobject):
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             return file_name
+
         settings = self.text2settings()
-        width = 600
-        height = 400
+        width = config["pixel_width"]
+        height = config["pixel_height"]
 
         return manimpango.text2svg(
             settings,
@@ -674,6 +687,9 @@ class Text(SVGMobject):
         super().init_colors(propagate_colors=propagate_colors)
 
 
+@deprecated_params(
+    params="size", since="v0.8.0", until="v0.9.0", message="Use font_size instead"
+)
 class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -738,7 +754,7 @@ class MarkupText(SVGMobject):
         Stroke width.
     color : :class:`str`
         Global color setting for the entire text. Local overrides are possible.
-    size : :class:`int`
+    font_size : :class:`float`
         Font size.
     line_spacing : :class:`int`
         Line spacing.
@@ -894,11 +910,10 @@ class MarkupText(SVGMobject):
     def __init__(
         self,
         text: str,
-        fill_opacity: int = 1,
-        stroke_width: int = 0,
-        color: str = WHITE,
-        size: int = 1,
-        font_size: float = 48,
+        fill_opacity: float = 1,
+        stroke_width: float = 0,
+        color: Color = WHITE,
+        font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -914,8 +929,11 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        self.size = size
-        self.font_size = font_size
+        size = kwargs.pop("size", None)
+        if size is not None:
+            self.font_size = size * DEFAULT_FONT_SIZE
+        else:
+            self.font_size = font_size
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -940,9 +958,11 @@ class MarkupText(SVGMobject):
             raise ValueError(validate_error)
 
         if self.line_spacing == -1:
-            self.line_spacing = self.size + self.size * 0.3
+            self.line_spacing = (
+                self.font_size + self.font_size * DEFAULT_LINE_SPACING_SCALE
+            )
         else:
-            self.line_spacing = self.size + self.size * self.line_spacing
+            self.line_spacing = self.font_size + self.font_size * self.line_spacing
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
@@ -1000,14 +1020,14 @@ class MarkupText(SVGMobject):
             )
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR * self.font_size)
+            self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate from classical Pango Text
-        settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.line_spacing) + str(self.font_size)
         settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
@@ -1016,8 +1036,9 @@ class MarkupText(SVGMobject):
 
     def text2svg(self):
         """Convert the text to SVG using Pango."""
-        size = self.size * 10
-        line_spacing = self.line_spacing * 10
+        size = self.font_size / 4.8
+        line_spacing = self.line_spacing / 4.8
+
         dir_name = config.get_dir("text_dir")
         disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
