@@ -32,8 +32,6 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_stroke,
 )
 
-count = 0
-
 
 class OpenGLCamera(OpenGLMobject):
     def __init__(
