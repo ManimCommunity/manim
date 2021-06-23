@@ -4,7 +4,7 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 import numpy as np
 
-from ..constants import DEFAULT_FONT_SIZE
+from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
@@ -236,9 +236,7 @@ class Integer(DecimalNumber):
     """
 
     def __init__(self, number=0, num_decimal_places=0, **kwargs):
-        DecimalNumber.__init__(
-            self, number=number, num_decimal_places=num_decimal_places, **kwargs
-        )
+        super().__init__(number=number, num_decimal_places=num_decimal_places, **kwargs)
 
     def get_value(self):
         return int(np.round(super().get_value()))
@@ -354,5 +352,5 @@ class Variable(VMobject):
             self.label, RIGHT
         )
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(self.label, self.value)

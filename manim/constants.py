@@ -59,6 +59,7 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_2D",
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
+    "DEFAULT_FONT_SIZE",
     "PI",
     "TAU",
     "DEGREES",

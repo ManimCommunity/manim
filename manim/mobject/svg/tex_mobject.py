@@ -205,7 +205,7 @@ from functools import reduce
 from textwrap import dedent
 
 from ... import config, logger
-from ...constants import DEFAULT_FONT_SIZE
+from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
@@ -267,8 +267,7 @@ class SingleStringMathTex(SVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
@@ -435,8 +434,7 @@ class MathTex(SingleStringMathTex):
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
         try:
-            SingleStringMathTex.__init__(
-                self,
+            super().__init__(
                 self.arg_separator.join(tex_strings),
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
@@ -593,8 +591,7 @@ class Tex(MathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        MathTex.__init__(
-            self,
+        super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
             tex_environment=tex_environment,
@@ -631,8 +628,8 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(
-            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+        super().__init__(
+            *line_separated_items, tex_environment=tex_environment, **kwargs
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)

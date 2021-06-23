@@ -170,8 +170,7 @@ class Code(VGroup):
         generate_html_file=False,
         **kwargs,
     ):
-        VGroup.__init__(
-            self,
+        super().__init__(
             stroke_width=stroke_width,
             background_stroke_color=background_stroke_color,
             background_stroke_width=background_stroke_width,
@@ -230,7 +229,7 @@ class Code(VGroup):
                 fill_opacity=1,
             )
             rect.round_corners(self.corner_radius)
-            self.background_mobject = VGroup(rect)
+            self.background_mobject = rect
         else:
             if self.insert_line_no:
                 foreground = VGroup(self.code, self.line_numbers)
@@ -264,12 +263,11 @@ class Code(VGroup):
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, self.code, **kwargs
+            super().__init__(
+                self.background_mobject, self.line_numbers, self.code, **kwargs
             )
         else:
-            VGroup.__init__(
-                self,
+            super().__init__(
                 self.background_mobject,
                 Dot(fill_opacity=0, stroke_opacity=0),
                 self.code,
