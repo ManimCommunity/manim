@@ -15,7 +15,6 @@ class TabularTest(Scene):
             top_left_entry=Text("TOP"),
             include_outer_lines=True,
         )
-        t.add(t.get_highlighted_cell((2, 2)))
         self.add(t)
 
 
