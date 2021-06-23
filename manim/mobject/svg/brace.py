@@ -172,16 +172,14 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
     def change_label(self, *text, **kwargs):
         self.label = self.label_constructor(*text, **kwargs)
-        if self.label_scale != 1:
-            self.label.scale(self.label_scale)
 
         self.brace.put_at_tip(self.label)
         self.submobjects[1] = self.label
         return self
 
-    def change_brace_label(self, obj, *text):
+    def change_brace_label(self, obj, *text, **kwargs):
         self.shift_brace(obj)
-        self.change_label(*text)
+        self.change_label(*text, **kwargs)
         return self
 
 
