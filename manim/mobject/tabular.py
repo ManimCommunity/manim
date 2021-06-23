@@ -14,12 +14,14 @@ Examples
                 row_labels=[Text("R1"), Text("R2")],
                 col_labels=[Text("C1"), Text("C2")],
                 top_left_entry=Text("TOP"))
+            t0.add(t0.get_highlighted_cell((2,2), color=GREEN))
             x_vals = np.linspace(-2,2,5)
             y_vals = np.exp(x_vals)
             t1 = DecimalTabular(
                 [x_vals, y_vals],
                 row_labels=[MathTex("x"), MathTex("f(x)")],
                 include_outer_lines=True)
+            t1.add(t1.get_cell((2,2), color=RED))
             t2 = MathTabular(
                 [["+", 0, 5, 10],
                 [0, 0, 5, 10],
@@ -96,6 +98,7 @@ class Tabular(VGroup):
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
                     col_labels=[Text("C1"), Text("C2")])
+                t1.add(t1.get_highlighted_cell((2,2), color=GREEN))
                 t2 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
@@ -104,6 +107,7 @@ class Tabular(VGroup):
                     top_left_entry=Star().scale(0.3),
                     include_outer_lines=True,
                     arrange_in_grid_config={"cell_alignment": RIGHT})
+                t2.add(t2.get_cell((2,2), color=RED))
                 t3 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
