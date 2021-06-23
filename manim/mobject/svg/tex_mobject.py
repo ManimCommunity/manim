@@ -215,7 +215,9 @@ from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
-TEX_MOB_SCALE_FACTOR = 0.05
+SCALE_FACTOR_PER_FONT_POINT = 1 / 960
+
+tex_string_to_mob_map = {}
 
 
 class TexSymbol(SVGPathMobject):
@@ -247,13 +249,16 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
+        font_size=DEFAULT_FONT_SIZE,
         **kwargs,
     ):
+
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
         self.tex_template = tex_template
+        self.font_size = font_size
 
         assert isinstance(tex_string, str)
         self.tex_string = tex_string
@@ -262,8 +267,7 @@ class SingleStringMathTex(SVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
@@ -276,7 +280,7 @@ class SingleStringMathTex(SVGMobject):
             **kwargs,
         )
         if height is None:
-            self.scale(TEX_MOB_SCALE_FACTOR)
+            self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
@@ -430,8 +434,7 @@ class MathTex(SingleStringMathTex):
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
         try:
-            SingleStringMathTex.__init__(
-                self,
+            super().__init__(
                 self.arg_separator.join(tex_strings),
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
@@ -588,8 +591,7 @@ class Tex(MathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        MathTex.__init__(
-            self,
+        super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
             tex_environment=tex_environment,
@@ -626,8 +628,8 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(
-            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+        super().__init__(
+            *line_separated_items, tex_environment=tex_environment, **kwargs
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
@@ -670,18 +672,15 @@ class Title(Tex):
     def __init__(
         self,
         *text_parts,
-        scale_factor=1,
         include_underline=True,
         match_underline_width_to_text=False,
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-        self.scale_factor = scale_factor
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff
-        Tex.__init__(self, *text_parts, **kwargs)
-        self.scale(self.scale_factor)
+        super().__init__(*text_parts, **kwargs)
         self.to_edge(UP)
         if self.include_underline:
             underline_width = config["frame_width"] - 2

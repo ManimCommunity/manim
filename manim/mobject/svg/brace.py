@@ -140,11 +140,10 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         text,
         brace_direction=DOWN,
         label_constructor=MathTex,
-        label_scale=1,
+        font_size=DEFAULT_FONT_SIZE,
         **kwargs
     ):
         self.label_constructor = label_constructor
-        self.label_scale = label_scale
         super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
@@ -153,11 +152,9 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.brace = Brace(obj, brace_direction, **kwargs)
 
         if isinstance(text, tuple) or isinstance(text, list):
-            self.label = self.label_constructor(*text, **kwargs)
+            self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
         else:
-            self.label = self.label_constructor(str(text))
-        if self.label_scale != 1:
-            self.label.scale(self.label_scale)
+            self.label = self.label_constructor(str(text), font_size=font_size)
 
         self.brace.put_at_tip(self.label)
         self.submobjects = [self.brace, self.label]
@@ -175,16 +172,14 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
     def change_label(self, *text, **kwargs):
         self.label = self.label_constructor(*text, **kwargs)
-        if self.label_scale != 1:
-            self.label.scale(self.label_scale)
 
         self.brace.put_at_tip(self.label)
         self.submobjects[1] = self.label
         return self
 
-    def change_brace_label(self, obj, *text):
+    def change_brace_label(self, obj, *text, **kwargs):
         self.shift_brace(obj)
-        self.change_label(*text)
+        self.change_label(*text, **kwargs)
         return self
 
 

@@ -2,15 +2,14 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-import uuid
-
 import numpy as np
 
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
-from ..utils.family import extract_mobject_family_members
+
+string_to_mob_map = {}
 
 
 class DecimalNumber(VMobject):
@@ -45,15 +44,18 @@ class DecimalNumber(VMobject):
 
     def __init__(
         self,
-        number=0,
-        num_decimal_places=2,
-        include_sign=False,
-        group_with_commas=True,
-        digit_to_digit_buff=0.05,
-        show_ellipsis=False,
+        number: float = 0,
+        num_decimal_places: int = 2,
+        include_sign: bool = False,
+        group_with_commas: bool = True,
+        digit_buff_per_font_unit: float = 0.001,
+        show_ellipsis: bool = False,
         unit=None,  # Aligned to bottom unless it starts with "^"
-        include_background_rectangle=False,
+        include_background_rectangle: bool = False,
         edge_to_fix=LEFT,
+        font_size: float = DEFAULT_FONT_SIZE,
+        stroke_width: float = 0,
+        fill_opacity: float = 1.0,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -61,11 +63,14 @@ class DecimalNumber(VMobject):
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
         self.group_with_commas = group_with_commas
-        self.digit_to_digit_buff = digit_to_digit_buff
+        self.digit_buff_per_font_unit = digit_buff_per_font_unit
         self.show_ellipsis = show_ellipsis
         self.unit = unit
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
+        self.font_size = font_size
+        self.stroke_width = stroke_width
+        self.fill_opacity = fill_opacity
 
         self.initial_config = kwargs.copy()
         self.initial_config.update(
@@ -73,14 +78,53 @@ class DecimalNumber(VMobject):
                 "num_decimal_places": num_decimal_places,
                 "include_sign": include_sign,
                 "group_with_commas": group_with_commas,
-                "digit_to_digit_buff": digit_to_digit_buff,
+                "digit_buff_per_font_unit": digit_buff_per_font_unit,
                 "show_ellipsis": show_ellipsis,
                 "unit": unit,
                 "include_background_rectangle": include_background_rectangle,
                 "edge_to_fix": edge_to_fix,
+                "font_size": font_size,
+                "stroke_width": stroke_width,
+                "fill_opacity": fill_opacity,
             }
         )
 
+        self.set_submobjects_from_number(number)
+        self.init_colors()
+
+    def set_submobjects_from_number(self, number):
+        self.number = number
+        self.set_submobjects([])
+
+        num_string = self.get_num_string(number)
+        self.add(*(map(self.string_to_mob, num_string)))
+
+        # Add non-numerical bits
+        if self.show_ellipsis:
+            self.add(self.string_to_mob("\\dots", SingleStringMathTex))
+        if self.unit is not None:
+            self.unit_sign = self.string_to_mob(self.unit, SingleStringMathTex)
+            self.add(self.unit_sign)
+
+        self.arrange(
+            buff=self.digit_buff_per_font_unit * self.font_size, aligned_edge=DOWN
+        )
+
+        # Handle alignment of parts that should be aligned
+        # to the bottom
+        for i, c in enumerate(num_string):
+            if c == "-" and len(num_string) > i + 1:
+                self[i].align_to(self[i + 1], UP)
+                self[i].shift(self[i + 1].height * DOWN / 2)
+            elif c == ",":
+                self[i].shift(self[i].height * DOWN / 2)
+        if self.unit and self.unit.startswith("^"):
+            self.unit_sign.align_to(self, UP)
+
+        if self.include_background_rectangle:
+            self.add_background_rectangle()
+
+    def get_num_string(self, number):
         if isinstance(number, complex):
             formatter = self.get_complex_formatter()
         else:
@@ -94,35 +138,14 @@ class DecimalNumber(VMobject):
             else:
                 num_string = num_string[1:]
 
-        self.add(*[SingleStringMathTex(char, **kwargs) for char in num_string])
+        return num_string
 
-        # Add non-numerical bits
-        if self.show_ellipsis:
-            self.add(SingleStringMathTex("\\dots"))
-
-        if num_string.startswith("-"):
-            minus = self.submobjects[0]
-            minus.next_to(self.submobjects[1], LEFT, buff=self.digit_to_digit_buff)
-
-        if self.unit is not None:
-            self.unit_sign = SingleStringMathTex(self.unit, color=self.color)
-            self.add(self.unit_sign)
-
-        self.arrange(buff=self.digit_to_digit_buff, aligned_edge=DOWN)
-
-        # Handle alignment of parts that should be aligned
-        # to the bottom
-        for i, c in enumerate(num_string):
-            if c == "-" and len(num_string) > i + 1:
-                self[i].align_to(self[i + 1], UP)
-                self[i].shift(self[i + 1].height * DOWN / 2)
-            elif c == ",":
-                self[i].shift(self[i].height * DOWN / 2)
-        if self.unit and self.unit.startswith("^"):
-            self.unit_sign.align_to(self, UP)
-        #
-        if self.include_background_rectangle:
-            self.add_background_rectangle()
+    def string_to_mob(self, string, mob_class=MathTex):
+        if string not in string_to_mob_map:
+            string_to_mob_map[string] = mob_class(string, font_size=1.0)
+        mob = string_to_mob_map[string].copy()
+        mob.scale(self.font_size)
+        return mob
 
     def get_formatter(self, **kwargs):
         """
@@ -157,7 +180,7 @@ class DecimalNumber(VMobject):
             ]
         )
 
-    def get_complex_formatter(self, **kwargs):
+    def get_complex_formatter(self):
         return "".join(
             [
                 self.get_formatter(field_name="0.real"),
@@ -166,37 +189,26 @@ class DecimalNumber(VMobject):
             ]
         )
 
-    def set_value(self, number, **config):
-        full_config = {}
-        full_config.update(self.initial_config)
-        full_config.update(config)
-        new_decimal = DecimalNumber(number, **full_config)
-
-        if hasattr(self, "original_id"):
-            if not hasattr(self, "generated_original_ids"):
-                self.generated_original_ids = []
-            new_submobjects = extract_mobject_family_members(
-                new_decimal, only_those_with_points=True
-            )
-            while len(self.generated_original_ids) < len(new_submobjects):
-                self.generated_original_ids.append(str(uuid.uuid4()))
-            for new_submobject, generated_id in zip(
-                new_submobjects, self.generated_original_ids
-            ):
-                new_submobject.original_id = generated_id
-
-        # Make sure last digit has constant height
-        new_decimal.scale(self[-1].height / new_decimal[-1].height)
-        new_decimal.move_to(self, self.edge_to_fix)
-        new_decimal.match_style(self)
-
+    def set_value(self, number):
         old_family = self.get_family()
-        self.submobjects = new_decimal.submobjects
+        move_to_point = self.get_edge_center(self.edge_to_fix)
+        old_submobjects = self.submobjects
+        self.set_submobjects_from_number(number)
+        self.move_to(move_to_point, self.edge_to_fix)
+        for sm1, sm2 in zip(self.submobjects, old_submobjects):
+            sm1.match_style(sm2)
+
         for mob in old_family:
             # Dumb hack...due to how scene handles families
             # of animated mobjects
+            # for compatibility with updaters to not leave first number in place while updating,
+            # not needed with opengl renderer
             mob.points[:] = 0
-        self.number = number
+        return self
+
+    def scale(self, scale_factor, **kwargs):
+        super().scale(scale_factor, **kwargs)
+        self.font_size *= scale_factor
         return self
 
     def get_value(self):
@@ -224,9 +236,7 @@ class Integer(DecimalNumber):
     """
 
     def __init__(self, number=0, num_decimal_places=0, **kwargs):
-        DecimalNumber.__init__(
-            self, number=number, num_decimal_places=num_decimal_places, **kwargs
-        )
+        super().__init__(number=number, num_decimal_places=num_decimal_places, **kwargs)
 
     def get_value(self):
         return int(np.round(super().get_value()))
@@ -342,5 +352,5 @@ class Variable(VMobject):
             self.label, RIGHT
         )
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(self.label, self.value)
