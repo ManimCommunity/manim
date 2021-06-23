@@ -44,6 +44,9 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
 
 
 def triangulate_mobject(mob):
+    if not mob.needs_new_triangulation:
+        return mob.triangulation
+
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
@@ -124,6 +127,10 @@ def triangulate_mobject(mob):
     attributes["in_color"] = np.repeat(mob.data["fill_rgba"], points.shape[0], axis=0)
     attributes["texture_coords"] = texture_coords
     attributes["texture_mode"] = texture_mode
+
+    mob.triangulation = attributes
+    mob.needs_new_triangulation = False
+
     return attributes
 
 
