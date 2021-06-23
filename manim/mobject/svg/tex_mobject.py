@@ -205,7 +205,7 @@ from functools import reduce
 from textwrap import dedent
 
 from ... import config, logger
-from ...constants import *
+from ...constants import DEFAULT_FONT_SIZE
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
@@ -249,7 +249,7 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
-        font_size=48,
+        font_size=DEFAULT_FONT_SIZE,
         **kwargs,
     ):
 

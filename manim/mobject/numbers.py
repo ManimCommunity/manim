@@ -2,11 +2,9 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-import uuid
-
 import numpy as np
 
-from ..constants import *
+from ..constants import DEFAULT_FONT_SIZE
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
@@ -55,7 +53,7 @@ class DecimalNumber(VMobject):
         unit=None,  # Aligned to bottom unless it starts with "^"
         include_background_rectangle: bool = False,
         edge_to_fix=LEFT,
-        font_size: float = 48,
+        font_size: float = DEFAULT_FONT_SIZE,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         **kwargs
