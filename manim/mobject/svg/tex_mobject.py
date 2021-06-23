@@ -675,18 +675,15 @@ class Title(Tex):
     def __init__(
         self,
         *text_parts,
-        scale_factor=1,
         include_underline=True,
         match_underline_width_to_text=False,
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-        self.scale_factor = scale_factor
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff
-        Tex.__init__(self, *text_parts, **kwargs)
-        self.scale(self.scale_factor)
+        super().__init__(*text_parts, **kwargs)
         self.to_edge(UP)
         if self.include_underline:
             underline_width = config["frame_width"] - 2
