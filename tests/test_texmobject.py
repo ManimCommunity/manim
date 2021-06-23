@@ -72,3 +72,12 @@ def test_tex_white_space_and_non_whitespace_args():
     assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
     assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
     assert len(tex[3]) == len("".join(str_part_4.split()))
+
+
+def test_tex_size():
+    """Check that the size of a :class:`Tex` string is not changed."""
+    text = Tex("what").center()
+    vertical = text.get_top() - text.get_bottom()
+    horizontal = text.get_right() - text.get_left()
+    assert vertical[1] == 0.35118305000000005
+    assert horizontal[0] == 1.0419676499999995
