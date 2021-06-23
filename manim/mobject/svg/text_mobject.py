@@ -894,6 +894,39 @@ class MarkupText(SVGMobject):
                 group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
                 self.add(group)
 
+    You can justify the text by passing :attr:`justify` parameter.
+
+    .. manim:: JustifyText
+
+        class JustifyText(Scene):
+            def construct(self):
+                ipsum_text = (
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    "Praesent feugiat metus sit amet iaculis pulvinar. Nulla posuere "
+                    "quam a ex aliquam, eleifend consectetur tellus viverra. Aliquam "
+                    "fermentum interdum justo, nec rutrum elit pretium ac. Nam quis "
+                    "leo pulvinar, dignissim est at, venenatis nisi. Quisque mattis "
+                    "dolor ut euismod hendrerit. Nullam eu ante sollicitudin, commodo "
+                    "risus a, vehicula odio. Nam urna tortor, aliquam a nibh eu, commodo "
+                    "imperdiet arcu. Donec tincidunt commodo enim a tincidunt."
+                )
+                justified_text = MarkupText(ipsum_text, justify=True).scale(0.4)
+                not_justified_text = MarkupText(ipsum_text, justify=False).scale(0.4)
+                just_title = Title("Justified")
+                njust_title = Title("Not Justified")
+                self.add(njust_title, not_justified_text)
+                self.play(
+                    Transform(
+                        not_justified_text,
+                        justified_text,
+                    ),
+                    Transform(
+                        njust_title,
+                        just_title,
+                    ),
+                    run_time=2,
+                )
+                self.wait(1)
 
     Tests
     -----
@@ -916,6 +949,7 @@ class MarkupText(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
+        justify: bool = False,
         gradient: tuple = None,
         tab_width: int = 4,
         height: int = None,
@@ -938,6 +972,7 @@ class MarkupText(SVGMobject):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
+        self.justify = justify
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
@@ -1027,6 +1062,7 @@ class MarkupText(SVGMobject):
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self.font_size)
         settings += str(self.disable_ligatures)
+        settings += str(self.justify)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -1060,6 +1096,8 @@ class MarkupText(SVGMobject):
             START_Y,
             600,  # width
             400,  # height
+            justify=self.justify,
+            pango_width=500,
         )
 
     def _count_real_chars(self, s):
