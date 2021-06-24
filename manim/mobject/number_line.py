@@ -70,7 +70,7 @@ class NumberLine(Line):
 
     Examples
     --------
-    .. manim:: NumLineExample
+    .. manim:: NumberLineExample
         :save_last_frame:
 
         class NumberLineExample(Scene):
