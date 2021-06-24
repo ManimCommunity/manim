@@ -889,11 +889,14 @@ class OpenGLVMobject(OpenGLMobject):
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
-        if self.has_fill():
-            tri1 = mobject1.get_triangulation()
-            tri2 = mobject2.get_triangulation()
-            if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
-                self.refresh_triangulation()
+        if config["use_projection_fill_shaders"]:
+            self.refresh_triangulation()
+        else:
+            if self.has_fill():
+                tri1 = mobject1.get_triangulation()
+                tri2 = mobject2.get_triangulation()
+                if len(tri1) != len(tri1) or not np.all(tri1 == tri2):
+                    self.refresh_triangulation()
         return self
 
     def pointwise_become_partial(self, vmobject, a, b):
