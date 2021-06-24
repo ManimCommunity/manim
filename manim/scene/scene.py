@@ -13,7 +13,6 @@ import sys
 import threading
 import time
 import types
-import warnings
 from queue import Queue
 
 try:
@@ -31,7 +30,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
 from ..gui.gui import configure_pygui
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
@@ -43,7 +41,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -57,7 +54,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue.put(("rerun_file", [], {}))
 
 
-class Scene(Container):
+class Scene:
     """A Scene is the canvas of your animation.
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
@@ -95,11 +92,12 @@ class Scene(Container):
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
-        **kwargs,
+        skip_animations=False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self.skip_animations = skip_animations
 
         self.animations = None
         self.stop_condition = None
@@ -123,7 +121,7 @@ class Scene(Container):
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
+                skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
@@ -135,8 +133,6 @@ class Scene(Container):
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-        Container.__init__(self, **kwargs)
 
     @property
     def camera(self):

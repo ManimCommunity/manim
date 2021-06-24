@@ -269,12 +269,7 @@ class PointCloudDot(Mobject1D):
     ):
         self.radius = radius
         Mobject1D.__init__(
-            self,
-            radius=radius,
-            stroke_width=stroke_width,
-            density=density,
-            color=color,
-            **kwargs
+            self, stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
 
