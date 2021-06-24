@@ -105,7 +105,7 @@ html_theme_options = {
         "color-content-foreground": "#000000",
         "color-background-primary": "#ffffff",
         "color-background-border": "#ffffff",
-        "color-sidebar-background": "#f2f3f5",
+        "color-sidebar-background": "#f8f9fb",
         "color-brand-content": "#1c00e3",
         "color-brand-primary": "#192bd0",
         "color-link": "#c93434",
