@@ -68,8 +68,12 @@ def triangulate_mobject(mob):
 
     crosses = cross2d(v01s, v12s)
     convexities = np.sign(crosses)
-    concave_parts = convexities > 0
-    convex_parts = convexities <= 0
+    if mob.orientation == 1:
+        concave_parts = convexities > 0
+        convex_parts = convexities <= 0
+    else:
+        concave_parts = convexities < 0
+        convex_parts = convexities >= 0
 
     # These are the vertices to which we'll apply a polygon triangulation
     atol = mob.tolerance_for_point_equality

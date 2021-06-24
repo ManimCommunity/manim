@@ -118,6 +118,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
+        self.orientation = 1
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
