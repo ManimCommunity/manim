@@ -79,7 +79,7 @@ class Broadcast(LaggedStart):
 
         # restore the mob to its original status
         # to create the effect of it growing from nothing
-        animations = [Restore(mobject) for mobject in mobjects]
+        animations = [Restore(mobject, remover=remover) for mobject in mobjects]
         super().__init__(
             *animations,
             run_time=run_time,
