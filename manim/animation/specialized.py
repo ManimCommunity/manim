@@ -21,10 +21,10 @@ class Broadcast(LaggedStart):
         The origin point of the broadcast, by default ORIGIN.
     n_mobs
         The number of mobjects that appear from the focal point, by default 5.
-    initial_color
-        The starting stroke_color of mobjects emitted from the broadcast, by default WHITE.
-    final_color
-        The final stroke_color of mobjects emitted from the broadcast, by default BLACK.
+    initial_opacity
+        The starting stroke opacity of mobjects emitted from the broadcast, by default 1.
+    final_opacity
+        The final stroke opacity of mobjects emitted from the broadcast, by default 0.
     initial_width
         The initial width of the mobjects, by default 0.0.
     remover
@@ -51,6 +51,7 @@ class Broadcast(LaggedStart):
         **kwargs
     ):
         self.focal_point = focal_point
+        self.init
         self.initial_width = initial_width
         self.n_mobs = n_mobs
 
