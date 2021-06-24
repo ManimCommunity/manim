@@ -136,7 +136,7 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        VGroup.__init__(self, **config)
+        VGroup.__init__(self)
 
         lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
@@ -165,9 +165,7 @@ class Paragraph(VGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
-        self.get_group_class().__init__(
-            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
-        )
+        self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self.set_all_lines_alignments(self.alignment)
