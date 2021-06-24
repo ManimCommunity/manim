@@ -48,7 +48,7 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject: "VMobject",
+        mobject: VMobject,
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,
