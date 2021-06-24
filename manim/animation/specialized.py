@@ -29,7 +29,7 @@ class Broadcast(LaggedStart):
         The initial width of the mobjects, by default 0.0.
     remover
         Whether the given mobject should be removed from the scene after the animation, by default True.
-    lag_raito
+    lag_ratio
         The time between each iteration of the mobject, by default 0.2.
     run_time
         The total duration of the animation, by default 3.
@@ -56,7 +56,7 @@ class Broadcast(LaggedStart):
         final_opacity: float = 0,
         initial_width: float = 0.0,
         remover: bool = True,
-        lag_raito: float = 0.2,
+        lag_ratio: float = 0.2,
         run_time: float = 3,
         **kwargs
     ):
@@ -87,7 +87,7 @@ class Broadcast(LaggedStart):
         super().__init__(
             *animations,
             run_time=run_time,
-            lag_ratio=lag_raito,
+            lag_ratio=lag_ratio,
             remover=remover,
             **kwargs
         )
