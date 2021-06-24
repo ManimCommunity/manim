@@ -74,6 +74,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity=1.0,
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
+        color=None,
         **kwargs,
     ):
         self.def_map = {}
@@ -81,14 +82,17 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        self.path_string_config = {
-            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
-            "should_remove_null_curves": should_remove_null_curves,
-        }
-        # Force color to default to None if not set
-        if "color" not in kwargs:
-            kwargs["color"] = None
-        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
+        self.path_string_config = (
+            {
+                "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+                "should_remove_null_curves": should_remove_null_curves,
+            }
+            if config.renderer == "opengl"
+            else {}
+        )
+        super().__init__(
+            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
