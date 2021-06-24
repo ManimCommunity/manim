@@ -3,10 +3,9 @@ __all__ = ["Broadcast"]
 from typing import Sequence
 
 from manim.animation.transform import Restore
-from manim.mobject.mobject import Mobject
 
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VMobject
 from .composition import LaggedStart
 
 
@@ -49,7 +48,7 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: "VMobject",
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,
@@ -66,28 +65,15 @@ class Broadcast(LaggedStart):
         self.final_opacity = final_opacity
         self.initial_width = initial_width
 
-        # create all the mobjects and move them to the focal point
-        mobjects = VGroup(
-            *[
-                mobject.copy()
-                .set_stroke(opacity=self.final_opacity)
-                .move_to(self.focal_point)
-                for _ in range(self.n_mobs)
-            ]
-        )
+        anims = []
 
-        for mobject in mobjects:
-            mobject.save_state()
-            mobject.set(width=self.initial_width)
-            mobject.set_stroke(opacity=self.initial_opacity)
+        for _ in range(self.n_mobs):
+            mob = mobject.copy()
+            mob.set_opacity(self.final_opacity).move_to(self.focal_point)
+            mob.save_state()
+            mob.set_width(self.initial_width).set_opacity(self.initial_opacity)
+            anims.append(Restore(mob))
 
-        # restore the mob to its original status
-        # to create the effect of it growing from nothing
-        animations = [Restore(mobject) for mobject in mobjects]
         super().__init__(
-            *animations,
-            run_time=run_time,
-            lag_ratio=lag_ratio,
-            remover=remover,
-            **kwargs
+            *anims, run_time=run_time, lag_ratio=lag_ratio, remover=remover, **kwargs
         )
