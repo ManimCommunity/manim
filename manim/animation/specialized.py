@@ -43,7 +43,7 @@ class Broadcast(LaggedStart):
 
         class BroadcastExample(Scene):
             def construct(self):
-                mob = Circle(color=TEAL_A, radius=4)
+                mob = Circle(radius=4, color=TEAL_A)
                 self.play(Broadcast(mob))
     """
 
@@ -85,9 +85,9 @@ class Broadcast(LaggedStart):
         # to create the effect of it growing from nothing
         animations = [Restore(mobject) for mobject in mobjects]
         super().__init__(
+            *animations,
             run_time=run_time,
             lag_ratio=lag_raito,
             remover=remover,
-            *animations,
             **kwargs
         )
