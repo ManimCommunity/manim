@@ -1056,7 +1056,7 @@ class DecimalTabular(Tabular):
         self,
         table: Iterable[Iterable[Union[float, str]]],
         element_to_mobject: Callable[[Union[float, str]], "VMobject"] = DecimalNumber,
-        element_to_mobject_config: Optional[dict] = {"num_decimal_places": 1},
+        element_to_mobject_config: dict = {"num_decimal_places": 1},
         **kwargs,
     ):
         """
