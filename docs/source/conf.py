@@ -37,7 +37,7 @@ if os.environ.get("READTHEDOCS") == "True":
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020, The Manim Community Dev Team"
+copyright = "2020-2021, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
@@ -102,15 +102,16 @@ html_theme_options = {
     "light_logo": "manim-logo-sidebar.svg",
     "dark_logo": "manim-logo-sidebar-dark.svg",
     "light_css_variables": {
-        "color-content-foreground": "#413c3c",
-        "color-background-primary": "#f1ece9",
-        "color-background-border": "#ded6d4",
-        "color-sidebar-background": "#ece6e2",
-        "color-brand-content": "#2196f3",
-        "color-brand-primary": "#525893",
-        "color-link": "#e07a5f",
-        "color-link--hover": "#a05744",
-        "color-inline-code-background": "#f9f9f9",
+        "color-content-foreground": "#000000",
+        "color-background-primary": "#ffffff",
+        "color-background-border": "#ffffff",
+        "color-sidebar-background": "#f8f9fb",
+        "color-brand-content": "#1c00e3",
+        "color-brand-primary": "#192bd0",
+        "color-link": "#c93434",
+        "color-link--hover": "#5b0000",
+        "color-inline-code-background": "#f6f6f6;",
+        "color-foreground-secondary": "#000",
     },
     "dark_css_variables": {
         "color-content-foreground": "#ffffffd9",
@@ -118,10 +119,11 @@ html_theme_options = {
         "color-background-border": "#303335",
         "color-sidebar-background": "#1a1c1e",
         "color-brand-content": "#2196f3",
-        "color-brand-primary": "#87c2a5",
-        "color-link": "#e07a5f",
-        "color-link--hover": "#ffb7a4",
-        "color-inline-code-background": "#383838",
+        "color-brand-primary": "#007fff",
+        "color-link": "#51ba86",
+        "color-link--hover": "#9cefc6",
+        "color-inline-code-background": "#262626",
+        "color-foreground-secondary": "#ffffffd9",
     },
 }
 html_title = f"Manim Community v{manim.__version__}"

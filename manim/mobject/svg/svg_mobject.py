@@ -74,6 +74,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity=1.0,
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
+        color=None,
         **kwargs,
     ):
         self.def_map = {}
@@ -89,7 +90,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             if config.renderer == "opengl"
             else {}
         )
-        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
+        super().__init__(
+            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -130,7 +133,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, {})
+            mobjects = self.get_mobjects_from(svg, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -221,6 +224,19 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             return []
 
         return result
+
+    def generate_style(self):
+        style = {
+            "fill-opacity": self.fill_opacity,
+            "stroke-opacity": self.stroke_opacity,
+        }
+        if self.color:
+            style["fill"] = style["stroke"] = self.color.get_hex_l()
+        if self.fill_color:
+            style["fill"] = self.fill_color
+        if self.stroke_color:
+            style["stroke"] = self.stroke_color
+        return style
 
     def path_string_to_mobject(self, path_string: str, style: dict):
         """Converts a SVG path element's ``d`` attribute to a mobject.

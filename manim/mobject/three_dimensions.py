@@ -32,6 +32,30 @@ class ThreeDVMobject(VMobject):
 
 
 class ParametricSurface(VGroup):
+    """Creates a Parametric Surface
+
+    Examples
+    --------
+    .. manim:: ParaSurface
+        :save_last_frame:
+
+        class ParaSurface(ThreeDScene):
+            def func(self, u, v):
+                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
+
+            def construct(self):
+                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
+                surface = ParametricSurface(
+                    lambda u, v: axes.c2p(*self.func(u, v)),
+                    u_min=-PI,
+                    u_max=PI,
+                    v_min=0,
+                    v_max=TAU,
+                )
+                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
+                self.add(axes, surface)
+    """
+
     def __init__(
         self,
         func,
@@ -260,6 +284,22 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
+    """A cuboid.
+
+    Examples
+    --------
+
+    .. manim:: ExamplePrism
+        :save_last_frame:
+
+        class ExamplePrism(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
+                prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
+                self.add(prismSmall, prismLarge)
+    """
+
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         Cube.__init__(self, **kwargs)
@@ -646,8 +686,8 @@ class Arrow3D(Line3D):
         start=LEFT,
         end=RIGHT,
         thickness=0.02,
-        height=0.5,
-        base_radius=0.25,
+        height=0.3,
+        base_radius=0.08,
         color=WHITE,
         **kwargs
     ):
