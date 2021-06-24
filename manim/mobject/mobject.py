@@ -95,7 +95,7 @@ class Mobject(Container):
         cls._add_intrinsic_animation_overrides()
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = Color(color)
+        self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -1144,6 +1144,22 @@ class Mobject(Container):
         -------
         Mobject
             The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
 
         See also
         --------

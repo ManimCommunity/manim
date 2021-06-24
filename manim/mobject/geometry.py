@@ -1500,6 +1500,21 @@ class DoubleArrow(Arrow):
                 group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
                 self.add(group)
 
+
+    .. manim:: DoubleArrowExample2
+        :save_last_frame:
+
+        class DoubleArrowExample2(Scene):
+            def construct(self):
+                box = Square()
+                p1 = box.get_left()
+                p2 = box.get_right()
+                d1 = DoubleArrow(p1, p2, buff=0)
+                d2 = DoubleArrow(p1, p2, buff=0, tip_length=0.2, color=YELLOW)
+                d3 = DoubleArrow(p1, p2, buff=0, tip_length=0.4, color=BLUE)
+                Group(d1, d2, d3).arrange(DOWN)
+                self.add(box, d1, d2, d3)
+
     See Also
     --------
     :class:`ArrowTip`
