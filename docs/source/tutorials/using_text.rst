@@ -81,11 +81,11 @@ You can set a different font using :attr:`~.Text.font`.
 Setting Slant and Weight
 ------------------------
 Slant is the style of the Text, and it can be ``NORMAL`` (the default), 
-``ITALIC``, ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and
-``OBLIQUE`` looks similar, but ``ITALIC`` uses **Roman Style**, which 
+``ITALIC`` or ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and
+``OBLIQUE`` look similar, but ``ITALIC`` uses **Roman Style**, whereas
 ``OBLIQUE`` uses **Italic Style**.
 
-Weight specifies the boldness of a font. You can see a list in
+Weight specifies the boldness of a font. You can see a list of weights in
 :class:`manimpango.Weight`.
 
 .. manim:: SlantsExample
@@ -112,9 +112,7 @@ Weight specifies the boldness of a font. You can see a list in
 Using Colors
 ------------
 
-You can set the color of the text using :attr:`~.Text.color`.
-
-For example,
+You can set the color of the text using :attr:`~.Text.color`:
 
 .. manim:: SimpleColor
     :save_last_frame:
@@ -124,8 +122,8 @@ For example,
             col = Text("RED COLOR", color=RED)
             self.add(col)
 
-You can use utilities like :attr:`~.Text.t2c` for coloring specific characters 
-from others. This may be problematic if your text contains ligatures
+You can use utilities like :attr:`~.Text.t2c` for coloring specific characters.
+This may be problematic if your text contains ligatures
 as explained in :ref:`iterating-text`.
 
 :attr:`~Text.t2c` accepts two types of dictionaries,
@@ -136,9 +134,7 @@ as explained in :ref:`iterating-text`.
   
 
 * The keys contain words or characters which should be colored separately
-  and the values should be the color from :class:`~.Color`.
-
-For example,
+  and the values should be the color from :class:`~.Color`:
 
 .. manim:: Textt2cExample
     :save_last_frame:
@@ -157,9 +153,7 @@ Using Gradients
 ---------------
 
 You can add a gradient using :attr:`~.Text.gradient`. The value must
-be a Iterable of any length.
-
-For example:
+be an Iterable of any length:
 
 .. manim:: GradientExample
     :save_last_frame:
@@ -170,9 +164,7 @@ For example:
             self.add(t)
 
 You can also use :attr:`~.Text.t2g` for gradients with specific 
-characters of the text. It shares a similar syntax to :ref:`Using Colors`.
-
-For example,
+characters of the text. It shares a similar syntax to :ref:`Using Colors`:
 
 .. manim:: t2gExample
     :save_last_frame:
@@ -196,8 +188,7 @@ For example,
 Setting Line Spacing
 --------------------
 
-You can set line spacing using :attr:`~.Text.line_spacing`.
-For example:
+You can set line spacing using :attr:`~.Text.line_spacing`:
 
 .. manim:: LineSpacing
     :save_last_frame:
@@ -215,7 +206,7 @@ Disabling Ligatures
 -------------------
 
 By disabling ligatures you would get a one-to-one mapping between characters and
-submobjects. This would fix some issues with coloring text. 
+submobjects. This fixes the issues with coloring text. 
 
 
 .. warning::
@@ -312,9 +303,7 @@ Working with :class:`~.MathTex`
 ===============================
 
 Everything passed to :class:`~.MathTex` is in Math Mode by default i.e., everything is enclosed
-with ``$`` when passed to LaTeX.
-
-For example,
+with ``$`` when passed to LaTeX:
 
 .. manim:: MathTeXDemo 
     :save_last_frame:
@@ -339,8 +328,8 @@ The same can be done using :class:`~.Tex` by adding ``$``:
 LaTeX commands and keyword arguments
 ====================================
 
-We can use any standard LaTeX commands in the AMS maths packages. For
-example the ``mathtt`` math-text type, or the ``looparrowright`` arrow.
+We can use any standard LaTeX commands in the AMS maths packages. Such
+as the ``mathtt`` math-text type or the ``looparrowright`` arrow.
 
 .. manim:: AMSLaTeX
     :save_last_frame:

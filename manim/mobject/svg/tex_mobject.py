@@ -2,7 +2,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 .. important::
 
-   See corresponding tutorial :ref:`rendering-with-latex`
+   See the corresponding tutorial :ref:`rendering-with-latex`
 
 .. note::
 
