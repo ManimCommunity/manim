@@ -552,13 +552,9 @@ class Tabular(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            if self.row_labels is not None and self.col_labels is not None:
-                if self.top_left_entry is not None:
-                    index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
-                    return self.elements[index]
-                else:
-                    index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
-                    return self.elements[index]
+            if self.row_labels is not None and self.col_labels is not None and self.top_left_entry is None:
+                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
+                return self.elements[index]
             else:
                 index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
                 return self.elements[index]
@@ -880,7 +876,7 @@ class Tabular(VGroup):
                 element_animation(self.elements, run_time=run_time, **kwargs),
             ]
         # if len(self.get_labels()) > 0:
-        #     animations.insert(0, label_animation(self.get_labels(), run_time=run_time, **kwargs))
+        #     animations.insert(1, label_animation(self.get_labels(), run_time=run_time, **kwargs))
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
