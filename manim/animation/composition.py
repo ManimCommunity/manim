@@ -61,7 +61,6 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             if self.remover:
                 anim.remover = True
-            print(anim)
             anim.clean_up_from_scene(scene)
 
     def update_mobjects(self, dt: float) -> None:
