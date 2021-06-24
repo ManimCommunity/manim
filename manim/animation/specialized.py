@@ -18,21 +18,21 @@ class Broadcast(LaggedStart):
     mobject
         The mobject to be broadcast.
     focal_point
-        The origin point of the broadcast, by default ORIGIN.
+        The point from which the mobjects emerge, by default ORIGIN.
     n_mobs
-        The number of mobjects that appear from the focal point, by default 5.
+        The number of mobjects that originate from the focal point, by default 5.
     initial_opacity
-        The starting stroke opacity of mobjects emitted from the broadcast, by default 1.
+        The starting stroke opacity of the mobjects emitted from the broadcast, by default 1.
     final_opacity
-        The final stroke opacity of mobjects emitted from the broadcast, by default 0.
+        The final stroke opacity of the mobjects emitted from the broadcast, by default 0.
     initial_width
         The initial width of the mobjects, by default 0.0.
     remover
-        Whether the given mobject should be removed from the scene after this animation, by default True.
+        Whether the given mobject should be removed from the scene after the animation, by default True.
     lag_raito
-        The time between each appearance of the mobject, by default 0.2.
+        The time between each iteration of the mobject, by default 0.2.
     run_time
-        The total length of the animation, by default 3.
+        The total duration of the animation, by default 3.
     kwargs
         Additional arguments to be passed to :class:`~.LaggedStart`.
 
