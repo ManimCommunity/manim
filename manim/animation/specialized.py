@@ -1,14 +1,12 @@
-from typing import Sequence
+__all__ = ["Broadcast"]
 
-from colour import Color
+from typing import Sequence
 
 from manim.animation.transform import Restore
 from manim.mobject.mobject import Mobject
 
 from ..constants import *
-from ..mobject.geometry import Circle
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import BLACK, WHITE
 from .composition import LaggedStart
 
 
@@ -24,9 +22,9 @@ class Broadcast(LaggedStart):
     n_mobs
         The number of mobjects that appear from the focal point, by default 5.
     initial_color
-        The starting color of mobjects emitted from the broadcast, by default WHITE.
+        The starting stroke_color of mobjects emitted from the broadcast, by default WHITE.
     final_color
-        The final color of mobjects emitted from the broadcast, by default BLACK.
+        The final stroke_color of mobjects emitted from the broadcast, by default BLACK.
     initial_width
         The initial width of the mobjects, by default 0.0.
     remover
@@ -44,8 +42,8 @@ class Broadcast(LaggedStart):
         mobject: "Mobject",
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
-        initial_color: Color = WHITE,
-        final_color: Color = BLACK,
+        initial_opacity: float = 1,
+        final_opacity: float = 0,
         initial_width: float = 0.0,
         remover: bool = True,
         lag_raito: float = 0.2,
@@ -56,15 +54,23 @@ class Broadcast(LaggedStart):
         self.initial_width = initial_width
         self.n_mobs = n_mobs
 
+        # create all the mobjects and move them to the focal point
         mobjects = VGroup(
-            *[mobject.copy().set_stroke(final_color) for _ in range(self.n_mobs)]
+            *[
+                mobject.copy()
+                .set_stroke(opacity=final_opacity)
+                .move_to(self.focal_point)
+                for _ in range(self.n_mobs)
+            ]
         )
+
         for mobject in mobjects:
-            mobject.add_updater(lambda c: c.move_to(self.focal_point))
             mobject.save_state()
             mobject.set(width=self.initial_width)
-            mobject.set_stroke(color=initial_color)
+            mobject.set_stroke(opacity=initial_opacity)
 
+        # restore the mob to its original status
+        # to create the effect of it growing from nothing
         animations = [Restore(mobject) for mobject in mobjects]
         super().__init__(
             run_time=run_time,
