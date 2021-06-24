@@ -16,11 +16,15 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
             ("texture_mode", np.int32),
         ],
     )
+    color = np.empty((0, 4), dtype=np.float32)
     for submob in mobject.family_members_with_points():
-        attributes = np.append(attributes, triangulate_mobject(submob))
-        attributes["in_color"] = np.repeat(
-            submob.data["fill_rgba"], attributes.shape[0], axis=0
+        mobject_triangulation = triangulate_mobject(submob)
+        mobject_color = np.repeat(
+            submob.data["fill_rgba"], mobject_triangulation.shape[0], axis=0
         )
+        attributes = np.append(attributes, mobject_triangulation)
+        color = np.append(color, mobject_color, axis=0)
+    attributes["in_color"] = color
 
     fill_shader = Shader(
         renderer.context,
