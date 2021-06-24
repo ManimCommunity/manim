@@ -31,7 +31,7 @@ What makes a great example
 
 - Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it.
 
-* Please ensure the examples run on the current master when you contribute an example.\
+* Please ensure the examples run on the current main branch when you contribute an example.
 
 * If the functions used are confusing for people, make sure to add comments in the example to explain what they do.
 

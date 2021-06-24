@@ -1195,7 +1195,7 @@ class Scene:
                     dot.set_color(RED)
                     self.wait()
 
-        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return
