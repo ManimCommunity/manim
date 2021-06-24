@@ -69,9 +69,9 @@ class Broadcast(LaggedStart):
 
         for _ in range(self.n_mobs):
             mob = mobject.copy()
-            mob.set_opacity(self.final_opacity).move_to(self.focal_point)
+            mob.set_stroke(opacity=self.final_opacity).move_to(self.focal_point)
             mob.save_state()
-            mob.set_width(self.initial_width).set_opacity(self.initial_opacity)
+            mob.set_width(self.initial_width).set_stroke(opacity=self.initial_opacity)
             anims.append(Restore(mob))
 
         super().__init__(
