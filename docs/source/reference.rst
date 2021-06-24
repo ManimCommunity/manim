@@ -134,6 +134,7 @@ Animations
    ~animation.movement
    ~animation.numbers
    ~animation.rotation
+   ~animation.specialzed
    ~animation.transform
    ~animation.transform_matching_parts
    ~animation.update
@@ -151,6 +152,7 @@ Animations
    manim.animation.movement
    manim.animation.numbers
    manim.animation.rotation
+   manim.animation.specialzed
    manim.animation.transform
    manim.animation.transform_matching_parts
    manim.animation.update
