@@ -35,6 +35,16 @@ class Broadcast(LaggedStart):
         The total length of the animation, by default 3.
     kwargs
         Additional arguments to be passed to :class:`~.LaggedStart`.
+
+    Examples
+    ---------
+
+    .. manim:: BroadcastExample
+
+        class BroadcastExample(Scene):
+            def construct(self):
+                mob = Circle(color=TEAL_A, radius=4)
+                self.play(Broadcast(mob))
     """
 
     def __init__(
@@ -51,15 +61,16 @@ class Broadcast(LaggedStart):
         **kwargs
     ):
         self.focal_point = focal_point
-        self.init
-        self.initial_width = initial_width
         self.n_mobs = n_mobs
+        self.initial_opacity = initial_opacity
+        self.final_opacity = final_opacity
+        self.initial_width = initial_width
 
         # create all the mobjects and move them to the focal point
         mobjects = VGroup(
             *[
                 mobject.copy()
-                .set_stroke(opacity=final_opacity)
+                .set_stroke(opacity=self.final_opacity)
                 .move_to(self.focal_point)
                 for _ in range(self.n_mobs)
             ]
@@ -68,7 +79,7 @@ class Broadcast(LaggedStart):
         for mobject in mobjects:
             mobject.save_state()
             mobject.set(width=self.initial_width)
-            mobject.set_stroke(opacity=initial_opacity)
+            mobject.set_stroke(opacity=self.initial_opacity)
 
         # restore the mob to its original status
         # to create the effect of it growing from nothing
