@@ -124,8 +124,7 @@ class NumberLine(Line):
         if decimal_number_config is None:
             decimal_number_config = {
                 "num_decimal_places": self.decimal_places_from_step(),
-                "font_size": 24,
-            }  # font_size does nothing
+            }
 
         self.length = length
         self.unit_size = unit_size
@@ -267,7 +266,6 @@ class NumberLine(Line):
             buff = self.line_to_number_buff
 
         num_mob = DecimalNumber(x, **number_config)
-        # font_size does not exist yet in decimal number
         num_mob.scale(self.number_scale_value)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
@@ -284,14 +282,12 @@ class NumberLine(Line):
     def get_labels(self):
         return self.get_number_mobjects()
 
-    def add_numbers(self, x_values=None, excluding=None, font_size=24, **kwargs):
+    def add_numbers(self, x_values=None, excluding=None, **kwargs):
         if x_values is None:
             x_values = self.get_tick_range()
 
         if excluding is None:
             excluding = self.numbers_to_exclude
-
-        kwargs["font_size"] = font_size
 
         numbers = VGroup()
         for x in x_values:
