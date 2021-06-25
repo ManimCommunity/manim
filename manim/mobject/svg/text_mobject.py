@@ -790,7 +790,7 @@ class Text(SingleStringText):
         self.break_up_by_substrings()
 
     def __repr__(self):
-        return f"Text({repr(self.text)})"
+        return f"Text({repr(self.original_text)})"
 
     def break_up_by_substrings(self):
         if len(self.text_strings) <= 1:
