@@ -735,7 +735,7 @@ class Scene:
                         f"Unexpected argument {arg} passed to Scene.play()."
                     )
 
-        # from manim.animation.composition import AnimationGroup  # import here to avoid circular imports
+        from manim.animation.composition import AnimationGroup  # import here to avoid circular imports
 
         # def update_anim_props(animation):
         #     if isinstance(animation, AnimationGroup):
