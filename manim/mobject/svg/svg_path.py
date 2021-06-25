@@ -12,8 +12,9 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...mobject.types.vectorized_mobject import MetaVMobject
 from ...utils.deprecation import deprecated
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
 
 
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
@@ -210,7 +211,12 @@ def string_to_numbers(num_string: str) -> List[float]:
     return float_results
 
 
-class SVGPathMobject(metaclass=MetaVMobject):
+def grouped(iterable, n):
+    """Group iterable into arrays of n items."""
+    return (np.array(v) for v in zip(*[iter(iterable)] * n))
+
+
+class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         if config.renderer == "opengl":
@@ -379,21 +385,37 @@ class SVGPathMobject(metaclass=MetaVMobject):
 
         # arcs are weirdest, handle them first.
         if command == "A":
-            # We have to handle offsets here because ellipses are complicated.
-            if is_relative:
-                numbers[5] += start_point[0]
-                numbers[6] += start_point[1]
+            result = np.zeros((0, self.dim))
+            last_end_point = None
+            for elliptic_numbers in grouped(numbers, 7):
+                # The startpoint changes with each iteration.
+                if last_end_point is not None:
+                    start_point = last_end_point
 
-            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
-            # is equivalent to omitting the elliptical arc segment entirely.
-            # for more information of where this math came from visit:
-            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-            if start_point[0] == numbers[5] and start_point[1] == numbers[6]:
-                return
+                # We have to handle offsets here because ellipses are complicated.
+                if is_relative:
+                    elliptic_numbers[5] += start_point[0]
+                    elliptic_numbers[6] += start_point[1]
 
-            result = np.array(
-                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
-            )
+                # If the endpoints (x1, y1) and (x2, y2) are identical, then this
+                # is equivalent to omitting the elliptical arc segment entirely.
+                # for more information of where this math came from visit:
+                #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+                if (
+                    start_point[0] == elliptic_numbers[5]
+                    and start_point[1] == elliptic_numbers[6]
+                ):
+                    continue
+
+                result = np.append(
+                    result,
+                    elliptical_arc_to_cubic_bezier(*start_point[:2], *elliptic_numbers),
+                    axis=0,
+                )
+
+                # We store the endpoint so that it can be the startpoint for the
+                # next iteration.
+                last_end_point = elliptic_numbers[5:]
 
             return result
 

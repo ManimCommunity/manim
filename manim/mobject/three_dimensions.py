@@ -19,6 +19,7 @@ import numpy as np
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import tuplify
@@ -566,7 +567,7 @@ class Line3D(Cylinder):
         self.shift((self.start + self.end) / 2)
 
     def pointify(self, mob_or_point, direction=None):
-        if isinstance(mob_or_point, Mobject):
+        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()

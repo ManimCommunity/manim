@@ -1,7 +1,7 @@
 """Debugging utilities."""
 
 
-__all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
+__all__ = ["print_family", "index_labels"]
 
 
 from os import replace
@@ -28,8 +28,3 @@ def index_labels(mobject, label_height=0.15):
         label.set_stroke(BLACK, 5, background=True)
         labels.add(label)
     return labels
-
-
-@deprecated(until="v0.6.0", replacement="index_labels")
-def get_submobject_index_labels(mobject, label_height=0.15):
-    return index_labels(mobject, label_height)
