@@ -14,6 +14,7 @@ class AxesTest(Scene):
             x_length=6,
             y_length=6,
             color=WHITE,
+            axis_config={"exclude_origin_tick": False},
         )
         labels = graph.get_axis_labels()
         self.add(graph, labels)

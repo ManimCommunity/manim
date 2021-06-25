@@ -9,9 +9,10 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class ParametricFunction(VMobject):
+class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
 
     Examples
@@ -56,16 +57,16 @@ class ParametricFunction(VMobject):
         **kwargs
     ):
         self.function = function
-        t_range = np.array([0, 1, 0.01]) if t_range is None else t_range
+        t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:
-            t_range = [*t_range, 0.01]
+            t_range = np.array([*t_range, 0.01])
 
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_function(self):
         return self.function
@@ -79,15 +80,17 @@ class ParametricFunction(VMobject):
             lambda t: self.t_min <= t <= self.t_max, self.discontinuities
         )
         discontinuities = np.array(list(discontinuities))
-        boundary_times = [
-            self.t_min,
-            self.t_max,
-            *(discontinuities - self.dt),
-            *(discontinuities + self.dt),
-        ]
+        boundary_times = np.array(
+            [
+                self.t_min,
+                self.t_max,
+                *(discontinuities - self.dt),
+                *(discontinuities + self.dt),
+            ]
+        )
         boundary_times.sort()
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = [*np.arange(t1, t2, self.t_step), t2]
+            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])
@@ -96,8 +99,38 @@ class ParametricFunction(VMobject):
             self.make_smooth()
         return self
 
+    init_points = generate_points
+
 
 class FunctionGraph(ParametricFunction):
+    """A :class:`ParametricFunction` that spans the length of the scene by default.
+
+    Examples
+    --------
+    .. manim:: ExampleFunctionGraph
+        :save_last_frame:
+
+        class ExampleFunctionGraph(Scene):
+            def construct(self):
+                cos_func = FunctionGraph(
+                    lambda t: np.cos(t) + 0.5 * np.cos(7 * t) + (1 / 7) * np.cos(14 * t),
+                    color=RED,
+                )
+
+                sin_func_1 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    color=BLUE,
+                )
+
+                sin_func_2 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    x_range=[-4, 4],
+                    color=GREEN,
+                ).move_to([0, 1, 0])
+
+                self.add(cos_func, sin_func_1, sin_func_2)
+    """
+
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
 
         if x_range is None:

@@ -8,6 +8,8 @@
 
 import hashlib
 import os
+import re
+import unicodedata
 from pathlib import Path
 
 from .. import config, logger
@@ -136,6 +138,22 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     return " ".join(commands)
 
 
+def insight_inputenc_error(match):
+    code_point = chr(int(match[1], 16))
+    name = unicodedata.name(code_point)
+    yield "TexTemplate does not support character '{}' (U+{})".format(name, match[1])
+    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
+
+
+# used by compile_tex; maps regexp to function offering additional insights
+LATEX_ERROR_INSIGHTS = [
+    (
+        r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
+        insight_inputenc_error,
+    ),
+]
+
+
 def compile_tex(tex_file, tex_compiler, output_format):
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
@@ -177,12 +195,12 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 if error_pos:
                     with open(tex_file, "r") as g:
                         tex = g.readlines()
-                        logger.error("LaTeX compilation error! LaTeX reports:")
                         for log_index in error_pos:
-                            index_line = log_index
-                            CONTENT = (
-                                f"{log[log_index][2:]}Here is the tex content:\n\n"
+                            logger.error(
+                                f"LaTeX compilation error: {log[log_index][2:]}"
                             )
+                            index_line = log_index
+                            context = "Context for error:\n\n"
 
                             # Find where the line of the error is indicated in the log file
                             while not log[index_line].startswith("l."):
@@ -199,12 +217,19 @@ def compile_tex(tex_file, tex_compiler, output_format):
                                 environment -= 1
 
                             # Print the entire environment including its end
-                            while not tex_lines[environment - 1].startswith("\\end"):
-                                CONTENT += tex_lines[environment]
+                            while not tex[environment - 1].startswith("\\end"):
+                                context += tex[environment]
                                 if environment == tex_index:
-                                    CONTENT += "^\n"
+                                    context += "^ this line\n"
                                 environment += 1
-                            logger.error(CONTENT)
+                            logger.error(context)
+
+                        # add insight for errors
+                        for prog, get_insight in LATEX_ERROR_INSIGHTS:
+                            match = re.search(prog, "".join(log[log_index:index_line]))
+                            if match is not None:
+                                for insight in get_insight(match):
+                                    logger.info(insight)
 
             raise ValueError(
                 f"{tex_compiler} error converting to"

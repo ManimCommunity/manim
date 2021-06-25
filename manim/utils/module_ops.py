@@ -94,6 +94,7 @@ def get_scenes_to_render(scene_classes):
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
+    config["write_all"] = True
     for count, scene_class in enumerate(scene_classes):
         count += 1  # start with 1 instead of 0
         name = scene_class.__name__
@@ -103,10 +104,12 @@ def prompt_user_for_choice(scene_classes):
         user_input = console.input(
             f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
         )
-        return [
+        scene_classes = [
             num_to_class[int(num_str)]
             for num_str in re.split(r"\s*,\s*", user_input.strip())
         ]
+        config["scene_names"] = [scene_class.__name__ for scene_class in scene_classes]
+        return scene_classes
     except KeyError:
         logger.error(constants.INVALID_NUMBER_MESSAGE)
         sys.exit(2)
@@ -114,9 +117,11 @@ def prompt_user_for_choice(scene_classes):
         sys.exit(1)
 
 
-def scene_classes_from_file(file_path, require_single_scene=False):
+def scene_classes_from_file(file_path, require_single_scene=False, full_list=False):
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
+    if full_list:
+        return all_scene_classes
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
     if require_single_scene:
         assert len(scene_classes_to_render) == 1

@@ -14,6 +14,13 @@ SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
 file_path_to_code_map = {}
 
+__all__ = [
+    "Object3D",
+    "Mesh",
+    "Shader",
+    "FullScreenQuad",
+]
+
 
 def get_shader_code_from_file(file_path):
     if file_path in file_path_to_code_map:
@@ -33,54 +40,130 @@ def get_shader_code_from_file(file_path):
         return source
 
 
-class Mesh:
-    def __init__(self, shader, attributes, indices=None, use_depth_test=True):
-        self.shader = shader
-        self.attributes = attributes
-        self.indices = indices
-        self.use_depth_test = use_depth_test
+def filter_attributes(unfiltered_attributes, attributes):
+    # Construct attributes for only those needed by the shader.
+    filtered_attributes_dtype = []
+    for i, dtype_name in enumerate(unfiltered_attributes.dtype.names):
+        if dtype_name in attributes:
+            filtered_attributes_dtype.append(
+                (
+                    dtype_name,
+                    unfiltered_attributes.dtype[i].subdtype[0].str,
+                    unfiltered_attributes.dtype[i].shape,
+                )
+            )
+
+    filtered_attributes = np.zeros(
+        unfiltered_attributes[unfiltered_attributes.dtype.names[0]].shape[0],
+        dtype=filtered_attributes_dtype,
+    )
+
+    for dtype_name in unfiltered_attributes.dtype.names:
+        if dtype_name in attributes:
+            filtered_attributes[dtype_name] = unfiltered_attributes[dtype_name]
+
+    return filtered_attributes
+
+
+class Object3D:
+    def __init__(self, *children):
+        self.model_matrix = np.eye(4)
+        self.normal_matrix = np.eye(4)
+        self.children = []
+        self.parent = None
+        self.add(*children)
         self.init_updaters()
 
-        self.translation = np.zeros(3)
-        self.rotation = np.zeros(3)
-        self.scale = np.zeros(3)
-        self.model_matrix = np.eye(4)
-        self.model_matrix_needs_update = False
+    # TODO: Use path_func.
+    def interpolate(self, start, end, alpha, _):
+        self.model_matrix = (1 - alpha) * start.model_matrix + alpha * end.model_matrix
+        self.normal_matrix = (
+            1 - alpha
+        ) * start.normal_matrix + alpha * end.normal_matrix
 
-    def render(self):
-        # Set matrix uniforms.
-        if self.model_matrix_needs_update:
-            pass
-        try:
-            self.shader.set_uniform(
-                "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
-            )
-        except KeyError:
-            pass
+    def single_copy(self):
+        copy = Object3D()
+        copy.model_matrix = self.model_matrix.copy()
+        copy.normal_matrix = self.normal_matrix.copy()
+        return copy
 
-        if self.use_depth_test:
-            self.shader.context.enable(moderngl.DEPTH_TEST)
+    def copy(self):
+        node_to_copy = {}
 
-        vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
-        if self.indices is None:
-            index_buffer_object = None
-        else:
-            vert_index_data = self.indices.astype("i4").tobytes()
-            if vert_index_data:
-                index_buffer_object = self.shader.context.buffer(vert_index_data)
-            else:
-                index_buffer_object = None
-        vertex_array_object = self.shader.context.simple_vertex_array(
-            self.shader.shader_program,
-            vertex_buffer_object,
-            *self.attributes.dtype.names,
-            index_buffer=index_buffer_object,
-        )
-        vertex_array_object.render(moderngl.TRIANGLES)
-        vertex_buffer_object.release()
-        vertex_array_object.release()
-        if index_buffer_object is not None:
-            index_buffer_object.release()
+        bfs = [self]
+        while bfs:
+            node = bfs.pop(0)
+            bfs.extend(node.children)
+
+            node_copy = node.single_copy()
+            node_to_copy[node] = node_copy
+
+            # Add the copy to the copy of the parent.
+            if node.parent is not None and node is not self:
+                node_to_copy[node.parent].add(node_copy)
+        return node_to_copy[self]
+
+    def add(self, *children):
+        for child in children:
+            if child.parent is not None:
+                raise Exception(
+                    "Attempt to add child that's already added to another Object3D"
+                )
+        self.remove(*children, current_children_only=False)
+        self.children.extend(children)
+        for child in children:
+            child.parent = self
+
+    def remove(self, *children, current_children_only=True):
+        if current_children_only:
+            for child in children:
+                if child.parent != self:
+                    raise Exception(
+                        "Attempt to remove child that isn't added to this Object3D"
+                    )
+        self.children = list(filter(lambda child: child not in children, self.children))
+        for child in children:
+            child.parent = None
+
+    def get_meshes(self):
+        dfs = [self]
+        while dfs:
+            parent = dfs.pop()
+            if isinstance(parent, Mesh):
+                yield parent
+            dfs.extend(parent.children)
+
+    def get_family(self):
+        dfs = [self]
+        while dfs:
+            parent = dfs.pop()
+            yield parent
+            dfs.extend(parent.children)
+
+    def align_data_and_family(self, _):
+        pass
+
+    def hierarchical_model_matrix(self):
+        if self.parent is None:
+            return self.model_matrix
+
+        model_matrices = [self.model_matrix]
+        current_object = self
+        while current_object.parent is not None:
+            model_matrices.append(current_object.parent.model_matrix)
+            current_object = current_object.parent
+        return np.linalg.multi_dot(list(reversed(model_matrices)))
+
+    def hierarchical_normal_matrix(self):
+        if self.parent is None:
+            return self.normal_matrix[:3, :3]
+
+        normal_matrices = [self.normal_matrix]
+        current_object = self
+        while current_object.parent is not None:
+            normal_matrices.append(current_object.parent.normal_matrix)
+            current_object = current_object.parent
+        return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
     def init_updaters(self):
         self.time_based_updaters = []
@@ -156,6 +239,89 @@ class Mesh:
         return self
 
 
+class Mesh(Object3D):
+    def __init__(
+        self,
+        shader=None,
+        attributes=None,
+        geometry=None,
+        material=None,
+        indices=None,
+        use_depth_test=True,
+        primitive=moderngl.TRIANGLES,
+    ):
+        super().__init__()
+        if shader is not None and attributes is not None:
+            self.shader = shader
+            self.attributes = attributes
+            self.indices = indices
+        elif geometry is not None and material is not None:
+            self.shader = material
+            self.attributes = geometry.attributes
+            self.indices = geometry.index
+        else:
+            raise Exception(
+                "Mesh requires either attributes and a Shader or a Geometry and a "
+                "Material"
+            )
+        self.use_depth_test = use_depth_test
+        self.primitive = primitive
+        self.skip_render = False
+        self.init_updaters()
+
+    def single_copy(self):
+        copy = Mesh(
+            attributes=self.attributes.copy(),
+            shader=self.shader,
+            indices=self.indices.copy() if self.indices is not None else None,
+            use_depth_test=self.use_depth_test,
+            primitive=self.primitive,
+        )
+        copy.skip_render = self.skip_render
+        copy.model_matrix = self.model_matrix.copy()
+        copy.normal_matrix = self.normal_matrix.copy()
+        # TODO: Copy updaters?
+        return copy
+
+    def render(self):
+        if self.skip_render:
+            return
+
+        if self.use_depth_test:
+            self.shader.context.enable(moderngl.DEPTH_TEST)
+        else:
+            self.shader.context.disable(moderngl.DEPTH_TEST)
+
+        from moderngl.program_members.attribute import Attribute
+
+        shader_attributes = []
+        for k, v in self.shader.shader_program._members.items():
+            if isinstance(v, Attribute):
+                shader_attributes.append(k)
+        shader_attributes = filter_attributes(self.attributes, shader_attributes)
+
+        vertex_buffer_object = self.shader.context.buffer(shader_attributes.tobytes())
+        if self.indices is None:
+            index_buffer_object = None
+        else:
+            vert_index_data = self.indices.astype("i4").tobytes()
+            if vert_index_data:
+                index_buffer_object = self.shader.context.buffer(vert_index_data)
+            else:
+                index_buffer_object = None
+        vertex_array_object = self.shader.context.simple_vertex_array(
+            self.shader.shader_program,
+            vertex_buffer_object,
+            *shader_attributes.dtype.names,
+            index_buffer=index_buffer_object,
+        )
+        vertex_array_object.render(self.primitive)
+        vertex_buffer_object.release()
+        vertex_array_object.release()
+        if index_buffer_object is not None:
+            index_buffer_object.release()
+
+
 class Shader:
     def __init__(
         self,
@@ -169,9 +335,8 @@ class Shader:
         # See if the program is cached.
         if self.name in shader_program_cache:
             self.shader_program = shader_program_cache[self.name]
-
-        # Generate the shader from inline code if it was passed.
-        if source is not None:
+        elif source is not None:
+            # Generate the shader from inline code if it was passed.
             self.shader_program = context.program(**source)
         else:
             # Search for a file containing the shader.
@@ -193,7 +358,10 @@ class Shader:
             shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name, value):
-        self.shader_program[name] = value
+        try:
+            self.shader_program[name] = value
+        except KeyError:
+            pass
 
 
 class FullScreenQuad(Mesh):
@@ -213,28 +381,15 @@ class FullScreenQuad(Mesh):
             fragment_shader_source = get_shader_code_from_file(shader_file_path)
         elif fragment_shader_source is not None:
             fragment_shader_source = textwrap.dedent(fragment_shader_source.lstrip())
-            fragment_shader_lines = fragment_shader_source.split("\n")
-
-            # If the first line is a version string, insert after it.
-            insertion_index = 0
-            if fragment_shader_lines[0].startswith("#version"):
-                insertion_index += 1
-            fragment_shader_lines.insert(
-                insertion_index,
-                f"out vec4 {output_color_variable};",
-            )
-            fragment_shader_source = "\n".join(fragment_shader_lines)
 
         shader = Shader(
             context,
             source=dict(
                 vertex_shader="""
                 #version 330
-
                 in vec4 in_vert;
                 uniform mat4 u_model_view_matrix;
                 uniform mat4 u_projection_matrix;
-
                 void main() {{
                     vec4 camera_space_vertex = u_model_view_matrix * in_vert;
                     vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
@@ -244,15 +399,8 @@ class FullScreenQuad(Mesh):
                 fragment_shader=fragment_shader_source,
             ),
         )
-        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
-        shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
-        )
-        super().__init__(shader, None)
-
-    def render(self):
-        self.attributes = np.zeros(6, dtype=[("in_vert", np.float32, (4,))])
-        self.attributes["in_vert"] = np.array(
+        attributes = np.zeros(6, dtype=[("in_vert", np.float32, (4,))])
+        attributes["in_vert"] = np.array(
             [
                 [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
                 [-config["frame_x_radius"], config["frame_y_radius"], 0, 1],
@@ -262,4 +410,11 @@ class FullScreenQuad(Mesh):
                 [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
             ],
         )
+        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        shader.set_uniform(
+            "u_projection_matrix", opengl.orthographic_projection_matrix()
+        )
+        super().__init__(shader, attributes)
+
+    def render(self):
         super().render()
