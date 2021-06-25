@@ -199,6 +199,27 @@ class Mobject2D(PMobject):
 
 
 class PGroup(PMobject):
+    """
+    Examples
+    --------
+
+    .. manim:: PgroupExample
+        :save_last_frame:
+
+        class PgroupExample(Scene):
+            def construct(self):
+
+                p1 = PointCloudDot(radius=1, density=20, color=BLUE)
+                p1.move_to(4.5 * LEFT)
+                p2 = PointCloudDot()
+                p3 = PointCloudDot(radius=1.5, stroke_width=2.5, color=PINK)
+                p3.move_to(4.5 * RIGHT)
+                pList = PGroup(p1, p2, p3)
+
+                self.add(pList)
+
+    """
+
     def __init__(self, *pmobs, **kwargs):
         if not all([isinstance(m, PMobject) for m in pmobs]):
             raise ValueError("All submobjects must be of type PMobject")
@@ -208,7 +229,7 @@ class PGroup(PMobject):
 
 class PointCloudDot(Mobject1D):
     """A disc made of a cloud of Dots
-    Example
+    Examples
     --------
     .. manim:: PointCloudDotExample
         :save_last_frame:
@@ -248,12 +269,7 @@ class PointCloudDot(Mobject1D):
     ):
         self.radius = radius
         Mobject1D.__init__(
-            self,
-            radius=radius,
-            stroke_width=stroke_width,
-            density=density,
-            color=color,
-            **kwargs
+            self, stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
 
@@ -271,6 +287,26 @@ class PointCloudDot(Mobject1D):
 
 
 class Point(PMobject):
+    """
+
+    Examples
+    --------
+
+    .. manim:: ExamplePoint
+        :save_last_frame:
+
+        class ExamplePoint(Scene):
+            def construct(self):
+                colorList = [RED, GREEN, BLUE, YELLOW]
+                for i in range(200):
+                    point = Point(location=[0.63 * np.random.randint(-4, 4), 0.37 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
+                    self.add(point)
+                for i in range(200):
+                    point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
+                    self.add(point)
+                self.add(point)
+    """
+
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         PMobject.__init__(self, color=color, **kwargs)
         self.add_points([location])
