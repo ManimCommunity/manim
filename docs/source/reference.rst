@@ -229,4 +229,3 @@ Other modules
    :toctree: reference
 
    constants
-   container       
