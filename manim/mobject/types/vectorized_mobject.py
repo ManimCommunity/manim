@@ -189,6 +189,8 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
+        if color is not None:
+            self.fill_color = color
         return self
 
     def set_stroke(
@@ -2004,7 +2006,7 @@ class CurvesAsSubmobjects(VGroup):
 
         class LineGradientExample(Scene):
             def construct(self):
-                curve = ParametricFunction(lambda t: [t, np.sin(t), 0], t_min = -PI, t_max=PI,stroke_width=10)
+                curve = ParametricFunction(lambda t: [t, np.sin(t), 0], t_range=[-PI, PI, 0.01], stroke_width=10)
                 new_curve = CurvesAsSubmobjects(curve)
                 new_curve.set_color_by_gradient(BLUE, RED)
                 self.add(new_curve.shift(UP), curve)
@@ -2022,6 +2024,41 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
+    """A :class:`VMobject` composed of dashes instead of lines.
+
+    Examples
+    --------
+    .. manim:: DashedVMobjectExample
+        :save_last_frame:
+
+        class DashedVMobjectExample(Scene):
+            def construct(self):
+                r = 0.5
+
+                top_row = VGroup()  # Increasing num_dashes
+                for dashes in range(2, 12):
+                    circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
+                    top_row.add(circ)
+
+                middle_row = VGroup()  # Increasing positive_space_ratio
+                for ratio in np.arange(1 / 11, 1, 1 / 11):
+                    circ = DashedVMobject(
+                        Circle(radius=r, color=WHITE), positive_space_ratio=ratio
+                    )
+                    middle_row.add(circ)
+
+                sq = DashedVMobject(Square(1.5, color=RED))
+                penta = DashedVMobject(RegularPolygon(5, color=BLUE))
+                bottom_row = VGroup(sq, penta)
+
+                top_row.arrange(buff=0.4)
+                middle_row.arrange()
+                bottom_row.arrange(buff=1)
+                everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
+                self.add(everything)
+
+    """
+
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):

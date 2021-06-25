@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/master/logo/cropped.png"></a>
+    <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/main/logo/cropped.png"></a>
     <br />
     <br />
     <a href="https://pypi.org/project/manim/"><img src="https://img.shields.io/pypi/v/manim.svg?style=flat&logo=pypi" alt="PyPI Latest Release"></a>
@@ -87,7 +87,7 @@ Manim also ships with a `%%manim` IPython magic which allows to use it convenien
 
 The general usage of Manim is as follows:
 
-![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/docs/source/_static/command.png)
+![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/main/docs/source/_static/command.png)
 
 The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
 
@@ -107,7 +107,7 @@ Documentation is in progress at [ReadTheDocs](https://docs.manim.community/).
 
 The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim). The following tags are supported:
 
-- `latest` -- the most recent version corresponding to [the master branch](https://github.com/ManimCommunity/manim)
+- `latest` -- the most recent version corresponding to [the main branch](https://github.com/ManimCommunity/manim)
 - `stable` -- the latest released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
 - `vX.Y.Z` -- any particular released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
 
