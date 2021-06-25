@@ -68,35 +68,41 @@ class CoordinateSystem:
 
         class CoordSysExample(Scene):
             def construct(self):
-                # When drawing Axes, the location of the ticks
-                # on the axes depend on x_range and y_range.
+                # the location of the ticks depends on the x_range and y_range.
                 grid = Axes(
-                    x_range=[0, 1, 0.05],  # The number of decimal places is determined by the step size.
+                    x_range=[0, 1, 0.05],  # step size determines num_decimal_places.
                     y_range=[0, 1, 0.05],
                     x_length=9,
                     y_length=5.5,
-                    x_axis_config={"numbers_to_include": np.arange(0, 1 + 0.1, 0.1), "number_scale_value": 0.5},
-                    y_axis_config={"numbers_to_include": np.arange(0, 1 + 0.1, 0.1), "number_scale_value": 0.5},
+                    axis_config={
+                        "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
+                        "number_scale_value": 0.5,
+                    },
                     tips=False,
                 )
 
-                graphs = VGroup()
-                # Label for x-axis and y-axis.
-                grid_labels = grid.get_axis_labels(x_label=Tex("$x$"), y_label=Tex("$y$"))
-                # Shifting y-axis label to the left to make space for the title.
-                grid_labels[1].shift(MED_LARGE_BUFF * LEFT)
+                # Labels for the x-axis and y-axis.
+                y_label = grid.get_y_axis_label("y", edge=LEFT, direction=1.5 * LEFT)
+                x_label = grid.get_x_axis_label("x")
+                grid_labels = VGroup(x_label, y_label)
 
+                graphs = VGroup()
                 for n in np.arange(1, 20 + 0.5, 0.5):
-                    graphs += grid.get_graph(lambda x: x ** (n), x_range=[0, 1], color=WHITE)
-                    graphs += grid.get_graph(lambda x: x ** (1 / n), x_range=[0, 1], color=WHITE, use_smoothing=False)
+                    graphs += grid.get_graph(lambda x: x ** n, color=WHITE)
+                    graphs += grid.get_graph(
+                        lambda x: x ** (1 / n), color=WHITE, use_smoothing=False
+                    )
 
                 # Extra lines and labels for point (1,1)
                 graphs += grid.get_horizontal_line(grid.c2p(1, 1, 0), color=BLUE)
                 graphs += grid.get_vertical_line(grid.c2p(1, 1, 0), color=BLUE)
                 graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
-                graphs += Text("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
-
-                title = Title("Graphs of $y=x^{\\frac{1}{n}}$ and $y=x^n (n=1,2,3,...,20)$", include_underline=False, scale_factor=0.85)
+                graphs += Tex("(1,1)", font_size=36).next_to(grid.c2p(1, 1, 0))
+                title = Title(
+                    "Graphs of $y=x^{\\frac{1}{n}}$ and $y=x^n (n=1,2,3,...,20)$",
+                    include_underline=False,
+                    scale_factor=0.85,
+                )
 
                 self.add(title, graphs, grid, grid_labels)
 
