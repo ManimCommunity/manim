@@ -657,12 +657,6 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=opacity)
 
 
-@deprecated_params(
-    params="scale_factor",
-    since="v0.8.0",
-    until="v0.9.0",
-    message="Use font_size instead.",
-)
 class Title(Tex):
     """
     Examples
@@ -680,6 +674,12 @@ class Title(Tex):
 
     """
 
+    @deprecated_params(
+        params="scale_factor",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         *text_parts,

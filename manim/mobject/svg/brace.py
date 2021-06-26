@@ -134,13 +134,13 @@ class Brace(SVGPathMobject):
         return vect / np.linalg.norm(vect)
 
 
-@deprecated_params(
-    params="label_scale",
-    since="v0.8.0",
-    until="v0.9.0",
-    message="Use font_size instead.",
-)
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+    @deprecated_params(
+        params="label_scale",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         obj,

@@ -283,9 +283,6 @@ class Paragraph(VGroup):
             )
 
 
-@deprecated_params(
-    params="size", since="v0.8.0", until="v0.9.0", message="Use font_size instead."
-)
 class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -396,6 +393,12 @@ class Text(SVGMobject):
 
     """
 
+    @deprecated_params(
+        params="size",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         text: str,
@@ -422,11 +425,13 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
+        # deprecation
         size = kwargs.pop("size", None)
         if size is not None:
             self.font_size = size * DEFAULT_FONT_SIZE
         else:
             self.font_size = font_size
+
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -683,9 +688,6 @@ class Text(SVGMobject):
         super().init_colors(propagate_colors=propagate_colors)
 
 
-@deprecated_params(
-    params="size", since="v0.8.0", until="v0.9.0", message="Use font_size instead"
-)
 class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -936,6 +938,12 @@ class MarkupText(SVGMobject):
 
     """
 
+    @deprecated_params(
+        params="size",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         text: str,
@@ -959,11 +967,13 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
+        # deprecation
         size = kwargs.pop("size", None)
         if size is not None:
             self.font_size = size * DEFAULT_FONT_SIZE
         else:
             self.font_size = font_size
+
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant

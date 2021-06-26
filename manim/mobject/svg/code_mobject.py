@@ -23,12 +23,6 @@ from ...utils.color import WHITE
 from ...utils.deprecation import deprecated_params
 
 
-@deprecated_params(
-    params="scale_factor",
-    since="v0.8.0",
-    until="v0.9.0",
-    message="Use font_size instead.",
-)
 class Code(VGroup):
     """A highlighted source code listing.
 
@@ -154,6 +148,12 @@ class Code(VGroup):
     styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
+    @deprecated_params(
+        params="scale_factor",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         file_name=None,
@@ -183,7 +183,7 @@ class Code(VGroup):
             background_stroke_width=background_stroke_width,
             **kwargs,
         )
-
+        # deprecation handling
         scale_factor = kwargs.pop("scale_factor", None)
         if scale_factor:
             self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
