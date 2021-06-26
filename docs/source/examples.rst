@@ -39,7 +39,7 @@ Basic Concepts
             logo_blue = "#525893"
             logo_red = "#e07a5f"
             logo_black = "#343434"
-            ds_m = MathTex(r"\mathbb{M}", fill_color=logo_black, font_size=336)
+            ds_m = MathTex(r"\mathbb{M}", fill_color=logo_black).scale(7)
             ds_m.shift(2.25 * LEFT + 1.5 * UP)
             circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
             square = Square(color=logo_blue, fill_opacity=1).shift(UP)
@@ -457,8 +457,8 @@ Special Camera Settings
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
             image.height = 7
-            frame_text = Text("Frame", color=PURPLE, font_size = 67.2)
-            zoomed_camera_text = Text("Zoomed camera", color=RED, font_size = 67.2)
+            frame_text = Text("Frame", color=PURPLE, font_size = 67)
+            zoomed_camera_text = Text("Zoomed camera", color=RED, font_size = 67)
 
             self.add(image, dot)
             zoomed_camera = self.zoomed_camera
