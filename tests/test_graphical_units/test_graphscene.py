@@ -11,7 +11,6 @@ class PlotFunctions(GraphScene):
         GraphScene.__init__(
             self,
             graph_origin=ORIGIN,
-            function_color=RED,
             axes_color=GREEN,
             x_labeled_nums=range(-10, 12, 2),
             **kwargs

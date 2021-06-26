@@ -278,7 +278,6 @@ class NumberLine(Line):
             buff = self.line_to_number_buff
 
         num_mob = DecimalNumber(x, **number_config)
-        # font_size does not exist yet in decimal number
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -306,8 +305,6 @@ class NumberLine(Line):
 
         if excluding is None:
             excluding = self.numbers_to_exclude
-
-        kwargs["font_size"] = font_size
 
         numbers = VGroup()
         for x in x_values:

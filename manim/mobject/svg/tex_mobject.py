@@ -204,13 +204,15 @@ import re
 from functools import reduce
 from textwrap import dedent
 
+from colour import Color
+
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ...utils.color import BLACK
+from ...utils.color import BLACK, WHITE
 from ...utils.deprecation import deprecated_params
 from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
@@ -251,6 +253,7 @@ class SingleStringMathTex(SVGMobject):
         tex_environment="align*",
         tex_template=None,
         font_size=DEFAULT_FONT_SIZE,
+        color=Color(WHITE),
         **kwargs,
     ):
 
@@ -278,6 +281,7 @@ class SingleStringMathTex(SVGMobject):
             background_stroke_color=background_stroke_color,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
+            color=color,
             **kwargs,
         )
         if height is None:

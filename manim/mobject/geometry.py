@@ -2431,9 +2431,8 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: CustomTipExample
 
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
-        ...     def __init__(self, **kwargs):
+        ...     def __init__(self, length=0.35, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
-        ...         length = 0.35
         ...         self.width = length
         ...         self.stretch_to_fit_height(length)
         >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
