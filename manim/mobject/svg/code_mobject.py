@@ -20,8 +20,15 @@ from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE
+from ...utils.deprecation import deprecated_params
 
 
+@deprecated_params(
+    params="scale_factor",
+    since="v0.8.0",
+    until="v0.9.0",
+    message="Use font_size instead.",
+)
 class Code(VGroup):
     """A highlighted source code listing.
 
@@ -176,9 +183,15 @@ class Code(VGroup):
             background_stroke_width=background_stroke_width,
             **kwargs,
         )
+
+        scale_factor = kwargs.pop("scale_factor", None)
+        if scale_factor:
+            self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
+        else:
+            self.font_size = font_size
+
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        self.font_size = font_size
         self.font = font
         self.margin = margin
         self.indentation_chars = indentation_chars

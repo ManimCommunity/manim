@@ -211,6 +211,7 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK
+from ...utils.deprecation import deprecated_params
 from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
@@ -652,6 +653,12 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=opacity)
 
 
+@deprecated_params(
+    params="scale_factor",
+    since="v0.8.0",
+    until="v0.9.0",
+    message="Use font_size instead.",
+)
 class Title(Tex):
     """
     Examples
@@ -677,6 +684,10 @@ class Title(Tex):
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
+        scale_factor = kwargs.pop("scale_factor", None)
+        if scale_factor:
+            kwargs["font_size"] = DEFAULT_FONT_SIZE * scale_factor
+
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff

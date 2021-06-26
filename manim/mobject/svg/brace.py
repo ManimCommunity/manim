@@ -19,6 +19,7 @@ from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
+from ...utils.deprecation import deprecated_params
 
 
 class Brace(SVGPathMobject):
@@ -133,6 +134,12 @@ class Brace(SVGPathMobject):
         return vect / np.linalg.norm(vect)
 
 
+@deprecated_params(
+    params="label_scale",
+    since="v0.8.0",
+    until="v0.9.0",
+    message="Use font_size instead.",
+)
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
@@ -143,6 +150,12 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         font_size=DEFAULT_FONT_SIZE,
         **kwargs
     ):
+        label_scale = kwargs.pop("label_scale", None)
+        if label_scale:
+            self.font_size = label_scale * DEFAULT_FONT_SIZE
+        else:
+            self.font_size = font_size
+
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
