@@ -139,7 +139,7 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        super().__init__(**config)
+        super().__init__()
 
         lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
