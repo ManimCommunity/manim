@@ -1089,7 +1089,7 @@ class Scene:
                     getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
-                dt = last_time - time.time()
+                dt = time.time() - last_time
                 last_time = time.time()
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
