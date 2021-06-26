@@ -5,7 +5,6 @@ from typing import Sequence
 from manim.animation.transform import Restore
 
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VMobject
 from .composition import LaggedStart
 
 
@@ -48,7 +47,7 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject: VMobject,
+        mobject,
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,
@@ -66,12 +65,28 @@ class Broadcast(LaggedStart):
         self.initial_width = initial_width
 
         anims = []
+        if mobject.fill_opacity:
+            fill_o = True
+        else:
+            fill_o = False
 
         for _ in range(self.n_mobs):
             mob = mobject.copy()
-            mob.set_stroke(opacity=self.final_opacity).move_to(self.focal_point)
+
+            if fill_o:
+                mob.set_opacity(self.final_opacity)
+            else:
+                mob.set_stroke(opacity=self.final_opacity)
+
+            mob.move_to(self.focal_point)
             mob.save_state()
-            mob.set_width(self.initial_width).set_stroke(opacity=self.initial_opacity)
+            mob.set_width(self.initial_width)
+
+            if fill_o:
+                mob.set_opacity(self.initial_opacity)
+            else:
+                mob.set_stroke(opacity=self.initial_opacity)
+
             anims.append(Restore(mob, remover=remover))
 
         super().__init__(*anims, run_time=run_time, lag_ratio=lag_ratio, **kwargs)
