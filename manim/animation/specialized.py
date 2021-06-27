@@ -1,6 +1,6 @@
 __all__ = ["Broadcast"]
 
-from typing import Sequence
+from typing import Any, Sequence
 
 from manim.animation.transform import Restore
 
@@ -13,25 +13,25 @@ class Broadcast(LaggedStart):
 
     Parameters
     ----------
-    mobject :
+    mobject
         The mobject to be broadcast.
-    focal_point :
+    focal_point
         The center of the broadcast, by default ORIGIN.
-    n_mobs :
+    n_mobs
         The number of mobjects that emerge from the focal point, by default 5.
-    initial_opacity :
+    initial_opacity
         The starting stroke opacity of the mobjects emitted from the broadcast, by default 1.
-    final_opacity :
+    final_opacity
         The final stroke opacity of the mobjects emitted from the broadcast, by default 0.
-    initial_width :
+    initial_width
         The initial width of the mobjects, by default 0.0.
-    remover :
+    remover
         Whether the mobjects should be removed from the scene after the animation, by default True.
-    lag_ratio :
+    lag_ratio
         The time between each iteration of the mobject, by default 0.2.
-    run_time :
+    run_time
         The total duration of the animation, by default 3.
-    kwargs :
+    kwargs
         Additional arguments to be passed to :class:`~.LaggedStart`.
 
     Examples
@@ -56,7 +56,7 @@ class Broadcast(LaggedStart):
         remover: bool = True,
         lag_ratio: float = 0.2,
         run_time: float = 3,
-        **kwargs
+        **kwargs: Any
     ):
         self.focal_point = focal_point
         self.n_mobs = n_mobs
