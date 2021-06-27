@@ -1024,6 +1024,9 @@ class Scene:
             target=ipython,
             args=(shell, local_namespace),
         )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
         keyboard_thread.start()
 
         if self.dearpygui_imported and config["enable_gui"]:
@@ -1048,7 +1051,7 @@ class Scene:
         file_observer.start()
 
         self.quit_interaction = False
-        keyboard_thread_needs_join = True
+        keyboard_thread_needs_join = shell.pt_app is not None
         assert self.queue.qsize() == 0
 
         last_time = time.time()
@@ -1083,7 +1086,7 @@ class Scene:
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
                     # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard"):
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
                     # Remove exit_keyboard from the queue if necessary.
