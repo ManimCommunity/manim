@@ -14,7 +14,6 @@ from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
-from colour import Color
 
 from ... import config, logger
 from ...constants import *
@@ -232,7 +231,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             "stroke-opacity": self.stroke_opacity,
         }
         if self.color:
-            style["fill"] = style["stroke"] = Color(self.color).get_hex_l()
+            style["fill"] = style["stroke"] = self.color.get_hex_l()
         if self.fill_color:
             style["fill"] = self.fill_color
         if self.stroke_color:
