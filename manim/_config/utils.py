@@ -659,6 +659,7 @@ class ManimConfig(MutableMapping):
             "use_opengl_renderer",
             "use_webgl_renderer",
             "enable_gui",
+            "fullscreen",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
