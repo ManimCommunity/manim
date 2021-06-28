@@ -16,8 +16,8 @@ LaTeX should only be used when you need Mathematical Typesetting. See
 
 .. _using-text-objects:
 
-Text (Non-LaTeX)
-****************
+Text Without LaTeX
+******************
 
 The simplest way to add text to your animations is to use the :class:`~.Text`
 class. It uses the `Pango library`_ to render text. With Pango, you can also
@@ -276,8 +276,8 @@ You can find the reference of PangoMarkup in :class:`~.MarkupText`.
 
 .. _rendering-with-latex:
 
-Text (LaTeX)
-************
+Text With LaTeX
+***************
 
 Just as you can use :class:`~.Text` to add text to your videos, you can
 use :class:`~.Tex` to insert LaTeX.
