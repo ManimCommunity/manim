@@ -1166,7 +1166,7 @@ class ManimConfig(MutableMapping):
     window_position = property(
         lambda self: self._d["window_position"],
         lambda self, val: self._d.__setitem__("window_position", val),
-        doc="Set the position of preview window, you can use directions, e.g. UL/DR/OL/OO/... also, you can also specify the position(pixel) of the upper left corner of the window on the monitor, e.g. '960,540'",
+        doc="Set the position of preview window. You can use directions, e.g. UL/DR/OL/OO/LEFT/ORIGIN...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
     )
 
     def resolve_movie_file_extension(self, is_transparent):
