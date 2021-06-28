@@ -3,6 +3,10 @@
 .. note::
    Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
 
+.. important::
+
+   See the corresponding tutorial :ref:`rendering-with-latex`
+
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
 With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
