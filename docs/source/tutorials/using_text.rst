@@ -303,27 +303,18 @@ Working with :class:`~.MathTex`
 ===============================
 
 Everything passed to :class:`~.MathTex` is in Math Mode by default i.e., everything is enclosed
-with ``$`` when passed to LaTeX:
+with ``$`` when passed to LaTeX. The same can be done using :class:`~.Tex` by adding ``$``:
+``$\xrightarrow{x^6y^8}$``:
 
 .. manim:: MathTeXDemo 
     :save_last_frame:
 
     class MathTeXDemo(Scene):
         def construct(self):
-            rtarrow = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
-            self.add(rtarrow)
+            rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
+            rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$").scale(2).
 
-The same can be done using :class:`~.Tex` by adding ``$``:
-``$\xrightarrow{x^6y^8}$``
-
-
-.. manim:: TeXToMathTex 
-    :save_last_frame:
-
-    class TeXToMathTex(Scene):
-        def construct(self):
-            rtarrow = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
-            self.add(rtarrow)
+            self.add(VGroup(rtarrow0, rtarrow1).arrange(DOWN)
 
 LaTeX commands and keyword arguments
 ====================================
