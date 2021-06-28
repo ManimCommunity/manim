@@ -90,7 +90,8 @@ class NumberLine(Line):
                     include_numbers=True,
                     number_scale_value=0.5,
                 )
-                num6 = l1.get_number_mobject(6).set_color(RED)
+                [num6] = [num for num in l1.numbers if num.number == 6]
+                num6.set_color(RED)
                 l1.add(num6)
 
                 l2 = NumberLine(
