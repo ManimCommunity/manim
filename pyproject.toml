@@ -52,6 +52,7 @@ mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
 dearpygui = { version = "^0.6.415", optional = true }
+screeninfo = "^0.6.7"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
