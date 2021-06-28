@@ -65,6 +65,6 @@ global_options = option_group(
     option(
         "--fullscreen",
         is_flag=True,
-        help="Enable GUI interaction.",
+        help="Expand the window to its maximum possible size.",
     ),
 )

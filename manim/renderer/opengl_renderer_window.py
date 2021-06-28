@@ -44,9 +44,6 @@ class Window(PygletWindow):
         self.swap_buffers()
 
         initial_position = self.find_initial_position(size, monitor)
-        print(initial_position)
-        print(size)
-        self.position = initial_position
         self.position = initial_position
 
     # Delegate event handling to scene.
@@ -88,7 +85,7 @@ class Window(PygletWindow):
         # x,y for integers x and y
         if len(custom_position) == 1:
             raise ValueError(
-                "window_position must specify both Y and X positions (Y/X -> UR). Also accepts LEFT/ORIGIN/UP."
+                "window_position must specify both Y and X positions (Y/X -> UR). Also accepts LEFT/RIGHT/ORIGIN/UP/DOWN."
             )
         # in the form Y/X (UR)
         if custom_position == "LEFT" or custom_position == "RIGHT":
