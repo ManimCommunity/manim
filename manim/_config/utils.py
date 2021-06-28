@@ -289,7 +289,8 @@ class ManimConfig(MutableMapping):
         "video_dir",
         "fullscreen",
         "window_position",
-        "window_monitor" "write_all",
+        "window_monitor",
+        "write_all",
         "write_to_movie",
     }
 
