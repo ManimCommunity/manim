@@ -87,7 +87,7 @@ class Window(PygletWindow):
         # Position might be specified with a string of the form
         # x,y for integers x and y
         if len(custom_position) == 1:
-            raise IndexError(
+            raise ValueError(
                 "window_position must specify both Y and X positions (Y/X -> UR). Also accepts LEFT/ORIGIN/UP."
             )
         # in the form Y/X (UR)
