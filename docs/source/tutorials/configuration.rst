@@ -344,7 +344,7 @@ A list of all config options
    'bottom', 'custom_folders', 'disable_caching', 'dry_run',
    'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', 'images_dir', 'input_file', 'left_side',
+   'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
    'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',

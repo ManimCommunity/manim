@@ -1166,7 +1166,7 @@ class ManimConfig(MutableMapping):
     window_position = property(
         lambda self: self._d["window_position"],
         lambda self, val: self._d.__setitem__("window_position", val),
-        doc="Set the position of preview window. You can use directions, e.g. UL/DR/OL/OO/LEFT/ORIGIN...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
+        doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
     )
 
     def resolve_movie_file_extension(self, is_transparent):
@@ -1194,7 +1194,7 @@ class ManimConfig(MutableMapping):
     fullscreen = property(
         lambda self: self._d["fullscreen"],
         lambda self, val: self._set_boolean("fullscreen", val),
-        doc="Make the OpenGL window render in fullscreen.",
+        doc="Expand the window to its maximum possible size.",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
