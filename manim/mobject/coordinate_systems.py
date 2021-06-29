@@ -99,7 +99,7 @@ class CoordinateSystem:
                 graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
                 graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
                 title = Title(
-                    "Graphs of $y=x^{\\frac{1}{n}}$ and $y=x^n (n=1,2,3,...,20)$",
+                    "Graphs of $y=x^{\\frac{1}{n}}$ and $y=x^n(n=1,2,3,...,20)$",
                     include_underline=False,
                     scale_factor=0.85,
                 )
