@@ -232,7 +232,7 @@ You can disable ligatures by passing ``disable_ligatures`` to
 Iterating :class:`~.Text`
 -------------------------
 
-Text objects behave like :class`~.VGroup`s. Therefore, you can slice and index
+Text objects behave like :class`VGroups <.VGroup>`_. Therefore, you can slice and index
 the text.
 
 For example, you can set each letter to different color by iterating it.
@@ -305,8 +305,9 @@ For example,
 Working with :class:`~.MathTex`
 ===============================
 
-Everything passed to :class:`~.MathTex` is in Math Mode by default i.e., everything is enclosed
-with ``$`` when passed to LaTeX. The same can be done using :class:`~.Tex` by adding ``$``:
+Everything passed to :class:`~.MathTex` is in math mode by default. To be more precise,
+:class:`~.MathTex` is processed within an ``align*`` environment. You can achieve a
+similar effect with :class:`~.Tex` by enclosing your formula with ``$`` symbols:
 ``$\xrightarrow{x^6y^8}$``:
 
 .. manim:: MathTeXDemo 
@@ -415,6 +416,14 @@ By setting ``substring_to_isolate`` to ``x``, we split up the
 :class:`~.MathTex` into substrings automatically and isolate the ``x`` components 
 into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
 to achieve the desired result.
+
+Note that Manim also supports a custom syntax that allows splitting
+a TeX string into substrings easily: simply enclose parts of your formula
+that you want to isolate with double braces. In the string
+``MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")``, the rendered mobject
+will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``.
+This makes transformations between similar text fragments easy
+to write using :class:`~.TransformMatchingTex`.
 
 LaTeX Maths Fonts - The Template Library
 ========================================
