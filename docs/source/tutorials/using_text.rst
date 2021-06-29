@@ -2,16 +2,16 @@
 Using Text
 ##########
 
-There are two different way by which you can render **Text** in videos:
+There are two different ways by which you can render **Text** in videos:
 
 1. Using Pango (:mod:`~.text_mobject`)
 2. Using LaTeX (:mod:`~.tex_mobject`)
 
-If you want to render simple Text, you should use either :class:`~.Text` or 
-:class:`~.MarkupText` or one of it's detrivaties like :class:`~.Paragraph`.
+If you want to render simple text, you should use either :class:`~.Text` or 
+:class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`.
 See :ref:`using-text-objects` for more information.
 
-LaTeX should only be used when you need Mathematical Typesetting. See 
+LaTeX should be used when you need mathematical typesetting. See 
 :ref:`rendering-with-latex` for more information.
 
 .. _using-text-objects:
@@ -21,10 +21,10 @@ Text Without LaTeX
 
 The simplest way to add text to your animations is to use the :class:`~.Text`
 class. It uses the `Pango library`_ to render text. With Pango, you can also
-render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or
-`مرحبا بالعالم`.
+render non-English alphabets like 你好 or  こんにちは or 안녕하세요 or
+مرحبا بالعالم.
 
-Here is a simple Hello World animation.
+Here is a simple *Hello World* animation.
 
 .. manim:: HelloWorld 
     :save_last_frame:
@@ -35,8 +35,9 @@ Here is a simple Hello World animation.
             text = Text("Hello world").scale(3)
             self.add(text)
 
-You can also use :class:`~.MarkupText` where PangoMarkup (:class:`~.MarkupText`)
-can be used to render text. For example:
+You can also use :class:`~.MarkupText` which allows the use of PangoMarkup
+(see the documentation of :class:`~.MarkupText` for details) to render text.
+For example:
 
 .. manim:: SingleLineColor 
     :save_last_frame:
@@ -153,7 +154,7 @@ Using Gradients
 ---------------
 
 You can add a gradient using :attr:`~.Text.gradient`. The value must
-be an Iterable of any length:
+be an iterable of any length:
 
 .. manim:: GradientExample
     :save_last_frame:
@@ -188,7 +189,7 @@ characters of the text. It shares a similar syntax to :ref:`Using Colors`:
 Setting Line Spacing
 --------------------
 
-You can set line spacing using :attr:`~.Text.line_spacing`:
+You can set the line spacing using :attr:`~.Text.line_spacing`:
 
 .. manim:: LineSpacing
     :save_last_frame:
@@ -251,7 +252,7 @@ For example, you can set each letter to different color by iterating it.
     Please note that `Ligature`_ can cause problems here. If you need a
     one-to-one mapping of characters to submobjects you should pass
     the ``disable_ligatures`` parameter to :class:`~.Text`.
-    See :ref:`disable-ligatures`
+    See :ref:`disable-ligatures`.
 
 .. _Ligature: https://en.wikipedia.org/wiki/Ligature_(writing)
 
@@ -259,9 +260,11 @@ Working with :class:`~.MarkupText`
 ==================================
 
 MarkupText is similar to :class:`~.Text`, the only difference between them is 
-that this accepts PangoMarkup (which is similar to html), instead of text.
+that this accepts and processes PangoMarkup (which is similar to
+html), instead of just rendering plain text.
 
-You can find the reference of PangoMarkup in :class:`~.MarkupText`.
+Consult the documentation of :class:`~.MarkupText` for more details
+and further references about PangoMarkup.
 
 .. manim:: MarkupTest 
     :save_last_frame:
@@ -297,7 +300,7 @@ For example,
     Note that we are using a raw string (``r'...'``) instead of a regular string (``r'...'``).
     This is because TeX code uses a lot of special characters - like ``\`` for example - that
     have special meaning within a regular python string. An alternative would have been to
-    write \\ : Tex('\\LaTeX').
+    write ``\\`` to escape the backslash: ``Tex('\\LaTeX')``.
 
 Working with :class:`~.MathTex`
 ===============================
