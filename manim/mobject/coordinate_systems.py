@@ -82,7 +82,7 @@ class CoordinateSystem:
                 )
 
                 # Labels for the x-axis and y-axis.
-                y_label = grid.get_y_axis_label("y", edge=LEFT, direction=1.5 * LEFT)
+                y_label = grid.get_y_axis_label("y", edge=LEFT, direction=LEFT, buff=0.4)
                 x_label = grid.get_x_axis_label("x")
                 grid_labels = VGroup(x_label, y_label)
 
@@ -99,6 +99,7 @@ class CoordinateSystem:
                 graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
                 graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
                 title = Title(
+                    # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
                     include_underline=False,
                     scale_factor=0.85,
