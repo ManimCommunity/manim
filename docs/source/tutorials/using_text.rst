@@ -313,7 +313,8 @@ with ``$`` when passed to LaTeX. The same can be done using :class:`~.Tex` by ad
         def construct(self):
             rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
             rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
-            self.add(VGroup(rtarrow0, rtarrow1).arrange(DOWN)
+            
+            self.add(VGroup(rtarrow0, rtarrow1).arrange(DOWN))
 
 
 LaTeX commands and keyword arguments
