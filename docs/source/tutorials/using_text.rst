@@ -232,7 +232,7 @@ You can disable ligatures by passing ``disable_ligatures`` to
 Iterating :class:`~.Text`
 -------------------------
 
-Text objects behave like :class:`VGroups <.VGroup>`_. Therefore, you can slice and index
+Text objects behave like :class:`VGroups <.VGroup>`. Therefore, you can slice and index
 the text.
 
 For example, you can set each letter to different color by iterating it.
