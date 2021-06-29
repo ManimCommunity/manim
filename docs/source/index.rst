@@ -29,7 +29,7 @@ information here will make it easier for newcomers to get started using
     `our GitHub repository <https://github.com/ManimCommunity/manim>`_. If you
     use Manim in a scientific context, instructions on how to cite a particular
     release can be found
-    `in our README <https://github.com/ManimCommunity/manim/blob/master/README.md>`_.
+    `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
 
 .. note::
 
