@@ -1,4 +1,4 @@
-See the [main README](https://github.com/ManimCommunity/manim/blob/master/README.md) for some instructions on how to use this image.
+See the [main README](https://github.com/ManimCommunity/manim/blob/main/README.md) for some instructions on how to use this image.
 
 # Building the image
 The docker image corresponding to the checked out version of the git repository
