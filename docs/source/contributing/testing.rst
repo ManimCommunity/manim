@@ -87,7 +87,6 @@ The ``manim/tests`` directory looks like this:
     ├── __init__.py
     ├── test_camera.py
     ├── test_config.py
-    ├── test_container.py
     ├── test_copy.py
     ├── test_vectorized_mobject.py
     ├── test_graphical_units

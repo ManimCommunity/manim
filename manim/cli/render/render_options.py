@@ -49,7 +49,7 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
+        type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(
@@ -123,5 +123,15 @@ render_options = option_group(
     ),
     option(
         "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
+    ),
+    option(
+        "--use_projection_fill_shaders",
+        is_flag=True,
+        help="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+    ),
+    option(
+        "--use_projection_stroke_shaders",
+        is_flag=True,
+        help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
     ),
 )

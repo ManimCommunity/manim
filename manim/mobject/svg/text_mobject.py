@@ -3,6 +3,10 @@
 .. note::
    Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
 
+.. important::
+
+   See the corresponding tutorial :ref:`rendering-with-latex`
+
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
 With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
@@ -136,7 +140,7 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        VGroup.__init__(self, **config)
+        VGroup.__init__(self)
 
         lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
@@ -165,9 +169,7 @@ class Paragraph(VGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
-        self.get_group_class().__init__(
-            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
-        )
+        self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self.set_all_lines_alignments(self.alignment)
@@ -676,8 +678,45 @@ class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
-    in the given text. In particular, slicing is possible. Text can be formatted
-    using different tags:
+    in the given text. In particular, slicing is possible.
+
+    **What is PangoMarkup?**
+
+    PangoMarkup is a small markup language like html and it helps you avoid using
+    "range of characters" while coloring or styling a piece a Text. You can use
+    this language with :class:`~.MarkupText`.
+
+    A simple example of a marked-up string might be::
+
+        <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"
+
+    and it can be used with :class:`~.MarkupText` as
+
+    .. manim:: MarkupExample
+        :save_last_frame:
+
+        class MarkupExample(Scene):
+            def construct(self):
+                text = MarkupText('<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"')
+                self.add(text)
+
+    A more elaborate example would be:
+
+    .. manim:: MarkupElaborateExample
+        :save_last_frame:
+
+        class MarkupElaborateExample(Scene):
+            def construct(self):
+                text = MarkupText('<span foreground="purple">ا</span><span foreground="red">َ</span>ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي<span foreground="green">ّ</span><span foreground="red">َ</span>ة<span foreground="blue">ُ</span>')
+                self.add(text)
+
+    PangoMarkup can also contain XML features such as numeric character
+    entities such as ``&#169;`` for © can be used too.
+
+    The most general markup tag is ``<span>``, then there are some
+    convenience tags.
+
+    Here is a list of supported tags:
 
     - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
     - ``<ul>underline</ul>`` and ``<s>strike through</s>``
@@ -693,18 +732,27 @@ class MarkupText(SVGMobject):
     - ``<span fgcolor="red">temporary change of color</span>``
     - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``
 
-    For ``<span>`` markup, colors can be specified either as hex triples like ``#aabbcc`` or as named CSS colors like ``AliceBlue``.
-    The ``<gradient>`` tag being handled by Manim rather than Pango, supports hex triplets or Manim constants like ``RED`` or ``RED_A``.
-    If you want to use Manim constants like ``RED_A`` together with ``<span>``,
-    you will need to use Python's f-String syntax as follows:
-    ``f'<span foreground="{RED_A}">here you go</span>'``
+    For ``<span>`` markup, colors can be specified either as
+    hex triples like ``#aabbcc`` or as named CSS colors like
+    ``AliceBlue``.
+    The ``<gradient>`` tag is handled by Manim rather than
+    Pango, and supports hex triplets or Manim constants like
+    ``RED`` or ``RED_A``.
+    If you want to use Manim constants like ``RED_A`` together
+    with ``<span>``, you will need to use Python's f-String
+    syntax as follows::
 
-    If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
-    the first and last letter when creating the gradient. This is due to the fact that e.g. ``fl``
-    are two characters, but might be set as one single glyph, a ligature. If your language does
-    not depend on ligatures, consider setting ``disable_ligatures=True``. If you cannot or do
-    not want to do without ligatures, the ``gradient`` tag supports an optional attribute ``offset``
-    which can be used to compensate for that error. Usage is as follows:
+        MarkupText(f'<span foreground="{RED_A}">here you go</span>')
+
+    If your text contains ligatures, the :class:`MarkupText` class may
+    incorrectly determine the first and last letter when creating the
+    gradient. This is due to the fact that ``fl`` are two separate characters,
+    but might be set as one single glyph - a ligature. If your language
+    does not depend on ligatures, consider setting ``disable_ligatures``
+    to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional
+    attribute ``offset`` which can be used to compensate for that error.
+
+    For example:
 
     - ``<gradient from="RED" to="YELLOW" offset="1">example</gradient>`` to *start* the gradient one letter earlier
     - ``<gradient from="RED" to="YELLOW" offset=",1">example</gradient>`` to *end* the gradient one letter earlier
@@ -714,20 +762,24 @@ class MarkupText(SVGMobject):
     itself contain ligatures. The same can happen when using HTML entities for
     special chars.
 
-    When using ``underline``, ``overline`` or ``strikethrough`` together with ``<gradient>`` tags, you will also need to use the offset, because
-    underlines are additional paths in the final :class:`SVGMobject`, check out the corresponding example.
+    When using ``underline``, ``overline`` or ``strikethrough`` together with
+    ``<gradient>`` tags, you will also need to use the offset, because
+    underlines are additional paths in the final :class:`SVGMobject`.
+    Check out the following example.
 
-    Escaping of special characters: ``>`` *should* be written as ``&gt;`` whereas ``<`` and
-    ``&`` *must* be written as ``&lt;`` and ``&amp;``.
+    Escaping of special characters: ``>`` **should** be written as ``&gt;``
+    whereas ``<`` and ``&`` *must* be written as ``&lt;`` and
+    ``&amp;``.
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/1.46/pango-Markup.html>`_.
+    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
     Parameters
     ----------
+
     text : :class:`str`
         The text that need to created as mobject.
     fill_opacity : :class:`int`
@@ -878,6 +930,39 @@ class MarkupText(SVGMobject):
                 group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
                 self.add(group)
 
+    You can justify the text by passing :attr:`justify` parameter.
+
+    .. manim:: JustifyText
+
+        class JustifyText(Scene):
+            def construct(self):
+                ipsum_text = (
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    "Praesent feugiat metus sit amet iaculis pulvinar. Nulla posuere "
+                    "quam a ex aliquam, eleifend consectetur tellus viverra. Aliquam "
+                    "fermentum interdum justo, nec rutrum elit pretium ac. Nam quis "
+                    "leo pulvinar, dignissim est at, venenatis nisi. Quisque mattis "
+                    "dolor ut euismod hendrerit. Nullam eu ante sollicitudin, commodo "
+                    "risus a, vehicula odio. Nam urna tortor, aliquam a nibh eu, commodo "
+                    "imperdiet arcu. Donec tincidunt commodo enim a tincidunt."
+                )
+                justified_text = MarkupText(ipsum_text, justify=True).scale(0.4)
+                not_justified_text = MarkupText(ipsum_text, justify=False).scale(0.4)
+                just_title = Title("Justified")
+                njust_title = Title("Not Justified")
+                self.add(njust_title, not_justified_text)
+                self.play(
+                    Transform(
+                        not_justified_text,
+                        justified_text,
+                    ),
+                    Transform(
+                        njust_title,
+                        just_title,
+                    ),
+                    run_time=2,
+                )
+                self.wait(1)
 
     Tests
     -----
@@ -900,6 +985,7 @@ class MarkupText(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
+        justify: bool = False,
         gradient: tuple = None,
         tab_width: int = 4,
         height: int = None,
@@ -918,6 +1004,7 @@ class MarkupText(SVGMobject):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
+        self.justify = justify
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
@@ -1005,6 +1092,7 @@ class MarkupText(SVGMobject):
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self.size)
         settings += str(self.disable_ligatures)
+        settings += str(self.justify)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -1037,6 +1125,8 @@ class MarkupText(SVGMobject):
             START_Y,
             600,  # width
             400,  # height
+            justify=self.justify,
+            pango_width=500,
         )
 
     def _count_real_chars(self, s):
