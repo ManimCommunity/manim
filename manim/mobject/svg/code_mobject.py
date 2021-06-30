@@ -172,10 +172,10 @@ class Code(VGroup):
     ):
         super().__init__(
             stroke_width=stroke_width,
-            background_stroke_color=background_stroke_color,
-            background_stroke_width=background_stroke_width,
             **kwargs,
         )
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.scale_factor = scale_factor
