@@ -47,6 +47,7 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
+from .opengl_compatibility import ConvertToOpenGL
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.
@@ -67,7 +68,7 @@ def matrix_to_mobject(matrix):
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject):
+class Matrix(VMobject, metaclass=ConvertToOpenGL):
     """A mobject that displays a matrix on the screen.
 
     Examples
@@ -182,7 +183,7 @@ class Matrix(VMobject):
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         mob_matrix = self.matrix_to_mob_matrix(matrix)
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*it.chain(*mob_matrix))

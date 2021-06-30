@@ -285,6 +285,8 @@ class ManimConfig(MutableMapping):
         "use_webgl_renderer",
         "enable_gui",
         "gui_location",
+        "use_projection_fill_shaders",
+        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
         "fullscreen",
@@ -523,6 +525,8 @@ class ManimConfig(MutableMapping):
             "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -661,6 +665,8 @@ class ManimConfig(MutableMapping):
             "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1195,6 +1201,18 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["fullscreen"],
         lambda self, val: self._set_boolean("fullscreen", val),
         doc="Expand the window to its maximum possible size.",
+    )
+
+    use_projection_fill_shaders = property(
+        lambda self: self._d["use_projection_fill_shaders"],
+        lambda self, val: self._set_boolean("use_projection_fill_shaders", val),
+        doc="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+    )
+
+    use_projection_stroke_shaders = property(
+        lambda self: self._d["use_projection_stroke_shaders"],
+        lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
+        doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:

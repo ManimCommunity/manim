@@ -211,6 +211,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.n_components = n_components
         self.arc_center = arc_center
         super().__init__(self, **kwargs)
+        self.orientation = -1
 
     def init_points(self):
         self.set_points(
@@ -220,6 +221,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                 n_components=self.n_components,
             )
         )
+        # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
