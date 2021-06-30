@@ -691,13 +691,14 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        Line3D.__init__(self, start=start, end=end, **kwargs)
+        Line3D.__init__(
+            self, start=start, end=end, thickness=thickness, color=color, **kwargs
+        )
 
         self.length = np.linalg.norm(self.vect)
         self.set_start_and_end_attrs(
             self.start,
             self.end - height * self.direction,
-            thickness=thickness,
             **kwargs,
         )
 
