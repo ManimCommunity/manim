@@ -195,10 +195,8 @@ class Sphere(ParametricSurface):
             self,
             self.func,
             resolution=resolution,
-            u_min=u_range[0],
-            u_max=u_range[1],
-            v_min=v_range[0],
-            v_max=v_range[1],
+            u_range=u_range,
+            v_range=v_range,
             **kwargs,
         )
         self.radius = radius
