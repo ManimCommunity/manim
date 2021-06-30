@@ -48,7 +48,7 @@ class ParametricSurface(VGroup):
                 surface = ParametricSurface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
                     u_range=[-PI, PI],
-                    v_range=[0,TAU]
+                    v_range=[0, TAU]
                 )
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
@@ -169,10 +169,8 @@ class Sphere(ParametricSurface):
                     center=(3, 0, 0),
                     radius=1,
                     resolution=(20, 20),
-                    u_min=0.001,
-                    u_max=PI - 0.001,
-                    v_min=0,
-                    v_max=TAU,
+                    u_range=[0.001, PI - 0.001],
+                    v_range=[0, TAU]
                 )
                 sphere1.set_color(RED)
                 self.add(sphere1)
@@ -189,20 +187,18 @@ class Sphere(ParametricSurface):
         center=ORIGIN,
         radius=1,
         resolution=(12, 24),
-        u_min=0.001,
-        u_max=PI - 0.001,
-        v_min=0,
-        v_max=TAU,
+        u_range=[0.001, PI - 0.001],
+        v_range=[0, TAU],
         **kwargs
     ):
         ParametricSurface.__init__(
             self,
             self.func,
             resolution=resolution,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_min=u_range[0],
+            u_max=u_range[1],
+            v_min=v_range[0],
+            v_max=v_range[1],
             **kwargs,
         )
         self.radius = radius
@@ -335,10 +331,8 @@ class Cone(ParametricSurface):
         The direction of the apex.
     show_base : :class:`bool`
         Whether to show the base plane or not.
-    v_min : :class:`float`
-        The azimuthal angle to start at.
-    v_max : :class:`float`
-        The azimuthal angle to end at.
+    v_range : :class:`float`
+        The azimuthal angle to start and end at.
     u_min : :class:`float`
         The radius at the apex.
     checkerboard_colors : :class:`bool`
@@ -351,8 +345,7 @@ class Cone(ParametricSurface):
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         u_min=0,
         checkerboard_colors=False,
         **kwargs
@@ -363,8 +356,8 @@ class Cone(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            v_min=v_min,
-            v_max=v_max,
+            v_min=v_range[0],
+            v_max=v_range[1],
             u_min=u_min,
             u_max=np.sqrt(base_radius ** 2 + height ** 2),
             checkerboard_colors=checkerboard_colors,
@@ -466,10 +459,8 @@ class Cylinder(ParametricSurface):
         The height of the cylinder.
     direction : :class:`numpy.array`
         The direction of the central axis of the cylinder.
-    v_min : :class:`float`
-        The height along the height axis (given by direction) to start on.
-    v_max : :class:`float`
-        The height along the height axis (given by direction) to end on.
+    v_range : :class:`float`
+        The height along the height axis (given by direction) to start and end on.
     show_ends : :class:`bool`
         Whether to show the end caps or not.
     """
@@ -479,8 +470,7 @@ class Cylinder(ParametricSurface):
         radius=1,
         height=2,
         direction=Z_AXIS,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         show_ends=True,
         resolution=24,
         **kwargs
@@ -493,8 +483,8 @@ class Cylinder(ParametricSurface):
             resolution=resolution,
             u_min=-self._height / 2,
             u_max=self._height / 2,
-            v_min=v_min,
-            v_max=v_max,
+            v_min=v_range[0],
+            v_max=v_range[1],
             **kwargs,
         )
         if show_ends:
@@ -733,10 +723,8 @@ class Torus(ParametricSurface):
         self,
         major_radius=3,
         minor_radius=1,
-        u_min=0,
-        u_max=TAU,
-        v_min=0,
-        v_max=TAU,
+        u_range=[0, TAU],
+        v_range=[0, TAU],
         resolution=24,
         **kwargs
     ):
@@ -745,10 +733,10 @@ class Torus(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_min=u_range[0],
+            u_max=u_range[1],
+            v_min=v_range[0],
+            v_max=v_range[1],
             resolution=resolution,
             **kwargs,
         )
