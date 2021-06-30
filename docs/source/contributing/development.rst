@@ -66,22 +66,22 @@ You are now ready to work on manim!
 Develop your contribution
 -------------------------
 
-#. Checkout your local repository's master branch and pull the latest
+#. Checkout your local repository's main branch and pull the latest
    changes from ManimCommunity, ``upstream``, into your local repository:
 
    .. code-block:: shell
 
-      git checkout master 
-      git pull --rebase upstream master
+      git checkout main
+      git pull --rebase upstream main
 
 #. Create a branch for the changes you want to work on rather than working
-   off of master:
+   off of your local main branch:
 
    .. code-block:: shell
 
-      git checkout -b <new branch name> upstream/master
+      git checkout -b <new branch name> upstream/main
 
-   This ensures you can easily update your local repository's master with the
+   This ensures you can easily update your local repository's main with the
    first step and switch branches to work on multiple features.
 
 #. Write some awesome code!
@@ -185,8 +185,8 @@ Your changes are eligible to be merged if:
 #. the tests in our pipeline pass
 #. at least one (two for more complex changes) Community Developer approves the changes
 
-You can check for merge conflicts between the current upstream/master and
-your branch by executing ``git pull upstream master`` locally. If this
+You can check for merge conflicts between the current upstream/main and
+your branch by executing ``git pull upstream main`` locally. If this
 generates any merge conflicts, you need to resolve them and push an
 updated version of the branch to your fork of the repository.
 
