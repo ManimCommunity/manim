@@ -1289,7 +1289,7 @@ class ThreeDAxes(Axes):
     x_length
         The length of the x-axis.
     y_length
-        The length of the y-axis
+        The length of the y-axis.
     z_length
         The length of the z-axis.
     z_axis_config
