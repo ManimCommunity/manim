@@ -6,6 +6,7 @@ from functools import wraps
 
 import moderngl
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
@@ -59,7 +60,7 @@ class OpenGLMobject:
         **kwargs,
     ):
 
-        self.color = color
+        self.color = Color(color)
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
