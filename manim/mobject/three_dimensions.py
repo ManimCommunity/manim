@@ -356,10 +356,8 @@ class Cone(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            v_min=v_range[0],
-            v_max=v_range[1],
-            u_min=u_min,
-            u_max=np.sqrt(base_radius ** 2 + height ** 2),
+            v_range=v_range,
+            u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -481,10 +479,8 @@ class Cylinder(ParametricSurface):
             self,
             self.func,
             resolution=resolution,
-            u_min=-self._height / 2,
-            u_max=self._height / 2,
-            v_min=v_range[0],
-            v_max=v_range[1],
+            u_range=[-self._height / 2, self._height / 2],
+            v_range=v_range,
             **kwargs,
         )
         if show_ends:
@@ -733,10 +729,8 @@ class Torus(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            u_min=u_range[0],
-            u_max=u_range[1],
-            v_min=v_range[0],
-            v_max=v_range[1],
+            u_range=u_range,
+            v_range=v_range,
             resolution=resolution,
             **kwargs,
         )
