@@ -59,8 +59,8 @@ class ParametricSurface(VGroup):
     def __init__(
         self,
         func,
-        u_range=[0,1],
-        v_range=[0,1],
+        u_range=[0, 1],
+        v_range=[0, 1],
         resolution=32,
         surface_piece_config={},
         fill_color=BLUE_D,
