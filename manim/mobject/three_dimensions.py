@@ -59,10 +59,8 @@ class ParametricSurface(VGroup):
     def __init__(
         self,
         func,
-        u_min=0,
-        u_max=1,
-        v_min=0,
-        v_max=1,
+        u_range=[0,1],
+        v_range=[0,1],
         resolution=32,
         surface_piece_config={},
         fill_color=BLUE_D,
@@ -75,10 +73,10 @@ class ParametricSurface(VGroup):
         **kwargs
     ):
         VGroup.__init__(self, **kwargs)
-        self.u_min = u_min
-        self.u_max = u_max
-        self.v_min = v_min
-        self.v_max = v_max
+        self.u_min = u_range[0]
+        self.u_max = u_range[1]
+        self.v_min = v_range[0]
+        self.v_max = v_range[1]
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
