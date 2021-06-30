@@ -1289,7 +1289,7 @@ class ThreeDAxes(Axes):
     x_length
         The length of the x-axis.
     y_length
-        The length of the y-axis.
+        The length of the y-axis.re
     z_length
         The length of the z-axis.
     z_axis_config
@@ -1361,8 +1361,9 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        self.add_3d_pieces()
-        self.set_axis_shading()
+        if not config.renderer == "opengl":
+            self.add_3d_pieces()
+            self.set_axis_shading()
 
     def add_3d_pieces(self):
         for axis in self.axes:

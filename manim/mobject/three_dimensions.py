@@ -16,6 +16,8 @@ __all__ = [
 
 import numpy as np
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
@@ -26,7 +28,7 @@ from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
 
-class ThreeDVMobject(VMobject):
+class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, shade_in_3d=True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
@@ -74,7 +76,7 @@ class ParametricSurface(VGroup):
         pre_function_handle_to_anchor_scale_factor=0.00001,
         **kwargs
     ):
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.u_min = u_min
         self.u_max = u_max
         self.v_min = v_min
