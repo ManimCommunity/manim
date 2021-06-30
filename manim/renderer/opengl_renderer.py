@@ -14,6 +14,7 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.simple_functions import clip
@@ -26,6 +27,10 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
+from .vectorized_mobject_rendering import (
+    render_opengl_vectorized_mobject_fill,
+    render_opengl_vectorized_mobject_stroke,
+)
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -262,6 +267,13 @@ class OpenGLRenderer:
         }
 
     def render_mobject(self, mobject):
+        if isinstance(mobject, OpenGLVMobject):
+            if config["use_projection_fill_shaders"]:
+                render_opengl_vectorized_mobject_fill(self, mobject)
+
+            if config["use_projection_stroke_shaders"]:
+                render_opengl_vectorized_mobject_stroke(self, mobject)
+
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 
         # Convert ShaderWrappers to Meshes.
@@ -377,11 +389,11 @@ class OpenGLRenderer:
         for obj in scene.meshes:
             for mesh in obj.get_meshes():
                 mesh.shader.set_uniform(
-                    "model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
+                    "u_model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
                 )
-                mesh.shader.set_uniform("view_matrix", opengl_view_matrix)
+                mesh.shader.set_uniform("u_view_matrix", opengl_view_matrix)
                 mesh.shader.set_uniform(
-                    "projection_matrix",
+                    "u_projection_matrix",
                     scene.camera.projection_matrix,
                 )
                 mesh.render()
