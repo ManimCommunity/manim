@@ -329,7 +329,7 @@ class Cone(ParametricSurface):
         The direction of the apex.
     show_base : :class:`bool`
         Whether to show the base plane or not.
-    v_range : :class:`float`
+    v_range : :class:`Sequence[float]`
         The azimuthal angle to start and end at.
     u_min : :class:`float`
         The radius at the apex.
@@ -455,7 +455,7 @@ class Cylinder(ParametricSurface):
         The height of the cylinder.
     direction : :class:`numpy.array`
         The direction of the central axis of the cylinder.
-    v_range : :class:`float`
+    v_range : :class:`Sequence[float]`
         The height along the height axis (given by direction) to start and end on.
     show_ends : :class:`bool`
         Whether to show the end caps or not.
