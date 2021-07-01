@@ -34,6 +34,17 @@ class ThreeDVMobject(VMobject):
 class ParametricSurface(VGroup):
     """Creates a Parametric Surface
 
+    Parameters
+    ----------
+    func : :class:`Callable[[float,float],np.ndarray]
+        The function of the surface
+    u_range : :class:`Sequence[float]`
+        The range of the u variable (replacing u_min and u_max)
+    v_range : :class:`Sequence[float]`
+        The range of the v variable (replacing v_min and v_max)
+    resolution : :class:`int`
+        The number of samples of the surface
+
     Examples
     --------
     .. manim:: ParaSurface
@@ -54,6 +65,12 @@ class ParametricSurface(VGroup):
                 self.add(axes, surface)
     """
 
+    @deprecated_params(
+        params="u_min,u_max,v_min,v_max",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use u_range and v_range instead.",
+    )
     def __init__(
         self,
         func,
@@ -71,10 +88,10 @@ class ParametricSurface(VGroup):
         **kwargs
     ):
         VGroup.__init__(self, **kwargs)
-        self.u_min = u_range[0]
-        self.u_max = u_range[1]
-        self.v_min = v_range[0]
-        self.v_max = v_range[1]
+        self.u_min = u_range[0] if "u_min" not in kwargs else kwargs.pop("u_min")
+        self.u_max = u_range[1] if "u_max" not in kwargs else kwargs.pop("u_max")
+        self.v_min = v_range[0] if "v_min" not in kwargs else kwargs.pop("v_min")
+        self.v_max = v_range[1] if "v_max" not in kwargs else kwargs.pop("v_max")
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
