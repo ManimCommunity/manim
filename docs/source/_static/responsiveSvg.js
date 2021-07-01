@@ -27,7 +27,7 @@ window.addEventListener("load", function () {
                 text: "#e07a5f",
                 box: "#fff",
                 edge: "#413c3c",
-                background: "#f1ece9"
+                background: "#ffffff"
             };
             additions = `
             .node polygon {
