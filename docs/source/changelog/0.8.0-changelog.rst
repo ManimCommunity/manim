@@ -93,8 +93,8 @@ New features
    A new parameter `justify` is added to :class:`MarkupText`. It can be used to justify a paragraph of text passed.
 
 * `#1660 <https://github.com/ManimCommunity/manim/pull/1660>`__: Add support for webm and jupyter transparency
-   - Add webm support via --format argument
-   - Handle transparency in jupyter by using webm format instead of mov
+   - Added webm support via the —format argument
+   - Added transparency support for jupyter
 
 * `#1553 <https://github.com/ManimCommunity/manim/pull/1553>`__: Add dearpygui integration
    Add integration with DearPyGUI
@@ -115,14 +115,10 @@ Enhancements
 
 
 * `#1649 <https://github.com/ManimCommunity/manim/pull/1649>`__: Improve jupyter output file naming
-   Enhancement for #1501 
-
-   Improve file naming of output videos when using jupyter. Add scene name, date and time instead of a hash as the file name.
+   Improved file naming of output videos when using jupyter.
 
 * `#1667 <https://github.com/ManimCommunity/manim/pull/1667>`__: Determine decimal places default by step size
-   Fixes #1653 
-
-   Set default number of decimal places in NumberLine based on step size
+   Set the default number of decimal places in NumberLine based on step size
 
 * `#1619 <https://github.com/ManimCommunity/manim/pull/1619>`__: Fix latex error summary
    Fix f-string formatting introduced by #1564, which earlier produced a hardcoded value instead of the error summary
@@ -143,9 +139,7 @@ Fixed bugs
 
 
 * `#1675 <https://github.com/ManimCommunity/manim/pull/1675>`__: Set attributes from svgmobject
-   Fixes #1615
-
-   Fix issue where fill and stroke are not being set for svgs
+   Fixed issue that caused fill and stroke to be ignored for svgs
 
 * `#1664 <https://github.com/ManimCommunity/manim/pull/1664>`__: Fixed accidental displacement in :class:`~.Axes` caused by `include_numbers`/`numbers_to_include`
 
@@ -165,12 +159,7 @@ Fixed bugs
 
 
 * `#1614 <https://github.com/ManimCommunity/manim/pull/1614>`__: Fix tick issues and improve tick location
-   Fixes #1604
-
-   - Improved handling of ticks for axes, ensuring they are symmetrical across axis regardless of the range and step size
-   - Generate ticks from the center when the range spans positive and negative directions
-   - Add handling to ensure ticks are not created at the origin for axes
-   - Ensure no tick overlapping occurs
+   Improved the handling of ticks for axes, ensuring they are symmetrical across axis regardless of the range and step size
 
 * `#1593 <https://github.com/ManimCommunity/manim/pull/1593>`__: Fixed get_frame() being flipped in OpenGL renderer
    Unflip get_frame() in opengl_renderer
@@ -179,13 +168,11 @@ Fixed bugs
 
 
 * `#1595 <https://github.com/ManimCommunity/manim/pull/1595>`__: Fixed a few CLI and rendering bugs
-   Fixes #1532 and fixes #1533
-
    - Corrected issue where Gifs were being logged with an incorrect extension
-   - Stopped outputting videos when format set to png
-   - Logged png output
-   - Added precedence handling when the`write_to_movie` flag would conflict with `--format png` config.
-   - Fixed issue that caused png image output to be ignored when caching was enabled and cached file was found in the partial movie directory
+   - Fixed issue where videos were output when format was set to png
+   - Added logging for png output
+   - Added precedence handling when the`write_to_movie` flag would conflict with `—format`
+   - Fixed issue that caused png image output to be ignored when caching was enabled
 
 * `#1634 <https://github.com/ManimCommunity/manim/pull/1634>`__: Fixed OpenGL examples for MacOS
    Renamed deprecated gl_FragColor to fragColor.
@@ -196,7 +183,7 @@ Documentation-related changes
 * `#1732 <https://github.com/ManimCommunity/manim/pull/1732>`__: docs: remove reference of `--plugins`
 
 
-* `#1734 <https://github.com/ManimCommunity/manim/pull/1734>`__: Fix inheritence graph background color
+* `#1734 <https://github.com/ManimCommunity/manim/pull/1734>`__: Fix inheritance graph background color
 
 
 * `#1698 <https://github.com/ManimCommunity/manim/pull/1698>`__: Added Example to :class:`~.PMobject`
