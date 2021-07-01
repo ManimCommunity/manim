@@ -22,6 +22,7 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
@@ -354,6 +355,12 @@ class Cone(ParametricSurface):
         Show checkerboard grid texture on the cone.
     """
 
+    @deprecated_params(
+        params="v_min,v_max",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use v_range instead.",
+    )
     def __init__(
         self,
         base_radius=1,
@@ -367,6 +374,8 @@ class Cone(ParametricSurface):
     ):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
+        if "v_min" in kwargs and "v_max" in kwargs:
+            v_range = [kwargs.pop("v_min"), kwargs.pop("v_max")]
 
         ParametricSurface.__init__(
             self,
@@ -478,6 +487,12 @@ class Cylinder(ParametricSurface):
         Whether to show the end caps or not.
     """
 
+    @deprecated_params(
+        params="v_min,v_max",
+        since="v0.8.0",
+        until="v0.9.0",
+        message="Use v_range instead.",
+    )
     def __init__(
         self,
         radius=1,
@@ -490,6 +505,8 @@ class Cylinder(ParametricSurface):
     ):
         self._height = height
         self.radius = radius
+        if "v_min" in kwargs and "v_max" in kwargs:
+            v_range = [kwargs.pop("v_min"), kwargs.pop("v_max")]
         ParametricSurface.__init__(
             self,
             self.func,
