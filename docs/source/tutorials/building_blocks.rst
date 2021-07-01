@@ -294,6 +294,12 @@ Use the :code:`run_time` argument to control the duration.
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
 
+Creating Custom Animation
+=========================
+
+.. TODO
+
+
 Using coordinates of a mobject
 ==============================
 
