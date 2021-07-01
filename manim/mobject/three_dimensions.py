@@ -37,7 +37,7 @@ class ParametricSurface(VGroup):
 
     Parameters
     ----------
-    func : :class:`Callable[[float,float],np.ndarray]
+    func : :class:`Callable[[float,float],np.ndarray]`
         The function of the surface
     u_range : :class:`Sequence[float]`
         The range of the u variable (replacing u_min and u_max)
