@@ -79,18 +79,6 @@ For specifying multiple plugins, command separated values must be used.
     [CLI]
     plugins = manim_rubikscube, manim_plugintemplate
 
-Enabling Plugins through CLI
-
-.. code-block:: bash
-
-    manim basic.py --plugins=manim_plugintemplate
-
-For multiple plugins
-
-.. code-block:: bash
-
-    manim basic.py --plugins=manim_rubikscube,manim_plugintemplate
-
 Creating Plugins
 ****************
 Plugins are intended to extend Manim's core functionality. If you aren't sure
