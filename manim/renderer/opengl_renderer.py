@@ -1,4 +1,5 @@
 import itertools as it
+import re
 import time
 
 import moderngl
@@ -8,11 +9,12 @@ from PIL import Image
 from manim import config
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
-from manim.utils.color import color_to_rgba
+from manim.utils.color import color_to_rgb, color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.simple_functions import clip
@@ -25,6 +27,10 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
+from .vectorized_mobject_rendering import (
+    render_opengl_vectorized_mobject_fill,
+    render_opengl_vectorized_mobject_stroke,
+)
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -36,10 +42,16 @@ class OpenGLCamera(OpenGLMobject):
         euler_angles=[0, 0, 0],
         focal_distance=2,
         light_source_position=[-10, 10, 10],
+        orthographic=False,
         **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
+        self.orthographic = orthographic
+        if self.orthographic:
+            self.projection_matrix = opengl.orthographic_projection_matrix()
+        else:
+            self.projection_matrix = opengl.perspective_projection_matrix()
 
         if frame_shape is None:
             self.frame_shape = (config["frame_width"], config["frame_height"])
@@ -65,6 +77,7 @@ class OpenGLCamera(OpenGLMobject):
         self.light_source = OpenGLPoint(self.light_source_position)
 
         self.model_matrix = opengl.translation_matrix(0, 0, 11)
+        self.default_model_matrix = opengl.translation_matrix(0, 0, 11)
 
         super().__init__(**kwargs)
 
@@ -93,7 +106,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
         self.set_euler_angles(0, 0, 0)
-        self.model_matrix = opengl.translation_matrix(0, 0, 11)
+        self.model_matrix = self.default_model_matrix
         return self
 
     def refresh_rotation_matrix(self):
@@ -254,6 +267,13 @@ class OpenGLRenderer:
         }
 
     def render_mobject(self, mobject):
+        if isinstance(mobject, OpenGLVMobject):
+            if config["use_projection_fill_shaders"]:
+                render_opengl_vectorized_mobject_fill(self, mobject)
+
+            if config["use_projection_stroke_shaders"]:
+                render_opengl_vectorized_mobject_stroke(self, mobject)
+
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 
         # Convert ShaderWrappers to Meshes.
@@ -276,7 +296,7 @@ class OpenGLRenderer:
             try:
                 shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
-                    "u_projection_matrix", opengl.orthographic_projection_matrix()
+                    "u_projection_matrix", self.scene.camera.projection_matrix
                 )
             except KeyError:
                 pass
@@ -340,28 +360,7 @@ class OpenGLRenderer:
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
-        def update_frame():
-            self.frame_buffer_object.clear(*window_background_color)
-            self.refresh_perspective_uniforms(scene.camera)
-
-            for mobject in scene.mobjects:
-                self.render_mobject(mobject)
-
-            view_matrix = scene.camera.get_view_matrix()
-            for mesh in scene.meshes:
-                try:
-                    mesh.shader.set_uniform("u_view_matrix", view_matrix)
-                    mesh.shader.set_uniform(
-                        "u_projection_matrix", opengl.perspective_projection_matrix()
-                    )
-                except KeyError:
-                    pass
-                mesh.render()
-
-            self.animation_elapsed_time = time.time() - self.animation_start_time
-
-        window_background_color = color_to_rgba(config["background_color"])
-        update_frame()
+        self.update_frame(scene)
 
         if self.skip_animations:
             return
@@ -372,8 +371,34 @@ class OpenGLRenderer:
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
-                update_frame()
+                self.update_frame(scene)
                 self.window.swap_buffers()
+
+    def update_frame(self, scene):
+        window_background_color = color_to_rgba(config["background_color"])
+        self.frame_buffer_object.clear(*window_background_color)
+        self.refresh_perspective_uniforms(scene.camera)
+
+        for mobject in scene.mobjects:
+            self.render_mobject(mobject)
+
+        view_matrix = scene.camera.get_view_matrix(format=False)
+        opengl_view_matrix = opengl.matrix_to_shader_input(view_matrix)
+        from moderngl.program_members.uniform import Uniform
+
+        for obj in scene.meshes:
+            for mesh in obj.get_meshes():
+                mesh.shader.set_uniform(
+                    "u_model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
+                )
+                mesh.shader.set_uniform("u_view_matrix", opengl_view_matrix)
+                mesh.shader.set_uniform(
+                    "u_projection_matrix",
+                    scene.camera.projection_matrix,
+                )
+                mesh.render()
+
+        self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
         self.file_writer.finish()

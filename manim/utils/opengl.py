@@ -31,11 +31,11 @@ def orthographic_projection_matrix(
         return projection_matrix
 
 
-def perspective_projection_matrix(width=None, height=None, near=4, far=18, format=True):
+def perspective_projection_matrix(width=None, height=None, near=2, far=30, format=True):
     if width is None:
-        width = config["frame_width"] / 3
+        width = config["frame_width"] / 6
     if height is None:
-        height = config["frame_height"] / 3
+        height = config["frame_height"] / 6
     projection_matrix = np.array(
         [
             [2 * near / width, 0, 0, 0],
@@ -111,12 +111,12 @@ def rotation_matrix(x=0, y=0, z=0):
     )
 
 
-def scale_matrix(scale_factor=None):
+def scale_matrix(scale_factor=1):
     return np.array(
         [
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
+            [scale_factor, 0, 0, 0],
+            [0, scale_factor, 0, 0],
+            [0, 0, scale_factor, 0],
             [0, 0, 0, 1],
         ]
     )

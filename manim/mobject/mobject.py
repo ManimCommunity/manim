@@ -33,7 +33,6 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..container import Container
 from ..utils.color import (
     BLACK,
     WHITE,
@@ -63,7 +62,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject(Container):
+class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
@@ -94,8 +93,8 @@ class Mobject(Container):
         ] = {}
         cls._add_intrinsic_animation_overrides()
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = Color(color)
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+        self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -121,8 +120,6 @@ class Mobject(Container):
         self.init_gl_data()
         self.init_gl_points()
         self.init_gl_colors()
-
-        Container.__init__(self, **kwargs)
 
     @classmethod
     def animation_override_for(
@@ -1144,6 +1141,22 @@ class Mobject(Container):
         -------
         Mobject
             The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
 
         See also
         --------
