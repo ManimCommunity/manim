@@ -170,7 +170,7 @@ class ParametricSurface(VGroup):
         Returns
         -------
         :class:`~.ParametricSurface`
-            The parametric surface with a gradient applied by value
+            The parametric surface with a gradient applied by value. For chaining.
 
         Examples
         --------
