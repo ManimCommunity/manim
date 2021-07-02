@@ -17,6 +17,8 @@ from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
@@ -1018,7 +1020,7 @@ class CoordinateSystem:
         return T_label_group
 
 
-class Axes(VGroup, CoordinateSystem):
+class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
     Parameters
@@ -1359,8 +1361,9 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        self.add_3d_pieces()
-        self.set_axis_shading()
+        if not config.renderer == "opengl":
+            self.add_3d_pieces()
+            self.set_axis_shading()
 
     def add_3d_pieces(self):
         for axis in self.axes:
