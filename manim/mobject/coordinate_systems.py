@@ -1591,10 +1591,26 @@ class NumberPlane(Axes):
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
-        ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
-        )
+
+        # If they're not on different sides then their product is positive or 0
+        on_same_side = axis_perpendicular_to.x_max * axis_perpendicular_to.x_min > 0
+        
+        if on_same_side:
+            if axis_perpendicular_to.x_max >= 0:
+                # Both on positive side
+                positive_end_point = axis_perpendicular_to.x_max - axis_perpendicular_to.x_min
+                ranges = (np.arange(0, positive_end_point, step),)
+            else:
+                # Both on negative side
+                negative_end_point = axis_perpendicular_to.x_min - axis_perpendicular_to.x_max
+                ranges = (np.arange(0, negative_end_point, -step),)
+        else:
+            # On different sides
+            ranges = (
+                np.arange(0, axis_perpendicular_to.x_max, step),
+                np.arange(0, axis_perpendicular_to.x_min, -step),
+            )
+
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()
