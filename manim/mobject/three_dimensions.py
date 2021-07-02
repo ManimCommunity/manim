@@ -16,6 +16,8 @@ __all__ = [
 
 import numpy as np
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
@@ -26,12 +28,36 @@ from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
 
-class ThreeDVMobject(VMobject):
+class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, shade_in_3d=True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
 class ParametricSurface(VGroup):
+    """Creates a Parametric Surface
+
+    Examples
+    --------
+    .. manim:: ParaSurface
+        :save_last_frame:
+
+        class ParaSurface(ThreeDScene):
+            def func(self, u, v):
+                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
+
+            def construct(self):
+                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
+                surface = ParametricSurface(
+                    lambda u, v: axes.c2p(*self.func(u, v)),
+                    u_min=-PI,
+                    u_max=PI,
+                    v_min=0,
+                    v_max=TAU,
+                )
+                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
+                self.add(axes, surface)
+    """
+
     def __init__(
         self,
         func,
@@ -50,7 +76,7 @@ class ParametricSurface(VGroup):
         pre_function_handle_to_anchor_scale_factor=0.00001,
         **kwargs
     ):
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.u_min = u_min
         self.u_max = u_max
         self.v_min = v_min
@@ -260,6 +286,22 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
+    """A cuboid.
+
+    Examples
+    --------
+
+    .. manim:: ExamplePrism
+        :save_last_frame:
+
+        class ExamplePrism(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
+                prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
+                self.add(prismSmall, prismLarge)
+    """
+
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         Cube.__init__(self, **kwargs)
@@ -651,13 +693,14 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        Line3D.__init__(self, start=start, end=end, **kwargs)
+        Line3D.__init__(
+            self, start=start, end=end, thickness=thickness, color=color, **kwargs
+        )
 
         self.length = np.linalg.norm(self.vect)
         self.set_start_and_end_attrs(
             self.start,
             self.end - height * self.direction,
-            thickness=thickness,
             **kwargs,
         )
 

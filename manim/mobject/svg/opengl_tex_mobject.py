@@ -253,6 +253,8 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
+        for mob in self.submobjects:
+            mob.orientation = -1
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.tex_string)})"

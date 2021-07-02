@@ -6,7 +6,7 @@ repos:
     hooks:
       - id: mixed-line-ending
   - repo: https://github.com/psf/black
-    rev: 21.5b2
+    rev: 21.6b0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
@@ -15,7 +15,7 @@ repos:
     -   id: blacken-docs
         additional_dependencies: [black==20.8b1]
   - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.9.1
     hooks:
       - id: isort
         name: isort (python)
@@ -30,6 +30,6 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.0.0
+    rev: v2.1.0
     hooks:
       - id: codespell

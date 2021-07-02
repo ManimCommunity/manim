@@ -59,6 +59,10 @@ __all__ = [
     "Cutout",
     "Angle",
     "RightAngle",
+    "ArrowCircleFilledTip",
+    "ArrowCircleTip",
+    "ArrowSquareTip",
+    "ArrowSquareFilledTip",
 ]
 
 import math
@@ -737,6 +741,52 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
+    """
+
+    Parameters
+    ----------
+    inner_radius
+       The inside radius of the Annular Sector.
+    outer_radius
+       The outside radius of the Annular Sector.
+    angle
+       The clockwise angle of the Annular Sector.
+    start_angle
+       The starting clockwise angle of the Annular Sector.
+    fill_opacity
+       The opacity of the color filled in the Annular Sector.
+    stroke_width
+       The stroke width of the Annular Sector.
+    color
+       The color filled into the Annular Sector.
+
+    Examples
+    --------
+    .. manim:: AnnularSectorExample
+        :save_last_frame:
+
+        class AnnularSectorExample(Scene):
+            def construct(self):
+                # Changes background color to clearly visualize changes in fill_opacity.
+                self.camera.background_color = WHITE
+
+                # The default parameter start_angle is 0, so the AnnularSector starts from the +x-axis.
+                s1 = AnnularSector(color=YELLOW).move_to(2 * UL)
+
+                # Different inner_radius and outer_radius than the default.
+                s2 = AnnularSector(inner_radius=1.5, outer_radius=2, angle=45 * DEGREES, color=RED).move_to(2 * UR)
+
+                # fill_opacity is typically a number > 0 and <= 1. If fill_opacity=0, the AnnularSector is transparent.
+                s3 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=PI, fill_opacity=0.25, color=BLUE).move_to(2 * DL)
+
+                # With a negative value for the angle, the AnnularSector is drawn clockwise from the start value.
+                s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
+
+                self.add(s1, s2, s3, s4)
+
+
+    """
+
     def __init__(
         self,
         inner_radius=1,
@@ -1264,6 +1314,46 @@ class Arrow(Line):
 
                 self.add(Group(g1, g2, g3).arrange(buff=2))
 
+
+    .. manim:: ArrowExample
+        :save_last_frame:
+
+        class ArrowExample(Scene):
+            def construct(self):
+                left_group = VGroup()
+                # As buff increases, the size of the arrow decreases.
+                for buff in np.arange(0, 2.2, 0.45):
+                    left_group += Arrow(buff=buff, start=2 * LEFT, end=2 * RIGHT)
+                # Required to arrange arrows.
+                left_group.arrange(DOWN)
+                left_group.move_to(4 * LEFT)
+
+                middle_group = VGroup()
+                # As max_stroke_width_to_length_ratio gets bigger,
+                # the width of stroke increases.
+                for i in np.arange(0, 5, 0.5):
+                    middle_group += Arrow(max_stroke_width_to_length_ratio=i)
+                middle_group.arrange(DOWN)
+
+                UR_group = VGroup()
+                # As max_tip_length_to_length_ratio increases,
+                # the length of the tip increases.
+                for i in np.arange(0, 0.3, 0.1):
+                    UR_group += Arrow(max_tip_length_to_length_ratio=i)
+                UR_group.arrange(DOWN)
+                UR_group.move_to(4 * RIGHT + 2 * UP)
+
+                DR_group = VGroup()
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
+                DR_group.arrange(DOWN)
+                DR_group.move_to(4 * RIGHT + 2 * DOWN)
+
+                self.add(left_group, middle_group, UR_group, DR_group)
+
+
     See Also
     --------
     :class:`ArrowTip`
@@ -1499,6 +1589,21 @@ class DoubleArrow(Arrow):
                 d_arrow_2 = DoubleArrow(tip_shape_end=ArrowCircleFilledTip, tip_shape_start=ArrowCircleFilledTip)
                 group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
                 self.add(group)
+
+
+    .. manim:: DoubleArrowExample2
+        :save_last_frame:
+
+        class DoubleArrowExample2(Scene):
+            def construct(self):
+                box = Square()
+                p1 = box.get_left()
+                p2 = box.get_right()
+                d1 = DoubleArrow(p1, p2, buff=0)
+                d2 = DoubleArrow(p1, p2, buff=0, tip_length=0.2, color=YELLOW)
+                d3 = DoubleArrow(p1, p2, buff=0, tip_length=0.4, color=BLUE)
+                Group(d1, d2, d3).arrange(DOWN)
+                self.add(box, d1, d2, d3)
 
     See Also
     --------
@@ -2416,9 +2521,8 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: CustomTipExample
 
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
-        ...     def __init__(self, **kwargs):
+        ...     def __init__(self, length=0.35, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
-        ...         length = 0.35
         ...         self.width = length
         ...         self.stretch_to_fit_height(length)
         >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
