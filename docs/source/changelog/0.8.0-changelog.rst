@@ -2,7 +2,7 @@
 v0.8.0
 ******
 
-:Date: July 01, 2021
+:Date: July 02, 2021
 
 Contributors
 ============
@@ -72,13 +72,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 73 pull requests were merged for this release.
-
-Highlights
-----------
-
-* `#1716 <https://github.com/ManimCommunity/manim/pull/1716>`__: Rewrite stroke and fill shaders
-   Rewrite vectorized mobject shaders to be compatible with transformation matrices.
+A total of 76 pull requests were merged for this release.
 
 Deprecated classes and functions
 --------------------------------
@@ -88,6 +82,9 @@ Deprecated classes and functions
 
 New features
 ------------
+
+* `#1716 <https://github.com/ManimCommunity/manim/pull/1716>`__: Rewrite stroke and fill shaders
+   Rewrite vectorized mobject shaders to be compatible with transformation matrices.
 
 * `#1695 <https://github.com/ManimCommunity/manim/pull/1695>`__: Add option to justify text with :class:`~.MarkupText`
    A new parameter ``justify`` is added to :class:`~.MarkupText`. It can be used to justify a paragraph of text.
@@ -101,6 +98,15 @@ New features
 
 Enhancements
 ------------
+
+* `#1728 <https://github.com/ManimCommunity/manim/pull/1728>`__: Improved positioning and size of the OpenGL window; added some configuration options
+
+
+* `#1733 <https://github.com/ManimCommunity/manim/pull/1733>`__: Let OpenGLMobject.copy return a deep copy by default
+
+
+* `#1735 <https://github.com/ManimCommunity/manim/pull/1735>`__: Metaclass compatibility for `coordinate_system.py`, `Code` and `ParametricSurface`
+
 
 * `#1585 <https://github.com/ManimCommunity/manim/pull/1585>`__: OpenGL compatibility via metaclass for :class:`~.Matrix`, :class:`~.DecimalNumber`, :class:`~.Variable`
 
@@ -130,10 +136,13 @@ Enhancements
 
 
 * `#1632 <https://github.com/ManimCommunity/manim/pull/1632>`__: OpenGL compatibility via metaclass: :class:`~.Group`
-   This PR adds OpenGL compatibility for `Group`
+
 
 Fixed bugs
 ----------
+
+* `#1740 <https://github.com/ManimCommunity/manim/pull/1740>`__: Fix pillow to <8.3.0
+
 
 * `#1729 <https://github.com/ManimCommunity/manim/pull/1729>`__: Fix bug when using :class:`~.Text` with the OpenGL renderer
 
@@ -178,34 +187,34 @@ Documentation-related changes
 * `#1734 <https://github.com/ManimCommunity/manim/pull/1734>`__: Fix inheritance graph background color
 
 
-* `#1698 <https://github.com/ManimCommunity/manim/pull/1698>`__: Added Example to :class:`~.PMobject`
+* `#1698 <https://github.com/ManimCommunity/manim/pull/1698>`__: Added an example for :class:`~.PMobject`
 
 
-* `#1690 <https://github.com/ManimCommunity/manim/pull/1690>`__: Added Example for :class:`~.CoordinateSystem`
+* `#1690 <https://github.com/ManimCommunity/manim/pull/1690>`__: Added an example for :class:`~.CoordinateSystem`
 
 
 * `#1510 <https://github.com/ManimCommunity/manim/pull/1510>`__: Add a tutorial for using :class:`~.Text` and :class:`~.Tex`
 
 
-* `#1685 <https://github.com/ManimCommunity/manim/pull/1685>`__: Added example and parameter description to :class:`~.AnnularSector`
+* `#1685 <https://github.com/ManimCommunity/manim/pull/1685>`__: Added an example and parameter description for :class:`~.AnnularSector`
 
 
 * `#1687 <https://github.com/ManimCommunity/manim/pull/1687>`__: Updated imports in ``geometry.py`` and added example to :class:`~.Arrow`
 
 
-* `#1681 <https://github.com/ManimCommunity/manim/pull/1681>`__: Added an example to :class:`~.NumberLine`
+* `#1681 <https://github.com/ManimCommunity/manim/pull/1681>`__: Added an example for :class:`~.NumberLine`
 
 
-* `#1697 <https://github.com/ManimCommunity/manim/pull/1697>`__: Added an example to :class:`~.PGroup`
+* `#1697 <https://github.com/ManimCommunity/manim/pull/1697>`__: Added an example for :class:`~.PGroup`
 
 
 * `#1594 <https://github.com/ManimCommunity/manim/pull/1594>`__: Several improvements to the documentation design and layout
 
 
-* `#1696 <https://github.com/ManimCommunity/manim/pull/1696>`__: Added an example to :class:`~.DashedVMobject`
+* `#1696 <https://github.com/ManimCommunity/manim/pull/1696>`__: Added an example for :class:`~.DashedVMobject`
 
 
-* `#1637 <https://github.com/ManimCommunity/manim/pull/1637>`__: Added an example to :class:`~.FunctionGraph`
+* `#1637 <https://github.com/ManimCommunity/manim/pull/1637>`__: Added an example for :class:`~.FunctionGraph`
 
 
 * `#1626 <https://github.com/ManimCommunity/manim/pull/1626>`__: Added an example for :class:`~.Prism`
@@ -238,7 +247,7 @@ Documentation-related changes
 * `#1569 <https://github.com/ManimCommunity/manim/pull/1569>`__: Added example to demonstrate differences between :class:`~.Transform` and :class:`~.ReplacementTransform`
 
 
-* `#1647 <https://github.com/ManimCommunity/manim/pull/1647>`__: Added example for :class:`~.Sector`
+* `#1647 <https://github.com/ManimCommunity/manim/pull/1647>`__: Added an example for :class:`~.Sector`
 
 
 * `#1673 <https://github.com/ManimCommunity/manim/pull/1673>`__: Updated documentation examples for :class:`~.Text` and :class:`~.MarkupText`: set ``weight=BOLD`` instead of ``style``
@@ -259,7 +268,7 @@ Documentation-related changes
 * `#1658 <https://github.com/ManimCommunity/manim/pull/1658>`__: Updated python requirement in the documentation
 
 
-* `#1639 <https://github.com/ManimCommunity/manim/pull/1639>`__: Added an Example for :class:`~.SampleSpace`
+* `#1639 <https://github.com/ManimCommunity/manim/pull/1639>`__: Added an example for :class:`~.SampleSpace`
 
 
 * `#1640 <https://github.com/ManimCommunity/manim/pull/1640>`__: Added an example for :class:`~.Point`
@@ -322,9 +331,6 @@ Code quality improvements and similar refactors
 New releases
 ------------
 
-* `#1601 <https://github.com/ManimCommunity/manim/pull/1601>`__: Preparation for v0.7.0: added changelog and bumped version number
-
-
-* `#1738 <https://github.com/ManimCommunity/manim/pull/1738>`__: Prepare v0.8.0
+* `#1738 <https://github.com/ManimCommunity/manim/pull/1738>`__: Preparation for v0.8.0: added changelog and bumped version number
 
 
