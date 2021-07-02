@@ -9,11 +9,13 @@ __all__ = [
 ]
 
 import typing
+from typing import Union
 
 import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import PI
+from ..mobject.three_dimensions import Arrow3D
 
 if typing.TYPE_CHECKING:
     from ..mobject.geometry import Arrow
@@ -53,13 +55,16 @@ class GrowFromEdge(GrowFromPoint):
 
 
 class GrowArrow(GrowFromPoint):
-    def __init__(self, arrow: "Arrow", **kwargs) -> None:
+    def __init__(self, arrow: Union["Arrow", "Arrow3D"], **kwargs) -> None:
         point = arrow.get_start()
         super().__init__(arrow, point, **kwargs)
 
     def create_starting_mobject(self) -> "Mobject":
         start_arrow = self.mobject.copy()
-        start_arrow.scale(0, about_point=self.point)
+        if isinstance(start_arrow, Arrow3D):
+            start_arrow.scale(0, about_point=self.point)
+        else:
+            start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:
             start_arrow.set_color(self.point_color)
         return start_arrow
