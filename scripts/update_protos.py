@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 """
-This is intended to be run from manim/grpc
+This is intended to be run from the project root.
 """
 
 import os
 
-CMD_STRING = """
+grpc_dir = "manim/grpc"
+CMD_STRING = f"""
 poetry run python \
     -m grpc_tools.protoc \
-    -I./proto \
-    --python_out=./gen \
-    --grpc_python_out=./gen \
-        ./proto/frameserver.proto \
-        ./proto/renderserver.proto
+    -I {grpc_dir}/proto \
+    --python_out={grpc_dir}/gen \
+    --grpc_python_out={grpc_dir}/gen \
+        {grpc_dir}/proto/frameserver.proto \
+        {grpc_dir}/proto/renderserver.proto \
+        {grpc_dir}/proto/threejs.proto
 """
 os.system(CMD_STRING)

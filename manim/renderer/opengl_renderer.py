@@ -43,11 +43,15 @@ class OpenGLCamera(OpenGLMobject):
         focal_distance=2,
         light_source_position=[-10, 10, 10],
         orthographic=False,
+        minimum_polar_angle=-PI / 2,
+        maximum_polar_angle=PI / 2,
         **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
+        self.minimum_polar_angle = minimum_polar_angle
+        self.maximum_polar_angle = maximum_polar_angle
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
         else:
@@ -83,6 +87,10 @@ class OpenGLCamera(OpenGLMobject):
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
 
     def get_view_matrix(self, format=True):
         if format:
@@ -314,6 +322,7 @@ class OpenGLRenderer:
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
             )
+            mesh.set_uniforms(self)
             mesh.render()
 
     def get_texture_id(self, path):
@@ -382,20 +391,9 @@ class OpenGLRenderer:
         for mobject in scene.mobjects:
             self.render_mobject(mobject)
 
-        view_matrix = scene.camera.get_view_matrix(format=False)
-        opengl_view_matrix = opengl.matrix_to_shader_input(view_matrix)
-        from moderngl.program_members.uniform import Uniform
-
         for obj in scene.meshes:
             for mesh in obj.get_meshes():
-                mesh.shader.set_uniform(
-                    "u_model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
-                )
-                mesh.shader.set_uniform("u_view_matrix", opengl_view_matrix)
-                mesh.shader.set_uniform(
-                    "u_projection_matrix",
-                    scene.camera.projection_matrix,
-                )
+                mesh.set_uniforms(self)
                 mesh.render()
 
         self.animation_elapsed_time = time.time() - self.animation_start_time

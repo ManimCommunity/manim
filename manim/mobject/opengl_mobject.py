@@ -79,6 +79,7 @@ class OpenGLMobject:
 
         self.submobjects = []
         self.parents = []
+        self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
         self.needs_new_bounding_box = True

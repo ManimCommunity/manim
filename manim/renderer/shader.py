@@ -125,6 +125,13 @@ class Object3D:
         for child in children:
             child.parent = None
 
+    def get_position(self):
+        return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
+
     def get_meshes(self):
         dfs = [self]
         while dfs:
@@ -282,6 +289,16 @@ class Mesh(Object3D):
         copy.normal_matrix = self.normal_matrix.copy()
         # TODO: Copy updaters?
         return copy
+
+    def set_uniforms(self, renderer):
+        self.shader.set_uniform(
+            "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
+        )
+        self.shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
+        self.shader.set_uniform(
+            "u_projection_matrix",
+            renderer.camera.projection_matrix,
+        )
 
     def render(self):
         if self.skip_render:
