@@ -19,6 +19,8 @@ from typing import *
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
@@ -30,7 +32,7 @@ from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
 
-class ThreeDVMobject(VMobject):
+class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, shade_in_3d=True, **kwargs):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
