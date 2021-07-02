@@ -270,29 +270,66 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         # Using math mode for the label
         on_screen_int_var = Variable(int_var, "{a}_{i}", var_type=Integer)
 
+    .. manim:: VariablesWithValueTracker
+
+        class VariablesWithValueTracker(Scene):
+            def construct(self):
+                var = 0.5
+                on_screen_var = Variable(var, Text("var"), num_decimal_places=3)
+
+                # You can also change the colours for the label and value
+                on_screen_var.label.set_color(RED)
+                on_screen_var.value.set_color(GREEN)
+
+                self.play(Write(on_screen_var))
+                # The above line will just display the variable with
+                # its initial value on the screen. If you also wish to
+                # update it, you can do so by accessing the `tracker` attribute
+                self.wait()
+                var_tracker = on_screen_var.tracker
+                var = 10.5
+                self.play(var_tracker.animate.set_value(var))
+                self.wait()
+
+                int_var = 0
+                on_screen_int_var = Variable(
+                    int_var, Text("int_var"), var_type=Integer
+                ).next_to(on_screen_var, DOWN)
+                on_screen_int_var.label.set_color(RED)
+                on_screen_int_var.value.set_color(GREEN)
+
+                self.play(Write(on_screen_int_var))
+                self.wait()
+                var_tracker = on_screen_int_var.tracker
+                var = 10.5
+                self.play(var_tracker.animate.set_value(var))
+                self.wait()
+
+                # If you wish to have a somewhat more complicated label for your
+                # variable with subscripts, superscripts, etc. the default class
+                # for the label is MathTex
+                subscript_label_var = 10
+                on_screen_subscript_var = Variable(subscript_label_var, "{a}_{i}").next_to(
+                    on_screen_int_var, DOWN
+                )
+                self.play(Write(on_screen_subscript_var))
+                self.wait()
 
     .. manim:: VariableExample
 
         class VariableExample(Scene):
             def construct(self):
-                x = 2.0
-                x_sqr = x**2
+                start = 2.0
 
-                x_display = Variable(x, "x", num_decimal_places=3)
-                sqr_display = Variable(x_sqr, "x^2", num_decimal_places=3).next_to(x_display,DOWN)
+                x_var = Variable(start, 'x', num_decimal_places=3)
+                sqr_var = Variable(start**2, 'x^2', num_decimal_places=3)
+                Group(x_var, sqr_var).arrange(DOWN)
 
-                self.play(Write(x_display))
-                self.play(Write(sqr_display))
+                sqr_var.add_updater(lambda v: v.tracker.set_value(x_var.tracker.get_value()**2))
 
-                x_tracker = x_display.tracker
-                sqr_tracker = sqr_display.tracker
-
-                x = 5.6
-                x_sqr = x**2
-
-                self.play(x_tracker.animate.set_value(x),
-                          sqr_tracker.animate.set_value(x_sqr))
-                self.wait()
+                self.add(x_var, sqr_var)
+                self.play(x_var.tracker.animate.set_value(5), run_time=2, rate_func=linear)
+                self.wait(0.1)
 
     """
 
