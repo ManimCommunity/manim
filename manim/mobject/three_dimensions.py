@@ -14,7 +14,10 @@ __all__ = [
     "Torus",
 ]
 
+from typing import *
+
 import numpy as np
+from colour import Color
 
 from ..constants import *
 from ..mobject.geometry import Circle, Square
@@ -43,8 +46,10 @@ class ParametricSurface(VGroup):
         The range of the ``u`` variable: ``(u_min, u_max)``.
     v_range : :class:`Sequence[float]`
         The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution : :class:`int`
-        The number of samples taken of the surface.
+    resolution : :class:`Union[int,Sequence[int,int]]`
+        The number of samples taken of the surface. A tuple
+        can be used to define different resolutions for ``u`` and
+        ``v`` respectively.
 
     Examples
     --------
@@ -74,25 +79,25 @@ class ParametricSurface(VGroup):
     )
     def __init__(
         self,
-        func,
-        u_range=[0, 1],
-        v_range=[0, 1],
-        resolution=32,
-        surface_piece_config={},
-        fill_color=BLUE_D,
-        fill_opacity=1.0,
-        checkerboard_colors=[BLUE_D, BLUE_E],
-        stroke_color=LIGHT_GREY,
-        stroke_width=0.5,
-        should_make_jagged=False,
-        pre_function_handle_to_anchor_scale_factor=0.00001,
+        func: Callable[[float, float], np.ndarray],
+        u_range: Sequence[float] = [0, 1],
+        v_range: Sequence[float] = [0, 1],
+        resolution: Union[int, Sequence[int, int]] = 32,
+        surface_piece_config: dict = {},
+        fill_color: Color = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        stroke_color: Color = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
-    ):
+    ) -> None:
+        self.u_min = kwargs.pop("u_min", None) or u_range[0]
+        self.u_max = kwargs.pop("u_max", None) or u_range[1]
+        self.v_min = kwargs.pop("v_min", None) or v_range[0]
+        self.v_max = kwargs.pop("v_max", None) or v_range[1]
         VGroup.__init__(self, **kwargs)
-        self.u_min = u_range[0] if "u_min" not in kwargs else kwargs.pop("u_min")
-        self.u_max = u_range[1] if "u_max" not in kwargs else kwargs.pop("u_max")
-        self.v_min = v_range[0] if "v_min" not in kwargs else kwargs.pop("v_min")
-        self.v_max = v_range[1] if "v_max" not in kwargs else kwargs.pop("v_max")
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
