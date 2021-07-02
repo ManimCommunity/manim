@@ -175,6 +175,9 @@ Fixed bugs
    - Added precedence handling when the ``write_to_movie`` flag would conflict with ``--format``
    - Fixed issue that caused png image output to be ignored when caching was enabled
 
+* `#1635 <https://github.com/ManimCommunity/manim/pull/1635>`__: Added missing numpy import for :mod:`manim.mobject.probability`
+
+
 * `#1634 <https://github.com/ManimCommunity/manim/pull/1634>`__: Fixed OpenGL examples for MacOS
    Renamed deprecated ``gl_FragColor`` to ``fragColor``.
 
@@ -320,9 +323,6 @@ Code quality improvements and similar refactors
 
 
 * `#1651 <https://github.com/ManimCommunity/manim/pull/1651>`__: Small code cleanup for :class:`~.Polygram`
-
-
-* `#1635 <https://github.com/ManimCommunity/manim/pull/1635>`__: Added missing numpy import for :mod:`manim.mobject.probability`
 
 
 * `#1610 <https://github.com/ManimCommunity/manim/pull/1610>`__: Changed one image extension to lowercase letters
