@@ -46,7 +46,7 @@ class ParametricSurface(VGroup):
         The range of the ``u`` variable: ``(u_min, u_max)``.
     v_range : :class:`Sequence[float]`
         The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution : :class:`Union[int,Sequence[int,int]]`
+    resolution : :class:`Union[int,tuple[int,int]]`
         The number of samples taken of the surface. A tuple
         can be used to define different resolutions for ``u`` and
         ``v`` respectively.
@@ -82,7 +82,7 @@ class ParametricSurface(VGroup):
         func: Callable[[float, float], np.ndarray],
         u_range: Sequence[float] = [0, 1],
         v_range: Sequence[float] = [0, 1],
-        resolution: Union[int, Sequence[int, int]] = 32,
+        resolution: Union[int, tuple[int, int]] = 32,
         surface_piece_config: dict = {},
         fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
