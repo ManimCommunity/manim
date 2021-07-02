@@ -1594,15 +1594,19 @@ class NumberPlane(Axes):
 
         # If they're not on different sides then their product is positive or 0
         on_same_side = axis_perpendicular_to.x_max * axis_perpendicular_to.x_min > 0
-        
+
         if on_same_side:
             if axis_perpendicular_to.x_max >= 0:
                 # Both on positive side
-                positive_end_point = axis_perpendicular_to.x_max - axis_perpendicular_to.x_min
+                positive_end_point = (
+                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min
+                )
                 ranges = (np.arange(0, positive_end_point, step),)
             else:
                 # Both on negative side
-                negative_end_point = axis_perpendicular_to.x_min - axis_perpendicular_to.x_max
+                negative_end_point = (
+                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max
+                )
                 ranges = (np.arange(0, negative_end_point, -step),)
         else:
             # On different sides
