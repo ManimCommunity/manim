@@ -37,7 +37,7 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class ParametricSurface(VGroup):
+class ParametricSurface(VGroup, metaclass=ConvertToOpenGL):
     """Creates a Parametric Surface
 
     Parameters
