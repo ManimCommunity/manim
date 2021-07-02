@@ -38,13 +38,13 @@ class ParametricSurface(VGroup):
     Parameters
     ----------
     func : :class:`Callable[[float,float],np.ndarray]`
-        The function of the surface
+        The function that defines the surface.
     u_range : :class:`Sequence[float]`
-        The range of the u variable (replacing u_min and u_max)
+        The range of the ``u`` variable: ``(u_min, u_max)``.
     v_range : :class:`Sequence[float]`
-        The range of the v variable (replacing v_min and v_max)
+        The range of the ``v`` variable: ``(v_min, v_max)``.
     resolution : :class:`int`
-        The number of samples of the surface
+        The number of samples taken of the surface.
 
     Examples
     --------
