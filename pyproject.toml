@@ -30,7 +30,7 @@ click = ">=7.1<=9.0"
 click-default-group = "*"
 colour = "*"
 numpy = "^1.9"
-Pillow = "*"
+Pillow = "<8.3.0"  # can be removed when https://github.com/python-pillow/Pillow/issues/5571 is resolved
 scipy = "*"
 tqdm = "*"
 pydub = "*"
