@@ -21,8 +21,6 @@ from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
-
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
