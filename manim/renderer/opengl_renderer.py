@@ -14,7 +14,7 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.simple_functions import clip
@@ -45,6 +45,7 @@ class OpenGLCamera(OpenGLMobject):
         orthographic=False,
         minimum_polar_angle=-PI / 2,
         maximum_polar_angle=PI / 2,
+        model_matrix=None,
         **kwargs,
     ):
         self.use_z_index = True
@@ -80,10 +81,12 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        self.model_matrix = opengl.translation_matrix(0, 0, 11)
-        self.default_model_matrix = opengl.translation_matrix(0, 0, 11)
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
-        super().__init__(**kwargs)
+        super().__init__(model_matrix=model_matrix, **kwargs)
+
+        self.default_model_matrix = model_matrix
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
