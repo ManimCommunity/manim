@@ -13,7 +13,6 @@ import sys
 import threading
 import time
 import types
-import warnings
 from queue import Queue
 
 try:
@@ -31,7 +30,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
 from ..gui.gui import configure_pygui
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
@@ -43,7 +41,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -57,7 +54,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue.put(("rerun_file", [], {}))
 
 
-class Scene(Container):
+class Scene:
     """A Scene is the canvas of your animation.
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
@@ -95,16 +92,17 @@ class Scene(Container):
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
-        **kwargs,
+        skip_animations=False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self.skip_animations = skip_animations
 
         self.animations = None
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
         self.time_progression = None
         self.duration = None
         self.last_t = None
@@ -123,7 +121,7 @@ class Scene(Container):
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
+                skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
@@ -135,8 +133,6 @@ class Scene(Container):
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-        Container.__init__(self, **kwargs)
 
     @property
     def camera(self):
@@ -419,7 +415,6 @@ class Scene(Container):
             return self
 
     def add_mobjects_from_animations(self, animations):
-
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             # Anything animated that's not already in the
@@ -886,9 +881,10 @@ class Scene(Container):
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(self, *animations: Animation, **play_kwargs):
-        """Given a list of animations, compile statics and moving mobjects, duration from them.
+        """Given a list of animations, compile the corresponding
+        static and moving mobjects, and gather the animation durations.
 
-        This also begin the animations.
+        This also begins the animations.
 
         Parameters
         ----------
@@ -910,8 +906,8 @@ class Scene(Container):
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
 
         if not config.renderer == "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
@@ -1199,7 +1195,7 @@ class Scene(Container):
                     dot.set_color(RED)
                     self.wait()
 
-        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return

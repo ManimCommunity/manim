@@ -6,16 +6,9 @@ import pytest
 from manim import *
 
 from ..helpers.graphical_units import set_test_scene
-from ..helpers.path_utils import get_project_root
+from ..helpers.path_utils import get_project_root, get_svg_resource
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
-
-
-def get_test_resource(filename):
-    return str(
-        get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename
-    )
-
 
 # Tests break down into two kinds: one where the SVG is simple enough to step through
 # and ones where the SVG is realistically complex, and the output should be visually inspected.
@@ -25,21 +18,21 @@ def get_test_resource(filename):
 
 class LineTest(Scene):
     def construct(self):
-        line_demo = SVGMobject(get_test_resource("line.svg"))
+        line_demo = SVGMobject(get_svg_resource("line.svg"))
         self.add(line_demo)
         self.wait()
 
 
 class CubicPathTest(Scene):
     def construct(self):
-        cubic_demo = SVGMobject(get_test_resource("cubic_demo.svg"))
+        cubic_demo = SVGMobject(get_svg_resource("cubic_demo.svg"))
         self.add(cubic_demo)
         self.wait()
 
 
 class CubicAndLinetoTest(Scene):
     def construct(self):
-        cubic_lineto = SVGMobject(get_test_resource("cubic_and_lineto.svg"))
+        cubic_lineto = SVGMobject(get_svg_resource("cubic_and_lineto.svg"))
         self.add(cubic_lineto)
         self.wait()
 
@@ -48,7 +41,7 @@ class RhomboidTest(Scene):
     """Test the default fill and parsed stroke of a rhomboid"""
 
     def construct(self):
-        rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).scale(0.5)
+        rhomboid = SVGMobject(get_svg_resource("rhomboid.svg")).scale(0.5)
         rhomboid_fill = rhomboid.copy().set_fill(opacity=1).shift(UP * 2)
         rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).shift(DOWN * 2)
 
@@ -60,56 +53,56 @@ class InheritanceTest(Scene):
     """Ensure SVG inheritance is followed"""
 
     def construct(self):
-        three_arrows = SVGMobject(get_test_resource("inheritance_test.svg")).scale(0.5)
+        three_arrows = SVGMobject(get_svg_resource("inheritance_test.svg")).scale(0.5)
         self.add(three_arrows)
         self.wait()
 
 
 class MultiPartPathTest(Scene):
     def construct(self):
-        mpp = SVGMobject(get_test_resource("multi_part_path.svg"))
+        mpp = SVGMobject(get_svg_resource("multi_part_path.svg"))
         self.add(mpp)
         self.wait()
 
 
 class QuadraticPathTest(Scene):
     def construct(self):
-        quad = SVGMobject(get_test_resource("qcurve_demo.svg"))
+        quad = SVGMobject(get_svg_resource("qcurve_demo.svg"))
         self.add(quad)
         self.wait()
 
 
 class SmoothCurvesTest(Scene):
     def construct(self):
-        smooths = SVGMobject(get_test_resource("smooth_curves.svg"))
+        smooths = SVGMobject(get_svg_resource("smooth_curves.svg"))
         self.add(smooths)
         self.wait()
 
 
 class WatchTheDecimals(Scene):
     def construct(self):
-        decimal = SVGMobject(get_test_resource("watch_the_decimals.svg"))
+        decimal = SVGMobject(get_svg_resource("watch_the_decimals.svg"))
         self.add(decimal)
         self.wait()
 
 
 class UseTagInheritanceTest(Scene):
     def construct(self):
-        aabbb = SVGMobject(get_test_resource("aabbb.svg"))
+        aabbb = SVGMobject(get_svg_resource("aabbb.svg"))
         self.add(aabbb)
         self.wait()
 
 
 class HalfEllipseTest(Scene):
     def construct(self):
-        half_ellipse = SVGMobject(get_test_resource("half_ellipse.svg"))
+        half_ellipse = SVGMobject(get_svg_resource("half_ellipse.svg"))
         self.add(half_ellipse)
         self.wait()
 
 
 class HeartTest(Scene):
     def construct(self):
-        heart = SVGMobject(get_test_resource("heart.svg"))
+        heart = SVGMobject(get_svg_resource("heart.svg"))
         self.add(heart)
         self.wait()
 
@@ -117,7 +110,7 @@ class HeartTest(Scene):
 class Arcs01Test(Scene):
     # See: https://www.w3.org/TR/SVG11/images/paths/arcs01.svg
     def construct(self):
-        arcs = SVGMobject(get_test_resource("arcs01.svg"))
+        arcs = SVGMobject(get_svg_resource("arcs01.svg"))
         self.add(arcs)
         self.wait()
 
@@ -125,7 +118,7 @@ class Arcs01Test(Scene):
 class Arcs02Test(Scene):
     # See: https://www.w3.org/TR/SVG11/images/paths/arcs02.svg
     def construct(self):
-        arcs = SVGMobject(get_test_resource("arcs02.svg"))
+        arcs = SVGMobject(get_svg_resource("arcs02.svg"))
         self.add(arcs)
         self.wait()
 
@@ -136,7 +129,7 @@ class Arcs02Test(Scene):
 
 class WeightSVGTest(Scene):
     def construct(self):
-        path = get_test_resource("weight.svg")
+        path = get_svg_resource("weight.svg")
         svg_obj = SVGMobject(path)
         self.add(svg_obj)
         self.wait()
@@ -144,21 +137,21 @@ class WeightSVGTest(Scene):
 
 class BrachistochroneCurveTest(Scene):
     def construct(self):
-        brach_curve = SVGMobject(get_test_resource("curve.svg"))
+        brach_curve = SVGMobject(get_svg_resource("curve.svg"))
         self.add(brach_curve)
         self.wait()
 
 
 class DesmosGraph1Test(Scene):
     def construct(self):
-        dgraph = SVGMobject(get_test_resource("desmos-graph_1.svg")).scale(3)
+        dgraph = SVGMobject(get_svg_resource("desmos-graph_1.svg")).scale(3)
         self.add(dgraph)
         self.wait()
 
 
 class PenroseTest(Scene):
     def construct(self):
-        penrose = SVGMobject(get_test_resource("penrose.svg"))
+        penrose = SVGMobject(get_svg_resource("penrose.svg"))
         self.add(penrose)
         self.wait()
 
@@ -166,28 +159,28 @@ class PenroseTest(Scene):
 class ManimLogoTest(Scene):
     def construct(self):
         background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
-        manim_logo = SVGMobject(get_test_resource("manim-logo-sidebar.svg"))
+        manim_logo = SVGMobject(get_svg_resource("manim-logo-sidebar.svg"))
         self.add(background_rect, manim_logo)
         self.wait()
 
 
 class UKFlagTest(Scene):
     def construct(self):
-        uk_flag = SVGMobject(get_test_resource("united-kingdom.svg"))
+        uk_flag = SVGMobject(get_svg_resource("united-kingdom.svg"))
         self.add(uk_flag)
         self.wait()
 
 
 class SingleUSStateTest(Scene):
     def construct(self):
-        single_state = SVGMobject(get_test_resource("single_state.svg"))
+        single_state = SVGMobject(get_svg_resource("single_state.svg"))
         self.add(single_state)
         self.wait()
 
 
 class ContiguousUSMapTest(Scene):
     def construct(self):
-        states = SVGMobject(get_test_resource("states_map.svg")).scale(3)
+        states = SVGMobject(get_svg_resource("states_map.svg")).scale(3)
         self.add(states)
         self.wait()
 
@@ -195,70 +188,70 @@ class ContiguousUSMapTest(Scene):
 class PixelizedTextTest(Scene):
     def construct(self):
         background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
-        rgb_svg = SVGMobject(get_test_resource("pixelated_text.svg"))
+        rgb_svg = SVGMobject(get_svg_resource("pixelated_text.svg"))
         self.add(background_rect, rgb_svg)
         self.wait()
 
 
 class VideoIconTest(Scene):
     def construct(self):
-        video_icon = SVGMobject(get_test_resource("video_icon.svg"))
+        video_icon = SVGMobject(get_svg_resource("video_icon.svg"))
         self.add(video_icon)
         self.wait()
 
 
 class MultipleTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("multiple_transforms.svg"))
+        svg_obj = SVGMobject(get_svg_resource("multiple_transforms.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class MatrixTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("matrix.svg"))
+        svg_obj = SVGMobject(get_svg_resource("matrix.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class ScaleTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("scale.svg"))
+        svg_obj = SVGMobject(get_svg_resource("scale.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class TranslateTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("translate.svg"))
+        svg_obj = SVGMobject(get_svg_resource("translate.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class SkewXTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("skewX.svg"))
+        svg_obj = SVGMobject(get_svg_resource("skewX.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class SkewYTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("skewY.svg"))
+        svg_obj = SVGMobject(get_svg_resource("skewY.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class RotateTransformTest(Scene):
     def construct(self):
-        svg_obj = SVGMobject(get_test_resource("rotate.svg"))
+        svg_obj = SVGMobject(get_svg_resource("rotate.svg"))
         self.add(svg_obj)
         self.wait()
 
 
 class ImageMobjectTest(Scene):
     def construct(self):
-        file_path = get_test_resource("tree_img_640x351.png")
+        file_path = get_svg_resource("tree_img_640x351.png")
 
         im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
         im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(

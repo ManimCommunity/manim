@@ -17,6 +17,8 @@ from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
@@ -59,6 +61,54 @@ from ..utils.space_ops import angle_of_vector
 class CoordinateSystem:
     """
     Abstract class for Axes and NumberPlane
+
+    Examples
+    --------
+
+    .. manim:: CoordSysExample
+        :save_last_frame:
+
+        class CoordSysExample(Scene):
+            def construct(self):
+                # the location of the ticks depends on the x_range and y_range.
+                grid = Axes(
+                    x_range=[0, 1, 0.05],  # step size determines num_decimal_places.
+                    y_range=[0, 1, 0.05],
+                    x_length=9,
+                    y_length=5.5,
+                    axis_config={
+                        "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
+                        "number_scale_value": 0.5,
+                    },
+                    tips=False,
+                )
+
+                # Labels for the x-axis and y-axis.
+                y_label = grid.get_y_axis_label("y", edge=LEFT, direction=LEFT, buff=0.4)
+                x_label = grid.get_x_axis_label("x")
+                grid_labels = VGroup(x_label, y_label)
+
+                graphs = VGroup()
+                for n in np.arange(1, 20 + 0.5, 0.5):
+                    graphs += grid.get_graph(lambda x: x ** n, color=WHITE)
+                    graphs += grid.get_graph(
+                        lambda x: x ** (1 / n), color=WHITE, use_smoothing=False
+                    )
+
+                # Extra lines and labels for point (1,1)
+                graphs += grid.get_horizontal_line(grid.c2p(1, 1, 0), color=BLUE)
+                graphs += grid.get_vertical_line(grid.c2p(1, 1, 0), color=BLUE)
+                graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
+                graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
+                title = Title(
+                    # spaces between braces to prevent SyntaxError
+                    r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
+                    include_underline=False,
+                    scale_factor=0.85,
+                )
+
+                self.add(title, graphs, grid, grid_labels)
+
     """
 
     def __init__(
@@ -970,7 +1020,7 @@ class CoordinateSystem:
         return T_label_group
 
 
-class Axes(VGroup, CoordinateSystem):
+class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
     Parameters
@@ -1311,8 +1361,9 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        self.add_3d_pieces()
-        self.set_axis_shading()
+        if not config.renderer == "opengl":
+            self.add_3d_pieces()
+            self.set_axis_shading()
 
     def add_3d_pieces(self):
         for axis in self.axes:
