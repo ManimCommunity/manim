@@ -62,4 +62,9 @@ global_options = option_group(
         callback=validate_gui_location,
         help="Starting location for the GUI.",
     ),
+    option(
+        "--fullscreen",
+        is_flag=True,
+        help="Expand the window to its maximum possible size.",
+    ),
 )

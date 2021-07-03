@@ -512,7 +512,17 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self):
+    def copy(self, shallow: bool = False):
+        """Copies the mobject.
+
+        Parameters
+        ----------
+        shallow
+            Controls whether a shallow copy is returned.
+        """
+        if not shallow:
+            return self.deepcopy()
+
         # TODO, either justify reason for shallow copy, or
         # remove this redundancy everywhere
         # return self.deepcopy()
