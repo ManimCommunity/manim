@@ -49,6 +49,8 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
+    """A vectorized mobject."""
+
     def __init__(
         self,
         fill_color=None,
@@ -183,6 +185,25 @@ class VMobject(Mobject):
         return self
 
     def set_fill(self, color=None, opacity=None, family=True):
+        """Set the fill color and fill opacity of a :class:`VMobject`.
+
+        Parameters
+        ----------
+        color :
+            Fill color of the :class:`VMobject`.
+        opacity : :class:`float`
+            Fill opacity of the :class:`VMobject`.
+
+        Examples
+        --------
+        Normal usage::
+
+            Square().set_fill(RED,0.5)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_style`
+        """
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
