@@ -2,14 +2,13 @@
 
 __all__ = [
     "Code",
-    "hilite_me",
-    "insert_line_numbers_in_html",
 ]
 
 import html
 import os
 import re
 
+import numpy as np
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
@@ -171,13 +170,12 @@ class Code(VGroup):
         generate_html_file=False,
         **kwargs,
     ):
-        VGroup.__init__(
-            self,
+        super().__init__(
             stroke_width=stroke_width,
-            background_stroke_color=background_stroke_color,
-            background_stroke_width=background_stroke_width,
             **kwargs,
         )
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.scale_factor = scale_factor
@@ -265,12 +263,11 @@ class Code(VGroup):
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, self.code, **kwargs
+            super().__init__(
+                self.background_mobject, self.line_numbers, self.code, **kwargs
             )
         else:
-            VGroup.__init__(
-                self,
+            super().__init__(
                 self.background_mobject,
                 Dot(fill_opacity=0, stroke_opacity=0),
                 self.code,

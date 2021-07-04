@@ -72,30 +72,18 @@ Enabling plugins through ``manim.cfg``
     [CLI]
     plugins = manim_rubikscube
 
-For specifing multiple plugins, command separated values must be used.
+For specifying multiple plugins, command separated values must be used.
 
 .. code-block:: ini
 
     [CLI]
     plugins = manim_rubikscube, manim_plugintemplate
 
-Enabling Plugins through CLI
-
-.. code-block:: bash
-
-    manim basic.py --plugins=manim_plugintemplate
-
-For multiple plugins
-
-.. code-block:: bash
-
-    manim basic.py --plugins=manim_rubikscube,manim_plugintemplate
-
 Creating Plugins
 ****************
 Plugins are intended to extend Manim's core functionality. If you aren't sure
 whether a feature should be included in Manim's core, feel free to ask over
-on the `Discord server <https://discord.gg/mMRrZQW>`_. Visit
+on the `Discord server <https://www.manim.community/discord/>`_. Visit
 `manim-plugintemplate <https://pypi.org/project/manim-plugintemplate/>`_
 on PyPI.org which serves as an in-depth tutorial for creating plugins.
 
@@ -107,7 +95,7 @@ The only requirement of manim plugins is that they specify an entry point
 with the group, ``"manim.plugins"``. This allows Manim to discover plugins
 available in the user's environment. Everything regarding the plugin's
 directory structure, build system, and naming are completely up to your
-discretion as an author. The aforementioned template plugin, is only a model
+discretion as an author. The aforementioned template plugin is only a model
 using Poetry since this is the build system Manim uses. The plugin's `entry
 point <https://packaging.python.org/specifications/entry-points/>`_ can be
 specified in poetry as:
@@ -132,8 +120,7 @@ Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and
 everything as a global variable one by one.
 
 If ``object_reference`` is a function, Manim calls the function and expects the
-function returns a list of modules or functions that needs to defined globally and
-it defined it.
+function to return a list of modules or functions that need to be defined globally.
 
 For example,
 

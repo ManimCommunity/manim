@@ -60,7 +60,7 @@ the following command:
 
 .. code-block:: bash
 
-   $ manim -pql scene.py SquareToCircle 
+   manim -pql scene.py SquareToCircle 
 
 After showing some output, manim should render the scene into a .mp4 file,
 and open that file with the default movie player application.  You should see a
@@ -120,7 +120,7 @@ The next two lines create a circle and set its color and opacity.
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
 Finally, the last line uses the animation :class:`.Create` to display the
-circle on screen.
+circle on the screen.
 
 .. code-block:: python
 
@@ -148,8 +148,7 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
            circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
            square = Square()  # create a square
-           square.flip(RIGHT)  # flip horizontally
-           square.rotate(-3 * TAU / 8)  # rotate a certain amount
+           square.rotate(PI / 4)  # rotate a certain amount
 
            self.play(Create(square))  # animate the creation of the square
            self.play(Transform(square, circle))  # interpolate the square into the circle
@@ -159,7 +158,7 @@ And render it using the following command:
 
 .. code-block:: bash
 
-   $ manim -pql scene.py SquareToCircle 
+   manim -pql scene.py SquareToCircle 
 
 The output should look as follows.
 
@@ -168,19 +167,18 @@ The output should look as follows.
 
    class SquareToCircle2(Scene):
        def construct(self):
-           circle = Circle()                    # create a circle
-           circle.set_fill(PINK, opacity=0.5)   # set color and transparency
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
-           square = Square()                    # create a square
-           square.flip(RIGHT)                   # flip horizontally
-           square.rotate(-3 * TAU / 8)          # rotate a certain amount
+           square = Square()  # create a square
+           square.rotate(PI / 4)  # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
-           self.play(Transform(square, circle)) # interpolate the square into the circle
-           self.play(FadeOut(square))           # fade out animation
+           self.play(Create(square))  # animate the creation of the square
+           self.play(Transform(square, circle))  # interpolate the square into the circle
+           self.play(FadeOut(square))  # fade out animation
 
 This example shows one of the most basic features of manim: the ability to
-implement complicated and mathematically-intensive animations (such as cleanly
+implement complicated and mathematically intensive animations (such as cleanly
 interpolating between two geometric shapes) in very few lines of code.
 
 
@@ -188,7 +186,7 @@ interpolating between two geometric shapes) in very few lines of code.
 You're done!
 ************
 
-With a working installation of manim, and the bare basics under your belt, it
+With a working installation of manim and the bare basics under your belt, it
 is now time to start creating awesome mathematical animations.  For a look
 under the hood at what manim is doing when rendering the ``SquareToCircle``
 scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of

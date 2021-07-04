@@ -36,7 +36,7 @@ class TexTemplate:
     documentclass : :class:`str`
         The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
     preamble : :class:`str`
-        The document's preample, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
     placeholder_text : :class:`str`
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : :class:`str`
@@ -46,25 +46,8 @@ class TexTemplate:
     default_documentclass = r"\documentclass[preview]{standalone}"
     default_preamble = r"""
 \usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{dsfont}
-\usepackage{setspace}
-\usepackage{tipa}
-\usepackage{relsize}
-\usepackage{textcomp}
-\usepackage{mathrsfs}
-\usepackage{calligra}
-\usepackage{wasysym}
-\usepackage{ragged2e}
-\usepackage{physics}
-\usepackage{xcolor}
-\usepackage{microtype}
-\DisableLigatures{encoding = *, family = * }
-\linespread{1}
 """
     default_placeholder_text = "YourTextHere"
     default_tex_compiler = "latex"
@@ -137,7 +120,7 @@ class TexTemplate:
         txt : :class:`string`
             String containing the text to be added, e.g. ``\\usepackage{hyperref}``
         prepend : Optional[:class:`bool`], optional
-            Whether the text should be added at the beginning of the preample, i.e. right after ``\\documentclass``. Default is to add it at the end of the preample, i.e. right before ``\\begin{document}``
+            Whether the text should be added at the beginning of the preamble, i.e. right after ``\\documentclass``. Default is to add it at the end of the preamble, i.e. right before ``\\begin{document}``
         """
         if prepend:
             self.preamble = txt + "\n" + self.preamble
@@ -210,7 +193,7 @@ class TexTemplate:
         return begin, end
 
     def get_texcode_for_expression_in_env(self, expression, environment):
-        r"""Inserts expression into TeX template wrapped in \begin{environemnt} and \end{environment}
+        r"""Inserts expression into TeX template wrapped in \begin{environment} and \end{environment}
 
         Parameters
         ----------

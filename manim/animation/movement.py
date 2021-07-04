@@ -8,8 +8,8 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-
 import typing
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import numpy as np
 
@@ -23,12 +23,10 @@ if typing.TYPE_CHECKING:
 class Homotopy(Animation):
     def __init__(
         self,
-        homotopy: typing.Callable[
-            [float, float, float, float], typing.Tuple[float, float, float]
-        ],
+        homotopy: Callable[[float, float, float, float], Tuple[float, float, float]],
         mobject: "Mobject",
         run_time: float = 3,
-        apply_function_kwargs: typing.Optional[typing.Dict[str, typing.Any]] = None,
+        apply_function_kwargs: Optional[Dict[str, Any]] = None,
         **kwargs
     ) -> None:
         """
@@ -41,7 +39,7 @@ class Homotopy(Animation):
         )
         super().__init__(mobject, run_time=run_time, **kwargs)
 
-    def function_at_time_t(self, t: float) -> typing.Tuple[float, float, float]:
+    def function_at_time_t(self, t: float) -> Tuple[float, float, float]:
         return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
@@ -63,10 +61,7 @@ class SmoothedVectorizedHomotopy(Homotopy):
 
 class ComplexHomotopy(Homotopy):
     def __init__(
-        self,
-        complex_homotopy: typing.Callable[[complex], float],
-        mobject: "Mobject",
-        **kwargs
+        self, complex_homotopy: Callable[[complex], float], mobject: "Mobject", **kwargs
     ) -> None:
         """
         Complex Homotopy a function Cx[0, 1] to C
@@ -74,7 +69,7 @@ class ComplexHomotopy(Homotopy):
 
         def homotopy(
             x: float, y: float, z: float, t: float
-        ) -> typing.Tuple[float, float, float]:
+        ) -> Tuple[float, float, float]:
             c = complex_homotopy(complex(x, y), t)
             return (c.real, c.imag, z)
 
@@ -84,13 +79,11 @@ class ComplexHomotopy(Homotopy):
 class PhaseFlow(Animation):
     def __init__(
         self,
-        function: typing.Callable[[np.ndarray], np.ndarray],
+        function: Callable[[np.ndarray], np.ndarray],
         mobject: "Mobject",
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
-        rate_func: typing.Callable[
-            [typing.Union[np.ndarray, float]], typing.Union[np.ndarray, float]
-        ] = linear,
+        rate_func: Callable[[float], float] = linear,
         **kwargs
     ) -> None:
         self.virtual_time = virtual_time
@@ -104,7 +97,9 @@ class PhaseFlow(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
-            dt = self.virtual_time * (alpha - self.last_alpha)
+            dt = self.virtual_time * (
+                self.rate_func(alpha) - self.rate_func(self.last_alpha)
+            )
             self.mobject.apply_function(lambda p: p + dt * self.function(p))
         self.last_alpha = alpha
 
@@ -129,7 +124,7 @@ class MoveAlongPath(Animation):
         self,
         mobject: "Mobject",
         path: np.ndarray,
-        suspend_mobject_updating: typing.Optional[bool] = False,
+        suspend_mobject_updating: Optional[bool] = False,
         **kwargs
     ) -> None:
         self.path = path
@@ -138,5 +133,5 @@ class MoveAlongPath(Animation):
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
-        point = self.path.point_from_proportion(alpha)
+        point = self.path.point_from_proportion(self.rate_func(alpha))
         self.mobject.move_to(point)

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# flake8: noqa
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
@@ -8,9 +10,29 @@ except ModuleNotFoundError:
 __version__ = importlib_metadata.version(__name__)
 
 
+import sys
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
+
+# Workaround to set the renderer passed via CLI args *before* importing
+# Manim's classes (as long as the metaclass approach for switching
+# between OpenGL and cairo rendering is in place, classes depend
+# on the value of config.renderer).
+for i, arg in enumerate(sys.argv):
+    if arg.startswith("--renderer"):
+        if "=" in arg:
+            _, parsed_renderer = arg.split("=")
+        else:
+            parsed_renderer = sys.argv[i + 1]
+        config.renderer = parsed_renderer
+    elif arg == "--use_opengl_renderer":
+        config.renderer = "opengl"
+    elif arg == "--use_webgl_renderer":
+        config.renderer = "webgl"
+
+
 from .animation.animation import *
 from .animation.composition import *
 from .animation.creation import *
@@ -29,7 +51,6 @@ from .camera.moving_camera import *
 from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
-from .container import *
 from .mobject.changing import *
 from .mobject.coordinate_systems import *
 from .mobject.frame import *
@@ -42,6 +63,7 @@ from .mobject.mobject import *
 from .mobject.mobject_update_utils import *
 from .mobject.number_line import *
 from .mobject.numbers import *
+from .mobject.polyhedra import *
 from .mobject.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *

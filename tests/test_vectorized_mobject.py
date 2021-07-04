@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from manim import Line, Mobject, VDict, VGroup, VMobject
+from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
 
 
 def test_vmobject_point_from_propotion():
@@ -127,6 +127,18 @@ def test_vmob_add_to_back():
     a.add_to_back(b)
     a.add_to_back(b, b)
     assert len(a.submobjects) == 1
+    a.submobjects.clear()
+    a.add_to_back(b, b, b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
+    a.submobjects.clear()
+
+    # Make sure the ordering has not changed
+    o1, o2, o3 = Square(), Line(), Circle()
+    a.add_to_back(o1, o2, o3)
+    assert a.submobjects.pop() == o3
+    assert a.submobjects.pop() == o2
+    assert a.submobjects.pop() == o1
 
 
 def test_vdict_init():
@@ -162,3 +174,33 @@ def test_vdict_remove():
     assert len(obj.submob_dict) == 0
     with pytest.raises(KeyError):
         obj.remove("a")
+
+
+def test_vgroup_supports_item_assigment():
+    """Test VGroup supports array-like assignment for VMObjects"""
+    a = VMobject()
+    b = VMobject()
+    vgroup = VGroup(a)
+    assert vgroup[0] == a
+    vgroup[0] = b
+    assert vgroup[0] == b
+    assert len(vgroup) == 1
+
+
+def test_vgroup_item_assignment_at_correct_position():
+    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    n_items = 10
+    vgroup = VGroup()
+    for i in range(n_items):
+        vgroup.add(VMobject())
+    new_obj = VMobject()
+    vgroup[6] = new_obj
+    assert vgroup[6] == new_obj
+    assert len(vgroup) == n_items
+
+
+def test_vgroup_item_assignment_only_allows_vmobjects():
+    """Test VGroup item-assignment raises TypeError when invalid type is passed"""
+    vgroup = VGroup(VMobject())
+    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+        vgroup[0] = "invalid object"

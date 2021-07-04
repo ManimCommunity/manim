@@ -3,10 +3,10 @@ import itertools as it
 import random
 import sys
 from functools import wraps
-from typing import List, Union
 
 import moderngl
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
@@ -25,7 +25,7 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, get_norm, rotation_matrix_transpose
+from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
 
 
 class OpenGLMobject:
@@ -60,7 +60,7 @@ class OpenGLMobject:
         **kwargs,
     ):
 
-        self.color = color
+        self.color = Color(color)
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
@@ -512,7 +512,17 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self):
+    def copy(self, shallow: bool = False):
+        """Copies the mobject.
+
+        Parameters
+        ----------
+        shallow
+            Controls whether a shallow copy is returned.
+        """
+        if not shallow:
+            return self.deepcopy()
+
         # TODO, either justify reason for shallow copy, or
         # remove this redundancy everywhere
         # return self.deepcopy()
@@ -887,8 +897,12 @@ class OpenGLMobject:
     def set_width(self, width, stretch=False, **kwargs):
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
+    scale_to_fit_width = set_width
+
     def set_height(self, height, stretch=False, **kwargs):
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
+
+    scale_to_fit_height = set_height
 
     def set_depth(self, depth, stretch=False, **kwargs):
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
@@ -954,7 +968,7 @@ class OpenGLMobject:
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = end - start
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
@@ -1177,7 +1191,7 @@ class OpenGLMobject:
         return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha):
-        """Abbreviation fo point_from_proportion"""
+        """Abbreviation for point_from_proportion"""
         return self.point_from_proportion(alpha)
 
     def get_pieces(self, n_pieces):
@@ -1362,7 +1376,7 @@ class OpenGLMobject:
 
     def become(self, mobject):
         """
-        Edit all data and submobjects to be idential
+        Edit all data and submobjects to be identical
         to another mobject
         """
         self.align_family(mobject)
@@ -1519,7 +1533,7 @@ class OpenGLMobject:
         return result
 
     def check_data_alignment(self, array, data_key):
-        # Makes sure that self.data[key] can be brodcast into
+        # Makes sure that self.data[key] can be broadcast into
         # the given array, meaning its length has to be either 1
         # or the length of the array
         d_len = len(self.data[data_key])

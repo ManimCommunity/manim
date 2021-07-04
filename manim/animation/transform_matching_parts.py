@@ -7,11 +7,14 @@ from typing import List, Optional
 
 import numpy as np
 
+from .._config import config
 from ..mobject.mobject import Group, Mobject
+from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
-from .fading import FadeInFromPoint, FadeOutToPoint
+from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
 
 
@@ -70,7 +73,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
     ):
         assert type(mobject) is type(target_mobject)
 
-        if isinstance(mobject, VMobject):
+        if isinstance(mobject, OpenGLVMobject):
+            group_type = OpenGLVGroup
+        elif isinstance(mobject, OpenGLMobject):
+            group_type = OpenGLGroup
+        elif isinstance(mobject, VMobject):
             group_type = VGroup
         else:
             group_type = Group
@@ -114,15 +121,15 @@ class TransformMatchingAbstractBase(AnimationGroup):
             fade_target.add(target_map[key])
 
         if transform_mismatches:
-            anims.append(Transform(fade_source.copy(), fade_target, **kwargs))
-        if fade_transform_mismatches:
+            if "replace_mobject_with_target_in_scene" not in kwargs:
+                kwargs["replace_mobject_with_target_in_scene"] = True
+            anims.append(Transform(fade_source, fade_target, **kwargs))
+        elif fade_transform_mismatches:
             anims.append(FadeTransformPieces(fade_source, fade_target, **kwargs))
         else:
+            anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeOutToPoint(fade_source, fade_target.get_center(), **kwargs)
-            )
-            anims.append(
-                FadeInFromPoint(fade_target.copy(), fade_source.get_center(), **kwargs)
+                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs)
             )
 
         super().__init__(*anims)
@@ -135,7 +142,10 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                shape_map[key] = VGroup()
+                if config["renderer"] == "opengl":
+                    shape_map[key] = OpenGLVGroup()
+                else:
+                    shape_map[key] = VGroup()
             shape_map[key].add(sm)
         return shape_map
 

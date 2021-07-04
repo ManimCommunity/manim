@@ -1,190 +1,13 @@
 r"""Mobjects representing text rendered using LaTeX.
 
+.. important::
 
-The Tex mobject
-+++++++++++++++
-Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX.
+   See the corresponding tutorial :ref:`rendering-with-latex`
 
-.. manim:: HelloLaTeX
-    :save_last_frame:
+.. note::
 
-    class HelloLaTeX(Scene):
-        def construct(self):
-            tex = Tex(r'\LaTeX').scale(3)
-            self.add(tex)
+   Just as you can use :class:`~.Text` (from the module :mod:`~.text_mobject`) to add text to your videos, you can use :class:`~.Tex` and :class:`~.MathTex` to insert LaTeX.
 
-Note that we are using a raw string (``r'---'``) instead of a regular string (``'---'``).
-This is because TeX code uses a lot of special characters - like ``\`` for example -
-that have special meaning within a regular python string. An alternative would have
-been to write ``\\`` as in ``Tex('\\LaTeX')``.
-
-The MathTex mobject
-+++++++++++++++++++
-Anything enclosed in ``$`` signs is interpreted as maths-mode:
-
-.. manim:: HelloTex
-    :save_last_frame:
-
-    class HelloTex(Scene):
-        def construct(self):
-            tex = Tex(r'$\xrightarrow{x^2y^3}$ \LaTeX').scale(3)
-            self.add(tex)
-
-Whereas in a :class:`~.MathTex` mobject everything is math-mode by default.
-
-.. manim:: MovingBraces
-
-    class MovingBraces(Scene):
-        def construct(self):
-            text=MathTex(
-                "\\frac{d}{dx}f(x)g(x)=",       #0
-                "f(x)\\frac{d}{dx}g(x)",        #1
-                "+",                            #2
-                "g(x)\\frac{d}{dx}f(x)"         #3
-            )
-            self.play(Write(text))
-            brace1 = Brace(text[1], UP, buff=SMALL_BUFF)
-            brace2 = Brace(text[3], UP, buff=SMALL_BUFF)
-            t1 = brace1.get_text("$g'f$")
-            t2 = brace2.get_text("$f'g$")
-            self.play(
-                GrowFromCenter(brace1),
-                FadeIn(t1),
-                )
-            self.wait()
-            self.play(
-                ReplacementTransform(brace1,brace2),
-                ReplacementTransform(t1,t2)
-                )
-            self.wait()
-
-
-LaTeX commands and keyword arguments
-++++++++++++++++++++++++++++++++++++
-We can use any standard LaTeX commands in the AMS maths packages. For example the ``mathtt`` math-text type, or the ``looparrowright`` arrow.
-
-.. manim:: AMSLaTeX
-    :save_last_frame:
-
-    class AMSLaTeX(Scene):
-        def construct(self):
-            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
-            self.add(tex)
-
-On the manim side, the :class:`~.Tex` class also accepts attributes to change the appearance of the output.
-This is very similar to the :class:`~.Text` class. For example, the ``color`` keyword changes the color of the TeX mobject:
-
-.. manim:: LaTeXAttributes
-    :save_last_frame:
-
-    class LaTeXAttributes(Scene):
-        def construct(self):
-            tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
-            self.add(tex)
-
-Extra LaTeX Packages
-++++++++++++++++++++
-Some commands require special packages to be loaded into the TeX template. For example,
-to use the ``mathscr`` script, we need to add the ``mathrsfs`` package. Since this package isn't loaded
-into manim's tex template by default, we add it manually:
-
-.. manim:: AddPackageLatex
-    :save_last_frame:
-
-    class AddPackageLatex(Scene):
-        def construct(self):
-            myTemplate = TexTemplate()
-            myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
-            self.add(tex)
-
-Substrings and parts
-++++++++++++++++++++
-The TeX mobject can accept multiple strings as arguments. Afterwards you can refer to the individual
-parts either by their index (like ``tex[1]``), or you can look them up by (parts of) the tex code like
-in this example where we set the color of the ``\bigstar`` using :func:`~.set_color_by_tex`:
-
-.. manim:: LaTeXSubstrings
-    :save_last_frame:
-
-    class LaTeXSubstrings(Scene):
-        def construct(self):
-            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX').scale(3)
-            tex.set_color_by_tex('igsta', RED)
-            self.add(tex)
-
-Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex searched for,
-not just the specific symbol or Tex expression searched for. Consider the following example:
-
-.. manim:: IncorrectLaTeXSubstringColoring
-    :save_last_frame:
-
-    class IncorrectLaTeXSubstringColoring(Scene):
-        def construct(self):
-            equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots"
-            )
-            equation.set_color_by_tex("x", YELLOW)
-            self.add(equation)
-
-As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
-
-.. manim:: CorrectLaTeXSubstringColoring
-    :save_last_frame:
-
-    class CorrectLaTeXSubstringColoring(Scene):
-        def construct(self):
-            equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
-                substrings_to_isolate="x"
-            )
-            equation.set_color_by_tex("x", YELLOW)
-            self.add(equation)
-
-By setting ``substring_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings
-automatically and isolate ``x`` components into individual substrings. Only then can :meth:`~.set_color_by_tex` be used to achieve the desired result.
-
-LaTeX Maths Fonts - The Template Library
-++++++++++++++++++++++++++++++++++++++++
-Changing fonts in LaTeX when typesetting mathematical formulae is a little bit more tricky than
-with regular text. It requires changing the template that is used to compile the tex code.
-Manim comes with a collection of :class:`~.TexFontTemplates` ready for you to use. These templates will all work
-in maths mode:
-
-.. manim:: LaTeXMathFonts
-    :save_last_frame:
-
-    class LaTeXMathFonts(Scene):
-        def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive).scale(3)
-            self.add(tex)
-
-Manim also has a :class:`~.TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example
-is the ctex template, used for typesetting Chinese. For this to work, the ctex LaTeX package
-must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not
-need :class:`~.Tex` at all, and should use :class:`~.Text` or :class:`~.PangoText` instead.
-
-.. manim:: LaTeXTemplateLibrary
-    :save_last_frame:
-
-    class LaTeXTemplateLibrary(Scene):
-        def construct(self):
-            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
-            self.add(tex)
-
-
-Aligning formulae
-+++++++++++++++++
-A :class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` environment. This means you can use the ``&`` alignment
-character when typesetting multiline formulae:
-
-.. manim:: LaTeXAlignEnvironment
-    :save_last_frame:
-
-    class LaTeXAlignEnvironment(Scene):
-        def construct(self):
-            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6').scale(2)
-            self.add(tex)
 """
 
 __all__ = [
@@ -194,8 +17,6 @@ __all__ = [
     "Tex",
     "BulletedList",
     "Title",
-    "TexMobject",
-    "TextMobject",
 ]
 
 
@@ -203,6 +24,9 @@ import itertools as it
 import operator as op
 import re
 from functools import reduce
+from textwrap import dedent
+
+from colour import Color
 
 from ... import config, logger
 from ...constants import *
@@ -210,7 +34,7 @@ from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ...utils.color import BLACK
+from ...utils.color import BLACK, WHITE
 from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
@@ -231,7 +55,7 @@ class SingleStringMathTex(SVGMobject):
     -----
     Check that creating a :class:`~.SingleStringMathTex` object works::
 
-        >>> SingleStringMathTex('Test')
+        >>> SingleStringMathTex('Test') # doctest: +SKIP
         SingleStringMathTex('Test')
     """
 
@@ -247,6 +71,7 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
+        color=Color(WHITE),
         **kwargs,
     ):
         self.organize_left_to_right = organize_left_to_right
@@ -271,6 +96,9 @@ class SingleStringMathTex(SVGMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
+            should_subdivide_sharp_curves=True,
+            should_remove_null_curves=True,
+            color=color,
             **kwargs,
         )
         if height is None:
@@ -288,7 +116,7 @@ class SingleStringMathTex(SVGMobject):
         return result
 
     def modify_special_strings(self, tex):
-        tex = self.remove_stray_braces(tex)
+        tex = tex.strip()
         should_add_filler = reduce(
             op.or_,
             [
@@ -297,12 +125,14 @@ class SingleStringMathTex(SVGMobject):
                 tex == "\\overline",
                 # Make sure sqrt has overbar
                 tex == "\\sqrt",
+                tex == "\\sqrt{",
                 # Need to add blank subscript or superscript
                 tex.endswith("_"),
                 tex.endswith("^"),
                 tex.endswith("dot"),
             ],
         )
+
         if should_add_filler:
             filler = "{\\quad}"
             tex += filler
@@ -325,6 +155,8 @@ class SingleStringMathTex(SVGMobject):
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
+
+        tex = self.remove_stray_braces(tex)
 
         for context in ["array"]:
             begin_in = ("\\begin{%s}" % context) in tex
@@ -361,14 +193,14 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
+        return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -388,8 +220,17 @@ class MathTex(SingleStringMathTex):
     -----
     Check that creating a :class:`~.MathTex` works::
 
-        >>> MathTex('a^2 + b^2 = c^2')
+        >>> MathTex('a^2 + b^2 = c^2') # doctest: +SKIP
         MathTex('a^2 + b^2 = c^2')
+
+    Check that double brace group splitting works correctly::
+
+        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}') # doctest: +SKIP
+        >>> len(t1.submobjects) # doctest: +SKIP
+        5
+        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}") # doctest: +SKIP
+        >>> len(t2.submobjects) # doctest: +SKIP
+        1
 
     """
 
@@ -411,27 +252,49 @@ class MathTex(SingleStringMathTex):
         if self.tex_to_color_map is None:
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
+        self.brace_notation_split_occurred = False
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
-        SingleStringMathTex.__init__(
-            self,
-            self.arg_separator.join(tex_strings),
-            tex_environment=self.tex_environment,
-            tex_template=self.tex_template,
-            **kwargs,
-        )
-        self.break_up_by_substrings()
+        try:
+            SingleStringMathTex.__init__(
+                self,
+                self.arg_separator.join(tex_strings),
+                tex_environment=self.tex_environment,
+                tex_template=self.tex_template,
+                **kwargs,
+            )
+            self.break_up_by_substrings()
+        except ValueError as compilation_error:
+            if self.brace_notation_split_occurred:
+                logger.error(
+                    dedent(
+                        """\
+                        A group of double braces, {{ ... }}, was detected in
+                        your string. Manim splits TeX strings at the double
+                        braces, which might have caused the current
+                        compilation error. If you didn't use the double brace
+                        split intentionally, add spaces between the braces to
+                        avoid the automatic splitting: {{ ... }} --> { { ... } }.
+                        """
+                    )
+                )
+            raise compilation_error
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
     def break_up_tex_strings(self, tex_strings):
-        tex_strings = [str(t) for t in tex_strings]
         # Separate out anything surrounded in double braces
-        patterns = ["{{", "}}"]
+        pre_split_length = len(tex_strings)
+        tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
+        tex_strings = sum(tex_strings, [])
+        if len(tex_strings) > pre_split_length:
+            self.brace_notation_split_occurred = True
+
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
+        patterns = []
         patterns.extend(
             [
                 "({})".format(re.escape(ss))
@@ -441,10 +304,13 @@ class MathTex(SingleStringMathTex):
             ]
         )
         pattern = "|".join(patterns)
-        pieces = []
-        for s in tex_strings:
-            pieces.extend(re.split(pattern, s))
-        return list(filter(lambda s: s, pieces))
+        if pattern:
+            pieces = []
+            for s in tex_strings:
+                pieces.extend(re.split(pattern, s))
+        else:
+            pieces = tex_strings
+        return [p for p in pieces if p]
 
     def break_up_by_substrings(self):
         """
@@ -459,22 +325,29 @@ class MathTex(SingleStringMathTex):
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
-                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
-            new_index = curr_index + num_submobs
+            new_index = (
+                curr_index + num_submobs + len("".join(self.arg_separator.split()))
+            )
             if num_submobs == 0:
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [VectorizedPoint()]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
                 sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
+        if config.renderer == "opengl":
+            self.assemble_family()
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
@@ -533,7 +406,7 @@ class Tex(MathTex):
 
     Check whether writing a LaTeX string works::
 
-        >>> Tex('The horse does not eat cucumber salad.')
+        >>> Tex('The horse does not eat cucumber salad.') # doctest: +SKIP
         Tex('The horse does not eat cucumber salad.')
 
     """
@@ -551,6 +424,22 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
+    """
+    Examples
+    --------
+
+    .. manim:: BulletedListExample
+        :save_last_frame:
+
+        class BulletedListExample(Scene):
+            def construct(self):
+                blist = BulletedList("Item 1", "Item 2", "Item 3", height=2, width=2)
+                blist.set_color_by_tex("Item 1", RED)
+                blist.set_color_by_tex("Item 2", GREEN)
+                blist.set_color_by_tex("Item 3", BLUE)
+                self.add(blist)
+    """
+
     def __init__(
         self,
         *items,
@@ -588,6 +477,22 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
+    """
+    Examples
+    --------
+    .. manim:: TitleExample
+        :save_last_frame:
+
+        import manim
+
+        class TitleExample(Scene):
+            def construct(self):
+                banner = ManimBanner()
+                title = Title(f"Manim version {manim.__version__}")
+                self.add(banner, title)
+
+    """
+
     def __init__(
         self,
         *text_parts,
@@ -614,21 +519,3 @@ class Title(Tex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-class TexMobject(MathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        logger.warning(
-            "TexMobject has been deprecated (due to its confusing name) "
-            "in favour of MathTex. Please use MathTex instead!"
-        )
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-class TextMobject(Tex):
-    def __init__(self, *text_parts, **kwargs):
-        logger.warning(
-            "TextMobject has been deprecated (due to its confusing name) "
-            "in favour of Tex. Please use Tex instead!"
-        )
-        Tex.__init__(self, *text_parts, **kwargs)

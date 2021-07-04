@@ -1,7 +1,8 @@
-Manim Installation For Developers
-=================================
+For Developers
+==============
 
-	This documentation is for developers who want to contribute to ``ManimCommunity/manim``.
+This documentation is for developers who want to contribute to 
+`ManimCommunity/manim <https://github.com/ManimCommunity/manim>`_.
 
 Thank you for your interest in contributing! Please see our documentation on
 :doc:`../contributing` to take the necessary steps before installing Manim as a
@@ -12,8 +13,8 @@ steps to clone your fork.
 
    If you have installed a non-developer version of manim, please uninstall
    it. This is to avoid any accidental usage of the non-developer version
-   when developing and testing on your local copy of the repository. This
-   warning doesn't apply for users who use `poetry
+   when developing and testing your local copy of the repository. This
+   warning doesn't apply to users who use `poetry
    <https://python-poetry.org>`_ (chapter below.)
 
 For Developers with Poetry (Recommended)
@@ -36,7 +37,10 @@ Windows PowerShell install instructions
 	
 	  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
 
-.. note:: Poetry can be installed by other ways also, such as with ``pip``. See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_. If you are using MacOS with the Homebrew package manager, you can also install poetry with ``brew install poetry``.
+.. note:: Poetry can be installed by other ways also, such as with ``pip``. 
+          See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_. 
+          If you are using MacOS with the Homebrew package manager, you can also install 
+          poetry with ``brew install poetry``.
 
 It will add it to ``PATH`` variable automatically. In order to make sure you have poetry installed correctly, try running:
 
@@ -57,7 +61,7 @@ Please follow the instructions under :ref:`installing-manim` to install all
 dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterwards, proceed with the
 installation with Poetry.
 
-.. important:: Windows Users can skip the steps to install Pycairo.
+.. important:: Windows users can skip the steps to install Pycairo.
 
 
 .. _install-manim-poetry:
@@ -72,9 +76,9 @@ Installing Manim using Poetry
          poetry install
 
     .. note:: The first time running this command, poetry will create and
-              enter a virtual environment rooted at the current directory.
+              enter a virtual environment rooted in the current directory.
     
-    For more information you can visit the `poetry documentation
+    For more information, you can visit the `poetry documentation
     <https://python-poetry.org/docs/managing-environments/>`_.
 
 #. If you exit the virtual environment, you can reactivate the
@@ -107,13 +111,14 @@ command ``pytest`` to run the tests.
 .. important:: 
 
    You should always run the test suite before making a PR. See
-   :doc:`contributing` for details.
+   :doc:`../contributing` for details.
 
 
 Code Formatting and Linting Using Poetry
 ****************************************
 
-Once you are done with :ref:`install-manim-poetry`, you can run the code formatter ``black`` by activating entering the virtual environment:
+Once you are done with :ref:`install-manim-poetry`, you can run the code 
+formatter ``black`` by activating entering the virtual environment:
 
 .. code-block:: bash
 
@@ -126,13 +131,15 @@ Or alternatively, without entering the virtual environment:
 
    poetry run black manim
 
-For example, if you have written some new example and want to format it and see lint information use the commands below.
+For example, if you have written some new example and want to format it and see 
+lint information use the commands below.
 
 .. code-block:: bash
 
     poetry run black example_scenes
 
-Similarly, you can see linting information for a given file, or directory, by the ``black`` command with ``pylint``.
+Similarly, you can see linting information for a given file, or directory, 
+by the ``black`` command with ``pylint``.
 
 
 For Developers with pip
@@ -142,5 +149,5 @@ For Developers with pip
 
    python3 -m pip install .
 
-Please see :doc:`contributing` for more details about contributing to Manim.
-Since `pip` doesn't implement editable installations from our pyproject.toml
+Please see :doc:`../contributing` for more details about contributing to Manim.
+Since `pip` doesn't implement editable installations from our ``pyproject.toml``

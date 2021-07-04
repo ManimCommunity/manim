@@ -6,7 +6,7 @@ The following pages have instructions that are specific to your system. Once
 you are done installing the dependencies, come back to this page to install
 manim itself.
 
-.. NOTE::
+.. note::
 
    Before installing manim, you should understand that there are a few main versions of manim 
    today that are generally incompatible with each other.
@@ -26,6 +26,7 @@ Installing dependencies
 
 .. toctree::
 
+   installation/versions
    installation/win
    installation/mac
    installation/linux
@@ -40,7 +41,7 @@ Installing dependencies
 Installing Manim
 ****************
 
-Manim-Community runs on Python 3.6+. If you'd like to just use the library, you
+Manim Community runs on Python 3.7+. If you'd like to just use the library, you
 can install it from PyPI via pip:
 
 .. code-block:: bash
@@ -55,3 +56,8 @@ found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_.
 Installation For Developers
 ***************************
 If you want to contribute to manim, follow the :doc:`contributing` instructions.
+
+Verifying installation
+**********************
+Please proceed to our :doc:`quickstart guide <tutorials/quickstart>` to run a simple file to test your installation.
+If it did not work, please refer to our :doc:`troubleshooting guide <installation/troubleshooting>` for help.

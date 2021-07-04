@@ -12,6 +12,12 @@ class GradientTest(Scene):
         self.add(c)
 
 
+class GradientRotationTest(Scene):
+    def construct(self):
+        c = Circle(fill_opacity=1).set_color(color=[YELLOW, GREEN]).rotate(PI)
+        self.add(c)
+
+
 MODULE_NAME = "modifier_methods"
 
 
