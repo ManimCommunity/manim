@@ -14,11 +14,11 @@ __all__ = [
     "Torus",
 ]
 
-import typing
+from typing import *
 
 import numpy as np
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
@@ -88,10 +88,10 @@ class ParametricSurface(VGroup):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: Color = BLUE_D,
+        fill_color: "Color" = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
-        stroke_color: Color = LIGHT_GREY,
+        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
+        stroke_color: "Color" = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
