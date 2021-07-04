@@ -14,11 +14,11 @@ __all__ = [
     "Torus",
 ]
 
-from typing import *
+import typing
 
 import numpy as np
 
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
