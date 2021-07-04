@@ -33,7 +33,8 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = "ALREADY PROCESSED"
+    ALREADY_PROCESSED_PLACEHOLDER = object()
+    THRESHOLD_WARNING = 170_000
 
     @classmethod
     def reset_already_processed(cls):
@@ -125,7 +126,11 @@ class _Memoizer:
         default_func,
         memoizing=True,
     ) -> typing.Union[str, Any]:
-
+        if len(cls._already_processed) == cls.THRESHOLD_WARNING:
+            logger.warning(
+                "It looks like the scene contains a lot of sub-mobjects. Caching mecanism is not suited to handle such large scenes, you might consider disabling caching with\
+                           --disable_caching to speed up the rendering process."
+            )
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
