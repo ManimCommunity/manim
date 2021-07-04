@@ -64,11 +64,11 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLACK,
     BLUE,
-    Colors,
     GREEN,
     GREY,
     WHITE,
     YELLOW,
+    Colors,
     color_gradient,
     invert_color,
 )
