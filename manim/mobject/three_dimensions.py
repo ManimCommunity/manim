@@ -99,7 +99,7 @@ class ParametricSurface(VGroup, metaclass=ConvertToOpenGL):
         self.u_max = kwargs.pop("u_max", None) or u_range[1]
         self.v_min = kwargs.pop("v_min", None) or v_range[0]
         self.v_max = kwargs.pop("v_max", None) or v_range[1]
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
