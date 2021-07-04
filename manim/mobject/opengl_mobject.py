@@ -6,6 +6,7 @@ from functools import wraps
 
 import moderngl
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
@@ -59,7 +60,7 @@ class OpenGLMobject:
         **kwargs,
     ):
 
-        self.color = color
+        self.color = Color(color)
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
@@ -511,7 +512,17 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self):
+    def copy(self, shallow: bool = False):
+        """Copies the mobject.
+
+        Parameters
+        ----------
+        shallow
+            Controls whether a shallow copy is returned.
+        """
+        if not shallow:
+            return self.deepcopy()
+
         # TODO, either justify reason for shallow copy, or
         # remove this redundancy everywhere
         # return self.deepcopy()

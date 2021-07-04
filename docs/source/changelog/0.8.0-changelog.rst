@@ -1,0 +1,336 @@
+******
+v0.8.0
+******
+
+:Date: July 02, 2021
+
+Contributors
+============
+
+A total of 37 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+* Bill Shillito +
+* Darigov Research +
+* Darylgolden
+* Devin Neal
+* Iced-Tea3
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* MathInvariance +
+* Max Stoumen
+* Mehmet Ali Özer +
+* Michael Pilosov +
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nikhil Garuda
+* Oliver
+* PaulCMurdoch
+* Philipp Imhof
+* PipedQuintes +
+* Raghav Goel
+* Ryan McCauley
+* Ujjayanta +
+* Vagrid +
+* andrehisatsuga +
+* friedkeenan
+* peaceheis +
+* yit6 +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Abhijith Muthyala
+* Anton Ballmaier
+* Aron
+* Benjamin Hackl
+* Clar Fon
+* Darylgolden
+* Devin Neal
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* Mark Miller
+* MathInvariance
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nikhil Garuda
+* Oliver
+* Philipp Imhof
+* Raghav Goel
+* Ryan McCauley
+* Ujjayanta
+* Vagrid
+* friedkeenan
+
+Pull requests merged
+====================
+
+A total of 76 pull requests were merged for this release.
+
+Deprecated classes and functions
+--------------------------------
+
+* `#1616 <https://github.com/ManimCommunity/manim/pull/1616>`__: Remove all functions and classes that were deprecated until ``v0.6.0``
+
+
+New features
+------------
+
+* `#1716 <https://github.com/ManimCommunity/manim/pull/1716>`__: Rewrite stroke and fill shaders
+   Rewrite vectorized mobject shaders to be compatible with transformation matrices.
+
+* `#1695 <https://github.com/ManimCommunity/manim/pull/1695>`__: Add option to justify text with :class:`~.MarkupText`
+   A new parameter ``justify`` is added to :class:`~.MarkupText`. It can be used to justify a paragraph of text.
+
+* `#1660 <https://github.com/ManimCommunity/manim/pull/1660>`__: Added support for ``.webm`` and transparency of videos in Jupyter notebooks
+   - Added support for generating ``webm`` videos via the command line flag ``--format=webm``
+   - Added transparency support for Jupyter notebooks
+
+* `#1553 <https://github.com/ManimCommunity/manim/pull/1553>`__: Add dearpygui integration
+
+
+Enhancements
+------------
+
+* `#1728 <https://github.com/ManimCommunity/manim/pull/1728>`__: Improved positioning and size of the OpenGL window; added some configuration options
+
+
+* `#1733 <https://github.com/ManimCommunity/manim/pull/1733>`__: Let OpenGLMobject.copy return a deep copy by default
+
+
+* `#1735 <https://github.com/ManimCommunity/manim/pull/1735>`__: Metaclass compatibility for `coordinate_system.py`, `Code` and `ParametricSurface`
+
+
+* `#1585 <https://github.com/ManimCommunity/manim/pull/1585>`__: OpenGL compatibility via metaclass for :class:`~.Matrix`, :class:`~.DecimalNumber`, :class:`~.Variable`
+
+
+* `#1713 <https://github.com/ManimCommunity/manim/pull/1713>`__: Exit the command line interface gracefully if no scene was chosen
+
+
+* `#1652 <https://github.com/ManimCommunity/manim/pull/1652>`__: Refactored :class:`~.Mobject` and :class:`~.Scene` to no longer inherit from the abstract base class ``Container``
+   - Moved tests in ``test_container.py`` for :class:`Container` that test :class:`~.Scene` and :class:`~.Mobject` to their own files.
+   - Corrected various instances of incorrectly passed keyword arguments, or unused keyword arguments.
+
+* `#1693 <https://github.com/ManimCommunity/manim/pull/1693>`__: Made the default arrowhead size for :class:`~.Arrow3D` smaller
+
+
+* `#1678 <https://github.com/ManimCommunity/manim/pull/1678>`__: Allow some rate functions to assume values outside of [0, 1]; introduce clamping decorators
+   - Fixed animations so that certain rate functions (``running_start``, ``wiggle``, ``ease_in_back``, ``ease_out_back``, ``ease_in_out_back``, ``ease_in_elastic``, ``ease_out_elastic``, and ``ease_out_elastic``) can go outside the range from 0 to 1.
+   - Fixed lag ratios so that they're spaced out evenly within the time interval and the rate functions are applied to each animation individually, rather than having the rate function determine when the animation starts.
+   - Fixed faulty code for ``ease_in_out_expo``, ``ease_in_bounce``, ``ease_out_bounce``, and ``ease_in_out_bounce``.
+
+* `#1649 <https://github.com/ManimCommunity/manim/pull/1649>`__: Made video file names in Jupyter notebook more readable
+
+
+* `#1667 <https://github.com/ManimCommunity/manim/pull/1667>`__: Determine the default number of decimal places for :class:`~.NumberLine` labels automatically from the step size
+   As an example: If the step size is set to 0.5, labels will now show at least one decimal place.
+
+* `#1608 <https://github.com/ManimCommunity/manim/pull/1608>`__: Color file paths in terminal; remove curly braces surrounding the file path in "Partial movie file written in..." messages
+
+
+* `#1632 <https://github.com/ManimCommunity/manim/pull/1632>`__: OpenGL compatibility via metaclass: :class:`~.Group`
+
+
+Fixed bugs
+----------
+
+* `#1740 <https://github.com/ManimCommunity/manim/pull/1740>`__: Fix pillow to <8.3.0
+
+
+* `#1729 <https://github.com/ManimCommunity/manim/pull/1729>`__: Fix bug when using :class:`~.Text` with the OpenGL renderer
+
+
+* `#1675 <https://github.com/ManimCommunity/manim/pull/1675>`__: Fixed ignored fill and stroke colors for :class:`~.SVGMobject`
+
+
+* `#1664 <https://github.com/ManimCommunity/manim/pull/1664>`__: Fixed accidental displacement in :class:`~.Axes` caused by ``include_numbers`` / ``numbers_to_include``
+
+
+* `#1670 <https://github.com/ManimCommunity/manim/pull/1670>`__: Fixed missing ``numpy`` import in OpenGL shader example
+
+
+* `#1636 <https://github.com/ManimCommunity/manim/pull/1636>`__: Fixed bugs and added examples to methods and classes in :mod:`manim.mobject.matrix`
+
+
+* `#1614 <https://github.com/ManimCommunity/manim/pull/1614>`__: Fix tick issues and improve tick placement for :class:`~.NumberLine`
+
+
+* `#1593 <https://github.com/ManimCommunity/manim/pull/1593>`__: Un-flip output of ``get_frame()`` when using the OpenGL renderer
+
+
+* `#1619 <https://github.com/ManimCommunity/manim/pull/1619>`__: Fix output of automatically detected LaTeX errors
+
+
+* `#1595 <https://github.com/ManimCommunity/manim/pull/1595>`__: Fixed a few CLI and rendering bugs
+   - Corrected issue where gifs were being logged with an incorrect extension
+   - Fixed issue where videos were output when format was set to png
+   - Added logging for png output
+   - Added precedence handling when the ``write_to_movie`` flag would conflict with ``--format``
+   - Fixed issue that caused png image output to be ignored when caching was enabled
+
+* `#1635 <https://github.com/ManimCommunity/manim/pull/1635>`__: Added missing numpy import for :mod:`manim.mobject.probability`
+
+
+* `#1634 <https://github.com/ManimCommunity/manim/pull/1634>`__: Fixed OpenGL examples for MacOS
+   Renamed deprecated ``gl_FragColor`` to ``fragColor``.
+
+Documentation-related changes
+-----------------------------
+
+* `#1732 <https://github.com/ManimCommunity/manim/pull/1732>`__: Remove reference to ``--plugins`` flag
+
+
+* `#1734 <https://github.com/ManimCommunity/manim/pull/1734>`__: Fix inheritance graph background color
+
+
+* `#1698 <https://github.com/ManimCommunity/manim/pull/1698>`__: Added an example for :class:`~.PMobject`
+
+
+* `#1690 <https://github.com/ManimCommunity/manim/pull/1690>`__: Added an example for :class:`~.CoordinateSystem`
+
+
+* `#1510 <https://github.com/ManimCommunity/manim/pull/1510>`__: Add a tutorial for using :class:`~.Text` and :class:`~.Tex`
+
+
+* `#1685 <https://github.com/ManimCommunity/manim/pull/1685>`__: Added an example and parameter description for :class:`~.AnnularSector`
+
+
+* `#1687 <https://github.com/ManimCommunity/manim/pull/1687>`__: Updated imports in ``geometry.py`` and added example to :class:`~.Arrow`
+
+
+* `#1681 <https://github.com/ManimCommunity/manim/pull/1681>`__: Added an example for :class:`~.NumberLine`
+
+
+* `#1697 <https://github.com/ManimCommunity/manim/pull/1697>`__: Added an example for :class:`~.PGroup`
+
+
+* `#1594 <https://github.com/ManimCommunity/manim/pull/1594>`__: Several improvements to the documentation design and layout
+
+
+* `#1696 <https://github.com/ManimCommunity/manim/pull/1696>`__: Added an example for :class:`~.DashedVMobject`
+
+
+* `#1637 <https://github.com/ManimCommunity/manim/pull/1637>`__: Added an example for :class:`~.FunctionGraph`
+
+
+* `#1626 <https://github.com/ManimCommunity/manim/pull/1626>`__: Added an example for :class:`~.Prism`
+
+
+* `#1712 <https://github.com/ManimCommunity/manim/pull/1712>`__: Added a second example for :class:`~.DoubleArrow`
+
+
+* `#1710 <https://github.com/ManimCommunity/manim/pull/1710>`__: Update copyright year in documentation to 2020-2021
+
+
+* `#1708 <https://github.com/ManimCommunity/manim/pull/1708>`__: Fixed link to interactive example notebook
+
+
+* `#1657 <https://github.com/ManimCommunity/manim/pull/1657>`__: Added an example for :class:`~.ParametricSurface`
+
+
+* `#1642 <https://github.com/ManimCommunity/manim/pull/1642>`__: Added examples and docstrings for :class:`~.BarChart`
+
+
+* `#1700 <https://github.com/ManimCommunity/manim/pull/1700>`__: Added an example for :meth:`~.Mobject.scale`
+
+
+* `#1689 <https://github.com/ManimCommunity/manim/pull/1689>`__: Added an example for :class:`~.SurroundingRectangle`
+
+
+* `#1627 <https://github.com/ManimCommunity/manim/pull/1627>`__: Added an example for :class:`~.Sphere`
+
+
+* `#1569 <https://github.com/ManimCommunity/manim/pull/1569>`__: Added example to demonstrate differences between :class:`~.Transform` and :class:`~.ReplacementTransform`
+
+
+* `#1647 <https://github.com/ManimCommunity/manim/pull/1647>`__: Added an example for :class:`~.Sector`
+
+
+* `#1673 <https://github.com/ManimCommunity/manim/pull/1673>`__: Updated documentation examples for :class:`~.Text` and :class:`~.MarkupText`: set ``weight=BOLD`` instead of ``style``
+
+
+* `#1650 <https://github.com/ManimCommunity/manim/pull/1650>`__: Added an example for :class:`~.ArcBetweenPoints`
+
+
+* `#1628 <https://github.com/ManimCommunity/manim/pull/1628>`__: Added an example for :class:`~.NumberPlane`
+
+
+* `#1646 <https://github.com/ManimCommunity/manim/pull/1646>`__: Added an example for :class:`~.Underline`
+
+
+* `#1659 <https://github.com/ManimCommunity/manim/pull/1659>`__: Added more details to the Google Colab installation instructions
+
+
+* `#1658 <https://github.com/ManimCommunity/manim/pull/1658>`__: Updated python requirement in the documentation
+
+
+* `#1639 <https://github.com/ManimCommunity/manim/pull/1639>`__: Added an example for :class:`~.SampleSpace`
+
+
+* `#1640 <https://github.com/ManimCommunity/manim/pull/1640>`__: Added an example for :class:`~.Point`
+
+
+* `#1643 <https://github.com/ManimCommunity/manim/pull/1643>`__: Fixed ``RightArcAngleExample`` for :class:`~.Angle` in documentation
+
+
+* `#1617 <https://github.com/ManimCommunity/manim/pull/1617>`__: Visually improved an example in our tutorial
+
+
+* `#1641 <https://github.com/ManimCommunity/manim/pull/1641>`__: Added an example for :class:`~.ComplexPlane`
+
+
+* `#1644 <https://github.com/ManimCommunity/manim/pull/1644>`__: Added an example for :class:`~.BackgroundRectangle`
+
+
+* `#1633 <https://github.com/ManimCommunity/manim/pull/1633>`__: Added an example for :class:`~.Integer`
+
+
+* `#1630 <https://github.com/ManimCommunity/manim/pull/1630>`__: Added an example for :class:`~.Arc`
+
+
+* `#1631 <https://github.com/ManimCommunity/manim/pull/1631>`__: Added an example for :class:`~.BulletedList`
+
+
+* `#1620 <https://github.com/ManimCommunity/manim/pull/1620>`__: Fixed reference to command line interface help command
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* `#1623 <https://github.com/ManimCommunity/manim/pull/1623>`__: CI: branch rename: master -> main
+
+
+* `#1621 <https://github.com/ManimCommunity/manim/pull/1621>`__: Revert default template and add new templates
+
+
+* `#1573 <https://github.com/ManimCommunity/manim/pull/1573>`__: PR template for the manim hackathon
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#1720 <https://github.com/ManimCommunity/manim/pull/1720>`__: Renamed incorrect references of ``master`` to ``main``
+
+
+* `#1692 <https://github.com/ManimCommunity/manim/pull/1692>`__: Removed redundant warning in CLI parsing
+
+
+* `#1651 <https://github.com/ManimCommunity/manim/pull/1651>`__: Small code cleanup for :class:`~.Polygram`
+
+
+* `#1610 <https://github.com/ManimCommunity/manim/pull/1610>`__: Changed one image extension to lowercase letters
+
+
+New releases
+------------
+
+* `#1738 <https://github.com/ManimCommunity/manim/pull/1738>`__: Preparation for v0.8.0: added changelog and bumped version number
+
+

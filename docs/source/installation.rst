@@ -41,7 +41,7 @@ Installing dependencies
 Installing Manim
 ****************
 
-Manim-Community runs on Python 3.6+. If you'd like to just use the library, you
+Manim Community runs on Python 3.7+. If you'd like to just use the library, you
 can install it from PyPI via pip:
 
 .. code-block:: bash

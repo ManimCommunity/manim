@@ -8,7 +8,6 @@ can specify options, and arguments for the render command.
 import json
 import sys
 from pathlib import Path
-from textwrap import dedent
 
 import click
 import cloup
@@ -42,27 +41,6 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-    for scene in args["scene_names"]:
-        if str(scene).startswith("-"):
-            logger.warning(
-                dedent(
-                    """\
-                Manim Community has moved to Click for the CLI.
-
-                This means that options in the CLI are provided BEFORE the positional
-                arguments for your FILE and SCENE(s):
-                `manim render [OPTIONS] [FILE] [SCENES]...`
-
-                For example:
-                New way - `manim -p -ql file.py SceneName1 SceneName2 ...`
-                Old way - `manim file.py SceneName1 SceneName2 ... -p -ql`
-
-                To see the help page for the new available options, run:
-                `manim render -h`
-                """
-                )
-            )
-            sys.exit()
 
     if args["use_opengl_renderer"]:
         logger.warning(

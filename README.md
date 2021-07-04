@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/master/logo/cropped.png"></a>
+    <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/main/logo/cropped.png"></a>
     <br />
     <br />
     <a href="https://pypi.org/project/manim/"><img src="https://img.shields.io/pypi/v/manim.svg?style=flat&logo=pypi" alt="PyPI Latest Release"></a>
@@ -87,7 +87,7 @@ Manim also ships with a `%%manim` IPython magic which allows to use it convenien
 
 The general usage of Manim is as follows:
 
-![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/docs/source/_static/command.png)
+![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/main/docs/source/_static/command.png)
 
 The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
 
@@ -107,7 +107,7 @@ Documentation is in progress at [ReadTheDocs](https://docs.manim.community/).
 
 The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim). The following tags are supported:
 
-- `latest` -- the most recent version corresponding to [the master branch](https://github.com/ManimCommunity/manim)
+- `latest` -- the most recent version corresponding to [the main branch](https://github.com/ManimCommunity/manim)
 - `stable` -- the latest released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
 - `vX.Y.Z` -- any particular released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
 
@@ -164,13 +164,13 @@ that research becomes more valuable when it is communicated effectively. To
 demonstrate the value of Manim, we ask that you cite Manim in your work.
 Currently, the best way to cite Manim is to reference the
 [Manim home page](https://www.manim.community) using this BibTeX entry (the
-entry is for release `v0.6.0`, but can be adapted easily):
+entry is for release `v0.9.0`, but can be adapted easily):
 
 ```
-@Manual{Manim:v0.6.0,
+@Manual{Manim:v0.9.0,
   key =          {Manim},
   author =       {{The Manim Community Developers}},
-  title =        {{Manim} -- {M}athematical {A}nimation {F}ramework ({V}ersion v0.6.0)},
+  title =        {{Manim} -- {M}athematical {A}nimation {F}ramework ({V}ersion v0.9.0)},
   note =         {\url{https://www.manim.community}},
   year =         2021,
 }
@@ -179,7 +179,7 @@ entry is for release `v0.6.0`, but can be adapted easily):
 This should render a reference that looks more or less like this:
 
 42. The Manim Community Developers,
-    [Manim – Mathematical Animation Framework (Version v0.6.0)](https://www.manim.community).
+    [Manim – Mathematical Animation Framework (Version v0.9.0)](https://www.manim.community).
     2021.
 
 ## Code of Conduct

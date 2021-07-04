@@ -5,13 +5,14 @@ from manim import *
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
+EPSILON = 1e-5
+
 
 class PlotFunctions(GraphScene):
     def __init__(self, **kwargs):
         GraphScene.__init__(
             self,
             graph_origin=ORIGIN,
-            function_color=RED,
             axes_color=GREEN,
             x_labeled_nums=range(-10, 12, 2),
             **kwargs
@@ -28,6 +29,19 @@ class PlotFunctions(GraphScene):
         f = self.get_graph(lambda x: x ** 2)
 
         self.add(f)
+
+
+class PlotFunctionWithDiscontinuitiesTest(GraphScene):
+    def construct(self):
+        self.x_axis_label, self.y_axis_label = None, None
+        self.setup_axes()
+        func_graph = self.get_graph(
+            lambda t: t % 1.0,
+            x_min=-2 + EPSILON,
+            x_max=2 - EPSILON,
+            discontinuities=range(-2, 2),
+        )
+        self.play(Animation(func_graph))
 
 
 MODULE_NAME = "plot"
