@@ -33,7 +33,7 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = object()
+    ALREADY_PROCESSED_PLACEHOLDER = "AP"
     THRESHOLD_WARNING = 170_000
 
     @classmethod
@@ -193,7 +193,8 @@ class _CustomEncoder(json.JSONEncoder):
             return self._cleaned_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
-        return f"Unsupported type for serializing -> {str(type(obj))}"
+        # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
+        return str(type(obj))
 
     def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
