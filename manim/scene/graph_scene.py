@@ -407,6 +407,7 @@ class GraphScene(Scene):
         graph = ParametricFunction(
             parameterized_function,
             color=color,
+            # This converts the discontinuities in the user's referential. See #1331.
             discontinuities=[
                 inverse_interpolate(x_min, x_max, k) for k in discontinuities
             ]
