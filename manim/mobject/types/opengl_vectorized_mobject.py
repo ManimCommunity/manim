@@ -222,7 +222,10 @@ class OpenGLVMobject(OpenGLMobject):
         }
 
     def match_style(self, vmobject, recurse=True):
-        self.set_style(**vmobject.get_style(), recurse=False)
+        vmobject_style = vmobject.get_style()
+        if config.renderer == "opengl":
+            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+        self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
             # match styles accordingly
