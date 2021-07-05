@@ -567,16 +567,18 @@ class Text(SVGMobject):
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
+        txt = self.original_text if self.disable_ligatures else self.text
         for word, color in list(t2c.items()):
-            for start, end in self.find_indexes(word, self.text):
+            for start, end in self.find_indexes(word, txt):
                 self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
         """Internally used. Sets gradient colors for specified
         strings. Behaves similarly to ``set_color_by_t2c``."""
         t2g = t2g if t2g else self.t2g
+        txt = self.original_text if self.disable_ligatures else self.text
         for word, gradient in list(t2g.items()):
-            for start, end in self.find_indexes(word, self.text):
+            for start, end in self.find_indexes(word, txt):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
     def text2hash(self):
