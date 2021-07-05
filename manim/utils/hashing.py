@@ -128,7 +128,7 @@ class _Memoizer:
     ) -> typing.Union[str, Any]:
         if len(cls._already_processed) == cls.THRESHOLD_WARNING:
             logger.warning(
-                "It looks like the scene contains a lot of sub-mobjects. Caching mecanism is not suited to handle such large scenes, you might consider disabling caching with\
+                "It looks like the scene contains a lot of sub-mobjects. Caching is not suited to handle such large scenes, you might consider disabling caching with\
                            --disable_caching to speed up the rendering process."
             )
         obj_membership_sign = obj_to_membership_sign(obj)
