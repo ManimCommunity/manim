@@ -1229,8 +1229,9 @@ class Scene:
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        factor = 1 + np.arctan(-2.1 * offset[1])
-        self.camera.scale(factor, about_point=self.camera_target)
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
