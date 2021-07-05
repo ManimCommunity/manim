@@ -101,8 +101,8 @@ class Scene:
 
         self.animations = None
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
         self.time_progression = None
         self.duration = None
         self.last_t = None
@@ -895,9 +895,10 @@ class Scene:
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(self, *animations: Animation, **play_kwargs):
-        """Given a list of animations, compile statics and moving mobjects, duration from them.
+        """Given a list of animations, compile the corresponding
+        static and moving mobjects, and gather the animation durations.
 
-        This also begin the animations.
+        This also begins the animations.
 
         Parameters
         ----------
@@ -919,8 +920,8 @@ class Scene:
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
 
         if not config.renderer == "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):

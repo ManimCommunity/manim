@@ -93,6 +93,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
 def triangulate_mobject(mob):
     if not mob.needs_new_triangulation:
         return mob.triangulation
+
     # Figure out how to triangulate the interior to know
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points

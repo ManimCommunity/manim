@@ -9,6 +9,8 @@ from ..mobject.opengl_compatibility import ConvertToOpenGL
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
+from ..utils.family import extract_mobject_family_members
+from .opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
@@ -193,26 +195,32 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             ]
         )
 
-    def set_value(self, number):
-        old_family = self.get_family()
-        move_to_point = self.get_edge_center(self.edge_to_fix)
-        old_submobjects = self.submobjects
-        self.set_submobjects_from_number(number)
-        self.move_to(move_to_point, self.edge_to_fix)
-        for sm1, sm2 in zip(self.submobjects, old_submobjects):
-            sm1.match_style(sm2)
+    def set_value(self, number, **config):
+        full_config = {}
+        full_config.update(self.initial_config)
+        full_config.update(config)
+        new_decimal = DecimalNumber(number, **full_config)
 
-        # for mob in old_family:
-        #     # Dumb hack...due to how scene handles families
-        #     # of animated mobjects
-        #     # for compatibility with updaters to not leave first number in place while updating,
-        #     # not needed with opengl renderer
-        #     mob.points[:] = 0
-        return self
+        if hasattr(self, "original_id"):
+            if not hasattr(self, "generated_original_ids"):
+                self.generated_original_ids = []
+            new_submobjects = extract_mobject_family_members(
+                new_decimal, only_those_with_points=True
+            )
+            while len(self.generated_original_ids) < len(new_submobjects):
+                self.generated_original_ids.append(str(uuid.uuid4()))
+            for new_submobject, generated_id in zip(
+                new_submobjects, self.generated_original_ids
+            ):
+                new_submobject.original_id = generated_id
 
-    def scale(self, scale_factor, **kwargs):
-        super().scale(scale_factor, **kwargs)
-        self.font_size *= scale_factor
+        # Make sure last digit has constant height
+        new_decimal.scale(self[-1].height / new_decimal[-1].height)
+        new_decimal.move_to(self, self.edge_to_fix)
+        new_decimal.match_style(self)
+        self.become(new_decimal)
+
+        self.number = number
         return self
 
     def get_value(self):
@@ -246,7 +254,7 @@ class Integer(DecimalNumber):
         return int(np.round(super().get_value()))
 
 
-class Variable(VMobject):
+class Variable(VMobject, metaclass=ConvertToOpenGL):
     """A class for displaying text that continuously updates to reflect the value of a python variable.
 
     Automatically adds the text for the label and the value when instantiated and added to the screen.
