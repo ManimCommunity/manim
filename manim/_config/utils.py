@@ -745,7 +745,8 @@ class ManimConfig(MutableMapping):
                 self["write_to_movie"] = False
 
         # Handle --gui_location flag.
-        self.gui_location = args.gui_location
+        if getattr(args, "gui_location") is not None:
+            self.gui_location = args.gui_location
 
         return self
 
