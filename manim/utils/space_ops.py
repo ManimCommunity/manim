@@ -30,6 +30,7 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "perpendicular_bisector",
 ]
 
 
@@ -766,3 +767,15 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
     meta_indices = earcut(verts[indices, :2], [len(indices)])
     return [indices[mi] for mi in meta_indices]
+
+
+def perpendicular_bisector(line: Sequence[Sequence[float]]):
+    p1 = line[0]
+    p2 = line[1]
+    m = midpoint(p1, p2)
+    length = np.linalg.norm(p1 - p2)
+    ang = np.arctan(-(p2[0] - p1[0]) / (p2[1] - p1[1]))
+    return [
+        [m[0] - length / 2 * np.cos(ang), m[1] - length / 2 * np.sin(ang), 0],
+        [m[0] + length / 2 * np.cos(ang), m[1] + length / 2 * np.sin(ang), 0],
+    ]
