@@ -344,7 +344,7 @@ A list of all config options
    'bottom', 'custom_folders', 'disable_caching', 'dry_run',
    'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', 'images_dir', 'input_file', 'left_side',
+   'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
    'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
@@ -352,8 +352,8 @@ A list of all config options
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
-   'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
-   'write_to_movie']
+   'verbosity', 'video_dir', 'webgl_renderer_path', 'window_position',
+    'window_monitor', 'write_all', 'write_to_movie']
 
 
 A list of all CLI flags
