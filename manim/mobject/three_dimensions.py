@@ -14,7 +14,12 @@ __all__ = [
     "Torus",
 ]
 
+from typing import *
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -24,6 +29,7 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
@@ -35,6 +41,19 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 class ParametricSurface(VGroup):
     """Creates a Parametric Surface
+
+    Parameters
+    ----------
+    func :
+        The function that defines the surface.
+    u_range :
+        The range of the ``u`` variable: ``(u_min, u_max)``.
+    v_range :
+        The range of the ``v`` variable: ``(v_min, v_max)``.
+    resolution :
+        The number of samples taken of the surface. A tuple
+        can be used to define different resolutions for ``u`` and
+        ``v`` respectively.
 
     Examples
     --------
@@ -49,38 +68,40 @@ class ParametricSurface(VGroup):
                 axes = ThreeDAxes(x_range=[-4,4], x_length=8)
                 surface = ParametricSurface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
-                    u_min=-PI,
-                    u_max=PI,
-                    v_min=0,
-                    v_max=TAU,
+                    u_range=[-PI, PI],
+                    v_range=[0, TAU]
                 )
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
     """
 
+    @deprecated_params(
+        params="u_min,u_max,v_min,v_max",
+        since="v0.9.0",
+        until="v0.10.0",
+        message="Use u_range and v_range instead.",
+    )
     def __init__(
         self,
-        func,
-        u_min=0,
-        u_max=1,
-        v_min=0,
-        v_max=1,
-        resolution=32,
-        surface_piece_config={},
-        fill_color=BLUE_D,
-        fill_opacity=1.0,
-        checkerboard_colors=[BLUE_D, BLUE_E],
-        stroke_color=LIGHT_GREY,
-        stroke_width=0.5,
-        should_make_jagged=False,
-        pre_function_handle_to_anchor_scale_factor=0.00001,
+        func: Callable[[float, float], np.ndarray],
+        u_range: Sequence[float] = [0, 1],
+        v_range: Sequence[float] = [0, 1],
+        resolution: Sequence[int] = 32,
+        surface_piece_config: dict = {},
+        fill_color: "Color" = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
+        stroke_color: "Color" = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
-    ):
+    ) -> None:
+        self.u_min = kwargs.pop("u_min", None) or u_range[0]
+        self.u_max = kwargs.pop("u_max", None) or u_range[1]
+        self.v_min = kwargs.pop("v_min", None) or v_range[0]
+        self.v_max = kwargs.pop("v_max", None) or v_range[1]
         super().__init__(**kwargs)
-        self.u_min = u_min
-        self.u_max = u_max
-        self.v_min = v_min
-        self.v_max = v_max
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
@@ -175,10 +196,8 @@ class Sphere(ParametricSurface):
                     center=(3, 0, 0),
                     radius=1,
                     resolution=(20, 20),
-                    u_min=0.001,
-                    u_max=PI - 0.001,
-                    v_min=0,
-                    v_max=TAU,
+                    u_range=[0.001, PI - 0.001],
+                    v_range=[0, TAU]
                 )
                 sphere1.set_color(RED)
                 self.add(sphere1)
@@ -195,20 +214,16 @@ class Sphere(ParametricSurface):
         center=ORIGIN,
         radius=1,
         resolution=(12, 24),
-        u_min=0.001,
-        u_max=PI - 0.001,
-        v_min=0,
-        v_max=TAU,
+        u_range=[0.001, PI - 0.001],
+        v_range=[0, TAU],
         **kwargs
     ):
         ParametricSurface.__init__(
             self,
             self.func,
             resolution=resolution,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=u_range,
+            v_range=v_range,
             **kwargs,
         )
         self.radius = radius
@@ -341,10 +356,8 @@ class Cone(ParametricSurface):
         The direction of the apex.
     show_base : :class:`bool`
         Whether to show the base plane or not.
-    v_min : :class:`float`
-        The azimuthal angle to start at.
-    v_max : :class:`float`
-        The azimuthal angle to end at.
+    v_range : :class:`Sequence[float]`
+        The azimuthal angle to start and end at.
     u_min : :class:`float`
         The radius at the apex.
     checkerboard_colors : :class:`bool`
@@ -357,8 +370,7 @@ class Cone(ParametricSurface):
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         u_min=0,
         checkerboard_colors=False,
         **kwargs
@@ -369,10 +381,8 @@ class Cone(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            v_min=v_min,
-            v_max=v_max,
-            u_min=u_min,
-            u_max=np.sqrt(base_radius ** 2 + height ** 2),
+            v_range=v_range,
+            u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -472,10 +482,8 @@ class Cylinder(ParametricSurface):
         The height of the cylinder.
     direction : :class:`numpy.array`
         The direction of the central axis of the cylinder.
-    v_min : :class:`float`
-        The height along the height axis (given by direction) to start on.
-    v_max : :class:`float`
-        The height along the height axis (given by direction) to end on.
+    v_range : :class:`Sequence[float]`
+        The height along the height axis (given by direction) to start and end on.
     show_ends : :class:`bool`
         Whether to show the end caps or not.
     """
@@ -485,8 +493,7 @@ class Cylinder(ParametricSurface):
         radius=1,
         height=2,
         direction=Z_AXIS,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         show_ends=True,
         resolution=24,
         **kwargs
@@ -497,10 +504,8 @@ class Cylinder(ParametricSurface):
             self,
             self.func,
             resolution=resolution,
-            u_min=-self._height / 2,
-            u_max=self._height / 2,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=[-self._height / 2, self._height / 2],
+            v_range=v_range,
             **kwargs,
         )
         if show_ends:
@@ -739,10 +744,8 @@ class Torus(ParametricSurface):
         self,
         major_radius=3,
         minor_radius=1,
-        u_min=0,
-        u_max=TAU,
-        v_min=0,
-        v_max=TAU,
+        u_range=[0, TAU],
+        v_range=[0, TAU],
         resolution=24,
         **kwargs
     ):
@@ -751,10 +754,8 @@ class Torus(ParametricSurface):
         ParametricSurface.__init__(
             self,
             self.func,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=u_range,
+            v_range=v_range,
             resolution=resolution,
             **kwargs,
         )
