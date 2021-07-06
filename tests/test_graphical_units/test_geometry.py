@@ -49,6 +49,12 @@ class CircleTest(Scene):
         self.add(circle)
 
 
+class CirclePointsTest(Scene):
+    def construct(self):
+        circle = Circle(points=[ORIGIN, UP, RIGHT])
+        self.play(Animation(circle))
+
+
 class DotTest(Scene):
     def construct(self):
         dot = Dot()
