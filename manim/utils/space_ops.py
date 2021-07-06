@@ -769,13 +769,9 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def perpendicular_bisector(line: Sequence[Sequence[float]]):
+def perpendicular_bisector(line: Sequence[Sequence[float]], norm_vector=OUT):
     p1 = line[0]
     p2 = line[1]
+    direction = np.cross(p1 - p2, norm_vector)
     m = midpoint(p1, p2)
-    length = np.linalg.norm(p1 - p2)
-    ang = np.arctan(-(p2[0] - p1[0]) / (p2[1] - p1[1]))
-    return [
-        [m[0] - length / 2 * np.cos(ang), m[1] - length / 2 * np.sin(ang), 0],
-        [m[0] + length / 2 * np.cos(ang), m[1] + length / 2 * np.sin(ang), 0],
-    ]
+    return [m + direction, m - direction]
