@@ -134,7 +134,6 @@ render_options = option_group(
         "--transparent",
         is_flag=True,
         help="Render scenes with alpha channel.",
-        default=None,
     ),
     option(
         "--use_projection_fill_shaders",
