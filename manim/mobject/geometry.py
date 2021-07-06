@@ -89,6 +89,7 @@ from ..utils.space_ops import (
     normalize,
     regular_vertices,
     rotate_vector,
+    perpendicular_bisector,
 )
 from .opengl_compatibility import ConvertToOpenGL
 
@@ -490,9 +491,20 @@ class Circle(Arc):
     def __init__(
         self,
         radius: float = None,
+        points: Sequence[Sequence[float]] = [],
         color=RED,
         **kwargs,
     ):
+        if radius == None and points != []:
+            if len(points) != 3:
+                raise ValueError("The points parameter requires 3 points.")
+            radius = np.linalg.norm(
+                points[0]
+                - line_intersection(
+                    perpendicular_bisector([points[0], points[1]]),
+                    perpendicular_bisector([points[1], points[2]]),
+                )
+            )
         Arc.__init__(
             self,
             radius=radius,
@@ -501,6 +513,13 @@ class Circle(Arc):
             color=color,
             **kwargs,
         )
+        if points != []:
+            self.shift(
+                line_intersection(
+                    perpendicular_bisector([points[0], points[1]]),
+                    perpendicular_bisector([points[1], points[2]]),
+                )
+            )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         """Modifies a circle so that it surrounds a given mobject.
