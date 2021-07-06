@@ -569,6 +569,11 @@ class Text(SVGMobject):
         t2c = t2c if t2c else self.t2c
         txt = self.original_text if self.disable_ligatures else self.text
         for word, color in list(t2c.items()):
+            word = (
+                word
+                if self.disable_ligatures
+                else word.replace(" ", "").replace("\n", "").replace("\t", "")
+            )
             for start, end in self.find_indexes(word, txt):
                 self.chars[start:end].set_color(color)
 
@@ -578,6 +583,11 @@ class Text(SVGMobject):
         t2g = t2g if t2g else self.t2g
         txt = self.original_text if self.disable_ligatures else self.text
         for word, gradient in list(t2g.items()):
+            word = (
+                word
+                if self.disable_ligatures
+                else word.replace(" ", "").replace("\n", "").replace("\t", "")
+            )
             for start, end in self.find_indexes(word, txt):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
