@@ -1063,8 +1063,7 @@ class Scene:
                     if not tup[0].endswith("keyboard"):
                         if shell.pt_app:
                             shell.pt_app.app.exit(exception=EOFError)
-                        file_observer.stop()
-                        file_observer.join()
+                        file_observer.unschedule_all()
                         raise RerunSceneException
                     keyboard_thread.join()
 
@@ -1081,8 +1080,7 @@ class Scene:
                     #     ]
 
                     keyboard_thread.join()
-                    file_observer.stop()
-                    file_observer.join()
+                    file_observer.unschedule_all()
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
                     # Intentionally skip calling join() on the file thread to save time.
