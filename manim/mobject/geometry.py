@@ -87,9 +87,9 @@ from ..utils.space_ops import (
     compass_directions,
     line_intersection,
     normalize,
+    perpendicular_bisector,
     regular_vertices,
     rotate_vector,
-    perpendicular_bisector,
 )
 from .opengl_compatibility import ConvertToOpenGL
 
