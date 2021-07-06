@@ -467,6 +467,9 @@ class Circle(Arc):
 
     Parameters
     ----------
+    points : Sequence[Sequence[float]]
+        Takes a list of three points to form a circle,
+        without specifying the radius.
     color : :class:`~.Colors`, optional
         The color of the shape.
     kwargs : Any
@@ -486,6 +489,16 @@ class Circle(Arc):
 
                 circle_group = Group(circle_1, circle_2, circle_3).arrange(buff=1)
                 self.add(circle_group)
+
+    .. manim:: CircleFromPointsExample
+        :save_last_frame:
+
+        class CircleFromPointsExample(Scene):
+            def construct(self):
+                points = [LEFT, LEFT + UP, UP * 2]
+                dots = VGroup(*[Dot(i) for i in points])
+                circle = Circle(points=points)
+                self.add(NumberPlane(), circle, dots)
     """
 
     def __init__(
@@ -505,6 +518,8 @@ class Circle(Arc):
                     perpendicular_bisector([points[1], points[2]]),
                 )
             )
+        else:
+            points = []
         Arc.__init__(
             self,
             radius=radius,
