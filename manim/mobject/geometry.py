@@ -87,9 +87,9 @@ from ..utils.space_ops import (
     compass_directions,
     line_intersection,
     normalize,
+    perpendicular_bisector,
     regular_vertices,
     rotate_vector,
-    perpendicular_bisector,
 )
 from .opengl_compatibility import ConvertToOpenGL
 
@@ -495,7 +495,7 @@ class Circle(Arc):
         color=RED,
         **kwargs,
     ):
-        if radius == None and points != []:
+        if radius is None and points != []:
             if len(points) != 3:
                 raise ValueError("The points parameter requires 3 points.")
             radius = np.linalg.norm(
