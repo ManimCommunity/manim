@@ -351,7 +351,7 @@ class Unwrite(Write):
                 text = Tex("Alice and Bob").scale(3)
                 self.add(text)
                 self.play(Unwrite(text))
-    
+
     .. manim:: UnwriteReverseFalse
 
         class UnwriteReverseFalse(Scene):
