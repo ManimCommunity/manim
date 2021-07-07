@@ -274,6 +274,12 @@ class Write(DrawBorderThenFill):
         class ShowWrite(Scene):
             def construct(self):
                 self.play(Write(Text("Hello").scale(3)))
+
+    .. manim:: ShowWriteReversed
+
+        class ShowWriteReversed(Scene):
+            def construct(self):
+                self.play(Write(Text("Hello").scale(3), reverse=TRUE))
     """
 
     def __init__(
