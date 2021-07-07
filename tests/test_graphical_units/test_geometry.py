@@ -51,7 +51,7 @@ class CircleTest(Scene):
 
 class CirclePointsTest(Scene):
     def construct(self):
-        circle = Circle(points=[ORIGIN, UP, RIGHT])
+        circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2)
         self.add(circle)
 
 
