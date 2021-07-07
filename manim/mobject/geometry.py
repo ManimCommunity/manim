@@ -467,9 +467,6 @@ class Circle(Arc):
 
     Parameters
     ----------
-    points : Sequence[Sequence[float]]
-        Takes a list of three points to uniquely form a circle that passes through such points,
-        without specifying the radius.
     color : :class:`~.Colors`, optional
         The color of the shape.
     kwargs : Any
@@ -489,37 +486,14 @@ class Circle(Arc):
 
                 circle_group = Group(circle_1, circle_2, circle_3).arrange(buff=1)
                 self.add(circle_group)
-
-    .. manim:: CircleFromPointsExample
-        :save_last_frame:
-
-        class CircleFromPointsExample(Scene):
-            def construct(self):
-                points = [LEFT, LEFT + UP, UP * 2]
-                dots = VGroup(*[Dot(i) for i in points])
-                circle = Circle(points=points)
-                self.add(NumberPlane(), circle, dots)
     """
 
     def __init__(
         self,
         radius: float = None,
-        points: Sequence[Sequence[float]] = [],
         color=RED,
         **kwargs,
     ):
-        if radius is None and points != []:
-            if len(points) != 3:
-                raise ValueError("The points parameter requires 3 points.")
-            radius = np.linalg.norm(
-                points[0]
-                - line_intersection(
-                    perpendicular_bisector([points[0], points[1]]),
-                    perpendicular_bisector([points[1], points[2]]),
-                )
-            )
-        else:
-            points = []
         Arc.__init__(
             self,
             radius=radius,
@@ -528,13 +502,6 @@ class Circle(Arc):
             color=color,
             **kwargs,
         )
-        if points != []:
-            self.shift(
-                line_intersection(
-                    perpendicular_bisector([points[0], points[1]]),
-                    perpendicular_bisector([points[1], points[2]]),
-                )
-            )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         """Modifies a circle so that it surrounds a given mobject.
@@ -616,6 +583,36 @@ class Circle(Arc):
 
         start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
+
+    @staticmethod
+    def from_three_points(
+        p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
+    ):
+        """Returns a circle passing through the specified
+        three points.
+
+        Example
+        -------
+
+        .. manim:: CircleFromPointsExample
+            :save_last_frame:
+
+            class CircleFromPointsExample(Scene):
+                def construct(self):
+                    circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2, color=RED)
+                    dots = VGroup(
+                        Dot(LEFT),
+                        Dot(LEFT + UP),
+                        Dot(UP * 2),
+                    )
+                    self.add(NumberPlane(), circle, dots)
+        """
+        center = line_intersection(
+            perpendicular_bisector([p1, p2]),
+            perpendicular_bisector([p2, p3]),
+        )
+        radius = np.linalg.norm(p1 - center)
+        return Circle(radius=radius, **kwargs).shift(center)
 
 
 class Dot(Circle):
