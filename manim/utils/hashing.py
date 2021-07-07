@@ -12,8 +12,7 @@ from typing import Any
 
 import numpy as np
 
-from .. import config
-from .. import logger
+from .. import config, logger
 
 # Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
 # This is used to filter them out.
@@ -127,7 +126,10 @@ class _Memoizer:
         default_func,
         memoizing=True,
     ) -> typing.Union[str, Any]:
-        if not config.disable_caching_warning and len(cls._already_processed) == cls.THRESHOLD_WARNING:
+        if (
+            not config.disable_caching_warning
+            and len(cls._already_processed) == cls.THRESHOLD_WARNING
+        ):
             logger.warning(
                 "It looks like the scene contains a lot of sub-mobjects. Caching is not suited to handle such large scenes, you might consider disabling caching with\
                            --disable_caching to speed up the rendering process."
