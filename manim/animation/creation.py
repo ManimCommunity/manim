@@ -92,8 +92,8 @@ if TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.opengl_surface import OpenGLSurface
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.deprecation import deprecated
@@ -114,9 +114,13 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject, OpenGLSurface, None], **kwargs):
+    def __init__(
+        self, mobject: Union[Mobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+    ):
         if not isinstance(mobject, (VMobject, OpenGLVMobject, OpenGLSurface)):
-            raise TypeError("This Animation only works on vectorized mobjects or surfaces")
+            raise TypeError(
+                "This Animation only works on vectorized mobjects or surfaces"
+            )
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
