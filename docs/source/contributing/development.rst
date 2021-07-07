@@ -124,7 +124,7 @@ Develop your contribution
       to the documentation!
 
       .. autosummary::
-         :toctree: reference
+         :toctree: ../reference
 
          manim_directive
 
