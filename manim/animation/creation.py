@@ -295,7 +295,6 @@ class Write(DrawBorderThenFill):
             vmobject, run_time, lag_ratio
         )
         self.reverse = reverse
-        self.vmobject = vmobject
         super().__init__(
             vmobject,
             rate_func=rate_func,
@@ -321,7 +320,7 @@ class Write(DrawBorderThenFill):
         return run_time, lag_ratio
 
     def reverse_submobjects(self) -> None:
-        self.vmobject.invert(recursive=True)
+        self.mobject.invert(recursive=True)
 
     def begin(self) -> None:
         if self.reverse:
