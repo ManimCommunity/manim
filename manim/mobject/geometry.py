@@ -468,7 +468,7 @@ class Circle(Arc):
     Parameters
     ----------
     points : Sequence[Sequence[float]]
-        Takes a list of three points to form a circle,
+        Takes a list of three points to uniquely form a circle that passes through such points,
         without specifying the radius.
     color : :class:`~.Colors`, optional
         The color of the shape.
