@@ -24,7 +24,12 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose, angle_between_vectors, normalize
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    normalize,
+    rotation_matrix_transpose,
+)
 
 
 class OpenGLMobject:
