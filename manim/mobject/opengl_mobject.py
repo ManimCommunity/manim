@@ -25,7 +25,12 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    normalize,
+    rotation_matrix_transpose,
+)
 
 
 class OpenGLMobject:
@@ -961,19 +966,24 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start, end):
-        # TODO, this doesn't currently work in 3d
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
-        target_vect = end - start
+        target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
