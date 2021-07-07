@@ -184,9 +184,10 @@ class VMobject(Mobject):
             curr_rgbas[:, 3] = rgbas[:, 3]
         return self
 
-    def set_fill(self, color=None, opacity=None, family=True) -> "VMobject":
-        """Set the fill color and fill opacity of a :class:`VMobject`
-        including its subMobjects.
+    def set_fill(
+        self, color=None, opacity: float = None, family: bool = True
+    ) -> "VMobject":
+        """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
         ----------
@@ -194,6 +195,8 @@ class VMobject(Mobject):
             Fill color of the :class:`VMobject`.
         opacity : :class:`float`, optional
             Fill opacity of the :class:`VMobject`.
+        family : :class:`bool`, optional
+            If `True`, the fill color of all submobjects is also set.
 
         Returns
         -------
@@ -214,9 +217,6 @@ class VMobject(Mobject):
                     group = Group(circle1,circle2,circle3).arrange()
                     self.add(square)
                     self.add(group)
-
-        .. important::
-            All Mobjects are initialized with 0 fill_opacity. If you forget to set it, the fill color won't show.
 
         See Also
         --------
