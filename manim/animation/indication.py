@@ -29,18 +29,10 @@ __all__ = [
     "FocusOn",
     "Indicate",
     "Flash",
-    "CircleIndicate",
     "ShowPassingFlash",
     "ShowPassingFlashWithThinningStrokeWidth",
-    "ShowCreationThenDestruction",
     "ShowCreationThenFadeOut",
-    "AnimationOnSurroundingRectangle",
-    "ShowPassingFlashAround",
-    "ShowCreationThenDestructionAround",
-    "ShowCreationThenFadeAround",
     "ApplyWave",
-    "WiggleOutThenIn",
-    "TurnInsideOut",
     "Circumscribe",
     "Wiggle",
 ]
@@ -278,32 +270,6 @@ class Flash(AnimationGroup):
         ]
 
 
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class CircleIndicate(Indicate):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        circle_config: typing.Dict[str, typing.Any] = {"color": YELLOW},
-        rate_func: typing.Callable[
-            [float, typing.Optional[float]], np.ndarray
-        ] = there_and_back,
-        remover: bool = True,
-        **kwargs
-    ) -> None:
-        self.circle_config = circle_config
-        circle = self.get_circle(mobject)
-        super().__init__(circle, rate_func=rate_func, remover=remover, **kwargs)
-
-    def get_circle(self, mobject: "Mobject") -> Circle:
-        circle = Circle(**self.circle_config)
-        circle.add_updater(lambda c: c.surround(mobject))
-        return circle
-
-    def interpolate_mobject(self, alpha: float) -> None:
-        super().interpolate_mobject(alpha)
-        self.mobject.set_stroke(opacity=alpha)
-
-
 class ShowPassingFlash(ShowPartial):
     """Show only a sliver of the VMobject each frame.
 
@@ -379,14 +345,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         )
 
 
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="ShowPassingFlash")
-class ShowCreationThenDestruction(ShowPassingFlash):
-    def __init__(
-        self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
-    ) -> None:
-        super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
-
-
 # TODO Decide what to do with this class:
 #   Remove?
 #   Deprecate?
@@ -394,64 +352,6 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class AnimationOnSurroundingRectangle(AnimationGroup):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = Animation,
-        surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
-        **kwargs
-    ) -> None:
-        # Callable which takes in a rectangle, and spits out some animation.  Could be
-        # some animation class, could be something more
-        self.rect_animation = rect_animation
-        self.surrounding_rectangle_config = surrounding_rectangle_config
-        self.mobject_to_surround = mobject
-
-        rect = self.get_rect()
-        rect.add_updater(lambda r: r.move_to(mobject))
-
-        super().__init__(
-            self.rect_animation(rect, **kwargs),
-        )
-
-    def get_rect(self) -> SurroundingRectangle:
-        return SurroundingRectangle(
-            self.mobject_to_surround, **self.surrounding_rectangle_config
-        )
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self, mobject: "Mobject", rect_animation: Animation = ShowPassingFlash, **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenDestruction,
-        **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenFadeOut,
-        **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ApplyWave(Homotopy):
@@ -651,25 +551,6 @@ class Wiggle(Animation):
             wiggle(alpha, self.n_wiggles) * self.rotation_angle,
             about_point=self.get_rotate_about_point(),
         )
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Wiggle")
-class WiggleOutThenIn(Wiggle):
-    def __init__(*args, **kwargs):
-        super().__init(*args, **kwargs)
-
-
-@deprecated(
-    since="v0.5.0",
-    until="v0.7.0",
-    message="Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to.",
-)
-class TurnInsideOut(Transform):
-    def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
-        super().__init__(mobject, path_arc=path_arc, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        return self.mobject.copy().reverse_points()
 
 
 class Circumscribe(Succession):
