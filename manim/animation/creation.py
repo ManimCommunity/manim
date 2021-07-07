@@ -333,6 +333,7 @@ class Write(DrawBorderThenFill):
             self.reverse_submobjects()
         super().finish()
 
+
 class Unwrite(Write):
     """Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`.
 
@@ -380,10 +381,9 @@ class Unwrite(Write):
             run_time=run_time,
             lag_ratio=lag_ratio,
             rate_func=lambda t: -rate_func(t) + 1,
-            reverse = reverse,
+            reverse=reverse,
             **kwargs,
         )
-
 
 
 class ShowIncreasingSubsets(Animation):
