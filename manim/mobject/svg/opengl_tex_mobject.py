@@ -163,8 +163,6 @@ __all__ = [
     "OpenGLTex",
     "OpenGLBulletedList",
     "OpenGLTitle",
-    "OpenGLTexMobject",
-    "OpenGLTextMobject",
 ]
 
 
@@ -599,15 +597,3 @@ class OpenGLTitle(OpenGLTex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-@deprecated(until="v0.7.0", replacement="MathTex")
-class OpenGLTexMobject(OpenGLMathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-@deprecated(until="v0.7.0", replacement="Tex")
-class OpenGLTextMobject(OpenGLTex):
-    def __init__(self, *text_parts, **kwargs):
-        Tex.__init__(self, *text_parts, **kwargs)

@@ -1,7 +1,6 @@
 """Utility functions for two- and three-dimensional vectors."""
 
 __all__ = [
-    "get_norm",
     "quaternion_mult",
     "quaternion_from_angle_axis",
     "angle_axis_from_quaternion",
@@ -11,12 +10,10 @@ __all__ = [
     "rotation_matrix",
     "rotation_about_z",
     "z_to_vector",
-    "angle_between",
     "angle_of_vector",
     "angle_between_vectors",
     "project_along_vector",
     "normalize",
-    "cross",
     "get_unit_normal",
     "compass_directions",
     "regular_vertices",
@@ -45,11 +42,6 @@ from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
-def get_norm(vect):
-    return np.linalg.norm(vect)
 
 
 def norm_squared(v: float) -> float:
@@ -321,11 +313,6 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     return np.dot(rotation_about_z(theta), phi_down)
 
 
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
-def angle_between(v1, v2):
-    return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
-
-
 def angle_of_vector(vector: Sequence[float]) -> float:
     """Returns polar coordinate theta when vector is projected on xy plane.
 
@@ -424,11 +411,6 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     buffed_norms = np.repeat(norms, array.shape[axis]).reshape(array.shape)
     array /= buffed_norms
     return array
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
-def cross(v1, v2):
-    return np.cross(v1, v2)
 
 
 def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
