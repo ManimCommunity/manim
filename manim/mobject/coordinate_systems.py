@@ -608,11 +608,11 @@ class CoordinateSystem:
         # setting up x_range, overwrite user's third input
         if x_range is None:
             if bounded_graph is None:
-                x_range = [graph.t_min, graph.t_max, None]
+                x_range = [graph.t_min, graph.t_max]
             else:
                 x_min = max(graph.t_min, bounded_graph.t_min)
                 x_max = min(graph.t_max, bounded_graph.t_max)
-                x_range = [x_min, x_max, None]
+                x_range = [x_min, x_max]
 
         x_range = [*x_range[:2], dx]
 
