@@ -176,10 +176,10 @@ class ParametricSurface(VGroup):
 
         Examples
         --------
-        .. manim:: Fill_by_valueExample
+        .. manim:: FillByValueExample
             :save_last_frame:
 
-            class Fill_by_valueExample(ThreeDScene):
+            class FillByValueExample(ThreeDScene):
                 def construct(self):
                     resolution_fa = 42
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
