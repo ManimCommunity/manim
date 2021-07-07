@@ -344,29 +344,28 @@ class Unwrite(Write):
     Examples
     --------
 
-    .. manim:: UnwriteReverseFalse
-
-        class UnwriteReverseFalse(Scene):
-            def construct(self):
-                text = Tex("Alice and Bob").scale(3)
-                self.add(text)
-                self.play(Unwrite(text))
-
     .. manim :: UnwriteReverseTrue
 
         class UnwriteReverseTrue(Scene):
             def construct(self):
                 text = Tex("Alice and Bob").scale(3)
                 self.add(text)
-                self.play(Unwrite(text,reverse=True))
+                self.play(Unwrite(text))
+    
+    .. manim:: UnwriteReverseFalse
 
+        class UnwriteReverseFalse(Scene):
+            def construct(self):
+                text = Tex("Alice and Bob").scale(3)
+                self.add(text)
+                self.play(Unwrite(text, reverse=False))
     """
 
     def __init__(
         self,
         vmobject: VMobject,
         rate_func: Callable[[float], float] = linear,
-        reverse: bool = False,
+        reverse: bool = True,
         **kwargs,
     ) -> None:
 
@@ -380,7 +379,7 @@ class Unwrite(Write):
             run_time=run_time,
             lag_ratio=lag_ratio,
             rate_func=lambda t: -rate_func(t) + 1,
-            reverse=not reverse,
+            reverse=reverse,
             **kwargs,
         )
 
