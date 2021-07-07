@@ -17,7 +17,6 @@ __all__ = [
 
 from typing import *
 
-
 import numpy as np
 from colour import Color
 
