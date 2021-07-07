@@ -285,8 +285,13 @@ class ManimConfig(MutableMapping):
         "use_webgl_renderer",
         "enable_gui",
         "gui_location",
+        "use_projection_fill_shaders",
+        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
+        "fullscreen",
+        "window_position",
+        "window_monitor",
         "write_all",
         "write_to_movie",
     }
@@ -519,6 +524,9 @@ class ManimConfig(MutableMapping):
             "use_opengl_renderer",
             "use_webgl_renderer",
             "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -530,6 +538,7 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "window_monitor",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -551,6 +560,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "webgl_renderer_path",
+            "window_position",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -564,6 +574,7 @@ class ManimConfig(MutableMapping):
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
 
+        # tuple keys
         gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
         setattr(self, "gui_location", gui_location)
 
@@ -653,6 +664,9 @@ class ManimConfig(MutableMapping):
             "use_opengl_renderer",
             "use_webgl_renderer",
             "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -991,6 +1005,11 @@ class ManimConfig(MutableMapping):
         doc="Maximum number of files cached.  Use -1 for infinity (no flag).",
     )
 
+    window_monitor = property(
+        lambda self: self._d["window_monitor"],
+        lambda self, val: self._set_pos_number("window_monitor", val, True),
+        doc="The monitor on which the scene will be rendered",
+    )
     flush_cache = property(
         lambda self: self._d["flush_cache"],
         lambda self, val: self._set_boolean("flush_cache", val),
@@ -1132,8 +1151,8 @@ class ManimConfig(MutableMapping):
         self._d["use_webgl_renderer"] = val
         if val:
             self._set_from_list(
-                "renderer",
                 "webgl",
+                "renderer",
                 ["cairo", "opengl", "webgl"],
             )
             self["disable_caching"] = True
@@ -1148,6 +1167,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["media_dir"],
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    window_position = property(
+        lambda self: self._d["window_position"],
+        lambda self, val: self._d.__setitem__("window_position", val),
+        doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
     )
 
     def resolve_movie_file_extension(self, is_transparent):
@@ -1170,6 +1195,24 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["gui_location"],
         lambda self, val: self._set_tuple("gui_location", val),
         doc="Enable GUI interaction.",
+    )
+
+    fullscreen = property(
+        lambda self: self._d["fullscreen"],
+        lambda self, val: self._set_boolean("fullscreen", val),
+        doc="Expand the window to its maximum possible size.",
+    )
+
+    use_projection_fill_shaders = property(
+        lambda self: self._d["use_projection_fill_shaders"],
+        lambda self, val: self._set_boolean("use_projection_fill_shaders", val),
+        doc="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+    )
+
+    use_projection_stroke_shaders = property(
+        lambda self: self._d["use_projection_stroke_shaders"],
+        lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
+        doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
