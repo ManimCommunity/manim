@@ -769,7 +769,9 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def perpendicular_bisector(line: list[np.ndarray], norm_vector=OUT) -> list[np.ndarray]:
+def perpendicular_bisector(
+    line: Sequence[np.ndarray], norm_vector=OUT
+) -> Sequence[np.ndarray]:
     """Returns a list of two points that correspond
     to the ends of the perpendicular bisector of the
     two points given.
