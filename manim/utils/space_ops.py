@@ -351,14 +351,11 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     np.ndarray
         The angle between the vectors.
     """
-    if config["renderer"] == "opengl":
-        diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
-        return min(diff, TAU - diff)
-    else:
-        return 2 * np.arctan2(
-            np.linalg.norm(normalize(v1) - normalize(v2)),
-            np.linalg.norm(normalize(v1) + normalize(v2)),
-        )
+
+    return 2 * np.arctan2(
+        np.linalg.norm(normalize(v1) - normalize(v2)),
+        np.linalg.norm(normalize(v1) + normalize(v2)),
+    )
 
 
 def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
