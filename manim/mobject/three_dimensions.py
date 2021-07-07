@@ -18,6 +18,7 @@ __all__ = [
 from typing import *
 
 import numpy as np
+from colour import Color
 
 if TYPE_CHECKING:
     from colour import Color
