@@ -27,6 +27,7 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "perpendicular_bisector",
 ]
 
 
@@ -745,3 +746,32 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
     meta_indices = earcut(verts[indices, :2], [len(indices)])
     return [indices[mi] for mi in meta_indices]
+
+
+def perpendicular_bisector(
+    line: Sequence[np.ndarray], norm_vector=OUT
+) -> Sequence[np.ndarray]:
+    """Returns a list of two points that correspond
+    to the ends of the perpendicular bisector of the
+    two points given.
+
+    Parameters
+    ----------
+    line
+        a list of two numpy array points (corresponding
+        to the ends of a line).
+    norm_vector
+        the vector perpendicular to both the line given
+        and the perpendicular bisector.
+
+    Returns
+    -------
+    list
+        A list of two numpy array points that correspond
+        to the ends of the perpendicular bisector
+    """
+    p1 = line[0]
+    p2 = line[1]
+    direction = np.cross(p1 - p2, norm_vector)
+    m = midpoint(p1, p2)
+    return [m + direction, m - direction]
