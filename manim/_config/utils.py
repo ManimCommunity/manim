@@ -1070,10 +1070,7 @@ class ManimConfig(MutableMapping):
 
     @transparent.setter
     def transparent(self, val: bool) -> None:
-        if val:
-            self.background_opacity = 0.0
-        else:
-            self.background_opacity = 1.0
+        self._d["background_opacity"] = float(not val)
         self.resolve_movie_file_extension(val)
 
     @property
