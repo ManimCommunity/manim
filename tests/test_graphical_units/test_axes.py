@@ -20,7 +20,7 @@ class AxesTest(Scene):
         self.add(graph, labels)
 
 
-class PlotFunctionWithDiscontinuitiesTest(ThreeDScene):
+class PlotFunctionWithDiscontinuitiesTest(Scene):
     def construct(self):
         ax = Axes(x_range=(-3, 3), y_range=(-1, 1))
         plt = ax.get_graph(
