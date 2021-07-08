@@ -188,7 +188,7 @@ class VMobject(Mobject):
         self,
         color: Optional[str] = None,
         opacity: Optional[float] = None,
-        family: bool = True
+        family: bool = True,
     ) -> "VMobject":
         """Set the fill color and fill opacity of a :class:`VMobject`.
 
