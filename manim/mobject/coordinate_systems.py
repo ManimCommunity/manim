@@ -309,7 +309,7 @@ class CoordinateSystem:
             labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def add_coordinate_labels(
         self, *axes_labels: Union[dict[float, Union[str, float, "Mobject"]]], **kwargs
