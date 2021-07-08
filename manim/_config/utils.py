@@ -244,6 +244,7 @@ class ManimConfig(MutableMapping):
         "background_opacity",
         "custom_folders",
         "disable_caching",
+        "disable_caching_warning",
         "ffmpeg_loglevel",
         "format",
         "flush_cache",
@@ -519,6 +520,7 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "log_to_file",
             "disable_caching",
+            "disable_caching_warning",
             "flush_cache",
             "custom_folders",
             "use_opengl_renderer",
@@ -1020,6 +1022,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["disable_caching"],
         lambda self, val: self._set_boolean("disable_caching", val),
         doc="Whether to use scene caching.",
+    )
+
+    disable_caching_warning = property(
+        lambda self: self._d["disable_caching_warning"],
+        lambda self, val: self._set_boolean("disable_caching_warning", val),
+        doc="Whether a warning is raised if there are too much submobjects to hash.",
     )
 
     png_mode = property(
