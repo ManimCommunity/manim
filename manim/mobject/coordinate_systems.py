@@ -311,6 +311,40 @@ class CoordinateSystem:
 
         return self.coordinate_labels
 
+    def add_coordinate_labels(
+        self, *axes_labels: Union[dict[float, Union[str, float, "Mobject"]]], **kwargs
+    ) -> VGroup:
+        """Adds labels to the axes.
+
+        axes_numbers
+            The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            ax = ThreeDAxes()
+            x_labels = range(-4, 5)
+            z_labels = range(-4, 4, 2)
+            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
+            ax.add_coordinates(x_labels)  # only x labels
+
+        Returns
+        -------
+        VGroup
+            A :class:`VGroup` of the number mobjects.
+        """
+
+        self.coordinate_labels = VGroup()
+        # if nothing is passed to axes_numbers, produce axes with default labelling
+
+        for axis, values in zip(self.axes, axes_labels):
+            labels = axis.add_labels(values, **kwargs)
+            self.coordinate_labels.add(labels)
+
+        return self
+
     def get_line_from_axis_to_point(
         self,
         index: int,
