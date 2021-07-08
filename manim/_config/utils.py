@@ -268,7 +268,6 @@ class ManimConfig(MutableMapping):
         "pixel_height",
         "pixel_width",
         "plugins",
-        "png_mode",
         "preview",
         "progress_bar",
         "save_as_gif",
@@ -555,7 +554,6 @@ class ManimConfig(MutableMapping):
             "partial_movie_dir",
             "input_file",
             "output_file",
-            "png_mode",
             "movie_file_extension",
             "background_color",
             "renderer",
@@ -1023,12 +1021,6 @@ class ManimConfig(MutableMapping):
         doc="Whether to use scene caching.",
     )
 
-    png_mode = property(
-        lambda self: self._d["png_mode"],
-        lambda self, val: self._set_from_list("png_mode", val, ["RGB", "RGBA"]),
-        doc="Either RGA (no transparency) or RGBA (with transparency) (no flag).",
-    )
-
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
@@ -1079,10 +1071,8 @@ class ManimConfig(MutableMapping):
     @transparent.setter
     def transparent(self, val: bool) -> None:
         if val:
-            self.png_mode = "RGBA"
             self.background_opacity = 0.0
         else:
-            self.png_mode = "RGB"
             self.background_opacity = 1.0
         self.resolve_movie_file_extension(val)
 
