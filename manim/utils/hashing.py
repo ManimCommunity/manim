@@ -139,7 +139,7 @@ class _Memoizer:
                             --disable_caching to potentially speed up the rendering process."
                 )
                 logger.warning(
-                    "You can disable this warnin by setting disable_caching_warning to True in your config file."
+                    "You can disable this warning by setting disable_caching_warning to True in your config file."
                 )
 
             cls._already_processed.add(obj_membership_sign)
