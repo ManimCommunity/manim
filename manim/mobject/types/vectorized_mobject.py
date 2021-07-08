@@ -185,18 +185,21 @@ class VMobject(Mobject):
         return self
 
     def set_fill(
-        self, color=None, opacity: float = None, family: bool = True
+        self,
+        color: Optional[str] = None,
+        opacity: Optional[float] = None,
+        family: bool = True
     ) -> "VMobject":
         """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
         ----------
-        color : optional
+        color
             Fill color of the :class:`VMobject`.
-        opacity : :class:`float`, optional
+        opacity
             Fill opacity of the :class:`VMobject`.
-        family : :class:`bool`, optional
-            If `True`, the fill color of all submobjects is also set.
+        family
+            If ``True``, the fill color of all submobjects is also set.
 
         Returns
         -------
