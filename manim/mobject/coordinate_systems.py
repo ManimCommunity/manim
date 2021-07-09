@@ -278,42 +278,6 @@ class CoordinateSystem:
     def add_coordinates(
         self, *axes_numbers: Optional[Iterable[float]], **kwargs
     ) -> VGroup:
-        """Adds number labels to the axes.
-
-        axes_numbers
-            The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            ax = ThreeDAxes()
-            x_labels = range(-4, 5)
-            z_labels = range(-4, 4, 2)
-            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
-            ax.add_coordinates(x_labels)  # only x labels
-
-        Returns
-        -------
-        VGroup
-            A :class:`VGroup` of the number mobjects.
-        """
-
-        self.coordinate_labels = VGroup()
-        # if nothing is passed to axes_numbers, produce axes with default labelling
-        if not axes_numbers:
-            axes_numbers = [None for _ in range(self.dimension)]
-
-        for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
-            self.coordinate_labels.add(labels)
-
-        return self
-
-    def add_coordinate_labels(
-        self, *axes_labels: Union[dict[float, Union[str, float, "Mobject"]]], **kwargs
-    ) -> VGroup:
         """Adds labels to the axes.
 
         axes_numbers
@@ -330,6 +294,17 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
+        ..code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
+
         Returns
         -------
         VGroup
@@ -338,9 +313,14 @@ class CoordinateSystem:
 
         self.coordinate_labels = VGroup()
         # if nothing is passed to axes_numbers, produce axes with default labelling
+        if not axes_numbers:
+            axes_numbers = [None for _ in range(self.dimension)]
 
-        for axis, values in zip(self.axes, axes_labels):
-            labels = axis.add_labels(values, **kwargs)
+        for axis, values in zip(self.axes, axes_numbers):
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
         return self
