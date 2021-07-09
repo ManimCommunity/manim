@@ -3,7 +3,7 @@
 __all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
 
 import operator as op
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Union
 
 import numpy as np
 
@@ -350,7 +350,7 @@ class NumberLine(Line):
 
     def add_labels(
         self,
-        dict_values: dict[float, Union[str, float, "Mobject"]],
+        dict_values: Dict[float, Union[str, float, "Mobject"]],
         direction=None,
         buff=None,
     ):

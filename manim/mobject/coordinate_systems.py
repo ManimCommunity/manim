@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -278,7 +278,7 @@ class CoordinateSystem:
     def add_coordinates(
         self,
         *axes_numbers: Union[
-            Optional[Iterable[float]], Union[dict[float, Union[str, float, "Mobject"]]]
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
         ],
         **kwargs,
     ) -> VGroup:
