@@ -372,7 +372,7 @@ class NumberLine(Line):
 
     @staticmethod
     def create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
+        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/`~.Tex` label accordingly.
 
         Parameters
         ----------
