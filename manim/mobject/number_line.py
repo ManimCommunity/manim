@@ -353,6 +353,7 @@ class NumberLine(Line):
         direction=None,
         buff=None,
     ):
+        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."""
         if direction is None:
             direction = self.label_direction
         if buff is None:
