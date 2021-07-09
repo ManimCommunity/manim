@@ -276,7 +276,11 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
     ) -> VGroup:
         """Adds labels to the axes.
 
