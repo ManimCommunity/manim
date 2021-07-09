@@ -427,6 +427,11 @@ class OpenGLMobject:
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
 
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
         Examples
         --------
 
@@ -434,8 +439,8 @@ class OpenGLMobject:
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2= s.copy()
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
                     s2.invert()
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
