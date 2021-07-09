@@ -3,13 +3,11 @@
 __all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
 
 import operator as op
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
 from manim.mobject.svg.tex_mobject import MathTex, Tex
-from tests.test_plugins.test_plugins import create_plugin
 
 from .. import config
 from ..constants import *
@@ -22,6 +20,9 @@ from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
+
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
 
 
 class NumberLine(Line):
