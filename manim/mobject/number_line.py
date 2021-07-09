@@ -350,7 +350,7 @@ class NumberLine(Line):
 
     def add_labels(
         self,
-        dict_values: Union[dict[float, Union[str, float, "Mobject"]]],
+        dict_values: dict[float, Union[str, float, "Mobject"]],
         direction=None,
         buff=None,
     ):
