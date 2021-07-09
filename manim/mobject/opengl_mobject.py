@@ -424,6 +424,7 @@ class OpenGLMobject:
         self.add(*submobject_list)
         return self
 
+
     def digest_mobject_attrs(self):
         """
         Ensures all attributes which are mobjects are included
@@ -513,6 +514,7 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
+        self.assemble_family()
         return self
 
     # Copying
