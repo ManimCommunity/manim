@@ -278,7 +278,7 @@ class CoordinateSystem:
     def add_coordinates(
         self, *axes_numbers: Optional[Iterable[float]], **kwargs
     ) -> VGroup:
-        """Adds labels to the axes.
+        """Adds number labels to the axes.
 
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.

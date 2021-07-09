@@ -345,7 +345,7 @@ class NumberLine(Line):
             numbers.add(self.get_number_mobject(x, **kwargs))
         self.add(numbers)
         self.numbers = numbers
-        return numbers
+        return self
 
     def add_labels(
         self,
