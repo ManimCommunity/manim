@@ -347,7 +347,7 @@ A list of all config options
    'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
    'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
+   'pixel_height', 'pixel_width', 'plugins', 'preview',
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
