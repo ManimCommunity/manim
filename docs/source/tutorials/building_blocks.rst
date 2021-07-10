@@ -309,7 +309,7 @@ Custom Animation
 
         def interpolate_mobject(self, alpha: float) -> None:
             # Set value of DecimalNumber according to alpha
-            value = self.start + (alpha * (self.to - self.start))
+            value = self.start + (alpha * (self.upto - self.start))
             self.mobject.set_value(value)
 
 
