@@ -316,7 +316,7 @@ Custom Animation
     class CountingScene(Scene):
         def construct(self):
             # Create Decimal Number and add it to scene
-            num = DecimalNumber()
+            num = DecimalNumber().scale(5)
             self.add(num)
 
             # Wait for 1 second
