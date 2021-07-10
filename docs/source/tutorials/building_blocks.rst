@@ -294,10 +294,39 @@ Use the :code:`run_time` argument to control the duration.
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
 
-Creating Custom Animation
+Custom Animation
 =========================
 
-.. TODO
+.. manim:: CountingScene
+
+    class Count(Animation):
+        def __init__(self, num: DecimalNumber, upto: float, ** kwargs) -> None:
+            # Pass num as mobject of animation
+            super().__init__(num,  **kwargs)
+            # Set start and upto
+            self.start = num.get_value()
+            self.upto = upto
+
+        def interpolate_mobject(self, alpha: float) -> None:
+            # Set value of DecimalNumber according to alpha
+            value = self.start + (alpha * (self.to - self.start))
+            self.mobject.set_value(value)
+
+
+    class CountingScene(Scene):
+        def construct(self):
+            # Create Decimal Number and add it to scene
+            num = DecimalNumber()
+            self.add(num)
+
+            # Wait for 1 second
+            self.wait(1)
+
+            # Play Count Animation to count upto 100 in 4 seconds
+            self.play(Count(num, 100), run_time=4, rate_func=linear)
+
+            # Wait for 1 second
+            self.wait(1)
 
 
 Using coordinates of a mobject
