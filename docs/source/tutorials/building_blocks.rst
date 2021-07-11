@@ -298,7 +298,7 @@ Custom Animation
 ================
 
 .. manim:: CountingScene
-    :quality: 'low'
+    :quality: medium
     :ref_classes: Animation DecimalNumber
     :ref_methods: Animation.interpolate_mobject Scene.play
     :ref_functions: rate_functions
