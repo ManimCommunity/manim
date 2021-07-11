@@ -332,7 +332,6 @@ Once you set the calculated value for the :class:`~.DecimalNumber`, you are done
 Once you have defined your Count Animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
 
 .. manim:: CountingScene
-    :quality: medium
     :ref_classes: Animation DecimalNumber
     :ref_methods: Animation.interpolate_mobject Scene.play
 
