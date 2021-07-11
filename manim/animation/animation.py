@@ -1,6 +1,12 @@
 """Animate mobjects."""
 
 
+from ..utils.rate_functions import smooth
+from ..utils.deprecation import deprecated
+from ..mobject.opengl_mobject import OpenGLMobject
+from ..mobject.mobject import Mobject
+from ..mobject import mobject, opengl_mobject
+from .. import logger
 __all__ = ["Animation", "Wait", "override_animation"]
 
 
@@ -20,12 +26,6 @@ from typing import (
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
-from .. import logger
-from ..mobject import mobject, opengl_mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.deprecation import deprecated
-from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -278,6 +278,13 @@ class Animation:
         self.interpolate_mobject(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        """Interpolates the mobject of the :class:`Animation` based on alpha value.
+
+        Parameters
+        ----------
+        alpha
+            The overall animation progress
+        """
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
