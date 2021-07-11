@@ -317,7 +317,7 @@ Custom Animation
         def construct(self):
             # Create Decimal Number and add it to scene
             number = DecimalNumber().set_color(WHITE).scale(5)
-            number.add_updater(lambda mob: mob.move_to(ORIGIN))
+            number.add_updater(lambda number: number.move_to(ORIGIN))
             self.add(number)
 
             # Wait for 1 second
