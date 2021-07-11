@@ -325,6 +325,7 @@ Suppose you are starting at 50 and incrementing until the :class:~.DecimalNumber
 * If alpha is 0.5, you want the value to be 75.
 * If alpha is 1, you want the value to be 100.
 
+Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value.
 So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50).
 Once you set the calculated value for the :class:~.DecimalNumber, you are done.
 
