@@ -328,9 +328,9 @@ class Write(DrawBorderThenFill):
         super().begin()
 
     def finish(self) -> None:
+        super().finish()
         if self.reverse:
             self.reverse_submobjects()
-        super().finish()
 
 
 class Unwrite(Write):
