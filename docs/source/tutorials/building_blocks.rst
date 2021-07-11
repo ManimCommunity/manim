@@ -297,6 +297,39 @@ Use the :code:`run_time` argument to control the duration.
 Custom Animation
 ================
 
+Even though Manim has number of built-in animations, often times you will find yourself in a situation where you have to do a smooth animation from one state of an object to another.
+If you find yourself in that situation then you could define your own custom animation.
+You can define your own animation by extending the :class:`~.Animation` class and overriding it's :meth:`~.Animation.interpolate_mobject`.
+:meth:`~.Animation.interpolate_mobject` method receives alpha as parameter which starts with 0 and changes through out the animation.
+So, you just have to manipulate self.mobject inside animation according to alpha in interpolate_mobject method.
+Then you can get all the benefits of :class:`~.Animation` such as playing it for different time periods by having different rate functions.
+
+Let's say you want to start with a number and create a transform animation taking it to a target number.
+You can do it using :class:`~.FadeTransform`, which will fade out the starting number and fade in the target number.
+But when we think about tranforming a number from one to another, intuitive way of doing it is by incrementing or decrementing it smoothly.
+Manim has a feature that allows you to customize this behaviour by defining your own custom animation.
+
+You can start by creating your own Count class that extends :class:`~.Animation` class.
+The class can have a constructor with three arguments, :class:`~.DecimalNumber` object, start and end.
+The constructor will pass the :class:`~.DecimalNumber` object to super constructor and will set up start and end.
+
+The only thing that you need to do is to define the logic of output at every step of the animation.
+
+Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function and run time of animation played.
+
+The alpha parameter holds a value between 0 and 1 representing the step of currently playing animation.
+For example, 0 means begining of the animation, 0.5 means half way through the animation, 1 means end of animation and so on.
+
+In case of the Count animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of Count Animation.
+Suppose you are starting at 50 and incrementing till 100 at the end of the animation.
+If alpha is 0, you want value to be 50.
+If alpha is 0.5, you want value to be 75.
+If alpha is 1, you want value to be 100.
+So the logic of calcuating the number to display at each step will be - 50 + alpha * (100 - 50).
+Set the calculated value for decimal number and you are done.
+
+Once, you have defined Count Animation, you can play it in your :class:`~.Scene` for any duration you want for any DecimalNumber with any rate function.
+
 .. manim:: CountingScene
     :quality: medium
     :ref_classes: Animation DecimalNumber
