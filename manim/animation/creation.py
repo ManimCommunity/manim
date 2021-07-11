@@ -119,9 +119,7 @@ class ShowPartial(Animation):
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
-            raise NotImplementedError(
-                "This animation is not defined for this Mobject."
-            )
+            raise NotImplementedError("This animation is not defined for this Mobject.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
