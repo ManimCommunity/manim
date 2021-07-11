@@ -337,8 +337,8 @@ Once you have defined your Count Animation, you can play it in your :class:~.Sce
     :ref_methods: Animation.interpolate_mobject Scene.play
 
     class Count(Animation):
-        def __init__(self, number: DecimalNumber, start: float, end: float, ** kwargs) -> None:
-            # Pass num as mobject of animation
+        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None:
+            # Pass number as the mobject of the animation
             super().__init__(number,  **kwargs)
             # Set start and end
             self.start = start
@@ -354,17 +354,17 @@ Once you have defined your Count Animation, you can play it in your :class:~.Sce
         def construct(self):
             # Create Decimal Number and add it to scene
             number = DecimalNumber().set_color(WHITE).scale(5)
+            # Add an updater to keep the DecimalNumber centered as its value changes
             number.add_updater(lambda number: number.move_to(ORIGIN))
+
             self.add(number)
 
-            # Wait for 1 second
-            self.wait(1)
+            self.wait()
 
-            # Play Count Animation to count from 0 to 100 in 4 seconds
+            # Play the Count Animation to count from 0 to 100 in 4 seconds
             self.play(Count(number, 0, 100), run_time=4, rate_func=linear)
 
-            # Wait for 1 second
-            self.wait(1)
+            self.wait()
 
 Using coordinates of a mobject
 ==============================
