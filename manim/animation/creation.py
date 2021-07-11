@@ -115,11 +115,12 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: Union[Mobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
     ):
-        if not isinstance(mobject, (VMobject, OpenGLVMobject, OpenGLSurface)):
-            raise TypeError(
-                "This Animation only works on vectorized mobjects or surfaces"
+        pointwise = getattr(mobject, "pointwise_become_partial", None)
+        if not callable(pointwise):
+            raise NotImplementedError(
+                "This animation is not defined for this Mobject."
             )
         super().__init__(mobject, **kwargs)
 
