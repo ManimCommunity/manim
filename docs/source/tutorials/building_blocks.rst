@@ -334,7 +334,6 @@ Once, you have defined Count Animation, you can play it in your :class:`~.Scene`
     :quality: medium
     :ref_classes: Animation DecimalNumber
     :ref_methods: Animation.interpolate_mobject Scene.play
-    :ref_functions: rate_functions
 
     class Count(Animation):
         def __init__(self, number: DecimalNumber, start: float, end: float, ** kwargs) -> None:
