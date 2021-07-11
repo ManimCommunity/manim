@@ -306,7 +306,7 @@ Then you can get all the benefits of :class:`~.Animation` such as playing it for
 
 Let's say you want to start with a number and create a transform animation taking it to a target number.
 You can do it using :class:`~.FadeTransform`, which will fade out the starting number and fade in the target number.
-But when we think about tranforming a number from one to another, intuitive way of doing it is by incrementing or decrementing it smoothly.
+But when we think about transforming a number from one to another, intuitive way of doing it is by incrementing or decrementing it smoothly.
 Manim has a feature that allows you to customize this behaviour by defining your own custom animation.
 
 You can start by creating your own Count class that extends :class:`~.Animation` class.
@@ -314,11 +314,9 @@ The class can have a constructor with three arguments, :class:`~.DecimalNumber` 
 The constructor will pass the :class:`~.DecimalNumber` object to super constructor and will set up start and end.
 
 The only thing that you need to do is to define the logic of output at every step of the animation.
-
 Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function and run time of animation played.
-
 The alpha parameter holds a value between 0 and 1 representing the step of currently playing animation.
-For example, 0 means begining of the animation, 0.5 means half way through the animation, 1 means end of animation and so on.
+For example, 0 means beginning of the animation, 0.5 means half way through the animation, 1 means end of animation and so on.
 
 In case of the Count animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of Count Animation.
 Suppose you are starting at 50 and incrementing till 100 at the end of the animation.
