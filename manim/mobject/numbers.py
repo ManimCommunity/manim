@@ -99,7 +99,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(SingleStringMathTex("\\dots"))
+            self.add(SingleStringMathTex("\\dots", color=self.color))
 
         if num_string.startswith("-"):
             minus = self.submobjects[0]
