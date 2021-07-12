@@ -14,12 +14,11 @@ __all__ = [
     "Torus",
 ]
 
+
 from typing import *
 
 import numpy as np
-
-if TYPE_CHECKING:
-    from colour import Color
+from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -174,6 +173,81 @@ class ParametricSurface(VGroup):
         for face in self:
             c_index = (face.u_index + face.v_index) % n_colors
             face.set_fill(colors[c_index], opacity=opacity)
+        return self
+
+    def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
+        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+
+        Parameters
+        ----------
+        axes :
+            The axes for the parametric surface, which will be used to map z-values to colors.
+        colors :
+            A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
+            containing colors paired with numbers, then those numbers will be used as the pivots.
+
+        Returns
+        -------
+        :class:`~.ParametricSurface`
+            The parametric surface with a gradient applied by value. For chaining.
+
+        Examples
+        --------
+        .. manim:: FillByValueExample
+            :save_last_frame:
+
+            class FillByValueExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 42
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+                    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+                    def param_surface(u, v):
+                        x = u
+                        y = v
+                        z = np.sin(x) * np.cos(y)
+                        return z
+                    surface_plane = ParametricSurface(
+                        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+                        resolution=(resolution_fa, resolution_fa),
+                        v_min=0,
+                        v_max=5,
+                        u_min=0,
+                        u_max=5)
+                    surface_plane.set_style(fill_opacity=1)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    self.add(axes, surface_plane)
+        """
+        if type(colors[0]) is tuple:
+            new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
+        else:
+            new_colors = colors
+
+            pivot_min = axes.z_range[0]
+            pivot_max = axes.z_range[1]
+            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+            pivots = np.arange(
+                start=pivot_min, stop=pivot_max + pivot_frequency, step=pivot_frequency
+            )
+
+        for mob in self.family_members_with_points():
+            z_value = axes.point_to_coords(mob.get_midpoint())[2]
+            if z_value <= pivots[0]:
+                mob.set_color(new_colors[0])
+            elif z_value >= pivots[-1]:
+                mob.set_color(new_colors[-1])
+            else:
+                for i, pivot in enumerate(pivots):
+                    if pivot > z_value:
+                        color_index = (z_value - pivots[i - 1]) / (
+                            pivots[i] - pivots[i - 1]
+                        )
+                        color_index = min(color_index, 1)
+                        mob_color = interpolate_color(
+                            new_colors[i - 1], new_colors[i], color_index
+                        )
+                        mob.set_color(mob_color, family=False)
+                        break
+
         return self
 
 
