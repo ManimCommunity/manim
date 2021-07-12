@@ -2614,9 +2614,6 @@ class Mobject:
     def interpolate_color(self, mobject1, mobject2, alpha):
         raise NotImplementedError("Please override in a child class.")
 
-    def pointwise_become_partial(self, mobject, a, b):
-        raise NotImplementedError("Please override in a child class.")
-
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`

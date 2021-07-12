@@ -99,7 +99,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(SingleStringMathTex("\\dots"))
+            self.add(SingleStringMathTex("\\dots", color=self.color))
 
         if num_string.startswith("-"):
             minus = self.submobjects[0]
@@ -190,7 +190,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
-        self.become(new_decimal)
+        old_family = self.get_family()
+        self.set_submobjects(new_decimal.submobjects)
+        for mobj in old_family:
+            mobj.clear_points()
 
         self.number = number
         return self

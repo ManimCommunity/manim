@@ -92,6 +92,7 @@ if TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
+from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
@@ -113,9 +114,12 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject, None], **kwargs):
-        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("This Animation only works on vectorized mobjects")
+    def __init__(
+        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+    ):
+        pointwise = getattr(mobject, "pointwise_become_partial", None)
+        if not callable(pointwise):
+            raise NotImplementedError("This animation is not defined for this Mobject.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -158,7 +162,7 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject],
+        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface],
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
