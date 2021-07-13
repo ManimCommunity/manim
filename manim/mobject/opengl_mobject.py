@@ -424,6 +424,33 @@ class OpenGLMobject:
         self.add(*submobject_list)
         return self
 
+    def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
+        self.assemble_family()
+
     def digest_mobject_attrs(self):
         """
         Ensures all attributes which are mobjects are included
@@ -513,6 +540,7 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
+        self.assemble_family()
         return self
 
     # Copying
