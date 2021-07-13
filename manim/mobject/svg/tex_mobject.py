@@ -253,12 +253,11 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        tex_strings = self.break_up_tex_strings(tex_strings)
-        self.tex_strings = tex_strings
+        self.tex_strings = self.break_up_tex_strings(tex_strings)
         try:
             SingleStringMathTex.__init__(
                 self,
-                self.arg_separator.join(tex_strings),
+                self.arg_separator.join(self.tex_strings),
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
@@ -334,20 +333,14 @@ class MathTex(SingleStringMathTex):
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
-                sub_tex_mob.submobjects = [VectorizedPoint()]
-                if config.renderer == "opengl":
-                    sub_tex_mob.assemble_family()
+                sub_tex_mob.set_submobjects([VectorizedPoint()])
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
-                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
-                if config.renderer == "opengl":
-                    sub_tex_mob.assemble_family()
+                sub_tex_mob.set_submobjects(self.submobjects[curr_index:new_index])
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
-        self.submobjects = new_submobjects
-        if config.renderer == "opengl":
-            self.assemble_family()
+        self.set_submobjects(new_submobjects)
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
