@@ -2433,6 +2433,11 @@ class Mobject:
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
 
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
         Examples
         --------
 
@@ -2440,8 +2445,8 @@ class Mobject:
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2= s.copy()
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
                     s2.invert()
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
@@ -2607,9 +2612,6 @@ class Mobject:
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
-        raise NotImplementedError("Please override in a child class.")
-
-    def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
 
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):
