@@ -16,6 +16,7 @@ from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
+from icecream import ic
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -1098,16 +1099,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             axis.scaling.function((axis.x_range[1] + axis.x_range[0]) / 2)
             for axis in self.axes
         ]
-
         self.origin = self.x_axis.number_to_point(
-            (self.origin_shift([self.x_axis.x_min, self.x_axis.x_max]))
+            self.origin_shift([self.x_axis.x_min, self.x_axis.x_max])
         )
         self.shift(-self.coords_to_point(*lines_center_point))
 
         self.origin = self.x_axis.number_to_point(
-            self.x_axis.scaling.function(
-                self.origin_shift([self.x_axis.x_min, self.x_axis.x_max])
-            )
+            self.origin_shift([self.x_axis.x_min, self.x_axis.x_max])
         )
 
     @staticmethod
