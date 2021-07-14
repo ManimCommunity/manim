@@ -1632,7 +1632,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.submobjects[key] = value
 
 
-class VDict(VMobject):
+class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
     key, like a python dict
 
@@ -1731,7 +1731,7 @@ class VDict(VMobject):
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
         self.add(mapping_or_iterable)
@@ -1944,8 +1944,8 @@ class VDict(VMobject):
             self.add_key_value_pair('s', square_obj)
 
         """
-        if not isinstance(value, VMobject):
-            raise TypeError("All submobjects must be of type VMobject")
+        # if not isinstance(value, VMobject):
+        #     raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import

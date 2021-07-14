@@ -425,7 +425,11 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+            lambda t: self.coords_to_point(
+                self.x_axis.scaling.function(t), function(t)
+            ),
+            t_range=t_range,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -1090,9 +1094,21 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.add(*self.axes)
 
         # finds the middle-point on each axis
-        lines_center_point = [((axis.x_max + axis.x_min) / 2) for axis in self.axes]
+        lines_center_point = [
+            axis.scaling.function((axis.x_range[1] + axis.x_range[0]) / 2)
+            for axis in self.axes
+        ]
 
+        self.origin = self.x_axis.number_to_point(
+            (self.origin_shift([self.x_axis.x_min, self.x_axis.x_max]))
+        )
         self.shift(-self.coords_to_point(*lines_center_point))
+
+        self.origin = self.x_axis.number_to_point(
+            self.x_axis.scaling.function(
+                self.origin_shift([self.x_axis.x_min, self.x_axis.x_max])
+            )
+        )
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
@@ -1127,7 +1143,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
+        axis.shift(-axis.number_to_point(self.origin_shift([axis.x_min, axis.x_max])))
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -1140,10 +1156,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             A point that results from a change of basis from the coordinate system
             defined by the :class:`Axes` to that of ``manim``'s default coordinate system
         """
-        origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
-        result = np.array(origin)
+
+        result = np.array(self.origin)
         for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - origin
+            result += axis.number_to_point(coord) - self.origin
         return result
 
     def point_to_coords(self, point: float) -> Tuple:
@@ -1237,7 +1253,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
+        if config.renderer == "opengl":
+            from manim.opengl import OpenGLVMobject
+
+            graph = OpenGLVMobject(color=line_color, **kwargs)
+        else:
+            graph = VMobject(color=line_color, **kwargs)
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
@@ -1355,7 +1376,9 @@ class ThreeDAxes(Axes):
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.number_to_point(self.origin_shift(x_range)))
+        z_axis.shift(
+            self.x_axis.number_to_point(self.origin_shift([z_axis.x_min, z_axis.x_max]))
+        )
 
         self.axes.add(z_axis)
         self.add(z_axis)
@@ -1542,13 +1565,13 @@ class NumberPlane(Axes):
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            self.x_axis.x_step,
+            self.x_axis.x_range[2],
             self.faded_line_ratio,
         )
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            self.y_axis.x_step,
+            self.y_axis.x_range[2],
             self.faded_line_ratio,
         )
         lines1 = VGroup(*x_lines1, *y_lines1)
@@ -1592,8 +1615,8 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+            np.arange(0, axis_perpendicular_to.x_range[1], step),
+            np.arange(0, axis_perpendicular_to.x_range[0], -step),
         )
         for inputs in ranges:
             for k, x in enumerate(inputs):
@@ -1851,14 +1874,14 @@ class PolarPlane(Axes):
 
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
-        rstep = (1 / ratio_faded_lines) * self.x_axis.x_step
+        rstep = (1 / ratio_faded_lines) * self.x_axis.x_range[2]
         astep = (1 / ratio_faded_lines) * (TAU * (1 / self.azimuth_step))
         rlines1 = VGroup()
         rlines2 = VGroup()
         alines1 = VGroup()
         alines2 = VGroup()
 
-        rinput = np.arange(0, self.x_axis.x_max + rstep, rstep)
+        rinput = np.arange(0, self.x_axis.x_range[1] + rstep, rstep)
         ainput = np.arange(0, TAU, astep)
 
         unit_vector = self.x_axis.get_unit_vector()[0]

@@ -1,8 +1,10 @@
 """Mobject representing a number line."""
 
-__all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
+__all__ = ["NumberLine", "UnitInterval", "NumberLineOld", "LogBase", "LinearBase"]
 
 import operator as op
+from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 
@@ -17,6 +19,39 @@ from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
+
+
+@dataclass
+class LogBase:
+    base: float = 10.0
+
+    def __post_init__(self):
+        def func(x: Union[float, np.ndarray]):
+            # if isinstance(x, np.ndarray):
+            #     x[x == 0] = 1e-15
+            # elif x == 0:
+            #     x = 1e-15
+
+            return self.base ** x
+
+        self.function = func
+
+    def plot_num(self, number: float) -> float:
+        # log base change rule. equivalent to math.log(number, base)
+        value = np.log(number) / np.log(self.base)
+        return value
+
+
+@dataclass
+class LinearBase:
+    scale_factor: float = 1.0
+
+    def __post_init__(self):
+        self.function = lambda x: x * self.scale_factor
+
+    def plot_num(self, number: float) -> float:
+        value = number / self.scale_factor
+        return value
 
 
 class NumberLine(Line):
@@ -146,6 +181,7 @@ class NumberLine(Line):
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
         exclude_origin_tick=False,
+        scaling=LogBase(base=10),
         **kwargs
     ):
         # avoid mutable arguments in defaults
@@ -163,7 +199,9 @@ class NumberLine(Line):
         elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
+        self.x_range = np.array(x_range, dtype=float)
 
+        x_range = scaling.function(self.x_range)
         self.x_min, self.x_max, self.x_step = x_range
         if decimal_number_config is None:
             decimal_number_config = {
@@ -194,10 +232,11 @@ class NumberLine(Line):
         self.numbers_to_exclude = numbers_to_exclude
         self.numbers_to_include = numbers_to_include
         self.number_scale_value = number_scale_value
+        self.scaling = scaling
 
         super().__init__(
-            self.x_min * RIGHT,
-            self.x_max * RIGHT,
+            self.x_range[0] * RIGHT,
+            self.x_range[1] * RIGHT,
             stroke_width=self.stroke_width,
             color=self.color,
             **kwargs,
@@ -253,29 +292,36 @@ class NumberLine(Line):
         return VGroup(self.ticks)
 
     def get_tick_range(self):
-        if self.include_tip:
-            x_max = self.x_max
-        else:
-            x_max = self.x_max + 1e-6
+        x_min, x_max, x_step = self.x_range
+        if not self.include_tip:
+            x_max += 1e-6
 
         # Handle cases where min and max are both positive or both negative
-        if self.x_min < x_max < 0 or self.x_max > self.x_min > 0:
-            return np.arange(self.x_min, x_max, self.x_step)
+        if x_min < x_max < 0 or x_max > x_min > 0:
+            val = np.arange(x_min, x_max, x_step)
+        else:
+            start_point = 0
+            if self.exclude_origin_tick:
+                start_point += x_step
 
-        start_point = 0
-        if self.exclude_origin_tick:
-            start_point += self.x_step
+            x_min_segment = np.arange(start_point, np.abs(x_min) + 1e-6, x_step) * -1
+            x_max_segment = np.arange(start_point, x_max, x_step)
 
-        x_min_segment = (
-            np.arange(start_point, np.abs(self.x_min) + 1e-6, self.x_step) * -1
-        )
-        x_max_segment = np.arange(start_point, x_max, self.x_step)
+            val = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
-        return np.unique(np.concatenate((x_min_segment, x_max_segment)))
+        val = self.scaling.function(val)
+        return val
 
     def number_to_point(self, number):
-        alpha = float(number - self.x_min) / (self.x_max - self.x_min)
-        return interpolate(self.get_start(), self.get_end(), alpha)
+        from icecream import ic
+
+        # ic(number)
+        number = self.scaling.plot_num(number)
+        # ic(number)
+        alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        val = interpolate(self.get_start(), self.get_end(), alpha)
+        # ic(val)
+        return val
 
     def point_to_number(self, point):
         start, end = self.get_start_and_end()
@@ -295,7 +341,7 @@ class NumberLine(Line):
         return self.point_to_number(point)
 
     def get_unit_size(self):
-        return self.get_length() / (self.x_max - self.x_min)
+        return self.get_length() / (self.x_range[1] - self.x_range[0])
 
     def get_unit_vector(self):
         return super().get_unit_vector() * self.unit_size
