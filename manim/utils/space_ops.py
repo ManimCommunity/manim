@@ -800,9 +800,23 @@ def cartesian_to_spherical(point: Union[list, np.ndarray]):
     return np.array([rho, theta, phi])
 
 
-def spherical_to_cartesian(spherical:Union[list,np.ndarray]):
+def spherical_to_cartesian(spherical: Union[list, np.ndarray]):
+    """Returns a point coordinate based on the spherical
+    coordinates given.
+
+    Parameters
+    ----------
+    spherical
+        a numpy array of spherical coordinates.
+
+    Returns
+    -------
+    numpy array
+        A point coordinate based on the spherical
+        coordinates given.
+    """
     rho, theta, phi = spherical
     x = rho * np.cos(theta)
     y = rho * np.sin(theta)
     z = rho * np.cos(phi)
-    return np.array([x,y,z])
+    return np.array([x, y, z])
