@@ -32,9 +32,9 @@ from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import tuplify
 from ..utils.space_ops import (
-    projected_vector,
     cartesian_to_spherical,
     normalize,
+    projected_vector,
     z_to_vector,
 )
 
