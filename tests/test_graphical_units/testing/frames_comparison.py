@@ -46,7 +46,7 @@ def frames_comparison(
     module_name : str
         The module which the test belongs to.
     last_frame : bool, optional
-        Wether the test should test the last frame, by default True.
+        wether the test should test the last frame, by default True.
     renderer_class , optional
         The base renderer to use (OpenGlRenderer/CairoRenderer), by default CairoRenderer
     base_scene : [type], optional
@@ -75,7 +75,7 @@ def frames_comparison(
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
         def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
-            constuct = functools.partial(tested_scene_construct, *args, **kwargs)
+            construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
             # Kwargs contains the eventual parametrization arguments.
             # This modify the test_name so the it is defined by the parametrization arguments too.
@@ -88,7 +88,7 @@ def frames_comparison(
                     module_name, test_name_with_param, setting_test
                 ),
                 base_scene=base_scene,
-                construct=constuct,
+                construct=construct,
                 renderer_class=renderer_class,
                 is_set_test_data_test=setting_test,
                 last_frame=last_frame,
@@ -150,11 +150,11 @@ def _make_test_comparing_frames(
     base_scene : Type[Scene]
         The base scene class.
     construct : Callable[[Scene], None]
-        The construct methode (= the test function)
+        The construct method (= the test function)
     renderer_class : [type]
         The renderer base class.
     show_diff : bool
-        Wether to visually show_diff (see --show_diff)
+        wether to visually show_diff (see --show_diff)
 
     Returns
     -------
