@@ -28,6 +28,7 @@ __all__ = [
     "cross2d",
     "earclip_triangulation",
     "perpendicular_bisector",
+    "projected_vector",
     "cartesian_to_spherical",
     "spherical_to_cartesian",
 ]
@@ -777,6 +778,27 @@ def perpendicular_bisector(
     direction = np.cross(p1 - p2, norm_vector)
     m = midpoint(p1, p2)
     return [m + direction, m - direction]
+
+
+def projected_vector(vec1: np.ndarray, vec2: np.ndarray):
+    """Returns a vector that is projected onto another vector.
+
+    Parameters
+    ----------
+    vec1
+        The vector to be projected onto.
+    vec2
+        The vector being projected.
+
+    Returns
+    -------
+    numpy array
+        The component vector of the second vector
+        in the direction of the first vector
+    """
+    dot_prod = np.dot(vec1, vec2)
+    length_prod = np.linalg.norm(vec1) ** 2
+    return vec1 * dot_prod / length_prod
 
 
 def cartesian_to_spherical(point: Union[list, np.ndarray]):
