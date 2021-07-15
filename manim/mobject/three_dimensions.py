@@ -32,7 +32,7 @@ from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import tuplify
 from ..utils.space_ops import (
-    angle_between_vectors,
+    projected_vector,
     cartesian_to_spherical,
     normalize,
     z_to_vector,
@@ -261,6 +261,36 @@ class ParametricSurface(VGroup):
 
 
 class Plane(ParametricSurface):
+    """
+    A 3D Plane Mobject.
+
+    Examples
+    --------
+
+    .. manim:: PlaneExample
+        :save_last_frame:
+
+        class PlaneExample(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(PI / 3, 100 * DEGREES)
+                ax = ThreeDAxes()
+                normal = [1, 1, 1]
+                normal_vector = Arrow3D(ORIGIN, normal, color=RED)
+                dot = Dot3D([-2, -1, 1], color=ORANGE)
+                plane = Plane(point=dot.get_center(), normal_vect=normal)
+                self.add(ax, normal_vector, dot, plane)
+                self.wait()
+
+    Parameters
+    ----------
+    point: :class:`numpy.ndarray`
+        A point that lies on the plane.
+    normal_vect :class:`numpy.ndarray`
+        A vector perpendicular to the plane.
+    kwargs
+        To be passed to :class:`ParametricSurface`
+    """
+
     def __init__(
         self,
         point=ORIGIN,
@@ -271,14 +301,12 @@ class Plane(ParametricSurface):
     ):
         self.normal_vect = np.array(normal_vect)
         super().__init__(
-            lambda u, v: np.array([u, v, 0]),
-            u_range=u_range,
-            v_range=v_range,
+            lambda u, v: np.array([u, v, 0]), u_range=u_range, v_range=v_range, **kwargs
         )
-        self.shift(point)
         spherical = cartesian_to_spherical(normal_vect)
         axis = [np.sin(spherical[1]), -np.cos(spherical[1]), 0]
         self.rotate(-spherical[2], axis=axis)
+        self.shift(projected_vector(self.normal_vect, point))
 
     def line_perp_to_plane(self, point, **kwargs):
         return Line3D(
@@ -766,14 +794,68 @@ class Line3D(Cylinder):
 
     @staticmethod
     def perp_to_line(point, line, **kwargs):
-        mid = line.get_center()
-        u = mid - point
+        """Returns a line passing through a point and
+        perpendicular to another line.
+
+        Example
+        -------
+
+        .. manim:: PerpendicularLineExample
+            :save_last_frame:
+
+            class PerpendicularLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(45 * DEGREES, 135 * DEGREES)
+                    ax = ThreeDAxes()
+                    line1 = Line3D([-5, -5, -5], [5, 5, 5], color=RED)
+                    dot = Dot3D([3, 0, 2], color=BLUE)
+                    line2 = Line3D.perp_to_line(dot.get_center(), line1, color=YELLOW)
+                    self.add(ax, line1, dot, line2)
+
+        Parameters
+        ----------
+        point: :class:`numpy.ndarray`
+            A numpy array of the point at which the line passes
+        line: :class:`Line3D`
+            The line to be perpendicular to.
+        """
+        u = point - line.get_center()
         v = line.vect
-        length = np.cos(angle_between_vectors(u, v))
-        scale = np.linalg.norm(u) / np.linalg.norm(v)
-        point2 = mid - length * v * scale
+        point2 = projected_vector(v, u)
         direction = point - point2
         return Line3D(point2 + direction * 10, point2 - direction * 10, **kwargs)
+
+    @staticmethod
+    def parallel_to_line(point, line, **kwargs):
+        """Returns a line passing through a point and
+        perpendicular to another line.
+
+        Example
+        -------
+
+        .. manim:: ParallelLineExample
+            :save_last_frame:
+
+            class ParallelLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(45 * DEGREES, 135 * DEGREES)
+                    ax = ThreeDAxes()
+                    line1 = Line3D([-5, -5, -5], [5, 5, 5], color=RED)
+                    dot = Dot3D([3, 0, 2], color=BLUE)
+                    line2 = Line3D.parallel_to_line(dot.get_center(), line1, color=YELLOW)
+                    self.add(ax, line1, dot, line2)
+
+        Parameters
+        ----------
+        point: :class:`numpy.ndarray`
+            A numpy array of the point at which the line passes
+        line: :class:`Line3D`
+            The line to be parallel to.
+        """
+        u = point - line.get_center()
+        v = line.vect
+        direction = projected_vector(v, u)
+        return Line3D(point + direction * 10, point - direction * 10, **kwargs)
 
 
 class Arrow3D(Line3D):
