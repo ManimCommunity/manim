@@ -10,6 +10,7 @@ class PlaneTest(ThreeDScene):
     def construct(self):
         self.add(Plane())
 
+
 class CubeTest(ThreeDScene):
     def construct(self):
         self.add(Cube())
