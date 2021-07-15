@@ -3,6 +3,7 @@
 __all__ = [
     "ThreeDVMobject",
     "ParametricSurface",
+    "Plane",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -30,7 +31,12 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import tuplify
-from ..utils.space_ops import normalize, z_to_vector
+from ..utils.space_ops import (
+    angle_between_vectors,
+    cartesian_to_spherical,
+    normalize,
+    z_to_vector,
+)
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -252,6 +258,32 @@ class ParametricSurface(VGroup):
 
 
 # Specific shapes
+
+
+class Plane(ParametricSurface):
+    def __init__(
+        self,
+        point=ORIGIN,
+        normal_vect=[1, 1, 1],
+        u_range=[-2 * PI, 2 * PI],
+        v_range=[-2 * PI, 2 * PI],
+        **kwargs
+    ):
+        self.normal_vect = np.array(normal_vect)
+        super().__init__(
+            lambda u, v: np.array([u, v, 0]),
+            u_range=u_range,
+            v_range=v_range,
+        )
+        self.shift(point)
+        spherical = cartesian_to_spherical(normal_vect)
+        axis = [np.sin(spherical[1]), -np.cos(spherical[1]), 0]
+        self.rotate(-spherical[2], axis=axis)
+
+    def line_perp_to_plane(self, point, **kwargs):
+        return Line3D(
+            point - self.normal_vect * 10, point + self.normal_vect * 10, **kwargs
+        )
 
 
 class Sphere(ParametricSurface):
