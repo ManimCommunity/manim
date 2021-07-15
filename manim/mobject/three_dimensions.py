@@ -764,6 +764,17 @@ class Line3D(Cylinder):
     def get_end(self):
         return self.end
 
+    @staticmethod
+    def perp_to_line(point, line, **kwargs):
+        mid = line.get_center()
+        u = mid - point
+        v = line.vect
+        length = np.cos(angle_between_vectors(u, v))
+        scale = np.linalg.norm(u) / np.linalg.norm(v)
+        point2 = mid - length * v * scale
+        direction = point - point2
+        return Line3D(point2 + direction * 10, point2 - direction * 10, **kwargs)
+
 
 class Arrow3D(Line3D):
     """An arrow made out of a cylindrical line and a conical tip.
