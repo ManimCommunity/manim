@@ -6,6 +6,10 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
 
+class PlaneTest(ThreeDScene):
+    def construct(self):
+        self.add(Plane())
+
 class CubeTest(ThreeDScene):
     def construct(self):
         self.add(Cube())
