@@ -28,6 +28,8 @@ __all__ = [
     "cross2d",
     "earclip_triangulation",
     "perpendicular_bisector",
+    "cartesian_to_spherical",
+    "spherical_to_cartesian",
 ]
 
 
@@ -775,3 +777,32 @@ def perpendicular_bisector(
     direction = np.cross(p1 - p2, norm_vector)
     m = midpoint(p1, p2)
     return [m + direction, m - direction]
+
+
+def cartesian_to_spherical(point: Union[list, np.ndarray]):
+    """Returns a list of numbers corresponding to each
+    polar coordinate value (phi, theta, distance).
+
+    Parameters
+    ----------
+    point
+        a numpy array point.
+
+    Returns
+    -------
+    numpy array
+        A list of numbers corresponding to each
+        polar coordinate value (rho, theta, phi)
+    """
+    phi = angle_between_vectors(point, OUT)
+    theta = np.arctan2(point[1], point[0])
+    rho = np.linalg.norm(point)
+    return np.array([rho, theta, phi])
+
+
+def spherical_to_cartesian(spherical:Union[list,np.ndarray]):
+    rho, theta, phi = spherical
+    x = rho * np.cos(theta)
+    y = rho * np.sin(theta)
+    z = rho * np.cos(phi)
+    return np.array([x,y,z])
