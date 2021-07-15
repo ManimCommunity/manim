@@ -1,14 +1,14 @@
 import functools
 import inspect
 import itertools
+import warnings
 from pathlib import Path
 from typing import Any, Callable, Type
-import warnings
 
+import pytest
 from _pytest.config import ConftestImportFailure
 from _pytest.fixtures import FixtureRequest
 from _pytest.mark.structures import Mark
-import pytest
 
 from manim import Scene, config
 from manim._config import tempconfig
@@ -104,7 +104,7 @@ def frames_comparison(
 
             if last_frame:
                 config["frame_rate"] = 1
-                config["dry_run"]= True
+                config["dry_run"] = True
 
             # Isolate the config used for the test, to avoid a modifying the global config during the test run.
             with tempconfig({**custom_config, **config_tests}):
