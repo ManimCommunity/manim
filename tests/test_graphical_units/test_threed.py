@@ -41,6 +41,11 @@ class Arrow3DTest(ThreeDScene):
         self.add(Arrow3D())
 
 
+class PlaneTest(ThreeDScene):
+    def construct(self):
+        self.add(Plane())
+
+
 class TorusTest(ThreeDScene):
     def construct(self):
         self.add(Torus())
