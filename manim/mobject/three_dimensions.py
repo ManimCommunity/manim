@@ -291,15 +291,10 @@ class Plane(ParametricSurface):
         To be passed to :class:`ParametricSurface`
     """
 
-    def __init__(
-        self,
-        point=ORIGIN,
-        normal_vect=[1, 1, 1],
-        u_range=[-2 * PI, 2 * PI],
-        v_range=[-2 * PI, 2 * PI],
-        **kwargs
-    ):
+    def __init__(self, point=ORIGIN, normal_vect=[1, 1, 1], **kwargs):
         self.normal_vect = np.array(normal_vect)
+        u_range = kwargs.pop("u_range", [-2 * PI, 2 * PI])
+        v_range = kwargs.pop("v_range", [-2 * PI, 2 * PI])
         super().__init__(
             lambda u, v: np.array([u, v, 0]), u_range=u_range, v_range=v_range, **kwargs
         )
