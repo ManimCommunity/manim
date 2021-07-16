@@ -827,7 +827,7 @@ class Line3D(Cylinder):
     @staticmethod
     def parallel_to_line(point, line, **kwargs):
         """Returns a line passing through a point and
-        perpendicular to another line.
+        parallel to another line.
 
         Example
         -------
