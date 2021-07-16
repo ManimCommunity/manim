@@ -364,6 +364,7 @@ class NumberLine(Line):
         for x, label in dict_values.items():
 
             label = self.create_label_tex(label)
+            label.scale(self.number_scale_value)
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
             labels.add(label)
 
