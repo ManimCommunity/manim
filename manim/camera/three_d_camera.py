@@ -31,7 +31,7 @@ class ThreeDCamera(Camera):
         should_apply_shading=True,
         exponential_projection=False,
         phi=0,
-        theta=-90 * DEGREES,
+        theta=0,
         gamma=0,
         **kwargs
     ):
@@ -246,9 +246,9 @@ class ThreeDCamera(Camera):
         theta = self.get_theta()
         gamma = self.get_gamma()
         matrices = [
-            rotation_about_z(-theta - 90 * DEGREES),
+            rotation_matrix(-theta, UP),
             rotation_matrix(-phi, RIGHT),
-            rotation_about_z(gamma),
+            rotation_about_z(-gamma),
         ]
         result = np.identity(3)
         for matrix in matrices:
