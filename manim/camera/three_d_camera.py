@@ -245,7 +245,7 @@ class ThreeDCamera(Camera):
         phi = self.get_phi()
         theta = self.get_theta()
         gamma = self.get_gamma()
-
+        #
         matrices = [
             rotation_matrix(-theta, UP),
             rotation_matrix(-phi, RIGHT),
