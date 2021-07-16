@@ -3,10 +3,12 @@
 __all__ = ["NumberLine", "UnitInterval", "NumberLineOld", "LogBase", "LinearBase"]
 
 import operator as op
-from dataclasses import dataclass
-from typing import Union
+from typing import TYPE_CHECKING, Dict, Union
 
 import numpy as np
+
+from manim.mobject.svg.tex_mobject import MathTex, Tex
+from manim.utils.scale import LinearBase, LogBase
 
 from .. import config
 from ..constants import *
@@ -20,38 +22,8 @@ from ..utils.deprecation import deprecated
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
-
-@dataclass
-class LogBase:
-    base: float = 10.0
-
-    def __post_init__(self):
-        def func(x: Union[float, np.ndarray]):
-            # if isinstance(x, np.ndarray):
-            #     x[x == 0] = 1e-15
-            # elif x == 0:
-            #     x = 1e-15
-
-            return self.base ** x
-
-        self.function = func
-
-    def plot_num(self, number: float) -> float:
-        # log base change rule. equivalent to math.log(number, base)
-        value = np.log(number) / np.log(self.base)
-        return value
-
-
-@dataclass
-class LinearBase:
-    scale_factor: float = 1.0
-
-    def __post_init__(self):
-        self.function = lambda x: x * self.scale_factor
-
-    def plot_num(self, number: float) -> float:
-        value = number / self.scale_factor
-        return value
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
 
 
 class NumberLine(Line):
@@ -199,6 +171,7 @@ class NumberLine(Line):
         elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
+
         self.x_range = np.array(x_range, dtype=float)
 
         x_range = scaling.function(self.x_range)
@@ -257,10 +230,21 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
+
         if self.include_numbers or self.numbers_to_include is not None:
-            self.add_numbers(
-                x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
-            )
+            if self.scaling.custom_labels:
+                pos_range = self.get_tick_range()
+
+                self.add_labels(
+                    self.scaling.get_custom_labels(
+                        pos_range,
+                    )
+                )
+
+            else:
+                self.add_numbers(
+                    x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
+                )
 
     def rotate_about_zero(self, angle, axis=OUT, **kwargs):
         return self.rotate_about_number(0, angle, axis, **kwargs)
@@ -313,14 +297,9 @@ class NumberLine(Line):
         return val
 
     def number_to_point(self, number):
-        from icecream import ic
-
-        # ic(number)
-        number = self.scaling.plot_num(number)
-        # ic(number)
+        number = self.scaling.inverse_function(number)
         alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
         val = interpolate(self.get_start(), self.get_end(), alpha)
-        # ic(val)
         return val
 
     def point_to_number(self, point):
@@ -393,6 +372,48 @@ class NumberLine(Line):
         if "." not in step_as_str:
             return 0
         return len(step_as_str.split(".")[-1])
+
+    def add_labels(
+        self,
+        dict_values: Dict[float, Union[str, float, "Mobject"]],
+        direction=None,
+        buff=None,
+    ):
+        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."""
+        if direction is None:
+            direction = self.label_direction
+        if buff is None:
+            buff = self.line_to_number_buff
+
+        labels = VGroup()
+        for x, label in dict_values.items():
+
+            label = self.create_label_tex(label)
+            label.scale(self.number_scale_value)
+            label.next_to(self.number_to_point(x), direction=direction, buff=buff)
+            labels.add(label)
+
+        self.labels = labels
+        self.add(labels)
+        return self
+
+    @staticmethod
+    def create_label_tex(label_tex) -> "Mobject":
+        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
+        Parameters
+        ----------
+        label_tex : The label to be compared against the above types.
+        Returns
+        -------
+        :class:`~.Mobject`
+            The label.
+        """
+
+        if isinstance(label_tex, float) or isinstance(label_tex, int):
+            label_tex = MathTex(label_tex)
+        elif isinstance(label_tex, str):
+            label_tex = Tex(label_tex)
+        return label_tex
 
 
 class UnitInterval(NumberLine):
