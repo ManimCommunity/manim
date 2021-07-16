@@ -40,22 +40,25 @@ render_options = option_group(
         callback=validate_scene_range,
         help="Start rendering from n_0 until n_1. If n_1 is left unspecified, "
         "renders all scenes after n_0.",
+        default=None,
     ),
     option(
         "-a",
         "--write_all",
         is_flag=True,
         help="Render all scenes in the input file.",
+        default=None,
     ),
     option(
         "--format",
         type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
+        default=None,
     ),
-    option("-s", "--save_last_frame", is_flag=True),
+    option("-s", "--save_last_frame", is_flag=True, default=None),
     option(
         "-q",
         "--quality",
-        default="h",
+        default=None,
         type=click.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
         help="""
             Render quality at the follow resolution framerates, respectively:
@@ -70,6 +73,7 @@ render_options = option_group(
         "-r",
         "--resolution",
         callback=validate_resolution,
+        default=None,
         help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
     ),
     option(
@@ -77,22 +81,26 @@ render_options = option_group(
         "--frame_rate",
         "frame_rate",
         type=float,
+        default=None,
         help="Render at this frame rate.",
     ),
     option(
         "--renderer",
         type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
         help="Select a renderer for your Scene.",
+        default=None,
     ),
     option(
         "--use_opengl_renderer",
         is_flag=True,
         help="Render scenes using OpenGL (Deprecated).",
+        default=None,
     ),
     option(
         "--use_webgl_renderer",
         is_flag=True,
         help="Render scenes using the WebGL frontend (Deprecated).",
+        default=None,
     ),
     option(
         "--webgl_renderer_path",
@@ -122,16 +130,21 @@ render_options = option_group(
         help="Save last frame as png (Deprecated).",
     ),
     option(
-        "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
+        "-t",
+        "--transparent",
+        is_flag=True,
+        help="Render scenes with alpha channel.",
     ),
     option(
         "--use_projection_fill_shaders",
         is_flag=True,
         help="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+        default=None,
     ),
     option(
         "--use_projection_stroke_shaders",
         is_flag=True,
         help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+        default=None,
     ),
 )

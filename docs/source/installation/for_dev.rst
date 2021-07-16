@@ -69,6 +69,10 @@ installation with Poetry.
 Installing Manim using Poetry
 *****************************
 
+#.  First start by cloning the `manim repository <https://github.com/manimcommunity/manim>`_ 
+    (see the first few steps in :doc:`../contributing/development` for more details),
+    then navigate into the freshly cloned directory in the terminal.
+
 #.  Use the following command to install python dependencies. This will use the system python:
 
     .. code-block:: bash

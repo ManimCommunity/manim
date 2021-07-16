@@ -95,6 +95,34 @@ class MovingVerticesTest(ThreeDScene):
         self.wait()
 
 
+class SurfaceColorscaleTest(ThreeDScene):
+    def construct(self):
+        resolution_fa = 50
+        self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+
+        axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-4, 4, 1))
+
+        def param_trig(u, v):
+            x = u
+            y = v
+            z = y ** 2 / 2 - x ** 2 / 2
+            return z
+
+        trig_plane = ParametricSurface(
+            lambda x, y: axes.c2p(x, y, param_trig(x, y)),
+            resolution=(resolution_fa, resolution_fa),
+            v_min=-3,
+            v_max=+3,
+            u_min=-3,
+            u_max=+3,
+        )
+
+        trig_plane.set_fill_by_value(
+            axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED]
+        )
+        self.add(axes, trig_plane)
+
+
 MODULE_NAME = "threed"
 
 

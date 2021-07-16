@@ -41,8 +41,6 @@ class SceneFileWriter(object):
     Some useful attributes are:
         "write_to_movie" (bool=False)
             Whether or not to write the animations into a video file.
-        "png_mode" (str="RGBA")
-            The PIL image mode to use when outputting PNGs
         "movie_file_extension" (str=".mp4")
             The file-type extension of the outputted video.
         "partial_movie_files"
