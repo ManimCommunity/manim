@@ -309,6 +309,10 @@ class Plane(ParametricSurface):
         self.shift(projected_vector(self.normal_vect, point))
 
     def line_perp_to_plane(self, point, **kwargs):
+        """
+        Creates a :class:`Line3D` that passes through a point given
+        and perpendicular to the plane.
+        """
         return Line3D(
             point - self.normal_vect * 10, point + self.normal_vect * 10, **kwargs
         )
