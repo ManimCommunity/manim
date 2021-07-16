@@ -33,7 +33,7 @@ class LinearBase(_ScaleBase):
 
 
 class LogBase(_ScaleBase):
-    def __init__(self, base: float, custom_labels: bool = True):
+    def __init__(self, base: float = 10, custom_labels: bool = True):
         super().__init__()
         self.base = base
         self.custom_labels = custom_labels

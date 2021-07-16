@@ -425,10 +425,10 @@ class CoordinateSystem:
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
+        # t_range = self.x_axis.scaling.function(np.array([*self.x_range[:2], 3], dtype=float))
+        # print(t_range)
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(
-                self.x_axis.scaling.function(t), function(t)
-            ),
+            lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
             **kwargs,
         )
@@ -1612,10 +1612,28 @@ class NumberPlane(Axes):
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
+
+        # select for min/max in case range does not include 0.
+        # i.e. x_range=(2,6) becomes (0,4) to produce the correct amount of lines
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_range[1], step),
-            np.arange(0, axis_perpendicular_to.x_range[0], -step),
+            np.arange(
+                0,
+                min(
+                    axis_perpendicular_to.x_range[1] - axis_perpendicular_to.x_range[0],
+                    axis_perpendicular_to.x_range[1],
+                ),
+                step,
+            ),
+            np.arange(
+                0,
+                max(
+                    axis_perpendicular_to.x_range[0] - axis_perpendicular_to.x_range[1],
+                    axis_perpendicular_to.x_range[0],
+                ),
+                -step,
+            ),
         )
+
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()
