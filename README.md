@@ -34,7 +34,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 -  [License](#license)
 
 ## Installation
-**WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
+> **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
         
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
