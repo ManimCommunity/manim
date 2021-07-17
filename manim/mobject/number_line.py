@@ -16,7 +16,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
 from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.deprecation import deprecated
+from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
@@ -120,6 +120,12 @@ class NumberLine(Line):
         The constructed number line.
     """
 
+    @deprecated_params(
+        params="number_scale_value",
+        since="v0.9.0",
+        until="v0.10.0",
+        message="Use font_size instead.",
+    )
     def __init__(
         self,
         x_range: Sequence[float] = None,  # must be first
@@ -149,6 +155,13 @@ class NumberLine(Line):
         numbers_to_include: Optional[Iterable[float]] = None,
         **kwargs
     ):
+        # deprecation
+        number_scale_value = kwargs.pop("number_scale_value", None)
+        if number_scale_value is not None:
+            self.font_size = number_scale_value * DEFAULT_FONT_SIZE * 0.75
+        else:
+            self.font_size = font_size
+
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
             numbers_to_exclude = []
@@ -190,7 +203,6 @@ class NumberLine(Line):
         self.tip_height = tip_height
         # numbers
         self.include_numbers = include_numbers
-        self.font_size = font_size
         self.label_direction = label_direction
         self.line_to_number_buff = line_to_number_buff
         self.decimal_number_config = decimal_number_config

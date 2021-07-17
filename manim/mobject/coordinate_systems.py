@@ -78,7 +78,7 @@ class CoordinateSystem:
                     y_length=5.5,
                     axis_config={
                         "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
-                        "number_scale_value": 0.5,
+                        "font_size": 24,
                     },
                     tips=False,
                 )
