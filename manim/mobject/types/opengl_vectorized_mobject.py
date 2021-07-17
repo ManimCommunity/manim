@@ -10,8 +10,6 @@ import numpy as np
 from ... import config
 from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-
-# from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -21,9 +19,6 @@ from ...utils.bezier import (
     partial_quadratic_bezier_points,
 )
 from ...utils.color import *
-
-# from manimlib.utils.iterables import resize_array
-# from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
 from ...utils.space_ops import (
     angle_between_vectors,

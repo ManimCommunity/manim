@@ -104,7 +104,13 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(self.string_to_mob("\\dots", SingleStringMathTex))
+            self.add(SingleStringMathTex("\\dots", color=self.color))
+
+        if num_string.startswith("-"):
+            minus = self.submobjects[0]
+            # minus.next_to(self.submobjects[1], LEFT, buff=self.digit_to_digit_buff)
+            minus.next_to(self.submobjects[1], LEFT, buff=0)
+
         if self.unit is not None:
             self.unit_sign = self.string_to_mob(self.unit, SingleStringMathTex)
             self.add(self.unit_sign)
@@ -207,7 +213,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
-        self.become(new_decimal)
+        old_family = self.get_family()
+        self.set_submobjects(new_decimal.submobjects)
+        for mobj in old_family:
+            mobj.clear_points()
 
         self.number = number
         return self
@@ -329,6 +338,22 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
                 )
                 self.play(Write(on_screen_subscript_var))
                 self.wait()
+
+    .. manim:: VariableExample
+
+        class VariableExample(Scene):
+            def construct(self):
+                start = 2.0
+
+                x_var = Variable(start, 'x', num_decimal_places=3)
+                sqr_var = Variable(start**2, 'x^2', num_decimal_places=3)
+                Group(x_var, sqr_var).arrange(DOWN)
+
+                sqr_var.add_updater(lambda v: v.tracker.set_value(x_var.tracker.get_value()**2))
+
+                self.add(x_var, sqr_var)
+                self.play(x_var.tracker.animate.set_value(5), run_time=2, rate_func=linear)
+                self.wait(0.1)
 
     """
 

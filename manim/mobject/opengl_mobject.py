@@ -25,7 +25,12 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    normalize,
+    rotation_matrix_transpose,
+)
 
 
 class OpenGLMobject:
@@ -433,6 +438,33 @@ class OpenGLMobject:
         self.add(*submobject_list)
         return self
 
+    def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
+        self.assemble_family()
+
     def digest_mobject_attrs(self):
         """
         Ensures all attributes which are mobjects are included
@@ -522,6 +554,7 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
+        self.assemble_family()
         return self
 
     # Copying
@@ -986,19 +1019,24 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start, end):
-        # TODO, this doesn't currently work in 3d
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
-        target_vect = end - start
+        target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -1094,7 +1132,7 @@ class OpenGLMobject:
     def add_background_rectangle(self, color=None, opacity=0.75, **kwargs):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from manimlib.mobject.shape_matchers import BackgroundRectangle
+        from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs

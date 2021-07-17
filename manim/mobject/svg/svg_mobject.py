@@ -252,7 +252,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject from the given path string, or d attribute.
         """
         return SVGPathMobject(
@@ -455,7 +455,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject representing the polygon.
         """
         # This seems hacky... yes it is.
