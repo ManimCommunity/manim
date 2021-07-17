@@ -4,15 +4,17 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 import numpy as np
 
+from .. import config
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
+from .opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
 
-class DecimalNumber(VMobject):
+class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.
 
     Examples
@@ -101,7 +103,10 @@ class DecimalNumber(VMobject):
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(self.string_to_mob("\\dots", SingleStringMathTex))
+            self.add(
+                self.string_to_mob("\\dots", SingleStringMathTex, color=self.color)
+            )
+
         if self.unit is not None:
             self.unit_sign = self.string_to_mob(self.unit, SingleStringMathTex)
             self.add(self.unit_sign)
@@ -140,9 +145,9 @@ class DecimalNumber(VMobject):
 
         return num_string
 
-    def string_to_mob(self, string, mob_class=MathTex):
+    def string_to_mob(self, string, mob_class=MathTex, **kwargs):
         if string not in string_to_mob_map:
-            string_to_mob_map[string] = mob_class(string, font_size=1.0)
+            string_to_mob_map[string] = mob_class(string, font_size=1.0, **kwargs)
         mob = string_to_mob_map[string].copy()
         mob.scale(self.font_size)
         return mob
@@ -198,12 +203,14 @@ class DecimalNumber(VMobject):
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
 
-        for mob in old_family:
-            # Dumb hack...due to how scene handles families
-            # of animated mobjects
-            # for compatibility with updaters to not leave first number in place while updating,
-            # not needed with opengl renderer
-            mob.points[:] = 0
+        if config.renderer == "opengl":
+            for mob in old_family:
+                # Dumb hack...due to how scene handles families
+                # of animated mobjects
+                # for compatibility with updaters to not leave first number in place while updating,
+                # not needed with opengl renderer
+                mob.points[:] = 0
+
         return self
 
     def scale(self, scale_factor, **kwargs):
@@ -242,7 +249,7 @@ class Integer(DecimalNumber):
         return int(np.round(super().get_value()))
 
 
-class Variable(VMobject):
+class Variable(VMobject, metaclass=ConvertToOpenGL):
     """A class for displaying text that continuously updates to reflect the value of a python variable.
 
     Automatically adds the text for the label and the value when instantiated and added to the screen.
@@ -328,6 +335,22 @@ class Variable(VMobject):
                 )
                 self.play(Write(on_screen_subscript_var))
                 self.wait()
+
+    .. manim:: VariableExample
+
+        class VariableExample(Scene):
+            def construct(self):
+                start = 2.0
+
+                x_var = Variable(start, 'x', num_decimal_places=3)
+                sqr_var = Variable(start**2, 'x^2', num_decimal_places=3)
+                Group(x_var, sqr_var).arrange(DOWN)
+
+                sqr_var.add_updater(lambda v: v.tracker.set_value(x_var.tracker.get_value()**2))
+
+                self.add(x_var, sqr_var)
+                self.play(x_var.tracker.animate.set_value(5), run_time=2, rate_func=linear)
+                self.wait(0.1)
 
     """
 

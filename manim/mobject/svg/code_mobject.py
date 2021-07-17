@@ -179,8 +179,6 @@ class Code(VGroup):
     ):
         super().__init__(
             stroke_width=stroke_width,
-            background_stroke_color=background_stroke_color,
-            background_stroke_width=background_stroke_width,
             **kwargs,
         )
         # deprecation handling
@@ -190,6 +188,8 @@ class Code(VGroup):
         else:
             self.font_size = font_size
 
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.font = font

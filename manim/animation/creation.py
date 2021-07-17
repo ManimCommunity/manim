@@ -92,6 +92,7 @@ if TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
+from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
@@ -113,9 +114,12 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject, None], **kwargs):
-        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("This Animation only works on vectorized mobjects")
+    def __init__(
+        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+    ):
+        pointwise = getattr(mobject, "pointwise_become_partial", None)
+        if not callable(pointwise):
+            raise NotImplementedError("This animation is not defined for this Mobject.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -158,7 +162,7 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject],
+        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface],
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
@@ -273,13 +277,20 @@ class Write(DrawBorderThenFill):
 
         class ShowWrite(Scene):
             def construct(self):
-                self.play(Write(Text("Hello", font_size = 144)))
+                self.play(Write(Text("Hello", font_size=144)))
+
+    .. manim:: ShowWriteReversed
+
+        class ShowWriteReversed(Scene):
+            def construct(self):
+                self.play(Write(Text("Hello", font_size=144), reverse=True))
     """
 
     def __init__(
         self,
         vmobject: Union[VMobject, OpenGLVMobject],
         rate_func: Callable[[float], float] = linear,
+        reverse: bool = False,
         **kwargs,
     ) -> None:
         run_time: Optional[float] = kwargs.pop("run_time", None)
@@ -287,6 +298,7 @@ class Write(DrawBorderThenFill):
         run_time, lag_ratio = self._set_default_config_from_length(
             vmobject, run_time, lag_ratio
         )
+        self.reverse = reverse
         super().__init__(
             vmobject,
             rate_func=rate_func,
@@ -311,6 +323,19 @@ class Write(DrawBorderThenFill):
             lag_ratio = min(4.0 / length, 0.2)
         return run_time, lag_ratio
 
+    def reverse_submobjects(self) -> None:
+        self.mobject.invert(recursive=True)
+
+    def begin(self) -> None:
+        if self.reverse:
+            self.reverse_submobjects()
+        super().begin()
+
+    def finish(self) -> None:
+        super().finish()
+        if self.reverse:
+            self.reverse_submobjects()
+
 
 class Unwrite(Write):
     """Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`.
@@ -323,34 +348,31 @@ class Unwrite(Write):
     Examples
     --------
 
-    .. manim:: UnwriteReverseFalse
-
-        class UnwriteReverseFalse(Scene):
-            def construct(self):
-                text = Tex("Alice and Bob").scale(3)
-                self.add(text)
-                self.play(Unwrite(text))
-
     .. manim :: UnwriteReverseTrue
 
         class UnwriteReverseTrue(Scene):
             def construct(self):
                 text = Tex("Alice and Bob").scale(3)
                 self.add(text)
-                self.play(Unwrite(text,reverse=True))
+                self.play(Unwrite(text))
 
+    .. manim:: UnwriteReverseFalse
+
+        class UnwriteReverseFalse(Scene):
+            def construct(self):
+                text = Tex("Alice and Bob").scale(3)
+                self.add(text)
+                self.play(Unwrite(text, reverse=False))
     """
 
     def __init__(
         self,
         vmobject: VMobject,
         rate_func: Callable[[float], float] = linear,
-        reverse: bool = False,
+        reverse: bool = True,
         **kwargs,
     ) -> None:
 
-        self.vmobject = vmobject
-        self.reverse = reverse
         run_time: Optional[float] = kwargs.pop("run_time", None)
         lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
@@ -361,21 +383,9 @@ class Unwrite(Write):
             run_time=run_time,
             lag_ratio=lag_ratio,
             rate_func=lambda t: -rate_func(t) + 1,
+            reverse=reverse,
             **kwargs,
         )
-
-    def begin(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().begin()
-
-    def finish(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().finish()
-
-    def reverse_submobjects(self) -> None:
-        self.vmobject.invert(recursive=True)
 
 
 class ShowIncreasingSubsets(Animation):

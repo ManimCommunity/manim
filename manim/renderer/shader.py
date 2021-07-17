@@ -329,6 +329,7 @@ class Shader:
         name=None,
         source=None,
     ):
+        global shader_program_cache
         self.context = context
         self.name = name
 
@@ -354,7 +355,7 @@ class Shader:
             self.shader_program = context.program(**source_dict)
 
         # Cache the shader.
-        if name is not None:
+        if name is not None and name not in shader_program_cache:
             shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name, value):
@@ -370,7 +371,6 @@ class FullScreenQuad(Mesh):
         context,
         fragment_shader_source=None,
         fragment_shader_name=None,
-        output_color_variable="frag_color",
     ):
         if fragment_shader_source is None and fragment_shader_name is None:
             raise Exception("Must either pass shader name or shader source.")

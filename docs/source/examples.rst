@@ -529,7 +529,7 @@ Special Camera Settings
                     1.5 * np.cos(u) * np.cos(v),
                     1.5 * np.cos(u) * np.sin(v),
                     1.5 * np.sin(u)
-                ]), v_min=0, v_max=TAU, u_min=-PI / 2, u_max=PI / 2,
+                ]), v_range=[0, TAU], u_range=[-PI / 2, PI / 2],
                 checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
             )
             self.renderer.camera.light_source.move_to(3*IN) # changes the source of the light
@@ -587,10 +587,8 @@ Special Camera Settings
            gauss_plane = ParametricSurface(
                param_gauss,
                resolution=(resolution_fa, resolution_fa),
-               v_min=-2,
-               v_max=+2,
-               u_min=-2,
-               u_max=+2,
+               v_range=[-2, +2],
+               u_range=[-2, +2]
            )
 
            gauss_plane.scale_about_point(2, ORIGIN)
