@@ -322,7 +322,7 @@ class NumberLine(Line):
         x: float,
         direction: Optional[Sequence[float]] = None,
         buff: Optional[float] = None,
-        font_size=None,
+        font_size: Optional[float] = None,
         **number_config
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(
@@ -335,7 +335,7 @@ class NumberLine(Line):
         if font_size is None:
             font_size = self.font_size
 
-        num_mob = DecimalNumber(x, font_size, **number_config)
+        num_mob = DecimalNumber(x, font_size=font_size, **number_config)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
