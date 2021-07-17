@@ -104,7 +104,7 @@ class CoordinateSystem:
                     # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
                     include_underline=False,
-                    scale_factor=0.85,
+                    font_size=40,
                 )
 
                 self.add(title, graphs, grid, grid_labels)

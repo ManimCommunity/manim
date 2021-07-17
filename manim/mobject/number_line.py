@@ -147,7 +147,7 @@ class NumberLine(Line):
         tip_height: float = 0.25,
         # numbers
         include_numbers: bool = False,
-        font_size: bool = 36,
+        font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
@@ -182,7 +182,6 @@ class NumberLine(Line):
         if decimal_number_config is None:
             decimal_number_config = {
                 "num_decimal_places": self.decimal_places_from_step(),
-                "font_size": font_size,
             }
 
         self.length = length
@@ -236,7 +235,7 @@ class NumberLine(Line):
             self.add_numbers(
                 x_values=self.numbers_to_include,
                 excluding=self.numbers_to_exclude,
-                font_size=self.decimal_number_config["font_size"],
+                font_size=self.font_size,
             )
 
     def rotate_about_zero(self, angle: float, axis: Sequence[float] = OUT, **kwargs):
@@ -323,6 +322,7 @@ class NumberLine(Line):
         x: float,
         direction: Optional[Sequence[float]] = None,
         buff: Optional[float] = None,
+        font_size=None,
         **number_config
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(
@@ -332,8 +332,10 @@ class NumberLine(Line):
             direction = self.label_direction
         if buff is None:
             buff = self.line_to_number_buff
+        if font_size is None:
+            font_size = self.font_size
 
-        num_mob = DecimalNumber(x, **number_config)
+        num_mob = DecimalNumber(x, font_size, **number_config)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -353,7 +355,7 @@ class NumberLine(Line):
         self,
         x_values: Optional[Iterable[float]] = None,
         excluding: Optional[Iterable[float]] = None,
-        font_size: float = 24,
+        font_size: Optional[float] = None,
         **kwargs
     ) -> VGroup:
         if x_values is None:
@@ -361,6 +363,10 @@ class NumberLine(Line):
 
         if excluding is None:
             excluding = self.numbers_to_exclude
+
+        if font_size is None:
+            font_size = self.font_size
+        kwargs["font_size"] = font_size
 
         numbers = VGroup()
         for x in x_values:
