@@ -150,8 +150,8 @@ class Code(VGroup):
 
     @deprecated_params(
         params="scale_factor",
-        since="v0.8.0",
-        until="v0.9.0",
+        since="v0.9.0",
+        until="v0.10.0",
         message="Use font_size instead.",
     )
     def __init__(
