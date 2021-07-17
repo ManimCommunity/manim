@@ -60,6 +60,7 @@ from typing import TYPE_CHECKING, Dict
 
 import manimpango
 import numpy as np
+from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
@@ -69,9 +70,6 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
 from ...utils.deprecation import deprecated_params
-
-if TYPE_CHECKING:
-    from colour import Color
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
