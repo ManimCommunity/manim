@@ -1,5 +1,4 @@
 import itertools as it
-import re
 import time
 
 import moderngl
@@ -9,12 +8,11 @@ from PIL import Image
 from manim import config
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
-from manim.utils.color import color_to_rgb, color_to_rgba
+from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.simple_functions import clip
