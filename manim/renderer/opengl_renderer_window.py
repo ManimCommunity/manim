@@ -23,7 +23,7 @@ class Window(PygletWindow):
             window_width = monitor.width
 
             if not config.fullscreen:
-                window_width //= 3
+                window_width //= 2
 
             window_height = int(
                 window_width * config.frame_height // config.frame_width
