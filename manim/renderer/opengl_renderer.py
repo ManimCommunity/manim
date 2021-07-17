@@ -55,8 +55,14 @@ class OpenGLCamera(OpenGLMobject):
         self.maximum_polar_angle = maximum_polar_angle
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
+            self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
+                format=False
+            )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
+            self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
+                format=False
+            )
 
         if frame_shape is None:
             self.frame_shape = (config["frame_width"], config["frame_height"])
@@ -255,7 +261,10 @@ class OpenGLRenderer:
             )
 
     def get_pixel_shape(self):
-        return self.frame_buffer_object.viewport[2:4]
+        if hasattr(self, "frame_buffer_object"):
+            return self.frame_buffer_object.viewport[2:4]
+        else:
+            return None
 
     def refresh_perspective_uniforms(self, camera):
         pw, ph = self.get_pixel_shape()
@@ -448,7 +457,10 @@ class OpenGLRenderer:
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
-        pw, ph = config["pixel_width"], config["pixel_height"]
+        pixel_shape = self.get_pixel_shape()
+        if pixel_shape is None:
+            return np.array([0, 0, 0])
+        pw, ph = pixel_shape
         fw, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:

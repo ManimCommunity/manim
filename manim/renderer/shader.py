@@ -168,7 +168,7 @@ class Object3D:
         normal_matrices = [self.normal_matrix]
         current_object = self
         while current_object.parent is not None:
-            normal_matrices.append(current_object.parent.normal_matrix)
+            normal_matrices.append(current_object.parent.model_matrix)
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 

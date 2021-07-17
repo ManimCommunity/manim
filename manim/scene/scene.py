@@ -116,6 +116,7 @@ class Scene:
         self.point_lights = []
         self.ambient_light = None
         self.key_to_function_map = {}
+        self.mouse_press_callbacks = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1345,3 +1346,7 @@ class Scene:
 
     def set_key_function(self, char, func):
         self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()
