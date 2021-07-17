@@ -79,5 +79,5 @@ def test_tex_size():
     text = Tex("what").center()
     vertical = text.get_top() - text.get_bottom()
     horizontal = text.get_right() - text.get_left()
-    assert vertical[1] == 0.35118305000000005
-    assert horizontal[0] == 1.0419676499999995
+    assert round(vertical[1], 4) == 0.3512
+    assert round(horizontal[0], 4) == 1.0420
