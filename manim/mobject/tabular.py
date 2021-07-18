@@ -173,7 +173,7 @@ class Tabular(VGroup):
         col_labels
             List of :class:`~.VMobject` representing the labels of each column.
         top_left_entry
-            Top-left entry of the table, only possible if row and
+            The top-left entry of the table, can only be specified if row and
             column labels are given.
         v_buff
             Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
