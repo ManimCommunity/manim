@@ -453,7 +453,7 @@ class Tabular(VGroup):
         Parameters
         ----------
         colors
-            The list of colors; each color specified corresponds to a column.
+            An iterable of colors; each color corresponds to a column.
 
         Returns
         -------
