@@ -396,7 +396,7 @@ class Tabular(VGroup):
         Returns
         --------
         List[:class:`~.VGroup`]
-            Each VGroup contains a column of the table.
+            Each :class:~.VGroup` contains a column of the table.
 
         Examples
         --------
