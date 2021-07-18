@@ -421,8 +421,8 @@ class Tabular(VGroup):
             ]
         )
 
-    def get_rows(self) -> List["VGroup"]:
-        """Return rows of the table as VGroups.
+    def get_rows(self) -> List[VGroup]:
+        """Return the rows of the table as a list of :class:`~.VGroup`s.
 
         Returns
         --------
