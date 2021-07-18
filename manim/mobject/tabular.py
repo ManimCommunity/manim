@@ -171,7 +171,7 @@ class Tabular(VGroup):
         row_labels
             List of :class:`~.VMobject` representing the labels of each row.
         col_labels
-            List of :class:`~.VMobject` representing labels of every column.
+            List of :class:`~.VMobject` representing the labels of each column.
         top_left_entry
             Top-left entry of the table, only possible if row and
             column labels are given.
