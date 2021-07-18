@@ -180,7 +180,7 @@ class Tabular(VGroup):
         h_buff
             Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
         include_outer_lines
-            `True` if should include outer lines, by default False.
+            ``True`` if the table should include outer lines, by default False.
         add_background_rectangles_to_entries
             `True` if should add backgraound rectangles to entries, by default False.
         include_background_rectangle
