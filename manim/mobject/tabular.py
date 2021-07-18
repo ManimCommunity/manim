@@ -182,7 +182,7 @@ class Tabular(VGroup):
         include_outer_lines
             ``True`` if the table should include outer lines, by default False.
         add_background_rectangles_to_entries
-            `True` if should add backgraound rectangles to entries, by default False.
+            `True` if background rectangles should be added to entries, by default ``False``.
         include_background_rectangle
             `True` if should include background rectangle, by default False.
         element_to_mobject
