@@ -166,8 +166,8 @@ class Tabular(VGroup):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be a valid input
-            for the callable set in `element_to_mobject`.
+            A 2D array or list of lists. Content of the table has to be a valid input
+            for the callable set in ``element_to_mobject``.
         row_labels
             List of :class:`~.VMobject` representing labels of every row.
         col_labels
