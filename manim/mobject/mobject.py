@@ -33,7 +33,6 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..container import Container
 from ..utils.color import (
     BLACK,
     WHITE,
@@ -63,7 +62,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject(Container):
+class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
@@ -94,7 +93,7 @@ class Mobject(Container):
         ] = {}
         cls._add_intrinsic_animation_overrides()
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
         self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
@@ -121,8 +120,6 @@ class Mobject(Container):
         self.init_gl_data()
         self.init_gl_points()
         self.init_gl_colors()
-
-        Container.__init__(self, **kwargs)
 
     @classmethod
     def animation_override_for(
@@ -2436,6 +2433,11 @@ class Mobject(Container):
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
 
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
         Examples
         --------
 
@@ -2443,8 +2445,8 @@ class Mobject(Container):
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2= s.copy()
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
                     s2.invert()
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
@@ -2610,9 +2612,6 @@ class Mobject(Container):
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
-        raise NotImplementedError("Please override in a child class.")
-
-    def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
 
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):

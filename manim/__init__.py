@@ -42,6 +42,7 @@ from .animation.indication import *
 from .animation.movement import *
 from .animation.numbers import *
 from .animation.rotation import *
+from .animation.specialized import *
 from .animation.transform import *
 from .animation.transform_matching_parts import *
 from .animation.update import *
@@ -51,7 +52,6 @@ from .camera.moving_camera import *
 from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
-from .container import *
 from .mobject.changing import *
 from .mobject.coordinate_systems import *
 from .mobject.frame import *
