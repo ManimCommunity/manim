@@ -527,7 +527,7 @@ class Tabular(VGroup):
 
         Returns
         --------
-        :class:`~.VMobject`
+        Union[:class:`~.VMobject`, :class:`~.VGroup`]
             :class:~.VGroup` containing all entries of the table (including labels)
             or the :class:`~.VMobject` at the given position if ``pos`` is set.
 
