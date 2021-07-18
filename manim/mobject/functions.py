@@ -9,6 +9,7 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from ..utils.scale import LinearBase, _ScaleBase
 from .opengl_compatibility import ConvertToOpenGL
 
 
@@ -51,6 +52,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self,
         function=None,
         t_range=None,
+        scaling: _ScaleBase = LinearBase(),
         dt=1e-8,
         discontinuities=None,
         use_smoothing=True,
@@ -60,6 +62,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:
             t_range = np.array([*t_range, 0.01])
+
+        self.scaling = scaling
 
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
@@ -76,21 +80,27 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_points(self):
 
-        discontinuities = filter(
-            lambda t: self.t_min <= t <= self.t_max, self.discontinuities
-        )
-        discontinuities = np.array(list(discontinuities))
-        boundary_times = np.array(
-            [
-                self.t_min,
-                self.t_max,
-                *(discontinuities - self.dt),
-                *(discontinuities + self.dt),
-            ]
-        )
-        boundary_times.sort()
+        if self.discontinuities:
+            discontinuities = filter(
+                lambda t: self.t_min <= t <= self.t_max, self.discontinuities
+            )
+            discontinuities = np.array(list(discontinuities))
+            boundary_times = np.array(
+                [
+                    self.t_min,
+                    self.t_max,
+                    *(discontinuities - self.dt),
+                    *(discontinuities + self.dt),
+                ]
+            )
+            boundary_times.sort()
+        else:
+            boundary_times = [self.t_min, self.t_max]
+
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
+            t_range = np.array(
+                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2]
+            )
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])

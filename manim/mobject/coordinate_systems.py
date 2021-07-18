@@ -425,11 +425,11 @@ class CoordinateSystem:
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
-        # t_range = self.x_axis.scaling.function(np.array([*self.x_range[:2], 3], dtype=float))
-        # print(t_range)
+
         graph = ParametricFunction(
             lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
+            scaling=self.x_axis.scaling,
             **kwargs,
         )
         graph.underlying_function = function

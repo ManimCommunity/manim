@@ -3,7 +3,7 @@ from typing import Dict, Iterable
 
 import numpy as np
 
-from ..mobject.numbers import DecimalNumber
+from ..mobject.numbers import Integer
 
 
 class _ScaleBase:
@@ -51,9 +51,8 @@ class LogBase(_ScaleBase):
 
     def get_custom_labels(self, val_range: Iterable[float]) -> Dict:
         tex_labels = [
-            DecimalNumber(
+            Integer(
                 self.base,
-                num_decimal_places=0,
                 unit="^{%s}" % int(round(self.inverse_function(i))),
             )
             for i in val_range
