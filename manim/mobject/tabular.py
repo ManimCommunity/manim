@@ -188,7 +188,7 @@ class Tabular(VGroup):
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod`~.tex_mobject`.
         element_to_mobject_config
-            Element to mobject config, by default {}.
+            Custom configuration passed to :attr:`element_to_mobject`, by default {}.
         arrange_in_grid_config
             Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
         line_config
