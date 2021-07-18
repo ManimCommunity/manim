@@ -169,7 +169,7 @@ class Tabular(VGroup):
             A 2D array or list of lists. Content of the table has to be a valid input
             for the callable set in ``element_to_mobject``.
         row_labels
-            List of :class:`~.VMobject` representing labels of every row.
+            List of :class:`~.VMobject` representing the labels of each row.
         col_labels
             List of :class:`~.VMobject` representing labels of every column.
         top_left_entry
