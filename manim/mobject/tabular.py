@@ -455,11 +455,6 @@ class Tabular(VGroup):
         colors
             An iterable of colors; each color corresponds to a column.
 
-        Returns
-        -------
-        :class:`Tabular`
-            The current table object (self).
-
         Examples
         --------
 
@@ -489,11 +484,6 @@ class Tabular(VGroup):
         colors
             An iterable of colors; each color corresponds to a row.
 
-        Returns
-        -------
-        :class:`Tabular`
-            The current table object (self).
-
         Examples
         --------
 
@@ -515,9 +505,9 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos: Optional[Seuqence[int, int]] = None) -> "VMobject":
+    def get_entries(self, pos: Optional[Sequence[int, int]] = None) -> "VMobject":
         """Return the individual entries of the table (including labels) or one specific entry
-        if the position parameter is set.
+        if the parameter, ``pos``,  is set.
 
         Parameters
         ----------
@@ -565,22 +555,22 @@ class Tabular(VGroup):
             return self.elements
 
     def get_entries_without_labels(
-        self, pos: Optional[Tuple[int, int]] = None
+        self, pos: Optional[Sequence[int, int]] = None
     ) -> "VMobject":
-        """Return the individual entries of the table (without labels) or one specific single entry
-        if the position parameter is set.
+        """Return the individual entries of the table (without labels) or one specific entry
+        if the parameter, ``pos``, is set.
 
         Parameters
         ----------
         pos
-            The desired position as an iterable tuple, (1,1) being the top left entry
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table (without labels).
 
         Returns
         --------
-        :class:`~.VMobject`
-            VGroup containing all entries of the table (without labels)
-            or the VMobject at the given position if `pos` is set.
+        Union[:class:`~.VMobject`, :class:`~.VGroup`]
+            :class:`~.VGroup` containing all entries of the table (without labels)
+            or the :class:`~.VMobject` at the given position if ``pos`` is set.
 
         Examples
         --------
@@ -608,13 +598,13 @@ class Tabular(VGroup):
         else:
             return self.elements_without_labels
 
-    def get_row_labels(self) -> "VGroup":
+    def get_row_labels(self) -> VGroup:
         """Return the row labels of the table.
 
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing the row labels of the table.
+            :class:`~.VGroup` containing the row labels of the table.
 
         Examples
         --------
@@ -666,13 +656,13 @@ class Tabular(VGroup):
 
         return VGroup(*self.col_labels)
 
-    def get_labels(self) -> "VGroup":
+    def get_labels(self) -> VGroup:
         """Returns the labels of the table.
 
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing all labels of the table.
+            :class:`~.VGroup` containing all the labels of the table.
 
         Examples
         --------
@@ -702,25 +692,18 @@ class Tabular(VGroup):
         return label_group
 
     def add_background_to_entries(self) -> "Tabular":
-        """Add a black background rectangle to the table, see above for an
-        example and comparison with `include_background_rectangle`.
-
-        Returns
-        -------
-        :class:`Tabular`
-            The current tabular Mobject (self).
-        """
+        """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle()
         return self
 
-    def get_cell(self, pos: Tuple[int, int] = (1, 1), **kwargs) -> "Polygon":
-        """Return one specific single cell as a rectangular :class:`~.Polygon` without the entry.
+    def get_cell(self, pos: Sequence[int, int] = (1, 1), **kwargs) -> "Polygon":
+        """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
         ----------
         pos
-            The desired position of the cell as an iterable tuple, (1,1) being the top left entry
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Polygon`.
@@ -772,24 +755,19 @@ class Tabular(VGroup):
         return rec
 
     def add_highlighted_cell(
-        self, pos: Tuple[int, int] = (1, 1), color: Colors = YELLOW, **kwargs
-    ) -> "BackgroundRectangle":
-        """Return one highlighter of one cell.
+        self, pos: Sequence[int, int] = (1, 1), color: Color = YELLOW, **kwargs
+    ):
+        """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
         ----------
         pos
-            The desired position of the cell as an iterable tuple, (1,1) being the top left entry
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table.
         color
             The color used to highlight the cell.
         kwargs : Any
             Additional arguments to be passed to :meth:`~.add_background_rectangle`.
-
-        Returns
-        -------
-        :class:`Tabular`
-            The current tabular Mobject (self).
 
         Examples
         --------
@@ -882,13 +860,11 @@ class Tabular(VGroup):
                 ),
                 element_animation(self.elements, run_time=run_time, **kwargs),
             ]
-        # if len(self.get_labels()) > 0:
-        #     animations.insert(1, label_animation(self.get_labels(), run_time=run_time, **kwargs))
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
 class MathTabular(Tabular):
-    """A mobject that displays a table with Latex entries on the screen.
+    """A specialized :class:`~.Tabular` mobject for use with with LaTeX.
 
     Examples
     --------
@@ -923,11 +899,11 @@ class MathTabular(Tabular):
             A 2d array or list of lists. Content of the table have to be valid input
             for :class:`~.MathTex`.
         element_to_mobject
-            Element to mobject, here set as :class:`~.MathTex`.
+            The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(
+        super().__init__(
             self,
             table,
             element_to_mobject=element_to_mobject,
@@ -936,7 +912,7 @@ class MathTabular(Tabular):
 
 
 class MobjectTabular(Tabular):
-    """A mobject that displays a table with mobject entries on the screen.
+    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Mobject`s.
 
     Examples
     --------
@@ -970,19 +946,19 @@ class MobjectTabular(Tabular):
         **kwargs,
     ):
         """
-        Special case of :class:`~.Tabular` with `element_to_mobject` set to an identity function.
-        Here, every item in `table` has to be of type :class:`~.Mobject` already.
+        Special case of :class:`~.Tabular` with ``element_to_mobject`` set to an identity function.
+        Here, every item in ``table`` must already be of type :class:`~.Mobject`.
 
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table have to be of type :class:`~.Mobject`.
+            A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`.
         element_to_mobject
-            Element to mobject, here set as the identity `lambda m: m`.
+            The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class IntegerTabular(Tabular):
@@ -1031,7 +1007,7 @@ class IntegerTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class DecimalTabular(Tabular):
@@ -1070,7 +1046,7 @@ class DecimalTabular(Tabular):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be valid input
+            A 2D array, or a list of lists. Content of the table must be valid input
             for :class:`~.DecimalNumber`.
         element_to_mobject
             Element to mobject, here set as :class:`~.DecimalNumber`.
@@ -1079,7 +1055,7 @@ class DecimalTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(
+        super().__init__(
             self,
             table,
             element_to_mobject=element_to_mobject,
