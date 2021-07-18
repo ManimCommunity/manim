@@ -344,7 +344,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing all horizontal lines.
+            :class`~.VGroup` containing all the horizontal lines of the table.
 
         Examples
         --------
