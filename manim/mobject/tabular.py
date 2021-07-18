@@ -184,7 +184,7 @@ class Tabular(VGroup):
         add_background_rectangles_to_entries
             `True` if background rectangles should be added to entries, by default ``False``.
         include_background_rectangle
-            `True` if should include background rectangle, by default False.
+            ``True`` if the table should have a background rectangle, by default ``False``.
         element_to_mobject
             Element to mobject, by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`
             and :mod:`~.tex_mobject`.
