@@ -1,5 +1,5 @@
 import math
-from typing import Dict, Iterable
+from typing import Any, Dict, Iterable
 
 import numpy as np
 
@@ -42,18 +42,20 @@ class LogBase(_ScaleBase):
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
-        # if isinstance(value, np.ndarray):
-        #     value[value== 0] = 1e-15
-        # elif value == 0:
-        #     value = 1e-15
         value = np.log(value) / np.log(self.base)
         return value
 
-    def get_custom_labels(self, val_range: Iterable[float]) -> Dict:
+    def get_custom_labels(
+        self,
+        val_range: Iterable[float],
+        unit_decimal_places: int = 0,
+        **base_config: Dict[str, Any],
+    ) -> Dict:
         tex_labels = [
             Integer(
                 self.base,
-                unit="^{%s}" % int(round(self.inverse_function(i))),
+                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
+                **base_config,
             )
             for i in val_range
         ]

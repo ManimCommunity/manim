@@ -172,14 +172,14 @@ class NumberLine(Line):
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
 
-        self.x_range = np.array(x_range, dtype=float)
-
-        x_range = scaling.function(self.x_range)
-        self.x_min, self.x_max, self.x_step = x_range
         if decimal_number_config is None:
             decimal_number_config = {
-                "num_decimal_places": self.decimal_places_from_step(),
+                "num_decimal_places": self.decimal_places_from_step(x_range[2]),
             }
+
+        # turn into into an np array to scale by just applying the function
+        self.x_range = np.array(x_range, dtype=float)
+        self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
 
         self.length = length
         self.unit_size = unit_size
@@ -230,14 +230,12 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
-
         if self.include_numbers or self.numbers_to_include is not None:
             if self.scaling.custom_labels:
-                pos_range = self.get_tick_range()
-
                 self.add_labels(
                     self.scaling.get_custom_labels(
-                        pos_range,
+                        self.get_tick_range(),
+                        unit_decimal_places=decimal_number_config["num_decimal_places"],
                     )
                 )
 
@@ -367,11 +365,12 @@ class NumberLine(Line):
         self.numbers = numbers
         return numbers
 
-    def decimal_places_from_step(self):
-        step_as_str = str(self.x_step)
-        if "." not in step_as_str:
+    @staticmethod
+    def decimal_places_from_step(step):
+        step = str(step)
+        if "." not in step:
             return 0
-        return len(step_as_str.split(".")[-1])
+        return len(step.split(".")[-1])
 
     def add_labels(
         self,
