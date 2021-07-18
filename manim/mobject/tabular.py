@@ -515,8 +515,8 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos: Optional[Tuple[int, int]] = None) -> "VMobject":
-        """Return the individual entries of the table (including labels) or one specific single entry
+    def get_entries(self, pos: Optional[Seuqence[int, int]] = None) -> "VMobject":
+        """Return the individual entries of the table (including labels) or one specific entry
         if the position parameter is set.
 
         Parameters
