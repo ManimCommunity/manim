@@ -339,7 +339,7 @@ class Tabular(VGroup):
         return self
 
     def get_horizontal_lines(self) -> VGroup:
-        """Return the horizontal lines.
+        """Return the horizontal lines of the table.
 
         Returns
         --------
