@@ -552,7 +552,11 @@ class Tabular(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            if self.row_labels is not None and self.col_labels is not None and self.top_left_entry is None:
+            if (
+                self.row_labels is not None
+                and self.col_labels is not None
+                and self.top_left_entry is None
+            ):
                 index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
                 return self.elements[index]
             else:
