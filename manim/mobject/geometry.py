@@ -87,6 +87,7 @@ from ..utils.space_ops import (
     compass_directions,
     line_intersection,
     normalize,
+    perpendicular_bisector,
     regular_vertices,
     rotate_vector,
 )
@@ -582,6 +583,36 @@ class Circle(Arc):
 
         start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
+
+    @staticmethod
+    def from_three_points(
+        p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
+    ):
+        """Returns a circle passing through the specified
+        three points.
+
+        Example
+        -------
+
+        .. manim:: CircleFromPointsExample
+            :save_last_frame:
+
+            class CircleFromPointsExample(Scene):
+                def construct(self):
+                    circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2, color=RED)
+                    dots = VGroup(
+                        Dot(LEFT),
+                        Dot(LEFT + UP),
+                        Dot(UP * 2),
+                    )
+                    self.add(NumberPlane(), circle, dots)
+        """
+        center = line_intersection(
+            perpendicular_bisector([p1, p2]),
+            perpendicular_bisector([p2, p3]),
+        )
+        radius = np.linalg.norm(p1 - center)
+        return Circle(radius=radius, **kwargs).shift(center)
 
 
 class Dot(Circle):

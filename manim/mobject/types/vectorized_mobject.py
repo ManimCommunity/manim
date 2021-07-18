@@ -49,6 +49,8 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
+    """A vectorized mobject."""
+
     def __init__(
         self,
         fill_color=None,
@@ -182,7 +184,47 @@ class VMobject(Mobject):
             curr_rgbas[:, 3] = rgbas[:, 3]
         return self
 
-    def set_fill(self, color=None, opacity=None, family=True):
+    def set_fill(
+        self,
+        color: Optional[str] = None,
+        opacity: Optional[float] = None,
+        family: bool = True,
+    ) -> "VMobject":
+        """Set the fill color and fill opacity of a :class:`VMobject`.
+
+        Parameters
+        ----------
+        color
+            Fill color of the :class:`VMobject`.
+        opacity
+            Fill opacity of the :class:`VMobject`.
+        family
+            If ``True``, the fill color of all submobjects is also set.
+
+        Returns
+        -------
+        VMobject
+            self. For chaining purposes.
+
+        Examples
+        --------
+        .. manim:: SetFill
+            :save_last_frame:
+
+            class SetFill(Scene):
+                def construct(self):
+                    square = Square().scale(2).set_fill(WHITE,1)
+                    circle1 = Circle().set_fill(GREEN,0.8)
+                    circle2 = Circle().set_fill(YELLOW) # No fill_opacity
+                    circle3 = Circle().set_fill(color = '#FF2135', opacity = 0.2)
+                    group = Group(circle1,circle2,circle3).arrange()
+                    self.add(square)
+                    self.add(group)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_style`
+        """
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
