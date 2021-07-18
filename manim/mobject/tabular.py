@@ -14,7 +14,7 @@ Examples
                 row_labels=[Text("R1"), Text("R2")],
                 col_labels=[Text("C1"), Text("C2")],
                 top_left_entry=Text("TOP"))
-            t0.add(t0.get_highlighted_cell((2,2), color=GREEN))
+            t0.add_highlighted_cell((2,2), color=GREEN)
             x_vals = np.linspace(-2,2,5)
             y_vals = np.exp(x_vals)
             t1 = DecimalTabular(
@@ -98,7 +98,7 @@ class Tabular(VGroup):
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
                     col_labels=[Text("C1"), Text("C2")])
-                t1.add(t1.get_highlighted_cell((2,2), color=GREEN))
+                t1.add_highlighted_cell((2,2), color=GREEN)
                 t2 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
@@ -709,7 +709,7 @@ class Tabular(VGroup):
         Returns
         -------
         :class:`Tabular`
-            The current tabular object (self).
+            The current tabular Mobject (self).
         """
         for mob in self.get_entries():
             mob.add_background_rectangle()
@@ -772,7 +772,7 @@ class Tabular(VGroup):
         rec = Polygon(edge_UL, edge_UR, edge_DR, edge_DL, **kwargs)
         return rec
 
-    def get_highlighted_cell(
+    def add_highlighted_cell(
         self, pos: Tuple[int, int] = (1, 1), color: Colors = YELLOW, **kwargs
     ) -> "BackgroundRectangle":
         """Return one highlighter of one cell.
@@ -788,29 +788,32 @@ class Tabular(VGroup):
             Additional arguments to be passed to :meth:`~.add_background_rectangle`.
 
         Returns
-        --------
-        :class:`~.BackgroundRectangle`
-            Background rectangle of the given cell.
+        -------
+        :class:`Tabular`
+            The current tabular Mobject (self).
 
         Examples
         --------
 
-        .. manim:: GetHighlightedCellExample
+        .. manim:: AddHighlightedCellExample
             :save_last_frame:
 
-            class GetHighlightedCellExample(Scene):
+            class AddHighlightedCellExample(Scene):
                 def construct(self):
                     table = Tabular(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
                         col_labels=[Text("C1"), Text("C2")])
-                    h_cell = table.get_highlighted_cell((2,2), color=GREEN)
-                    self.add(table, h_cell)
+                    table.add_highlighted_cell((2,2), color=GREEN)
+                    self.add(table)
         """
         cell = self.get_cell(pos)
-        cell.add_background_rectangle(color=color, **kwargs)
-        return cell[1].set_z_index(-1)
+        entry = self.get_entries(pos)
+        entry.add_background_rectangle(color=color, **kwargs)
+        entry.background_rectangle.stretch_to_fit_height(cell.get_height())
+        entry.background_rectangle.stretch_to_fit_width(cell.get_width())
+        return self
 
     def create(
         self,
@@ -818,7 +821,7 @@ class Tabular(VGroup):
         lag_ratio: float = 1,
         line_animation: Callable[["VGroup"], None] = Create,
         label_animation: Callable[["VGroup"], None] = Write,
-        element_animation: Callable[["VGroup"], None] = Write,
+        element_animation: Callable[["VGroup"], None] = Create,
         **kwargs,
     ) -> "AnimationGroup":
         """Customized create-type function for tables.
@@ -857,6 +860,7 @@ class Tabular(VGroup):
                         col_labels=[Text("C1"), Text("C2")],
                         include_outer_lines=True)
                     self.play(table.create())
+                    self.wait()
         """
         if len(self.get_labels()) > 0:
             animations = [
