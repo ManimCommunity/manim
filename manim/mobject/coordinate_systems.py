@@ -1033,12 +1033,31 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
+    Examples
+    --------
+
+    .. manim:: LogScalingExample
+        :save_last_frame:
+
+        class LogScalingExample(Scene):
+            def construct(self):
+                ax = Axes(
+                    x_range=[0.0001, 10.0001, 1],  # min must be > 0, log is undefined at 0.
+                    y_range=[-2, 6, 1],
+                    tips=False,
+                    axis_config={"include_numbers": True, "exclude_origin_tick": False},
+                    y_axis_config={"scaling": LogBase(custom_labels=True)},
+                )
+
+                graph = ax.get_graph(lambda x: x ** 2, use_smoothing=False)
+                self.add(ax, graph)
+
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``[x_min, x_max, x_step]`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``[y_min, y_max, y_step]`` values of the y-axis.
     x_length
         The length of the x-axis.
     y_length
