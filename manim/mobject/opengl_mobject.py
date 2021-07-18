@@ -1107,7 +1107,7 @@ class OpenGLMobject:
     def add_background_rectangle(self, color=None, opacity=0.75, **kwargs):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from manimlib.mobject.shape_matchers import BackgroundRectangle
+        from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
