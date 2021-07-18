@@ -186,8 +186,7 @@ class Tabular(VGroup):
         include_background_rectangle
             ``True`` if the table should have a background rectangle, by default ``False``.
         element_to_mobject
-            Element to mobject, by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`
-            and :mod:`~.tex_mobject`.
+            The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod`~.tex_mobject`.
         element_to_mobject_config
             Element to mobject config, by default {}.
         arrange_in_grid_config
