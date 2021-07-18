@@ -987,7 +987,7 @@ class MobjectTabular(Tabular):
 
 
 class IntegerTabular(Tabular):
-    """A mobject that displays a table with integer entries on the screen.
+    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Integer`.
 
     Examples
     --------
