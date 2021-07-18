@@ -390,8 +390,8 @@ class Tabular(VGroup):
         """
         return self.vertical_lines
 
-    def get_columns(self) -> List["VGroup"]:
-        """Return columns of the table as VGroups.
+    def get_columns(self) -> List[VGroup]:
+        """Return columns of the table as a list of :class:`~.VGroup`s.
 
         Returns
         --------
