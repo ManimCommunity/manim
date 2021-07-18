@@ -481,7 +481,7 @@ class Tabular(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: List[Color]) -> "Tabular":
+    def set_row_colors(self, *colors: Iterable[Color]) -> "Tabular":
         """Set individual colors for each row of the table.
 
         Parameters
