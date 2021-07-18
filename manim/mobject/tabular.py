@@ -157,9 +157,9 @@ class Tabular(VGroup):
         element_to_mobject: Callable[
             [Union[float, str, "VMobject"]], "VMobject"
         ] = Paragraph,
-        element_to_mobject_config: Optional[dict] = {},
-        arrange_in_grid_config: Optional[dict] = {},
-        line_config: Optional[dict] = {},
+        element_to_mobject_config: dict = {},
+        arrange_in_grid_config: dict = {},
+        line_config: dict = {},
         **kwargs,
     ):
         """
