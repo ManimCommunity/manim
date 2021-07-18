@@ -1064,8 +1064,8 @@ class DecimalTabular(Tabular):
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.DecimalNumber`.
-        By default, `num_decimal_places` is set to 1.
-        Will round/truncate the decimal places as per the provided config.
+        By default, ``num_decimal_places`` is set to 1.
+        Will round/truncate the decimal places based on the provided ``element_to_mobject_config``.
 
         Parameters
         ----------
