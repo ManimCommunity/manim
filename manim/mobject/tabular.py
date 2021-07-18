@@ -1036,7 +1036,7 @@ class IntegerTabular(Tabular):
 
 
 class DecimalTabular(Tabular):
-    """A mobject that displays a table with decimal entries on the screen.
+    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------
