@@ -370,7 +370,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing all vertical lines.
+            :class:`~.VGroup` containing all the vertical lines of the table.
 
         Examples
         --------
