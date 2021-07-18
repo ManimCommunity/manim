@@ -427,7 +427,7 @@ class Tabular(VGroup):
         Returns
         --------
         List[:class:`~.VGroup`]
-            Each VGroup contains a row of the table.
+            Each :class:~.VGroup` contains a row of the table.
 
         Examples
         --------
