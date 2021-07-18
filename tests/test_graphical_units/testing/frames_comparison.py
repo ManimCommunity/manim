@@ -46,7 +46,7 @@ def frames_comparison(
     module_name : str
         The module which the test belongs to.
     last_frame : bool, optional
-        wether the test should test the last frame, by default True.
+        whether the test should test the last frame, by default True.
     renderer_class , optional
         The base renderer to use (OpenGlRenderer/CairoRenderer), by default CairoRenderer
     base_scene : [type], optional
@@ -154,7 +154,7 @@ def _make_test_comparing_frames(
     renderer_class : [type]
         The renderer base class.
     show_diff : bool
-        wether to visually show_diff (see --show_diff)
+        whether to visually show_diff (see --show_diff)
 
     Returns
     -------
