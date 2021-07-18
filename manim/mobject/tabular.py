@@ -522,7 +522,7 @@ class Tabular(VGroup):
         Parameters
         ----------
         pos
-            The desired position as an iterable tuple, (1,1) being the top left entry
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
             of the table.
 
         Returns
