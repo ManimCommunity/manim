@@ -447,7 +447,7 @@ class Tabular(VGroup):
         """
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
-    def set_column_colors(self, *colors: List[Colors]) -> "Tabular":
+    def set_column_colors(self, *colors: Iterable[Color]) -> "Tabular":
         """Set individual colors for each column of the table.
 
         Parameters
