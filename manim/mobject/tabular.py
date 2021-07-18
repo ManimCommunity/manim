@@ -637,7 +637,7 @@ class Tabular(VGroup):
 
         return VGroup(*self.row_labels)
 
-    def get_col_labels(self) -> "VGroup":
+    def get_col_labels(self) -> VGroup:
         """Return the column labels of the table.
 
         Returns
