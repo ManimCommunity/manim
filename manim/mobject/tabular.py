@@ -487,7 +487,7 @@ class Tabular(VGroup):
         Parameters
         ----------
         colors
-            The list of colors; each color specified corresponds to a row.
+            An iterable of colors; each color corresponds to a row.
 
         Returns
         -------
