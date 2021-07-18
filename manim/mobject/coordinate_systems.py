@@ -1055,9 +1055,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     Parameters
     ----------
     x_range
-        The ``[x_min, x_max, x_step]`` values of the x-axis.
+        The ``(x_min, x_max, x_step)`` values of the x-axis.
     y_range
-        The ``[y_min, y_max, y_step]`` values of the y-axis.
+        The ``(y_min, y_max, y_step)`` values of the y-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1149,16 +1149,16 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         range_terms
-            The range of the the axis : `(x_min, x_max, x_step)`.
+            The range of the the axis : ``(x_min, x_max, x_step)``.
         axis_config
-            Additional parameters that are passed to :class:`NumberLine`.
+            Additional parameters that are passed to :class:`~.NumberLine`.
         length
             The length of the axis.
 
         Returns
         -------
         :class:`NumberLine`
-            Returns a number line with the provided x and y axis range.
+            Returns a number line based on the ``range_terms``.
         """
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
@@ -1184,7 +1184,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             result += axis.number_to_point(coord) - self.origin
         return result
 
-    def point_to_coords(self, point: float) -> Tuple:
+    def point_to_coords(self, point: Sequence[float]) -> Tuple:
         """Transforms the coordinates of the point which are with respect to ``manim``'s default
         basis into the coordinates of that point with respect to the basis defined by :class:`Axes`.
 
@@ -1324,11 +1324,11 @@ class ThreeDAxes(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``[x_min, x_max, x_step]`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``[y_min, y_max, y_step]`` values of the y-axis.
     z_range
-        The :code:`[z_min, z_max, z_step]` values of the z-axis.
+        The ``[z_min, z_max, z_step]`` values of the z-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1438,9 +1438,9 @@ class NumberPlane(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+        The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+        The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction.
     x_length
         The width of the plane.
     y_length
@@ -1456,7 +1456,8 @@ class NumberPlane(Axes):
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+    .. note::
+        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
 
     Examples
@@ -1496,7 +1497,7 @@ class NumberPlane(Axes):
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
         faded_line_ratio: Optional[float] = 1,
-        make_smooth_after_applying_functions=True,
+        make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
 
