@@ -15,6 +15,7 @@ Inheritance Graph
    manim.animation.movement
    manim.animation.numbers
    manim.animation.rotation
+   manim.animation.specialized
    manim.animation.transform
    manim.animation.transform_matching_parts
    manim.animation.update
@@ -39,6 +40,7 @@ Module Index
    ~animation.movement
    ~animation.numbers
    ~animation.rotation
+   ~animation.specialized
    ~animation.transform
    ~animation.transform_matching_parts
    ~animation.update
