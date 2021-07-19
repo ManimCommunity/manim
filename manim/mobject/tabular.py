@@ -903,7 +903,7 @@ class MathTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        super().__init__(
+        Tabular.__init__(
             self,
             table,
             element_to_mobject=element_to_mobject,
@@ -958,7 +958,7 @@ class MobjectTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        super().__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class IntegerTabular(Tabular):
@@ -1007,7 +1007,7 @@ class IntegerTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        super().__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class DecimalTabular(Tabular):
@@ -1055,7 +1055,7 @@ class DecimalTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        super().__init__(
+        Tabular.__init__(
             self,
             table,
             element_to_mobject=element_to_mobject,
