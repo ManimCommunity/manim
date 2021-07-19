@@ -9,7 +9,7 @@ the :doc:`changelog`.
 .. warning:: The pages linked to here are currently a work in progress.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    reference_index/animations
    reference_index/cameras
