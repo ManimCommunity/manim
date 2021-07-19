@@ -62,6 +62,8 @@ class NumberLine(Line):
     include_numbers : :class:`bool`
         Determines whether numbers are added to tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
+    scaling
+        The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
     label_direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The specific position to which number mobjects are added on the line.
     line_to_number_buff : :class:`float`
@@ -153,7 +155,7 @@ class NumberLine(Line):
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
         exclude_origin_tick=False,
-        scaling=LogBase(base=10),
+        scaling=LinearBase(),
         **kwargs
     ):
         # avoid mutable arguments in defaults

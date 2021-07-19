@@ -1986,8 +1986,8 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             self.add_key_value_pair('s', square_obj)
 
         """
-        # if not isinstance(value, VMobject):
-        #     raise TypeError("All submobjects must be of type VMobject")
+        if not isinstance(value, (VMobject, OpenGLVMobject)):
+            raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import

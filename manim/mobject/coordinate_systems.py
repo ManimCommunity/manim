@@ -16,7 +16,6 @@ from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
-from icecream import ic
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -1158,7 +1157,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Returns
         -------
         :class:`NumberLine`
-            Returns a number line based on the ``range_terms``.
+            Returns a number line based on ``range_terms``.
         """
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
@@ -1281,6 +1280,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             graph = OpenGLVMobject(color=line_color, **kwargs)
         else:
             graph = VMobject(color=line_color, **kwargs)
+        print("dah")
+
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
@@ -1638,25 +1639,9 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
-        # select for min/max in case range does not include 0.
-        # i.e. x_range=(2,6) becomes (0,4) to produce the correct amount of lines
         ranges = (
-            np.arange(
-                0,
-                min(
-                    axis_perpendicular_to.x_range[1] - axis_perpendicular_to.x_range[0],
-                    axis_perpendicular_to.x_range[1],
-                ),
-                step,
-            ),
-            np.arange(
-                0,
-                max(
-                    axis_perpendicular_to.x_range[0] - axis_perpendicular_to.x_range[1],
-                    axis_perpendicular_to.x_range[0],
-                ),
-                -step,
-            ),
+            np.arange(0, axis_perpendicular_to.x_max, step),
+            np.arange(0, axis_perpendicular_to.x_min, -step),
         )
 
         for inputs in ranges:
