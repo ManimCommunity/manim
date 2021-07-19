@@ -505,7 +505,7 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos: Optional[Sequence[int, int]] = None) -> "VMobject":
+    def get_entries(self, pos: Optional[Sequence[int]] = None) -> "VMobject":
         """Return the individual entries of the table (including labels) or one specific entry
         if the parameter, ``pos``,  is set.
 
@@ -555,7 +555,7 @@ class Tabular(VGroup):
             return self.elements
 
     def get_entries_without_labels(
-        self, pos: Optional[Sequence[int, int]] = None
+        self, pos: Optional[Sequence[int]] = None
     ) -> "VMobject":
         """Return the individual entries of the table (without labels) or one specific entry
         if the parameter, ``pos``, is set.
@@ -697,7 +697,7 @@ class Tabular(VGroup):
             mob.add_background_rectangle()
         return self
 
-    def get_cell(self, pos: Sequence[int, int] = (1, 1), **kwargs) -> "Polygon":
+    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> "Polygon":
         """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
@@ -755,7 +755,7 @@ class Tabular(VGroup):
         return rec
 
     def add_highlighted_cell(
-        self, pos: Sequence[int, int] = (1, 1), color: Color = YELLOW, **kwargs
+        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
     ):
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
