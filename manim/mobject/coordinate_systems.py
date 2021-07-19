@@ -1640,8 +1640,8 @@ class NumberPlane(Axes):
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+            np.arange(0, axis_perpendicular_to.x_range[1], step),
+            np.arange(0, axis_perpendicular_to.x_range[0], -step),
         )
 
         for inputs in ranges:
