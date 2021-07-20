@@ -5,16 +5,17 @@ from manim import *
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
-# class TabularTest(Scene):
-#     def construct(self):
-#         t = Tabular(
-#             [["1", "2"], ["3", "4"]],
-#             row_labels=[Text("R1"), Text("R2")],
-#             col_labels=[Text("C1"), Text("C2")],
-#             top_left_entry=Text("TOP"),
-#             include_outer_lines=True,
-#         )
-#         self.add(t)
+
+class TabularTest(Scene):
+    def construct(self):
+        t = Tabular(
+            [["1", "2"], ["3", "4"]],
+            row_labels=[Tex("R1"), Tex("R2")],
+            col_labels=[Tex("C1"), Tex("C2")],
+            top_left_entry=Text("TOP"),
+            include_outer_lines=True,
+        )
+        self.add(t)
 
 
 class MathTabularTest(Scene):

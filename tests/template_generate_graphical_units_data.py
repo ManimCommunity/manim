@@ -7,29 +7,12 @@ from tests.helpers.graphical_units import set_test_scene
 # More about graphical unit tests: https://github.com/ManimCommunity/manim/wiki/Testing#graphical-unit-test
 
 
-# class YourClassTest(Scene):  # e.g. RoundedRectangleTest
-#     def construct(self):
-#         circle = Circle()
-#         self.play(Animation(circle))
-
-
-# set_test_scene(
-#     YourClassTest, "INSERT_MODULE_NAME"
-# )  # INSERT_MODULE_NAME can be e.g.  "geometry" or "movements"
-
-
-class TabularTest(Scene):
+class YourClassTest(Scene):  # e.g. RoundedRectangleTest
     def construct(self):
-        t = Tabular(
-            [["1", "2"], ["3", "4"]],
-            row_labels=[Tex("R1"), Tex("R2")],
-            col_labels=[Tex("C1"), Tex("C2")],
-            top_left_entry=Text("TOP"),
-            include_outer_lines=True,
-        )
-        self.add(t)
+        circle = Circle()
+        self.play(Animation(circle))
 
 
 set_test_scene(
-    TabularTest, "tabular"
+    YourClassTest, "INSERT_MODULE_NAME"
 )  # INSERT_MODULE_NAME can be e.g.  "geometry" or "movements"
