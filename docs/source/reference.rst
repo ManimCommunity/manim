@@ -32,7 +32,6 @@ Mobjects
    ~mobject.polyhedra
    ~mobject.probability
    ~mobject.shape_matchers
-   ~mobject.tabular
    ~mobject.three_d_utils
    ~mobject.three_dimensions
    ~mobject.value_tracker
@@ -66,7 +65,6 @@ Mobjects
    manim.mobject.numbers
    manim.mobject.probability
    manim.mobject.shape_matchers
-   manim.mobject.tabular
    manim.mobject.three_d_utils
    manim.mobject.three_dimensions
    manim.mobject.value_tracker
