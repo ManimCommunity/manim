@@ -216,26 +216,26 @@ class Tabular(VGroup):
                 pass
             else:
                 raise ValueError("Not all rows in table have the same length.")
-        VGroup.__init__(self, **kwargs)
-        mob_table = self.table_to_mob_table(table)
+        super().__init__(**kwargs)
+        mob_table = self._table_to_mob_table(table)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
-        mob_table = self.add_labels(mob_table)
-        self.organize_mob_table(mob_table)
+        mob_table = self._add_labels(mob_table)
+        self._organize_mob_table(mob_table)
         self.elements = VGroup(*it.chain(*mob_table))
         if len(self.elements[0].get_all_points()) == 0:
             self.elements.remove(self.elements[0])
         self.add(self.elements)
         self.center()
         self.mob_table = mob_table
-        self.add_horizontal_lines()
-        self.add_vertical_lines()
+        self._add_horizontal_lines()
+        self._add_vertical_lines()
         if self.add_background_rectangles_to_entries:
             for mob in self.elements:
                 mob.add_background_rectangle()
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def table_to_mob_table(self, table):
+    def _table_to_mob_table(self, table) -> List:
         """Used internally."""
         return [
             [
@@ -245,7 +245,7 @@ class Tabular(VGroup):
             for row in table
         ]
 
-    def organize_mob_table(self, table):
+    def _organize_mob_table(self, table) -> VGroup:
         """Used internally."""
         help_table = VGroup()
         for i, row in enumerate(table):
@@ -259,7 +259,7 @@ class Tabular(VGroup):
         )
         return help_table
 
-    def add_labels(self, mob_table):
+    def _add_labels(self, mob_table) -> VGroup:
         """Used internally."""
         if self.row_labels is not None:
             for k in range(len(self.row_labels)):
@@ -277,7 +277,7 @@ class Tabular(VGroup):
                 mob_table.insert(0, self.col_labels)
         return mob_table
 
-    def add_horizontal_lines(self):
+    def _add_horizontal_lines(self) -> "Tabular":
         """Used internally."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
@@ -307,7 +307,7 @@ class Tabular(VGroup):
         self.horizontal_lines = line_group
         return self
 
-    def add_vertical_lines(self):
+    def _add_vertical_lines(self) -> "Tabular":
         """Used internally."""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
@@ -505,7 +505,7 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos: Optional[Sequence[int]] = None) -> "VMobject":
+    def get_entries(self, pos: Optional[Sequence[int]] = None) -> Union[VMobject, VGroup]:
         """Return the individual entries of the table (including labels) or one specific entry
         if the parameter, ``pos``,  is set.
 
@@ -556,7 +556,7 @@ class Tabular(VGroup):
 
     def get_entries_without_labels(
         self, pos: Optional[Sequence[int]] = None
-    ) -> "VMobject":
+    ) -> Union[VMobject, VGroup]:
         """Return the individual entries of the table (without labels) or one specific entry
         if the parameter, ``pos``, is set.
 
@@ -697,7 +697,7 @@ class Tabular(VGroup):
             mob.add_background_rectangle()
         return self
 
-    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> "Polygon":
+    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
         """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
@@ -756,7 +756,7 @@ class Tabular(VGroup):
 
     def add_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
-    ):
+    ) -> "Tabular":
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
@@ -800,7 +800,7 @@ class Tabular(VGroup):
         label_animation: Callable[["VGroup"], None] = Write,
         element_animation: Callable[["VGroup"], None] = Create,
         **kwargs,
-    ) -> "AnimationGroup":
+    ) -> AnimationGroup:
         """Customized create-type function for tables.
 
         Parameters
@@ -903,8 +903,7 @@ class MathTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(
-            self,
+        super().__init__(
             table,
             element_to_mobject=element_to_mobject,
             **kwargs,
@@ -958,7 +957,7 @@ class MobjectTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class IntegerTabular(Tabular):
@@ -1007,7 +1006,7 @@ class IntegerTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class DecimalTabular(Tabular):
@@ -1055,8 +1054,7 @@ class DecimalTabular(Tabular):
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
-        Tabular.__init__(
-            self,
+        super().__init__(
             table,
             element_to_mobject=element_to_mobject,
             element_to_mobject_config=element_to_mobject_config,
