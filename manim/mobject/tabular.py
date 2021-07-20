@@ -98,7 +98,7 @@ class Tabular(VGroup):
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
                     col_labels=[Text("C1"), Text("C2")])
-                t1.add_highlighted_cell((2,2), color=GREEN)
+                t1.add_highlighted_cell((2,2), color=YELLOW)
                 t2 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
