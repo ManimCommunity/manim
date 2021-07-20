@@ -12,7 +12,7 @@ class TabularTest(Scene):
             [["1", "2"], ["3", "4"]],
             row_labels=[Tex("R1"), Tex("R2")],
             col_labels=[Tex("C1"), Tex("C2")],
-            top_left_entry=Text("TOP"),
+            top_left_entry=Tex("TOP"),
             include_outer_lines=True,
         )
         self.add(t)
