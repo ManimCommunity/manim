@@ -8,9 +8,6 @@ import numpy as np
 
 from .. import logger
 
-# from manimlib.utils.directories import get_shader_dir
-# from manimlib.utils.file_ops import find_file
-
 # Mobjects that should be rendered with
 # the same shader will be organized and
 # clumped together based on keeping track
