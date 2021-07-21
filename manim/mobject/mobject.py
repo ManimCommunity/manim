@@ -2677,7 +2677,7 @@ class Mobject:
     # About z-index
     def set_z_index(
         self,
-        z_index_value: Union[int, float],
+        z_index_value: float,
         family: bool = True,
     ) -> "VMobject":
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
