@@ -361,7 +361,7 @@ A list of all CLI flags
 
 .. code::
 
-   manim -h
+   manim --help
 
    Usage: manim [OPTIONS] COMMAND [ARGS]...
 
@@ -369,7 +369,7 @@ A list of all CLI flags
 
    Options:
      --version   Show the version and exit.
-     -h, --help  Show this message and exit.
+     --help  Show this message and exit.
 
    Commands:
      render*  Render SCENE(S) from the input FILE.
@@ -382,6 +382,6 @@ Each of the subcommands has its own help page which can be
 
 .. code::
 
-   manim render -h
-   manim cfg -h
-   manim plugins -h
+   manim render --help
+   manim cfg --help
+   manim plugins --help
