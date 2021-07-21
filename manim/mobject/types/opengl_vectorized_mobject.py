@@ -1225,24 +1225,22 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         self.num_dashes = num_dashes
         self.positive_space_ratio = positive_space_ratio
         super().__init__(color=color, **kwargs)
-        num_dashes = self.num_dashes
-        ps_ratio = self.positive_space_ratio
+        p = self.positive_space_ratio
+        n = self.num_dashes
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * ps_ratio
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            # Assuming total length is 1
+            dash_len = p / n
+            if vmobject.is_closed():
+                void_len = (1 - p) / n
+            else:
+                void_len = (1 - p) / (n - 1)
 
             self.add(
                 *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                    )
+                    for i in range(n)
                 ]
             )
         # Family is already taken care of by get_subcurve
