@@ -274,10 +274,17 @@ class Plane(ParametricSurface):
             def construct(self):
                 self.set_camera_orientation(PI / 3, 100 * DEGREES)
                 ax = ThreeDAxes()
-                normal = [1, 1, 1]
+                normal = ax.c2p(1, 1, 3)
                 normal_vector = Arrow3D(ORIGIN, normal, color=RED)
-                dot = Dot3D([-2, -1, 1], color=ORANGE)
-                plane = Plane(point=dot.get_center(), normal_vect=normal)
+                dot = Dot3D(ax.c2p(-2, -1, 1), color=ORANGE)
+                plane = Plane(
+                    point=dot.get_center(),
+                    normal_vect=normal,
+                    u_range=[-2.5, 2.5],
+                    v_range=[-2.5, 2.5],
+                    fill_opacity=0.5,
+                )
+                normal_vector.shift(plane.get_center())
                 self.add(ax, normal_vector, dot, plane)
                 self.wait()
 
@@ -320,8 +327,18 @@ class Plane(ParametricSurface):
         and perpendicular to the plane.
         """
         return Line3D(
-            point - self.normal_vect * 10, point + self.normal_vect * 10, **kwargs
+            point - self.normal_vect * length / 2,
+            point + self.normal_vect * length / 2,
+            **kwargs,
         )
+
+    @staticmethod
+    def from_three_points(*points: Sequence[float], **kwargs) -> "Plane":
+        """
+        Creates a :class:`Plane` that passes through the three points given.
+        """
+        normal = np.cross(points[1] - points[0], points[2] - points[0])
+        return Plane(points[0], normal, **kwargs)
 
 
 class Sphere(ParametricSurface):
