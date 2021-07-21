@@ -287,6 +287,10 @@ class Plane(ParametricSurface):
         A point that lies on the plane.
     normal_vect: Sequence[float]
         A vector perpendicular to the plane.
+    u_range: Sequence[float]
+        The dimensions of the plane.
+    v_range: Sequence[float]
+        The dimensions of the plane.
     kwargs
         To be passed to :class:`ParametricSurface`
     """
@@ -813,11 +817,11 @@ class Line3D(Cylinder):
 
             class PerpendicularLineExample(ThreeDScene):
                 def construct(self):
-                    self.set_camera_orientation(45 * DEGREES, 135 * DEGREES)
+                    self.set_camera_orientation(60 * DEGREES, -135 * DEGREES)
                     ax = ThreeDAxes()
-                    line1 = Line3D([-5, -5, -5], [5, 5, 5], color=RED)
-                    dot = Dot3D([3, 0, 2], color=BLUE)
-                    line2 = Line3D.perp_to_line(dot.get_center(), line1, color=YELLOW)
+                    line1 = Line3D(ax.c2p(4, 0, 3), ax.c2p(0, -3, 0), color=RED)
+                    dot = Dot3D(ax.c2p(-3, 2, 0), color=BLUE)
+                    line2 = Line3D.perp_to_line(dot.get_center(), line1, length=7, color=YELLOW)
                     self.add(ax, line1, dot, line2)
 
         Parameters
