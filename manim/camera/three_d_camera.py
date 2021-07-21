@@ -44,7 +44,7 @@ class ThreeDCamera(Camera):
         *kwargs
             Any keyword argument of Camera.
         """
-        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
+        self._frame_center = Point(kwargs.get("frame_center", ORIGIN), stroke_width=0)
         super().__init__(**kwargs)
         self.distance = distance
         self.phi = phi
