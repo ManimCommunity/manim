@@ -831,9 +831,15 @@ class Line3D(Cylinder):
         """
         u = point - line.get_center()
         v = line.vect
-        point2 = projected_vector(v, u)
-        direction = point - point2
-        return Line3D(point2 + direction * 10, point2 - direction * 10, **kwargs)
+        length = length or line.length
+        intersection = projected_vector(v, u) + line.get_center()
+        direction = point - intersection
+        direction /= np.linalg.norm(direction)
+        return Line3D(
+            intersection + direction * length / 2,
+            intersection - direction * length / 2,
+            **kwargs,
+        )
 
     @classmethod
     def parallel_to_line(
@@ -850,11 +856,11 @@ class Line3D(Cylinder):
 
             class ParallelLineExample(ThreeDScene):
                 def construct(self):
-                    self.set_camera_orientation(45 * DEGREES, 135 * DEGREES)
+                    self.set_camera_orientation(60 * DEGREES, -135 * DEGREES)
                     ax = ThreeDAxes()
-                    line1 = Line3D([-5, -5, -5], [5, 5, 5], color=RED)
-                    dot = Dot3D([3, 0, 2], color=BLUE)
-                    line2 = Line3D.parallel_to_line(dot.get_center(), line1, color=YELLOW)
+                    line1 = Line3D(ax.c2p(4, 0, 3), ax.c2p(0, -3, 0), color=RED)
+                    dot = Dot3D(ax.c2p(-3, 2, 0), color=BLUE)
+                    line2 = Line3D.parallel_to_line(dot.get_center(), line1, length=7, color=YELLOW)
                     self.add(ax, line1, dot, line2)
 
         Parameters
@@ -866,10 +872,11 @@ class Line3D(Cylinder):
         length: float
             The length of the line.
         """
-        u = point - line.get_center()
-        v = line.vect
-        direction = projected_vector(v, u)
-        return Line3D(point + direction * 10, point - direction * 10, **kwargs)
+        direction = line.direction
+        direction /= np.linalg.norm(direction)
+        return Line3D(
+            point + direction * length / 2, point - direction * length / 2, **kwargs
+        )
 
 
 class Arrow3D(Line3D):
