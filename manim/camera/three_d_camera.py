@@ -289,7 +289,6 @@ class ThreeDCamera(Camera):
                 factor = distance / (distance - zs)
                 factor[(distance - zs) < 0] = 10 ** 6
             points[:, i] *= factor
-        points = points + frame_center
         return points
 
     def project_point(self, point):
