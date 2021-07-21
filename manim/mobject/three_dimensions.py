@@ -283,9 +283,9 @@ class Plane(ParametricSurface):
 
     Parameters
     ----------
-    point: :class:`numpy.ndarray`
+    point: : Sequence[float]
         A point that lies on the plane.
-    normal_vect: :class:`numpy.ndarray`
+    normal_vect: Sequence[float]
         A vector perpendicular to the plane.
     kwargs
         To be passed to :class:`ParametricSurface`
