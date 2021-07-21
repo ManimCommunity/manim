@@ -822,7 +822,7 @@ def cartesian_to_spherical(point: Sequence[float]):
     return np.array([rho, theta, phi])
 
 
-def spherical_to_cartesian(spherical: Union[list, np.ndarray]):
+def spherical_to_cartesian(spherical: Sequence[float]):
     """Returns a point coordinate based on the spherical
     coordinates given.
 
