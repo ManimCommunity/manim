@@ -286,7 +286,7 @@ class Tabular(VGroup):
         return help_table
 
     def _add_labels(self, mob_table: "VGroup") -> VGroup:
-        """Adds lables to an in a grid arranged :class:`~.VGroup`.
+        """Adds labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
         ----------
