@@ -291,10 +291,15 @@ class Plane(ParametricSurface):
         To be passed to :class:`ParametricSurface`
     """
 
-    def __init__(self, point=ORIGIN, normal_vect=[1, 1, 1], **kwargs):
+    def __init__(
+        self,
+        point: Sequence[float] = ORIGIN,
+        normal_vect: Sequence[float] = [1, 1, 1],
+        u_range: Sequence[float] = [-2 * PI, 2 * PI],
+        v_range: Sequence[float] = [-2 * PI, 2 * PI],
+        **kwargs
+    ):
         self.normal_vect = np.array(normal_vect)
-        u_range = kwargs.pop("u_range", [-2 * PI, 2 * PI])
-        v_range = kwargs.pop("v_range", [-2 * PI, 2 * PI])
         super().__init__(
             lambda u, v: np.array([u, v, 0]), u_range=u_range, v_range=v_range, **kwargs
         )
@@ -303,7 +308,9 @@ class Plane(ParametricSurface):
         self.rotate(-spherical[2], axis=axis)
         self.shift(projected_vector(self.normal_vect, point))
 
-    def line_perp_to_plane(self, point, **kwargs):
+    def line_perp_to_plane(
+        self, point: Sequence[float], length: float = 20, **kwargs
+    ) -> "Line3D":
         """
         Creates a :class:`Line3D` that passes through a point given
         and perpendicular to the plane.
@@ -791,8 +798,10 @@ class Line3D(Cylinder):
     def get_end(self):
         return self.end
 
-    @staticmethod
-    def perp_to_line(point, line, **kwargs):
+    @classmethod
+    def perp_to_line(
+        cls, point: Sequence[float], line: "Line3D", length: float = None, **kwargs
+    ) -> "Line3D":
         """Returns a line passing through a point and
         perpendicular to another line.
 
@@ -817,6 +826,8 @@ class Line3D(Cylinder):
             A numpy array of the point at which the line passes
         line: :class:`Line3D`
             The line to be perpendicular to.
+        length: float
+            The length of the line.
         """
         u = point - line.get_center()
         v = line.vect
@@ -824,8 +835,10 @@ class Line3D(Cylinder):
         direction = point - point2
         return Line3D(point2 + direction * 10, point2 - direction * 10, **kwargs)
 
-    @staticmethod
-    def parallel_to_line(point, line, **kwargs):
+    @classmethod
+    def parallel_to_line(
+        cls, point: Sequence[float], line: "Line3D", length: float = None, **kwargs
+    ) -> "Line3D":
         """Returns a line passing through a point and
         parallel to another line.
 
@@ -846,10 +859,12 @@ class Line3D(Cylinder):
 
         Parameters
         ----------
-        point: :class:`numpy.ndarray`
+        point: Sequence[float]
             A numpy array of the point at which the line passes
         line: :class:`Line3D`
             The line to be parallel to.
+        length: float
+            The length of the line.
         """
         u = point - line.get_center()
         v = line.vect
