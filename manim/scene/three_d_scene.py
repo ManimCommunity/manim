@@ -207,7 +207,9 @@ class ThreeDScene(Scene):
             The animations whose mobjects will be checked.
         """
         moving_mobjects = Scene.get_moving_mobjects(self, *animations)
-        camera_mobjects = self.renderer.camera.get_value_trackers()
+        camera_mobjects = self.renderer.camera.get_value_trackers() + [
+            self.renderer.camera._frame_center
+        ]
         if any([cm in moving_mobjects for cm in camera_mobjects]):
             return self.mobjects
         return moving_mobjects
