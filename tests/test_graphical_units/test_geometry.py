@@ -54,6 +54,7 @@ class CirclePointsTest(Scene):
         circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2)
         self.add(circle)
 
+
 class DashedVMobjectTest(Scene):
     def construct(self):
         d = DashedVMobject(Circle(), 12, 0.9)
