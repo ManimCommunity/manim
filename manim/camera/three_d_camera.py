@@ -386,7 +386,7 @@ class ThreeDCamera(Camera):
         mobjects : :class:`Mobject`
             The mobjects whose orientation need not be fixed any longer.
         """
-        for mobject in self.extract_mobject_family_members(mobjects):
+        for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_orientation_mobjects:
                 self.fixed_orientation_mobjects.remove(mobject)
 
@@ -400,6 +400,6 @@ class ThreeDCamera(Camera):
         mobjects : :class:`Mobject`
             The mobjects which need not be fixed in frame any longer.
         """
-        for mobject in self.extract_mobject_family_members(mobjects):
+        for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_in_frame_mobjects:
                 self.fixed_in_frame_mobjects.remove(mobject)
