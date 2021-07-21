@@ -813,7 +813,7 @@ class Line3D(Cylinder):
 
         Parameters
         ----------
-        point: :class:`numpy.ndarray`
+        point: Sequence[float]
             A numpy array of the point at which the line passes
         line: :class:`Line3D`
             The line to be perpendicular to.
