@@ -235,8 +235,22 @@ class Tabular(VGroup):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def _table_to_mob_table(self, table) -> List:
-        """Used internally."""
+    def _table_to_mob_table(
+        self, table: Iterable[Iterable[Union[float, str, "VMobject"]]]
+    ) -> List:
+        """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
+
+        Parameters
+        ----------
+        table
+            A 2D array or list of lists. Content of the table has to be a valid input
+            for the callable set in ``element_to_mobject``.
+
+        Returns
+        --------
+        List
+            List of :class:`~.VMobject` from the entries of ``table``.
+        """
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -245,8 +259,20 @@ class Tabular(VGroup):
             for row in table
         ]
 
-    def _organize_mob_table(self, table) -> VGroup:
-        """Used internally."""
+    def _organize_mob_table(self, table: Iterable[Iterable["VMobject"]]) -> VGroup:
+        """Arranges the :class:`~.VMobject` of ``table`` in a grid.
+
+        Parameters
+        ----------
+        table
+            A 2D iterable object with :class:`~.VMobject` entries.
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            The :class:`~.VMobject` of the ``table`` in a :class:`~.VGroup` already
+            arranged in a table-like grid.
+        """
         help_table = VGroup()
         for i, row in enumerate(table):
             for j, _ in enumerate(row):
@@ -259,8 +285,19 @@ class Tabular(VGroup):
         )
         return help_table
 
-    def _add_labels(self, mob_table) -> VGroup:
-        """Used internally."""
+    def _add_labels(self, mob_table: "VGroup") -> VGroup:
+        """Adds lables to an in a grid arranged :class:`~.VGroup`.
+
+        Parameters
+        ----------
+        mob_table
+            An in a grid organized class:`~.VGroup`.
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            Returns the ``mob_table`` with added labels.
+        """
         if self.row_labels is not None:
             for k in range(len(self.row_labels)):
                 mob_table[k] = [self.row_labels[k]] + mob_table[k]
@@ -278,7 +315,7 @@ class Tabular(VGroup):
         return mob_table
 
     def _add_horizontal_lines(self) -> "Tabular":
-        """Used internally."""
+        """Adds the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
         line_group = VGroup()
@@ -308,7 +345,7 @@ class Tabular(VGroup):
         return self
 
     def _add_vertical_lines(self) -> "Tabular":
-        """Used internally."""
+        """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
         line_group = VGroup()
@@ -391,7 +428,7 @@ class Tabular(VGroup):
         return self.vertical_lines
 
     def get_columns(self) -> List[VGroup]:
-        """Return columns of the table as a list of :class:`~.VGroup`s.
+        """Return columns of the table as a list of :class:`~.VGroup`.
 
         Returns
         --------
@@ -422,7 +459,7 @@ class Tabular(VGroup):
         )
 
     def get_rows(self) -> List[VGroup]:
-        """Return the rows of the table as a list of :class:`~.VGroup`s.
+        """Return the rows of the table as a list of :class:`~.VGroup`.
 
         Returns
         --------
@@ -518,7 +555,7 @@ class Tabular(VGroup):
             of the table.
 
         Returns
-        --------
+        -------
         Union[:class:`~.VMobject`, :class:`~.VGroup`]
             :class:~.VGroup` containing all entries of the table (including labels)
             or the :class:`~.VMobject` at the given position if ``pos`` is set.
@@ -569,7 +606,7 @@ class Tabular(VGroup):
             of the table (without labels).
 
         Returns
-        --------
+        -------
         Union[:class:`~.VMobject`, :class:`~.VGroup`]
             :class:`~.VGroup` containing all entries of the table (without labels)
             or the :class:`~.VMobject` at the given position if ``pos`` is set.
@@ -604,7 +641,7 @@ class Tabular(VGroup):
         """Return the row labels of the table.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing the row labels of the table.
 
@@ -711,7 +748,7 @@ class Tabular(VGroup):
             Additional arguments to be passed to :class:`~.Polygon`.
 
         Returns
-        --------
+        -------
         :class:`~.Polygon`
             Polygon mimicking one specific cell of the tabular.
 
@@ -821,7 +858,7 @@ class Tabular(VGroup):
             Further arguments passed to the creation animations.
 
         Returns
-        --------
+        -------
         :class:`~.AnimationGroup`
             AnimationGroup containing creation of the lines and of the elements.
 
