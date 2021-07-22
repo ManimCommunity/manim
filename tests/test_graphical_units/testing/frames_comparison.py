@@ -22,7 +22,8 @@ from ._test_class_makers import (
 )
 
 SCENE_PARAMETER_NAME = "scene"
-PATH_CONTROL_DATA = Path("tests", "control_data", "graphical_units_data").absolute()
+_tests_root_dir_path =  Path(__file__).absolute().parents[2]
+PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
 
 
 def frames_comparison(
@@ -59,11 +60,6 @@ def frames_comparison(
     """
 
     def decorator(tested_scene_construct):
-        # Exclude "scene" from the argument list of the signature.
-        old_sig = inspect.signature(
-            functools.partial(tested_scene_construct, scene=None)
-        )
-
         if (
             SCENE_PARAMETER_NAME
             not in inspect.getfullargspec(tested_scene_construct).args
@@ -71,6 +67,12 @@ def frames_comparison(
             raise Exception(
                 f"Invalid graphical test function test function : must have '{SCENE_PARAMETER_NAME}'as one of the parameters."
             )
+            
+        # Exclude "scene" from the argument list of the signature.
+        old_sig = inspect.signature(
+            functools.partial(tested_scene_construct, scene=None)
+        )
+
 
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
@@ -81,11 +83,11 @@ def frames_comparison(
             # Kwargs contains the eventual parametrization arguments.
             # This modify the test_name so the it is defined by the parametrization arguments too.
             # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
-            test_name_with_param = test_name + "_".join(itertools.chain(**kwargs))
+            test_name_with_param = test_name + "_".join(map(lambda tup: f"{str(tup[0])}:{str(tup[1])}",kwargs.items()))
 
             setting_test = request.config.getoption("--set_test")
             real_test = _make_test_comparing_frames(
-                file_path=_get_control_data_path(
+                file_path=_control_data_path(
                     module_name, test_name_with_param, setting_test
                 ),
                 base_scene=base_scene,
@@ -190,7 +192,7 @@ def _make_test_comparing_frames(
     return real_test
 
 
-def _get_control_data_path(
+def _control_data_path(
     module_name: str, test_name: str, setting_test: bool
 ) -> Path:
     path = PATH_CONTROL_DATA / module_name
