@@ -9,7 +9,7 @@ from ._frames_testers import _FramesTester
 
 def _make_test_scene_class(
     base_scene: Type[Scene],
-    construct: Callable[[Scene], None],
+    construct_test: Callable[[Scene], None],
     test_renderer,
 ) -> Type[Scene]:
     class _TestedScene(base_scene):
@@ -17,7 +17,7 @@ def _make_test_scene_class(
             super().__init__(renderer=test_renderer, *args, **kwargs)
 
         def construct(self):
-            construct(self)
+            construct_test(self)
 
             # Manim hack to render the very last frame (normally the last frame is not the very end of the animation)
             self.update_to_time(self.get_run_time(self.animations))

@@ -179,7 +179,7 @@ def _make_test_comparing_frames(
         with frames_tester.testing():
             sceneTested = _make_test_scene_class(
                 base_scene=base_scene,
-                construct=construct,
+                construct_test=construct,
                 test_renderer=testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
