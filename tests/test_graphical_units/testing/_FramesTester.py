@@ -28,8 +28,8 @@ class _FramesTester:
             self._number_frames = np.ma.size(self._frames, axis=0)
             yield
             assert self._frames_compared == self._number_frames, (
-                   f"The scene tested contained {self._frames_compared} frames, "
-                   f"when there are {self._number_frames} control frames for this test."
+                f"The scene tested contained {self._frames_compared} frames, "
+                f"when there are {self._number_frames} control frames for this test."
             )
 
     def check_frame(self, frame_number: int, frame: np.ndarray):
