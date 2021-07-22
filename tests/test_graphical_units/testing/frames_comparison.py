@@ -4,7 +4,6 @@ import itertools
 from pathlib import Path
 from typing import Any, Callable, Type
 
-from _pytest.config import ConftestImportFailure
 from _pytest.fixtures import FixtureRequest
 from _pytest.mark.structures import Mark
 
@@ -22,7 +21,7 @@ from ._test_class_makers import (
 )
 
 SCENE_PARAMETER_NAME = "scene"
-_tests_root_dir_path =  Path(__file__).absolute().parents[2]
+_tests_root_dir_path = Path(__file__).absolute().parents[2]
 PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
 
 
@@ -67,12 +66,11 @@ def frames_comparison(
             raise Exception(
                 f"Invalid graphical test function test function : must have '{SCENE_PARAMETER_NAME}'as one of the parameters."
             )
-            
+
         # Exclude "scene" from the argument list of the signature.
         old_sig = inspect.signature(
             functools.partial(tested_scene_construct, scene=None)
         )
-
 
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
@@ -83,7 +81,9 @@ def frames_comparison(
             # Kwargs contains the eventual parametrization arguments.
             # This modify the test_name so the it is defined by the parametrization arguments too.
             # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
-            test_name_with_param = test_name + "_".join(map(lambda tup: f"{str(tup[0])}:{str(tup[1])}",kwargs.items()))
+            test_name_with_param = test_name + "_".join(
+                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items())
+            )
 
             setting_test = request.config.getoption("--set_test")
             real_test = _make_test_comparing_frames(
@@ -98,9 +98,7 @@ def frames_comparison(
                 show_diff=request.config.getoption("--show_diff"),
             )
 
-            config_tests = ManimConfig().digest_file(
-                str(Path(__file__).parent / "config_graphical_tests.cfg")
-            )
+            config_tests = _config_test(last_frame)
 
             config_tests["text_dir"] = tmp_path
             config_tests["tex_dir"] = tmp_path
@@ -192,9 +190,7 @@ def _make_test_comparing_frames(
     return real_test
 
 
-def _control_data_path(
-    module_name: str, test_name: str, setting_test: bool
-) -> Path:
+def _control_data_path(module_name: str, test_name: str, setting_test: bool) -> Path:
     path = PATH_CONTROL_DATA / module_name
     if setting_test:
         # Create the directory if not existing.
@@ -208,3 +204,13 @@ def _control_data_path(
             "Make sure you generated the control frames first."
         )
     return path
+
+
+def _config_test(last_frame: bool) -> ManimConfig:
+    return ManimConfig().digest_file(
+        str(
+            Path(__file__).parent / ("config_graphical_tests_monoframe.cfg"
+            if last_frame
+            else "config_graphical_tests_multiframes.cfg")
+        )
+    )
