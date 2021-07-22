@@ -290,7 +290,7 @@ class Plane(ParametricSurface):
 
     Parameters
     ----------
-    point: : Sequence[float]
+    point: Sequence[float]
         A point that lies on the plane.
     normal_vect: Sequence[float]
         A vector perpendicular to the plane.
@@ -336,6 +336,25 @@ class Plane(ParametricSurface):
     def from_three_points(*points: Sequence[float], **kwargs) -> "Plane":
         """
         Creates a :class:`Plane` that passes through the three points given.
+
+        Examples
+        --------
+        .. manim:: PlaneFromThreePointsExample
+            :save_last_frame:
+
+            class PlaneFromThreePointsExample(ThreeDScene):
+                def construct(self):
+                    ax = ThreeDAxes()
+                    dots = VGroup(
+                        Dot3D(ax.c2p(-2, 0, 0)),
+                        Dot3D(ax.c2p(0, 4, 0)),
+                        Dot3D(ax.c2p(0, 0, -1)),
+                    )
+                    plane = Plane.from_three_points(
+                        *[dot.get_center() for dot in dots], fill_opacity=0.5
+                    )
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    self.add(ax, dots, plane)
         """
         normal = np.cross(points[1] - points[0], points[2] - points[0])
         return Plane(points[0], normal, **kwargs)
