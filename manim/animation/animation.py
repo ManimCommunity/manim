@@ -96,9 +96,9 @@ class Animation:
 
     def __new__(
         cls,
-        mobject: Optional[Mobject] = None,
+        mobject=None,
         *args,
-        use_override: bool = True,
+        use_override=True,
         **kwargs,
     ):
         if isinstance(mobject, Mobject) and use_override:

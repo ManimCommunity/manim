@@ -358,8 +358,6 @@ function of numpy:
             m1b = Circle().set_color(RED).shift(LEFT)
             m2a= Square().set_color(BLUE).shift(RIGHT)
             m2b= Circle().set_color(BLUE).shift(RIGHT)
-            m3a= Square().set_color(GREEN).shift(3*RIGHT)
-            m3b= Circle().set_color(GREEN).shift(3*RIGHT)
             
             points = m2a.points
             points = np.roll(points, int(len(points)/4), axis=0)

@@ -97,7 +97,7 @@ Breaking changes
    In Argparse: ``manim basic.py -p -ql``
    With Click: ``manim -p -ql basic.py``
 
-   Although this is primarily a refactor and most of the common options are still there, some options have been added/removed. Use the ``manim`` command's ``-h``, ``--help`` option, or simply run the command without providing options/arguments to view the help page with the full list of subcommands/options/arguments.
+   Although this is primarily a refactor and most of the common options are still there, some options have been added/removed. Use the ``manim`` command's ``--help`` option, or simply run the command without providing options/arguments to view the help page with the full list of subcommands/options/arguments.
 
    - Added a ``--fps``/``--frame_rate`` option which allows for custom fps that don't have to be integer (i.e. 29.97, 23.98, etc.). Users no longer have to specify the FPS from within a config file. Additionally, the ``--webgl_renderer_fps`` option has been removed. Use ``--fps`` or ``--frame_rate`` instead.
    - Added a ``--renderer`` option which you can use to select your choice of renderer (e.g. ``--renderer=opengl``). There are currently *THREE* renderers to choose from!
