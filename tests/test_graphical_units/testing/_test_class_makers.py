@@ -27,7 +27,7 @@ def _make_test_scene_class(
 
 
 def _make_test_renderer_class(from_renderer):
-    # Just for heritance.
+    # Just for inheritance.
     class _TestRenderer(from_renderer):
         pass
 
