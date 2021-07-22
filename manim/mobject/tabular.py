@@ -211,19 +211,23 @@ class Tabular(VGroup):
         self.element_to_mobject_config = element_to_mobject_config
         self.arrange_in_grid_config = arrange_in_grid_config
         self.line_config = line_config
+
         for row in table:
             if len(row) == len(table[0]):
                 pass
             else:
                 raise ValueError("Not all rows in table have the same length.")
+
         super().__init__(**kwargs)
         mob_table = self._table_to_mob_table(table)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
         mob_table = self._add_labels(mob_table)
         self._organize_mob_table(mob_table)
         self.elements = VGroup(*it.chain(*mob_table))
+
         if len(self.elements[0].get_all_points()) == 0:
             self.elements.remove(self.elements[0])
+            
         self.add(self.elements)
         self.center()
         self.mob_table = mob_table
