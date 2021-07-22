@@ -4,7 +4,7 @@ from manim.renderer.cairo_renderer import CairoRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter
 
-from ._FramesTester import _FramesTester
+from ._frames_testers import _FramesTester
 
 
 def _make_test_scene_class(

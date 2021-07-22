@@ -1,9 +1,7 @@
 import contextlib
-from contextlib import ContextDecorator, nullcontext
 from pathlib import Path
 
 import numpy as np
-from numpy.core.fromnumeric import trace
 
 from manim import logger
 

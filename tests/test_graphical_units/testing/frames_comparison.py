@@ -1,11 +1,9 @@
 import functools
 import inspect
 import itertools
-import warnings
 from pathlib import Path
 from typing import Any, Callable, Type
 
-import pytest
 from _pytest.config import ConftestImportFailure
 from _pytest.fixtures import FixtureRequest
 from _pytest.mark.structures import Mark
@@ -15,7 +13,7 @@ from manim._config import tempconfig
 from manim._config.utils import ManimConfig
 from manim.renderer.cairo_renderer import CairoRenderer
 
-from ._FramesTester import _ControlDataWriter, _FramesTester
+from ._frames_testers import _ControlDataWriter, _FramesTester
 from ._test_class_makers import (
     DummySceneFileWriter,
     _make_scene_file_writer_class,
