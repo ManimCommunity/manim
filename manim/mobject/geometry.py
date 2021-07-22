@@ -1174,7 +1174,7 @@ class DashedLine(Line):
         ::
 
             >>> DashedLine().get_end()
-            array([1.,  0.,  0.])
+            array([1., 0., 0.])
         """
 
         if len(self.submobjects) > 0:

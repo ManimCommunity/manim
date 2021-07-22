@@ -540,11 +540,9 @@ class OpenGLDashedLine(OpenGLLine):
         self.add(*dashes)
 
     def calculate_num_dashes(self, dashed_ratio):
-        try:
-            full_length = self.dash_length / dashed_ratio
-            return int(np.ceil(self.get_length() / full_length))
-        except ZeroDivisionError:
-            return 1
+        return max(
+            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
+        )
 
     def calculate_dashed_ratio(self):
         return fdiv(
