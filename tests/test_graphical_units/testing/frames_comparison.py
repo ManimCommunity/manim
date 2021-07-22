@@ -209,8 +209,11 @@ def _control_data_path(module_name: str, test_name: str, setting_test: bool) -> 
 def _config_test(last_frame: bool) -> ManimConfig:
     return ManimConfig().digest_file(
         str(
-            Path(__file__).parent / ("config_graphical_tests_monoframe.cfg"
-            if last_frame
-            else "config_graphical_tests_multiframes.cfg")
+            Path(__file__).parent
+            / (
+                "config_graphical_tests_monoframe.cfg"
+                if last_frame
+                else "config_graphical_tests_multiframes.cfg"
+            )
         )
     )
