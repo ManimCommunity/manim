@@ -22,7 +22,7 @@ from ._test_class_makers import (
 )
 
 SCENE_PARAMETER_NAME = "scene"
-PATH_CONTROl_DATA = Path("tests", "control_data", "graphical_units_data").absolute()
+PATH_CONTROL_DATA = Path("tests", "control_data", "graphical_units_data").absolute()
 
 
 def frames_comparison(
@@ -193,7 +193,7 @@ def _make_test_comparing_frames(
 def _get_control_data_path(
     module_name: str, test_name: str, setting_test: bool
 ) -> Path:
-    path = PATH_CONTROl_DATA / module_name
+    path = PATH_CONTROL_DATA / module_name
     if setting_test:
         # Create the directory if not existing.
         path.mkdir(exist_ok=True)
