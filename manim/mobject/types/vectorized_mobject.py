@@ -2082,10 +2082,10 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = VGroup()  # Increasing positive_space_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
-                        Circle(radius=r, color=WHITE), positive_space_ratio=ratio
+                        Circle(radius=r, color=WHITE), dashed_ratio=ratio
                     )
                     middle_row.add(circ)
 
@@ -2102,20 +2102,20 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
-        self.positive_space_ratio = positive_space_ratio
+        self.dashed_ratio = dashed_ratio
         super().__init__(color=color, **kwargs)
-        p = self.positive_space_ratio
+        r = self.dashed_ratio
         n = self.num_dashes
         if num_dashes > 0:
             # Assuming total length is 1
-            dash_len = p / n
+            dash_len = r / n
             if vmobject.is_closed():
-                void_len = (1 - p) / n
+                void_len = (1 - r) / n
             else:
-                void_len = (1 - p) / (n - 1)
+                void_len = (1 - r) / (n - 1)
 
             self.add(
                 *[
