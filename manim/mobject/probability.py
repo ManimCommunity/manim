@@ -333,4 +333,3 @@ class BarChart(VGroup):
             bar_bottom = bar.get_bottom()
             bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
             bar.move_to(bar_bottom, DOWN)
-
