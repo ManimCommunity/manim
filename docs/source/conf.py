@@ -81,7 +81,7 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-html_extra_path = ['robots.txt']
+html_extra_path = ["robots.txt"]
 
 exclude_patterns = []
 
