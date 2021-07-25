@@ -76,7 +76,7 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.text_mobject import Paragraph, Text
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import WHITE, YELLOW, BLACK
+from ..utils.color import BLACK, WHITE, YELLOW
 
 
 class Tabular(VGroup):
@@ -235,7 +235,7 @@ class Tabular(VGroup):
 
         if len(self.elements[0].get_all_points()) == 0:
             self.elements.remove(self.elements[0])
-            
+
         self.add(self.elements)
         self.center()
         self.mob_table = mob_table
