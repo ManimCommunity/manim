@@ -63,7 +63,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Type, Union
+from typing import Callable, Iterable, List, Optional, Sequence, Union
 
 from colour import Color
 
@@ -76,7 +76,7 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.text_mobject import Paragraph, Text
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import WHITE, YELLOW, Colors
+from ..utils.color import WHITE, YELLOW, BLACK
 
 
 class Tabular(VGroup):
@@ -153,7 +153,9 @@ class Tabular(VGroup):
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
         add_background_rectangles_to_entries: bool = False,
+        entries_background_color: Color = BLACK,
         include_background_rectangle: bool = False,
+        background_rectangle_color: Color = BLACK,
         element_to_mobject: Callable[
             [Union[float, str, "VMobject"]], "VMobject"
         ] = Paragraph,
@@ -182,9 +184,13 @@ class Tabular(VGroup):
         include_outer_lines
             ``True`` if the table should include outer lines, by default False.
         add_background_rectangles_to_entries
-            `True` if background rectangles should be added to entries, by default ``False``.
+            ``True`` if background rectangles should be added to entries, by default ``False``.
+        entries_background_color
+            Backgorund color of entries if ``add_background_rectangles_to_entries`` is ``True``.
         include_background_rectangle
             ``True`` if the table should have a background rectangle, by default ``False``.
+        background_rectangle_color
+            Backgorund color of table if ``include_background_rectangle`` is ``True``.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod`~.tex_mobject`.
         element_to_mobject_config
@@ -206,7 +212,9 @@ class Tabular(VGroup):
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
+        self.entries_background_color = entries_background_color
         self.include_background_rectangle = include_background_rectangle
+        self.background_rectangle_color = background_rectangle_color
         self.element_to_mobject = element_to_mobject
         self.element_to_mobject_config = element_to_mobject_config
         self.arrange_in_grid_config = arrange_in_grid_config
@@ -235,9 +243,9 @@ class Tabular(VGroup):
         self._add_vertical_lines()
         if self.add_background_rectangles_to_entries:
             for mob in self.elements:
-                mob.add_background_rectangle()
+                mob.add_background_rectangle(color=self.entries_background_color)
         if self.include_background_rectangle:
-            self.add_background_rectangle()
+            self.add_background_rectangle(color=self.background_rectangle_color)
 
     def _table_to_mob_table(
         self, table: Iterable[Iterable[Union[float, str, "VMobject"]]]
