@@ -186,11 +186,11 @@ class Tabular(VGroup):
         add_background_rectangles_to_entries
             ``True`` if background rectangles should be added to entries, by default ``False``.
         entries_background_color
-            Backgorund color of entries if ``add_background_rectangles_to_entries`` is ``True``.
+            Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
         include_background_rectangle
             ``True`` if the table should have a background rectangle, by default ``False``.
         background_rectangle_color
-            Backgorund color of table if ``include_background_rectangle`` is ``True``.
+            Background color of table if ``include_background_rectangle`` is ``True``.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod`~.tex_mobject`.
         element_to_mobject_config
