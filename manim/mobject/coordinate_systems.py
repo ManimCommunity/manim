@@ -1597,28 +1597,26 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
-        # If they're not on different sides then their product is positive or 0
-        on_same_side = axis_perpendicular_to.x_max * axis_perpendicular_to.x_min > 0
-
-        if on_same_side:
-            if axis_perpendicular_to.x_max >= 0:
-                # Both on positive side
-                positive_end_point = (
-                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min
-                )
-                ranges = (np.arange(0, positive_end_point, step),)
-            else:
-                # Both on negative side
-                negative_end_point = (
-                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max
-                )
-                ranges = (np.arange(0, negative_end_point, -step),)
-        else:
-            # On different sides
-            ranges = (
-                np.arange(0, axis_perpendicular_to.x_max, step),
-                np.arange(0, axis_perpendicular_to.x_min, -step),
-            )
+        # min/max used in case range does not include 0. i.e. if (2,6):
+        # the range becomes (0,4), not (0,6), to produce the corrent amount of lines
+        ranges = (
+            np.arange(
+                0,
+                min(
+                    axis_perpendicular_to.x_range[1] - axis_perpendicular_to.x_range[0],
+                    axis_perpendicular_to.x_range[1],
+                ),
+                step,
+            ),
+            np.arange(
+                0,
+                max(
+                    axis_perpendicular_to.x_range[0] - axis_perpendicular_to.x_range[1],
+                    axis_perpendicular_to.x_range[0],
+                ),
+                -step,
+            ),
+        )
 
         for inputs in ranges:
             for k, x in enumerate(inputs):
