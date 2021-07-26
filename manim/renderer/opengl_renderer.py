@@ -203,9 +203,10 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, skip_animations=False):
+    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
+        self._file_writer_class = file_writer_class
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
@@ -220,7 +221,7 @@ class OpenGLRenderer:
 
     def init_scene(self, scene):
         self.partial_movie_files = []
-        self.file_writer = SceneFileWriter(
+        self.file_writer = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
