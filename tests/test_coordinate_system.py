@@ -41,3 +41,35 @@ def test_abstract_base_class():
     """Check that CoordinateSystem has some abstract methods."""
     with pytest.raises(Exception):
         CS().get_axes()
+
+def test_NumberPlane():
+    """Test that basic attributes of NumberPlane are correct"""
+    pos_x_range = (0, 7)
+    neg_x_range = (-7, 0)
+
+    pos_y_range = (2, 6)
+    neg_y_range = (-6, -2)
+
+    x_vals = [0, 1.5, 2, 2.8, 4, 6.25]
+    y_vals = [2, 5, 4.25, 6, 4.5, 2.75]
+
+    testing_data = [ (pos_x_range, pos_y_range, x_vals, y_vals), (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]), (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals), (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals])]
+
+    for test_data in testing_data:
+
+        x_range, y_range, x_vals, y_vals = test_data
+
+        x_start, x_end = x_range
+        y_start, y_end = y_range
+
+        plane = NumberPlane(
+            x_range = x_range,
+            y_range = y_range,
+            #x_length = 7,
+            axis_config={"include_numbers": True},
+        )
+
+        x_lines = plane.background_lines[0]
+        y_lines = plane.background_lines[1]
+        assert len(x_lines) == abs(x_end - x_start)
+        assert len(y_lines) == abs(y_end - y_start)
