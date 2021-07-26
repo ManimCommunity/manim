@@ -1522,6 +1522,7 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
+
         self.background_lines.set_style(
             **self.background_line_style,
         )
@@ -1550,20 +1551,30 @@ class NumberPlane(Axes):
             self.x_axis.x_step,
             self.faded_line_ratio,
         )
+
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
             self.y_axis.x_step,
             self.faded_line_ratio,
         )
+
+        # TODO this was added so that we can run tests on NumberPlane
+        # In the future these attributes will be tacked onto self.background_lines
+        #self.x_lines = x_lines1
+        #self.y_lines = y_lines1
+
+        # For some reason the above is wrong
+
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
+
         return lines1, lines2
 
     def get_lines_parallel_to_axis(
         self,
         axis_parallel_to: Line,
-        axis_perpendicular_to: Line,
+        axis_perpendicular_to: NumberLine,
         freq: float,
         ratio_faded_lines: float,
     ) -> Tuple[VGroup, VGroup]:
@@ -1603,16 +1614,16 @@ class NumberPlane(Axes):
             np.arange(
                 0,
                 min(
-                    axis_perpendicular_to.x_range[1] - axis_perpendicular_to.x_range[0],
-                    axis_perpendicular_to.x_range[1],
+                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
+                    axis_perpendicular_to.x_max
                 ),
                 step,
             ),
             np.arange(
                 0,
                 max(
-                    axis_perpendicular_to.x_range[0] - axis_perpendicular_to.x_range[1],
-                    axis_perpendicular_to.x_range[0],
+                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
+                    axis_perpendicular_to.x_min,
                 ),
                 -step,
             ),

@@ -69,7 +69,7 @@ def test_NumberPlane():
             axis_config={"include_numbers": True},
         )
 
-        x_lines = plane.background_lines[0]
-        y_lines = plane.background_lines[1]
-        assert len(x_lines) == abs(x_end - x_start)
-        assert len(y_lines) == abs(y_end - y_start)
+        print(x_range, x_start, x_end)
+        print(y_range, y_start, y_end)
+        assert len(plane.x_lines) == abs(x_end - x_start)
+        assert len(plane.y_lines) == abs(y_end - y_start)
