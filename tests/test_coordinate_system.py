@@ -42,6 +42,7 @@ def test_abstract_base_class():
     with pytest.raises(Exception):
         CS().get_axes()
 
+
 def test_NumberPlane():
     """Test that basic attributes of NumberPlane are correct"""
     pos_x_range = (0, 7)
@@ -53,7 +54,12 @@ def test_NumberPlane():
     x_vals = [0, 1.5, 2, 2.8, 4, 6.25]
     y_vals = [2, 5, 4.25, 6, 4.5, 2.75]
 
-    testing_data = [ (pos_x_range, pos_y_range, x_vals, y_vals), (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]), (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals), (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals])]
+    testing_data = [
+        (pos_x_range, pos_y_range, x_vals, y_vals),
+        (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]),
+        (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals),
+        (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals]),
+    ]
 
     for test_data in testing_data:
 
@@ -63,9 +69,9 @@ def test_NumberPlane():
         y_start, y_end = y_range
 
         plane = NumberPlane(
-            x_range = x_range,
-            y_range = y_range,
-            #x_length = 7,
+            x_range=x_range,
+            y_range=y_range,
+            # x_length = 7,
             axis_config={"include_numbers": True},
         )
 
