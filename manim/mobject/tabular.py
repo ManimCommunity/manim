@@ -1054,7 +1054,7 @@ class IntegerTabular(Tabular):
             A 2d array or list of lists. Content of the table has to be valid input
             for :class:`~.Integer`.
         element_to_mobject
-            Element to mobject, here set as :class:`~.Integer`.
+            The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
