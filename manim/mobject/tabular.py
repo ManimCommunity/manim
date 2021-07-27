@@ -1100,7 +1100,7 @@ class DecimalTabular(Tabular):
             A 2D array, or a list of lists. Content of the table must be valid input
             for :class:`~.DecimalNumber`.
         element_to_mobject
-            Element to mobject, here set as :class:`~.DecimalNumber`.
+            The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`.
         element_to_mobject_config
             Element to mobject config, here set as {"num_decimal_places": 1}.
         kwargs : Any
