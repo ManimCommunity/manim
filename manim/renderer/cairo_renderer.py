@@ -57,11 +57,18 @@ class CairoRenderer:
     time: time elapsed since initialisation of scene.
     """
 
-    def __init__(self, camera_class=None, skip_animations=False, **kwargs):
+    def __init__(
+        self,
+        file_writer_class=SceneFileWriter,
+        camera_class=None,
+        skip_animations=False,
+        **kwargs,
+    ):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
         self.file_writer = None
+        self._file_writer_class = file_writer_class
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
@@ -72,7 +79,7 @@ class CairoRenderer:
         self.static_image = None
 
     def init_scene(self, scene):
-        self.file_writer = SceneFileWriter(
+        self.file_writer = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )

@@ -14,6 +14,7 @@ from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
+from colour import Color
 
 from ... import config, logger
 from ...constants import *

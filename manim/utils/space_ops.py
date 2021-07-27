@@ -748,6 +748,26 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
+def cartesian_to_spherical(vec):
+    norm = np.linalg.norm(vec)
+    if norm == 0:
+        return 0, 0, 0
+    r = norm
+    theta = np.arccos(vec[2] / r)
+    phi = np.arctan2(vec[1], vec[0])
+    return r, theta, phi
+
+
+def spherical_to_cartesian(r, theta, phi):
+    return np.array(
+        [
+            r * np.cos(phi) * np.sin(theta),
+            r * np.sin(phi) * np.sin(theta),
+            r * np.cos(theta),
+        ]
+    )
+
+
 def perpendicular_bisector(
     line: Sequence[np.ndarray], norm_vector=OUT
 ) -> Sequence[np.ndarray]:
