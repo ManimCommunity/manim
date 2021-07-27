@@ -107,3 +107,13 @@ class Window(PygletWindow):
             monitor.x + char_to_n[custom_position[1]] * width_diff // 2,
             -monitor.y + char_to_n[custom_position[0]] * height_diff // 2,
         )
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        super().on_mouse_press(x, y, button, modifiers)
+        point = self.renderer.pixel_coords_to_space_coords(x, y)
+        mouse_button_map = {
+            1: "LEFT",
+            2: "MOUSE",
+            4: "RIGHT",
+        }
+        self.renderer.scene.on_mouse_press(point, mouse_button_map[button], modifiers)
