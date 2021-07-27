@@ -128,7 +128,7 @@ class Tabular(VGroup):
 
         class BackgroundRectanglesExample(Scene):
             def construct(self):
-                background = Rectangle().scale(3.2)
+                background = Rectangle(height=6.5, width=13)
                 background.set_fill(opacity=.5)
                 background.set_color([TEAL, RED, YELLOW])
                 self.add(background)
@@ -320,7 +320,15 @@ class Tabular(VGroup):
                     col_labels = [self.top_left_entry] + self.col_labels
                     mob_table.insert(0, col_labels)
                 else:
-                    dummy_mobject = VMobject()
+                    # Placeholder to use arrange_in_grid id top_left_entry is not set.
+                    # Import OpenGLVMobject to work with --renderer=opengl
+                    if config.renderer == "opengl":
+                        from manim.opengl import OpenGLVMobject
+
+                        dummy_class = OpenGLVMobject
+                    else:
+                        dummy_class = VMobject
+                    dummy_mobject = dummy_class()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:
@@ -440,13 +448,13 @@ class Tabular(VGroup):
         """
         return self.vertical_lines
 
-    def get_columns(self) -> List[VGroup]:
-        """Return columns of the table as a list of :class:`~.VGroup`.
+    def get_columns(self) -> VGroup:
+        """Return columns of the table as a :class:`~.VGroup` of :class:`~.VGroup`.
 
         Returns
         --------
-        List[:class:`~.VGroup`]
-            Each :class:~.VGroup` contains a column of the table.
+        :class:`~.VGroup`
+            :class:~.VGroup` containing each column in a :class:`~.VGroup`.
 
         Examples
         --------
@@ -471,13 +479,13 @@ class Tabular(VGroup):
             ]
         )
 
-    def get_rows(self) -> List[VGroup]:
-        """Return the rows of the table as a list of :class:`~.VGroup`.
+    def get_rows(self) -> VGroup:
+        """Return the rows of the table as a :class:`~.VGroup` of :class:`~.VGroup`.
 
         Returns
         --------
-        List[:class:`~.VGroup`]
-            Each :class:~.VGroup` contains a row of the table.
+        :class:`~.VGroup`
+            :class:~.VGroup` containing each row in a :class:`~.VGroup`.
 
         Examples
         --------
