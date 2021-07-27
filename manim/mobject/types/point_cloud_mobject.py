@@ -21,6 +21,34 @@ from ...utils.iterables import stretch_array_to_length
 
 
 class PMobject(Mobject):
+    """A disc made of a cloud of Dots
+
+    Examples
+    --------
+
+    .. manim:: PMobjectExample
+        :save_last_frame:
+
+        class PMobjectExample(Scene):
+            def construct(self):
+
+                pG = PGroup()  # This is just a collection of PMobject's
+
+                # As the scale factor increases, the number of points
+                # removed increases.
+                for sf in range(1, 9 + 1):
+                    p = PointCloudDot(density=20, radius=1).thin_out(sf)
+                    # PointCloudDot is a type of PMobject
+                    # and can therefore be added to a PGroup
+                    pG.add(p)
+
+                # This organizes all the shapes in a grid.
+                pG.arrange_in_grid()
+
+                self.add(pG)
+
+    """
+
     def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
         self.stroke_width = stroke_width
         super().__init__(**kwargs)

@@ -1,5 +1,4 @@
 import itertools as it
-import re
 import time
 
 import moderngl
@@ -9,11 +8,12 @@ from PIL import Image
 from manim import config
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
-from manim.utils.color import color_to_rgb, color_to_rgba
+from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.simple_functions import clip
@@ -26,6 +26,10 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
+from .vectorized_mobject_rendering import (
+    render_opengl_vectorized_mobject_fill,
+    render_opengl_vectorized_mobject_stroke,
+)
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -38,15 +42,26 @@ class OpenGLCamera(OpenGLMobject):
         focal_distance=2,
         light_source_position=[-10, 10, 10],
         orthographic=False,
+        minimum_polar_angle=-PI / 2,
+        maximum_polar_angle=PI / 2,
+        model_matrix=None,
         **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
+        self.minimum_polar_angle = minimum_polar_angle
+        self.maximum_polar_angle = maximum_polar_angle
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
+            self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
+                format=False
+            )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
+            self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
+                format=False
+            )
 
         if frame_shape is None:
             self.frame_shape = (config["frame_width"], config["frame_height"])
@@ -71,13 +86,19 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        self.model_matrix = opengl.translation_matrix(0, 0, 11)
-        self.default_model_matrix = opengl.translation_matrix(0, 0, 11)
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
-        super().__init__(**kwargs)
+        super().__init__(model_matrix=model_matrix, **kwargs)
+
+        self.default_model_matrix = model_matrix
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
 
     def get_view_matrix(self, format=True):
         if format:
@@ -198,9 +219,10 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, skip_animations=False):
+    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
+        self._file_writer_class = file_writer_class
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
@@ -215,7 +237,7 @@ class OpenGLRenderer:
 
     def init_scene(self, scene):
         self.partial_movie_files = []
-        self.file_writer = SceneFileWriter(
+        self.file_writer = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
@@ -239,7 +261,10 @@ class OpenGLRenderer:
             )
 
     def get_pixel_shape(self):
-        return self.frame_buffer_object.viewport[2:4]
+        if hasattr(self, "frame_buffer_object"):
+            return self.frame_buffer_object.viewport[2:4]
+        else:
+            return None
 
     def refresh_perspective_uniforms(self, camera):
         pw, ph = self.get_pixel_shape()
@@ -262,6 +287,13 @@ class OpenGLRenderer:
         }
 
     def render_mobject(self, mobject):
+        if isinstance(mobject, OpenGLVMobject):
+            if config["use_projection_fill_shaders"]:
+                render_opengl_vectorized_mobject_fill(self, mobject)
+
+            if config["use_projection_stroke_shaders"]:
+                render_opengl_vectorized_mobject_stroke(self, mobject)
+
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 
         # Convert ShaderWrappers to Meshes.
@@ -302,6 +334,7 @@ class OpenGLRenderer:
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
             )
+            mesh.set_uniforms(self)
             mesh.render()
 
     def get_texture_id(self, path):
@@ -370,20 +403,9 @@ class OpenGLRenderer:
         for mobject in scene.mobjects:
             self.render_mobject(mobject)
 
-        view_matrix = scene.camera.get_view_matrix(format=False)
-        opengl_view_matrix = opengl.matrix_to_shader_input(view_matrix)
-        from moderngl.program_members.uniform import Uniform
-
         for obj in scene.meshes:
             for mesh in obj.get_meshes():
-                mesh.shader.set_uniform(
-                    "model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
-                )
-                mesh.shader.set_uniform("view_matrix", opengl_view_matrix)
-                mesh.shader.set_uniform(
-                    "projection_matrix",
-                    scene.camera.projection_matrix,
-                )
+                mesh.set_uniforms(self)
                 mesh.render()
 
         self.animation_elapsed_time = time.time() - self.animation_start_time
@@ -435,7 +457,10 @@ class OpenGLRenderer:
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
-        pw, ph = config["pixel_width"], config["pixel_height"]
+        pixel_shape = self.get_pixel_shape()
+        if pixel_shape is None:
+            return np.array([0, 0, 0])
+        pw, ph = pixel_shape
         fw, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:

@@ -1,7 +1,7 @@
 """Mobjects generated from an SVG pathstring."""
 
 
-__all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
+__all__ = ["SVGPathMobject", "string_to_numbers"]
 
 
 import re
@@ -467,9 +467,3 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         self.current_path_start = point
         super().start_new_path(point)
         return self
-
-
-@deprecated(until="v0.7.0", replacement="SVGPathMobject")
-class VMobjectFromSVGPathstring(SVGPathMobject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)

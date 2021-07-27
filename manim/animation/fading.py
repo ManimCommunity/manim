@@ -16,14 +16,6 @@
 __all__ = [
     "FadeOut",
     "FadeIn",
-    "FadeInFrom",
-    "FadeOutAndShift",
-    "FadeOutToPoint",
-    "FadeInFromPoint",
-    "FadeInFromLarge",
-    "VFadeIn",
-    "VFadeOut",
-    "VFadeInThenOut",
 ]
 
 from typing import Callable, Optional, Union
@@ -199,89 +191,3 @@ class FadeOut(_Fade):
     def clean_up_from_scene(self, scene: Scene = None) -> None:
         super().clean_up_from_scene(scene)
         self.interpolate(0)
-
-
-@deprecated(
-    since="v0.6.0",
-    until="v0.8.0",
-    replacement="FadeIn",
-    message="You can set a shift amount there.",
-)
-class FadeInFrom(FadeIn):
-    def __init__(
-        self, mobject: "Mobject", direction: np.ndarray = DOWN, **kwargs
-    ) -> None:
-        super().__init__(mobject, shift=-direction, **kwargs)
-
-
-@deprecated(
-    since="v0.6.0",
-    until="v0.8.0",
-    replacement="FadeOut",
-    message="You can set a shift amount there.",
-)
-class FadeOutAndShift(FadeIn):
-    def __init__(
-        self, mobject: "Mobject", direction: np.ndarray = DOWN, **kwargs
-    ) -> None:
-        super().__init__(mobject, shift=direction, **kwargs)
-
-
-@deprecated(
-    since="v0.6.0",
-    until="v0.8.0",
-    replacement="FadeOut",
-    message="You can set a target position there.",
-)
-class FadeOutToPoint(FadeOut):
-    def __init__(
-        self, mobject: "Mobject", point: Union["Mobject", np.ndarray] = ORIGIN, **kwargs
-    ) -> None:
-        super().__init__(mobject, target_position=point, **kwargs)
-
-
-@deprecated(
-    since="v0.6.0",
-    until="v0.8.0",
-    replacement="FadeIn",
-    message="You can set a target position and scaling factor there.",
-)
-class FadeInFromPoint(FadeIn):
-    def __init__(
-        self, mobject: "Mobject", point: Union["Mobject", np.ndarray], **kwargs
-    ) -> None:
-        super().__init__(mobject, target_position=point, scale=0, **kwargs)
-
-
-@deprecated(
-    since="v0.6.0",
-    until="v0.8.0",
-    replacement="FadeIn",
-    message="You can set a scaling factor there.",
-)
-class FadeInFromLarge(FadeIn):
-    def __init__(self, mobject: "Mobject", scale_factor: float = 2, **kwargs) -> None:
-        super().__init__(mobject, scale=scale_factor, **kwargs)
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="FadeIn")
-class VFadeIn(FadeIn):
-    def __init__(self, mobject: "Mobject", **kwargs) -> None:
-        super().__init__(mobject, **kwargs)
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="FadeOut")
-class VFadeOut(FadeOut):
-    def __init__(self, mobject: "Mobject", **kwargs) -> None:
-        super().__init__(mobject, **kwargs)
-
-
-@deprecated(since="v0.6.0", until="v0.8.0")
-class VFadeInThenOut(FadeIn):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rate_func: Callable[[float], float] = there_and_back,
-        **kwargs
-    ):
-        super().__init__(mobject, remover=True, rate_func=rate_func, **kwargs)
