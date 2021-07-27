@@ -64,6 +64,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
+        model_matrix=None,
         **kwargs,
     ):
 
@@ -87,9 +88,14 @@ class OpenGLMobject:
 
         self.submobjects = []
         self.parents = []
+        self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
         self.needs_new_bounding_box = True
+        if model_matrix is None:
+            self.model_matrix = np.eye(4)
+        else:
+            self.model_matrix = model_matrix
 
         self.init_data()
         self.init_uniforms()
@@ -389,7 +395,11 @@ class OpenGLMobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(self, *mobjects):
+    def add(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't set multiple parents."
+            mobjects[0].parent = self
+
         if self in mobjects:
             raise Exception("Mobject cannot contain self")
         for mobject in mobjects:
@@ -400,7 +410,11 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(self, *mobjects):
+    def remove(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't remove multiple parents."
+            mobjects[0].parent = None
+
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
@@ -996,6 +1010,17 @@ class OpenGLMobject:
             return [xy_complex.real, xy_complex.imag, z]
 
         return self.apply_function(R3_func)
+
+    def hierarchical_model_matrix(self):
+        if self.parent is None:
+            return self.model_matrix
+
+        model_matrices = [self.model_matrix]
+        current_object = self
+        while current_object.parent is not None:
+            model_matrices.append(current_object.parent.model_matrix)
+            current_object = current_object.parent
+        return np.linalg.multi_dot(list(reversed(model_matrices)))
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
