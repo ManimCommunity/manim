@@ -738,7 +738,7 @@ class Tabular(VGroup):
         label_group = VGroup()
         if self.top_left_entry is not None:
             label_group.add(self.top_left_entry)
-        for label in [self.col_labels, self.row_labels]:
+        for label in (self.col_labels, self.row_labels):
             if label is not None:
                 label_group.add(*label)
         return label_group
