@@ -42,7 +42,9 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def set_camera_orientation(self, phi=None, theta=None, distance=None, gamma=None):
+    def set_camera_orientation(
+        self, phi=None, theta=None, distance=None, gamma=None, frame_center=None
+    ):
         """
         This method sets the orientation of the camera in the scene.
 
