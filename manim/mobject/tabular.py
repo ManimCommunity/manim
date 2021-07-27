@@ -117,7 +117,7 @@ class Tabular(VGroup):
                     top_left_entry=Star().scale(0.3),
                     include_outer_lines=True,
                     line_config={"stroke_width": 1, "color": YELLOW})
-                t3.remove(*[line for line in t3.get_vertical_lines()])
+                t3.remove(*t3.get_vertical_lines())
                 g = Group(
                     t0,t1,t2,t3
                 ).scale(0.7).arrange_in_grid(buff=1)
