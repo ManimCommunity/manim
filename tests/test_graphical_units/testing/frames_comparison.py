@@ -26,8 +26,8 @@ _tests_root_dir_path = Path(__file__).absolute().parents[2]
 PATH_CONTROL_DATA = _tests_root_dir_path / Path("control_data", "graphical_units_data")
 
 
-
-def frames_comparison(func = None,
+def frames_comparison(
+    func=None,
     *,
     last_frame: bool = True,
     renderer_class=CairoRenderer,
@@ -39,7 +39,7 @@ def frames_comparison(func = None,
     If there is no control frames for this test, the test will fail. To generate
     control frames for a given test, pass ``--set_test`` flag to pytest
     while running the test.
-    
+
     Note that this decorator can be use with or without parentheses.
 
     Parameters
@@ -75,11 +75,13 @@ def frames_comparison(func = None,
         )
 
         # autodetectmodule_name
-        if not "__module_test__" in tested_scene_construct.__globals__: 
-            raise Exception("There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file.")
+        if not "__module_test__" in tested_scene_construct.__globals__:
+            raise Exception(
+                "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file."
+            )
         module_name = tested_scene_construct.__globals__.get("__module_test__")
-        test_name = tested_scene_construct.__name__[len("test_"):]
-        
+        test_name = tested_scene_construct.__name__[len("test_") :]
+
         @functools.wraps(tested_scene_construct)
         # The "request" parameter is meant to be used as a fixture by pytest. See below.
         def wrapper(*args, request: FixtureRequest, tmp_path, **kwargs):
@@ -137,7 +139,7 @@ def frames_comparison(func = None,
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
         wrapper.pytestmark = new_marks
         return wrapper
-    
+
     # Case where the decorator is called with and without parentheses.
     # If func is None, callabl(None) returns False
     if callable(func):
