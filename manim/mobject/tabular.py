@@ -193,7 +193,7 @@ class Tabular(VGroup):
         background_rectangle_color
             Background color of table if ``include_background_rectangle`` is ``True``.
         element_to_mobject
-            The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod`~.tex_mobject`.
+            The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
         element_to_mobject_config
             Custom configuration passed to :attr:`element_to_mobject`, by default {}.
         arrange_in_grid_config
