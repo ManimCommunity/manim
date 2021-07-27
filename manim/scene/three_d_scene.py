@@ -68,6 +68,8 @@ class ThreeDScene(Scene):
             self.renderer.camera.set_distance(distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
+        if frame_center is not None:
+            self.renderer.camera._frame_center.move_to(frame_center)
 
     def begin_ambient_camera_rotation(self, rate=0.02, about="theta"):
         """
@@ -191,7 +193,9 @@ class ThreeDScene(Scene):
                 anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
         if frame_center is not None:
             anims.append(
-                ApplyMethod(self.renderer.camera._frame_center.move_to, frame_center)
+                ApplyMethod(
+                    self.renderer.camera._frame_center.move_to, frame_center, **kwargs
+                )
             )
 
         self.play(*anims + added_anims)
