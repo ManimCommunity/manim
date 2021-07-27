@@ -67,6 +67,7 @@ from typing import Callable, Iterable, List, Optional, Sequence, Union
 
 from colour import Color
 
+from .. import config
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
 from ..constants import *
