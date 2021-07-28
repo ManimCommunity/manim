@@ -25,7 +25,12 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    normalize,
+    rotation_matrix_transpose,
+)
 
 
 class OpenGLMobject:
@@ -57,6 +62,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
+        model_matrix=None,
         **kwargs,
     ):
 
@@ -80,9 +86,14 @@ class OpenGLMobject:
 
         self.submobjects = []
         self.parents = []
+        self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
         self.needs_new_bounding_box = True
+        if model_matrix is None:
+            self.model_matrix = np.eye(4)
+        else:
+            self.model_matrix = model_matrix
 
         self.init_data()
         self.init_uniforms()
@@ -382,7 +393,11 @@ class OpenGLMobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(self, *mobjects):
+    def add(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't set multiple parents."
+            mobjects[0].parent = self
+
         if self in mobjects:
             raise Exception("Mobject cannot contain self")
         for mobject in mobjects:
@@ -393,7 +408,11 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(self, *mobjects):
+    def remove(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't remove multiple parents."
+            mobjects[0].parent = None
+
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
@@ -418,6 +437,33 @@ class OpenGLMobject:
         self.remove(*self.submobjects)
         self.add(*submobject_list)
         return self
+
+    def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
+        self.assemble_family()
 
     def digest_mobject_attrs(self):
         """
@@ -508,6 +554,7 @@ class OpenGLMobject:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
+        self.assemble_family()
         return self
 
     # Copying
@@ -772,6 +819,17 @@ class OpenGLMobject:
 
         return self.apply_function(R3_func)
 
+    def hierarchical_model_matrix(self):
+        if self.parent is None:
+            return self.model_matrix
+
+        model_matrices = [self.model_matrix]
+        current_object = self
+        while current_object.parent is not None:
+            model_matrices.append(current_object.parent.model_matrix)
+            current_object = current_object.parent
+        return np.linalg.multi_dot(list(reversed(model_matrices)))
+
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
             alphas = np.dot(mob.get_points(), np.transpose(axis))
@@ -961,19 +1019,24 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start, end):
-        # TODO, this doesn't currently work in 3d
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
-        target_vect = end - start
+        target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -1069,7 +1132,7 @@ class OpenGLMobject:
     def add_background_rectangle(self, color=None, opacity=0.75, **kwargs):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from manimlib.mobject.shape_matchers import BackgroundRectangle
+        from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
