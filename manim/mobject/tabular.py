@@ -243,7 +243,7 @@ class Tabular(VGroup):
         self._add_horizontal_lines()
         self._add_vertical_lines()
         if self.add_background_rectangles_to_entries:
-            self.add_background_to_entries()
+            self.add_background_to_entries(color=self.entries_background_color)
         if self.include_background_rectangle:
             self.add_background_rectangle(color=self.background_rectangle_color)
 
@@ -750,10 +750,10 @@ class Tabular(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self) -> "Tabular":
+    def add_background_to_entries(self, color: Color = BLACK) -> "Tabular":
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
-            mob.add_background_rectangle(color=self.entries_background_color)
+            mob.add_background_rectangle(color=color)
         return self
 
     def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
