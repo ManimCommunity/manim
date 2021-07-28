@@ -104,13 +104,7 @@ class FocusOn(Transform):
         remover = True
         # Initialize with blank mobject, while create_target
         # and create_starting_mobject handle the meat
-        if config.renderer == "opengl":
-            from manim.opengl import OpenGLVMobject
-
-            vmob_class = OpenGLVMobject
-        else:
-            vmob_class = VMobject
-        super().__init__(vmob_class(), run_time=run_time, remover=remover, **kwargs)
+        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
 
     def create_target(self) -> "Dot":
         little_dot = Dot(radius=0)
