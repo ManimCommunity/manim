@@ -177,7 +177,7 @@ Example : in ``test_geometry.py`` :
       circle = Circle()
       scene.play(Animation(circle))
 
-The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable mutli frame testing, you have to set ``last_frame=False`` in the parameters.**.
+The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**.
 
 .. code:: python
   
