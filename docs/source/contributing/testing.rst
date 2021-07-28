@@ -5,7 +5,7 @@ If you are adding new features to manim, you should add appropriate tests for th
 manim from breaking at each change by checking that no other
 feature has been broken and/or been unintentionally modified.
 
-How Manim Tests
+How Manim tests
 ---------------
 
 Manim uses pytest as its testing framework. 
@@ -20,7 +20,7 @@ Some useful pytest flags:
   
 - ``--skip_slow`` will skip the (arbitrarily) slow tests
 
-- ``--show_diff`` will show a visual comparison in case an unit test is failing. 
+- ``--show_diff`` will show a visual comparison in case an unit test is failing.
   
 
 How it Works
@@ -34,9 +34,8 @@ At the moment there are three types of tests:
    ``Mobject``, that checks if it can be added to a Scene, etc.
 
 #. Graphical unit tests:
-
    Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
-   When pytest runs, it compares the last frame of every render to the control data; If it matches, the tests
+   When pytest runs, it compares some frames (either 6 per seconds or only the last one) to a control data; If it matches, the tests
    pass. If the test and control data differ, the tests fail. You can
    use ``--show_diff`` flag with ``pytest`` to visually see the differences.
 
@@ -167,69 +166,47 @@ For example, to test the ``Circle`` VMobject which resides in
 ``manim/mobject/geometry.py``, add the CircleTest to
 ``test/test_geometry.py``.
 
-In ``test_geometry.py``, add:
+You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** take as a parameter a variable named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
+
+Example : in ``test_geometry.py`` :
 
 .. code:: python
+  
+  @frames_comparison
+  def test_circle(scene):
+      circle = Circle()
+      scene.play(Animation(circle))
 
-    class CircleTest(Scene):
-        def construct(self):
-            circle = Circle()
-            self.play(Animation(circle))
-
-Scene names follow the syntax: ``<thing_to_test>Test``. In the example above,
-we are testing whether Circle properly shows up with the generic
-``Animation`` and not any specific animation.
-
-.. note:: 
-
-   If the file already exists, edit it and add the test within the file. The 
-   ``Scene`` will be tested thanks to the ``GraphicalUnitTester`` that lives
-   in ``tests/utils/GraphicalUnitTester.py``. Import it with ``from
-   ..utils.GraphicalUnitTester import GraphicalUnitTester``.
-
-To test all the scenes in the module, we do the following:
+The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable mutli frame testing, you have to set ``last_frame=False`` in the parameters.**.
 
 .. code:: python
+  
+  @frames_comparison(last_frame=False)
+  def test_circle(scene):
+      circle = Circle()
+      scene.play(Animation(circle))
 
-    @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-    def test_scene(scene_to_test, tmpdir, show_diff):
-        GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+You can also specify, when needed, which base scene you need (ThreeDScene, for example) : 
 
-The first line is a `pytest decorator
-<https://docs.pytest.org/en/stable/parametrize.html>`_.
-It is used to run a test function several times with different
-parameters. Here, we pass in all the scenes as arguments.
+.. code:: python
+  
+  @frames_comparison(last_frame=False, base_scene=ThreeDScene)
+  def test_circle(scene):
+      circle = Circle()
+      scene.play(Animation(circle))
+
+Feel free to check the documentation of ``@frames_comparison`` for more.
+
+Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise pytest will not recognize it as a test.
 
 .. warning::
   If you run pytest now, you will get a ``FileNotFound`` error. This is because
   you have not created control data for your test. 
 
-Next, we'll want to create control data for ``CircleTest``. In
-``tests/template_generate_graphical_units_data.py``, there exists the
-function, ``set_test_scene``, for this purpose.
+To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. 
+For the example above, it would be ``pytest test_geometry.py::test_circle --set_test -s``. (``-s`` is here to see manim logs, so you can see what's going on). 
 
-It will look something like this:
-
-.. code:: python
-
-    class CircleTest(Scene):
-        def construct(self):
-            circle = Circle()
-            self.play(Animation(circle))
-
-
-    set_test_scene(CircleTest, "geometry")
-
-``set_test_scene`` takes two parameters: the scene to test, and the
-module name. You can generate the test data by running the file (it suffices to type the name of the file in the terminal; you do not have to run
-it like how you would normally run manim files). It will automatically generate the control data in the
-right directory (in this case,
-``tests/control_data/graphical_units_data/geometry/CircleTest.npz``).
-
-Please make sure to add the control data to git as
-soon as it is produced with ``git add <your-control-data.npz>``. However, do not
-include changes to the template script (template\_generate\_graphical\_units\_data.py) in your pull request so that others
-may continue to use the unmodified file to generate their own tests.
+Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
 
 
 Videos tests
