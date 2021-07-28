@@ -543,7 +543,7 @@ class OpenGLDashedLine(OpenGLLine):
         return max(
             2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
         )
-        
+
     def get_start(self):
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
