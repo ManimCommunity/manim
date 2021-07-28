@@ -52,6 +52,8 @@ class AxesTest(ThreeDScene):
 
 
 class CameraMoveTest(ThreeDScene):
+    """Tests camera movement to explore varied views of a static scene."""
+
     def construct(self):
         axes = ThreeDAxes()
         self.add(axes)

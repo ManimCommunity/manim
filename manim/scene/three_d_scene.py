@@ -3,14 +3,18 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+from typing import List, Optional, Sequence, Union
+
 import numpy as np
 
 from .. import config
+from ..animation.animation import Animation
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
+from ..mobject.mobject import Mobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
@@ -43,7 +47,12 @@ class ThreeDScene(Scene):
         super().__init__(camera_class=camera_class, **kwargs)
 
     def set_camera_orientation(
-        self, phi=None, theta=None, distance=None, gamma=None, frame_center=None
+        self,
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
     ):
         """
         This method sets the orientation of the camera in the scene.
@@ -61,6 +70,10 @@ class ThreeDScene(Scene):
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
+
+        frame_center : list, tuple or np.array, optional
+            The new center of the camera frame in cartesian coordinates
+
         """
         if phi is not None:
             self.renderer.camera.set_phi(phi)
@@ -150,12 +163,12 @@ class ThreeDScene(Scene):
 
     def move_camera(
         self,
-        phi=None,
-        theta=None,
-        distance=None,
-        gamma=None,
-        frame_center=None,
-        added_anims=[],
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        added_anims: List["Animation"] = [],
         **kwargs,
     ):
         """
