@@ -1,14 +1,52 @@
+import collections
+
 import numpy as np
 
 from ..constants import *
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..utils.space_ops import cross2d, earclip_triangulation, z_to_vector
+from ..utils import opengl
+from ..utils.space_ops import cross2d, earclip_triangulation
 from .shader import Shader
 
 
+def build_matrix_lists(mob):
+    root_hierarchical_matrix = mob.hierarchical_model_matrix()
+    matrix_to_mobject_list = collections.defaultdict(list)
+    if mob.has_points():
+        matrix_to_mobject_list[tuple(root_hierarchical_matrix.ravel())].append(mob)
+    mobject_to_hierarchical_matrix = {mob: root_hierarchical_matrix}
+    dfs = [mob]
+    while dfs:
+        parent = dfs.pop()
+        for child in parent.submobjects:
+            child_hierarchical_matrix = (
+                mobject_to_hierarchical_matrix[parent] @ child.model_matrix
+            )
+            mobject_to_hierarchical_matrix[child] = child_hierarchical_matrix
+            if child.has_points():
+                matrix_to_mobject_list[tuple(child_hierarchical_matrix.ravel())].append(
+                    child
+                )
+            dfs.append(child)
+    return matrix_to_mobject_list
+
+
 def render_opengl_vectorized_mobject_fill(renderer, mobject):
+    matrix_to_mobject_list = build_matrix_lists(mobject)
+
+    for matrix_tuple, mobject_list in matrix_to_mobject_list.items():
+        model_matrix = np.array(matrix_tuple).reshape((4, 4))
+        render_mobject_fills_with_matrix(renderer, model_matrix, mobject_list)
+
+
+def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
+    # Precompute the total number of vertices for which to reserve space.
+    # Note that triangulate_mobject() will cache its results.
+    total_size = 0
+    for submob in mobjects:
+        total_size += triangulate_mobject(submob).shape[0]
+
     attributes = np.empty(
-        0,
+        total_size,
         dtype=[
             ("in_vert", np.float32, (3,)),
             ("in_color", np.float32, (4,)),
@@ -16,23 +54,25 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
             ("texture_mode", np.int32),
         ],
     )
-    color = np.empty((0, 4), dtype=np.float32)
-    for submob in mobject.family_members_with_points():
+
+    write_offset = 0
+    for submob in mobjects:
+        if not submob.has_points():
+            continue
         mobject_triangulation = triangulate_mobject(submob)
-        mobject_color = np.repeat(
+        end_offset = write_offset + mobject_triangulation.shape[0]
+        attributes[write_offset:end_offset] = mobject_triangulation
+        attributes["in_color"][write_offset:end_offset] = np.repeat(
             submob.data["fill_rgba"], mobject_triangulation.shape[0], axis=0
         )
-        attributes = np.append(attributes, mobject_triangulation)
-        color = np.append(color, mobject_color, axis=0)
-    attributes["in_color"] = color
+        write_offset = end_offset
 
-    fill_shader = Shader(
-        renderer.context,
-        name="vectorized_mobject_fill",
-    )
+    fill_shader = Shader(renderer.context, name="vectorized_mobject_fill")
     fill_shader.set_uniform(
-        "u_view_matrix",
-        renderer.camera.get_view_matrix(),
+        "u_model_view_matrix",
+        opengl.matrix_to_shader_input(
+            renderer.camera.get_view_matrix(format=False) @ model_matrix
+        ),
     )
     fill_shader.set_uniform(
         "u_projection_matrix",
@@ -145,30 +185,36 @@ def triangulate_mobject(mob):
 
 
 def render_opengl_vectorized_mobject_stroke(renderer, mobject):
-    shader = Shader(renderer.context, "vectorized_mobject_stroke")
+    matrix_to_mobject_list = build_matrix_lists(mobject)
+    for matrix_tuple, mobject_list in matrix_to_mobject_list.items():
+        model_matrix = np.array(matrix_tuple).reshape((4, 4))
+        render_mobject_strokes_with_matrix(renderer, model_matrix, mobject_list)
 
-    shader.set_uniform("u_model_view_matrix", renderer.camera.get_view_matrix())
-    shader.set_uniform(
-        "u_projection_matrix",
-        renderer.scene.camera.projection_matrix,
-    )
 
-    points = np.empty((0, 3))
-    colors = np.empty((0, 4))
-    widths = np.empty((0))
-    for submob in mobject.family_members_with_points():
-        points = np.append(points, submob.data["points"], axis=0)
-        colors = np.append(
-            colors,
-            np.repeat(
-                submob.data["stroke_rgba"], submob.data["points"].shape[0], axis=0
-            ),
-            axis=0,
+def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
+    # Precompute the total number of vertices for which to reserve space.
+    total_size = 0
+    for submob in mobjects:
+        total_size += submob.data["points"].shape[0]
+
+    points = np.empty((total_size, 3))
+    colors = np.empty((total_size, 4))
+    widths = np.empty((total_size))
+
+    write_offset = 0
+    for submob in mobjects:
+        if not submob.has_points():
+            continue
+        end_offset = write_offset + submob.data["points"].shape[0]
+
+        points[write_offset:end_offset] = submob.data["points"]
+        colors[write_offset:end_offset] = np.repeat(
+            submob.data["stroke_rgba"], submob.data["points"].shape[0], axis=0
         )
-        widths = np.append(
-            widths,
-            np.repeat(submob.data["stroke_width"], submob.data["points"].shape[0]),
+        widths[write_offset:end_offset] = np.repeat(
+            submob.data["stroke_width"], submob.data["points"].shape[0]
         )
+        write_offset = end_offset
 
     stroke_data = np.zeros(
         len(points),
@@ -191,7 +237,7 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
 
     # Repeat each vertex in order to make a tile.
     stroke_data = np.tile(stroke_data, 2)
-    stroke_data["tile_coordinate"] = np.concatenate(
+    stroke_data["tile_coordinate"] = np.vstack(
         (
             np.tile(
                 [
@@ -209,12 +255,18 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
                 ],
                 (len(points) // 3, 1),
             ),
-        ),
-        axis=0,
+        )
     )
 
-    shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
-    shader.set_uniform("manim_unit_normal", tuple(-mobject.data["unit_normal"][0]))
+    shader = Shader(renderer.context, "vectorized_mobject_stroke")
+    shader.set_uniform(
+        "u_model_view_matrix",
+        opengl.matrix_to_shader_input(
+            renderer.camera.get_view_matrix(format=False) @ model_matrix
+        ),
+    )
+    shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)
+    shader.set_uniform("manim_unit_normal", tuple(-mobjects[0].data["unit_normal"][0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
     vao = renderer.context.simple_vertex_array(

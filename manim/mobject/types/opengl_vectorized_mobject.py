@@ -217,7 +217,10 @@ class OpenGLVMobject(OpenGLMobject):
         }
 
     def match_style(self, vmobject, recurse=True):
-        self.set_style(**vmobject.get_style(), recurse=False)
+        vmobject_style = vmobject.get_style()
+        if config.renderer == "opengl":
+            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+        self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
             # match styles accordingly
@@ -1018,9 +1021,14 @@ class OpenGLVMobject(OpenGLMobject):
     def triggers_refreshed_triangulation(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            old_points = self.get_points().copy()
+            old_points = np.empty((0, 3))
+            for mob in self.family_members_with_points():
+                old_points = np.concatenate((old_points, mob.get_points()), axis=0)
             func(self, *args, **kwargs)
-            if not np.all(self.get_points() == old_points):
+            new_points = np.empty((0, 3))
+            for mob in self.family_members_with_points():
+                new_points = np.concatenate((new_points, mob.get_points()), axis=0)
+            if not np.all(new_points == old_points):
                 self.refresh_triangulation()
                 self.refresh_unit_normal()
 
