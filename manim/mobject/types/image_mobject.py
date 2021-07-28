@@ -9,7 +9,6 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import DEFAULT_QUALITY, QUALITIES
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 from ... import config
 from ...constants import *
@@ -20,7 +19,7 @@ from ...utils.color import WHITE, color_to_int_rgb
 from ...utils.images import get_full_raster_image_path
 
 
-class AbstractImageMobject(Mobject, metaclass=ConvertToOpenGL):
+class AbstractImageMobject(Mobject):
     """
     Automatically filters out black pixels
 
