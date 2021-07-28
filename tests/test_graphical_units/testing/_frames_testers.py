@@ -1,5 +1,6 @@
 import contextlib
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 
@@ -50,9 +51,9 @@ class _FramesTester:
 
 
 class _ControlDataWriter(_FramesTester):
-    def __init__(self, file_path: Path) -> None:
+    def __init__(self, file_path: Path, size_frame: Tuple) -> None:
         self.file_path = file_path
-        self.frames = np.empty((0, 480, 854, 4))
+        self.frames = np.empty((0, *size_frame, 4))
         self._number_frames_written: int = 0
 
     # Actually write a frame.

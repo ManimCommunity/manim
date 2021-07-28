@@ -2,16 +2,17 @@ import functools
 import inspect
 import itertools
 from pathlib import Path
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Optional, Tuple, Type
 
 from _pytest.fixtures import FixtureRequest
 from _pytest.mark.structures import Mark
-from attr.validators import optional
 
 from manim import Scene, config
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
+from manim.camera.three_d_camera import ThreeDCamera
 from manim.renderer.cairo_renderer import CairoRenderer
+from manim.scene.three_d_scene import ThreeDScene
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
 from ._test_class_makers import (
@@ -74,7 +75,6 @@ def frames_comparison(
             functools.partial(tested_scene_construct, scene=None)
         )
 
-        # autodetectmodule_name
         if not "__module_test__" in tested_scene_construct.__globals__:
             raise Exception(
                 "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file."
@@ -95,6 +95,15 @@ def frames_comparison(
                 map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items())
             )
 
+            config_tests = _config_test(last_frame)
+
+            config_tests["text_dir"] = tmp_path
+            config_tests["tex_dir"] = tmp_path
+
+            if last_frame:
+                config_tests["frame_rate"] = 1
+                config_tests["dry_run"] = True
+
             setting_test = request.config.getoption("--set_test")
             real_test = _make_test_comparing_frames(
                 file_path=_control_data_path(
@@ -106,16 +115,8 @@ def frames_comparison(
                 is_set_test_data_test=setting_test,
                 last_frame=last_frame,
                 show_diff=request.config.getoption("--show_diff"),
+                size_frame=(config_tests["pixel_height"], config_tests["pixel_width"]),
             )
-
-            config_tests = _config_test(last_frame)
-
-            config_tests["text_dir"] = tmp_path
-            config_tests["tex_dir"] = tmp_path
-
-            if last_frame:
-                config_tests["frame_rate"] = 1
-                config_tests["dry_run"] = True
 
             # Isolate the config used for the test, to avoid a modifying the global config during the test run.
             with tempconfig({**custom_config, **config_tests}):
@@ -155,6 +156,7 @@ def _make_test_comparing_frames(
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
+    size_frame: Tuple,
 ) -> Callable[[], None]:
     """Create the real pytest test that will fail if the frames mismatch.
 
@@ -178,7 +180,7 @@ def _make_test_comparing_frames(
     """
 
     if is_set_test_data_test:
-        frames_tester = _ControlDataWriter(file_path)
+        frames_tester = _ControlDataWriter(file_path, size_frame=size_frame)
     else:
         frames_tester = _FramesTester(file_path, show_diff=show_diff)
 
@@ -194,7 +196,15 @@ def _make_test_comparing_frames(
             sceneTested = _make_test_scene_class(
                 base_scene=base_scene,
                 construct_test=construct,
-                test_renderer=testRenderer(file_writer_class=file_writer_class),
+                # NOTE this is realy ugly but it's due to the very bad design of the two renderers.
+                # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
+                # is not passed to the renderer. See __init__ of Scene.
+                # This potentially prevents OpenGL testing.
+                test_renderer=testRenderer(file_writer_class=file_writer_class)
+                if base_scene is not ThreeDScene
+                else testRenderer(
+                    file_writer_class=file_writer_class, camera_class=ThreeDCamera
+                ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
             scene_tested.render()
