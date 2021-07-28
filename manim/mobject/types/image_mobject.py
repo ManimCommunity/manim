@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import DEFAULT_QUALITY, QUALITIES
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 from ... import config
 from ...constants import *
@@ -19,7 +20,7 @@ from ...utils.color import WHITE, color_to_int_rgb
 from ...utils.images import get_full_raster_image_path
 
 
-class AbstractImageMobject(Mobject):
+class AbstractImageMobject(Mobject, metaclass=ConvertToOpenGL):
     """
     Automatically filters out black pixels
 
@@ -40,7 +41,7 @@ class AbstractImageMobject(Mobject):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
         self.set_resampling_algorithm(resampling_algorithm)
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_pixel_array(self):
         raise NotImplementedError()
@@ -284,7 +285,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
             }
         self.default_display_frame_config = default_display_frame_config
         self.pixel_array = self.camera.pixel_array
-        AbstractImageMobject.__init__(self, scale_to_resolution=False, **kwargs)
+        super().__init__(scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
     def get_pixel_array(self):
