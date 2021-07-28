@@ -401,7 +401,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            :class`~.VGroup` containing all the horizontal lines of the table.
+            :class:`~.VGroup` containing all the horizontal lines of the table.
 
         Examples
         --------
@@ -453,7 +453,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            :class:~.VGroup` containing each column in a :class:`~.VGroup`.
+            :class:`~.VGroup` containing each column in a :class:`~.VGroup`.
 
         Examples
         --------
@@ -484,7 +484,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            :class:~.VGroup` containing each row in a :class:`~.VGroup`.
+            :class:`~.VGroup` containing each row in a :class:`~.VGroup`.
 
         Examples
         --------
@@ -577,7 +577,7 @@ class Tabular(VGroup):
         Returns
         -------
         Union[:class:`~.VMobject`, :class:`~.VGroup`]
-            :class:~.VGroup` containing all entries of the table (including labels)
+            :class:`~.VGroup` containing all entries of the table (including labels)
             or the :class:`~.VMobject` at the given position if ``pos`` is set.
 
         Examples
@@ -970,7 +970,7 @@ class MathTabular(Tabular):
 
 
 class MobjectTabular(Tabular):
-    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Mobject`s.
+    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Mobject`.
 
     Examples
     --------
