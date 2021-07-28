@@ -1089,8 +1089,6 @@ class DashedLine(Line):
         Arguments to be passed to :class:`Line`
     dash_length : :class:`float`, optional
         The length of each individual dash of the line.
-    dash_spacing : Optional[:class:`float`]
-        The spacing between the dashes.
     dashed_ratio : :class:`float`, optional
         The ratio of dash space to empty space. Range of 0-1.
     kwargs : Any
