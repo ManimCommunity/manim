@@ -201,7 +201,13 @@ Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise 
   you have not created control data for your test. 
 
 To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. 
-For the example above, it would be ``pytest test_geometry.py::test_circle --set_test -s``. (``-s`` is here to see manim logs, so you can see what's going on). 
+For the example above, it would be 
+
+.. code-block::bash
+
+    pytest test_geometry.py::test_circle --set_test -s
+
+(``-s`` is here to see manim logs, so you can see what's going on). 
 
 Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
 
