@@ -20,7 +20,7 @@ Some useful pytest flags:
   
 - ``--skip_slow`` will skip the (arbitrarily) slow tests
 
-- ``--show_diff`` will show a visual comparison in case an unit test is failing.
+- ``--show_diff`` will show a visual comparison in case a unit test is failing.
   
 
 How it Works
@@ -35,7 +35,7 @@ At the moment there are three types of tests:
 
 #. Graphical unit tests:
    Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
-   When pytest runs, it compares some frames (either 6 per seconds or only the last one) to a control data; If it matches, the tests
+   When pytest runs, it compares the result of the test to the control data, either at 6 fps or just the last frame. If it matches, the tests
    pass. If the test and control data differ, the tests fail. You can
    use ``--show_diff`` flag with ``pytest`` to visually see the differences.
 
@@ -166,11 +166,14 @@ For example, to test the ``Circle`` VMobject which resides in
 ``manim/mobject/geometry.py``, add the CircleTest to
 ``test/test_geometry.py``.
 
-You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** take as a parameter a variable named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
+.. important::
+    You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a 
+    parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
 
 Example : in ``test_geometry.py`` :
 
 .. code:: python
+
   @frames_comparison
   def test_circle(scene):
       circle = Circle()
@@ -179,6 +182,7 @@ Example : in ``test_geometry.py`` :
 The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**.
 
 .. code:: python
+
   @frames_comparison(last_frame=False)
   def test_circle(scene):
       circle = Circle()
