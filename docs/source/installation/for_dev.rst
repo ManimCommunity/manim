@@ -20,7 +20,7 @@ steps to clone your fork.
 For Developers with Poetry (Recommended)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Please follow this guide `docs on installation - python poetry
+Please follow this guide `Poetry's installation guidelines
 <https://python-poetry.org/docs/master/#installation>`_.
 
 Installing System Dependencies
