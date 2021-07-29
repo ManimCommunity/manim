@@ -340,7 +340,7 @@ class Dot3D(Sphere):
     """
 
     def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        Sphere.__init__(self, center=point, radius=radius, **kwargs)
+        Sphere.__init__(self, center=point, radius=radius, resolution=(8, 8), **kwargs)
         self.set_color(color)
 
 
