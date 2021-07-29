@@ -166,6 +166,8 @@ For example, to test the ``Circle`` VMobject which resides in
 ``manim/mobject/geometry.py``, add the CircleTest to
 ``test/test_geometry.py``.
 
+The name of the module is indicated by the variable __module_test__, that **must** be decalared in any graphical test file. The module name is used to store the graphical control data.
+
 .. important::
     You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a 
     parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
