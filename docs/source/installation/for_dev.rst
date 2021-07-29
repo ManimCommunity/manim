@@ -20,9 +20,9 @@ steps to clone your fork.
 For Developers with Poetry (Recommended)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Why we recommend using poetry ?
-
-Because Poetry is a tool for dependency management and packaging in Python. It allows you to declare the libraries your project depends on and it will manage (install/update) them for you.
+Because Poetry is a tool for dependency management and packaging in Python. It allows to 
+declare the libraries your project depends on and it will manage (install/update) them 
+for you. In addition, Poetry provides a simple interface for managing virtual environments.
 
 Please follow this guide `Poetry's installation guidelines
 <https://python-poetry.org/docs/master/#installation>`_.
