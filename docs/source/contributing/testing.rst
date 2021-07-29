@@ -191,6 +191,7 @@ The decorator can be used with or without parentheses. **By default, the test on
 You can also specify, when needed, which base scene you need (ThreeDScene, for example) : 
 
 .. code:: python
+
   @frames_comparison(last_frame=False, base_scene=ThreeDScene)
   def test_circle(scene):
       circle = Circle()
