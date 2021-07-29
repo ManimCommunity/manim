@@ -24,8 +24,9 @@ Because Poetry is a tool for dependency management and packaging in Python. It a
 declare the libraries your project depends on and it will manage (install/update) them 
 for you. In addition, Poetry provides a simple interface for managing virtual environments.
 
-Please follow this guide `Poetry's installation guidelines
-<https://python-poetry.org/docs/master/#installation>`_.
+Please follow `Poetry's installation guidelines
+<https://python-poetry.org/docs/master/#installation>`_
+in order to get Poetry up and running on your system.
 
 Installing System Dependencies
 ******************************
