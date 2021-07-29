@@ -21,7 +21,7 @@ For Developers with Poetry (Recommended)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Please follow this guide `docs on installation - python poetry
-<https://python-poetry.org/docs/>`_.
+<https://python-poetry.org/docs/master/#installation>`_.
 
 Installing System Dependencies
 ******************************
