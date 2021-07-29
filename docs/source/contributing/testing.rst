@@ -175,7 +175,6 @@ The name of the module is indicated by the variable __module_test__, that **must
 Example : in ``test_geometry.py`` :
 
 .. code:: python
-  
   from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
 
@@ -183,7 +182,6 @@ Example : in ``test_geometry.py`` :
   def test_circle(scene):
       circle = Circle()
       scene.play(Animation(circle))
-      
 
 The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**.
 
