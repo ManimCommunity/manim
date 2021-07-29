@@ -1,15 +1,9 @@
-import sys
-from pathlib import Path
 
-import pytest
 
 from manim import *
 from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..helpers.graphical_units import set_test_scene
-from ..helpers.path_utils import get_project_root, get_svg_resource
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
+from ..helpers.path_utils import get_svg_resource
 
 __module_test__ = "img_and_svg"
 

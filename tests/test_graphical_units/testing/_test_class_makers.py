@@ -1,6 +1,5 @@
 from typing import Callable, Type
 
-from manim.renderer.cairo_renderer import CairoRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter
 

@@ -1,13 +1,11 @@
 import functools
 import inspect
-import itertools
 from pathlib import Path
-from typing import Any, Callable, Optional, Tuple, Type
+from typing import Callable, Tuple, Type
 
 from _pytest.fixtures import FixtureRequest
-from _pytest.mark.structures import Mark
 
-from manim import Scene, config
+from manim import Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
 from manim.camera.three_d_camera import ThreeDCamera
