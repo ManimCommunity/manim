@@ -825,9 +825,16 @@ class Torus(Surface):
         minor_radius=1,
         u_range=(0, TAU),
         v_range=(0, TAU),
-        resolution=(24, 24),
+        resolution=None,
         **kwargs
     ):
+        if config.renderer == "opengl":
+            res_value = (101, 101)
+        else:
+            res_value = (24, 24)
+
+        resolution = resolution if resolution is not None else res_value
+
         self.R = major_radius
         self.r = minor_radius
         super().__init__(

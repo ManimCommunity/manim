@@ -447,8 +447,8 @@ class SurfaceExample(Scene):
         # self.add(surface_text)
         # self.wait(0.1)
 
-        torus1 = Torus(major_radius=1, minor_radius=1, resolution=(101, 101))
-        torus2 = Torus(major_radius=3, minor_radius=1, resolution=(101, 101))
+        torus1 = Torus(major_radius=1, minor_radius=1)
+        torus2 = Torus(major_radius=3, minor_radius=1)
         sphere = Sphere(radius=3, resolution=torus1.resolution)
         # You can texture a surface with up to two images, which will
         # be interpreted as the side towards the light, and away from
