@@ -44,7 +44,7 @@ class ThreeDCamera(Camera):
         *kwargs
             Any keyword argument of Camera.
         """
-        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
+        self._frame_center = Point(kwargs.get("frame_center", ORIGIN), stroke_width=0)
         super().__init__(**kwargs)
         self.distance = distance
         self.phi = phi
@@ -289,7 +289,6 @@ class ThreeDCamera(Camera):
                 factor = distance / (distance - zs)
                 factor[(distance - zs) < 0] = 10 ** 6
             points[:, i] *= factor
-        points = points + frame_center
         return points
 
     def project_point(self, point):
@@ -387,7 +386,7 @@ class ThreeDCamera(Camera):
         mobjects : :class:`Mobject`
             The mobjects whose orientation need not be fixed any longer.
         """
-        for mobject in self.extract_mobject_family_members(mobjects):
+        for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_orientation_mobjects:
                 self.fixed_orientation_mobjects.remove(mobject)
 
@@ -401,6 +400,6 @@ class ThreeDCamera(Camera):
         mobjects : :class:`Mobject`
             The mobjects which need not be fixed in frame any longer.
         """
-        for mobject in self.extract_mobject_family_members(mobjects):
+        for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_in_frame_mobjects:
                 self.fixed_in_frame_mobjects.remove(mobject)
