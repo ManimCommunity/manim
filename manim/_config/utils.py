@@ -580,6 +580,13 @@ class ManimConfig(MutableMapping):
         gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
         setattr(self, "gui_location", gui_location)
 
+        window_size = parser["CLI"][
+            "window_size"
+        ]  # if not "default", get a tuple of the position
+        if window_size != "default":
+            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+        setattr(self, "window_size", window_size)
+
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
@@ -1175,7 +1182,7 @@ class ManimConfig(MutableMapping):
 
     window_size = property(
         lambda self: self._d["window_size"],
-        lambda self, val: self._d.__setitem__("window_size", val),
+        lambda self, val: self._set_tuple("window_size", val),
         doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
     )
 

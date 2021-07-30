@@ -31,8 +31,6 @@ class Window(PygletWindow):
                 window_width * config.frame_height // config.frame_width
             )
             size = (window_width, window_height)
-        else:
-            size = tuple(map(int, size.split(",")))
 
         super().__init__(size=size)
 
