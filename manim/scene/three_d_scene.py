@@ -215,6 +215,13 @@ class ThreeDScene(Scene):
 
         self.play(*anims + added_anims)
 
+        # These lines are added to improve performance. If manim thinks that frame_center is moving,
+        # it is required to redraw every object. These lines remove frame_center from the Scene once
+        # its animation is done, ensuring that manim does not think that it is moving. Since the
+        # frame_center is never actually drawn, this shouldn't break anything.
+        if frame_center is not None:
+            self.remove(self.renderer.camera._frame_center)
+
     def get_moving_mobjects(self, *animations):
         """
         This method returns a list of all of the Mobjects in the Scene that
