@@ -814,8 +814,8 @@ class Torus(Surface):
         self,
         major_radius=3,
         minor_radius=1,
-        u_range=[0, TAU],
-        v_range=[0, TAU],
+        u_range=(0, TAU),
+        v_range=(0, TAU),
         resolution=(24, 24),
         **kwargs
     ):
