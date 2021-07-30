@@ -562,7 +562,6 @@ class ManimConfig(MutableMapping):
             "renderer",
             "webgl_renderer_path",
             "window_position",
-            "window_size",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
