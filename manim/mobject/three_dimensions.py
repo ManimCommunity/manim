@@ -296,7 +296,7 @@ class Sphere(Surface):
         if config.renderer == "opengl":
             res_value = (101, 51)
         else:
-            res_value = (12, 24)
+            res_value = (24, 12)
 
         resolution = resolution if resolution is not None else res_value
 
@@ -348,7 +348,7 @@ class Dot3D(Sphere):
     """
 
     def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        Sphere.__init__(self, center=point, radius=radius, **kwargs)
+        super().__init__(center=point, radius=radius, **kwargs)
         self.set_color(color)
 
 

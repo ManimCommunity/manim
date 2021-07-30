@@ -505,9 +505,9 @@ class SurfaceExample(Scene):
         frame.add_updater(lambda m, dt: m.increment_theta(-0.1 * dt))
 
         # Play around with where the light is
-        # light_text = Text("You can move around the light source")
-        # light_text.move_to(surface_text)
-        # light_text.fix_in_frame()
+        light_text = Text("You can move around the light source")
+        light_text.move_to(surface_text)
+        light_text.fix_in_frame()
 
         # self.play(FadeTransform(surface_text, light_text))
         light = self.camera.light_source
@@ -516,6 +516,6 @@ class SurfaceExample(Scene):
         self.play(light.animate.move_to(3 * IN), run_time=5)
         self.play(light.animate.shift(10 * OUT), run_time=5)
 
-        # drag_text = Text("Try moving the mouse while pressing d or s")
-        # drag_text.move_to(light_text)
-        # drag_text.fix_in_frame()
+        drag_text = Text("Try moving the mouse while pressing d or s")
+        drag_text.move_to(light_text)
+        drag_text.fix_in_frame()
