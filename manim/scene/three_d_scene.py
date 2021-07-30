@@ -3,7 +3,7 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
-from typing import List, Optional, Sequence, Union
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 
@@ -190,7 +190,7 @@ class ThreeDScene(Scene):
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
         frame_center : list, tuple or np.array, optional
-            The new center of the camera frame in cartesian coordinates
+            The new center of the camera frame in cartesian coordinates.
 
         added_anims : list, optional
             Any other animations to be played at the same time.
