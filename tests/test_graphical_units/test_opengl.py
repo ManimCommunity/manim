@@ -9,7 +9,7 @@ from ..utils.testing_utils import get_scenes_to_test
 
 class CircleTest(Scene):
     def construct(self):
-        circle = OpenGLCircle().set_color(RED)
+        circle = Circle().set_color(RED)
         self.add(circle)
         self.wait()
 
