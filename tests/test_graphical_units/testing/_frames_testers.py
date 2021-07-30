@@ -24,6 +24,7 @@ class _FramesTester:
             # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
             if len(self._frames.shape) != 4:
                 self._frames = np.expand_dims(self._frames, axis=0)
+            print(self._frames.shape)
             self._number_frames = np.ma.size(self._frames, axis=0)
             yield
             assert self._frames_compared == self._number_frames, (
@@ -37,9 +38,10 @@ class _FramesTester:
             f"when there are {self._number_frames} control frames."
         )
         try:
-            np.testing.assert_array_equal(
-                self._frames[frame_number],
+            np.testing.assert_allclose(
                 frame,
+                self._frames[frame_number],
+                atol=1.01,
                 err_msg=f"Frame no {frame_number}. You can use --show_diff to visually show the difference.",
                 verbose=False,
             )
