@@ -62,6 +62,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
+        model_matrix=None,
         **kwargs,
     ):
 
@@ -85,9 +86,14 @@ class OpenGLMobject:
 
         self.submobjects = []
         self.parents = []
+        self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
         self.needs_new_bounding_box = True
+        if model_matrix is None:
+            self.model_matrix = np.eye(4)
+        else:
+            self.model_matrix = model_matrix
 
         self.init_data()
         self.init_uniforms()
@@ -387,7 +393,11 @@ class OpenGLMobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(self, *mobjects):
+    def add(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't set multiple parents."
+            mobjects[0].parent = self
+
         if self in mobjects:
             raise Exception("Mobject cannot contain self")
         for mobject in mobjects:
@@ -398,7 +408,11 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(self, *mobjects):
+    def remove(self, *mobjects, update_parent=False):
+        if update_parent:
+            assert len(mobjects) == 1, "Can't remove multiple parents."
+            mobjects[0].parent = None
+
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
@@ -804,6 +818,17 @@ class OpenGLMobject:
             return [xy_complex.real, xy_complex.imag, z]
 
         return self.apply_function(R3_func)
+
+    def hierarchical_model_matrix(self):
+        if self.parent is None:
+            return self.model_matrix
+
+        model_matrices = [self.model_matrix]
+        current_object = self
+        while current_object.parent is not None:
+            model_matrices.append(current_object.parent.model_matrix)
+            current_object = current_object.parent
+        return np.linalg.multi_dot(list(reversed(model_matrices)))
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
@@ -1738,10 +1763,26 @@ class OpenGLPoint(OpenGLMobject):
 class _AnimationBuilder:
     def __init__(self, mobject):
         self.mobject = mobject
-        self.overridden_animation = None
         self.mobject.generate_target()
+
+        self.overridden_animation = None
         self.is_chaining = False
         self.methods = []
+
+        # Whether animation args can be passed
+        self.cannot_pass_args = False
+        self.anim_args = {}
+
+    def __call__(self, **kwargs):
+        if self.cannot_pass_args:
+            raise ValueError(
+                "Animation arguments must be passed before accessing methods and can only be passed once"
+            )
+
+        self.anim_args = kwargs
+        self.cannot_pass_args = True
+
+        return self
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
@@ -1757,22 +1798,32 @@ class _AnimationBuilder:
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
-                    self.mobject, *method_args, **method_kwargs
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
                 )
             else:
                 method(*method_args, **method_kwargs)
             return self
 
         self.is_chaining = True
+        self.cannot_pass_args = True
+
         return update_target
 
     def build(self):
         from ..animation.transform import _MethodAnimation
 
         if self.overridden_animation:
-            return self.overridden_animation
+            anim = self.overridden_animation
+        else:
+            anim = _MethodAnimation(self.mobject, self.methods)
 
-        return _MethodAnimation(self.mobject, self.methods)
+        for attr, value in self.anim_args.items():
+            setattr(anim, attr, value)
+
+        return anim
 
 
 def override_animate(method):

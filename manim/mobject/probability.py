@@ -267,19 +267,21 @@ class BarChart(VGroup):
         self.bar_stroke_width = bar_stroke_width
         self.bar_names = bar_names
         self.bar_label_scale_val = bar_label_scale_val
+        self.total_bar_width = width
+        self.total_bar_height = height
 
         if self.max_value is None:
             self.max_value = max(values)
 
-        self.add_axes(width, height)
-        self.add_bars(values, width, height)
+        self.add_axes()
+        self.add_bars(values)
         self.center()
 
-    def add_axes(self, width, height):
-        x_axis = Line(self.tick_width * LEFT / 2, width * RIGHT)
-        y_axis = Line(MED_LARGE_BUFF * DOWN, height * UP)
+    def add_axes(self):
+        x_axis = Line(self.tick_width * LEFT / 2, self.total_bar_width * RIGHT)
+        y_axis = Line(MED_LARGE_BUFF * DOWN, self.total_bar_height * UP)
         ticks = VGroup()
-        heights = np.linspace(0, height, self.n_ticks + 1)
+        heights = np.linspace(0, self.total_bar_height, self.n_ticks + 1)
         values = np.linspace(0, self.max_value, self.n_ticks + 1)
         for y, _value in zip(heights, values):
             tick = Line(LEFT, RIGHT)
@@ -301,12 +303,12 @@ class BarChart(VGroup):
             self.y_axis_labels = labels
             self.add(labels)
 
-    def add_bars(self, values, width, height):
-        buff = float(width) / (2 * len(values) + 1)
+    def add_bars(self, values):
+        buff = float(self.total_bar_width) / (2 * len(values) + 1)
         bars = VGroup()
         for i, value in enumerate(values):
             bar = Rectangle(
-                height=(value / self.max_value) * height,
+                height=(value / self.max_value) * self.total_bar_height,
                 width=buff,
                 stroke_width=self.bar_stroke_width,
                 fill_opacity=self.bar_fill_opacity,
@@ -329,5 +331,5 @@ class BarChart(VGroup):
     def change_bar_values(self, values):
         for bar, value in zip(self.bars, values):
             bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.max_value) * self.height)
+            bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
             bar.move_to(bar_bottom, DOWN)
