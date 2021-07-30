@@ -378,7 +378,7 @@ class SpecialThreeDScene(ThreeDScene):
         Parameters
         ----------
         **kwargs
-            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
+            Any valid parameter of :class:`.Sphere` or :class:`.Surface`.
 
         Returns
         -------

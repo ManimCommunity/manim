@@ -137,7 +137,7 @@ class ThreeDMobjectTest(Scene):
         s = Square(fill_opacity=0.5).shift(2 * RIGHT)
         self.add(s)
 
-        sp = Square().shift(2 * LEFT)
+        sp = Sphere().shift(2 * LEFT)
         self.add(sp)
 
         mesh = get_plane_mesh(self.renderer.context)

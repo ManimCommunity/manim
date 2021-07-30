@@ -2,7 +2,7 @@
 
 __all__ = [
     "ThreeDVMobject",
-    "ParametricSurface",
+    "Surface",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -38,7 +38,7 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class ParametricSurface(VGroup):
+class Surface(VGroup):
     """Creates a Parametric Surface
 
     Parameters
@@ -65,7 +65,7 @@ class ParametricSurface(VGroup):
 
             def construct(self):
                 axes = ThreeDAxes(x_range=[-4,4], x_length=8)
-                surface = ParametricSurface(
+                surface = Surface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
                     u_range=[-PI, PI],
                     v_range=[0, TAU]
@@ -188,7 +188,7 @@ class ParametricSurface(VGroup):
 
         Returns
         -------
-        :class:`~.ParametricSurface`
+        :class:`~.Surface`
             The parametric surface with a gradient applied by value. For chaining.
 
         Examples
@@ -206,7 +206,7 @@ class ParametricSurface(VGroup):
                         y = v
                         z = np.sin(x) * np.cos(y)
                         return z
-                    surface_plane = ParametricSurface(
+                    surface_plane = Surface(
                         lambda u, v: axes.c2p(u, v, param_surface(u, v)),
                         resolution=(resolution_fa, resolution_fa),
                         v_min=0,
@@ -254,7 +254,7 @@ class ParametricSurface(VGroup):
 # Specific shapes
 
 
-class Sphere(ParametricSurface):
+class Sphere(Surface, metaclass=ConvertToOpenGL):
     """A mobject representing a three-dimensional sphere.
 
     Examples
@@ -292,7 +292,7 @@ class Sphere(ParametricSurface):
         v_range=[0, TAU],
         **kwargs
     ):
-        suoer().__init__(
+        super().__init__(
             self.func,
             resolution=resolution,
             u_range=u_range,
@@ -400,7 +400,7 @@ class Prism(Cube):
             self.rescale_to_fit(value, dim, stretch=True)
 
 
-class Cone(ParametricSurface):
+class Cone(Surface):
     """A circular cone.
     Can be defined using 2 parameters: its height, and its base radius.
     The polar angle, theta, can be calculated using arctan(base_radius /
@@ -531,7 +531,7 @@ class Cone(ParametricSurface):
         return self.direction
 
 
-class Cylinder(ParametricSurface):
+class Cylinder(Surface):
     """A cylinder, defined by its height, radius and direction,
 
     Examples
@@ -787,7 +787,7 @@ class Arrow3D(Line3D):
         self.set_color(color)
 
 
-class Torus(ParametricSurface):
+class Torus(Surface):
     """A torus.
 
     Examples
