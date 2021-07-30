@@ -22,6 +22,7 @@ from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
@@ -38,7 +39,7 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup):
+class Surface(VGroup, metaclass=ConvertToOpenGL):
     """Creates a Parametric Surface
 
     Parameters
@@ -254,7 +255,7 @@ class Surface(VGroup):
 # Specific shapes
 
 
-class Sphere(Surface, metaclass=ConvertToOpenGL):
+class Sphere(Surface):
     """A mobject representing a three-dimensional sphere.
 
     Examples
@@ -287,11 +288,20 @@ class Sphere(Surface, metaclass=ConvertToOpenGL):
         self,
         center=ORIGIN,
         radius=1,
-        resolution=(12, 24),
-        u_range=[0.001, PI - 0.001],
-        v_range=[0, TAU],
+        resolution=None,
+        u_range=(0, TAU),
+        v_range=(0, PI),
         **kwargs
     ):
+        if config.renderer == "opengl":
+            res_value = (101, 51)
+        else:
+            res_value = (12, 24)
+
+        resolution = resolution if resolution is not None else res_value
+
+        self.radius = radius
+
         super().__init__(
             self.func,
             resolution=resolution,
@@ -299,14 +309,13 @@ class Sphere(Surface, metaclass=ConvertToOpenGL):
             v_range=v_range,
             **kwargs,
         )
-        self.radius = radius
-        self.scale(self.radius)
+
         self.shift(center)
 
-    def func(
-        self, u, v
-    ):  # FIXME: An attribute defined in manim.mobject.three_dimensions line 56 hides this method
-        return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
+    def func(self, u, v):
+        return self.radius * np.array(
+            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
+        )
 
 
 class Dot3D(Sphere):
