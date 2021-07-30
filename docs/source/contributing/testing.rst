@@ -175,12 +175,10 @@ The name of the module is indicated by the variable __module_test__, that **must
 Example : in ``test_geometry.py`` :
 
 .. code:: python
-  
   from manim import *
   from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
   __module_test__ = "geometry"
-  
 
 
   @frames_comparison
