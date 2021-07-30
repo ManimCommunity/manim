@@ -244,6 +244,7 @@ class ManimConfig(MutableMapping):
         "background_opacity",
         "custom_folders",
         "disable_caching",
+        "disable_caching_warning",
         "ffmpeg_loglevel",
         "format",
         "flush_cache",
@@ -268,7 +269,6 @@ class ManimConfig(MutableMapping):
         "pixel_height",
         "pixel_width",
         "plugins",
-        "png_mode",
         "preview",
         "progress_bar",
         "save_as_gif",
@@ -520,6 +520,7 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "log_to_file",
             "disable_caching",
+            "disable_caching_warning",
             "flush_cache",
             "custom_folders",
             "use_opengl_renderer",
@@ -556,7 +557,6 @@ class ManimConfig(MutableMapping):
             "partial_movie_dir",
             "input_file",
             "output_file",
-            "png_mode",
             "movie_file_extension",
             "background_color",
             "renderer",
@@ -747,7 +747,8 @@ class ManimConfig(MutableMapping):
                 self["write_to_movie"] = False
 
         # Handle --gui_location flag.
-        self.gui_location = args.gui_location
+        if getattr(args, "gui_location") is not None:
+            self.gui_location = args.gui_location
 
         return self
 
@@ -1024,10 +1025,10 @@ class ManimConfig(MutableMapping):
         doc="Whether to use scene caching.",
     )
 
-    png_mode = property(
-        lambda self: self._d["png_mode"],
-        lambda self, val: self._set_from_list("png_mode", val, ["RGB", "RGBA"]),
-        doc="Either RGA (no transparency) or RGBA (with transparency) (no flag).",
+    disable_caching_warning = property(
+        lambda self: self._d["disable_caching_warning"],
+        lambda self, val: self._set_boolean("disable_caching_warning", val),
+        doc="Whether a warning is raised if there are too much submobjects to hash.",
     )
 
     movie_file_extension = property(
@@ -1079,12 +1080,7 @@ class ManimConfig(MutableMapping):
 
     @transparent.setter
     def transparent(self, val: bool) -> None:
-        if val:
-            self.png_mode = "RGBA"
-            self.background_opacity = 0.0
-        else:
-            self.png_mode = "RGB"
-            self.background_opacity = 1.0
+        self._d["background_opacity"] = float(not val)
         self.resolve_movie_file_extension(val)
 
     @property

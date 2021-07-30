@@ -87,6 +87,7 @@ from ..utils.space_ops import (
     compass_directions,
     line_intersection,
     normalize,
+    perpendicular_bisector,
     regular_vertices,
     rotate_vector,
 )
@@ -583,6 +584,36 @@ class Circle(Arc):
         start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
+    @staticmethod
+    def from_three_points(
+        p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
+    ):
+        """Returns a circle passing through the specified
+        three points.
+
+        Example
+        -------
+
+        .. manim:: CircleFromPointsExample
+            :save_last_frame:
+
+            class CircleFromPointsExample(Scene):
+                def construct(self):
+                    circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2, color=RED)
+                    dots = VGroup(
+                        Dot(LEFT),
+                        Dot(LEFT + UP),
+                        Dot(UP * 2),
+                    )
+                    self.add(NumberPlane(), circle, dots)
+        """
+        center = line_intersection(
+            perpendicular_bisector([p1, p2]),
+            perpendicular_bisector([p2, p3]),
+        )
+        radius = np.linalg.norm(p1 - center)
+        return Circle(radius=radius, **kwargs).shift(center)
+
 
 class Dot(Circle):
     """A circle with a very small radius.
@@ -1058,10 +1089,8 @@ class DashedLine(Line):
         Arguments to be passed to :class:`Line`
     dash_length : :class:`float`, optional
         The length of each individual dash of the line.
-    dash_spacing : Optional[:class:`float`]
-        The spacing between the dashes.
-    positive_space_ratio : :class:`float`, optional
-        The ratio of empty space to dash space. Range of 0-1.
+    dashed_ratio : :class:`float`, optional
+        The ratio of dash space to empty space. Range of 0-1.
     kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
@@ -1076,8 +1105,8 @@ class DashedLine(Line):
                 dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
                 # normal
                 dashed_2 = DashedLine(config.left_side, config.right_side)
-                # positive_space_ratio decreased
-                dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
+                # dashed_ratio decreased
+                dashed_3 = DashedLine(config.left_side, config.right_side, dashed_ratio=0.1).shift(DOWN*2)
                 self.add(dashed_1, dashed_2, dashed_3)
 
     See Also
@@ -1089,18 +1118,16 @@ class DashedLine(Line):
         self,
         *args,
         dash_length=DEFAULT_DASH_LENGTH,
-        dash_spacing=None,
-        positive_space_ratio=0.5,
+        dashed_ratio=0.5,
         **kwargs,
     ):
         self.dash_length = dash_length
-        self.dash_spacing = (dash_spacing,)
-        self.positive_space_ratio = positive_space_ratio
+        self.dashed_ratio = dashed_ratio
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
             num_dashes=self.calculate_num_dashes(),
-            positive_space_ratio=positive_space_ratio,
+            dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
@@ -1116,14 +1143,10 @@ class DashedLine(Line):
             20
         """
 
-        try:
-            full_length = self.dash_length / self.positive_space_ratio
-            return int(np.ceil(self.get_length() / full_length))
-        except ZeroDivisionError:
-            return 1
-
-    def calculate_positive_space_ratio(self):
-        return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
+        # Minimum number of dashes has to be 2
+        return max(
+            2, int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio))
+        )
 
     def get_start(self) -> np.ndarray:
         """Returns the start point of the line.
@@ -1149,7 +1172,7 @@ class DashedLine(Line):
         ::
 
             >>> DashedLine().get_end()
-            array([0.99871795, 0.        , 0.        ])
+            array([1., 0., 0.])
         """
 
         if len(self.submobjects) > 0:
@@ -1178,7 +1201,7 @@ class DashedLine(Line):
         ::
 
             >>> DashedLine().get_last_handle()
-            array([0.98205128, 0.        , 0.        ])
+            array([0.98333333, 0.        , 0.        ])
         """
 
         return self.submobjects[-1].get_points()[-2]

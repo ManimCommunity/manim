@@ -49,6 +49,8 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
+    """A vectorized mobject."""
+
     def __init__(
         self,
         fill_color=None,
@@ -182,7 +184,47 @@ class VMobject(Mobject):
             curr_rgbas[:, 3] = rgbas[:, 3]
         return self
 
-    def set_fill(self, color=None, opacity=None, family=True):
+    def set_fill(
+        self,
+        color: Optional[str] = None,
+        opacity: Optional[float] = None,
+        family: bool = True,
+    ) -> "VMobject":
+        """Set the fill color and fill opacity of a :class:`VMobject`.
+
+        Parameters
+        ----------
+        color
+            Fill color of the :class:`VMobject`.
+        opacity
+            Fill opacity of the :class:`VMobject`.
+        family
+            If ``True``, the fill color of all submobjects is also set.
+
+        Returns
+        -------
+        VMobject
+            self. For chaining purposes.
+
+        Examples
+        --------
+        .. manim:: SetFill
+            :save_last_frame:
+
+            class SetFill(Scene):
+                def construct(self):
+                    square = Square().scale(2).set_fill(WHITE,1)
+                    circle1 = Circle().set_fill(GREEN,0.8)
+                    circle2 = Circle().set_fill(YELLOW) # No fill_opacity
+                    circle3 = Circle().set_fill(color = '#FF2135', opacity = 0.2)
+                    group = Group(circle1,circle2,circle3).arrange()
+                    self.add(square)
+                    self.add(group)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_style`
+        """
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
@@ -2040,10 +2082,10 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = VGroup()  # Increasing positive_space_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
-                        Circle(radius=r, color=WHITE), positive_space_ratio=ratio
+                        Circle(radius=r, color=WHITE), dashed_ratio=ratio
                     )
                     middle_row.add(circ)
 
@@ -2060,35 +2102,27 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
-        self.positive_space_ratio = positive_space_ratio
+        self.dashed_ratio = dashed_ratio
         super().__init__(color=color, **kwargs)
-        ps_ratio = self.positive_space_ratio
+        r = self.dashed_ratio
+        n = self.num_dashes
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * ps_ratio
-
-            # Shifts the alphas and removes the last dash
-            # to give closed shapes even spacing
+            # Assuming total length is 1
+            dash_len = r / n
             if vmobject.is_closed():
-                alphas += partial_d_alpha / 2
-                np.delete(alphas, -1)
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
+                void_len = (1 - r) / n
             else:
-                alphas /= 1 - full_d_alpha + partial_d_alpha
+                void_len = (1 - r) / (n - 1)
 
             self.add(
                 *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                    )
+                    for i in range(n)
                 ]
             )
         # Family is already taken care of by get_subcurve
