@@ -166,7 +166,7 @@ For example, to test the ``Circle`` VMobject which resides in
 ``manim/mobject/geometry.py``, add the CircleTest to
 ``test/test_geometry.py``.
 
-The name of the module is indicated by the variable __module_test__, that **must** be decalared in any graphical test file. The module name is used to store the graphical control data.
+The name of the module is indicated by the variable __module_test__, that **must** be declared in any graphical test file. The module name is used to store the graphical control data.
 
 .. important::
     You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a 
@@ -175,7 +175,12 @@ The name of the module is indicated by the variable __module_test__, that **must
 Example : in ``test_geometry.py`` :
 
 .. code:: python
+  
+  from manim import *
   from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+
+  __module_test__ = "geometry"
+  
 
 
   @frames_comparison
@@ -183,7 +188,7 @@ Example : in ``test_geometry.py`` :
       circle = Circle()
       scene.play(Animation(circle))
 
-The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**.
+The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**
 
 .. code:: python
 
@@ -212,7 +217,7 @@ Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise 
 To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. 
 For the example above, it would be 
 
-.. code-block::bash
+.. code-block:: bash
 
     pytest test_geometry.py::test_circle --set_test -s
 
