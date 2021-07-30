@@ -292,8 +292,7 @@ class Sphere(ParametricSurface):
         v_range=[0, TAU],
         **kwargs
     ):
-        ParametricSurface.__init__(
-            self,
+        suoer().__init__(
             self.func,
             resolution=resolution,
             u_range=u_range,
@@ -393,7 +392,7 @@ class Prism(Cube):
 
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
-        Cube.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def generate_points(self):
         Cube.generate_points(self)
@@ -452,8 +451,7 @@ class Cone(ParametricSurface):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
             v_range=v_range,
             u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
@@ -574,8 +572,7 @@ class Cylinder(ParametricSurface):
     ):
         self._height = height
         self.radius = radius
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
             resolution=resolution,
             u_range=[-self._height / 2, self._height / 2],
@@ -708,8 +705,7 @@ class Line3D(Cylinder):
         # start and end, if they're mobjects
         self.start = self.pointify(start, self.direction)
         self.end = self.pointify(end, -self.direction)
-        Cylinder.__init__(
-            self,
+        super().__init__(
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
@@ -772,8 +768,8 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        Line3D.__init__(
-            self, start=start, end=end, thickness=thickness, color=color, **kwargs
+        super().__init__(
+            start=start, end=end, thickness=thickness, color=color, **kwargs
         )
 
         self.length = np.linalg.norm(self.vect)
@@ -825,8 +821,7 @@ class Torus(ParametricSurface):
     ):
         self.R = major_radius
         self.r = minor_radius
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
             u_range=u_range,
             v_range=v_range,
