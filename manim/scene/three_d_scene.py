@@ -72,7 +72,7 @@ class ThreeDScene(Scene):
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
         frame_center : list, tuple or np.array, optional
-            The new center of the camera frame in cartesian coordinates
+            The new center of the camera frame in cartesian coordinates.
 
         """
         if phi is not None:
@@ -168,7 +168,7 @@ class ThreeDScene(Scene):
         gamma: Optional[float] = None,
         distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
-        added_anims: List["Animation"] = [],
+        added_anims: Iterable["Animation"] = [],
         **kwargs,
     ):
         """
