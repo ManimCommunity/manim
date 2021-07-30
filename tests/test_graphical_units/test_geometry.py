@@ -55,6 +55,13 @@ class CirclePointsTest(Scene):
         self.add(circle)
 
 
+class DashedVMobjectTest(Scene):
+    def construct(self):
+        circle = DashedVMobject(Circle(), 12, 0.9)
+        line = DashedLine(dash_length=0.5)
+        self.add(circle, line)
+
+
 class DotTest(Scene):
     def construct(self):
         dot = Dot()

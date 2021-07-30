@@ -1763,10 +1763,26 @@ class OpenGLPoint(OpenGLMobject):
 class _AnimationBuilder:
     def __init__(self, mobject):
         self.mobject = mobject
-        self.overridden_animation = None
         self.mobject.generate_target()
+
+        self.overridden_animation = None
         self.is_chaining = False
         self.methods = []
+
+        # Whether animation args can be passed
+        self.cannot_pass_args = False
+        self.anim_args = {}
+
+    def __call__(self, **kwargs):
+        if self.cannot_pass_args:
+            raise ValueError(
+                "Animation arguments must be passed before accessing methods and can only be passed once"
+            )
+
+        self.anim_args = kwargs
+        self.cannot_pass_args = True
+
+        return self
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
@@ -1782,22 +1798,32 @@ class _AnimationBuilder:
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
-                    self.mobject, *method_args, **method_kwargs
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
                 )
             else:
                 method(*method_args, **method_kwargs)
             return self
 
         self.is_chaining = True
+        self.cannot_pass_args = True
+
         return update_target
 
     def build(self):
         from ..animation.transform import _MethodAnimation
 
         if self.overridden_animation:
-            return self.overridden_animation
+            anim = self.overridden_animation
+        else:
+            anim = _MethodAnimation(self.mobject, self.methods)
 
-        return _MethodAnimation(self.mobject, self.methods)
+        for attr, value in self.anim_args.items():
+            setattr(anim, attr, value)
+
+        return anim
 
 
 def override_animate(method):
