@@ -567,7 +567,7 @@ class Cylinder(Surface):
         direction=Z_AXIS,
         v_range=[0, TAU],
         show_ends=True,
-        resolution=24,
+        resolution=(24, 24),
         **kwargs
     ):
         self._height = height
@@ -816,7 +816,7 @@ class Torus(Surface):
         minor_radius=1,
         u_range=[0, TAU],
         v_range=[0, TAU],
-        resolution=24,
+        resolution=(24, 24),
         **kwargs
     ):
         self.R = major_radius
