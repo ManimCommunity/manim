@@ -1181,7 +1181,7 @@ class ManimConfig(MutableMapping):
 
     window_size = property(
         lambda self: self._d["window_size"],
-        lambda self, val: self._set_tuple("window_size", val),
+        lambda self, val: self._d.__setitem__("window_size", val),
         doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
     )
 
