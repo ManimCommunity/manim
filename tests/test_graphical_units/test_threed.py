@@ -52,10 +52,13 @@ class AxesTest(ThreeDScene):
 
 
 class CameraMoveTest(ThreeDScene):
+    """Tests camera movement to explore varied views of a static scene."""
+
     def construct(self):
-        cube = Cube()
-        self.add(cube)
-        self.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1])
+        axes = ThreeDAxes()
+        self.add(axes)
+        self.add(Dot([1, 2, 3]))
+        self.move_camera(phi=PI / 8, theta=-PI / 8, frame_center=[1, 2, 3])
 
 
 class AmbientCameraMoveTest(ThreeDScene):
