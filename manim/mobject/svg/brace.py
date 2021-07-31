@@ -160,7 +160,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
             self.label.scale(self.label_scale)
 
         self.brace.put_at_tip(self.label)
-        self.submobjects = [self.brace, self.label]
+        self.add(self.brace, self.label)
 
     def creation_anim(self, label_anim=FadeIn, brace_anim=GrowFromCenter):
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
@@ -170,7 +170,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
         self.brace.put_at_tip(self.label)
-        self.submobjects[0] = self.brace
+        self.brace = self.brace
         return self
 
     def change_label(self, *text, **kwargs):
@@ -179,7 +179,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
             self.label.scale(self.label_scale)
 
         self.brace.put_at_tip(self.label)
-        self.submobjects[1] = self.label
+        self.label = self.label
         return self
 
     def change_brace_label(self, obj, *text):
