@@ -412,24 +412,13 @@ class Mobject:
             ValueError: Mobject cannot contain self
 
         """
-        if config.renderer == "opengl":
-            if self in mobjects:
-                raise Exception("Mobject cannot contain self")
-            for mobject in mobjects:
-                if mobject not in self.submobjects:
-                    self.submobjects.append(mobject)
-                if self not in mobject.parents:
-                    mobject.parents.append(self)
-            self.assemble_family()
-            return self
-        else:
-            for m in mobjects:
-                if not isinstance(m, Mobject):
-                    raise TypeError("All submobjects must be of type Mobject")
-                if m is self:
-                    raise ValueError("Mobject cannot contain self")
-            self.submobjects = list_update(self.submobjects, mobjects)
-            return self
+        for m in mobjects:
+            if not isinstance(m, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+            if m is self:
+                raise ValueError("Mobject cannot contain self")
+        self.submobjects = list_update(self.submobjects, mobjects)
+        return self
 
     def __add__(self, mobject):
         raise NotImplementedError
@@ -1107,21 +1096,13 @@ class Mobject:
         :meth:`move_to`
         """
 
-        if config.renderer == "opengl":
-            self.apply_points_function(
-                lambda points: points + vectors[0],
-                about_edge=None,
-                works_on_bounding_box=True,
-            )
-            return self
-        else:
-            total_vector = reduce(op.add, vectors)
-            for mob in self.family_members_with_points():
-                mob.points = mob.points.astype("float")
-                mob.points += total_vector
-                if hasattr(mob, "data") and "points" in mob.data:
-                    mob.data["points"] += total_vector
-            return self
+        total_vector = reduce(op.add, vectors)
+        for mob in self.family_members_with_points():
+            mob.points = mob.points.astype("float")
+            mob.points += total_vector
+            if hasattr(mob, "data") and "points" in mob.data:
+                mob.data["points"] += total_vector
+        return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
         r"""Scale the size by a factor.
@@ -1163,18 +1144,10 @@ class Mobject:
         :meth:`move_to`
 
         """
-        if config.renderer == "opengl":
-            self.apply_points_function(
-                lambda points: scale_factor * points,
-                works_on_bounding_box=True,
-                **kwargs,
-            )
-            return self
-        else:
-            self.apply_points_function_about_point(
-                lambda points: scale_factor * points, **kwargs
-            )
-            return self
+        self.apply_points_function_about_point(
+            lambda points: scale_factor * points, **kwargs
+        )
+        return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes=[]):
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
@@ -1188,18 +1161,11 @@ class Mobject:
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
-        if config.renderer == "opengl":
-            rot_matrix_T = rotation_matrix_transpose(angle, axis)
-            self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T), about_point, **kwargs
-            )
-            return self
-        else:
-            rot_matrix = rotation_matrix(angle, axis)
-            self.apply_points_function_about_point(
-                lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
-            )
-            return self
+        rot_matrix = rotation_matrix(angle, axis)
+        self.apply_points_function_about_point(
+            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+        )
+        return self
 
     def flip(self, axis=UP, **kwargs):
         """Flips/Mirrors an mobject about its center.
@@ -1867,10 +1833,7 @@ class Mobject:
         return self.get_all_points()
 
     def get_num_points(self):
-        if config.renderer == "opengl":
-            return len(self.data["points"])
-        else:
-            return len(self.points)
+        return len(self.points)
 
     def get_extremum_along_dim(self, points=None, dim=0, key=0):
         if points is None:
@@ -2002,18 +1965,12 @@ class Mobject:
     def get_start(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
-        if config.renderer == "opengl":
-            return np.array(self.data["points"][0])
-        else:
-            return np.array(self.points[0])
+        return np.array(self.points[0])
 
     def get_end(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
-        if config.renderer == "opengl":
-            return np.array(self.data["points"][-1])
-        else:
-            return np.array(self.points[-1])
+        return np.array(self.points[-1])
 
     def get_start_and_end(self):
         """Returns starting and ending point of a stroke as a ``tuple``."""
@@ -2137,15 +2094,9 @@ class Mobject:
         return result + self.submobjects
 
     def get_family(self, recurse=True):
-        if config.renderer == "opengl":
-            if recurse:
-                return self.family
-            else:
-                return [self]
-        else:
-            sub_families = list(map(Mobject.get_family, self.submobjects))
-            all_mobjects = [self] + list(it.chain(*sub_families))
-            return remove_list_redundancies(all_mobjects)
+        sub_families = list(map(Mobject.get_family, self.submobjects))
+        all_mobjects = [self] + list(it.chain(*sub_families))
+        return remove_list_redundancies(all_mobjects)
 
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.get_num_points() > 0]
@@ -2602,12 +2553,7 @@ class Mobject:
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config.renderer == "opengl":
-            self.data["points"][:] = path_func(
-                mobject1.data["points"], mobject2.data["points"], alpha
-            )
-        else:
-            self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
@@ -2661,18 +2607,11 @@ class Mobject:
 
     # Errors
     def throw_error_if_no_points(self):
-        if config.renderer == "opengl":
-            if len(self.data["points"]) == 0:
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
-        else:
-            if self.has_no_points():
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
+        if self.has_no_points():
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call Mobject.{caller_name} for a Mobject with no points"
+            )
 
     # About z-index
     def set_z_index(
