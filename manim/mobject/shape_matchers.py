@@ -121,7 +121,7 @@ class BackgroundRectangle(SurroundingRectangle):
 class Cross(VGroup):
     """Creates a cross.
 
-     Parameters
+    Parameters
     ----------
     mobject
         The mobject linked to this instance. It fits the mobject when specified. Defaults to None.
