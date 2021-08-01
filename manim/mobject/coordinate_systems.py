@@ -1561,10 +1561,6 @@ class NumberPlane(Axes):
 
         # TODO this was added so that we can run tests on NumberPlane
         # In the future these attributes will be tacked onto self.background_lines
-        #self.x_lines = x_lines1
-        #self.y_lines = y_lines1
-
-        # For some reason the above is wrong
 
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
