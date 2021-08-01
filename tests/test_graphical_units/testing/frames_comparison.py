@@ -73,7 +73,7 @@ def frames_comparison(
             functools.partial(tested_scene_construct, scene=None)
         )
 
-        if not "__module_test__" in tested_scene_construct.__globals__:
+        if "__module_test__" not in tested_scene_construct.__globals__:
             raise Exception(
                 "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file."
             )
@@ -194,7 +194,7 @@ def _make_test_comparing_frames(
             sceneTested = _make_test_scene_class(
                 base_scene=base_scene,
                 construct_test=construct,
-                # NOTE this is realy ugly but it's due to the very bad design of the two renderers.
+                # NOTE this is really ugly but it's due to the very bad design of the two renderers.
                 # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
                 # is not passed to the renderer. See __init__ of Scene.
                 # This potentially prevents OpenGL testing.

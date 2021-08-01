@@ -52,7 +52,7 @@ def test_Axes(scene):
 
 
 @frames_comparison(base_scene=ThreeDScene)
-def test_CameraMove(scene):
+def test_CameraMoveAxes(scene):
     """Tests camera movement to explore varied views of a static scene."""
     axes = ThreeDAxes()
     scene.add(axes)
