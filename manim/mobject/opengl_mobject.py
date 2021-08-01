@@ -3,6 +3,8 @@ import itertools as it
 import random
 import sys
 from functools import wraps
+from math import ceil
+from typing import Iterable, Optional, Tuple, Union
 
 import moderngl
 import numpy as np
@@ -487,48 +489,238 @@ class OpenGLMobject:
 
     def arrange_in_grid(
         self,
-        n_rows=None,
-        n_cols=None,
-        buff=None,
-        h_buff=None,
-        v_buff=None,
-        buff_ratio=None,
-        h_buff_ratio=0.5,
-        v_buff_ratio=0.5,
-        aligned_edge=ORIGIN,
-        fill_rows_first=True,
-    ):
-        submobs = self.submobjects
-        if n_rows is None and n_cols is None:
-            n_rows = int(np.sqrt(len(submobs)))
-        if n_rows is None:
-            n_rows = len(submobs) // n_cols
-        if n_cols is None:
-            n_cols = len(submobs) // n_rows
+        rows: Optional[int] = None,
+        cols: Optional[int] = None,
+        buff: Union[float, Tuple[float, float]] = MED_SMALL_BUFF,
+        cell_alignment: np.ndarray = ORIGIN,
+        row_alignments: Optional[str] = None,  # "ucd"
+        col_alignments: Optional[str] = None,  # "lcr"
+        row_heights: Optional[Iterable[Optional[float]]] = None,
+        col_widths: Optional[Iterable[Optional[float]]] = None,
+        flow_order: str = "rd",
+        **kwargs,
+    ) -> "OpenGLMobject":
+        """Arrange submobjects in a grid.
 
-        if buff is not None:
-            h_buff = buff
-            v_buff = buff
+        Parameters
+        ----------
+        rows
+            The number of rows in the grid.
+        cols
+            The number of columns in the grid.
+        buff
+            The gap between grid cells. To specify a different buffer in the horizontal and
+            vertical directions, a tuple of two values can be given - ``(row, col)``.
+        cell_alignment
+            The way each submobject is aligned in its grid cell.
+        row_alignments
+            The vertical alignment for each row (top to bottom). Accepts the following characters: ``"u"`` -
+            up, ``"c"`` - center, ``"d"`` - down.
+        col_alignments
+            The horizontal alignment for each column (left to right). Accepts the following characters ``"l"`` - left,
+            ``"c"`` - center, ``"r"`` - right.
+        row_heights
+            Defines a list of heights for certain rows (top to bottom). If the list contains
+            ``None``, the corresponding row will fit its height automatically based
+            on the highest element in that row.
+        col_widths
+            Defines a list of widths for certain columns (left to right). If the list contains ``None``, the
+            corresponding column will fit its width automatically based on the widest element in that column.
+        flow_order
+            The order in which submobjects fill the grid. Can be one of the following values:
+            "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". ("rd" -> fill rightwards then downwards)
+
+        Returns
+        -------
+        Mobject
+            The mobject.
+
+        NOTES
+        -----
+
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
+
+
+        Raises
+        ------
+        ValueError
+            If ``rows`` and ``cols`` are too small to fit all submobjects.
+        ValueError
+            If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
+            :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Examples
+        --------
+        .. manim:: ExampleBoxes
+            :save_last_frame:
+
+            class ExampleBoxes(Scene):
+                def construct(self):
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
+
+        .. manim:: ArrangeInGrid
+            :save_last_frame:
+
+            class ArrangeInGrid(Scene):
+                def construct(self):
+                    #Add some numbered boxes:
+                    np.random.seed(3)
+                    boxes = VGroup(*[
+                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(22)
+                    ])
+                    self.add(boxes)
+
+                    boxes.arrange_in_grid(
+                        buff=(0.25,0.5),
+                        col_alignments="lccccr",
+                        row_alignments="uccd",
+                        col_widths=[2, *[None]*4, 2],
+                        flow_order="dr"
+                    )
+
+
+        """
+        from .geometry import Line
+
+        mobs = self.submobjects.copy()
+        start_pos = self.get_center()
+
+        # get cols / rows values if given (implicitly)
+        def init_size(num, alignments, sizes):
+            if num is not None:
+                return num
+            if alignments is not None:
+                return len(alignments)
+            if sizes is not None:
+                return len(sizes)
+
+        cols = init_size(cols, col_alignments, col_widths)
+        rows = init_size(rows, row_alignments, row_heights)
+
+        # calculate rows cols
+        if rows is None and cols is None:
+            cols = ceil(np.sqrt(len(mobs)))
+            # make the grid as close to quadratic as possible.
+            # choosing cols first can results in cols>rows.
+            # This is favored over rows>cols since in general
+            # the sceene is wider than high.
+        if rows is None:
+            rows = ceil(len(mobs) / cols)
+        if cols is None:
+            cols = ceil(len(mobs) / rows)
+        if rows * cols < len(mobs):
+            raise ValueError("Too few rows and columns to fit all submobjetcs.")
+        # rows and cols are now finally valid.
+
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
         else:
-            if buff_ratio is not None:
-                v_buff_ratio = buff_ratio
-                h_buff_ratio = buff_ratio
-            if h_buff is None:
-                h_buff = h_buff_ratio * self[0].get_width()
-            if v_buff is None:
-                v_buff = v_buff_ratio * self[0].get_height()
+            buff_x = buff_y = buff
 
-        x_unit = h_buff + max([sm.get_width() for sm in submobs])
-        y_unit = v_buff + max([sm.get_height() for sm in submobs])
+        # Initialize alignments correctly
+        def init_alignments(alignments, num, mapping, name, dir):
+            if alignments is None:
+                # Use cell_alignment as fallback
+                return [cell_alignment * dir] * num
+            if len(alignments) != num:
+                raise ValueError("{}_alignments has a mismatching size.".format(name))
+            alignments = list(alignments)
+            for i in range(num):
+                alignments[i] = mapping[alignments[i]]
+            return alignments
 
-        for index, sm in enumerate(submobs):
-            if fill_rows_first:
-                x, y = index % n_cols, index // n_cols
-            else:
-                x, y = index // n_rows, index % n_rows
-            sm.move_to(ORIGIN, aligned_edge)
-            sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
-        self.center()
+        row_alignments = init_alignments(
+            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+        )
+        col_alignments = init_alignments(
+            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+        )
+        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+
+        mapper = {
+            "dr": lambda r, c: (rows - r - 1) + c * rows,
+            "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
+            "ur": lambda r, c: r + c * rows,
+            "ul": lambda r, c: r + (cols - c - 1) * rows,
+            "rd": lambda r, c: (rows - r - 1) * cols + c,
+            "ld": lambda r, c: (rows - r - 1) * cols + (cols - c - 1),
+            "ru": lambda r, c: r * cols + c,
+            "lu": lambda r, c: r * cols + (cols - c - 1),
+        }
+        if flow_order not in mapper:
+            raise ValueError(
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+            )
+        flow_order = mapper[flow_order]
+
+        # Reverse row_alignments and row_heights. Necessary since the
+        # grid filling is handled bottom up for simplicity reasons.
+        def reverse(maybe_list):
+            if maybe_list is not None:
+                maybe_list = list(row_alignments)
+                maybe_list.reverse()
+                return maybe_list
+
+        row_alignments = reverse(row_alignments)
+        row_heights = reverse(row_heights)
+
+        placeholder = OpenGLMobject()
+        # Used to fill up the grid temporarily, doesn't get added to the scene.
+        # In this case a Mobject is better than None since it has width and height
+        # properties of 0.
+
+        mobs.extend([placeholder] * (rows * cols - len(mobs)))
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+
+        measured_heigths = [
+            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+        ]
+        measured_widths = [
+            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+        ]
+
+        # Initialize row_heights / col_widths correctly using measurements as fallback
+        def init_sizes(sizes, num, measures, name):
+            if sizes is None:
+                sizes = [None] * num
+            if len(sizes) != num:
+                raise ValueError("{} has a mismatching size.".format(name))
+            return [
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+            ]
+
+        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
+
+        x, y = 0, 0
+        for r in range(rows):
+            x = 0
+            for c in range(cols):
+                if grid[r][c] is not placeholder:
+                    alignment = row_alignments[r] + col_alignments[c]
+                    line = Line(
+                        x * RIGHT + y * UP,
+                        (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
+                    )
+                    # Use a mobject to avoid rewriting align inside
+                    # box code that Mobject.move_to(Mobject) already
+                    # includes.
+
+                    grid[r][c].move_to(line, alignment)
+                x += widths[c] + buff_x
+            y += heights[r] + buff_y
+
+        self.move_to(start_pos)
         return self
 
     def get_grid(self, n_rows, n_cols, height=None, **kwargs):
