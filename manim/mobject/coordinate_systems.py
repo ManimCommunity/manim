@@ -1611,7 +1611,7 @@ class NumberPlane(Axes):
                 0,
                 min(
                     axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
-                    axis_perpendicular_to.x_max
+                    axis_perpendicular_to.x_max,
                 ),
                 step,
             ),
