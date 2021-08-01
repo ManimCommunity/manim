@@ -145,7 +145,7 @@ class Cross(VGroup):
 
     def __init__(
         self,
-        mobject: Optional[Mobject] = None,
+        mobject: Optional["Mobject"] = None,
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
