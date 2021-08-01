@@ -33,6 +33,7 @@ from ...utils.bezier import (
     partial_bezier_points,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.deprecation import deprecated_params
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -1674,7 +1675,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.submobjects[key] = value
 
 
-class VDict(VMobject):
+class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
     key, like a python dict
 
@@ -1773,7 +1774,7 @@ class VDict(VMobject):
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
         self.add(mapping_or_iterable)
@@ -1986,7 +1987,7 @@ class VDict(VMobject):
             self.add_key_value_pair('s', square_obj)
 
         """
-        if not isinstance(value, VMobject):
+        if not isinstance(value, (VMobject, OpenGLVMobject)):
             raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
@@ -2101,11 +2102,18 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
         self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.num_dashes = num_dashes
-        self.dashed_ratio = dashed_ratio
         super().__init__(color=color, **kwargs)
         r = self.dashed_ratio
         n = self.num_dashes
