@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -276,7 +276,11 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
     ) -> VGroup:
         """Adds labels to the axes.
 
@@ -294,6 +298,17 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
+        ..code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
+
         Returns
         -------
         VGroup
@@ -306,10 +321,13 @@ class CoordinateSystem:
             axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def get_line_from_axis_to_point(
         self,
