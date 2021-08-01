@@ -262,7 +262,7 @@ class ParametricSurface(VGroup):
 
 class Plane(ParametricSurface):
     """
-    A 3D Plane Mobject.
+    A 2D plane :class:`~.VMobject`.
 
     Examples
     --------
@@ -290,16 +290,16 @@ class Plane(ParametricSurface):
 
     Parameters
     ----------
-    point: Sequence[float]
+    point
         A point that lies on the plane.
-    normal_vect: Sequence[float]
+    normal_vect
         A vector perpendicular to the plane.
-    u_range: Sequence[float]
+    u_range
         The dimensions of the plane.
-    v_range: Sequence[float]
+    v_range
         The dimensions of the plane.
     kwargs
-        To be passed to :class:`ParametricSurface`
+        To be passed to :class:`ParametricSurface`.
     """
 
     def __init__(

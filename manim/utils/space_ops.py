@@ -780,7 +780,7 @@ def perpendicular_bisector(
     return [m + direction, m - direction]
 
 
-def projected_vector(vec1: np.ndarray, vec2: np.ndarray):
+def projected_vector(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
     """Returns a vector that is projected onto another vector.
 
     Parameters
@@ -801,20 +801,20 @@ def projected_vector(vec1: np.ndarray, vec2: np.ndarray):
     return vec1 * dot_prod / length_prod
 
 
-def cartesian_to_spherical(point: Sequence[float]):
-    """Returns a list of numbers corresponding to each
+def cartesian_to_spherical(point: Sequence[float]) -> np.ndarray:
+    """Returns a numpy array of numbers corresponding to each
     polar coordinate value (phi, theta, distance).
 
     Parameters
     ----------
     point
-        a numpy array point.
+        A numpy array point.
 
     Returns
     -------
     numpy array
         A list of numbers corresponding to each
-        polar coordinate value (rho, theta, phi)
+        polar coordinate value (rho, theta, phi).
     """
     phi = angle_between_vectors(point, OUT)
     theta = np.arctan2(point[1], point[0])
@@ -822,14 +822,14 @@ def cartesian_to_spherical(point: Sequence[float]):
     return np.array([rho, theta, phi])
 
 
-def spherical_to_cartesian(spherical: Sequence[float]):
+def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
     """Returns a point coordinate based on the spherical
     coordinates given.
 
     Parameters
     ----------
     spherical
-        a numpy array of spherical coordinates.
+        A numpy array of spherical coordinates.
 
     Returns
     -------
