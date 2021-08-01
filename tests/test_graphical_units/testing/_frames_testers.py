@@ -70,7 +70,7 @@ class _ControlDataWriter(_FramesTester):
         self.save_contol_data()
 
     def save_contol_data(self):
-        self.frames = self.frames.astype('uint8')
+        self.frames = self.frames.astype("uint8")
         np.savez_compressed(self.file_path, frame_data=self.frames)
         logger.info(
             f"{self._number_frames_written} control frames saved in {self.file_path}"
