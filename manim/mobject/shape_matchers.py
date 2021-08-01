@@ -147,8 +147,8 @@ class Cross(VGroup):
         self,
         mobject: Optional[Mobject] = None,
         stroke_color: Optional[Color] = RED,
-        stroke_width: Optional[int] = 6,
-        length: Optional[int] = 1,
+        stroke_width: Optional[float] = 6,
+        scale_factor: Optional[float] = 1,
         **kwargs
     ):
         super().__init__(
@@ -156,7 +156,7 @@ class Cross(VGroup):
         )
         if mobject is not None:
             self.replace(mobject, stretch=True)
-        self.scale(length)
+        self.scale(scale_factor)
         self.set_stroke(color=stroke_color, width=stroke_width)
 
 
