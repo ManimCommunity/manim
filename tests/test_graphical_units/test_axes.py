@@ -23,6 +23,6 @@ def test_custom_coordinates(scene):
     ax = Axes(x_range=[0, 10])
 
     ax.add_coordinates(
-        dict(zip([x for x in range(1, 10)], [Text("str") for _ in range(1, 10)]))
+        dict(zip([x for x in range(1, 10)], [Tex("str") for _ in range(1, 10)]))
     )
     scene.add(ax)
