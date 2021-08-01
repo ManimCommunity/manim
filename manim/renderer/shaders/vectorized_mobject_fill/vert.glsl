@@ -1,6 +1,6 @@
 #version 330
 
-uniform mat4 u_view_matrix;
+uniform mat4 u_model_view_matrix;
 uniform mat4 u_projection_matrix;
 
 in vec3 in_vert;
@@ -16,5 +16,5 @@ void main() {
     v_color = in_color;
     v_texture_coords = texture_coords;
     v_texture_mode = texture_mode;
-    gl_Position = u_projection_matrix * u_view_matrix * vec4(in_vert, 1.0);
+    gl_Position = u_projection_matrix * u_model_view_matrix * vec4(in_vert, 1.0);
 }

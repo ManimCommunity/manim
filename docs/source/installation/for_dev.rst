@@ -20,39 +20,13 @@ steps to clone your fork.
 For Developers with Poetry (Recommended)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Poetry can be easily installed in any OS by running the following command:
+Poetry is a tool for dependency management and packaging in Python. It allows to 
+declare the libraries your project depends on and it will manage (install/update) them 
+for you. In addition, Poetry provides a simple interface for managing virtual environments.
 
-Linux / OSX / BashOnWindows install instructions
-************************************************
-
-.. code-block:: bash
-	
-	  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-
-
-Windows PowerShell install instructions
-***************************************
-
-.. code-block:: bash
-	
-	  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
-
-.. note:: Poetry can be installed by other ways also, such as with ``pip``. 
-          See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_. 
-          If you are using MacOS with the Homebrew package manager, you can also install 
-          poetry with ``brew install poetry``.
-
-It will add it to ``PATH`` variable automatically. In order to make sure you have poetry installed correctly, try running:
-
-.. code-block:: bash
-
-	poetry --version
-
-
-.. note:: You may need to restart your shell in order for the changes to take effect.
-
-See the `docs on installation python poetry for more information
-<https://python-poetry.org/docs/>`_.
+Please follow `Poetry's installation guidelines
+<https://python-poetry.org/docs/master/#installation>`_
+in order to get Poetry up and running on your system.
 
 Installing System Dependencies
 ******************************
