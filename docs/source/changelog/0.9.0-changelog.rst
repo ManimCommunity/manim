@@ -20,6 +20,7 @@ time.
 * Jared Hughes +
 * Jason Villanueva
 * Kadatatlu Kishore +
+* KingWampy
 * LED Me Explain +
 * Laith Bahodi
 * Mohammad Al-Fetyani
@@ -65,7 +66,13 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 50 pull requests were merged for this release.
+A total of 52 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#1677 <https://github.com/ManimCommunity/manim/pull/1677>`__: New Mobject: Added :class:`~.Table`
+
 
 Deprecated classes and functions
 --------------------------------
@@ -74,44 +81,46 @@ Deprecated classes and functions
    - ``dash_spacing`` is an unused parameter
    - ``positive_space_ratio`` has been replaced with the shorter name ``dashed_ratio``
 
-* `#1773 <https://github.com/ManimCommunity/manim/pull/1773>`__: Remove all classes and functions that were deprecated until `v0.7.0` and `v0.8.0`
+* `#1773 <https://github.com/ManimCommunity/manim/pull/1773>`__: Remove all classes and functions that were deprecated until ``v0.7.0`` and ``v0.8.0``
+   The classes ``FadeInFrom``, ``FadeOutAndShift``, ``FadeOutToPoint``, ``FadeInFromPoint``, ``FadeInFromLarge``, ``VFadeIn``, ``VFadeOut``, ``VFadeInThenOut`` have been removed, use :class:`~.FadeIn` or :class:`~.FadeOut` with appropriate
+   keyword arguments instead.
 
+   The classes ``CircleIndicate``, ``ShowCreationThenDestruction``, ``AnimationOnSurroundingRectangle``, ``ShowPassingFlashAround``, ``ShowCreationThenDestructionAround``, ``ShowCreationThenFadeAround``, ``WiggleOutThenIn``, ``TurnInsideOut`` have been removed. Use :class:`~.Circumscribe`, :class:`~.ShowPassingFlash`, or :class:`~.Wiggle` instead.
+
+   The classes ``OpenGLTexMobject`` and ``OpenGLTextMobject`` have been removed, use :class:`~.MathTex` and :class:`~.Tex` instead. Also, ``SVGPathMobject`` has been removed, use :class:`~.SVGPathMobject` instead.
+
+   Finally, the utility functions ``get_norm`` and ``cross`` have been removed (use the corresponding Numpy methods instead), and the function ``angle_between`` has been replaced with ``angle_between_vectors``.
+
+* `#1731 <https://github.com/ManimCommunity/manim/pull/1731>`__: Deprecated :class:`~.ParametricSurface` parameters
+   - ``u_min`` and ``u_max`` have been replaced by ``u_range``.
+   - ``v_min`` and ``v_max`` have been replaced by ``v_range``.
 
 New features
 ------------
 
-* `#1677 <https://github.com/ManimCommunity/manim/pull/1677>`__: New Mobject: Added :class:`~.Tabular`
-   New Mobject that allows displaying multiple styles of tables.
-
-* `#1719 <https://github.com/ManimCommunity/manim/pull/1719>`__: Added :class:`~.Broadcast` animation.
+* `#1719 <https://github.com/ManimCommunity/manim/pull/1719>`__: Added :class:`~.Broadcast` animation
 
 
-* `#1765 <https://github.com/ManimCommunity/manim/pull/1765>`__: Added a static method to :class:`~.Circle` to allow it to be defined by three points
-   - Added a static method to :class:`~.Circle` to allow it to be defined by three points
+* `#1765 <https://github.com/ManimCommunity/manim/pull/1765>`__: Added a static method :meth:`.Circle.from_three_points` for defining a circle from three points
    - Added a new :func:`~.perpendicular_bisector` function in `space_ops.py`
 
-* `#1686 <https://github.com/ManimCommunity/manim/pull/1686>`__: Added `.set_fill_by_value()` to :class:`~.ParametricSurface`
-   Added the method `.set_fill_by_value()` to :class:`~ParametricSurface` enabling a color gradient to be applied to parametric surfaces, including the ability to define at which points the colors should be centered.
+* `#1686 <https://github.com/ManimCommunity/manim/pull/1686>`__: Added :meth:`.ParametricSurface.set_fill_by_value`
+   This method enables a color gradient to be applied to a :class:`~.ParametricSurface`, including the ability to define at which points the colors should be centered.
 
 Enhancements
 ------------
 
-* `#1833 <https://github.com/ManimCommunity/manim/pull/1833>`__: Opengl compatibility for :class:`~.VDict`, :class:`~.Axes.get_line_graph` and :class:`~.FocusOn`.
+* `#1833 <https://github.com/ManimCommunity/manim/pull/1833>`__: Added OpenGL compatibility for :class:`~.VDict`, :meth:`~.Axes.get_line_graph` and :class:`~.FocusOn`
 
 
-* `#1760 <https://github.com/ManimCommunity/manim/pull/1760>`__: Add `window_size` flag.
-   Added ``window_size`` flag to manually adjust the size of the OpenGL window. Accepts a tuple in the form: ``x,y``.
+* `#1760 <https://github.com/ManimCommunity/manim/pull/1760>`__: Added ``window_size`` flag to manually adjust the size of the OpenGL window
+   Accepts a tuple in the form: ``x, y``.
 
-* `#1823 <https://github.com/ManimCommunity/manim/pull/1823>`__: DashedVMobject reworked
+* `#1823 <https://github.com/ManimCommunity/manim/pull/1823>`__: Reworked :class:`~.DashedVMobject`
    Rewritten the logic to generate dashes
-   `positive_space_ratio` renamed to `dashed_ratio`
-   `dash_spacing` parameter removed from `DashedLine`
 
 * `#1808 <https://github.com/ManimCommunity/manim/pull/1808>`__: OpenGL renderer updates
-   Improvements to OpenGL infrastructure
 
-* `#1802 <https://github.com/ManimCommunity/manim/pull/1802>`__: Refactored graphical unit testing system, and implemented multi frames tests.
-   Refactored graphical unit testing system, and implemented multi frames tests.
 
 * `#1787 <https://github.com/ManimCommunity/manim/pull/1787>`__: Made :class:`~.DecimalNumber` apply color to the ellipsis
    Made color apply to the dots when `show_ellipsis` is set to true in `DecimalNumber`
@@ -120,7 +129,7 @@ Enhancements
 
 
 * `#1757 <https://github.com/ManimCommunity/manim/pull/1757>`__: Added warning when there is a large number of items to hash.
-   Added warning when there are many items to hash.
+
 
 * `#1774 <https://github.com/ManimCommunity/manim/pull/1774>`__: Add the ``reverse`` parameter to :class:`~.Write`
 
@@ -128,70 +137,73 @@ Enhancements
 Fixed bugs
 ----------
 
-* `#1722 <https://github.com/ManimCommunity/manim/pull/1722>`__: Fixing `remover=True` for :class:`~.AnimationGroup`
+* `#1722 <https://github.com/ManimCommunity/manim/pull/1722>`__: Fixing ``remover=True`` for :class:`~.AnimationGroup`
 
 
-* `#1844 <https://github.com/ManimCommunity/manim/pull/1844>`__: Fix oversized code window with opengl renderer
-   Fixed oversized Code window when using the opengl renderer
+* `#1727 <https://github.com/ManimCommunity/manim/pull/1727>`__: Fixed some hot reload issues and compatibility with IDEs
+   - Fixed interactive embed issue where it would fail when running on non-tty terminals
+   - Fixed issue where file observer would error after the second run as the first observer was not closed
 
-* `#1821 <https://github.com/ManimCommunity/manim/pull/1821>`__: Fixed issues concerning frame_center in ThreeDScene
-   - Changing frame_center in a ThreeDScene now actually changes the camera position.
-   - An animation with only frame_center animated will now be rendered properly.
-   - A black dot is not created at the origin once frame_center is animated.
+* `#1844 <https://github.com/ManimCommunity/manim/pull/1844>`__: Fixed the oversized :class:`~.Code` window with the OpenGL renderer
 
-* `#1826 <https://github.com/ManimCommunity/manim/pull/1826>`__: Fix bar chart scaling
+
+* `#1821 <https://github.com/ManimCommunity/manim/pull/1821>`__: Fixed issues concerning ``frame_center`` in :class:`~.ThreeDScene`
+   - Changing ``frame_center`` in a :class:`~.ThreeDScene` now actually changes the camera position.
+   - An animation with only ``frame_center`` animated will now be rendered properly.
+   - A black dot is not created at the origin once ``frame_center`` is animated.
+
+* `#1826 <https://github.com/ManimCommunity/manim/pull/1826>`__: Fixed :class:`~.BarChart` scaling
    Fix bug with `change_bar_values` in :class:`~.BarChart`
 
-* `#1839 <https://github.com/ManimCommunity/manim/pull/1839>`__: Allow passing arguments to `.animate` with the OpenGL renderer
+* `#1839 <https://github.com/ManimCommunity/manim/pull/1839>`__: Allow passing arguments to ``.animate`` with the OpenGL renderer
 
 
-* `#1791 <https://github.com/ManimCommunity/manim/pull/1791>`__: fix: set_z_index now sets all submobjects' z_index value
-
+* `#1791 <https://github.com/ManimCommunity/manim/pull/1791>`__: :meth:`~.Mobject.set_z_index` now sets all submobjects' ``z_index`` value
+   All submobjects' z-index are set with the specified value.
 
 * `#1817 <https://github.com/ManimCommunity/manim/pull/1817>`__: Remove pillow version requirement
 
 
-* `#1792 <https://github.com/ManimCommunity/manim/pull/1792>`__: Fix png format issue when using dry run
-   Fixed bug that caused dry runs to fail when using the png format
+* `#1792 <https://github.com/ManimCommunity/manim/pull/1792>`__: Fixed bug that caused dry runs to fail when using the PNG format
 
-* `#1790 <https://github.com/ManimCommunity/manim/pull/1790>`__: Fix import from `manimlib` 
-   Made the import local and removed all `manimlib` comments.
+
+* `#1790 <https://github.com/ManimCommunity/manim/pull/1790>`__: Fixed an import from ``manimlib``
+
 
 * `#1782 <https://github.com/ManimCommunity/manim/pull/1782>`__: Fix :class:`~.Tex` not working properly with OpenGL
    Utilized the `~.set_submobjects` function for both renderer in the `~.break_up_by_substrings` function.
 
-* `#1783 <https://github.com/ManimCommunity/manim/pull/1783>`__: Fix :meth:`~OpenGLMobject.shuffle` function and add :meth:`~.invert` to OpenGL
-   Fixes #1777
-
-* `#1786 <https://github.com/ManimCommunity/manim/pull/1786>`__: Fix :class:`~.DecimalNumber` not working properly when the number of digits changes
-   Fixes #1761
-
-* `#1763 <https://github.com/ManimCommunity/manim/pull/1763>`__: Fix not being able to set some CLI flags in the configuration file
-   Changed the default value of all `manim render` flags to None, which basically means consider the default value from the config file unless specified otherwise in the CLI.
-
-* `#1776 <https://github.com/ManimCommunity/manim/pull/1776>`__: fix: `get_riemann_rectangles` now uses the graphs range instead of the axes range
+* `#1783 <https://github.com/ManimCommunity/manim/pull/1783>`__: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.invert` to OpenGL
 
 
-* `#1770 <https://github.com/ManimCommunity/manim/pull/1770>`__: Rewrite put_start_and_end_on for :class:`~.OpenGLMobject` to work correctly in 3D
-   * Rewrite `put_start_and_end_on` for :class:`~.OpenGLMobject` so that they work in 3D.
-   * Remove the conditional in `angle_between_vectors` so that the same function is used regardless of the renderer, since the normal code also works for OpenGL, and generalizes its use into 3D.
+* `#1786 <https://github.com/ManimCommunity/manim/pull/1786>`__: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes
 
-* `#1736 <https://github.com/ManimCommunity/manim/pull/1736>`__: Fix LinearTransformationScene crashing on second animation
-   Fixed LinearTransformationScene crashing on multiple animations
+
+* `#1763 <https://github.com/ManimCommunity/manim/pull/1763>`__: Fixed not being able to set some CLI flags in the configuration file
+
+
+* `#1776 <https://github.com/ManimCommunity/manim/pull/1776>`__: :meth:`~.CoordinateSystem.get_riemann_rectangles` now uses the graph's range instead of the axes range
+
+
+* `#1770 <https://github.com/ManimCommunity/manim/pull/1770>`__: Rewrote :meth:`~.OpenGLMobject.put_start_and_end_on` to work correctly in 3D
+
+
+* `#1736 <https://github.com/ManimCommunity/manim/pull/1736>`__: Fixed :class:`~.LinearTransformationScene` crashing on multiple animations
+
 
 Documentation-related changes
 -----------------------------
 
-* `#1739 <https://github.com/ManimCommunity/manim/pull/1739>`__: Custom Animation Docs
-   Add Custom Animation section in docs building blocks page
+* `#1739 <https://github.com/ManimCommunity/manim/pull/1739>`__: Added a tutorial on creating a custom animation
 
-* `#1835 <https://github.com/ManimCommunity/manim/pull/1835>`__: Updated docs for the test refactor (Tests PR 2/3)
-   Updated tests docs.
+
+* `#1835 <https://github.com/ManimCommunity/manim/pull/1835>`__: Updated docs about creating tests (Tests Refactor PR 2/3)
+
 
 * `#1845 <https://github.com/ManimCommunity/manim/pull/1845>`__: Fixed example in gallery to allow a two-dimensional mean
 
 
-* `#1842 <https://github.com/ManimCommunity/manim/pull/1842>`__: Update documentation for `developer installation` in `for_dev.rst`
+* `#1842 <https://github.com/ManimCommunity/manim/pull/1842>`__: Updated "Developer Installation" documentation
 
 
 * `#1829 <https://github.com/ManimCommunity/manim/pull/1829>`__: Switch the order of Scoop and Choco in the docs for the Windows Installation
@@ -203,13 +215,13 @@ Documentation-related changes
 * `#1819 <https://github.com/ManimCommunity/manim/pull/1819>`__: Update misleading -h flag in document
    Remove non-existing `-h` flag of `manim`, `manim config`, `manim render`
 
-* `#1813 <https://github.com/ManimCommunity/manim/pull/1813>`__: remove unused variables from tutorial
+* `#1813 <https://github.com/ManimCommunity/manim/pull/1813>`__: Removed unused variables from tutorial
 
 
 * `#1815 <https://github.com/ManimCommunity/manim/pull/1815>`__: Added codespell in contribution docs.
-   Fixes #1613.
 
-* `#1778 <https://github.com/ManimCommunity/manim/pull/1778>`__: Improve sidebar structure of reference manual
+
+* `#1778 <https://github.com/ManimCommunity/manim/pull/1778>`__: Improve sidebar structure of the documentation's reference manual
 
 
 * `#1749 <https://github.com/ManimCommunity/manim/pull/1749>`__: Added documentation for :meth:`~.VMobject.set_fill`
@@ -224,8 +236,11 @@ Documentation-related changes
 Changes concerning the testing system
 -------------------------------------
 
-* `#1836 <https://github.com/ManimCommunity/manim/pull/1836>`__: Converted all the graphical tests to the new syntax (Tests PR 3/3).
-   Converted all the graphical tests to the new syntax.
+* `#1836 <https://github.com/ManimCommunity/manim/pull/1836>`__: Converted all the graphical tests to the new syntax (Tests Refactor PR 3/3).
+
+
+* `#1802 <https://github.com/ManimCommunity/manim/pull/1802>`__: Refactored graphical unit testing system, and implemented multi frames tests.
+
 
 Changes to our development infrastructure
 -----------------------------------------
@@ -236,21 +251,18 @@ Changes to our development infrastructure
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* `#1851 <https://github.com/ManimCommunity/manim/pull/1851>`__: Renamed ``Tabular`` to :class:`~.Table`
+
+
 * `#1806 <https://github.com/ManimCommunity/manim/pull/1806>`__: Fixed spelling mistake
 
 
-* `#1745 <https://github.com/ManimCommunity/manim/pull/1745>`__: Updated citation to Manim 0.9.0
-   Updated the citation in the README to Manim 0.9.0.
+* `#1745 <https://github.com/ManimCommunity/manim/pull/1745>`__: Updated the citation in the README to Manim v0.9.0
 
-Unclassified changes
---------------------
 
-* `#1727 <https://github.com/ManimCommunity/manim/pull/1727>`__: Fix some hot reload issues and compatibility with IDEs
-   Fixes #1726
+New releases
+------------
 
-   - Fixed interactive embed issue where it would fail when running on non-tty terminals
-   - Fixed issue where file observer would error after the second run as the first observer was not closed
+* `#1850 <https://github.com/ManimCommunity/manim/pull/1850>`__: Prepare ``v0.9.0``
 
-* `#1731 <https://github.com/ManimCommunity/manim/pull/1731>`__: Changed uv min max to uv range instead for consistency
-   Since most of the library utilizes a range parameter rather than the min max notation, i thought it'd be better to change these too.
 
