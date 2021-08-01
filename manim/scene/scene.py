@@ -112,6 +112,11 @@ class Scene:
         self.camera_target = ORIGIN
         self.widgets = []
         self.dearpygui_imported = dearpygui_imported
+        self.updaters = []
+        self.point_lights = []
+        self.ambient_light = None
+        self.key_to_function_map = {}
+        self.mouse_press_callbacks = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -321,6 +326,10 @@ class Scene:
             for mesh in obj.get_family():
                 mesh.update(dt)
 
+    def update_self(self, dt):
+        for func in self.updaters:
+            func(dt)
+
     def should_update_mobjects(self):
         """
         Returns True if any mobject in Scene is being updated
@@ -454,6 +463,12 @@ class Scene:
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
+
+    def add_updater(self, func):
+        self.updaters.append(func)
+
+    def remove_updater(self, func):
+        self.updaters = [f for f in self.updaters if f is not func]
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -1090,11 +1105,12 @@ class Scene:
                     getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
-                dt = last_time - time.time()
+                dt = time.time() - last_time
                 last_time = time.time()
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
+                self.update_self(dt)
 
         # Join the keyboard thread if necessary.
         if shell is not None and keyboard_thread_needs_join:
@@ -1161,6 +1177,7 @@ class Scene:
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
+        self.update_self(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
@@ -1213,8 +1230,9 @@ class Scene:
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        factor = 1 + np.arctan(-2.1 * offset[1])
-        self.camera.scale(factor, about_point=self.camera_target)
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
@@ -1229,6 +1247,9 @@ class Scene:
             self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
+        else:
+            if char in self.key_to_function_map:
+                self.key_to_function_map[char]()
 
     def on_key_release(self, symbol, modifiers):
         pass
@@ -1275,8 +1296,8 @@ class Scene:
                 d_point[1], axis_of_rotation, homogeneous=True
             )
 
-            maximum_polar_angle = PI / 2
-            minimum_polar_angle = -PI / 2
+            maximum_polar_angle = self.camera.maximum_polar_angle
+            minimum_polar_angle = self.camera.minimum_polar_angle
 
             potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
             potential_camera_location = potential_camera_model_matrix[:3, 3]
@@ -1322,3 +1343,10 @@ class Scene:
                 @ self.camera.model_matrix
             )
             self.camera_target += total_shift_vector
+
+    def set_key_function(self, char, func):
+        self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()

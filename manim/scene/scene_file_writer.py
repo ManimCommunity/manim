@@ -83,9 +83,9 @@ class SceneFileWriter(object):
             image_dir = guarantee_existence(
                 config.get_dir("images_dir", module_name=module_name)
             )
-        self.image_file_path = os.path.join(
-            image_dir, add_extension_if_not_present(default_name, ".png")
-        )
+            self.image_file_path = os.path.join(
+                image_dir, add_extension_if_not_present(default_name, ".png")
+            )
 
         if write_to_movie():
             movie_dir = guarantee_existence(
@@ -288,7 +288,7 @@ class SceneFileWriter(object):
             frame = frame_or_renderer
             if write_to_movie():
                 self.writing_process.stdin.write(frame.tobytes())
-            if is_png_format():
+            if is_png_format() and not config["dry_run"]:
                 target_dir, extension = os.path.splitext(self.image_file_path)
                 Image.fromarray(frame).save(
                     f"{target_dir}{self.frame_count}{extension}"
@@ -305,6 +305,8 @@ class SceneFileWriter(object):
         image : np.array
             The pixel array of the image to save.
         """
+        if config["dry_run"]:
+            return
         if not config["output_file"]:
             self.image_file_path = add_version_before_extension(self.image_file_path)
 
@@ -347,7 +349,7 @@ class SceneFileWriter(object):
                 self.flush_cache_directory()
             else:
                 self.clean_cache()
-        elif is_png_format():
+        elif is_png_format() and not config["dry_run"]:
             target_dir, _ = os.path.splitext(self.image_file_path)
             logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
 
