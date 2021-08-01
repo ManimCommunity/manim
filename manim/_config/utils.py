@@ -291,6 +291,7 @@ class ManimConfig(MutableMapping):
         "video_dir",
         "fullscreen",
         "window_position",
+        "window_size",
         "window_monitor",
         "write_all",
         "write_to_movie",
@@ -577,6 +578,13 @@ class ManimConfig(MutableMapping):
         # tuple keys
         gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
         setattr(self, "gui_location", gui_location)
+
+        window_size = parser["CLI"][
+            "window_size"
+        ]  # if not "default", get a tuple of the position
+        if window_size != "default":
+            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+        setattr(self, "window_size", window_size)
 
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
@@ -1169,6 +1177,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["window_position"],
         lambda self, val: self._d.__setitem__("window_position", val),
         doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
+    )
+
+    window_size = property(
+        lambda self: self._d["window_size"],
+        lambda self, val: self._d.__setitem__("window_size", val),
+        doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
     )
 
     def resolve_movie_file_extension(self, is_transparent):
