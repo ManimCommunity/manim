@@ -579,9 +579,9 @@ Special Camera Settings
            def param_gauss(u, v):
                x = u
                y = v
-               d = np.sqrt(x * x + y * y)
-               sigma, mu = 0.4, 0.0
-               z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
+               sigma, mu = 0.4, [0.0, 0.0]
+               d = np.linalg.norm(np.array([x - mu[0], y - mu[1]]))
+               z = np.exp(-(d ** 2 / (2.0 * sigma ** 2)))
                return np.array([x, y, z])
 
            gauss_plane = ParametricSurface(

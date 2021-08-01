@@ -60,6 +60,13 @@ def test_Dot(scene):
 
 
 @frames_comparison
+def test_DashedVMobject(scene):
+    circle = DashedVMobject(Circle(), 12, 0.9)
+    line = DashedLine(dash_length=0.5)
+    scene.add(circle, line)
+
+
+@frames_comparison
 def test_AnnotationDot(scene):
     adot = AnnotationDot()
     scene.add(adot)
