@@ -52,10 +52,13 @@ class AxesTest(ThreeDScene):
 
 
 class CameraMoveTest(ThreeDScene):
+    """Tests camera movement to explore varied views of a static scene."""
+
     def construct(self):
-        cube = Cube()
-        self.add(cube)
-        self.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1])
+        axes = ThreeDAxes()
+        self.add(axes)
+        self.add(Dot([1, 2, 3]))
+        self.move_camera(phi=PI / 8, theta=-PI / 8, frame_center=[1, 2, 3])
 
 
 class AmbientCameraMoveTest(ThreeDScene):
@@ -93,6 +96,34 @@ class MovingVerticesTest(ThreeDScene):
             g[4].animate.move_to([-1, -1, 0]),
         )
         self.wait()
+
+
+class SurfaceColorscaleTest(ThreeDScene):
+    def construct(self):
+        resolution_fa = 50
+        self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+
+        axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-4, 4, 1))
+
+        def param_trig(u, v):
+            x = u
+            y = v
+            z = y ** 2 / 2 - x ** 2 / 2
+            return z
+
+        trig_plane = ParametricSurface(
+            lambda x, y: axes.c2p(x, y, param_trig(x, y)),
+            resolution=(resolution_fa, resolution_fa),
+            v_min=-3,
+            v_max=+3,
+            u_min=-3,
+            u_max=+3,
+        )
+
+        trig_plane.set_fill_by_value(
+            axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED]
+        )
+        self.add(axes, trig_plane)
 
 
 MODULE_NAME = "threed"

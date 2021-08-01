@@ -14,6 +14,7 @@ from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
+from colour import Color
 
 from ... import config, logger
 from ...constants import *
@@ -251,7 +252,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject from the given path string, or d attribute.
         """
         return SVGPathMobject(
@@ -454,7 +455,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject representing the polygon.
         """
         # This seems hacky... yes it is.

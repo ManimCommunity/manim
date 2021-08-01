@@ -26,13 +26,9 @@ DO NOT REMOVE THE FOLLOWING CHANGELOG LINES, EVEN IF YOU DON'T USE THEM.-->
 ## Explanation for Changes
 <!-- How do your changes improve the library? -->
 
-<!-- For PRs introducing new features, please adjust
-the link below to reference the docs of your feature. -->
-[Documentation Reference](https://manimce--####.org.readthedocs.build)
-<!-- In the link above replace #### with you PR number.
-You can also adjust the path to the module / class you worked on. This could look like adding
-"/en/####/reference/manim.mobject.geometry.Arc.html" to the link for the Arc class.
-Notice that the link will only work once the documentation is build which may take a few minutes.-->
+
+## Documentation Reference
+<!-- Please include links to the affected documentation pages below. --> 
 
 
 ## Testing Status
