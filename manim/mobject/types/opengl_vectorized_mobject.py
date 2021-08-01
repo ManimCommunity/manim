@@ -19,6 +19,7 @@ from ...utils.bezier import (
     partial_quadratic_bezier_points,
 )
 from ...utils.color import *
+from ...utils.deprecation import deprecated_params
 from ...utils.iterables import listify, make_even, resize_with_interpolation
 from ...utils.space_ops import (
     angle_between_vectors,
@@ -217,7 +218,10 @@ class OpenGLVMobject(OpenGLMobject):
         }
 
     def match_style(self, vmobject, recurse=True):
-        self.set_style(**vmobject.get_style(), recurse=False)
+        vmobject_style = vmobject.get_style()
+        if config.renderer == "opengl":
+            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+        self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
             # match styles accordingly
@@ -1018,9 +1022,14 @@ class OpenGLVMobject(OpenGLMobject):
     def triggers_refreshed_triangulation(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            old_points = self.get_points().copy()
+            old_points = np.empty((0, 3))
+            for mob in self.family_members_with_points():
+                old_points = np.concatenate((old_points, mob.get_points()), axis=0)
             func(self, *args, **kwargs)
-            if not np.all(self.get_points() == old_points):
+            new_points = np.empty((0, 3))
+            for mob in self.family_members_with_points():
+                new_points = np.concatenate((new_points, mob.get_points()), axis=0)
+            if not np.all(new_points == old_points):
                 self.refresh_triangulation()
                 self.refresh_unit_normal()
 
@@ -1219,30 +1228,35 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
 
 
 class OpenGLDashedVMobject(OpenGLVMobject):
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
-        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.num_dashes = num_dashes
-        self.positive_space_ratio = positive_space_ratio
         super().__init__(color=color, **kwargs)
-        num_dashes = self.num_dashes
-        ps_ratio = self.positive_space_ratio
+        r = self.dashed_ratio
+        n = self.num_dashes
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * ps_ratio
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            # Assuming total length is 1
+            dash_len = r / n
+            if vmobject.is_closed():
+                void_len = (1 - r) / n
+            else:
+                void_len = (1 - r) / (n - 1)
 
             self.add(
                 *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                    )
+                    for i in range(n)
                 ]
             )
         # Family is already taken care of by get_subcurve
