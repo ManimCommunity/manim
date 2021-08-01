@@ -7,7 +7,7 @@ from typing import Optional
 from ..constants import *
 from ..mobject.geometry import Line, Rectangle
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import BLACK, RED, YELLOW, Color
 
 
@@ -129,6 +129,8 @@ class Cross(VGroup):
         Specifies the color of the cross lines. Defaults to Red.
     stroke_width
         Specifies the width of the cross lines. Defaults to 6.
+    length
+        Scale the cross to the provided unites. Defaults to 1.
 
     Examples
     --------
@@ -144,17 +146,17 @@ class Cross(VGroup):
     def __init__(
         self,
         mobject: Optional[Mobject] = None,
-        stroke_color: Color = RED,
-        stroke_width: int = 6,
+        stroke_color: Optional[Color] = RED,
+        stroke_width: Optional[int] = 6,
+        length: Optional[int] = 1,
         **kwargs
     ):
         super().__init__(
-            Line(UP + LEFT, DOWN + RIGHT, buff=5),
-            Line(UP + RIGHT, DOWN + LEFT, buff=3),
-            **kwargs
+            Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
         )
         if mobject is not None:
             self.replace(mobject, stretch=True)
+        self.scale(length)
         self.set_stroke(color=stroke_color, width=stroke_width)
 
 
