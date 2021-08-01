@@ -146,9 +146,9 @@ class Cross(VGroup):
     def __init__(
         self,
         mobject: Optional[Mobject] = None,
-        stroke_color: Optional[Color] = RED,
-        stroke_width: Optional[float] = 6,
-        scale_factor: Optional[float] = 1,
+        stroke_color: Color = RED,
+        stroke_width: float = 6,
+        scale_factor: float = 1,
         **kwargs
     ):
         super().__init__(
