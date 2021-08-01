@@ -5,6 +5,11 @@ __module_test__ = "threed"
 
 
 @frames_comparison(base_scene=ThreeDScene)
+def test_Plane(scene):
+    scene.add(Plane())
+
+
+@frames_comparison(base_scene=ThreeDScene)
 def test_Cube(scene):
     scene.add(Cube())
 
