@@ -58,8 +58,8 @@ For first-time contributors
       poetry run pre-commit install
    
    This will ensure during development that each of your commits is properly
-   formatted against our linter and formatters, ``black``, ``flake8``, and
-   ``isort``.
+   formatted against our linter and formatters, ``black``, ``flake8``,
+   ``isort`` and ``codespell``.
 
 You are now ready to work on manim!
 

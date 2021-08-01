@@ -9,7 +9,7 @@ from ..mobject.types.opengl_vectorized_mobject import (
     OpenGLVMobject,
 )
 from ..utils.color import *
-from ..utils.deprecation import deprecated
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import clip, fdiv
 from ..utils.space_ops import (
@@ -525,31 +525,30 @@ class OpenGLLine(OpenGLTipableVMobject):
 
 
 class OpenGLDashedLine(OpenGLLine):
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
-        self, *args, dash_length=DEFAULT_DASH_LENGTH, positive_space_ratio=0.5, **kwargs
+        self, *args, dash_length=DEFAULT_DASH_LENGTH, dashed_ratio=0.5, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.dash_length = dash_length
-        self.positive_space_ratio = positive_space_ratio
         super().__init__(*args, **kwargs)
-        ps_ratio = self.positive_space_ratio
-        num_dashes = self.calculate_num_dashes(ps_ratio)
+        dashed_ratio = self.dashed_ratio
+        num_dashes = self.calculate_num_dashes(dashed_ratio)
         dashes = OpenGLDashedVMobject(
-            self, num_dashes=num_dashes, positive_space_ratio=ps_ratio
+            self, num_dashes=num_dashes, dashed_ratio=dashed_ratio
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self, positive_space_ratio):
-        try:
-            full_length = self.dash_length / positive_space_ratio
-            return int(np.ceil(self.get_length() / full_length))
-        except ZeroDivisionError:
-            return 1
-
-    def calculate_positive_space_ratio(self):
-        return fdiv(
-            self.dash_length,
-            self.dash_length + self.dash_spacing,
+    def calculate_num_dashes(self, dashed_ratio):
+        return max(
+            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
         )
 
     def get_start(self):

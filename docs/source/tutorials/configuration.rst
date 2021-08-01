@@ -353,7 +353,7 @@ A list of all config options
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
    'verbosity', 'video_dir', 'webgl_renderer_path', 'window_position',
-    'window_monitor', 'write_all', 'write_to_movie']
+    'window_monitor', 'window_size', 'write_all', 'write_to_movie']
 
 
 A list of all CLI flags
@@ -361,7 +361,7 @@ A list of all CLI flags
 
 .. code::
 
-   manim -h
+   manim --help
 
    Usage: manim [OPTIONS] COMMAND [ARGS]...
 
@@ -369,7 +369,7 @@ A list of all CLI flags
 
    Options:
      --version   Show the version and exit.
-     -h, --help  Show this message and exit.
+     --help  Show this message and exit.
 
    Commands:
      render*  Render SCENE(S) from the input FILE.
@@ -382,6 +382,6 @@ Each of the subcommands has its own help page which can be
 
 .. code::
 
-   manim render -h
-   manim cfg -h
-   manim plugins -h
+   manim render --help
+   manim cfg --help
+   manim plugins --help
