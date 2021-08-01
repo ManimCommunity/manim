@@ -129,8 +129,8 @@ class Cross(VGroup):
         Specifies the color of the cross lines. Defaults to Red.
     stroke_width
         Specifies the width of the cross lines. Defaults to 6.
-    length
-        Scale the cross to the provided unites. Defaults to 1.
+    scale_factor
+        Scales the cross to the provided units. Defaults to 1.
 
     Examples
     --------
