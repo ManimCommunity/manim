@@ -284,7 +284,9 @@ class Animation:
         Parameters
         ----------
         alpha
-            The overall animation progress
+            A float between 0 and 1 expressing the ratio to which the animation
+            is completed. For example, alpha-values of 0, 0.5, and 1 correspond
+            to the animation being completed 0%, 50%, and 100%, respectively.
         """
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):

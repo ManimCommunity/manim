@@ -309,7 +309,7 @@ You can do it using :class:`~.FadeTransform`, which will fade out the starting n
 But when we think about transforming a number from one to another, an intuitive way of doing it is by incrementing or decrementing it smoothly.
 Manim has a feature that allows you to customize this behavior by defining your own custom animation.
 
-You can start by creating your own Count class that extends :class:`~.Animation`.
+You can start by creating your own ``Count`` class that extends :class:`~.Animation`.
 The class can have a constructor with three arguments, a :class:`~.DecimalNumber` Mobject, start, and end.
 The constructor will pass the :class:`~.DecimalNumber` Mobject to the super constructor (in this case, the :class:`~.Animation` constructor) and will set start and end.
 
@@ -318,7 +318,7 @@ Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mo
 The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation.
 For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation.
 
-In the case of the Count animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the Count Animation.
+In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the ``Count`` animation.
 Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation.
 
 * If alpha is 0, you want the value to be 50.
@@ -329,7 +329,7 @@ Generally, you start with the starting number and add only some part of the valu
 So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50).
 Once you set the calculated value for the :class:`~.DecimalNumber`, you are done.
 
-Once you have defined your Count Animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
+Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
 
 .. manim:: CountingScene
     :ref_classes: Animation DecimalNumber
