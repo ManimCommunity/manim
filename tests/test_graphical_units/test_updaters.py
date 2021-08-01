@@ -1,53 +1,43 @@
-import pytest
-
 from manim import *
+from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
-
-
-class UpdaterTest(Scene):
-    def construct(self):
-        dot = Dot()
-        square = Square()
-        self.add(dot, square)
-        square.add_updater(lambda m: m.next_to(dot, RIGHT, buff=SMALL_BUFF))
-        self.add(square)
-        self.play(dot.animate.shift(UP * 2))
-        square.clear_updaters()
+__module_test__ = "updaters"
 
 
-class ValueTrackerTest(Scene):
-    def construct(self):
-        theta = ValueTracker(PI / 2)
-        line = Line(ORIGIN, RIGHT)
-        line.rotate(theta.get_value(), about_point=ORIGIN)
-        self.add(line)
+@frames_comparison(last_frame=False)
+def test_Updater(scene):
+    dot = Dot()
+    square = Square()
+    scene.add(dot, square)
+    square.add_updater(lambda m: m.next_to(dot, RIGHT, buff=SMALL_BUFF))
+    scene.add(square)
+    scene.play(dot.animate.shift(UP * 2))
+    square.clear_updaters()
 
 
-class UpdateSceneDuringAnimationTest(Scene):
-    def construct(self):
-        def f(mob):
-            self.add(Square())
-
-        s = Circle().add_updater(f)
-        self.play(Create(s))
-
-
-class LastFrameWhenClearedTest(Scene):
-    def construct(self):
-        dot = Dot()
-        square = Square()
-        square.add_updater(lambda m: m.move_to(dot, UL))
-        self.add(square)
-        self.play(dot.animate.shift(UP * 2), rate_func=linear)
-        square.clear_updaters()
-        self.wait()
+@frames_comparison
+def test_ValueTracker(scene):
+    theta = ValueTracker(PI / 2)
+    line = Line(ORIGIN, RIGHT)
+    line.rotate(theta.get_value(), about_point=ORIGIN)
+    scene.add(line)
 
 
-MODULE_NAME = "updaters"
+@frames_comparison(last_frame=False)
+def test_UpdateSceneDuringAnimation(scene):
+    def f(mob):
+        scene.add(Square())
+
+    s = Circle().add_updater(f)
+    scene.play(Create(s))
 
 
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+@frames_comparison(last_frame=False)
+def test_LastFrameWhenCleared(scene):
+    dot = Dot()
+    square = Square()
+    square.add_updater(lambda m: m.move_to(dot, UL))
+    scene.add(square)
+    scene.play(dot.animate.shift(UP * 2), rate_func=linear)
+    square.clear_updaters()
+    scene.wait()
