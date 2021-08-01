@@ -33,6 +33,7 @@ from ...utils.bezier import (
     partial_bezier_points,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.deprecation import deprecated_params
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -2082,10 +2083,10 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = VGroup()  # Increasing positive_space_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
-                        Circle(radius=r, color=WHITE), positive_space_ratio=ratio
+                        Circle(radius=r, color=WHITE), dashed_ratio=ratio
                     )
                     middle_row.add(circ)
 
@@ -2101,36 +2102,35 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
-        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.num_dashes = num_dashes
-        self.positive_space_ratio = positive_space_ratio
         super().__init__(color=color, **kwargs)
-        ps_ratio = self.positive_space_ratio
+        r = self.dashed_ratio
+        n = self.num_dashes
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * ps_ratio
-
-            # Shifts the alphas and removes the last dash
-            # to give closed shapes even spacing
+            # Assuming total length is 1
+            dash_len = r / n
             if vmobject.is_closed():
-                alphas += partial_d_alpha / 2
-                np.delete(alphas, -1)
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
+                void_len = (1 - r) / n
             else:
-                alphas /= 1 - full_d_alpha + partial_d_alpha
+                void_len = (1 - r) / (n - 1)
 
             self.add(
                 *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                    )
+                    for i in range(n)
                 ]
             )
         # Family is already taken care of by get_subcurve
