@@ -1,5 +1,3 @@
-
-
 from manim import *
 from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 

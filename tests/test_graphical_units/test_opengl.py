@@ -4,7 +4,6 @@ from manim import *
 from manim.opengl import *
 from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-
 __module_test__ = "opengl"
 
 
