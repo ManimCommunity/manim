@@ -126,7 +126,7 @@ class Cross(VGroup):
     mobject
         The mobject linked to this instance. It fits the mobject when specified. Defaults to None.
     stroke_color
-        Specifies the color of the cross lines. Defaults to Red.
+        Specifies the color of the cross lines. Defaults to RED.
     stroke_width
         Specifies the width of the cross lines. Defaults to 6.
     scale_factor
