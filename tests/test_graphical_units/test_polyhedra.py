@@ -1,34 +1,24 @@
-import pytest
-
 from manim import *
+from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
-
-
-class TetrahedronTest(ThreeDScene):
-    def construct(self):
-        self.add(Tetrahedron())
+__module_test__ = "polyhedra"
 
 
-class OctahedronTest(ThreeDScene):
-    def construct(self):
-        self.add(Octahedron())
+@frames_comparison
+def test_Tetrahedron(scene):
+    scene.add(Tetrahedron())
 
 
-class IcosahedronTest(ThreeDScene):
-    def construct(self):
-        self.add(Icosahedron())
+@frames_comparison
+def test_Octahedron(scene):
+    scene.add(Octahedron())
 
 
-class DodecahedronTest(ThreeDScene):
-    def construct(self):
-        self.add(Dodecahedron())
+@frames_comparison
+def test_Icosahedron(scene):
+    scene.add(Icosahedron())
 
 
-MODULE_NAME = "polyhedra"
-
-
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+@frames_comparison
+def test_Dodecahedron(scene):
+    scene.add(Dodecahedron())

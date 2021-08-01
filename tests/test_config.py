@@ -137,3 +137,23 @@ def test_temporary_dry_run():
 
     assert config["write_to_movie"]
     assert not config["save_last_frame"]
+
+
+def test_dry_run_with_png_format():
+    """Test that there are no exceptions when running a png without output"""
+    with tempconfig(
+        {"write_to_movie": False, "disable_caching": True, "format": "png"}
+    ):
+        assert config["dry_run"] is True
+        scene = MyScene()
+        scene.render()
+
+
+def test_dry_run_with_png_format_skipped_animations():
+    """Test that there are no exceptions when running a png without output and skipped animations"""
+    with tempconfig(
+        {"write_to_movie": False, "disable_caching": True, "format": "png"}
+    ):
+        assert config["dry_run"] is True
+        scene = MyScene(skip_animations=True)
+        scene.render()

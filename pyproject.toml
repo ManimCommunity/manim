@@ -30,7 +30,7 @@ click = ">=7.1<=9.0"
 click-default-group = "*"
 colour = "*"
 numpy = "^1.9"
-Pillow = "<8.3.0"  # can be removed when https://github.com/python-pillow/Pillow/issues/5571 is resolved
+Pillow = "*"
 scipy = "*"
 tqdm = "*"
 pydub = "*"
@@ -51,7 +51,7 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
-dearpygui = { version = "^0.6.415", optional = true }
+dearpygui = { version = "^0.8", optional = true }
 screeninfo = "^0.6.7"
 
 [tool.poetry.extras]
