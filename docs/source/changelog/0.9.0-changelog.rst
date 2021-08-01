@@ -66,7 +66,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 52 pull requests were merged for this release.
+A total of 53 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -97,6 +97,10 @@ Deprecated classes and functions
 
 New features
 ------------
+
+* `#1780 <https://github.com/ManimCommunity/manim/pull/1780>`__: Allow non-numerical values to be added to :class:`~.NumberLine` and :class:`~.Axes`
+   - Added :meth:`.NumberLine.add_labels` method to :class:`~.NumberLine` which accepts a dictionary of positions/values.
+   - :meth:`.CoordinateSystem.add_coordinates` now accepts a dictionary too.
 
 * `#1719 <https://github.com/ManimCommunity/manim/pull/1719>`__: Added a :class:`~.Broadcast` animation
 
