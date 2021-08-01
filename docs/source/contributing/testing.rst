@@ -172,7 +172,7 @@ The name of the module is indicated by the variable __module_test__, that **must
     You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a 
     parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
 
-Example : in ``test_geometry.py`` :
+Here's an example in ``test_geometry.py``:
 
 .. code:: python
 
