@@ -2,7 +2,7 @@ Windows
 =======
 
 There are two simple ways to download manim's dependencies, using the popular package
-managers `Chocolatey <https://chocolatey.org/install>`_ and `Scoop <https://scoop.sh>`_
+managers `Chocolatey <https://chocolatey.org/install>`__ and `Scoop <https://scoop.sh>`__
 
 .. _choco:
 
@@ -10,7 +10,7 @@ Installing using Chocolatey
 ***************************
 
 First, you need to install Chocolatey, which is a package manager for Windows
-systems.  Please refer to `this link <https://chocolatey.org/install>`_ for
+systems.  Please refer to `this link <https://chocolatey.org/install>`__ for
 instructions.
 
 You can install manim very easily using chocolatey, by typing the following command.
@@ -28,7 +28,7 @@ FFmpeg installation
 -------------------
 
 1. To install ``ffmpeg`` and add it to your PATH, install `Chocolatey
-   <https://chocolatey.org/>`_ and run ``choco install ffmpeg``.
+   <https://chocolatey.org/>`__ and run ``choco install ffmpeg``.
 
 2. You can check if you did it right by running ``refreshenv`` to update your
    environment variable and running ``ffmpeg``.
@@ -61,7 +61,7 @@ See https://www.tug.org/texlive/tlmgr.html for more information.
 Using MiKTex
 ++++++++++++
 1. Download the MiKTex installer from `this page
-   <https://miktex.org/download>`_ and execute it.
+   <https://miktex.org/download>`__ and execute it.
 
    .. image:: ../_static/windows_miktex.png
        :align: center
@@ -78,7 +78,7 @@ Installing using Scoop
 
 First, you need to install Scoop, which is a command-line installer for Windows
 systems. Please refer to `this link
-<https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`_ for
+<https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__ for
 instructions.
 
 While a manifest for manim doesn't currently exist, it is sufficient to install 

@@ -34,20 +34,15 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 -  [License](#license)
 
 ## Installation
-
+> **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
+        
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
 [in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
-For the local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
+For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
-
-Once the dependencies have been installed, run the following in a terminal window:
-
-```bash
-pip install manim
-```
-
+       
 ## Usage
 
 Manim is an extremely versatile package. The following is an example `Scene` you can construct:
