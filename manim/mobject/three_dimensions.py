@@ -924,6 +924,7 @@ class Line3D(Cylinder):
         """
         direction = line.direction
         direction /= np.linalg.norm(direction)
+        length = length or line.length
         return Line3D(
             point + direction * length / 2, point - direction * length / 2, **kwargs
         )
