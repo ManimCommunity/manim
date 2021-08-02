@@ -29,7 +29,7 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
-from ..utils.deprecation import deprecated_params
+from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, z_to_vector
 
@@ -250,6 +250,47 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         break
 
         return self
+
+
+@deprecated(
+    since="v0.10.0",
+    until="v0.13.0",
+    replacement="Surface",
+)
+class ParametricSurface(Surface):
+    """Creates a parametric surface"""
+
+    def __init__(
+        self,
+        func: Callable[[float, float], np.ndarray],
+        u_range: Sequence[float] = [0, 1],
+        v_range: Sequence[float] = [0, 1],
+        resolution: Sequence[int] = 32,
+        surface_piece_config: dict = {},
+        fill_color: "Color" = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
+        stroke_color: "Color" = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        **kwargs
+    ):
+        super().__init__(
+            func,
+            u_range,
+            v_range,
+            resolution,
+            surface_piece_config,
+            fill_color,
+            fill_opacity,
+            checkerboard_colors,
+            stroke_color,
+            stroke_width,
+            should_make_jagged,
+            pre_function_handle_to_anchor_scale_factor,
+            **kwargs,
+        )
 
 
 # Specific shapes
