@@ -66,7 +66,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 53 pull requests were merged for this release.
+A total of 55 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -196,6 +196,14 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#1852 <https://github.com/ManimCommunity/manim/pull/1852>`__: Fixed docs for :meth:`.Coordinate_system.add_coordinates` and moved :class: `~.Code` example
+
+
+* `#1807 <https://github.com/ManimCommunity/manim/pull/1807>`__: Updated installation instructions
+   - Added a warning about the incompatibility of different versions of Manim in the README
+   - Modified the admonition warning in the documentation
+   - Removed duplicated information from the README (``pip install manim`` is already covered in the docs)
 
 * `#1739 <https://github.com/ManimCommunity/manim/pull/1739>`__: Added a section on creating a custom animation to the "Manim's building blocks" tutorial
 
