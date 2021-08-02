@@ -44,11 +44,13 @@ def test_value_tracker_add():
     tracker = tracker + 10.0
     assert tracker.get_value() == 10.0
 
+
 def test_value_tracker_radd():
     """Test ValueTracker.__radd__()"""
     tracker = ValueTracker(0.0)
     tracker = 10.0 + tracker
     assert tracker.get_value() == 10.0
+
 
 def test_value_tracker_iadd():
     """Test ValueTracker.__iadd__()"""
@@ -63,6 +65,7 @@ def test_value_tracker_floordiv():
     tracker = tracker // 2.0
     assert tracker.get_value() == 2.0
 
+
 def test_value_tracker_ifloordiv():
     """Test ValueTracker.__ifloordiv__()"""
     tracker = ValueTracker(5.0)
@@ -75,6 +78,7 @@ def test_value_tracker_mod():
     tracker = ValueTracker(20.0)
     tracker = tracker % 3.0
     assert tracker.get_value() == 2.0
+
 
 def test_value_tracker_imod():
     """Test ValueTracker.__imod__()"""
@@ -89,11 +93,13 @@ def test_value_tracker_mul():
     tracker = tracker * 4.0
     assert tracker.get_value() == 12.0
 
+
 def test_value_tracker_rmul():
     """Test ValueTracker.__rmul__()"""
     tracker = ValueTracker(3.0)
     tracker = 4.0 * tracker
     assert tracker.get_value() == 12.0
+
 
 def test_value_tracker_imul():
     """Test ValueTracker.__imul__()"""
@@ -108,6 +114,7 @@ def test_value_tracker_pow():
     tracker = tracker ** 3.0
     assert tracker.get_value() == 27.0
 
+
 def test_value_tracker_ipow():
     """Test ValueTracker.__ipow__()"""
     tracker = ValueTracker(3.0)
@@ -121,6 +128,7 @@ def test_value_tracker_sub():
     tracker = tracker - 10.0
     assert tracker.get_value() == 10.0
 
+
 def test_value_tracker_isub():
     """Test ValueTracker.__isub__()"""
     tracker = ValueTracker(20.0)
@@ -133,6 +141,7 @@ def test_value_tracker_truediv():
     tracker = ValueTracker(5.0)
     tracker = tracker / 2.0
     assert tracker.get_value() == 2.5
+
 
 def test_value_tracker_itruediv():
     """Test ValueTracker.__itruediv__()"""
