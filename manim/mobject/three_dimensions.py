@@ -306,8 +306,8 @@ class Plane(ParametricSurface):
         self,
         point: Sequence[float] = ORIGIN,
         normal_vect: Sequence[float] = [1, 1, 1],
-        u_range: Sequence[float] = [-2 * PI, 2 * PI],
-        v_range: Sequence[float] = [-2 * PI, 2 * PI],
+        u_range: Sequence[float] = [-5, 5],
+        v_range: Sequence[float] = [-5, 5],
         **kwargs
     ):
         self.normal_vect = np.array(normal_vect)
