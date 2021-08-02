@@ -401,8 +401,7 @@ class OpenGLRenderer:
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
-            for mob in mobject.family_members_with_points():
-                self.render_mobject(mob)
+            self.render_mobject(mobject)
 
         for obj in scene.meshes:
             for mesh in obj.get_meshes():
