@@ -10,7 +10,7 @@ manim itself.
 .. warning:: 
    These instructions are for the *community edition* of Manim **only**. Trying
    to use these instructions to install
-   [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install
+   `3b1b/manim <https://github.com/3b1b/manim>`_ or instructions there to install
    this version will cause problems. Read the :doc:`Differences between Manim
    Versions <installation/versions>` and decide which version you wish to
    install, then only follow the instructions for your desired version.
