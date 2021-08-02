@@ -798,7 +798,7 @@ def projected_vector(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
     """
     dot_prod = np.dot(vec1, vec2)
     length_prod = np.linalg.norm(vec1) ** 2
-    return vec1 * dot_prod / length_prod
+    return vec1 * float(dot_prod / length_prod)
 
 
 def cartesian_to_spherical(point: Sequence[float]) -> np.ndarray:

@@ -310,14 +310,24 @@ class Plane(ParametricSurface):
         v_range: Sequence[float] = [-5, 5],
         **kwargs
     ):
-        self.normal_vect = np.array(normal_vect)
+        normal_vect = np.array(normal_vect)
         super().__init__(
             lambda u, v: np.array([u, v, 0]), u_range=u_range, v_range=v_range, **kwargs
         )
         spherical = cartesian_to_spherical(normal_vect)
         axis = [np.sin(spherical[1]), -np.cos(spherical[1]), 0]
         self.rotate(-spherical[2], axis=axis)
-        self.shift(projected_vector(self.normal_vect, point))
+        self.shift(projected_vector(normal_vect, point))
+
+    @property
+    def normal_vect(self):
+        res = self.resolution
+        p1, p2, p3 = (
+            self[0].get_center(),
+            self[res - 1].get_center(),
+            self[-1].get_center(),
+        )
+        return np.cross(p1 - p2, p3 - p2) / np.linalg.norm(np.cross(p1 - p2, p3 - p2))
 
     def line_perp_to_plane(
         self, point: Sequence[float], length: float = 20, **kwargs
