@@ -1,6 +1,6 @@
 """Mobject representing a number line."""
 
-__all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
+__all__ = ["NumberLine", "UnitInterval"]
 
 from typing import TYPE_CHECKING, Dict, Union
 
