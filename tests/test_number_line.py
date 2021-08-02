@@ -1,6 +1,7 @@
 import numpy as np
 
 from manim import NumberLine
+from manim.mobject.numbers import Integer
 
 
 def test_unit_vector():
@@ -50,3 +51,15 @@ def test_whole_numbers_step_size_default_to_0_decimal_places():
     assert actual_decimal_places == expected_decimal_places, (
         "Expected 1 decimal place but got " + actual_decimal_places
     )
+
+
+def test_add_labels():
+    expected_label_length = 6
+    num_line = NumberLine(x_range=[-4, 4])
+    num_line.add_labels(
+        dict(zip([x for x in range(-3, 3)], [Integer(m) for m in range(-1, 5)]))
+    )
+    actual_label_length = len(num_line.labels)
+    assert (
+        actual_label_length == expected_label_length
+    ), f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
