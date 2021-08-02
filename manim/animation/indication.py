@@ -104,7 +104,7 @@ class FocusOn(Transform):
         remover = True
         # Initialize with blank mobject, while create_target
         # and create_starting_mobject handle the meat
-        super().__init__(VMobject(), run_time=run_time, remover=remover, **kwargs)
+        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
 
     def create_target(self) -> "Dot":
         little_dot = Dot(radius=0)
