@@ -92,9 +92,22 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         """Return whether the value of this value tracker evaluates as true."""
         return bool(self.get_value())
 
+    def __add__(self, value: Union[int, float]):
+        """
+        This is called when you add a value to a ValueTracker, e.g. ValueTracker() + <some_integer_or_float>
+        Shorthand for ValueTracker().increment_value(<some_integer_or_float>)
+        """
+        self.increment_value(value)
+        return self
+
     def __iadd__(self, d_value: float):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
+        return self
+
+    def __floordiv__(self, d_value: Union[int, float]):
+        """Set the value of this value tracker to the floor division of the current value by ``d_value``."""
+        self.set_value(self.get_value() // d_value)
         return self
 
     def __ifloordiv__(self, d_value: float):
@@ -102,9 +115,19 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.set_value(self.get_value() // d_value)
         return self
 
+    def __mod__(self, d_value: float):
+        """Set the value of this value tracker to the current value modulo ``d_value``."""
+        self.set_value(self.get_value() % d_value)
+        return self
+
     def __imod__(self, d_value: float):
         """Set the value of this value tracker to the current value modulo ``d_value``."""
         self.set_value(self.get_value() % d_value)
+        return self
+
+    def __mul__(self, d_value: float):
+        """Set the value of this value tracker to the product of the current value and ``d_value``."""
+        self.set_value(self.get_value() * d_value)
         return self
 
     def __imul__(self, d_value: float):
@@ -112,9 +135,19 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.set_value(self.get_value() * d_value)
         return self
 
+    def __pow__(self, d_value: float):
+        """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
+        self.set_value(self.get_value() ** d_value)
+        return self
+
     def __ipow__(self, d_value: float):
         """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
         self.set_value(self.get_value() ** d_value)
+        return self
+
+    def __sub__(self, d_value: float):
+        """adds ``-=`` syntax to decrement the value of the ValueTracker"""
+        self.increment_value(-d_value)
         return self
 
     def __isub__(self, d_value: float):
@@ -122,10 +155,19 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.increment_value(-d_value)
         return self
 
+    def __truediv__(self, d_value: float):
+        """Sets the value of this value tracker to the current value divided by ``d_value``."""
+        self.set_value(self.get_value() / d_value)
+        return self
+
     def __itruediv__(self, d_value: float):
         """Sets the value of this value tracker to the current value divided by ``d_value``."""
         self.set_value(self.get_value() / d_value)
         return self
+
+    ## reverse methods, enables things like (4 + ValueTracker()) * 6
+    __radd__ = __add__
+    __rmul__ = __mul__
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
         """
