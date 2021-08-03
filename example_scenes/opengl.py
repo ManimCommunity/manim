@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import manim.utils.opengl as opengl
-import manim.utils.space_ops as space_ops
 from manim import *
 from manim.opengl import *
 
@@ -70,6 +69,24 @@ def get_plane_mesh(context):
         ]
     )
     return Mesh(shader, attributes)
+
+
+class TextTest(Scene):
+    def construct(self):
+        import string
+
+        text = OpenGLText(
+            string.ascii_lowercase, stroke_width=4, stroke_color=BLUE
+        ).scale(2)
+        text2 = (
+            OpenGLText(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
+            .scale(2)
+            .next_to(text, DOWN)
+        )
+        # self.add(text, text2)
+        self.play(Write(text))
+        self.play(Write(text2))
+        self.interactive_embed()
 
 
 class GuiTest(Scene):
@@ -390,7 +407,7 @@ class InteractiveDevelopment(Scene):
         # lines as if they were part of this construct method.
         # In particular, 'square', 'circle' and 'self' will all be
         # part of the local namespace in that terminal.
-        self.embed()
+        # self.embed()
 
         # Try copying and pasting some of the lines below into
         # the interactive shell
@@ -400,10 +417,12 @@ class InteractiveDevelopment(Scene):
         self.play(Rotate(circle, 90 * DEGREES))
         self.play(circle.animate.shift(2 * RIGHT).scale(0.25))
 
-        # text = Text("""
+        # text = Text(
+        #     """
         #     In general, using the interactive shell
         #     is very helpful when developing new scenes
-        # """)
+        # """
+        # )
         # self.play(Write(text))
 
         # # In the interactive shell, you can just type

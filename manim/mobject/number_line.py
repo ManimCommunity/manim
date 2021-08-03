@@ -3,8 +3,11 @@
 __all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
 
 import operator as op
+from typing import TYPE_CHECKING, Dict, Union
 
 import numpy as np
+
+from manim.mobject.svg.tex_mobject import MathTex, Tex
 
 from .. import config
 from ..constants import *
@@ -17,6 +20,9 @@ from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
+
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
 
 
 class NumberLine(Line):
@@ -67,6 +73,50 @@ class NumberLine(Line):
         The size scaling factor for the number mobjects.
     kwargs : Any
         Additional arguments to be passed to :class:`~.Line`.
+
+    Examples
+    --------
+    .. manim:: NumberLineExample
+        :save_last_frame:
+
+        class NumberLineExample(Scene):
+            def construct(self):
+                l0 = NumberLine(
+                    x_range=[-10, 10, 2],
+                    length=10,
+                    color=BLUE,
+                    include_numbers=True,
+                    label_direction=UP,
+                )
+
+                l1 = NumberLine(
+                    x_range=[-10, 10, 2],
+                    unit_size=0.5,
+                    numbers_with_elongated_ticks=[-2, 4],
+                    include_numbers=True,
+                    number_scale_value=0.5,
+                )
+                [num6] = [num for num in l1.numbers if num.number == 6]
+                num6.set_color(RED)
+                l1.add(num6)
+
+                l2 = NumberLine(
+                    x_range=[-2.5, 2.5 + 0.5, 0.5],
+                    length=12,
+                    decimal_number_config={"num_decimal_places": 2},
+                    include_numbers=True,
+                )
+
+                l3 = NumberLine(
+                    x_range=[-5, 5 + 1, 1],
+                    length=6,
+                    include_tip=True,
+                    include_numbers=True,
+                    rotation=10 * DEGREES,
+                )
+
+                line_group = VGroup(l0, l1, l2, l3).arrange(DOWN, buff=1)
+                self.add(line_group)
 
     Returns
     -------
@@ -124,8 +174,7 @@ class NumberLine(Line):
         if decimal_number_config is None:
             decimal_number_config = {
                 "num_decimal_places": self.decimal_places_from_step(),
-                "font_size": 24,
-            }  # font_size does nothing
+            }
 
         self.length = length
         self.unit_size = unit_size
@@ -267,7 +316,6 @@ class NumberLine(Line):
             buff = self.line_to_number_buff
 
         num_mob = DecimalNumber(x, **number_config)
-        # font_size does not exist yet in decimal number
         num_mob.scale(self.number_scale_value)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
@@ -284,14 +332,12 @@ class NumberLine(Line):
     def get_labels(self):
         return self.get_number_mobjects()
 
-    def add_numbers(self, x_values=None, excluding=None, font_size=24, **kwargs):
+    def add_numbers(self, x_values=None, excluding=None, **kwargs):
         if x_values is None:
             x_values = self.get_tick_range()
 
         if excluding is None:
             excluding = self.numbers_to_exclude
-
-        kwargs["font_size"] = font_size
 
         numbers = VGroup()
         for x in x_values:
@@ -300,7 +346,51 @@ class NumberLine(Line):
             numbers.add(self.get_number_mobject(x, **kwargs))
         self.add(numbers)
         self.numbers = numbers
-        return numbers
+        return self
+
+    def add_labels(
+        self,
+        dict_values: Dict[float, Union[str, float, "Mobject"]],
+        direction=None,
+        buff=None,
+    ):
+        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."""
+        if direction is None:
+            direction = self.label_direction
+        if buff is None:
+            buff = self.line_to_number_buff
+
+        labels = VGroup()
+        for x, label in dict_values.items():
+
+            label = self.create_label_tex(label)
+            label.scale(self.number_scale_value)
+            label.next_to(self.number_to_point(x), direction=direction, buff=buff)
+            labels.add(label)
+
+        self.labels = labels
+        self.add(labels)
+        return self
+
+    @staticmethod
+    def create_label_tex(label_tex) -> "Mobject":
+        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
+
+        Parameters
+        ----------
+        label_tex : The label to be compared against the above types.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The label.
+        """
+
+        if isinstance(label_tex, float) or isinstance(label_tex, int):
+            label_tex = MathTex(label_tex)
+        elif isinstance(label_tex, str):
+            label_tex = Tex(label_tex)
+        return label_tex
 
     def decimal_places_from_step(self):
         step_as_str = str(self.x_step)
