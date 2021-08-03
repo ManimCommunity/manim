@@ -1,38 +1,16 @@
-import pytest
-
 from manim import *
+from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
-
-
-class PlotFunctions(GraphScene):
-    def __init__(self, **kwargs):
-        GraphScene.__init__(
-            self,
-            graph_origin=ORIGIN,
-            axes_color=GREEN,
-            x_labeled_nums=range(-10, 12, 2),
-            **kwargs
-        )
-
-    def construct(self):
-        self.x_min = -10
-        self.x_max = 10.3
-        self.y_min = -1.5
-        self.y_max = 1.5
-
-        constants.TEX_TEMPLATE = TexTemplate()
-        self.setup_axes()
-        f = self.get_graph(lambda x: x ** 2)
-
-        self.add(f)
+__module_test__ = "graphscene"
 
 
-MODULE_NAME = "plot"
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+@frames_comparison(base_scene=GraphScene)
+def test_PlotFunctions(scene):
+    scene.x_min = -10
+    scene.x_max = 10.3
+    scene.y_min = -1.5
+    scene.y_max = 1.5
+    constants.TEX_TEMPLATE = TexTemplate()
+    scene.setup_axes()
+    f = scene.get_graph(lambda x: x ** 2)
+    scene.add(f)

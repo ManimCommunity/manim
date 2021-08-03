@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -276,9 +276,16 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
-    ) -> VGroup:
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
+    ):
         """Adds labels to the axes.
+
+        Parameters
+        ----------
 
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
@@ -294,10 +301,16 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
-        Returns
-        -------
-        VGroup
-            A :class:`VGroup` of the number mobjects.
+        .. code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
         """
 
         self.coordinate_labels = VGroup()
@@ -306,10 +319,13 @@ class CoordinateSystem:
             axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def get_line_from_axis_to_point(
         self,
@@ -1242,7 +1258,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
+        graph = VGroup(color=line_color, **kwargs)
+
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
