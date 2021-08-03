@@ -322,7 +322,7 @@ class Plane(ParametricSurface):
     @property
     def normal_vect(self):
         res = self.resolution
-        if len(res) > 1:
+        if type(res) is not int:
             res = res[0]
         p1, p2, p3 = (
             self[0].get_center(),
