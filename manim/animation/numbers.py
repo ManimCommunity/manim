@@ -1,6 +1,6 @@
 """Animations for changing numbers."""
 
-__all__ = ["ChangeDecimalToValue"]
+__all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
 import typing
