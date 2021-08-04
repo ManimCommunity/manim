@@ -491,8 +491,8 @@ class Title(Tex):
 
     @deprecated_params(
         params="scale_factor",
-        since="v0.9.0",
-        until="v0.10.0",
+        since="v0.10.0",
+        until="v0.11.0",
         message="Use font_size instead.",
     )
     def __init__(

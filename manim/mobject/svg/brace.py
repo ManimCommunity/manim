@@ -137,8 +137,8 @@ class Brace(SVGPathMobject):
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     @deprecated_params(
         params="label_scale",
-        since="v0.9.0",
-        until="v0.10.0",
+        since="v0.10.0",
+        until="v0.11.0",
         message="Use font_size instead.",
     )
     def __init__(
