@@ -99,21 +99,21 @@ def render(
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
-        for SceneClass in scene_classes_from_file(file):
-            try:
-                renderer = OpenGLRenderer()
-                while True:
-                    scene_classes = scene_classes_from_file(file)
-                    SceneClass = scene_classes[0]
+        try:
+            renderer = OpenGLRenderer()
+            keep_running = True
+            while keep_running:
+                for SceneClass in scene_classes_from_file(file):
                     scene = SceneClass(renderer)
                     status = scene.render()
                     if status:
                         continue
                     else:
+                        keep_running = False
                         break
-            except Exception:
-                error_console.print_exception()
-                sys.exit(1)
+        except Exception:
+            error_console.print_exception()
+            sys.exit(1)
     elif config.renderer == "webgl":
         try:
             from manim.grpc.impl import frame_server_impl
