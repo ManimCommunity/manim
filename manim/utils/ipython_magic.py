@@ -59,7 +59,7 @@ else:
                     def construct(self):
                         ...
 
-            Run ``%manim -h`` and ``%manim render -h`` for possible command line interface options.
+            Run ``%manim --help`` and ``%manim render --help`` for possible command line interface options.
 
             .. note::
 
