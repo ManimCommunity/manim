@@ -6,7 +6,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from manim import config, tempconfig
+from manim import Group, config, logger, tempconfig
 from manim.__main__ import main
 
 try:
@@ -106,7 +106,35 @@ else:
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
-                exec(f"{config['scene_names'][0]}().render()", local_ns)
+
+                renderer = None
+                if config.renderer == "opengl":
+                    # Check if the imported mobjects extend the OpenGLMobject class
+                    # meaning ConvertToOpenGL did its job
+                    if "OpenGLMobject" in map(lambda cls: cls.__name__, Group.mro()):
+                        from manim.renderer.opengl_renderer import OpenGLRenderer
+
+                        renderer = OpenGLRenderer()
+                    else:
+                        logger.warning(
+                            "Renderer must be set to OpenGL in the configuration file "
+                            "before importing Manim! Using cairo renderer instead."
+                        )
+                        config.renderer = "cairo"
+
+                SceneClass = local_ns[config["scene_names"][0]]
+                scene = SceneClass(renderer)
+                scene.render()
+
+                # Close OpenGL window here instead of waiting for the main thread to
+                # finish causing the window to stay open and freeze
+                if renderer is not None and renderer.window is not None:
+                    renderer.window.close()
+
+                if config["output_file"] is None:
+                    logger.info("No output file produced")
+                    return
+
                 local_path = Path(config["output_file"]).relative_to(Path.cwd())
                 tmpfile = (
                     Path(config["media_dir"])
