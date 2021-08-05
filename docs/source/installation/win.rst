@@ -2,7 +2,74 @@ Windows
 =======
 
 There are two simple ways to download manim's dependencies, using the popular package
-managers `Scoop <https://scoop.sh>`_ and `Chocolatey <https://chocolatey.org/install>`_
+managers `Chocolatey <https://chocolatey.org/install>`__ and `Scoop <https://scoop.sh>`__
+
+.. _choco:
+
+Installing using Chocolatey
+***************************
+
+First, you need to install Chocolatey, which is a package manager for Windows
+systems.  Please refer to `this link <https://chocolatey.org/install>`__ for
+instructions.
+
+You can install manim very easily using chocolatey, by typing the following command.
+
+.. code-block:: powershell
+
+      choco install manimce
+
+
+And then you can skip all the other steps and move to installing 
+:ref:`latex-installation`. Please see the :doc:`troubleshooting` section for
+details about OSError.
+
+FFmpeg installation
+-------------------
+
+1. To install ``ffmpeg`` and add it to your PATH, install `Chocolatey
+   <https://chocolatey.org/>`__ and run ``choco install ffmpeg``.
+
+2. You can check if you did it right by running ``refreshenv`` to update your
+   environment variable and running ``ffmpeg``.
+
+
+.. _latex-installation:
+
+LaTeX Installation
+------------------
+You can install latex by either of the two methods below. MiKTex is very large 
+(2 GB) while ManimLaTeX is small  (500Mb).
+
+Using a custom distribution for Manim based on Texlive (recommended for beginners)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This is the smallest latex distribution just enough to run Manim. Extra latex 
+packages for fonts can be installed using ``tlmgr``. 
+See https://www.tug.org/texlive/tlmgr.html for more information.
+
+1. Install chocolatey if you haven't already.
+
+2. Run the following command
+
+   .. code-block:: powershell
+
+      choco install manim-latex
+
+3. Finally, check whether it installed properly by running an example scene.
+
+Using MiKTex
+++++++++++++
+1. Download the MiKTex installer from `this page
+   <https://miktex.org/download>`__ and execute it.
+
+   .. image:: ../_static/windows_miktex.png
+       :align: center
+       :width: 500px
+       :alt: windows latex download page
+
+2. You can check if you did it right by running ``refreshenv`` to update your
+   environment variable and running ``latex``.
 
 .. _scoop:
 
@@ -11,7 +78,7 @@ Installing using Scoop
 
 First, you need to install Scoop, which is a command-line installer for Windows
 systems. Please refer to `this link
-<https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`_ for
+<https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__ for
 instructions.
 
 While a manifest for manim doesn't currently exist, it is sufficient to install 
@@ -60,72 +127,6 @@ Now run the following command to install all necessary packages for using manim:
 You can check whether they were installed properly by rendering an example scene
 that uses :class:`~.Tex` or :class:`~.MathTex`.
 
-.. _choco:
-
-Installing using Chocolatey
-***************************
-
-First, you need to install Chocolatey, which is a package manager for Windows
-systems.  Please refer to `this link <https://chocolatey.org/install>`_ for
-instructions.
-
-You can install manim very easily using chocolatey, by typing the following command.
-
-.. code-block:: powershell
-
-      choco install manimce
-
-
-And then you can skip all the other steps and move to installing 
-:ref:`latex-installation`. Please see the :doc:`troubleshooting` section for
-details about OSError.
-
-FFmpeg installation
--------------------
-
-1. To install ``ffmpeg`` and add it to your PATH, install `Chocolatey
-   <https://chocolatey.org/>`_ and run ``choco install ffmpeg``.
-
-2. You can check if you did it right by running ``refreshenv`` to update your
-   environment variable and running ``ffmpeg``.
-
-
-.. _latex-installation:
-
-LaTeX Installation
-------------------
-You can install latex by either of the two methods below. MiKTex is very large 
-(2 GB) while ManimLaTeX is small  (500Mb).
-
-Using a custom distribution for Manim based on Texlive (recommended for beginners)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-This is the smallest latex distribution just enough to run Manim. Extra latex 
-packages for fonts can be installed using ``tlmgr``. 
-See https://www.tug.org/texlive/tlmgr.html for more information.
-
-1. Install chocolatey if you haven't already.
-
-2. Run the following command
-
-   .. code-block:: powershell
-
-      choco install manim-latex
-
-3. Finally, check whether it installed properly by running an example scene.
-
-Using MiKTex
-++++++++++++
-1. Download the MiKTex installer from `this page
-   <https://miktex.org/download>`_ and execute it.
-
-   .. image:: ../_static/windows_miktex.png
-       :align: center
-       :width: 500px
-       :alt: windows latex download page
-
-2. You can check if you did it right by running ``refreshenv`` to update your
-   environment variable and running ``latex``.
 
 Certifying a clean install
 **************************

@@ -12,10 +12,12 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
+
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 from .. import config
 from ..constants import *
@@ -53,12 +55,58 @@ from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
-# TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
-
 
 class CoordinateSystem:
     """
     Abstract class for Axes and NumberPlane
+
+    Examples
+    --------
+
+    .. manim:: CoordSysExample
+        :save_last_frame:
+
+        class CoordSysExample(Scene):
+            def construct(self):
+                # the location of the ticks depends on the x_range and y_range.
+                grid = Axes(
+                    x_range=[0, 1, 0.05],  # step size determines num_decimal_places.
+                    y_range=[0, 1, 0.05],
+                    x_length=9,
+                    y_length=5.5,
+                    axis_config={
+                        "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
+                        "number_scale_value": 0.5,
+                    },
+                    tips=False,
+                )
+
+                # Labels for the x-axis and y-axis.
+                y_label = grid.get_y_axis_label("y", edge=LEFT, direction=LEFT, buff=0.4)
+                x_label = grid.get_x_axis_label("x")
+                grid_labels = VGroup(x_label, y_label)
+
+                graphs = VGroup()
+                for n in np.arange(1, 20 + 0.5, 0.5):
+                    graphs += grid.get_graph(lambda x: x ** n, color=WHITE)
+                    graphs += grid.get_graph(
+                        lambda x: x ** (1 / n), color=WHITE, use_smoothing=False
+                    )
+
+                # Extra lines and labels for point (1,1)
+                graphs += grid.get_horizontal_line(grid.c2p(1, 1, 0), color=BLUE)
+                graphs += grid.get_vertical_line(grid.c2p(1, 1, 0), color=BLUE)
+                graphs += Dot(point=grid.c2p(1, 1, 0), color=YELLOW)
+                graphs += Tex("(1,1)").scale(0.75).next_to(grid.c2p(1, 1, 0))
+                title = Title(
+                    # spaces between braces to prevent SyntaxError
+                    r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
+                    include_underline=False,
+                    scale_factor=0.85,
+                )
+
+                self.add(title, graphs, grid, grid_labels)
+
     """
 
     def __init__(
@@ -226,9 +274,16 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
-    ) -> VGroup:
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
+    ):
         """Adds labels to the axes.
+
+        Parameters
+        ----------
 
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
@@ -244,10 +299,16 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
-        Returns
-        -------
-        VGroup
-            A :class:`VGroup` of the number mobjects.
+        .. code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
         """
 
         self.coordinate_labels = VGroup()
@@ -256,10 +317,13 @@ class CoordinateSystem:
             axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def get_line_from_axis_to_point(
         self,
@@ -557,7 +621,12 @@ class CoordinateSystem:
 
         # setting up x_range, overwrite user's third input
         if x_range is None:
-            x_range = self.x_range
+            if bounded_graph is None:
+                x_range = [graph.t_min, graph.t_max]
+            else:
+                x_min = max(graph.t_min, bounded_graph.t_min)
+                x_max = min(graph.t_max, bounded_graph.t_max)
+                x_range = [x_min, x_max]
 
         x_range = [*x_range[:2], dx]
 
@@ -970,7 +1039,7 @@ class CoordinateSystem:
         return T_label_group
 
 
-class Axes(VGroup, CoordinateSystem):
+class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
     Parameters
@@ -1187,7 +1256,8 @@ class Axes(VGroup, CoordinateSystem):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
+        graph = VGroup(color=line_color, **kwargs)
+
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
@@ -1311,8 +1381,9 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        self.add_3d_pieces()
-        self.set_axis_shading()
+        if not config.renderer == "opengl":
+            self.add_3d_pieces()
+            self.set_axis_shading()
 
     def add_3d_pieces(self):
         for axis in self.axes:

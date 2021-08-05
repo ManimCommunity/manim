@@ -241,7 +241,7 @@ Fixed bugs
 * `#1570 <https://github.com/ManimCommunity/manim/pull/1570>`__: Output errors to stderr
 
 
-* `#1560 <https://github.com/ManimCommunity/manim/pull/1560>`__: Declare *.npz *.wav *.png as binary in .gitattributes
+* `#1560 <https://github.com/ManimCommunity/manim/pull/1560>`__: Declare ``*.npz`` ``*.wav`` ``*.png`` as binary in ``.gitattributes``
 
 
 * `#1211 <https://github.com/ManimCommunity/manim/pull/1211>`__: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene 

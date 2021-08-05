@@ -40,7 +40,7 @@ class AbstractImageMobject(Mobject):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
         self.set_resampling_algorithm(resampling_algorithm)
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_pixel_array(self):
         raise NotImplementedError()
@@ -284,7 +284,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
             }
         self.default_display_frame_config = default_display_frame_config
         self.pixel_array = self.camera.pixel_array
-        AbstractImageMobject.__init__(self, scale_to_resolution=False, **kwargs)
+        super().__init__(scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
     def get_pixel_array(self):

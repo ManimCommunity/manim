@@ -125,6 +125,13 @@ class Object3D:
         for child in children:
             child.parent = None
 
+    def get_position(self):
+        return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
+
     def get_meshes(self):
         dfs = [self]
         while dfs:
@@ -161,7 +168,7 @@ class Object3D:
         normal_matrices = [self.normal_matrix]
         current_object = self
         while current_object.parent is not None:
-            normal_matrices.append(current_object.parent.normal_matrix)
+            normal_matrices.append(current_object.parent.model_matrix)
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
@@ -283,6 +290,16 @@ class Mesh(Object3D):
         # TODO: Copy updaters?
         return copy
 
+    def set_uniforms(self, renderer):
+        self.shader.set_uniform(
+            "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
+        )
+        self.shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
+        self.shader.set_uniform(
+            "u_projection_matrix",
+            renderer.camera.projection_matrix,
+        )
+
     def render(self):
         if self.skip_render:
             return
@@ -329,6 +346,7 @@ class Shader:
         name=None,
         source=None,
     ):
+        global shader_program_cache
         self.context = context
         self.name = name
 
@@ -354,7 +372,7 @@ class Shader:
             self.shader_program = context.program(**source_dict)
 
         # Cache the shader.
-        if name is not None:
+        if name is not None and name not in shader_program_cache:
             shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name, value):
@@ -370,7 +388,6 @@ class FullScreenQuad(Mesh):
         context,
         fragment_shader_source=None,
         fragment_shader_name=None,
-        output_color_variable="frag_color",
     ):
         if fragment_shader_source is None and fragment_shader_name is None:
             raise Exception("Must either pass shader name or shader source.")
