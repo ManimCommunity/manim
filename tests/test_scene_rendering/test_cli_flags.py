@@ -361,7 +361,7 @@ def test_images_are_created_when_png_format_set(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
