@@ -125,11 +125,17 @@ class SingleStringMathTex(SVGMobject):
 
     @font_size.setter
     def font_size(self, font_val):
-        # scale to a factor of the initial height so that setting font_size does not depend on current size.
-        self.scale(
-            SCALE_FACTOR_PER_FONT_POINT * font_val * self.initial_height / self.height
-        )
-        self._font_size = font_val
+        if font_val <= 0:
+            logger.warning("font_size must be greater than 0.")
+        else:
+            # scale to a factor of the initial height so that setting font_size does not depend on current size.
+            self.scale(
+                SCALE_FACTOR_PER_FONT_POINT
+                * font_val
+                * self.initial_height
+                / self.height
+            )
+            self._font_size = font_val
 
     def get_modified_expression(self, tex_string):
         result = tex_string
