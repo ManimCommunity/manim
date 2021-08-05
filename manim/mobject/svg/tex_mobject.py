@@ -121,12 +121,11 @@ class SingleStringMathTex(SVGMobject):
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        print("are we here")
         return self._font_size
 
     @font_size.setter
     def font_size(self, font_val):
-        print("what's up")
+        # scale to a factor of the initial height so that setting font_size does not depend on current size.
         self.scale(
             SCALE_FACTOR_PER_FONT_POINT * font_val * self.initial_height / self.height
         )

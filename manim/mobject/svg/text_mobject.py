@@ -432,9 +432,9 @@ class Text(SVGMobject):
         # deprecation
         size = kwargs.pop("size", None)
         if size is not None:
-            self.font_size = size * DEFAULT_FONT_SIZE
+            self._font_size = size * DEFAULT_FONT_SIZE
         else:
-            self.font_size = font_size
+            self._font_size = font_size
 
         self.line_spacing = line_spacing
         self.font = font
@@ -472,10 +472,10 @@ class Text(SVGMobject):
         self.text = text_without_tabs
         if self.line_spacing == -1:
             self.line_spacing = (
-                self.font_size + self.font_size * DEFAULT_LINE_SPACING_SCALE
+                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self.font_size + self.font_size * self.line_spacing
+            self.line_spacing = self._font_size + self._font_size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -606,7 +606,7 @@ class Text(SVGMobject):
             "PANGO" + self.font + self.slant + self.weight
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
-        settings += str(self.line_spacing) + str(self.font_size)
+        settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
@@ -662,7 +662,7 @@ class Text(SVGMobject):
         """Internally used function.
         Convert the text to SVG using Pango
         """
-        size = self.font_size / 4.8
+        size = self._font_size / 4.8
         line_spacing = self.line_spacing / 4.8
 
         dir_name = config.get_dir("text_dir")
@@ -1027,9 +1027,9 @@ class MarkupText(SVGMobject):
         # deprecation
         size = kwargs.pop("size", None)
         if size is not None:
-            self.font_size = size * DEFAULT_FONT_SIZE
+            self._font_size = size * DEFAULT_FONT_SIZE
         else:
-            self.font_size = font_size
+            self._font_size = font_size
 
         self.line_spacing = line_spacing
         self.font = font
@@ -1057,10 +1057,10 @@ class MarkupText(SVGMobject):
 
         if self.line_spacing == -1:
             self.line_spacing = (
-                self.font_size + self.font_size * DEFAULT_LINE_SPACING_SCALE
+                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self.font_size + self.font_size * self.line_spacing
+            self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
@@ -1125,7 +1125,7 @@ class MarkupText(SVGMobject):
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate from classical Pango Text
-        settings += str(self.line_spacing) + str(self.font_size)
+        settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.justify)
         id_str = self.text + settings
@@ -1135,7 +1135,7 @@ class MarkupText(SVGMobject):
 
     def text2svg(self):
         """Convert the text to SVG using Pango."""
-        size = self.font_size / 4.8
+        size = self._font_size / 4.8
         line_spacing = self.line_spacing / 4.8
 
         dir_name = config.get_dir("text_dir")
