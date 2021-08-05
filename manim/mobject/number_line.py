@@ -157,7 +157,7 @@ class NumberLine(Line):
         decimal_number_config: Optional[Dict] = None,
         numbers_to_exclude: Optional[Iterable[float]] = None,
         numbers_to_include: Optional[Iterable[float]] = None,
-        **kwargs
+        **kwargs,
     ):
         # deprecation
         number_scale_value = kwargs.pop("number_scale_value", None)
@@ -327,7 +327,7 @@ class NumberLine(Line):
         direction: Optional[Sequence[float]] = None,
         buff: Optional[float] = None,
         font_size: Optional[float] = None,
-        **number_config
+        **number_config,
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(
             self.decimal_number_config, number_config
@@ -360,7 +360,7 @@ class NumberLine(Line):
         x_values: Optional[Iterable[float]] = None,
         excluding: Optional[Iterable[float]] = None,
         font_size: Optional[float] = None,
-        **kwargs
+        **kwargs,
     ) -> VGroup:
         if x_values is None:
             x_values = self.get_tick_range()
@@ -395,7 +395,10 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-            label.font_size = font_size
+            if hasattr(label, font_size):
+                label.font_size = font_size
+            else:
+                raise AttributeError(f"{label} is not compatible with add_labels.")
             label = self.create_label_tex(label)
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
             labels.add(label)
@@ -437,7 +440,7 @@ class UnitInterval(NumberLine):
         unit_size=10,
         numbers_with_elongated_ticks=None,
         decimal_number_config=None,
-        **kwargs
+        **kwargs,
     ):
         numbers_with_elongated_ticks = (
             [0, 1]
