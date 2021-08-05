@@ -2228,17 +2228,6 @@ class Mobject:
         Mobject
             The mobject.
 
-        NOTES
-        -----
-
-        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
-        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
-        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
-
-        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
-        defined, the latter has higher priority.
-
-
         Raises
         ------
         ValueError
@@ -2246,6 +2235,15 @@ class Mobject:
         ValueError
             If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Notes
+        -----
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
 
         Examples
         --------
