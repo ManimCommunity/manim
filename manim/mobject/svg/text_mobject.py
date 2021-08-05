@@ -73,6 +73,7 @@ from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
+TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
 
 def remove_invisible_chars(mobject):
@@ -658,38 +659,40 @@ class Text(SVGMobject):
                 setting.line_num = 0
         return settings
 
-    def text2svg(self):
-        """Internally used function.
-        Convert the text to SVG using Pango
-        """
-        size = self._font_size / 4.8
-        line_spacing = self.line_spacing / 4.8
+    def text2svg(self, size=None, line_spacing=None):
+        """Convert the text to SVG using Pango."""
+        size = self._font_size if size is None else size
+        line_spacing = self.line_spacing if size is None else size
+        size *= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing *= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
         file_name = os.path.join(dir_name, hash_name) + ".svg"
+
         if os.path.exists(file_name):
-            return file_name
+            svg_file = file_name
+        else:
+            settings = self.text2settings()
+            width = config["pixel_width"]
+            height = config["pixel_height"]
 
-        settings = self.text2settings()
-        width = config["pixel_width"]
-        height = config["pixel_height"]
+            svg_file = manimpango.text2svg(
+                settings,
+                size,
+                line_spacing,
+                self.disable_ligatures,
+                file_name,
+                START_X,
+                START_Y,
+                width,
+                height,
+                self.text,
+            )
 
-        return manimpango.text2svg(
-            settings,
-            size,
-            line_spacing,
-            disable_liga,
-            file_name,
-            START_X,
-            START_Y,
-            width,
-            height,
-            self.text,
-        )
+        return svg_file
 
     def init_colors(self, propagate_colors=True):
         super().init_colors(propagate_colors=propagate_colors)
@@ -1133,37 +1136,39 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def text2svg(self):
+    def text2svg(self, size=None, line_spacing=None):
         """Convert the text to SVG using Pango."""
-        size = self._font_size / 4.8
-        line_spacing = self.line_spacing / 4.8
+        size = self._font_size if size is None else size
+        line_spacing = self.line_spacing if size is None else size
+        size *= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing *= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
-            return file_name
-
-        logger.debug(f"Setting Text {self.text}")
-        return MarkupUtils.text2svg(
-            f'<span foreground="{self.color}">{self.text}</span>',
-            self.font,
-            self.slant,
-            self.weight,
-            size,
-            line_spacing,
-            disable_liga,
-            file_name,
-            START_X,
-            START_Y,
-            600,  # width
-            400,  # height
-            justify=self.justify,
-            pango_width=500,
-        )
+            svg_file = file_name
+        else:
+            logger.debug(f"Setting Text {self.text}")
+            svg_file = MarkupUtils.text2svg(
+                f'<span foreground="{self.color}">{self.text}</span>',
+                self.font,
+                self.slant,
+                self.weight,
+                size,
+                line_spacing,
+                self.disable_ligatures,
+                file_name,
+                START_X,
+                START_Y,
+                600,  # width
+                400,  # height
+                justify=self.justify,
+                pango_width=500,
+            )
+        return svg_file
 
     def _count_real_chars(self, s):
         """Counts characters that will be displayed.
