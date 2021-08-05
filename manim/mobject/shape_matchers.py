@@ -29,7 +29,6 @@ class SurroundingRectangle(RoundedRectangle):
                     color=BLUE,
                 ).scale(0.75)
                 box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
-                self.add()
 
                 t2 = Tex(r"Hello World").scale(1.5)
                 box2 = SurroundingRectangle(t2, corner_radius=0.2)
