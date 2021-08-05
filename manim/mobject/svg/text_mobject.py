@@ -435,7 +435,8 @@ class Text(SVGMobject):
         if size is not None:
             self._font_size = size * DEFAULT_FONT_SIZE
         else:
-            self._font_size = font_size
+            # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
+            self._font_size = float(font_size)
 
         self.line_spacing = line_spacing
         self.font = font
@@ -527,9 +528,24 @@ class Text(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+        self.initial_height = self.height
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_val):
+        self.scale(
+            TEXT_MOB_SCALE_FACTOR
+            * (1 / 2.4)
+            * font_val
+            * self.initial_height
+            / self.height
+        )
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -663,9 +679,10 @@ class Text(SVGMobject):
         """Convert the text to SVG using Pango."""
         size = self._font_size if size is None else size
         line_spacing = self.line_spacing if size is None else size
-        size *= TEXT2SVG_ADJUSTMENT_FACTOR
-        line_spacing *= TEXT2SVG_ADJUSTMENT_FACTOR
+        size /= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
+        print(size)
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
@@ -1032,7 +1049,7 @@ class MarkupText(SVGMobject):
         if size is not None:
             self._font_size = size * DEFAULT_FONT_SIZE
         else:
-            self._font_size = font_size
+            self._font_size = float(font_size)
 
         self.line_spacing = line_spacing
         self.font = font
@@ -1123,6 +1140,22 @@ class MarkupText(SVGMobject):
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
+        self.initial_height = self.height
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_val):
+        self.scale(
+            TEXT_MOB_SCALE_FACTOR
+            * (1 / 2.4)
+            * font_val
+            * self.initial_height
+            / self.height
+        )
+
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
@@ -1140,8 +1173,8 @@ class MarkupText(SVGMobject):
         """Convert the text to SVG using Pango."""
         size = self._font_size if size is None else size
         line_spacing = self.line_spacing if size is None else size
-        size *= TEXT2SVG_ADJUSTMENT_FACTOR
-        line_spacing *= TEXT2SVG_ADJUSTMENT_FACTOR
+        size /= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
