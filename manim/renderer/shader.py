@@ -3,7 +3,6 @@ import re
 import textwrap
 from pathlib import Path
 
-import IPython
 import moderngl
 import numpy as np
 
@@ -372,11 +371,8 @@ class Shader:
                 source_dict[source_dict_key[shader_file_path.stem]] = shader_source
             self.shader_program = context.program(**source_dict)
 
-        # Cache the shader, but not if called via IPython magic as the context is
-        # recreated with every scene render, making the cached shader invalid.
-        is_ipython = IPython.get_ipython() is not None
-
-        if not is_ipython and name is not None and name not in shader_program_cache:
+        # Cache the shader.
+        if name is not None and name not in shader_program_cache:
             shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name, value):

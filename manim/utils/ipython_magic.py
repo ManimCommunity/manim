@@ -8,6 +8,7 @@ from pathlib import Path
 
 from manim import Group, config, logger, tempconfig
 from manim.__main__ import main
+from manim.renderer.shader import shader_program_cache
 
 try:
     from IPython import get_ipython
@@ -125,6 +126,9 @@ else:
                 SceneClass = local_ns[config["scene_names"][0]]
                 scene = SceneClass(renderer)
                 scene.render()
+
+                # Shader cache becomes invalid as the context is destroyed
+                shader_program_cache.clear()
 
                 # Close OpenGL window here instead of waiting for the main thread to
                 # finish causing the window to stay open and freeze
