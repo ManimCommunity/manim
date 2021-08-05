@@ -79,12 +79,12 @@ class SingleStringMathTex(SVGMobject):
         **kwargs,
     ):
 
+        self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
         self.tex_template = tex_template
-        self.font_size = font_size
 
         assert isinstance(tex_string, str)
         self.tex_string = tex_string
@@ -106,13 +106,31 @@ class SingleStringMathTex(SVGMobject):
             color=color,
             **kwargs,
         )
+        # used for scaling via font_size.setter
+        self.initial_height = self.height
+
         if height is None:
-            self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size)
+            self.font_size = self._font_size
+
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.tex_string)})"
+
+    @property
+    def font_size(self):
+        """The font size of the tex mobject."""
+        print("are we here")
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_val):
+        print("what's up")
+        self.scale(
+            SCALE_FACTOR_PER_FONT_POINT * font_val * self.initial_height / self.height
+        )
+        self._font_size = font_val
 
     def get_modified_expression(self, tex_string):
         result = tex_string

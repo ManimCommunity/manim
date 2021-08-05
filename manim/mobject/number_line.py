@@ -395,7 +395,7 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-
+            label.font_size = font_size
             label = self.create_label_tex(label)
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
             labels.add(label)
