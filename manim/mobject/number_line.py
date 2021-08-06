@@ -440,7 +440,7 @@ class UnitInterval(NumberLine):
         unit_size=10,
         numbers_with_elongated_ticks=None,
         decimal_number_config=None,
-        **kwargs,
+        **kwargs
     ):
         numbers_with_elongated_ticks = (
             [0, 1]
