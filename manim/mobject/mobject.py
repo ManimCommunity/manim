@@ -102,7 +102,8 @@ class Mobject:
         self.point_hash = None
         self.submobjects = []
         self.updaters = []
-        self.updating_suspended = False
+        self.updating_variation = 1
+        self.updating_speed = 1
         self.reset_points()
         self.generate_points()
         self.init_colors()
@@ -771,10 +772,15 @@ class Mobject:
 
     # Updating
 
-    def update(self, dt: float = 0, recursive: bool = True) -> "Mobject":
+    def update(
+        self,
+        dt: float = 0,
+        recursive: bool = True,
+        rate_func: Callable[[float], float] = linear,
+    ) -> "Mobject":
         """Apply all updaters.
 
-        Does nothing if updating is suspended.
+        Does nothing if updation speed is 0 (updating suspended)
 
         Parameters
         ----------
@@ -782,6 +788,9 @@ class Mobject:
             The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
         recursive
             Whether to recursively update all submobjects.
+        rate_func
+            Function controlling the behavior of the animation when the suspending/resuming is not
+            instantaneous.
 
         Returns
         -------
@@ -794,12 +803,16 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        if self.updating_suspended:
+        if self.updating_speed == 0:
             return self
         for updater in self.updaters:
             parameters = get_parameters(updater)
             if "dt" in parameters:
-                updater(self, dt)
+                updater(self, rate_func(self.updating_speed * dt))
+                if 0 < self.updating_speed < 1:
+                    self.updating_speed = np.clip(
+                        self.updating_speed + self.updating_variation, 0, 1
+                    )
             else:
                 updater(self)
         if recursive:
@@ -1013,7 +1026,12 @@ class Mobject:
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive: bool = True) -> "Mobject":
+    def suspend_updating(
+        self,
+        recursive: bool = True,
+        run_time: float = 0,
+        rate_func: Callable[[float], float] = linear,
+    ) -> "Mobject":
         """Disable updating from updaters and animations.
 
 
@@ -1021,6 +1039,11 @@ class Mobject:
         ----------
         recursive
             Whether to recursively suspend updating on all submobjects.
+        run_time
+            Duration of the interruption of the animations (instantaneous if 0).
+        rate_func
+            Function controlling the behavior of the animation's interruption (useless
+            if run_time=0).
 
         Returns
         -------
@@ -1033,20 +1056,38 @@ class Mobject:
         :meth:`add_updater`
 
         """
-
-        self.updating_suspended = True
+        frame_duration = 1 / config.frame_rate
+        if run_time < frame_duration:
+            self.updating_speed = 0
+        else:
+            self.updating_variation = -frame_duration / run_time
+            self.updating_speed += self.updating_variation
         if recursive:
             for submob in self.submobjects:
-                submob.suspend_updating(recursive)
+                submob.suspend_updating(
+                    recursive=recursive, run_time=run_time, rate_func=rate_func
+                )
+            self.update(dt=0, recursive=recursive, rate_func=rate_func)
         return self
 
-    def resume_updating(self, recursive: bool = True) -> "Mobject":
+    def resume_updating(
+        self,
+        recursive: bool = True,
+        run_time: float = 0,
+        rate_func: Callable[[float], float] = linear,
+    ) -> "Mobject":
         """Enable updating from updaters and animations.
 
         Parameters
         ----------
         recursive
             Whether to recursively enable updating on all submobjects.
+        run_time
+            Duration needed to get the animation to its full speed of the animations
+            (instantaneous if 0).
+        rate_func
+            Function controlling the behavior of the animation's start (useless if
+            run_time=0).
 
         Returns
         -------
@@ -1059,11 +1100,18 @@ class Mobject:
         :meth:`add_updater`
 
         """
-        self.updating_suspended = False
+        frame_duration = 1 / config.frame_rate
+        if run_time < frame_duration:
+            self.updating_speed = 1
+        else:
+            self.updating_variation = frame_duration / run_time
+            self.updating_speed += self.updating_variation
         if recursive:
             for submob in self.submobjects:
-                submob.resume_updating(recursive)
-        self.update(dt=0, recursive=recursive)
+                submob.resume_updating(
+                    recursive=recursive, run_time=run_time, rate_func=rate_func
+                )
+            self.update(dt=0, recursive=recursive, rate_func=rate_func)
         return self
 
     # Transforming operations
