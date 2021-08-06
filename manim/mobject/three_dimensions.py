@@ -76,8 +76,8 @@ class ParametricSurface(VGroup):
 
     @deprecated_params(
         params="u_min,u_max,v_min,v_max",
-        since="v0.10.0",
-        until="v0.11.0",
+        since="v0.9.0",
+        until="v0.10.0",
         message="Use u_range and v_range instead.",
     )
     def __init__(
