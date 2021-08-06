@@ -101,7 +101,7 @@ class LogBase(_ScaleBase):
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
-        """Scales the value to fit it to a logarithimic scale.``self.function(5) == 10**5``"""
+        """Scales the value to fit it to a logarithmic scale.``self.function(5) == 10**5``"""
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
