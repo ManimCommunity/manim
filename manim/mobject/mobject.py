@@ -44,6 +44,7 @@ from ..utils.color import (
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
+from ..utils.rate_functions import linear
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
