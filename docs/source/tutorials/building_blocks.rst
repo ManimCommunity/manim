@@ -256,28 +256,25 @@ Animating methods
 
 Any property of a mobject that can be changed can be animated.  In fact, any
 method that changes a mobject's property can be used as an animation, through
-the use of :class:`.ApplyMethod`.
+the use of :meth:`.animate`.
 
-.. manim:: ApplyMethodExample
+.. manim:: AnimateExample
+    :ref_classes: Animation
 
-   class ApplyMethodExample(Scene):
-       def construct(self):
-           square = Square().set_fill(RED, opacity=1.0)
-           self.add(square)
+    class AnimateExample(Scene):
+        def construct(self):
+            square = Square().set_fill(RED, opacity=1.0)
+            self.add(square)
 
-           # animate the change of color
-           self.play(ApplyMethod(square.set_fill, WHITE))
-           self.wait(1)
+            # animate the change of color
+            self.play(square.animate().set_fill(WHITE))
+            self.wait(1)
 
-           # animate the change of position
-           self.play(ApplyMethod(square.shift, UP))
-           self.wait(1)
+            # animate the change of position
+            self.play(square.animate().shift(UP))
+            self.wait(1)
 
-:meth:`.ApplyMethod` receives one mandatory argument which is the method of the
-mobject to animate (e.g. :code:`square.set_fill` or :code:`square.shift`), and
-any number of optional arguments which are then passed to the method call.  For
-example, :code:`ApplyMethod(square.shift, UP)` executes
-:code:`square.shift(UP)`, but animates it instead of applying it immediately.
+:meth:`.animate` is a method of mobjects that will animate the function comes afterward.  For example, :code:`square.set_fill(WHITE)` sets the fill color of the square, while :code:`sqaure.animate().set_fill(WHITE)` animates this action.
 
 Animation run time
 ==================
