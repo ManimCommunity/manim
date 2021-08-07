@@ -818,7 +818,7 @@ class Mobject:
                 updater(self)
         if recursive:
             for submob in self.submobjects:
-                submob.update(dt, recursive)
+                submob.update(dt, recursive, rate_func)
         return self
 
     def get_time_based_updaters(self) -> List[Updater]:
