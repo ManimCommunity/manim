@@ -2936,7 +2936,10 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        self.line1 = line1
+        self.line2 = line2
         self.quadrant = quadrant
+        self.other_angle = other_angle
         self.dot_distance = dot_distance
         self.elbow = elbow
         inter = line_intersection(
@@ -3014,6 +3017,38 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 self.add(right_dot)
 
         self.set_points(angle_mobject.get_points())
+
+    def get_lines(self):
+        return self.line1, self.line2
+
+    def get_value(self, degrees=True):
+        edge1, edge2 = self.get_lines()
+        alpha, beta = edge1.get_angle(), edge2.get_angle()
+
+        unit_vector_1, unit_vector_2 = edge1.get_unit_vector(), edge2.get_unit_vector()
+        det = np.linalg.det(
+            [[unit_vector_1[0], unit_vector_1[1]], [unit_vector_2[0], unit_vector_2[1]]]
+        )
+
+        theta = beta - alpha
+
+        if det >= 0 and alpha >= 0 and beta <= 0:
+            theta += TAU
+
+        if det <= 0:
+            if not (alpha <= 0 and beta >= 0):
+                theta += TAU
+
+        if self.other_angle:
+            if theta >= 0:
+                theta -= TAU
+            else:
+                theta = TAU - np.abs(theta)
+
+        if degrees:
+            return theta / DEGREES
+
+        return theta
 
 
 class RightAngle(Angle):
