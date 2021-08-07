@@ -260,7 +260,7 @@ class ParametricSurface(VGroup):
 # Specific shapes
 
 
-class Plane(ParametricSurface):
+class Plane(ThreeDVMobject):
     """
     A 2D plane :class:`~.VMobject`.
 
@@ -280,8 +280,7 @@ class Plane(ParametricSurface):
                 plane = Plane(
                     point=dot.get_center(),
                     normal_vect=normal,
-                    u_range=[-2.5, 2.5],
-                    v_range=[-2.5, 2.5],
+                    sidelength=5,
                     fill_opacity=0.5,
                 )
                 normal_vector.shift(plane.get_center())
@@ -299,20 +298,33 @@ class Plane(ParametricSurface):
     v_range
         The dimensions of the plane.
     kwargs
-        To be passed to :class:`ParametricSurface`.
+        To be passed to :class:`ThreeDVMobject`.
     """
 
     def __init__(
         self,
         point: Sequence[float] = ORIGIN,
         normal_vect: Sequence[float] = [1, 1, 1],
-        u_range: Sequence[float] = [-5, 5],
-        v_range: Sequence[float] = [-5, 5],
+        sidelength: float = 10,
+        color: Color = BLUE,
+        fill_opacity: float = 1,
         **kwargs
     ):
         normal_vect = np.array(normal_vect)
+        hyp = np.hypot(*[sidelength] * 2) / 2 ** 0.5 / 2
         super().__init__(
-            lambda u, v: np.array([u, v, 0]), u_range=u_range, v_range=v_range, **kwargs
+            color=color,
+            fill_opacity=fill_opacity,
+            **kwargs,
+        )
+        self.set_points_as_corners(
+            [
+                UR * hyp,
+                DR * hyp,
+                DL * hyp,
+                UL * hyp,
+                UR * hyp,
+            ]
         )
         spherical = cartesian_to_spherical(normal_vect)
         axis = [np.sin(spherical[1]), -np.cos(spherical[1]), 0]
@@ -321,14 +333,8 @@ class Plane(ParametricSurface):
 
     @property
     def normal_vect(self):
-        res = self.resolution
-        if type(res) is not int:
-            res = res[0]
-        p1, p2, p3 = (
-            self[0].get_center(),
-            self[res - 1].get_center(),
-            self[-1].get_center(),
-        )
+        p0 = self.get_points()
+        p1, p2, p3 = p0[0], p0[1], p0[-2]
         return np.cross(p1 - p2, p3 - p2) / np.linalg.norm(np.cross(p1 - p2, p3 - p2))
 
     def line_perp_to_plane(
