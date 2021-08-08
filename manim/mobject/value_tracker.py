@@ -105,7 +105,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.increment_value(d_value)
         return self
 
-    def __floordiv__(self, d_value: Union[int, float]):
+    def __floordiv__(self, d_value: float):
         """Set the value of this value tracker to the floor division of the current value by ``d_value``."""
         self.set_value(self.get_value() // d_value)
         return self
