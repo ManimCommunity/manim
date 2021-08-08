@@ -271,7 +271,7 @@ the use of :meth:`.animate`.
             self.wait(1)
 
             # animate the change of position and the rotation at the same time
-            self.play(square.animate().shift(UP).rotate(PI / 2))
+            self.play(square.animate().shift(UP).rotate(PI / 3))
             self.wait(1)
 
 :meth:`.animate` is a property of all mobjects that animates the methods that come 
