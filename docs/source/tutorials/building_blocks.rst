@@ -267,7 +267,7 @@ the use of :meth:`.animate`.
             self.add(square)
 
             # animate the change of color
-            self.play(square.animate().set_fill(WHITE))
+            self.play(square.animate.set_fill(WHITE))
             self.wait(1)
 
             # animate the change of position and the rotation at the same time
