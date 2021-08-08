@@ -1,24 +1,31 @@
 from pathlib import Path
 
 try:
-    import dearpygui.core
-    import dearpygui.demo
-    import dearpygui.simple
+    import dearpygui.dearpygui as dpg
+    from dearpygui.demo import show_demo
 
     dearpygui_imported = True
 except ImportError:
     dearpygui_imported = False
 
 
-from .. import config
+from .. import __version__, config
 from ..utils.module_ops import scene_classes_from_file
+
+if dearpygui_imported:
+    window = dpg.generate_uuid()
 
 
 def configure_pygui(renderer, widgets, update=True):
     if not dearpygui_imported:
         raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
     if update:
-        dearpygui.core.delete_item("Manim GUI")
+        dpg.delete_item(window)
+    else:
+        dpg.setup_viewport()
+    dpg.set_viewport_title(title=f"Manim Community v{__version__}")
+    dpg.set_viewport_width(1015)
+    dpg.set_viewport_height(540)
 
     def rerun_callback(sender, data):
         renderer.scene.queue.put(("rerun_gui", [], {}))
@@ -27,33 +34,32 @@ def configure_pygui(renderer, widgets, update=True):
         renderer.scene.queue.put(("exit_gui", [], {}))
 
     def scene_selection_callback(sender, data):
-        config["scene_names"] = (dearpygui.core.get_value(sender),)
+        config["scene_names"] = (dpg.get_value(sender),)
         renderer.scene.queue.put(("rerun_gui", [], {}))
 
     scene_classes = scene_classes_from_file(Path(config["input_file"]), full_list=True)
     scene_names = [scene_class.__name__ for scene_class in scene_classes]
 
-    with dearpygui.simple.window(
-        "Manim GUI",
-        x_pos=config["gui_location"][0],
-        y_pos=config["gui_location"][1],
+    with dpg.window(
+        id=window,
+        label="Manim GUI",
+        pos=[config["gui_location"][0], config["gui_location"][1]],
         width=1000,
         height=500,
     ):
-        dearpygui.core.set_main_window_size(width=1015, height=540)
-        dearpygui.core.set_global_font_scale(2)
-        dearpygui.core.add_button("Rerun", callback=rerun_callback)
-        dearpygui.core.add_button("Continue", callback=continue_callback)
-        dearpygui.core.add_combo(
-            "Selected scene",
+        dpg.set_global_font_scale(2)
+        dpg.add_button(label="Rerun", callback=rerun_callback)
+        dpg.add_button(label="Continue", callback=continue_callback)
+        dpg.add_combo(
+            label="Selected scene",
             items=scene_names,
             callback=scene_selection_callback,
             default_value=config["scene_names"][0],
         )
-        dearpygui.core.add_separator()
+        dpg.add_separator()
         if len(widgets) != 0:
-            with dearpygui.simple.collapsing_header(
-                f"{config['scene_names'][0]} widgets", default_open=True
+            with dpg.collapsing_header(
+                label=f"{config['scene_names'][0]} widgets", default_open=True
             ):
                 for widget_config in widgets:
                     widget_config_copy = widget_config.copy()
@@ -62,11 +68,10 @@ def configure_pygui(renderer, widgets, update=True):
                     if widget != "separator":
                         del widget_config_copy["name"]
                         del widget_config_copy["widget"]
-                        getattr(dearpygui.core, f"add_{widget}")(
-                            name, **widget_config_copy
-                        )
+                        getattr(dpg, f"add_{widget}")(name, **widget_config_copy)
                     else:
-                        dearpygui.core.add_separator()
-    # dearpygui.demo.show_demo()
+                        dpg.add_separator()
+    # show_demo()
+
     if not update:
-        dearpygui.core.start_dearpygui()
+        dpg.start_dearpygui()
