@@ -274,7 +274,7 @@ the use of :meth:`.animate`.
             self.play(square.animate().shift(UP).rotate(PI / 2))
             self.wait(1)
 
-:meth:`.animate` is a method of mobjects that will animate methods that come 
+:meth:`.animate` is a property of all mobjects that animates the methods that come 
 afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
 the square, while :code:`sqaure.animate().set_fill(WHITE)` animates this action.
 
