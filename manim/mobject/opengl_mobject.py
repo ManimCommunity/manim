@@ -56,7 +56,7 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow=0.0,
         # For shaders
-        render_primitive=moderngl.TRIANGLE_STRIP,
+        render_primitive=moderngl.TRIANGLES,
         texture_paths=None,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
