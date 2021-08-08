@@ -290,8 +290,8 @@ Use the :code:`run_time` argument to control the duration.
        def construct(self):
            square = Square()
            self.add(square)
-	   self.play(square.animate().shift(UP), run_time=3)
-	   self.wait(1)
+           self.play(square.animate().shift(UP), run_time=3)
+           self.wait(1)
 
 Creating a custom animation
 ===========================
