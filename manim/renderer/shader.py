@@ -300,10 +300,14 @@ class Mesh(Object3D):
             renderer.camera.projection_matrix,
         )
 
+    def enable_opengl_defaults(self):
+        self.shader.context.enable(moderngl.PROGRAM_POINT_SIZE)
+
     def render(self):
         if self.skip_render:
             return
 
+        self.enable_opengl_defaults()
         if self.use_depth_test:
             self.shader.context.enable(moderngl.DEPTH_TEST)
         else:
