@@ -327,7 +327,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     .. manim:: Tree
 
-        from manim import *
         import networkx as nx
 
         class Tree(Scene):
