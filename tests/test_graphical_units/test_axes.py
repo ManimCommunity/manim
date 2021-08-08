@@ -18,6 +18,13 @@ def test_axes(scene):
     scene.add(graph, labels)
 
 
+@frames_comparison()
+def test_plot_functions(scene):
+    ax = Axes(x_range=(-10, 10.3), y_range=(-1.5, 1.5))
+    graph = ax.get_graph(lambda x: x ** 2)
+    scene.add(ax, graph)
+
+
 @frames_comparison
 def test_custom_coordinates(scene):
     ax = Axes(x_range=[0, 10])
