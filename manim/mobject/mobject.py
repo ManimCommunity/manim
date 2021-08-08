@@ -31,7 +31,7 @@ from typing import (
 import numpy as np
 from colour import Color
 
-from .. import config
+from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -1061,6 +1061,10 @@ class Mobject:
         if run_time < frame_duration:
             self.updating_speed = 0
         else:
+            if not config.disable_caching:
+                logger.warning(
+                    "If caching is enabled, suspending updaters with a run_time not equal to zero may cause issues when rendering. To be sure to obtain the desired result, make sure to pass the CLI flag --disable_caching."
+                )
             self.updating_variation = -frame_duration / run_time
             self.updating_speed += self.updating_variation
         if recursive:
@@ -1105,6 +1109,10 @@ class Mobject:
         if run_time < frame_duration:
             self.updating_speed = 1
         else:
+            if not config.disable_caching:
+                logger.warning(
+                    "If caching is enabled, resuming updaters with a run_time not equal to zero may cause issues when rendering. To be sure to obtain the desired result, make sure to pass the CLI flag --disable_caching."
+                )
             self.updating_variation = frame_duration / run_time
             self.updating_speed += self.updating_variation
         if recursive:
