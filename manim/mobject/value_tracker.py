@@ -92,7 +92,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         """Return whether the value of this value tracker evaluates as true."""
         return bool(self.get_value())
 
-    def __add__(self, value: Union[int, float]):
+    def __add__(self, value: float):
         """
         This is called when you add a value to a ValueTracker, e.g. ValueTracker() + <some_integer_or_float>
         Shorthand for ValueTracker().increment_value(<some_integer_or_float>)
