@@ -260,6 +260,11 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
+    def apply_over_attr_arrays(self, func):
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
+
     def append_points(self, new_points):
         self.data["points"] = np.vstack([self.data["points"], new_points])
         self.refresh_bounding_box()
