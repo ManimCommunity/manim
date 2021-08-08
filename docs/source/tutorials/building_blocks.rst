@@ -276,7 +276,7 @@ the use of :meth:`.animate`.
 
 :meth:`.animate` is a property of all mobjects that animates the methods that come 
 afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
-the square, while :code:`sqaure.animate().set_fill(WHITE)` animates this action.
+the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
 
 Animation run time
 ==================
