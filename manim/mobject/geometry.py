@@ -3020,12 +3020,12 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(angle_mobject.get_points())
 
     def get_lines(self) -> VGroup:
-        """Get the lines forming an angle of the :class:`Angle`.
+        """Get the lines forming an angle of the :class:`Angle` class.
 
         Returns
         -------
         :class:`VGroup`
-            The VGroup of the lines that form an angle of the :class:`Angle`.
+            The VGroup of the lines that form an angle of the :class:`Angle` class.
 
         Examples
         --------
@@ -3040,7 +3040,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(self.line1, self.line2)
 
     def get_value(self, degrees: bool = False) -> float:
-        """Get the value of an angle of the :class:`Angle`.
+        """Get the value of an angle of the :class:`Angle` class.
 
         Parameters
         ----------
@@ -3050,7 +3050,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         Returns
         -------
         :class:`float`
-            The value in degrees/radians of an angle of the :class:`Angle`.
+            The value in degrees/radians of an angle of the :class:`Angle` class.
 
         Examples
         --------
