@@ -1,5 +1,5 @@
 try:
-    from dearpygui import core as dpg
+    from dearpygui import dearpygui as dpg
 except ImportError:
     pass
 
