@@ -2981,15 +2981,17 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             if not other_angle:
                 start_angle = angle_1
                 if angle_2 > angle_1:
-                    self.angle_fin = angle_2 - angle_1
+                    angle_fin = angle_2 - angle_1
                 else:
-                    self.angle_fin = 2 * np.pi - (angle_1 - angle_2)
+                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
             else:
                 start_angle = angle_1
                 if angle_2 < angle_1:
-                    self.angle_fin = -angle_1 + angle_2
+                    angle_fin = -angle_1 + angle_2
                 else:
-                    self.angle_fin = -2 * np.pi + (angle_2 - angle_1)
+                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
+
+            self.angle_fin = angle_fin
 
             angle_mobject = Arc(
                 radius=radius,
