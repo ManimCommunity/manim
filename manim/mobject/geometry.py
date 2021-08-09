@@ -3042,6 +3042,11 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     def get_value(self, degrees: bool = False) -> float:
         """Get the value of an angle of the :class:`Angle`.
 
+        Parameters
+        ----------
+        degrees
+            A boolean to decide the unit (deg/rad) in which the value of the angle is given.
+
         Returns
         -------
         :class:`float`
