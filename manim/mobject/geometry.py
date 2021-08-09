@@ -3024,8 +3024,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        :class:`VGroup`
-            The VGroup of the lines that form an angle of the :class:`Angle` class.
+        :class:`~.VGroup`
+            A :class:`~.VGroup` containing the lines that form the angle of the :class:`Angle` class.
 
         Examples
         --------
@@ -3045,7 +3045,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         degrees
-            A boolean to decide the unit (deg/rad) in which the value of the angle is given.
+            A boolean to decide the unit (deg/rad) in which the value of the angle is returned.
 
         Returns
         -------
