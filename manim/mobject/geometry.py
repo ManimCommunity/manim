@@ -2939,7 +2939,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.line1 = line1
         self.line2 = line2
         self.quadrant = quadrant
-        self.other_angle = other_angle
         self.dot_distance = dot_distance
         self.elbow = elbow
         inter = line_intersection(
@@ -3019,7 +3018,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(angle_mobject.get_points())
 
     def get_lines(self) -> VGroup:
-        """get the forming an angle of the :class:`Angle`.
+        """Get the forming an angle of the :class:`Angle`.
 
         Returns
         -------
@@ -3039,7 +3038,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(self.line1, self.line2)
 
     def get_value(self, degrees: bool = False) -> float:
-        """get the value of an angle of the :class:`Angle`.
+        """Get the value of an angle of the :class:`Angle`.
 
         Returns
         -------
