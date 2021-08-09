@@ -2982,19 +2982,19 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             if not other_angle:
                 start_angle = angle_1
                 if angle_2 > angle_1:
-                    angle_fin = angle_2 - angle_1
+                    self.angle_fin = angle_2 - angle_1
                 else:
-                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
+                    self.angle_fin = 2 * np.pi - (angle_1 - angle_2)
             else:
                 start_angle = angle_1
                 if angle_2 < angle_1:
-                    angle_fin = -angle_1 + angle_2
+                    self.angle_fin = -angle_1 + angle_2
                 else:
-                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
+                    self.angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
             angle_mobject = Arc(
                 radius=radius,
-                angle=angle_fin,
+                angle=self.angle_fin,
                 start_angle=start_angle,
                 arc_center=inter,
                 **kwargs,
@@ -3018,37 +3018,49 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         self.set_points(angle_mobject.get_points())
 
-    def get_lines(self):
-        return self.line1, self.line2
+    def get_lines(self) -> VGroup:
+        """get the forming an angle of the :class:`Angle`.
 
-    def get_value(self, degrees=True):
-        edge1, edge2 = self.get_lines()
-        alpha, beta = edge1.get_angle(), edge2.get_angle()
+        Returns
+        -------
+        :class:`VGroup`
+            The VGroup of the lines that form an angle of the :class:`Angle`.
 
-        unit_vector_1, unit_vector_2 = edge1.get_unit_vector(), edge2.get_unit_vector()
-        det = np.linalg.det(
-            [[unit_vector_1[0], unit_vector_1[1]], [unit_vector_2[0], unit_vector_2[1]]]
-        )
+        Examples
+        --------
+        ::
 
-        theta = beta - alpha
+            >>> line_1, line_2 = Line(ORIGIN, RIGHT), Line(ORIGIN, UR)
+            >>> angle = Angle(line_1, line_2)
+            >>> angle.get_lines()
+            VGroup(Line, Line)
+        """
 
-        if det >= 0 and alpha >= 0 and beta <= 0:
-            theta += TAU
+        return VGroup(self.line1, self.line2)
 
-        if det <= 0:
-            if not (alpha <= 0 and beta >= 0):
-                theta += TAU
+    def get_value(self, degrees: bool = False) -> float:
+        """get the value of an angle of the :class:`Angle`.
 
-        if self.other_angle:
-            if theta >= 0:
-                theta -= TAU
-            else:
-                theta = TAU - np.abs(theta)
+        Returns
+        -------
+        :class:`float`
+            The value in degrees/radians of an angle of the :class:`Angle`.
+
+        Examples
+        --------
+        ::
+
+            >>> line_1, line_2 = Line(ORIGIN, RIGHT), Line(ORIGIN, UR)
+            >>> angle = Angle(line_1, line_2)
+            >>> angle.get_value()
+            0.7853981633974483
+            >>> angle.get_value(degrees=True)
+            45.0
+        """
 
         if degrees:
-            return theta / DEGREES
-
-        return theta
+            return self.angle_fin / DEGREES
+        return self.angle_fin
 
 
 class RightAngle(Angle):
