@@ -3020,7 +3020,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.set_points(angle_mobject.get_points())
 
     def get_lines(self) -> VGroup:
-        """Get the forming an angle of the :class:`Angle`.
+        """Get the lines forming an angle of the :class:`Angle`.
 
         Returns
         -------
