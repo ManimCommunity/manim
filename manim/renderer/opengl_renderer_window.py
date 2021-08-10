@@ -13,13 +13,7 @@ class Window(PygletWindow):
     vsync = True
     cursor = True
 
-<<<<<<< HEAD
-    def __init__(self, renderer, size=None, samples=0, **kwargs):
-        if size is None:
-            size = (config["pixel_width"], config["pixel_height"])
-        super().__init__(size=size, samples=samples)
-=======
-    def __init__(self, renderer, size=config.window_size, **kwargs):
+    def __init__(self, renderer, size=config.window_size, samples=0, **kwargs):
         monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
@@ -40,8 +34,7 @@ class Window(PygletWindow):
         else:
             size = tuple(size)
 
-        super().__init__(size=size)
->>>>>>> master
+        super().__init__(size=size, samples=samples)
 
         self.title = f"Manim Community {__version__}"
         self.size = size
