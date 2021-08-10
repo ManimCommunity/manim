@@ -2,11 +2,13 @@ import types
 from importlib import import_module
 
 import pkg_resources
+from cloup import option, option_group
 
 from .. import config, logger
 
-__all__ = []
+__all__ = ["plugin_options"]
 
+pluginopts = []
 
 plugins_requested: list = config["plugins"]
 if "" in plugins_requested:
@@ -15,6 +17,11 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
     if plugin.name not in plugins_requested:
         continue
     loaded_plugin = plugin.load()
+
+    if hasattr(loaded_plugin, "manimopts"):
+        manimopts = loaded_plugin.manimopts
+        pluginopts.extend(manimopts)
+
     if isinstance(loaded_plugin, types.ModuleType):
         # it is a module so it can't be called
         # see if __all__ is defined
@@ -40,3 +47,9 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
 else:
     if plugins_requested != []:
         logger.warning("Missing Plugins: %s", plugins_requested)
+
+
+def plugin_options(func):
+    if not len(pluginopts) == 0:
+        return option_group("Plugin Render Options", *pluginopts)(func)
+    return func

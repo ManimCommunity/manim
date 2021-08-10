@@ -132,3 +132,23 @@ For example,
 Here, Manim will call the function ``setup_things`` defined in
 ``manim_awesomeplugin.imports`` and calls that. It returns a list of function or
 modules which will be imported globally.
+
+Plugins can add custom CLI flags by exposing a ``manimopts`` list in ``object_reference`` as such:
+
+.. code-block:: python
+
+    from cloup import option
+
+    manimopts = [
+        option(
+            "--flag",
+            callback=lambda ctx, param, value: print(
+                f"Callback got value {value}"
+            ),  # do something with value
+            type=int,
+            default=1,
+            help="Help string",
+        )
+    ]
+
+This should print ``Callback got value n`` upon running ``manim --flag n ...``. See `here <https://click.palletsprojects.com/en/8.0.x/api/#click.Option>`_ for documentation on command options.

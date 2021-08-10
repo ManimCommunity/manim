@@ -243,3 +243,73 @@ def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_
     print(out)
     print(err)
     assert exit_code == 0, err
+
+
+@pytest.mark.slow
+def test_plugin_custom_render_opts(tmp_path, create_plugin, python_version):
+    exception_text = "test_plugin_custom_render_opts --testflag raised"
+    create_plugin = create_plugin(
+        "{plugin_name}",
+        "a",
+        "b",
+        textwrap.dedent(
+            f"""\
+            from cloup import option
+            def optcallback(ctx, param, value):
+                if(value):
+                    raise Exception('{exception_text}')
+            manimopts = [
+                option(
+                    "--testflag",
+                    callback=optcallback,
+                    is_flag=True,
+                    help="Test flag"
+                )
+            ]
+            """
+        ),
+    )
+    plugin_name = create_plugin["plugin_name"]
+    cfg_file = cfg_file_create(
+        cfg_file_contents.format(plugin_name=plugin_name), tmp_path
+    )
+    test_class = textwrap.dedent(
+        """\
+        from manim import *
+        class RenderOptsTest(Scene):
+            def construct(self):
+                a = Dot()
+                self.add(a)
+        """
+    )
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", suffix=".py", delete=False
+    ) as tmpfile:
+        tmpfile.write(test_class)
+    scene_name = "RenderOptsTest"
+    command = [
+        python_version,
+        "-m",
+        "manim",
+        "-ql",
+        "--testflag",
+        "--media_dir",
+        str(cfg_file.parent),
+        "--config_file",
+        str(cfg_file),
+        tmpfile.name,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
+    print(out)
+    print(err)
+    assert exception_text in err
+
+    command.remove("--testflag")
+    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
+    print(out)
+    print(err)
+    assert exit_code == 0, err
+
+    Path(tmpfile.name).unlink()
