@@ -33,7 +33,6 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..container import Container
 from ..utils.color import (
     BLACK,
     WHITE,
@@ -52,6 +51,7 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -62,7 +62,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject(Container):
+class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
@@ -93,8 +93,8 @@ class Mobject(Container):
         ] = {}
         cls._add_intrinsic_animation_overrides()
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = Color(color)
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+        self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -120,8 +120,6 @@ class Mobject(Container):
         self.init_gl_data()
         self.init_gl_points()
         self.init_gl_colors()
-
-        Container.__init__(self, **kwargs)
 
     @classmethod
     def animation_override_for(
@@ -1143,6 +1141,22 @@ class Mobject(Container):
         -------
         Mobject
             The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
 
         See also
         --------
@@ -2214,17 +2228,6 @@ class Mobject(Container):
         Mobject
             The mobject.
 
-        NOTES
-        -----
-
-        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
-        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
-        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
-
-        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
-        defined, the latter has higher priority.
-
-
         Raises
         ------
         ValueError
@@ -2232,6 +2235,15 @@ class Mobject(Container):
         ValueError
             If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Notes
+        -----
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
 
         Examples
         --------
@@ -2419,6 +2431,11 @@ class Mobject(Container):
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
 
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
         Examples
         --------
 
@@ -2426,8 +2443,8 @@ class Mobject(Container):
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2= s.copy()
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
                     s2.invert()
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
@@ -2595,9 +2612,6 @@ class Mobject(Container):
     def interpolate_color(self, mobject1, mobject2, alpha):
         raise NotImplementedError("Please override in a child class.")
 
-    def pointwise_become_partial(self, mobject, a, b):
-        raise NotImplementedError("Please override in a child class.")
-
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
@@ -2659,19 +2673,46 @@ class Mobject(Container):
                 )
 
     # About z-index
-    def set_z_index(self, z_index_value: Union[int, float]):
+    def set_z_index(
+        self,
+        z_index_value: float,
+        family: bool = True,
+    ) -> "VMobject":
         """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
         ----------
         z_index_value
             The new value of :attr:`z_index` set.
+        family
+            If ``True``, the :attr:`z_index` value of all submobjects is also set.
 
         Returns
         -------
         :class:`Mobject`
-            The Mobject itself, after :attr:`z_index` is set. (Returns `self`.)
+            The Mobject itself, after :attr:`z_index` is set. For chaining purposes. (Returns `self`.)
+
+        Examples
+        --------
+        .. manim:: SetZIndex
+            :save_last_frame:
+
+            class SetZIndex(Scene):
+                def construct(self):
+                    text = Text('z_index = 3', color = PURE_RED).shift(UP).set_z_index(3)
+                    square = Square(2, fill_opacity=1).set_z_index(2)
+                    tex = Tex(r'zIndex = 1', color = PURE_BLUE).shift(DOWN).set_z_index(1)
+                    circle = Circle(radius = 1.7, color = GREEN, fill_opacity = 1) # z_index = 0
+
+                    # Displaying order is now defined by z_index values
+                    self.add(text)
+                    self.add(square)
+                    self.add(tex)
+                    self.add(circle)
         """
+        if family:
+            for submob in self.submobjects:
+                submob.set_z_index(z_index_value, family=family)
         self.z_index = z_index_value
         return self
 
@@ -2688,11 +2729,11 @@ class Mobject(Container):
         return self
 
 
-class Group(Mobject):
+class Group(Mobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`."""
 
     def __init__(self, *mobjects, **kwargs):
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
@@ -2783,8 +2824,6 @@ def override_animate(method):
     --------
 
     .. manim:: AnimationOverrideExample
-
-        from manim import Circle, Scene, Create, Text, Uncreate, VGroup
 
         class CircleWithContent(VGroup):
             def __init__(self, content):

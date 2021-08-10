@@ -9,7 +9,7 @@ from ..mobject.types.opengl_vectorized_mobject import (
     OpenGLVMobject,
 )
 from ..utils.color import *
-from ..utils.deprecation import deprecated
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import clip, fdiv
 from ..utils.space_ops import (
@@ -202,7 +202,6 @@ class OpenGLArc(OpenGLTipableVMobject):
         angle=TAU / 4,
         radius=1.0,
         n_components=8,
-        anchors_span_full_range=True,
         arc_center=ORIGIN,
         **kwargs
     ):
@@ -210,9 +209,9 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.angle = angle
         self.radius = radius
         self.n_components = n_components
-        self.anchors_span_full_range = anchors_span_full_range
         self.arc_center = arc_center
         super().__init__(self, **kwargs)
+        self.orientation = -1
 
     def init_points(self):
         self.set_points(
@@ -222,6 +221,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                 n_components=self.n_components,
             )
         )
+        # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
@@ -295,18 +295,8 @@ class OpenGLCurvedDoubleArrow(OpenGLCurvedArrow):
 
 
 class OpenGLCircle(OpenGLArc):
-    def __init__(
-        self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
-    ):
-        OpenGLArc.__init__(
-            self,
-            0,
-            TAU,
-            color=color,
-            close_new_points=close_new_points,
-            anchors_span_full_range=anchors_span_full_range,
-            **kwargs
-        )
+    def __init__(self, color=RED, **kwargs):
+        OpenGLArc.__init__(self, 0, TAU, color=color, **kwargs)
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -339,13 +329,6 @@ class OpenGLDot(OpenGLCircle):
             color=color,
             **kwargs
         )
-
-
-@deprecated(until="v0.6.0", replacement="OpenGLDot")
-class OpenGLSmallDot(OpenGLDot):
-    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-
-        super().__init__(radius=radius, **kwargs)
 
 
 class OpenGLEllipse(OpenGLCircle):
@@ -542,37 +525,30 @@ class OpenGLLine(OpenGLTipableVMobject):
 
 
 class OpenGLDashedLine(OpenGLLine):
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
-        self,
-        *args,
-        dash_length=DEFAULT_DASH_LENGTH,
-        dash_spacing=None,
-        positive_space_ratio=0.5,
-        **kwargs
+        self, *args, dash_length=DEFAULT_DASH_LENGTH, dashed_ratio=0.5, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.dash_length = dash_length
-        self.dash_spacing = (dash_spacing,)
-        self.positive_space_ratio = positive_space_ratio
         super().__init__(*args, **kwargs)
-        ps_ratio = self.positive_space_ratio
-        num_dashes = self.calculate_num_dashes(ps_ratio)
+        dashed_ratio = self.dashed_ratio
+        num_dashes = self.calculate_num_dashes(dashed_ratio)
         dashes = OpenGLDashedVMobject(
-            self, num_dashes=num_dashes, positive_space_ratio=ps_ratio
+            self, num_dashes=num_dashes, dashed_ratio=dashed_ratio
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self, positive_space_ratio):
-        try:
-            full_length = self.dash_length / positive_space_ratio
-            return int(np.ceil(self.get_length() / full_length))
-        except ZeroDivisionError:
-            return 1
-
-    def calculate_positive_space_ratio(self):
-        return fdiv(
-            self.dash_length,
-            self.dash_length + self.dash_spacing,
+    def calculate_num_dashes(self, dashed_ratio):
+        return max(
+            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
         )
 
     def get_start(self):
@@ -869,17 +845,7 @@ class OpenGLArrowTip(OpenGLTriangle):
 
 
 class OpenGLRectangle(OpenGLPolygon):
-    def __init__(
-        self,
-        color=WHITE,
-        width=4.0,
-        height=2.0,
-        mark_paths_closed=True,
-        close_new_points=True,
-        **kwargs
-    ):
-        self.mark_paths_closed = mark_paths_closed
-        self.close_new_points = close_new_points
+    def __init__(self, color=WHITE, width=4.0, height=2.0, **kwargs):
         OpenGLPolygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
 
         self.set_width(width, stretch=True)
