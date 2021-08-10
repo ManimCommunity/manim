@@ -17,6 +17,7 @@ def test_Circle(scene):
     scene.add(circle)
     scene.wait()
 
+
 @frames_comparison(renderer_class=OpenGLRenderer, renderer="opengl", opengl_samples=4)
 def test_opengl_samples(scene):
     sphere = OpenGLSphere()
