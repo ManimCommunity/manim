@@ -3,7 +3,6 @@ import time
 
 import moderngl
 import numpy as np
-from IPython import get_ipython
 from PIL import Image
 
 from manim import config
@@ -251,8 +250,14 @@ class OpenGLRenderer:
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
                 context_settings = {}
-                if "google.colab" in str(get_ipython()):
-                    context_settings["backend"] = "egl"
+
+                try:
+                    from IPython import get_ipython
+
+                    if "google.colab" in str(get_ipython()):
+                        context_settings["backend"] = "egl"
+                except ModuleNotFoundError:
+                    pass
 
                 self.window = None
                 self.context = moderngl.create_context(
