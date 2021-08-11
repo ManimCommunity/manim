@@ -318,7 +318,7 @@ class OpenGLMobject:
         if self.submobjects:
             return np.vstack([sm.get_points() for sm in self.get_family()])
         else:
-            return self.get_points()
+            return self.points
 
     def has_points(self):
         return self.get_num_points() > 0
@@ -332,7 +332,7 @@ class OpenGLMobject:
     def compute_bounding_box(self):
         all_points = np.vstack(
             [
-                self.get_points(),
+                self.points,
                 *(
                     mob.get_bounding_box()
                     for mob in self.get_family()[1:]
@@ -1434,17 +1434,17 @@ class OpenGLMobject:
 
     def get_start(self):
         self.throw_error_if_no_points()
-        return np.array(self.get_points()[0])
+        return np.array(self.points[0])
 
     def get_end(self):
         self.throw_error_if_no_points()
-        return np.array(self.get_points()[-1])
+        return np.array(self.points[-1])
 
     def get_start_and_end(self):
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
-        points = self.get_points()
+        points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
@@ -1946,7 +1946,7 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self):
-        return self.get_points()[0].copy()
+        return self.points[0].copy()
 
     def get_bounding_box_point(self, *args, **kwargs):
         return self.get_location()
