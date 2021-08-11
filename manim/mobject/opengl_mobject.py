@@ -248,23 +248,23 @@ class OpenGLMobject:
         self.rescale_to_fit(value, 2, stretch=False)
 
     def resize_points(self, new_length, resize_func=resize_array):
-        if new_length != len(self.data["points"]):
-            self.data["points"] = resize_func(self.data["points"], new_length)
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
         self.refresh_bounding_box()
         return self
 
     def set_points(self, points):
-        if len(points) == len(self.data["points"]):
-            self.data["points"][:] = points
+        if len(points) == len(self.points):
+            self.points[:] = points
         elif isinstance(points, np.ndarray):
-            self.data["points"] = points.copy()
+            self.points = points.copy()
         else:
-            self.data["points"] = np.array(points)
+            self.points = np.array(points)
         self.refresh_bounding_box()
         return self
 
     def append_points(self, new_points):
-        self.data["points"] = np.vstack([self.data["points"], new_points])
+        self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
         return self
 
@@ -306,13 +306,13 @@ class OpenGLMobject:
         self.set_points(mobject.get_points())
 
     def get_points(self):
-        return self.data["points"]
+        return self.points
 
     def clear_points(self):
         self.resize_points(0)
 
     def get_num_points(self):
-        return len(self.data["points"])
+        return len(self.points)
 
     def get_all_points(self):
         if self.submobjects:
@@ -325,9 +325,9 @@ class OpenGLMobject:
 
     def get_bounding_box(self):
         if self.needs_new_bounding_box:
-            self.data["bounding_box"] = self.compute_bounding_box()
+            self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
-        return self.data["bounding_box"]
+        return self.bounding_box
 
     def compute_bounding_box(self):
         all_points = np.vstack(
@@ -1280,10 +1280,10 @@ class OpenGLMobject:
         return self
 
     def get_color(self):
-        return rgb_to_hex(self.data["rgbas"][0, :3])
+        return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self):
-        return self.data["rgbas"][0, 3]
+        return self.rgbas[0, 3]
 
     def set_color_by_gradient(self, *colors):
         self.set_submobject_colors_by_gradient(*colors)
@@ -1804,7 +1804,7 @@ class OpenGLMobject:
     def get_resized_shader_data_array(self, length):
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
-        points = self.data["points"]
+        points = self.points
         shader_data = np.zeros(len(points), dtype=self.shader_dtype)
         return shader_data
 
