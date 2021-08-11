@@ -19,6 +19,7 @@ from ...utils.bezier import (
     partial_quadratic_bezier_points,
 )
 from ...utils.color import *
+from ...utils.config_ops import _Data
 from ...utils.deprecation import deprecated_params
 from ...utils.iterables import listify, make_even, resize_with_interpolation
 from ...utils.space_ops import (
@@ -55,6 +56,11 @@ class OpenGLVMobject(OpenGLMobject):
     ]
     stroke_shader_folder = "quadratic_bezier_stroke"
     fill_shader_folder = "quadratic_bezier_fill"
+
+    fill_rgba = _Data()
+    stroke_rgba = _Data()
+    stroke_width = _Data()
+    unit_normal = _Data()
 
     def __init__(
         self,
@@ -124,14 +130,10 @@ class OpenGLVMobject(OpenGLMobject):
     def init_data(self):
         super().init_data()
         self.data.pop("rgbas")
-        self.data.update(
-            {
-                "fill_rgba": np.zeros((1, 4)),
-                "stroke_rgba": np.zeros((1, 4)),
-                "stroke_width": np.zeros((1, 1)),
-                "unit_normal": np.zeros((1, 3)),
-            }
-        )
+        self.fill_rgba = np.zeros((1, 4))
+        self.stroke_rgba = np.zeros((1, 4))
+        self.stroke_width = np.zeros((1, 1))
+        self.unit_normal = np.zeros((1, 3))
 
     # Colors
     def init_colors(self):
@@ -160,9 +162,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.data["stroke_width"] = np.array(
-                    [[width] for width in listify(width)]
-                )
+                mob.stroke_width = np.array([[width] for width in listify(width)])
 
         if background is not None:
             for mob in self.get_family(recurse):
@@ -183,16 +183,12 @@ class OpenGLVMobject(OpenGLMobject):
         recurse=True,
     ):
         if fill_rgba is not None:
-            self.data["fill_rgba"] = resize_with_interpolation(
-                fill_rgba, len(fill_rgba)
-            )
+            self.fill_rgba = resize_with_interpolation(fill_rgba, len(fill_rgba))
         else:
             self.set_fill(color=fill_color, opacity=fill_opacity, recurse=recurse)
 
         if stroke_rgba is not None:
-            self.data["stroke_rgba"] = resize_with_interpolation(
-                stroke_rgba, len(fill_rgba)
-            )
+            self.stroke_rgba = resize_with_interpolation(stroke_rgba, len(fill_rgba))
             self.set_stroke(width=stroke_width)
         else:
             self.set_stroke(
@@ -210,9 +206,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_style(self):
         return {
-            "fill_rgba": self.data["fill_rgba"],
-            "stroke_rgba": self.data["stroke_rgba"],
-            "stroke_width": self.data["stroke_width"],
+            "fill_rgba": self.fill_rgba,
+            "stroke_rgba": self.stroke_rgba,
+            "stroke_width": self.stroke_width,
             "gloss": self.get_gloss(),
             "shadow": self.get_shadow(),
         }
@@ -258,19 +254,19 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_colors(self):
-        return [rgb_to_hex(rgba[:3]) for rgba in self.data["fill_rgba"]]
+        return [rgb_to_hex(rgba[:3]) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
-        return self.data["fill_rgba"][:, 3]
+        return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [rgb_to_hex(rgba[:3]) for rgba in self.data["stroke_rgba"]]
+        return [rgb_to_hex(rgba[:3]) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
-        return self.data["stroke_rgba"][:, 3]
+        return self.stroke_rgba[:, 3]
 
     def get_stroke_widths(self):
-        return self.data["stroke_width"]
+        return self.stroke_width
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
@@ -782,7 +778,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_unit_normal(self, recompute=False):
         if not recompute:
-            return self.data["unit_normal"][0]
+            return self.unit_normal[0]
 
         if len(self.points) < 3:
             return OUT
@@ -800,7 +796,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def refresh_unit_normal(self):
         for mob in self.get_family():
-            mob.data["unit_normal"][:] = mob.get_unit_normal(recompute=True)
+            mob.unit_normal[:] = mob.get_unit_normal(recompute=True)
         return self
 
     # Alignment
