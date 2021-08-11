@@ -348,7 +348,7 @@ class Dot3D(Sphere):
         **kwargs
     ):
         super().__init__(
-            self, center=point, radius=radius, resolution=resolution, **kwargs
+            center=point, radius=radius, resolution=resolution, **kwargs
         )
         self.set_color(color)
 
