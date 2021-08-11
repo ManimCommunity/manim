@@ -149,25 +149,24 @@ class Paragraph(VGroup):
 
         chars_lines_text_list = self.get_group_class()()
         char_index_counter = 0
-        for line_index in range(lines_str_list.__len__()):
+        for line_index in range(len(lines_str_list)):
             chars_lines_text_list.add(
                 self.lines_text[
                     char_index_counter : char_index_counter
-                    + lines_str_list[line_index].__len__()
-                    + 1
+                    + len(Text(lines_str_list[line_index]))
                 ]
             )
-            char_index_counter += lines_str_list[line_index].__len__() + 1
+            char_index_counter += len(Text(lines_str_list[line_index]))
         self.lines = []
         self.lines.append([])
-        for line_no in range(chars_lines_text_list.__len__()):
+        for line_no in range(len(chars_lines_text_list)):
             self.lines[0].append(chars_lines_text_list[line_no])
         self.lines_initial_positions = []
-        for line_no in range(self.lines[0].__len__()):
+        for line_no in range(len(self.lines[0])):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
+            [self.alignment for _ in range(len(chars_lines_text_list))]
         )
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
