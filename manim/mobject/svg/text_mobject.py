@@ -188,16 +188,15 @@ class Paragraph(VGroup):
         """
         char_index_counter = 0
         chars = self.get_group_class()()
-        for line_no in range(lines_str_list.__len__()):
+        for line_no in range(len(lines_str_list)):
             chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
                     char_index_counter : char_index_counter
-                    + lines_str_list[line_no].__len__()
-                    + 1
+                    + len(Text(lines_str_list[line_no]))
                 ]
             )
-            char_index_counter += lines_str_list[line_no].__len__() + 1
+            char_index_counter += len(Text(lines_str_list[line_no]))
         return chars
 
     def set_all_lines_alignments(self, alignment):
@@ -208,7 +207,7 @@ class Paragraph(VGroup):
         alignment : :class:`str`
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(0, len(self.lines[0])):
             self.change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -227,8 +226,8 @@ class Paragraph(VGroup):
 
     def set_all_lines_to_initial_positions(self):
         """Set all lines to their initial positions."""
-        self.lines[1] = [None for _ in range(self.lines[0].__len__())]
-        for line_no in range(0, self.lines[0].__len__()):
+        self.lines[1] = [None for _ in range(len(self.lines[0]))]
+        for line_no in range(0, len(self.lines[0])):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no]
             )
@@ -516,7 +515,7 @@ class Text(SVGMobject):
     def gen_chars(self):
         chars = self.get_group_class()()
         submobjects_char_index = 0
-        for char_index in range(self.text.__len__()):
+        for char_index in range(len(self.text)):
             if self.text[char_index] in (" ", "\t", "\n"):
                 space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
