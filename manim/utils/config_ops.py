@@ -8,6 +8,10 @@ __all__ = [
 
 
 import itertools as it
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 def merge_dicts_recursively(*dicts):
@@ -42,3 +46,14 @@ def update_dict_recursively(current_dict, *others):
 class DictAsObject(object):
     def __init__(self, dictin):
         self.__dict__ = dictin
+
+
+class _Data:
+    def __set_name__(self, obj, name):
+        self.name = name
+
+    def __get__(self, obj):
+        return obj.__dict__["data"][self.name]
+
+    def __set__(self, obj, array: np.ndarray):
+        obj.__dict__["data"][self.name] = array

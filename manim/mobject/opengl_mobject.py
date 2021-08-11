@@ -14,6 +14,7 @@ from .. import config
 from ..constants import *
 from ..utils.bezier import interpolate
 from ..utils.color import *
+from ..utils.config_ops import _Data
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -44,6 +45,9 @@ class OpenGLMobject:
         ("point", np.float32, (3,)),
     ]
     shader_folder = ""
+    points = _Data()
+    bounding_box = _Data()
+    rgbas = _Data()
 
     def __init__(
         self,
@@ -97,6 +101,7 @@ class OpenGLMobject:
         else:
             self.model_matrix = model_matrix
 
+        self.data = {}
         self.init_data()
         self.init_uniforms()
         self.init_updaters()
@@ -113,11 +118,9 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def init_data(self):
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
+        self.points = np.zeros((0, 3))
+        self.bounding_box = np.zeros((3, 3))
+        self.rgbas = np.zeros((1, 4))
 
     def init_uniforms(self):
         self.uniforms = {
