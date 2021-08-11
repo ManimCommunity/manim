@@ -784,7 +784,7 @@ class OpenGLVMobject(OpenGLMobject):
         if not recompute:
             return self.data["unit_normal"][0]
 
-        if len(self.data["points"]) < 3:
+        if len(self.points) < 3:
             return OUT
 
         area_vect = self.get_area_vector()
@@ -1154,7 +1154,7 @@ class OpenGLVMobject(OpenGLMobject):
         }
 
     def get_stroke_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
         nppc = self.n_points_per_curve
@@ -1171,7 +1171,7 @@ class OpenGLVMobject(OpenGLMobject):
         return stroke_data
 
     def get_fill_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
         fill_data["vert_index"][:, 0] = range(len(points))
 
