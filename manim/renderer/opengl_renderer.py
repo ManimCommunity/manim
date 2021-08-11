@@ -3,6 +3,7 @@ import time
 
 import moderngl
 import numpy as np
+from IPython import get_ipython
 from PIL import Image
 
 from manim import config
@@ -24,7 +25,6 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
-from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -244,12 +244,20 @@ class OpenGLRenderer:
         self.scene = scene
         if not hasattr(self, "window"):
             if config["preview"]:
+                from .opengl_renderer_window import Window
+
                 self.window = Window(self)
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
+                context_settings = {}
+                if "google.colab" in str(get_ipython()):
+                    context_settings["backend"] = "egl"
+
                 self.window = None
-                self.context = moderngl.create_standalone_context()
+                self.context = moderngl.create_context(
+                    standalone=True, **context_settings
+                )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)
