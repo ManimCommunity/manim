@@ -1,7 +1,7 @@
 """Basic canvas for animations."""
 
 
-__all__ = ["Scene"]
+__all__ = ["Scene", "manim_scene"]
 
 
 import copy
@@ -1365,3 +1365,15 @@ class Scene:
     def on_mouse_press(self, point, button, modifiers):
         for func in self.mouse_press_callbacks:
             func()
+
+
+def manim_scene(original_construct=None, *, base_class=Scene):
+    def scene_decorator(construct):
+        scene = type(construct.__name__, (base_class, ), {})()
+        scene.construct = types.MethodType(construct, scene)
+        return scene
+    
+    if original_construct:
+        return scene_decorator(original_construct)
+    
+    return scene_decorator
