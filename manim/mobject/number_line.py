@@ -9,7 +9,6 @@ import numpy as np
 from manim.mobject.svg.tex_mobject import MathTex, Tex
 from manim.utils.scale import LinearBase, LogBase
 
-
 from .. import config
 from ..constants import *
 from ..mobject.geometry import Line
