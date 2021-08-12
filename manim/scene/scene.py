@@ -1743,11 +1743,11 @@ class Scene:
 
 def manim_scene(original_construct=None, *, base_class=Scene):
     def scene_decorator(construct):
-        scene = type(construct.__name__, (base_class, ), {})()
+        scene = type(construct.__name__, (base_class,), {})()
         scene.construct = types.MethodType(construct, scene)
         return scene
-    
+
     if original_construct:
         return scene_decorator(original_construct)
-    
+
     return scene_decorator
