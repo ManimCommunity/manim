@@ -82,6 +82,7 @@ Basic Concepts
 .. manim:: GradientImageFromArray
     :save_last_frame:
     :ref_classes: ImageMobject
+    :renderer: cairo
 
     class GradientImageFromArray(Scene):
         def construct(self):
