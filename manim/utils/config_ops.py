@@ -8,10 +8,8 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    import numpy as np
+import numpy as np
 
 
 def merge_dicts_recursively(*dicts):
@@ -52,7 +50,7 @@ class _Data:
     def __set_name__(self, obj, name):
         self.name = name
 
-    def __get__(self, obj):
+    def __get__(self, obj, owner):
         return obj.__dict__["data"][self.name]
 
     def __set__(self, obj, array: np.ndarray):

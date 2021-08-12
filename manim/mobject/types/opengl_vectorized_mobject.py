@@ -90,6 +90,7 @@ class OpenGLVMobject(OpenGLMobject):
         triangulation_locked=False,
         **kwargs,
     ):
+        self.data = {}
         self.fill_color = fill_color
         self.fill_opacity = fill_opacity
         self.stroke_color = stroke_color
@@ -132,7 +133,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.data.pop("rgbas")
         self.fill_rgba = np.zeros((1, 4))
         self.stroke_rgba = np.zeros((1, 4))
-        self.stroke_width = np.zeros((1, 1))
         self.unit_normal = np.zeros((1, 3))
 
     # Colors

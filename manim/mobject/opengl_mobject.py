@@ -101,7 +101,7 @@ class OpenGLMobject:
         else:
             self.model_matrix = model_matrix
 
-        self.data = {}
+        self.data = getattr(self, "data", {})
         self.init_data()
         self.init_uniforms()
         self.init_updaters()
@@ -312,6 +312,7 @@ class OpenGLMobject:
         self.resize_points(0)
 
     def get_num_points(self):
+        self.points
         return len(self.points)
 
     def get_all_points(self):

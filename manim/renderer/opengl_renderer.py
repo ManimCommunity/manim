@@ -76,11 +76,8 @@ class OpenGLCamera(OpenGLMobject):
         else:
             self.center_point = center_point
 
-        if euler_angles is None:
-            euler_angles = [0, 0, 0]
-        euler_angles = np.array(euler_angles, dtype=float)
-
-        self.euler_angles = euler_angles
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
         self.focal_distance = focal_distance
 
@@ -90,12 +87,15 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        if model_matrix is None:
-            model_matrix = opengl.translation_matrix(0, 0, 11)
-
+        self.default_model_matrix = model_matrix
         super().__init__(model_matrix=model_matrix, **kwargs)
 
-        self.default_model_matrix = model_matrix
+        if euler_angles is None:
+            euler_angles = [0, 0, 0]
+        euler_angles = np.array(euler_angles, dtype=float)
+
+        self.euler_angles = euler_angles
+        self.refresh_rotation_matrix()
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
