@@ -209,8 +209,8 @@ class OpenGLVMobject(OpenGLMobject):
             "fill_rgba": self.fill_rgba,
             "stroke_rgba": self.stroke_rgba,
             "stroke_width": self.stroke_width,
-            "gloss": self.get_gloss(),
-            "shadow": self.get_shadow(),
+            "gloss": self.gloss,
+            "shadow": self.shadow,
         }
 
     def match_style(self, vmobject, recurse=True):

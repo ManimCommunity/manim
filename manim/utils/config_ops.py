@@ -55,3 +55,14 @@ class _Data:
 
     def __set__(self, obj, array: np.ndarray):
         obj.__dict__["data"][self.name] = array
+
+
+class _Uniforms:
+    def __set_name__(self, obj, name):
+        self.name = name
+
+    def __get__(self, obj, owner):
+        return obj.__dict__["uniforms"][self.name]
+
+    def __set__(self, obj, array: np.ndarray):
+        obj.__dict__["uniforms"][self.name] = array

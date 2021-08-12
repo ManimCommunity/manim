@@ -5,7 +5,7 @@ from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate, interpolate
 from ...utils.color import *
-from ...utils.config_ops import _Data
+from ...utils.config_ops import _Data, _Uniforms
 from ...utils.images import get_full_raster_image_path
 from ...utils.iterables import listify
 from ...utils.space_ops import normalize_along_axis
@@ -226,10 +226,13 @@ class OpenGLTexturedSurface(OpenGLSurface):
     shader_folder = "textured_surface"
     im_coords = _Data()
     opacity = _Data()
+    num_textures = _Uniforms()
 
     def __init__(
         self, uv_surface, image_file, dark_image_file=None, shader_folder=None, **kwargs
     ):
+        self.uniforms = {}
+
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
         # Set texture information
@@ -266,10 +269,6 @@ class OpenGLTexturedSurface(OpenGLSurface):
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
             ]
         )
-
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["num_textures"] = self.num_textures
 
     def init_colors(self):
         self.opacity = np.array([self.uv_surface.rgbas[:, 3]])

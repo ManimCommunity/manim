@@ -9,12 +9,13 @@ from typing import Iterable, Optional, Tuple, Union
 import moderngl
 import numpy as np
 from colour import Color
+from moderngl.program_members.uniform import Uniform
 
 from .. import config
 from ..constants import *
 from ..utils.bezier import interpolate
 from ..utils.color import *
-from ..utils.config_ops import _Data
+from ..utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -49,6 +50,10 @@ class OpenGLMobject:
     bounding_box = _Data()
     rgbas = _Data()
 
+    is_fixed_in_frame = _Uniforms()
+    gloss = _Uniforms()
+    shadow = _Uniforms()
+
     def __init__(
         self,
         color=WHITE,
@@ -71,6 +76,9 @@ class OpenGLMobject:
         model_matrix=None,
         **kwargs,
     ):
+        # getattr in case data/uniforms are already defined in parent classes.
+        self.data = getattr(self, "data", {})
+        self.uniforms = getattr(self, "uniforms", {})
 
         self.color = Color(color)
         self.opacity = opacity
@@ -85,7 +93,7 @@ class OpenGLMobject:
         self.texture_paths = texture_paths
         self.depth_test = depth_test
         # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = is_fixed_in_frame
+        self.is_fixed_in_frame = float(is_fixed_in_frame)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -101,9 +109,7 @@ class OpenGLMobject:
         else:
             self.model_matrix = model_matrix
 
-        self.data = getattr(self, "data", {})
         self.init_data()
-        self.init_uniforms()
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
@@ -121,13 +127,6 @@ class OpenGLMobject:
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
-
-    def init_uniforms(self):
-        self.uniforms = {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "gloss": self.gloss,
-            "shadow": self.shadow,
-        }
 
     def init_colors(self):
         self.set_color(self.color, self.opacity)
@@ -1308,19 +1307,19 @@ class OpenGLMobject:
         self.set_opacity(1.0 - darkness, recurse=recurse)
 
     def get_gloss(self):
-        return self.uniforms["gloss"]
+        return self.gloss
 
     def set_gloss(self, gloss, recurse=True):
         for mob in self.get_family(recurse):
-            mob.uniforms["gloss"] = gloss
+            mob.gloss = gloss
         return self
 
     def get_shadow(self):
-        return self.uniforms["shadow"]
+        return self.shadow
 
     def set_shadow(self, shadow, recurse=True):
         for mob in self.get_family(recurse):
-            mob.uniforms["shadow"] = shadow
+            mob.shadow = shadow
         return self
 
     # Background rectangle
@@ -1694,12 +1693,12 @@ class OpenGLMobject:
 
     @affects_shader_info_id
     def fix_in_frame(self):
-        self.uniforms["is_fixed_in_frame"] = 1.0
+        self.is_fixed_in_frame = 1.0
         return self
 
     @affects_shader_info_id
     def unfix_from_frame(self):
-        self.uniforms["is_fixed_in_frame"] = 0.0
+        self.is_fixed_in_frame = 0.0
         return self
 
     @affects_shader_info_id
