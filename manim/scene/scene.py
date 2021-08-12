@@ -37,6 +37,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
+from .._config import tempconfig
 from ..animation.animation import Animation, Wait, prepare_animation, validate_run_time
 from ..camera.camera import Camera
 from ..constants import *
@@ -44,7 +45,6 @@ from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
-from .._config import tempconfig
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
