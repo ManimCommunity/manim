@@ -62,11 +62,9 @@ from .mobject.mobject_update_utils import *
 from .mobject.number_line import *
 from .mobject.numbers import *
 from .mobject.polyhedra import *
-
-# from .mobject.probability import *
+from .mobject.probability import *
 from .mobject.shape_matchers import *
-
-# from .mobject.svg.brace import *
+from .mobject.svg.brace import *
 from .mobject.svg.code_mobject import *
 from .mobject.svg.style_utils import *
 from .mobject.svg.svg_mobject import *
@@ -84,8 +82,7 @@ from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
 from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
-
-# from .scene.sample_space_scene import *
+from .scene.sample_space_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
 from .scene.three_d_scene import *

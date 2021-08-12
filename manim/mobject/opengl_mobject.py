@@ -9,7 +9,6 @@ from typing import Iterable, Optional, Tuple, Union
 import moderngl
 import numpy as np
 from colour import Color
-from moderngl.program_members.uniform import Uniform
 
 from .. import config
 from ..constants import *
@@ -311,7 +310,6 @@ class OpenGLMobject:
         self.resize_points(0)
 
     def get_num_points(self):
-        self.points
         return len(self.points)
 
     def get_all_points(self):
