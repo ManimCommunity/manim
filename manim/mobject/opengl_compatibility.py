@@ -14,6 +14,7 @@ class ConvertToOpenGL(ABCMeta):
     after Manim has been imported won't have the desired effect and will lead to
     spurious errors.
     """
+
     _converted_classes = []
 
     def __new__(mcls, name, bases, namespace):
@@ -30,7 +31,7 @@ class ConvertToOpenGL(ABCMeta):
             )
 
         return super().__new__(mcls, name, bases, namespace)
-    
+
     def __init__(cls, name, bases, namespace):
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)
