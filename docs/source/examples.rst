@@ -252,6 +252,7 @@ Animations
 .. manim:: PointWithTrace
     :ref_classes: Rotating
     :ref_methods: VMobject.set_points_as_corners Mobject.add_updater
+    :renderer: cairo
 
     class PointWithTrace(Scene):
         def construct(self):
@@ -406,6 +407,7 @@ Special Camera Settings
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: MovingCameraScene MoveAlongPath Restore
     :ref_methods: Axes.get_graph Mobject.add_updater
+    :renderer: cairo
 
 
     class FollowingGraphCamera(MovingCameraScene):
@@ -437,6 +439,7 @@ Special Camera Settings
     :ref_modules: manim.scene.zoomed_scene
     :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
     :ref_methods: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
+    :renderer: cairo
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
@@ -506,6 +509,7 @@ Special Camera Settings
     :save_last_frame:
     :ref_classes: ThreeDScene
     :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
+    :renderer: cairo
 
     class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
@@ -521,6 +525,7 @@ Special Camera Settings
     :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
     :ref_methods: ThreeDScene.set_camera_orientation
+    :renderer: cairo
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
@@ -541,6 +546,7 @@ Special Camera Settings
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+    :renderer: cairo
 
     class ThreeDCameraRotation(ThreeDScene):
         def construct(self):
@@ -557,6 +563,7 @@ Special Camera Settings
 .. manim:: ThreeDCameraIllusionRotation
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+    :renderer: cairo
 
     class ThreeDCameraIllusionRotation(ThreeDScene):
         def construct(self):
@@ -571,6 +578,7 @@ Special Camera Settings
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
    :ref_classes: ThreeDScene ParametricSurface
+   :renderer: cairo
    
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):

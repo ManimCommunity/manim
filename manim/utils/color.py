@@ -39,6 +39,7 @@ class Colors(Enum):
     .. manim:: ColorsOverview
         :save_last_frame:
         :hide_source:
+        :renderer: cairo
 
         from manim.utils.color import Colors
         class ColorsOverview(Scene):

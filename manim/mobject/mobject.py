@@ -636,6 +636,7 @@ class Mobject:
         Examples
         --------
         .. manim:: WidthExample
+            :renderer: cairo
 
             class WidthExample(Scene):
                 def construct(self):
@@ -673,6 +674,7 @@ class Mobject:
         Examples
         --------
         .. manim:: HeightExample
+            :renderer: cairo
 
             class HeightExample(Scene):
                 def construct(self):
@@ -1209,6 +1211,7 @@ class Mobject:
 
         .. manim:: FlipExample
             :save_last_frame:
+            :renderer: cairo
 
             class FlipExample(Scene):
                 def construct(self):
@@ -1266,6 +1269,7 @@ class Mobject:
         -------
 
         .. manim:: ApplyFuncExample
+            :renderer: cairo
 
             class ApplyFuncExample(Scene):
                 def construct(self):
@@ -1938,6 +1942,7 @@ class Mobject:
 
         .. manim:: AngleMidPoint
             :save_last_frame:
+            :renderer: cairo
 
             class AngleMidPoint(Scene):
                 def construct(self):
@@ -2461,10 +2466,11 @@ class Mobject:
         Examples
         --------
 
-        .. manim:: ArrangeSumobjectsExample
+        .. manim:: ArrangeSubmobjectsExample
             :save_last_frame:
+            :renderer: cairo
 
-            class ArrangeSumobjectsExample(Scene):
+            class ArrangeSubmobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
                     s.shift(UP).set_color(BLUE)
@@ -2487,6 +2493,7 @@ class Mobject:
         --------
 
         .. manim:: ShuffleSubmobjectsExample
+            :renderer: cairo
 
             class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
@@ -2588,6 +2595,7 @@ class Mobject:
 
         .. manim:: DotInterpolation
             :save_last_frame:
+            :renderer: cairo
 
             class DotInterpolation(Scene):
                 def construct(self):
@@ -2696,6 +2704,7 @@ class Mobject:
         --------
         .. manim:: SetZIndex
             :save_last_frame:
+            :renderer: cairo
 
             class SetZIndex(Scene):
                 def construct(self):

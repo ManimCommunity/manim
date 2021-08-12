@@ -9,6 +9,7 @@ Examples
 --------
 
 .. manim:: ChangingCameraWidthAndRestore
+    :renderer: cairo
 
     class ChangingCameraWidthAndRestore(MovingCameraScene):
         def construct(self):
@@ -21,6 +22,7 @@ Examples
 
 
 .. manim:: MovingCameraCenter
+    :renderer: cairo
 
     class MovingCameraCenter(MovingCameraScene):
         def construct(self):
@@ -34,6 +36,7 @@ Examples
 
 
 .. manim:: MovingAndZoomingCamera
+    :renderer: cairo
 
     class MovingAndZoomingCamera(MovingCameraScene):
         def construct(self):
@@ -47,6 +50,7 @@ Examples
             self.play(self.camera.frame.animate.move_to(ORIGIN).set(width=14))
 
 .. manim:: MovingCameraOnGraph
+    :renderer: cairo
 
     class MovingCameraOnGraph(MovingCameraScene):
         def construct(self):

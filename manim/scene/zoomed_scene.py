@@ -5,6 +5,7 @@ Examples
 --------
 
 .. manim:: UseZoomedScene
+    :renderer: cairo
 
     class UseZoomedScene(ZoomedScene):
         def construct(self):
@@ -16,6 +17,7 @@ Examples
             self.play(dot.animate.shift(LEFT))
 
 .. manim:: ChangingZoomScale
+    :renderer: cairo
 
     class ChangingZoomScale(ZoomedScene):
         def __init__(self, **kwargs):

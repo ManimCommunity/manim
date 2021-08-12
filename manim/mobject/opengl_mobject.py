@@ -159,6 +159,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: WidthExample
+            :renderer: cairo
 
             class WidthExample(Scene):
                 def construct(self):
@@ -197,6 +198,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: HeightExample
+            :renderer: cairo
 
             class HeightExample(Scene):
                 def construct(self):

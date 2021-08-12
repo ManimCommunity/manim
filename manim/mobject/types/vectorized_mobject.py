@@ -504,6 +504,7 @@ class VMobject(Mobject):
         --------
         .. manim:: SetSheen
             :save_last_frame:
+            :renderer: cairo
 
             class SetSheen(Scene):
                 def construct(self):
@@ -2046,6 +2047,7 @@ class CurvesAsSubmobjects(VGroup):
     --------
     .. manim:: LineGradientExample
         :save_last_frame:
+        :renderer: cairo
 
         class LineGradientExample(Scene):
             def construct(self):

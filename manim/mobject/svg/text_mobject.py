@@ -24,6 +24,7 @@ Examples
 
 .. manim:: TextAlignment
     :save_last_frame:
+    :renderer: cairo
 
     class TextAlignment(Scene):
         def construct(self):

@@ -413,6 +413,7 @@ class ArrowVectorField(VectorField):
 
     .. manim:: BasicUsage
         :save_last_frame:
+        :renderer: cairo
 
         class BasicUsage(Scene):
             def construct(self):
@@ -581,6 +582,7 @@ class StreamLines(VectorField):
 
     .. manim:: BasicUsage
         :save_last_frame:
+        :renderer: cairo
 
         class BasicUsage(Scene):
             def construct(self):
@@ -589,6 +591,7 @@ class StreamLines(VectorField):
 
     .. manim:: SpawningAndFlowingArea
         :save_last_frame:
+        :renderer: cairo
 
         class SpawningAndFlowingArea(Scene):
             def construct(self):
@@ -738,6 +741,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: StreamLineCreation
+            :renderer: cairo
 
             class StreamLineCreation(Scene):
                 def construct(self):
@@ -794,6 +798,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: ContinuousMotion
+            :renderer: cairo
 
             class ContinuousMotion(Scene):
                 def construct(self):
@@ -854,6 +859,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: EndAnimation
+            :renderer: cairo
 
             class EndAnimation(Scene):
                 def construct(self):

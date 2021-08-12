@@ -28,6 +28,7 @@ class PMobject(Mobject):
 
     .. manim:: PMobjectExample
         :save_last_frame:
+        :renderer: cairo
 
         class PMobjectExample(Scene):
             def construct(self):
@@ -233,6 +234,7 @@ class PGroup(PMobject):
 
     .. manim:: PgroupExample
         :save_last_frame:
+        :renderer: cairo
 
         class PgroupExample(Scene):
             def construct(self):
@@ -261,6 +263,7 @@ class PointCloudDot(Mobject1D):
     --------
     .. manim:: PointCloudDotExample
         :save_last_frame:
+        :renderer: cairo
 
         class PointCloudDotExample(Scene):
             def construct(self):
@@ -272,6 +275,7 @@ class PointCloudDot(Mobject1D):
                 self.add(group)
 
     .. manim:: PointCloudDotExample2
+        :renderer: cairo
 
         class PointCloudDotExample2(Scene):
             def construct(self):

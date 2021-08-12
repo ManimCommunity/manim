@@ -2298,6 +2298,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     need to be drawn, in which case they can be passed as invisible.
 
     .. manim:: ArcPolygonExample
+        :renderer: cairo
 
         class ArcPolygonExample(Scene):
             def construct(self):
@@ -2318,6 +2319,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     arcs are drawn. This can be used to easily debug arcs or to highlight them.
 
     .. manim:: ArcPolygonExample2
+        :renderer: cairo
 
         class ArcPolygonExample2(Scene):
             def construct(self):

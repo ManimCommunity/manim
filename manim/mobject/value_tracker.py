@@ -145,6 +145,7 @@ class ComplexValueTracker(ValueTracker):
     Examples
     --------
     .. manim:: ComplexValueTrackerExample
+        :renderer: cairo
 
         class ComplexValueTrackerExample(Scene):
             def construct(self):

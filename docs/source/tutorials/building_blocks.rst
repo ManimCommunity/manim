@@ -420,6 +420,7 @@ Here it might help to use the `flip` function and reposition the points via the
 function of numpy:
 
 .. manim:: ExampleRotation
+    :renderer: cairo
 
     class ExampleRotation(Scene):
         def construct(self):

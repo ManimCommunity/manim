@@ -562,6 +562,7 @@ class FadeTransformPieces(FadeTransform):
     Examples
     --------
     .. manim:: FadeTransformSubmobjects
+        :renderer: cairo
 
         class FadeTransformSubmobjects(Scene):
             def construct(self):

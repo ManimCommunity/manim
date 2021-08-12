@@ -31,6 +31,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     .. manim:: ThreeDParametricSpring
         :save_last_frame:
+        :renderer: cairo
 
         class ThreeDParametricSpring(ThreeDScene):
             def construct(self):

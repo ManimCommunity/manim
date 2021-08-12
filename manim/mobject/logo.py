@@ -30,6 +30,7 @@ class ManimBanner(VGroup):
     Examples
     --------
     .. manim:: DarkThemeBanner
+        :renderer: cairo
 
         class DarkThemeBanner(Scene):
             def construct(self):
@@ -40,6 +41,7 @@ class ManimBanner(VGroup):
                 self.play(Unwrite(banner))
 
     .. manim:: LightThemeBanner
+        :renderer: cairo
 
         class LightThemeBanner(Scene):
             def construct(self):
@@ -182,6 +184,7 @@ class ManimBanner(VGroup):
         Examples
         --------
         .. manim:: ExpandDirections
+            :renderer: cairo
 
             class ExpandDirections(Scene):
                 def construct(self):

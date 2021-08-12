@@ -104,6 +104,7 @@ class ImageMobject(AbstractImageMobject):
     -------
     .. manim:: ImageFromArray
         :save_last_frame:
+        :renderer: cairo
 
         class ImageFromArray(Scene):
             def construct(self):
@@ -117,6 +118,7 @@ class ImageMobject(AbstractImageMobject):
 
     .. manim:: ImageInterpolationEx
         :save_last_frame:
+        :renderer: cairo
 
         class ImageInterpolationEx(Scene):
             def construct(self):

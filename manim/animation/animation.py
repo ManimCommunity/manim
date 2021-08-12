@@ -69,6 +69,7 @@ class Animation:
     --------
 
     .. manim:: LagRatios
+        :renderer: cairo
 
         class LagRatios(Scene):
             def construct(self):

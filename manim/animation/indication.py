@@ -4,6 +4,7 @@ Examples
 --------
 
 .. manim:: Indications
+    :renderer: cairo
 
     class Indications(Scene):
         def construct(self):
@@ -140,6 +141,7 @@ class Indicate(Transform):
     Examples
     --------
     .. manim:: UsingIndicate
+        :renderer: cairo
 
         class UsingIndicate(Scene):
             def construct(self):
@@ -283,6 +285,7 @@ class ShowPassingFlash(ShowPartial):
     Examples
     --------
     .. manim:: TimeWidthValues
+        :renderer: cairo
 
         class TimeWidthValues(Scene):
             def construct(self):
@@ -378,6 +381,7 @@ class ApplyWave(Homotopy):
     --------
 
     .. manim:: ApplyingWaves
+        :renderer: cairo
 
         class ApplyingWaves(Scene):
             def construct(self):
@@ -504,6 +508,7 @@ class Wiggle(Animation):
     --------
 
     .. manim:: ApplyingWaves
+        :renderer: cairo
 
         class ApplyingWaves(Scene):
             def construct(self):

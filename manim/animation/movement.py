@@ -109,6 +109,7 @@ class MoveAlongPath(Animation):
     Example
     --------
     .. manim:: MoveAlongPathExample
+        :renderer: cairo
 
         class MoveAlongPathExample(Scene):
             def construct(self):

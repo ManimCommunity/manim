@@ -1210,6 +1210,7 @@ class Scene:
         Examples
         --------
         .. manim:: SoundExample
+            :renderer: cairo
 
             class SoundExample(Scene):
                 # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/

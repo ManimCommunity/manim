@@ -195,6 +195,7 @@ class ParametricSurface(VGroup):
         --------
         .. manim:: FillByValueExample
             :save_last_frame:
+            :renderer: cairo
 
             class FillByValueExample(ThreeDScene):
                 def construct(self):

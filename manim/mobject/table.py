@@ -5,6 +5,7 @@ Examples
 
 .. manim:: TableExamples
     :save_last_frame:
+    :renderer: cairo
 
     class TableExamples(Scene):
         def construct(self):
@@ -88,6 +89,7 @@ class Table(VGroup):
 
     .. manim:: TableExamples
         :save_last_frame:
+        :renderer: cairo
 
         class TableExamples(Scene):
             def construct(self):
