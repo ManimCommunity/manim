@@ -249,20 +249,13 @@ class OpenGLRenderer:
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
-                context_settings = {}
-
-                try:
-                    from IPython import get_ipython
-
-                    if "google.colab" in str(get_ipython()):
-                        context_settings["backend"] = "egl"
-                except ModuleNotFoundError:
-                    pass
-
                 self.window = None
-                self.context = moderngl.create_context(
-                    standalone=True, **context_settings
-                )
+                try:
+                    self.context = moderngl.create_context(standalone=True)
+                except Exception:
+                    self.context = moderngl.create_context(
+                        standalone=True, backend="egl"
+                    )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)
