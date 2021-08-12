@@ -189,7 +189,6 @@ class ManimDirective(Directive):
         frame_rate = QUALITIES[quality]["frame_rate"]
         pixel_height = QUALITIES[quality]["pixel_height"]
         pixel_width = QUALITIES[quality]["pixel_width"]
-        qualitydir = f"{pixel_height}p{frame_rate}"
 
         state_machine = self.state_machine
         document = state_machine.document
