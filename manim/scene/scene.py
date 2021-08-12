@@ -27,6 +27,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from .. import config, logger
+from .._config import tempconfig
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
@@ -35,7 +36,6 @@ from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.shader import Mesh, Object3D
-from .._config import tempconfig
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
