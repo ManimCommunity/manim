@@ -137,6 +137,9 @@ class ManimDirective(Directive):
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
+        "renderer": lambda arg: directives.choice(
+            arg, ("cairo", "opengl", "webgl")
+        ),
         "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
@@ -226,6 +229,13 @@ class ManimDirective(Directive):
             config_code.append('config["format"] = None')
         if save_as_gif:
             config_code.append('config["format"] = "gif"')
+
+        renderer = self.options.get("renderer", "opengl")
+        if renderer:
+            config_code.append(f'config["renderer"] = "{ renderer }"')
+            if renderer == "opengl":
+                from manim.renderer.shader import shader_program_cache
+                shader_program_cache.clear()
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
