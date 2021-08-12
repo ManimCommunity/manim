@@ -6,13 +6,14 @@ The following pages have instructions that are specific to your system. Once
 you are done installing the dependencies, come back to this page to install
 manim itself.
 
-.. note::
 
-   Before installing manim, you should understand that there are a few main versions of manim 
-   today that are generally incompatible with each other.
-   This documentation **only** covers the installation of the *community edition*; 
-   trying to use instructions intended for other versions of manim or vice versa will likely result in failure.
-   In particular, most video tutorials are outdated. For more information, please read :doc:`Differences between Manim Versions <installation/versions>`.
+.. warning:: 
+   These instructions are for the *community edition* of Manim **only**. Trying
+   to use these instructions to install
+   `3b1b/manim <https://github.com/3b1b/manim>`_ or instructions there to install
+   this version will cause problems. Read the :doc:`Differences between Manim
+   Versions <installation/versions>` and decide which version you wish to
+   install, then only follow the instructions for your desired version.
 
 
 .. tip::

@@ -2,14 +2,16 @@
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
+from typing import Optional
 
 from ..constants import *
-from ..mobject.geometry import Line, Rectangle
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.geometry import Line, RoundedRectangle
+from ..mobject.mobject import Mobject
+from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import BLACK, RED, YELLOW, Color
 
 
-class SurroundingRectangle(Rectangle):
+class SurroundingRectangle(RoundedRectangle):
     r"""A rectangle surrounding a :class:`~.Mobject`
 
     Examples
@@ -24,21 +26,27 @@ class SurroundingRectangle(Rectangle):
                 quote = Text(
                     "If I have seen further than others, \n"
                     "it is by standing upon the shoulders of giants.",
-                    color=BLUE
+                    color=BLUE,
                 ).scale(0.75)
                 box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
-                self.add(title, box, quote)
 
+                t2 = Tex(r"Hello World").scale(1.5)
+                box2 = SurroundingRectangle(t2, corner_radius=0.2)
+                mobjects = VGroup(VGroup(box, quote), VGroup(t2, box2)).arrange(DOWN)
+                self.add(title, mobjects)
     """
 
-    def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
+    def __init__(
+        self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
+    ):
         self.color = color
         self.buff = buff
-        Rectangle.__init__(
+        RoundedRectangle.__init__(
             self,
             color=color,
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
+            corner_radius=corner_radius,
             **kwargs
         )
         self.move_to(mobject)
@@ -117,13 +125,44 @@ class BackgroundRectangle(SurroundingRectangle):
 
 
 class Cross(VGroup):
-    def __init__(self, mobject, stroke_color=RED, stroke_width=6, **kwargs):
-        VGroup.__init__(
-            self,
-            Line(UP + LEFT, DOWN + RIGHT),
-            Line(UP + RIGHT, DOWN + LEFT),
+    """Creates a cross.
+
+    Parameters
+    ----------
+    mobject
+        The mobject linked to this instance. It fits the mobject when specified. Defaults to None.
+    stroke_color
+        Specifies the color of the cross lines. Defaults to RED.
+    stroke_width
+        Specifies the width of the cross lines. Defaults to 6.
+    scale_factor
+        Scales the cross to the provided units. Defaults to 1.
+
+    Examples
+    --------
+    .. manim:: ExampleCross
+        :save_last_frame:
+
+        class ExampleCross(Scene):
+            def construct(self):
+                cross = Cross()
+                self.add(cross)
+    """
+
+    def __init__(
+        self,
+        mobject: Optional["Mobject"] = None,
+        stroke_color: Color = RED,
+        stroke_width: float = 6,
+        scale_factor: float = 1,
+        **kwargs
+    ):
+        super().__init__(
+            Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
         )
-        self.replace(mobject, stretch=True)
+        if mobject is not None:
+            self.replace(mobject, stretch=True)
+        self.scale(scale_factor)
         self.set_stroke(color=stroke_color, width=stroke_width)
 
 
