@@ -33,6 +33,7 @@ from ..constants import *
 from ..gui.gui import configure_pygui
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.shader import Mesh, Object3D
 from ..utils import opengl, space_ops
@@ -122,6 +123,8 @@ class Scene:
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
+            if renderer is None:
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self.renderer = CairoRenderer(
