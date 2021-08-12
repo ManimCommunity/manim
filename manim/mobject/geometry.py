@@ -3062,6 +3062,21 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             0.7853981633974483
             >>> angle.get_value(degrees=True)
             45.0
+
+        .. manim:: GetValueExample
+            :save_last_frame:
+
+            class GetValueExample(Scene):
+                def construct(self):
+                    line1 = Line(LEFT+(1/3)*UP, RIGHT+(1/3)*DOWN)
+                    line2 = Line(DOWN+(1/3)*RIGHT, UP+(1/3)*LEFT)
+                    angle = Angle(line1, line2)
+
+                    lines = angle.get_lines()
+                    lines[0].set_color(BLUE)
+                    lines[1].set_color(GREEN)
+
+                    self.add(line1, line2, angle, value)
         """
 
         if degrees:
