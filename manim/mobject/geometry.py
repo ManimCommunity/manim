@@ -3066,7 +3066,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                     angle = Angle(line1, line2, radius=0.4)
 
                     value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
-                    value.move_to(Angle(line1, line2, radius = 0.4 + 3*SMALL_BUFF).point_from_proportion(0.5))
+                    value.next_to(angle, UR)
 
                     self.add(line1, line2, angle, value)
         """
