@@ -3054,14 +3054,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-        ::
-
-            >>> line_1, line_2 = Line(ORIGIN, RIGHT), Line(ORIGIN, UR)
-            >>> angle = Angle(line_1, line_2)
-            >>> angle.get_value()
-            0.7853981633974483
-            >>> angle.get_value(degrees=True)
-            45.0
 
         .. manim:: GetValueExample
             :save_last_frame:
@@ -3070,11 +3062,11 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 def construct(self):
                     line1 = Line(LEFT+(1/3)*UP, RIGHT+(1/3)*DOWN)
                     line2 = Line(DOWN+(1/3)*RIGHT, UP+(1/3)*LEFT)
-                    angle = Angle(line1, line2)
 
-                    lines = angle.get_lines()
-                    lines[0].set_color(BLUE)
-                    lines[1].set_color(GREEN)
+                    angle = Angle(line1, line2, radius=0.4)
+
+                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
+                    value.move_to(Angle(line1, line2, radius = 0.4 + 3*SMALL_BUFF).point_from_proportion(0.5))
 
                     self.add(line1, line2, angle, value)
         """
