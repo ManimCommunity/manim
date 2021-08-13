@@ -679,10 +679,10 @@ class Text(SVGMobject):
                 setting.line_num = 0
         return settings
 
-    def text2svg(self, size=None, line_spacing=None):
+    def text2svg(self):
         """Convert the text to SVG using Pango."""
-        size = self._font_size if size is None else size
-        line_spacing = self.line_spacing if size is None else size
+        size = self._font_size
+        line_spacing = self.line_spacing
         size /= TEXT2SVG_ADJUSTMENT_FACTOR
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
@@ -1176,10 +1176,10 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def text2svg(self, size=None, line_spacing=None):
+    def text2svg(self):
         """Convert the text to SVG using Pango."""
-        size = self._font_size if size is None else size
-        line_spacing = self.line_spacing if size is None else size
+        size = self._font_size
+        line_spacing = self.line_spacing
         size /= TEXT2SVG_ADJUSTMENT_FACTOR
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
