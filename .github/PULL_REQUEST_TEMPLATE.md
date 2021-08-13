@@ -1,59 +1,25 @@
-<!--
-Thanks for your contribution to ManimCommunity!
+<!-- Thank you for contributing to Manim! Learn more about the process in our contributing guidelines: https://docs.manim.community/en/latest/contributing.html -->
 
-Before filling in the details, ensure:
-- Your local changes are up-to-date with ManimCommunity/manim
-  
-- The title of your PR gives a descriptive summary to end-users. Some examples:
-  - Fixed last animations not running to completion
-  - Added gradient support and documentation for SVG files
-  Examples of what *NOT* to do:
-  - "fixed that styling issue" - not descriptive enough
-  - "fixed issue #XYZ" - end-user needs to do further research
--->
-## Changelog / Overview
-<!-- Optional (Recommended): a detailed overview of the PR for the upcoming
-release's changelog entry. Useful for when the PR title isn't enough. 
-
-DO NOT REMOVE THE FOLLOWING CHANGELOG LINES, EVEN IF YOU DON'T USE THEM.-->
+## Overview: What does this pull request change?
+<!-- If there is more information than the PR title that should be added to our release changelog, add it in the following changelog section. This is optional, but recommended for larger pull requests. -->
 <!--changelog-start-->
 
 <!--changelog-end-->
 
-## Motivation
-<!-- In what way do your changes improve the library? -->
+## Motivation and Explanation: Why and how do your changes improve the library?
+<!-- Optional for bugfixes, small enhancements, and documentation-related PRs. Otherwise, please give a short reasoning for your changes. -->
 
-## Explanation for Changes
-<!-- How do your changes improve the library? -->
-
-
-## Documentation Reference
-<!-- Please include links to the affected documentation pages below. --> 
+## Links to added or changed documentation pages
+<!-- Please add links to the affected documentation pages (edit the description after opening the PR). The link to the documentation for your PR is https://manimce--####.org.readthedocs.build/en/####/, where #### represents the PR number. --> 
 
 
-## Testing Status
-<!-- Optional (Recommended): your computer specs and what tests you ran with
-their results, if any. This section is also intended for other
-testing-related comments. -->
-
-## Further Comments
-<!-- Optional: any further comments that might be useful for reviewers. -->
-
-## Checklist
-- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have written a descriptive PR title (see top of PR template for examples)
-- [ ] I have written a changelog entry for the PR or deem it unnecessary
-- [ ] My new functions/classes either have a docstring or are private
-- [ ] My new functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
-- [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
-<!-- Once again, thanks for contributing to ManimCommunity! -->
+## Further Information and Comments
+<!-- If applicable, put further comments for the reviewers here. -->
 
 
-<!-- Do not modify the lines below. These are for the reviewers of your PR -->
+
+<!-- Thank you again for contributing! Do not modify the lines below, they are for reviewers. -->
 ## Reviewer Checklist
-- [ ] The PR title is descriptive enough
-- [ ] The PR is labeled correctly
-- [ ] The changelog entry is completed if necessary
-- [ ] Newly added functions/classes either have a docstring or are private
-- [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
-- [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
+- [ ] The PR title is descriptive enough for the changelog, and the PR is labeled correctly
+- [ ] If applicable: newly added non-private functions and classes have a docstring including a short summary and a PARAMETERS section
+- [ ] If applicable: newly added functions and classes are tested

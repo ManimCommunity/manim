@@ -117,7 +117,7 @@ def frames_comparison(
             )
 
             # Isolate the config used for the test, to avoid a modifying the global config during the test run.
-            with tempconfig({**custom_config, **config_tests}):
+            with tempconfig({**config_tests, **custom_config}):
                 real_test()
 
         parameters = list(old_sig.parameters.values())
