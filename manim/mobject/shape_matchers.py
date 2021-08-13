@@ -5,13 +5,13 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 from typing import Optional
 
 from ..constants import *
-from ..mobject.geometry import Line, Rectangle
+from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import BLACK, RED, YELLOW, Color
 
 
-class SurroundingRectangle(Rectangle):
+class SurroundingRectangle(RoundedRectangle):
     r"""A rectangle surrounding a :class:`~.Mobject`
 
     Examples
@@ -26,21 +26,27 @@ class SurroundingRectangle(Rectangle):
                 quote = Text(
                     "If I have seen further than others, \n"
                     "it is by standing upon the shoulders of giants.",
-                    color=BLUE
+                    color=BLUE,
                 ).scale(0.75)
                 box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
-                self.add(title, box, quote)
 
+                t2 = Tex(r"Hello World").scale(1.5)
+                box2 = SurroundingRectangle(t2, corner_radius=0.2)
+                mobjects = VGroup(VGroup(box, quote), VGroup(t2, box2)).arrange(DOWN)
+                self.add(title, mobjects)
     """
 
-    def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
+    def __init__(
+        self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
+    ):
         self.color = color
         self.buff = buff
-        Rectangle.__init__(
+        RoundedRectangle.__init__(
             self,
             color=color,
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
+            corner_radius=corner_radius,
             **kwargs
         )
         self.move_to(mobject)
