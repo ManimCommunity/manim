@@ -2,10 +2,11 @@ import itertools as it
 import operator as op
 import typing
 from functools import reduce, wraps
-from typing import Optional
+from typing import Optional, Union
 
 import moderngl
 import numpy as np
+from PIL.Image import Image
 
 from ... import config
 from ...constants import *
@@ -320,6 +321,13 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_flat_stroke(self):
         return self.flat_stroke
+
+    def color_using_background_image(self, background_image: Union[Image, str]):
+        self.background_image = background_image
+        self.set_color(WHITE)
+        for submob in self.submobjects:
+            submob.color_using_background_image(background_image)
+        return self
 
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
