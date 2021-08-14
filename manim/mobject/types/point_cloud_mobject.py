@@ -115,6 +115,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(*colors, len(self.points))))
         )
+        if config["renderer"] == "opengl":
+            self.set_rgba_array_direct(self.rgbas)
         return self
 
     def set_colors_by_radial_gradient(

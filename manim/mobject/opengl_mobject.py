@@ -1265,6 +1265,10 @@ class OpenGLMobject:
                 mob.data[name] = rgbas.copy()
         return self
 
+    def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+        for mob in self.get_family(recurse):
+            mob.data[name] = rgbas.copy()
+
     def set_color(self, color, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
