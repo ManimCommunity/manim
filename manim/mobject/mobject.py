@@ -107,20 +107,6 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
-        # OpenGL data.
-        self.data = {}
-        self.depth_test = False
-        self.is_fixed_in_frame = False
-        self.gloss = 0.0
-        self.shadow = 0.0
-        self.needs_new_bounding_box = True
-        self.parents = []
-        self.family = [self]
-
-        self.init_gl_data()
-        self.init_gl_points()
-        self.init_gl_colors()
-
     @classmethod
     def animation_override_for(
         cls, animation_class: Type["Animation"]
@@ -192,41 +178,6 @@ class Mobject:
                     f"{override_func.__qualname__}."
                 )
             )
-
-    def init_gl_data(self):
-        pass
-
-    def init_gl_points(self):
-        pass
-
-    def init_gl_colors(self):
-        pass
-
-    def get_bounding_box(self):
-        if self.needs_new_bounding_box:
-            self.data["bounding_box"] = self.compute_bounding_box()
-            self.needs_new_bounding_box = False
-        return self.data["bounding_box"]
-
-    def compute_bounding_box(self):
-        all_points = np.vstack(
-            [
-                self.data["points"],
-                *(
-                    mob.get_bounding_box()
-                    for mob in self.get_family()[1:]
-                    if mob.has_points()
-                ),
-            ]
-        )
-        if len(all_points) == 0:
-            return np.zeros((3, self.dim))
-        else:
-            # Lower left and upper right corners
-            mins = all_points.min(0)
-            maxs = all_points.max(0)
-            mids = (mins + maxs) / 2
-            return np.array([mins, mids, maxs])
 
     @property
     def animate(self):
@@ -344,14 +295,6 @@ class Mobject:
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
         pass
-
-    def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
-        for mob in self.get_family(recurse_down):
-            mob.needs_new_bounding_box = True
-        if recurse_up:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
 
     def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
@@ -1100,8 +1043,6 @@ class Mobject:
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")
             mob.points += total_vector
-            if hasattr(mob, "data") and "points" in mob.data:
-                mob.data["points"] += total_vector
         return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
@@ -1288,31 +1229,6 @@ class Mobject:
     # In place operations.
     # Note, much of these are now redundant with default behavior of
     # above methods
-    def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
-    ):
-        if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
-
-        for mob in self.get_family():
-            arrs = []
-            if len(self.data["points"]):
-                arrs.append(mob.data["points"])
-            if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
-
-            for arr in arrs:
-                if about_point is None:
-                    arr[:] = func(arr)
-                else:
-                    arr[:] = func(arr - about_point) + about_point
-
-        if not works_on_bounding_box:
-            self.refresh_bounding_box(recurse_down=True)
-        else:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
 
     def apply_points_function_about_point(
         self, func, about_point=None, about_edge=None
