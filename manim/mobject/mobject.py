@@ -1043,6 +1043,7 @@ class Mobject:
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")
             mob.points += total_vector
+
         return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
