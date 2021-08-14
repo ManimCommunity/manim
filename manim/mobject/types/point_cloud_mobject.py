@@ -53,7 +53,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     """
 
-    shader_folder = "point"
+    # Scaled for consistency with cairo
+    OPENGL_POINT_WIDTH_SCALE_FACTOR = 0.01
+    shader_folder = "true_dot"
     shader_dtype = [
         ("point", np.float32, (3,)),
         ("color", np.float32, (4,)),
@@ -357,7 +359,12 @@ class PointCloudDot(Mobject1D):
 
     def set_point_width_uniform(self):
         if config["renderer"] == "opengl":
-            self.set_uniforms({"point_width": self.stroke_width})
+            self.set_uniforms(
+                {
+                    "point_width": self.stroke_width
+                    * PMobject.OPENGL_POINT_WIDTH_SCALE_FACTOR
+                }
+            )
 
 
 class Point(PMobject):
@@ -402,4 +409,9 @@ class Point(PMobject):
 
     def set_point_width_uniform(self):
         if config["renderer"] == "opengl":
-            self.set_uniforms({"point_width": self.stroke_width})
+            self.set_uniforms(
+                {
+                    "point_width": self.stroke_width
+                    * PMobject.OPENGL_POINT_WIDTH_SCALE_FACTOR
+                }
+            )

@@ -6,7 +6,7 @@ uniform float shadow;
 uniform float anti_alias_width;
 
 in vec4 color;
-in float radius;
+in float point_width;
 in vec2 center;
 in vec2 point;
 
@@ -17,11 +17,11 @@ out vec4 frag_color;
 void main() {
     vec2 diff = point - center;
     float dist = length(diff);
-    float signed_dist = dist - radius;
+    float signed_dist = dist - point_width;
     if (signed_dist > 0.5 * anti_alias_width){
         discard;
     }
-    vec3 normal = vec3(diff / radius, sqrt(1 - (dist * dist) / (radius * radius)));
+    vec3 normal = vec3(diff / point_width, sqrt(1 - (dist * dist) / (point_width * point_width)));
     frag_color = finalize_color(
         color,
         vec3(point.xy, 0.0),
