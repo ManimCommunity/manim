@@ -24,7 +24,6 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
-from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -244,12 +243,19 @@ class OpenGLRenderer:
         self.scene = scene
         if not hasattr(self, "window"):
             if config["preview"]:
+                from .opengl_renderer_window import Window
+
                 self.window = Window(self)
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
                 self.window = None
-                self.context = moderngl.create_standalone_context()
+                try:
+                    self.context = moderngl.create_context(standalone=True)
+                except Exception:
+                    self.context = moderngl.create_context(
+                        standalone=True, backend="egl"
+                    )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)

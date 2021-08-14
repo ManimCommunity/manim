@@ -388,8 +388,15 @@ class Dot3D(Sphere):
                 self.add(axes, dot_1, dot_2,dot_3)
     """
 
-    def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        super().__init__(center=point, radius=radius, **kwargs)
+    def __init__(
+        self,
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        color=WHITE,
+        resolution=(8, 8),
+        **kwargs
+    ):
+        super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
 
 

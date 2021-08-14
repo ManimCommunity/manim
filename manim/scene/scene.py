@@ -16,7 +16,7 @@ import types
 from queue import Queue
 
 try:
-    import dearpygui.core
+    import dearpygui.dearpygui as dpg
 
     dearpygui_imported = True
 except ImportError:
@@ -1045,7 +1045,7 @@ class Scene:
         keyboard_thread.start()
 
         if self.dearpygui_imported and config["enable_gui"]:
-            if not dearpygui.core.is_dearpygui_running():
+            if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
                     target=configure_pygui,
                     args=(self.renderer, self.widgets),
@@ -1131,7 +1131,7 @@ class Scene:
         file_observer.join()
 
         if self.dearpygui_imported and config["enable_gui"]:
-            dearpygui.core.stop_dearpygui()
+            dpg.stop_dearpygui()
 
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
