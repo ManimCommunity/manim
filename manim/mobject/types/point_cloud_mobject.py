@@ -92,8 +92,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def set_color(self, color=None, family=True):
         if config["renderer"] == "opengl":
             color = self.color if not color else color
-            opacity = 1 if not self.opacity else self.opacity
-            return super().set_color(color=color, opacity=opacity)
+            # temp fix due to clash between opengl and cairo implementations
+            # as opengl will pass opacity and not family for set_color
+            return super().set_color(color=color, opacity=family)
         else:
             rgba = color_to_rgba(color)
             mobs = self.family_members_with_points() if family else [self]
