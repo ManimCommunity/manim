@@ -4,6 +4,7 @@ __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Poi
 
 import moderngl
 import numpy as np
+from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -110,17 +111,16 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             mob.stroke_width = width
         return self
 
-    # def set_color_by_gradient(self, start_color, end_color):
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(colors, len(self.points))))
+            list(map(color_to_rgba, color_gradient(*colors, len(self.points))))
         )
         return self
 
     def set_colors_by_radial_gradient(
         self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
     ):
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
+        start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
             center = self.get_center()
         for mob in self.family_members_with_points():
