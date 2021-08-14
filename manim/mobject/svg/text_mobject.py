@@ -144,7 +144,7 @@ class Paragraph(VGroup):
 
         lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
-        lines_str_list = lines_str.split("\n")
+        lines_str_list = lines_str.splitlines(keepends=True)
         self.chars = self.gen_chars(lines_str_list)
 
         chars_lines_text_list = self.get_group_class()()
