@@ -233,7 +233,13 @@ class BarChart(Axes):
         y_step: Optional[float] = None,
         y_include_numbers: Optional[bool] = True,
         y_number_scale_value: Optional[float] = 0.75,
-        bar_colors: Optional[Union[str, Iterable[str]]] = [BLUE, GREEN, YELLOW],
+        bar_colors: Optional[Union[str, Iterable[str]]] = [
+            "#003f5c",
+            "#58508d",
+            "#bc5090",
+            "#ff6361",
+            "#ffa600",
+        ],
         bar_buff: Optional[float] = MED_LARGE_BUFF,
         bar_fill_opacity: Optional[float] = 0.7,
         bar_stroke_width: Optional[float] = 3,
@@ -325,14 +331,18 @@ class BarChart(Axes):
         if self.bar_labels is not None:
             return self.bar_labels
         self.bar_labels = VGroup()
+
         for bar, value in zip(self.bars, self.values):
             bar_lbl = label_constructor(str(value))
+
             if color is None:
                 bar_lbl.set_color(bar.get_fill_color())
             else:
                 bar_lbl.set_color(color)
+
             if scale is None:
                 bar_lbl.scale_to_fit_width(min(bar.width * 0.6, 0.5))
+                bar_lbl.height = min(bar_lbl.height, 0.25)
             else:
                 bar_lbl.scale(scale)
             bar_lbl.next_to(bar.get_top(), UP, buff=buff)
@@ -397,7 +407,7 @@ class BarChart(Axes):
 
         if self.x_label_scale_value is None:
             unit_width = self.c2p(1, 0)[0] - self.c2p(0, 0)[0]
-            self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.9)
+            self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.75)
 
         if self.x_label_buff is None:
             self.x_label_buff = max_lbl_height * self.x_label_scale_value * 0.75
