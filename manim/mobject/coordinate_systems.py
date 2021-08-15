@@ -1470,7 +1470,7 @@ class NumberPlane(Axes):
         y_length: Optional[float] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[float] = 1,
+        faded_line_ratio: int = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -1585,10 +1585,10 @@ class NumberPlane(Axes):
 
     def get_lines_parallel_to_axis(
         self,
-        axis_parallel_to: Line,
+        axis_parallel_to: NumberLine,
         axis_perpendicular_to: NumberLine,
         freq: float,
-        ratio_faded_lines: float,
+        ratio_faded_lines: int,
     ) -> Tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
