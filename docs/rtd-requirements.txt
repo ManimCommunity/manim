@@ -1,2 +1,1 @@
-imageio-ffmpeg
 jupyterlab

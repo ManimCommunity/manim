@@ -3,12 +3,12 @@ r"""Mobjects representing tables.
 Examples
 --------
 
-.. manim:: TabularExamples
+.. manim:: TableExamples
     :save_last_frame:
 
-    class TabularExamples(Scene):
+    class TableExamples(Scene):
         def construct(self):
-            t0 = Tabular(
+            t0 = Table(
                 [["First", "Second"],
                 ["Third","Fourth"]],
                 row_labels=[Text("R1"), Text("R2")],
@@ -17,12 +17,12 @@ Examples
             t0.add_highlighted_cell((2,2), color=GREEN)
             x_vals = np.linspace(-2,2,5)
             y_vals = np.exp(x_vals)
-            t1 = DecimalTabular(
+            t1 = DecimalTable(
                 [x_vals, y_vals],
                 row_labels=[MathTex("x"), MathTex("f(x)")],
                 include_outer_lines=True)
             t1.add(t1.get_cell((2,2), color=RED))
-            t2 = MathTabular(
+            t2 = MathTable(
                 [["+", 0, 5, 10],
                 [0, 0, 5, 10],
                 [2, 2, 7, 12],
@@ -36,7 +36,7 @@ Examples
                 Line(UP + RIGHT, DOWN + LEFT))
             a = Circle().set_color(RED).scale(0.5)
             b = cross.set_color(BLUE).scale(0.5)
-            t3 = MobjectTabular(
+            t3 = MobjectTable(
                 [[a.copy(),b.copy(),a.copy()],
                 [b.copy(),a.copy(),a.copy()],
                 [a.copy(),b.copy(),b.copy()]])
@@ -44,7 +44,7 @@ Examples
                 t3.get_corner(DL), t3.get_corner(UR)
             ).set_color(RED))
             vals = np.arange(1,21).reshape(5,4)
-            t4 = IntegerTabular(
+            t4 = IntegerTable(
                 vals,
                 include_outer_lines=True
             )
@@ -54,11 +54,11 @@ Examples
 """
 
 __all__ = [
-    "Tabular",
-    "MathTabular",
-    "MobjectTabular",
-    "IntegerTabular",
-    "DecimalTabular",
+    "Table",
+    "MathTable",
+    "MobjectTable",
+    "IntegerTable",
+    "DecimalTable",
 ]
 
 
@@ -80,27 +80,27 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, WHITE, YELLOW
 
 
-class Tabular(VGroup):
+class Table(VGroup):
     """A mobject that displays a table on the screen.
 
     Examples
     --------
 
-    .. manim:: TabularExamples
+    .. manim:: TableExamples
         :save_last_frame:
 
-        class TabularExamples(Scene):
+        class TableExamples(Scene):
             def construct(self):
-                t0 = Tabular(
+                t0 = Table(
                     [["This", "is a"],
                     ["simple", "Table in \\n Manim."]])
-                t1 = Tabular(
+                t1 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
                     col_labels=[Text("C1"), Text("C2")])
                 t1.add_highlighted_cell((2,2), color=YELLOW)
-                t2 = Tabular(
+                t2 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
@@ -109,7 +109,7 @@ class Tabular(VGroup):
                     include_outer_lines=True,
                     arrange_in_grid_config={"cell_alignment": RIGHT})
                 t2.add(t2.get_cell((2,2), color=RED))
-                t3 = Tabular(
+                t3 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
                     row_labels=[Text("R1"), Text("R2")],
@@ -132,11 +132,11 @@ class Tabular(VGroup):
                 background.set_fill(opacity=.5)
                 background.set_color([TEAL, RED, YELLOW])
                 self.add(background)
-                t0 = Tabular(
+                t0 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
                     add_background_rectangles_to_entries=True)
-                t1 = Tabular(
+                t1 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
                     include_background_rectangle=True)
@@ -334,7 +334,7 @@ class Tabular(VGroup):
                 mob_table.insert(0, self.col_labels)
         return mob_table
 
-    def _add_horizontal_lines(self) -> "Tabular":
+    def _add_horizontal_lines(self) -> "Table":
         """Adds the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
@@ -364,7 +364,7 @@ class Tabular(VGroup):
         self.horizontal_lines = line_group
         return self
 
-    def _add_vertical_lines(self) -> "Tabular":
+    def _add_vertical_lines(self) -> "Table":
         """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
@@ -411,7 +411,7 @@ class Tabular(VGroup):
 
             class GetHorizontalLinesExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -437,7 +437,7 @@ class Tabular(VGroup):
 
             class GetVerticalLinesExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -463,7 +463,7 @@ class Tabular(VGroup):
 
             class GetColumnsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -494,7 +494,7 @@ class Tabular(VGroup):
 
             class GetRowsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -504,7 +504,7 @@ class Tabular(VGroup):
         """
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
-    def set_column_colors(self, *colors: Iterable[Color]) -> "Tabular":
+    def set_column_colors(self, *colors: Iterable[Color]) -> "Table":
         """Set individual colors for each column of the table.
 
         Parameters
@@ -520,7 +520,7 @@ class Tabular(VGroup):
 
             class SetColumnColorsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -533,7 +533,7 @@ class Tabular(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: Iterable[Color]) -> "Tabular":
+    def set_row_colors(self, *colors: Iterable[Color]) -> "Table":
         """Set individual colors for each row of the table.
 
         Parameters
@@ -549,7 +549,7 @@ class Tabular(VGroup):
 
             class SetRowColorsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -588,7 +588,7 @@ class Tabular(VGroup):
 
             class GetEntriesExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -639,7 +639,7 @@ class Tabular(VGroup):
 
             class GetEntriesWithoutLabelsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -673,7 +673,7 @@ class Tabular(VGroup):
 
             class GetRowLabelsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -702,7 +702,7 @@ class Tabular(VGroup):
 
             class GetColLabelsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -731,7 +731,7 @@ class Tabular(VGroup):
 
             class GetLabelsExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -750,7 +750,7 @@ class Tabular(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: Color = BLACK) -> "Tabular":
+    def add_background_to_entries(self, color: Color = BLACK) -> "Table":
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=color)
@@ -770,7 +770,7 @@ class Tabular(VGroup):
         Returns
         -------
         :class:`~.Polygon`
-            Polygon mimicking one specific cell of the tabular.
+            Polygon mimicking one specific cell of the Table.
 
         Examples
         --------
@@ -780,7 +780,7 @@ class Tabular(VGroup):
 
             class GetCellExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -815,7 +815,7 @@ class Tabular(VGroup):
 
     def add_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
-    ) -> "Tabular":
+    ) -> "Table":
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
@@ -836,7 +836,7 @@ class Tabular(VGroup):
 
             class AddHighlightedCellExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -889,7 +889,7 @@ class Tabular(VGroup):
 
             class CreateTableExample(Scene):
                 def construct(self):
-                    table = Tabular(
+                    table = Table(
                         [["First", "Second"],
                         ["Third","Fourth"]],
                         row_labels=[Text("R1"), Text("R2")],
@@ -922,18 +922,18 @@ class Tabular(VGroup):
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
-class MathTabular(Tabular):
-    """A specialized :class:`~.Tabular` mobject for use with with LaTeX.
+class MathTable(Table):
+    """A specialized :class:`~.Table` mobject for use with with LaTeX.
 
     Examples
     --------
 
-    .. manim:: MathTabularExample
+    .. manim:: MathTableExample
         :save_last_frame:
 
-        class MathTabularExample(Scene):
+        class MathTableExample(Scene):
             def construct(self):
-                t0 = MathTabular(
+                t0 = MathTable(
                     [["+", 0, 5, 10],
                     [0, 0, 5, 10],
                     [2, 2, 7, 12],
@@ -949,7 +949,7 @@ class MathTabular(Tabular):
         **kwargs,
     ):
         """
-        Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.MathTex`.
+        Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.MathTex`.
         Every entry in `table` is set in a Latex `align` environment.
 
         Parameters
@@ -960,7 +960,7 @@ class MathTabular(Tabular):
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
         kwargs : Any
-            Additional arguments to be passed to :class:`~.Tabular`.
+            Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(
             table,
@@ -969,16 +969,16 @@ class MathTabular(Tabular):
         )
 
 
-class MobjectTabular(Tabular):
-    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Mobject`.
+class MobjectTable(Table):
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`.
 
     Examples
     --------
 
-    .. manim:: MobjectTabularExample
+    .. manim:: MobjectTableExample
         :save_last_frame:
 
-        class MobjectTabularExample(Scene):
+        class MobjectTableExample(Scene):
             def construct(self):
                 cross = VGroup(
                     Line(UP + LEFT, DOWN + RIGHT),
@@ -986,7 +986,7 @@ class MobjectTabular(Tabular):
                 )
                 a = Circle().set_color(RED).scale(0.5)
                 b = cross.set_color(BLUE).scale(0.5)
-                t0 = MobjectTabular(
+                t0 = MobjectTable(
                     [[a.copy(),b.copy(),a.copy()],
                     [b.copy(),a.copy(),a.copy()],
                     [a.copy(),b.copy(),b.copy()]]
@@ -1004,7 +1004,7 @@ class MobjectTabular(Tabular):
         **kwargs,
     ):
         """
-        Special case of :class:`~.Tabular` with ``element_to_mobject`` set to an identity function.
+        Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function.
         Here, every item in ``table`` must already be of type :class:`~.Mobject`.
 
         Parameters
@@ -1014,23 +1014,23 @@ class MobjectTabular(Tabular):
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
         kwargs : Any
-            Additional arguments to be passed to :class:`~.Tabular`.
+            Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
-class IntegerTabular(Tabular):
-    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.Integer`.
+class IntegerTable(Table):
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`.
 
     Examples
     --------
 
-    .. manim:: IntegerTabularExample
+    .. manim:: IntegerTableExample
         :save_last_frame:
 
-        class IntegerTabularExample(Scene):
+        class IntegerTableExample(Scene):
             def construct(self):
-                t0 = IntegerTabular(
+                t0 = IntegerTable(
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
@@ -1052,7 +1052,7 @@ class IntegerTabular(Tabular):
         **kwargs,
     ):
         """
-        Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.Integer`.
+        Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.Integer`.
         Will round if there are decimal entries in the table.
 
         Parameters
@@ -1063,25 +1063,25 @@ class IntegerTabular(Tabular):
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
         kwargs : Any
-            Additional arguments to be passed to :class:`~.Tabular`.
+            Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(table, element_to_mobject=element_to_mobject, **kwargs)
 
 
-class DecimalTabular(Tabular):
-    """A specialized :class:`~.Tabular` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
+class DecimalTable(Table):
+    """A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------
 
-    .. manim:: DecimalTabularExample
+    .. manim:: DecimalTableExample
         :save_last_frame:
 
-        class DecimalTabularExample(Scene):
+        class DecimalTableExample(Scene):
             def construct(self):
                 x_vals = [-2,-1,0,1,2]
                 y_vals = np.exp(x_vals)
-                t0 = DecimalTabular(
+                t0 = DecimalTable(
                     [x_vals, y_vals],
                     row_labels=[MathTex("x"), MathTex("f(x)=e^{x}")],
                     h_buff=1,
@@ -1097,7 +1097,7 @@ class DecimalTabular(Tabular):
         **kwargs,
     ):
         """
-        Special case of :class:`~.Tabular` with ``element_to_mobject`` set to :class:`~.DecimalNumber`.
+        Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`.
         By default, ``num_decimal_places`` is set to 1.
         Will round/truncate the decimal places based on the provided ``element_to_mobject_config``.
 
@@ -1111,7 +1111,7 @@ class DecimalTabular(Tabular):
         element_to_mobject_config
             Element to mobject config, here set as {"num_decimal_places": 1}.
         kwargs : Any
-            Additional arguments to be passed to :class:`~.Tabular`.
+            Additional arguments to be passed to :class:`~.Table`.
         """
         super().__init__(
             table,

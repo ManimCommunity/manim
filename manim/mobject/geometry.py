@@ -79,6 +79,7 @@ from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
@@ -1114,6 +1115,12 @@ class DashedLine(Line):
     :class:`~.DashedVMobject`
     """
 
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+        redirections=[("positive_space_ratio", "dashed_ratio")],
+    )
     def __init__(
         self,
         *args,
@@ -1121,6 +1128,9 @@ class DashedLine(Line):
         dashed_ratio=0.5,
         **kwargs,
     ):
+        self.dash_spacing = kwargs.pop(
+            "dash_spacing", None
+        )  # Unused param, remove with deprecation warning
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
         super().__init__(*args, **kwargs)
