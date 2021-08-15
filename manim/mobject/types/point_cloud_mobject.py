@@ -129,10 +129,14 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         if center is None:
             center = self.get_center()
         for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            t = min(1, np.abs(mob.get_center() - center) / radius)
+            distances = np.abs(self.points - center)
+            alphas = np.linalg.norm(distances, axis=1)
 
-            mob.rgbas = np.array([interpolate(start_rgba, end_rgba, t)] * num_points)
+            mob.rgbas = np.array(
+                np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
+            )
+            if config["renderer"] == "opengl":
+                self.set_rgba_array_direct(self.rgbas)
         return self
 
     def match_colors(self, mobject):
