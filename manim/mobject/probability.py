@@ -4,24 +4,29 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 import typing
-from typing import Iterable, List
+from typing import Iterable, List, Optional, Sequence, Union
 
 import numpy as np
 
+from .. import config
 from ..constants import *
+from ..mobject.coordinate_systems import Axes
 from ..mobject.geometry import Line, Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.svg.tex_mobject import *
+from ..mobject.svg.text_mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
     BLUE,
     BLUE_E,
     DARK_GREY,
+    GREEN,
     GREEN_E,
     LIGHT_GREY,
     MAROON_B,
+    WHITE,
     YELLOW,
     color_gradient,
 )
@@ -178,37 +183,15 @@ class SampleSpace(Rectangle):
         return self.split()[index]
 
 
-class BarChart(VGroup):
+class BarChart(Axes):
     """This is a class for Bar Charts.
 
     Parameters
     ----------
     values
         The values for the bar chart.
-    height
-        The height of the axes.
-    width
-        The width of the axes.
-    n_ticks
-        Number of ticks.
-    tick_width
-        Width of the ticks.
-    label_y_axis
-        Y axis label
-    y_axis_label_height
-        Height of the label.
-    max_value
-        Maximum value of the data.
-    bar_colors
-        The colors of the bars.
-    bar_fill_opacity
-        The opacity of the bars.
-    bar_stroke_width
-        The stroke width of the bars.
     bar_names
         The names of each bar.
-    bar_label_scale_val
-        The label size.
 
     Examples
     --------
@@ -230,11 +213,9 @@ class BarChart(VGroup):
                 ]
                 colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
                 bar = BarChart(
-                    pull_req,
-                    max_value=max(pull_req),
-                    bar_colors=colors,
-                    bar_names=versions,
-                    bar_label_scale_val=0.3,
+                    values = pull_req,
+                    bar_names = versions,
+                    bar_colors = colors
                 )
                 self.add(bar)
     """
@@ -242,94 +223,198 @@ class BarChart(VGroup):
     def __init__(
         self,
         values: Iterable[float],
-        height: float = 4,
-        width: float = 6,
-        n_ticks: int = 4,
-        tick_width: float = 0.2,
-        label_y_axis: bool = True,
-        y_axis_label_height: float = 0.25,
-        max_value: float = 1,
-        bar_colors=[BLUE, YELLOW],
-        bar_fill_opacity: float = 0.8,
-        bar_stroke_width: float = 3,
-        bar_names: List[str] = [],
-        bar_label_scale_val: float = 0.75,
-        **kwargs
-    ):  # What's the return type?
-        VGroup.__init__(self, **kwargs)
-        self.n_ticks = n_ticks
-        self.tick_width = tick_width
-        self.label_y_axis = label_y_axis
-        self.y_axis_label_height = y_axis_label_height
-        self.max_value = max_value
+        bar_names: Optional[Iterable[str]] = None,
+        x_length: Optional[float] = None,
+        x_label_constructor=Text,
+        x_label_buff=None,
+        x_label_scale_value: Optional[float] = None,
+        y_length: Optional[float] = config["frame_height"] - 4,
+        y_max_value: Optional[float] = None,
+        y_step: Optional[float] = None,
+        y_include_numbers: Optional[bool] = True,
+        y_number_scale_value: Optional[float] = 0.75,
+        bar_colors: Optional[Union[str, Iterable[str]]] = [BLUE, GREEN, YELLOW],
+        bar_buff: Optional[float] = MED_LARGE_BUFF,
+        bar_fill_opacity: Optional[float] = 0.7,
+        bar_stroke_width: Optional[float] = 3,
+        **kwargs,
+    ) -> "VGroup":
+
+        self.values = values
+        self.bar_names = bar_names
+        self.x_length = x_length
+        self.x_label_constructor = x_label_constructor
+        self.x_label_buff = x_label_buff
+        self.x_label_scale_value = x_label_scale_value
+        self.y_length = y_length
+        self.y_max_value = y_max_value
+        self.y_step = y_step
+        self.y_include_numbers = y_include_numbers
+        self.y_number_scale_value = y_number_scale_value
         self.bar_colors = bar_colors
+        self.bar_buff = bar_buff
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
-        self.bar_names = bar_names
-        self.bar_label_scale_val = bar_label_scale_val
-        self.total_bar_width = width
-        self.total_bar_height = height
 
-        if self.max_value is None:
-            self.max_value = max(values)
+        self.axis_config = {
+            "stroke_color": WHITE,
+            "include_tip": False,
+        }
+        self.x_axis_config = {}
+        self.y_axis_config = {
+            "include_numbers": self.y_include_numbers,
+            "number_scale_value": self.y_number_scale_value,
+        }
 
-        self.add_axes()
-        self.add_bars(values)
+        self.bars = None
+        self.x_labels = None
+        self.y_labels = None
+        self.bar_labels = None
+
+        self.update_default_configs(
+            (self.axis_config, self.x_axis_config, self.y_axis_config),
+            (
+                kwargs.pop("axis_config", None),
+                kwargs.pop("x_axis_config", None),
+                kwargs.pop("y_axis_config", None),
+            ),
+        )
+
+        if self.y_step is None:
+            self.y_step = round(max(self.values) / self.y_length, 2)
+
+        if self.y_max_value is None:
+            self.y_max_value = max(self.values)
+
+        self.x_range = [0, len(self.values), 1]
+        self.y_range = [0, self.y_max_value, self.y_step]
+
+        if self.x_length is None:
+            self.x_length = min(len(self.values), config["frame_width"] - 2)
+
+        super().__init__(
+            x_range=self.x_range,
+            y_range=self.y_range,
+            x_length=self.x_length,
+            y_length=self.y_length,
+            axis_config=self.axis_config,
+            x_axis_config=self.x_axis_config,
+            y_axis_config=self.y_axis_config,
+            **kwargs,
+        )
+
+        if self.y_include_numbers:
+            self.y_labels = self.get_y_axis().numbers
+
+        self.add_bars()
+        self.add_x_labels()
         self.center()
 
-    def add_axes(self):
-        x_axis = Line(self.tick_width * LEFT / 2, self.total_bar_width * RIGHT)
-        y_axis = Line(MED_LARGE_BUFF * DOWN, self.total_bar_height * UP)
-        ticks = VGroup()
-        heights = np.linspace(0, self.total_bar_height, self.n_ticks + 1)
-        values = np.linspace(0, self.max_value, self.n_ticks + 1)
-        for y, _value in zip(heights, values):
-            tick = Line(LEFT, RIGHT)
-            tick.width = self.tick_width
-            tick.move_to(y * UP)
-            ticks.add(tick)
-        y_axis.add(ticks)
+    def get_bars(self):
+        return self.bars
 
-        self.add(x_axis, y_axis)
-        self.x_axis, self.y_axis = x_axis, y_axis
+    def get_x_labels(self):
+        return self.x_labels
 
-        if self.label_y_axis:
-            labels = VGroup()
-            for tick, value in zip(ticks, values):
-                label = MathTex(str(np.round(value, 2)))
-                label.height = self.y_axis_label_height
-                label.next_to(tick, LEFT, SMALL_BUFF)
-                labels.add(label)
-            self.y_axis_labels = labels
-            self.add(labels)
+    def get_y_labels(self):
+        return self.y_labels
 
-    def add_bars(self, values):
-        buff = float(self.total_bar_width) / (2 * len(values) + 1)
-        bars = VGroup()
-        for i, value in enumerate(values):
+    def get_bar_labels(
+        self, color=None, scale=None, buff=MED_SMALL_BUFF, label_constructor=Tex
+    ):
+        if self.bar_labels is not None:
+            return self.bar_labels
+        self.bar_labels = VGroup()
+        for bar, value in zip(self.bars, self.values):
+            bar_lbl = label_constructor(str(value))
+            if color is None:
+                bar_lbl.set_color(bar.get_fill_color())
+            else:
+                bar_lbl.set_color(color)
+            if scale is None:
+                bar_lbl.scale_to_fit_width(min(bar.width * 0.6, 0.5))
+            else:
+                bar_lbl.scale(scale)
+            bar_lbl.next_to(bar.get_top(), UP, buff=buff)
+            self.bar_labels.add(bar_lbl)
+        return self.bar_labels
+
+    def get_values(self):
+        return self.values
+
+    def get_bar_names(self):
+        return self.bar_names
+
+    def hide_bars(self):
+        if self.bars is not None:
+            self.bars.set_opacity(0)
+
+    def show_bars(self):
+        if self.bars is not None:
+            self.bars.set_stroke(opacity=1)
+            self.bars.set_fill(opacity=self.bar_fill_opacity)
+
+    def add_bars(self):
+        if self.bars is not None:
+            return
+        self.bars = VGroup()
+
+        for i, value in enumerate(self.values):
+            bar_h = self.c2p(0, value)[1] - self.c2p(0, 0)[1]
+            bar_w = self.c2p(1 - self.bar_buff, 0)[0] - self.c2p(0, 0)[0]
             bar = Rectangle(
-                height=(value / self.max_value) * self.total_bar_height,
-                width=buff,
+                height=bar_h,
+                width=bar_w,
                 stroke_width=self.bar_stroke_width,
                 fill_opacity=self.bar_fill_opacity,
             )
-            bar.move_to((2 * i + 1) * buff * RIGHT, DOWN + LEFT)
-            bars.add(bar)
-        bars.set_color_by_gradient(*self.bar_colors)
+            bar.next_to(self.c2p(i + 0.5, 0), UP, buff=0)
+            self.bars.add(bar)
+        if isinstance(self.bar_colors, str):
+            self.bars.set_color_by_gradient(self.bar_colors)
+        else:
+            self.bars.set_color_by_gradient(*self.bar_colors)
 
-        bar_labels = VGroup()
-        for bar, name in zip(bars, self.bar_names):
-            label = MathTex(str(name))
-            label.scale(self.bar_label_scale_val)
-            label.next_to(bar, DOWN, SMALL_BUFF)
-            bar_labels.add(label)
+        self.add_to_back(self.bars)
 
-        self.add(bars, bar_labels)
-        self.bars = bars
-        self.bar_labels = bar_labels
+    def add_x_labels(self):
+        if self.x_labels is not None:
+            return
+        self.x_labels = VGroup()
 
-    def change_bar_values(self, values):
-        for bar, value in zip(self.bars, values):
-            bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
-            bar.move_to(bar_bottom, DOWN)
+        max_lbl_width = 0
+        max_lbl_height = 0
+        for i, name in enumerate(self.bar_names):
+            if i == len(self.values):
+                self.bar_names = self.bar_names[:i]
+                break
+            label = self.x_label_constructor(name)
+            if max_lbl_width < label.width:
+                max_lbl_width = label.width
+            if max_lbl_height < label.height:
+                max_lbl_height = label.height
+            self.x_labels.add(label)
+
+        if self.x_label_scale_value is None:
+            unit_width = self.c2p(1, 0)[0] - self.c2p(0, 0)[0]
+            self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.9)
+
+        if self.x_label_buff is None:
+            self.x_label_buff = max_lbl_height * self.x_label_scale_value * 0.75
+
+        for i, label in enumerate(self.x_labels):
+            label.scale(self.x_label_scale_value)
+            label.move_to(
+                self.c2p(i + 0.5, 0)
+                + DOWN * max_lbl_height * self.x_label_scale_value / 2
+                + DOWN * self.x_label_buff
+            )
+
+        self.add(self.x_labels)
+
+    #
+    # def change_bar_values(self, values):
+    #     for bar, value in zip(self.bars, values):
+    #         bar_bottom = bar.get_bottom()
+    #         bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
+    #         bar.move_to(bar_bottom, DOWN)
