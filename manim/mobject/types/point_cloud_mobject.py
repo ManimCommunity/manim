@@ -158,9 +158,13 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         """
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
+            if config["renderer"] == "opengl":
+                self.set_points(self.points[np.arange(0, num_points, factor)])
             mob.apply_over_attr_arrays(
                 lambda arr: arr[np.arange(0, num_points, factor)]
             )
+            if config["renderer"] == "opengl":
+                self.set_points(self.points)
         return self
 
     def sort_points(self, function=lambda p: p[0]):
