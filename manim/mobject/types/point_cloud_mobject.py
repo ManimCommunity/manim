@@ -130,7 +130,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             center = self.get_center()
         for mob in self.family_members_with_points():
             distances = np.abs(self.points - center)
-            alphas = np.linalg.norm(distances, axis=1)
+            alphas = np.linalg.norm(distances, axis=1) / radius
 
             mob.rgbas = np.array(
                 np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
