@@ -62,13 +62,13 @@ screen, simply call the :meth:`~.Scene.remove` method from the containing
 
 .. manim:: CreatingMobjects
 
-   class CreatingMobjects(Scene):
-       def construct(self):
-           circle = Circle()
-           self.add(circle)
-           self.wait(1)
-           self.remove(circle)
-           self.wait(1)
+    class CreatingMobjects(Scene):
+        def construct(self):
+            circle = Circle()
+            self.add(circle)
+            self.wait(1)
+            self.remove(circle)
+            self.wait(1)
 
 
 Placing mobjects
@@ -80,18 +80,18 @@ circle, a square, and a triangle:
 
 .. manim:: Shapes
 
-   class Shapes(Scene):
-       def construct(self):
-           circle = Circle()
-           square = Square()
-           triangle = Triangle()
+    class Shapes(Scene):
+        def construct(self):
+            circle = Circle()
+            square = Square()
+            triangle = Triangle()
 
-           circle.shift(LEFT)
-           square.shift(UP)
-           triangle.shift(RIGHT)
+            circle.shift(LEFT)
+            square.shift(UP)
+            triangle.shift(RIGHT)
 
-           self.add(circle, square, triangle)
-           self.wait(1)
+            self.add(circle, square, triangle)
+            self.wait(1)
 
 By default, mobjects are placed at the center of coordinates, or *origin*, when
 they are first created.  They are also given some default colors.  Further, the
@@ -111,21 +111,21 @@ There are many other possible ways to place mobjects on the screen, for example
 
 .. manim:: MobjectPlacement
 
-   class MobjectPlacement(Scene):
-       def construct(self):
-           circle = Circle()
-           square = Square()
-           triangle = Triangle()
+    class MobjectPlacement(Scene):
+        def construct(self):
+            circle = Circle()
+            square = Square()
+            triangle = Triangle()
 
-           # place the circle two units left from the origin
-           circle.move_to(LEFT * 2)
-           # place the square to the left of the circle
-           square.next_to(circle, LEFT)
-           # align the left border of the triangle to the left border of the circle
-           triangle.align_to(circle, LEFT)
+            # place the circle two units left from the origin
+            circle.move_to(LEFT * 2)
+            # place the square to the left of the circle
+            square.next_to(circle, LEFT)
+            # align the left border of the triangle to the left border of the circle
+            triangle.align_to(circle, LEFT)
 
-           self.add(circle, square, triangle)
-           self.wait(1)
+            self.add(circle, square, triangle)
+            self.wait(1)
 
 The :meth:`.move_to` method uses absolute units (measured relative to the
 ``ORIGIN``), while :meth:`.next_to` uses relative units (measured from the
@@ -139,14 +139,14 @@ bounding box around it.
 
          .. code-block:: python
 
-            square = Square()
-            square.shift(LEFT)
+             square = Square()
+             square.shift(LEFT)
 
          can be replaced by
 
          .. code-block:: python
 
-            square = Square().shift(LEFT)
+             square = Square().shift(LEFT)
 
          Technically, this is possible because most methods calls return the modified mobject.
 
@@ -158,18 +158,18 @@ The following scene changes the default aesthetics of the mobjects.
 
 .. manim:: MobjectStyling
 
-   class MobjectStyling(Scene):
-       def construct(self):
-           circle = Circle().shift(LEFT)
-           square = Square().shift(UP)
-           triangle = Triangle().shift(RIGHT)
+    class MobjectStyling(Scene):
+        def construct(self):
+            circle = Circle().shift(LEFT)
+            square = Square().shift(UP)
+            triangle = Triangle().shift(RIGHT)
 
-           circle.set_stroke(color=GREEN, width=20)
-           square.set_fill(YELLOW, opacity=1.0)
-           triangle.set_fill(PINK, opacity=0.5)
+            circle.set_stroke(color=GREEN, width=20)
+            square.set_fill(YELLOW, opacity=1.0)
+            triangle.set_fill(PINK, opacity=0.5)
 
-           self.add(circle, square, triangle)
-           self.wait(1)
+            self.add(circle, square, triangle)
+            self.wait(1)
 
 This scene uses two of the main functions that change the visual style of a
 mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
@@ -193,18 +193,18 @@ previous section, except for exactly one line.
 
 .. manim:: MobjectZOrder
 
-   class MobjectZOrder(Scene):
-       def construct(self):
-           circle = Circle().shift(LEFT)
-           square = Square().shift(UP)
-           triangle = Triangle().shift(RIGHT)
+    class MobjectZOrder(Scene):
+        def construct(self):
+            circle = Circle().shift(LEFT)
+            square = Square().shift(UP)
+            triangle = Triangle().shift(RIGHT)
 
-           circle.set_stroke(color=GREEN, width=20)
-           square.set_fill(YELLOW, opacity=1.0)
-           triangle.set_fill(PINK, opacity=0.5)
+            circle.set_stroke(color=GREEN, width=20)
+            square.set_fill(YELLOW, opacity=1.0)
+            triangle.set_fill(PINK, opacity=0.5)
 
-           self.add(triangle, square, circle)
-           self.wait(1)
+            self.add(triangle, square, circle)
+            self.wait(1)
 
 The only difference here (besides the scene name) is the order in which the
 mobjects are added to the scene.  In ``MobjectStyling``, we added them as
@@ -225,21 +225,21 @@ your scene by calling the :meth:`~.Scene.play` method.
 
 .. manim:: SomeAnimations
 
-   class SomeAnimations(Scene):
-       def construct(self):
-           square = Square()
-           self.add(square)
+    class SomeAnimations(Scene):
+        def construct(self):
+            square = Square()
+            self.add(square)
 
-           # some animations display mobjects, ...
-           self.play(FadeIn(square))
+            # some animations display mobjects, ...
+            self.play(FadeIn(square))
 
-           # ... some move or rotate mobjects around...
-           self.play(Rotate(square, PI/4))
+            # ... some move or rotate mobjects around...
+            self.play(Rotate(square, PI/4))
 
-           # some animations remove mobjects from the screen
-           self.play(FadeOut(square))
+            # some animations remove mobjects from the screen
+            self.play(FadeOut(square))
 
-           self.wait(1)
+            self.wait(1)
 
 Put simply, animations are procedures that interpolate between two mobjects.
 For example, :code:`FadeIn(square)` starts with a fully transparent version of
@@ -256,28 +256,27 @@ Animating methods
 
 Any property of a mobject that can be changed can be animated.  In fact, any
 method that changes a mobject's property can be used as an animation, through
-the use of :class:`.ApplyMethod`.
+the use of :meth:`.animate`.
 
-.. manim:: ApplyMethodExample
+.. manim:: AnimateExample
+    :ref_classes: Animation
 
-   class ApplyMethodExample(Scene):
-       def construct(self):
-           square = Square().set_fill(RED, opacity=1.0)
-           self.add(square)
+    class AnimateExample(Scene):
+        def construct(self):
+            square = Square().set_fill(RED, opacity=1.0)
+            self.add(square)
 
-           # animate the change of color
-           self.play(ApplyMethod(square.set_fill, WHITE))
-           self.wait(1)
+            # animate the change of color
+            self.play(square.animate.set_fill(WHITE))
+            self.wait(1)
 
-           # animate the change of position
-           self.play(ApplyMethod(square.shift, UP))
-           self.wait(1)
+            # animate the change of position and the rotation at the same time
+            self.play(square.animate.shift(UP).rotate(PI / 3))
+            self.wait(1)
 
-:meth:`.ApplyMethod` receives one mandatory argument which is the method of the
-mobject to animate (e.g. :code:`square.set_fill` or :code:`square.shift`), and
-any number of optional arguments which are then passed to the method call.  For
-example, :code:`ApplyMethod(square.shift, UP)` executes
-:code:`square.shift(UP)`, but animates it instead of applying it immediately.
+:meth:`.animate` is a property of all mobjects that animates the methods that come 
+afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
+the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
 
 Animation run time
 ==================
@@ -287,12 +286,83 @@ Use the :code:`run_time` argument to control the duration.
 
 .. manim:: RunTime
 
-   class RunTime(Scene):
-       def construct(self):
-           square = Square()
-           self.add(square)
-	   self.play(ApplyMethod(square.shift, UP), run_time=3)
-	   self.wait(1)
+    class RunTime(Scene):
+        def construct(self):
+            square = Square()
+            self.add(square)
+            self.play(square.animate.shift(UP), run_time=3)
+            self.wait(1)
+
+Creating a custom animation
+===========================
+
+Even though Manim has many built-in animations, you will find times when you need to smoothly animate from one state of a :class:`~.Mobject` to another.
+If you find yourself in that situation, then you can define your own custom animation.
+You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate_mobject`.
+The :meth:`~.Animation.interpolate_mobject` method receives alpha as a parameter that starts at 0 and changes throughout the animation.
+So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate_mobject method.
+Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions.
+
+Let's say you start with a number and want to create a :class:`~.Transform` animation that transforms it to a target number.
+You can do it using :class:`~.FadeTransform`, which will fade out the starting number and fade in the target number.
+But when we think about transforming a number from one to another, an intuitive way of doing it is by incrementing or decrementing it smoothly.
+Manim has a feature that allows you to customize this behavior by defining your own custom animation.
+
+You can start by creating your own ``Count`` class that extends :class:`~.Animation`.
+The class can have a constructor with three arguments, a :class:`~.DecimalNumber` Mobject, start, and end.
+The constructor will pass the :class:`~.DecimalNumber` Mobject to the super constructor (in this case, the :class:`~.Animation` constructor) and will set start and end.
+
+The only thing that you need to do is to define how you want it to look at every step of the animation.
+Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function, and run time of animation played.
+The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation.
+For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation.
+
+In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the ``Count`` animation.
+Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation.
+
+* If alpha is 0, you want the value to be 50.
+* If alpha is 0.5, you want the value to be 75.
+* If alpha is 1, you want the value to be 100.
+
+Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value.
+So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50).
+Once you set the calculated value for the :class:`~.DecimalNumber`, you are done.
+
+Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
+
+.. manim:: CountingScene
+    :ref_classes: Animation DecimalNumber
+    :ref_methods: Animation.interpolate_mobject Scene.play
+
+    class Count(Animation):
+        def __init__(self, number: DecimalNumber, start: float, end: float, **kwargs) -> None:
+            # Pass number as the mobject of the animation
+            super().__init__(number,  **kwargs)
+            # Set start and end
+            self.start = start
+            self.end = end
+
+        def interpolate_mobject(self, alpha: float) -> None:
+            # Set value of DecimalNumber according to alpha
+            value = self.start + (alpha * (self.end - self.start))
+            self.mobject.set_value(value)
+
+
+    class CountingScene(Scene):
+        def construct(self):
+            # Create Decimal Number and add it to scene
+            number = DecimalNumber().set_color(WHITE).scale(5)
+            # Add an updater to keep the DecimalNumber centered as its value changes
+            number.add_updater(lambda number: number.move_to(ORIGIN))
+
+            self.add(number)
+
+            self.wait()
+
+            # Play the Count Animation to count from 0 to 100 in 4 seconds
+            self.play(Count(number, 0, 100), run_time=4, rate_func=linear)
+
+            self.wait()
 
 Using coordinates of a mobject
 ==============================
