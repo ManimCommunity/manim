@@ -1576,7 +1576,8 @@ class NumberPlane(Axes):
 
         # TODO this was added so that we can run tests on NumberPlane
         # In the future these attributes will be tacked onto self.background_lines
-
+        self.x_lines = x_lines1
+        self.y_lines = y_lines1
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
 
@@ -1620,7 +1621,7 @@ class NumberPlane(Axes):
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
         # min/max used in case range does not include 0. i.e. if (2,6):
-        # the range becomes (0,4), not (0,6), to produce the corrent amount of lines
+        # the range becomes (0,4), not (0,6), to produce the correct number of lines
         ranges = (
             np.arange(
                 0,

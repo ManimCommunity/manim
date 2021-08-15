@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pytest
 
@@ -44,7 +46,7 @@ def test_abstract_base_class():
 
 
 def test_NumberPlane():
-    """Test that basic attributes of NumberPlane are correct"""
+    """Test that NumberPlane generates the correct number of lines when its ranges do not cross 0."""
     pos_x_range = (0, 7)
     neg_x_range = (-7, 0)
 
@@ -75,7 +77,11 @@ def test_NumberPlane():
             axis_config={"include_numbers": True},
         )
 
-        print(x_range, x_start, x_end)
-        print(y_range, y_start, y_end)
-        assert len(plane.x_lines) == abs(x_end - x_start)
-        assert len(plane.y_lines) == abs(y_end - y_start)
+        # normally these values would be need to be added by one to pass since there's an
+        # overlapping pair of lines at the origin, but since these planes do not cross 0,
+        # this is not needed.
+        num_y_lines = math.ceil(x_end - x_start)
+        num_x_lines = math.floor(y_end - y_start)
+
+        assert len(plane.y_lines) == num_y_lines
+        assert len(plane.x_lines) == num_x_lines
