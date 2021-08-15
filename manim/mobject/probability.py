@@ -378,7 +378,7 @@ class BarChart(Axes):
         self.add_to_back(self.bars)
 
     def add_x_labels(self):
-        if self.x_labels is not None:
+        if self.x_labels is not None or self.bar_names is None:
             return
         self.x_labels = VGroup()
 
