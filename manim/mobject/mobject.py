@@ -2825,8 +2825,6 @@ def override_animate(method):
 
     .. manim:: AnimationOverrideExample
 
-        from manim import Circle, Scene, Create, Text, Uncreate, VGroup
-
         class CircleWithContent(VGroup):
             def __init__(self, content):
                 super().__init__()
