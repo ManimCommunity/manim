@@ -6,6 +6,8 @@ Inheritance Graph
 -----------------
 
 .. inheritance-diagram::
+   :toctree: ../reference
+   
    manim.animation.animation
    manim.animation.composition
    manim.animation.creation
