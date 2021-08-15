@@ -311,7 +311,6 @@ class Plane(ThreeDVMobject):
         **kwargs
     ):
         normal_vect = np.array(normal_vect)
-        hyp = np.hypot(*[sidelength] * 2) / 2 ** 0.5 / 2
         super().__init__(
             color=color,
             fill_opacity=fill_opacity,
@@ -319,11 +318,11 @@ class Plane(ThreeDVMobject):
         )
         self.set_points_as_corners(
             [
-                UR * hyp,
-                DR * hyp,
-                DL * hyp,
-                UL * hyp,
-                UR * hyp,
+                UR * sidelength / 2,
+                DR * sidelength / 2,
+                DL * sidelength / 2,
+                UL * sidelength / 2,
+                UR * sidelength / 2,
             ]
         )
         spherical = cartesian_to_spherical(normal_vect)
