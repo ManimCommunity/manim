@@ -1,7 +1,7 @@
 Google Colaboratory
 ===================
 
-You can install Colab by running the following in a cell:
+You can install Manim in a Google Colaboratory environment by running the following in a cell:
 
 .. code-block::
 
