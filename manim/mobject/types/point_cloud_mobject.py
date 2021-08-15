@@ -16,7 +16,6 @@ from ...utils.color import (
     BLACK,
     WHITE,
     YELLOW,
-    YELLOW_C,
     color_gradient,
     color_to_rgba,
     rgba_to_color,
@@ -63,6 +62,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
         self.stroke_width = stroke_width
+        self.rgbas = None
+        self.points = None
         if config["renderer"] == "opengl":
             kwargs["render_primitive"] = moderngl.POINTS
         super().__init__(**kwargs)
@@ -171,10 +172,12 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             mob.apply_over_attr_arrays(lambda arr: arr[indices])
         return self
 
-    def fade_to(self, color, alpha):
+    def fade_to(self, color, alpha, family=True):
         self.rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
-            mob.fade_to(color, alpha)
+            mob.fade_to(color, alpha, family)
+        if config["renderer"] == "opengl":
+            self.set_rgba_array_direct(self.rgbas)
         return self
 
     def get_all_rgbas(self):
@@ -300,6 +303,11 @@ class PGroup(PMobject):
             raise ValueError("All submobjects must be of type PMobject")
         super().__init__(**kwargs)
         self.add(*pmobs)
+
+    def fade_to(self, color, alpha, family=True):
+        if family:
+            for mob in self.submobjects:
+                mob.fade_to(color, alpha, family)
 
 
 class PointCloudDot(Mobject1D):
