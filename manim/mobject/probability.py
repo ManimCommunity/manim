@@ -229,7 +229,7 @@ class BarChart(Axes):
         x_label_buff=None,
         x_label_scale_value: Optional[float] = None,
         y_length: Optional[float] = config["frame_height"] - 4,
-        y_max_value: Optional[float] = None,
+        y_range: Optional[Sequence[float]] = None,
         y_step: Optional[float] = None,
         y_include_numbers: Optional[bool] = True,
         y_number_scale_value: Optional[float] = 0.75,
@@ -253,7 +253,7 @@ class BarChart(Axes):
         self.x_label_buff = x_label_buff
         self.x_label_scale_value = x_label_scale_value
         self.y_length = y_length
-        self.y_max_value = y_max_value
+        self.y_range = y_range
         self.y_step = y_step
         self.y_include_numbers = y_include_numbers
         self.y_number_scale_value = y_number_scale_value
@@ -270,6 +270,8 @@ class BarChart(Axes):
         self.y_axis_config = {
             "include_numbers": self.y_include_numbers,
             "number_scale_value": self.y_number_scale_value,
+            "exclude_origin_tick": False,
+            "numbers_to_exclude": None,
         }
 
         self.bars = None
@@ -289,11 +291,14 @@ class BarChart(Axes):
         if self.y_step is None:
             self.y_step = round(max(self.values) / self.y_length, 2)
 
-        if self.y_max_value is None:
-            self.y_max_value = max(self.values)
-
         self.x_range = [0, len(self.values), 1]
-        self.y_range = [0, self.y_max_value, self.y_step]
+
+        if self.y_range is None:
+            self.y_range = [
+                min(0, min(self.values)),
+                max(0, max(self.values)),
+                self.y_step,
+            ]
 
         if self.x_length is None:
             self.x_length = min(len(self.values), config["frame_width"] - 2)
@@ -345,7 +350,8 @@ class BarChart(Axes):
                 bar_lbl.height = min(bar_lbl.height, 0.25)
             else:
                 bar_lbl.scale(scale)
-            bar_lbl.next_to(bar.get_top(), UP, buff=buff)
+            pos = UP if (value >= 0) else DOWN
+            bar_lbl.next_to(bar, pos, buff=buff)
             self.bar_labels.add(bar_lbl)
         return self.bar_labels
 
@@ -370,7 +376,7 @@ class BarChart(Axes):
         self.bars = VGroup()
 
         for i, value in enumerate(self.values):
-            bar_h = self.c2p(0, value)[1] - self.c2p(0, 0)[1]
+            bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
             bar_w = self.c2p(1 - self.bar_buff, 0)[0] - self.c2p(0, 0)[0]
             bar = Rectangle(
                 height=bar_h,
@@ -378,7 +384,9 @@ class BarChart(Axes):
                 stroke_width=self.bar_stroke_width,
                 fill_opacity=self.bar_fill_opacity,
             )
-            bar.next_to(self.c2p(i + 0.5, 0), UP, buff=0)
+
+            pos = UP if (value >= 0) else DOWN
+            bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
             self.bars.add(bar)
         if isinstance(self.bar_colors, str):
             self.bars.set_color_by_gradient(self.bar_colors)
@@ -414,17 +422,11 @@ class BarChart(Axes):
 
         for i, label in enumerate(self.x_labels):
             label.scale(self.x_label_scale_value)
+            pos = DOWN if (self.values[i] >= 0) else UP
             label.move_to(
                 self.c2p(i + 0.5, 0)
-                + DOWN * max_lbl_height * self.x_label_scale_value / 2
-                + DOWN * self.x_label_buff
+                + pos * max_lbl_height * self.x_label_scale_value / 2
+                + pos * self.x_label_buff
             )
 
         self.add(self.x_labels)
-
-    #
-    # def change_bar_values(self, values):
-    #     for bar, value in zip(self.bars, values):
-    #         bar_bottom = bar.get_bottom()
-    #         bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
-    #         bar.move_to(bar_bottom, DOWN)
