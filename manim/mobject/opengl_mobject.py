@@ -86,8 +86,9 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events = listen_to_events
 
-        self.submobjects = []
+        self.init_updaters()
         self.parents = []
+        self.submobjects = []
         self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
@@ -99,7 +100,6 @@ class OpenGLMobject:
 
         self.init_data()
         self.init_uniforms()
-        self.init_updaters()
         # self.init_event_listners()
         self.init_points()
         self.init_colors()
@@ -1824,6 +1824,15 @@ class OpenGLMobject:
 
     def get_shader_vert_indices(self):
         return self.shader_indices
+
+    @property
+    def submobjects(self):
+        return self._submobjects
+
+    @submobjects.setter
+    def submobjects(self, submobject_list):
+        self._submobjects = submobject_list
+        self.assemble_family()
 
     # Event Handlers
     """
