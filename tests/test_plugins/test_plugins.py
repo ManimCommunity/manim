@@ -287,29 +287,25 @@ def test_plugin_custom_render_opts(tmp_path, create_plugin, python_version):
         mode="w", encoding="utf-8", suffix=".py", delete=False
     ) as tmpfile:
         tmpfile.write(test_class)
-    scene_name = "RenderOptsTest"
-    command = [
-        python_version,
-        "-m",
-        "manim",
-        "-ql",
-        "--testflag",
-        "--media_dir",
-        str(cfg_file.parent),
-        "--config_file",
-        str(cfg_file),
-        tmpfile.name,
-        scene_name,
-    ]
-    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
-    print(out)
-    print(err)
-    assert exception_text in err
+        scene_name = "RenderOptsTest"
+        command = [
+            python_version,
+            "-m",
+            "manim",
+            "-ql",
+            "--testflag",
+            "--media_dir",
+            str(cfg_file.parent),
+            "--config_file",
+            str(cfg_file),
+            tmpfile.name,
+            scene_name,
+        ]
+        out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
+        assert exception_text in err
 
-    command.remove("--testflag")
-    out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
-    print(out)
-    print(err)
-    assert exit_code == 0, err
+        command.remove("--testflag")
+        out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
+        assert exit_code == 0, err
 
-    Path(tmpfile.name).unlink()
+        Path(tmpfile.name).unlink()
