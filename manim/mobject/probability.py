@@ -262,6 +262,24 @@ class BarChart(Axes):
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
 
+        if self.y_step is None:
+            self.y_step = round(max(self.values) / self.y_length, 2)
+
+        self.x_range = [0, len(self.values), 1]
+
+        if self.y_range is None:
+            self.y_range = [
+                min(0, min(self.values)),
+                max(0, max(self.values)),
+                self.y_step,
+            ]
+        else:
+            self.y_range = self.y_range[:2]
+            self.y_range.append(self.y_step)
+
+        if self.x_length is None:
+            self.x_length = min(len(self.values), config["frame_width"] - 2)
+
         self.axis_config = {
             "stroke_color": WHITE,
             "include_tip": False,
@@ -270,9 +288,11 @@ class BarChart(Axes):
         self.y_axis_config = {
             "include_numbers": self.y_include_numbers,
             "number_scale_value": self.y_number_scale_value,
-            "exclude_origin_tick": False,
-            "numbers_to_exclude": None,
         }
+
+        if min(self.y_range) < 0:
+            self.y_axis_config["exclude_origin_tick"] = False
+            self.y_axis_config["numbers_to_exclude"] = None
 
         self.bars = None
         self.x_labels = None
@@ -287,21 +307,6 @@ class BarChart(Axes):
                 kwargs.pop("y_axis_config", None),
             ),
         )
-
-        if self.y_step is None:
-            self.y_step = round(max(self.values) / self.y_length, 2)
-
-        self.x_range = [0, len(self.values), 1]
-
-        if self.y_range is None:
-            self.y_range = [
-                min(0, min(self.values)),
-                max(0, max(self.values)),
-                self.y_step,
-            ]
-
-        if self.x_length is None:
-            self.x_length = min(len(self.values), config["frame_width"] - 2)
 
         super().__init__(
             x_range=self.x_range,
@@ -360,15 +365,6 @@ class BarChart(Axes):
 
     def get_bar_names(self):
         return self.bar_names
-
-    def hide_bars(self):
-        if self.bars is not None:
-            self.bars.set_opacity(0)
-
-    def show_bars(self):
-        if self.bars is not None:
-            self.bars.set_stroke(opacity=1)
-            self.bars.set_fill(opacity=self.bar_fill_opacity)
 
     def add_bars(self):
         if self.bars is not None:
