@@ -151,4 +151,4 @@ Plugins can add custom CLI flags by exposing a ``manimopts`` list in ``object_re
         )
     ]
 
-This should print ``Callback got value n`` upon running ``manim --flag n ...``. See `here <https://click.palletsprojects.com/en/8.0.x/api/#click.Option>`_ for documentation on command options.
+This should print ``Callback got value n`` upon running ``manim --flag n ...``. See `here <https://click.palletsprojects.com/en/8.0.x/api/#click.Option>`__ for documentation on command options.
