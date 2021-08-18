@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -54,8 +54,6 @@ from ..utils.color import (
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
-
-# TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
 
 
 class CoordinateSystem:
@@ -276,9 +274,16 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
-    ) -> VGroup:
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
+    ):
         """Adds labels to the axes.
+
+        Parameters
+        ----------
 
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
@@ -294,10 +299,16 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
-        Returns
-        -------
-        VGroup
-            A :class:`VGroup` of the number mobjects.
+        .. code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
         """
 
         self.coordinate_labels = VGroup()
@@ -306,10 +317,13 @@ class CoordinateSystem:
             axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def get_line_from_axis_to_point(
         self,
@@ -1242,7 +1256,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
+        graph = VGroup(color=line_color, **kwargs)
+
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
@@ -1455,7 +1470,7 @@ class NumberPlane(Axes):
         y_length: Optional[float] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[float] = 1,
+        faded_line_ratio: int = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -1522,6 +1537,7 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
+
         self.background_lines.set_style(
             **self.background_line_style,
         )
@@ -1550,22 +1566,29 @@ class NumberPlane(Axes):
             self.x_axis.x_step,
             self.faded_line_ratio,
         )
+
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
             self.y_axis.x_step,
             self.faded_line_ratio,
         )
+
+        # TODO this was added so that we can run tests on NumberPlane
+        # In the future these attributes will be tacked onto self.background_lines
+        self.x_lines = x_lines1
+        self.y_lines = y_lines1
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
+
         return lines1, lines2
 
     def get_lines_parallel_to_axis(
         self,
-        axis_parallel_to: Line,
-        axis_perpendicular_to: Line,
+        axis_parallel_to: NumberLine,
+        axis_perpendicular_to: NumberLine,
         freq: float,
-        ratio_faded_lines: float,
+        ratio_faded_lines: int,
     ) -> Tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
@@ -1596,10 +1619,28 @@ class NumberPlane(Axes):
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
+
+        # min/max used in case range does not include 0. i.e. if (2,6):
+        # the range becomes (0,4), not (0,6), to produce the correct number of lines
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+            np.arange(
+                0,
+                min(
+                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
+                    axis_perpendicular_to.x_max,
+                ),
+                step,
+            ),
+            np.arange(
+                0,
+                max(
+                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
+                    axis_perpendicular_to.x_min,
+                ),
+                -step,
+            ),
         )
+
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()

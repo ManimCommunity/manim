@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pytest
 
@@ -41,3 +43,45 @@ def test_abstract_base_class():
     """Check that CoordinateSystem has some abstract methods."""
     with pytest.raises(Exception):
         CS().get_axes()
+
+
+def test_NumberPlane():
+    """Test that NumberPlane generates the correct number of lines when its ranges do not cross 0."""
+    pos_x_range = (0, 7)
+    neg_x_range = (-7, 0)
+
+    pos_y_range = (2, 6)
+    neg_y_range = (-6, -2)
+
+    x_vals = [0, 1.5, 2, 2.8, 4, 6.25]
+    y_vals = [2, 5, 4.25, 6, 4.5, 2.75]
+
+    testing_data = [
+        (pos_x_range, pos_y_range, x_vals, y_vals),
+        (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]),
+        (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals),
+        (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals]),
+    ]
+
+    for test_data in testing_data:
+
+        x_range, y_range, x_vals, y_vals = test_data
+
+        x_start, x_end = x_range
+        y_start, y_end = y_range
+
+        plane = NumberPlane(
+            x_range=x_range,
+            y_range=y_range,
+            # x_length = 7,
+            axis_config={"include_numbers": True},
+        )
+
+        # normally these values would be need to be added by one to pass since there's an
+        # overlapping pair of lines at the origin, but since these planes do not cross 0,
+        # this is not needed.
+        num_y_lines = math.ceil(x_end - x_start)
+        num_x_lines = math.floor(y_end - y_start)
+
+        assert len(plane.y_lines) == num_y_lines
+        assert len(plane.x_lines) == num_x_lines
