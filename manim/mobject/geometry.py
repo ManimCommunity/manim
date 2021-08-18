@@ -89,6 +89,7 @@ from ..utils.space_ops import (
     line_intersection,
     normalize,
     perpendicular_bisector,
+    cartesian_to_spherical,
     regular_vertices,
     rotate_vector,
 )
@@ -177,7 +178,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(angles[2] - PI - tip.tip_angle)
+        axis = [np.sin(angles[2]), -np.cos(angles[2]), 0]
+        tip.rotate(-angles[1] + PI / 2, axis=axis)
         tip.shift(anchor - tip.tip_point)
         return tip
 
