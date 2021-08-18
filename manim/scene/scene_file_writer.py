@@ -29,7 +29,6 @@ from ..utils.file_ops import (
 )
 from ..utils.sounds import get_full_sound_file_path
 
-
 class SceneFileWriter(object):
     """
     SceneFileWriter is the object that actually writes the animations
@@ -47,6 +46,8 @@ class SceneFileWriter(object):
             List of all the partial-movie files.
 
     """
+
+    force_output_as_scene_name = False
 
     def __init__(self, renderer, scene_name, **kwargs):
         self.renderer = renderer
@@ -74,7 +75,9 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"] and not config["write_all"]:
+        if SceneFileWriter.force_output_as_scene_name:
+            default_name = Path(scene_name)
+        elif config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
