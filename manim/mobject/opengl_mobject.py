@@ -45,6 +45,8 @@ class OpenGLMobject:
         ("point", np.float32, (3,)),
     ]
     shader_folder = ""
+
+    # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
     points = _Data()
     bounding_box = _Data()
     rgbas = _Data()
@@ -123,6 +125,8 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def init_data(self):
+        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
+        Subclasses can inherit and overwrite this method to extend `self.data`."""
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))

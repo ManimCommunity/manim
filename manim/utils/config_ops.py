@@ -47,6 +47,10 @@ class DictAsObject(object):
 
 
 class _Data:
+    """Descriptor that allows _Data variables to be grouped and accessed from self.data["attr"] via self.attr.
+    self.data attributes must be arrays.
+    """
+
     def __set_name__(self, obj, name):
         self.name = name
 
@@ -58,6 +62,10 @@ class _Data:
 
 
 class _Uniforms:
+    """Descriptor that allows _Uniforms variables to be grouped from self.uniforms["attr"] via self.attr.
+    self.uniforms attributes must be floats.
+    """
+
     def __set_name__(self, obj, name):
         self.name = name
 

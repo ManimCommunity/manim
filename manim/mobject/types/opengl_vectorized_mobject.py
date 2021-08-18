@@ -134,7 +134,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.fill_rgba = np.zeros((1, 4))
         self.stroke_rgba = np.zeros((1, 4))
         self.unit_normal = np.zeros((1, 3))
-        # stroke_width is defined through init_colors+set_stroke
+        # stroke_width belongs to self.data, but is defined through init_colors+set_stroke
 
     # Colors
     def init_colors(self):
