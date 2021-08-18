@@ -72,5 +72,5 @@ class _Uniforms:
     def __get__(self, obj, owner):
         return obj.__dict__["uniforms"][self.name]
 
-    def __set__(self, obj, array: np.ndarray):
-        obj.__dict__["uniforms"][self.name] = array
+    def __set__(self, obj, num: float):
+        obj.__dict__["uniforms"][self.name] = num
