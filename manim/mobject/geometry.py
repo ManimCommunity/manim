@@ -85,11 +85,11 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
+    cartesian_to_spherical,
     compass_directions,
     line_intersection,
     normalize,
     perpendicular_bisector,
-    cartesian_to_spherical,
     regular_vertices,
     rotate_vector,
 )
