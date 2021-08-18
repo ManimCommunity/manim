@@ -29,6 +29,7 @@ from ..utils.file_ops import (
 )
 from ..utils.sounds import get_full_sound_file_path
 
+
 class SceneFileWriter(object):
     """
     SceneFileWriter is the object that actually writes the animations
