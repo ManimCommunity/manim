@@ -88,6 +88,7 @@ class OpenGLMobject:
 
         self.init_updaters()
         self.parents = []
+
         self.submobjects = []
         self.parent = None
         self.family = [self]
@@ -1831,8 +1832,10 @@ class OpenGLMobject:
 
     @submobjects.setter
     def submobjects(self, submobject_list):
-        self._submobjects = submobject_list
-        self.assemble_family()
+        if not hasattr(self, "submobjects"):
+            self._submobjects = submobject_list
+        else:
+            self.set_submobjects(submobject_list)
 
     # Event Handlers
     """
