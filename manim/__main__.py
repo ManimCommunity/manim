@@ -20,7 +20,7 @@ def exit_early(ctx, param, value):
 console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 console.print(
-    f"For more information about rendering and configuration, use manim render --help or manim cfg --help\n"
+    "For more information about rendering and configuration, use manim render --help or manim cfg --help\n"
 )
 
 
