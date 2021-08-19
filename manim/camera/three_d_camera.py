@@ -181,7 +181,7 @@ class ThreeDCamera(Camera):
             from the ORIGIN to the Camera in radians
         """
         return self.gamma_tracker.get_value()
-    
+
     def get_zoom(self):
         """Returns the zoom amount of the camera.
 
