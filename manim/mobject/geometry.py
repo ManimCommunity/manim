@@ -179,9 +179,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             handle = self.get_last_handle()
             anchor = self.get_end()
         angles = cartesian_to_spherical(handle - anchor)
-        tip.rotate(angles[2] - PI - tip.tip_angle)
-        axis = [np.sin(angles[2]), -np.cos(angles[2]), 0]
-        tip.rotate(-angles[1] + PI / 2, axis=axis)
+        tip.rotate(angles[2] - PI - tip.tip_angle) # Rotates the tip along the azimuthal
+        axis = [np.sin(angles[2]), -np.cos(angles[2]), 0] # Obtains the perpendicular of the tip
+        tip.rotate(-angles[1] + PI / 2, axis=axis) # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
 
