@@ -416,48 +416,6 @@ class NumberLine(Line):
             return 0
         return len(step.split(".")[-1])
 
-    def add_labels(
-        self,
-        dict_values: Dict[float, Union[str, float, "Mobject"]],
-        direction=None,
-        buff=None,
-    ):
-        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."""
-        if direction is None:
-            direction = self.label_direction
-        if buff is None:
-            buff = self.line_to_number_buff
-
-        labels = VGroup()
-        for x, label in dict_values.items():
-
-            label = self.create_label_tex(label)
-            label.scale(self.number_scale_value)
-            label.next_to(self.number_to_point(x), direction=direction, buff=buff)
-            labels.add(label)
-
-        self.labels = labels
-        self.add(labels)
-        return self
-
-    @staticmethod
-    def create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
-        Parameters
-        ----------
-        label_tex : The label to be compared against the above types.
-        Returns
-        -------
-        :class:`~.Mobject`
-            The label.
-        """
-
-        if isinstance(label_tex, float) or isinstance(label_tex, int):
-            label_tex = MathTex(label_tex)
-        elif isinstance(label_tex, str):
-            label_tex = Tex(label_tex)
-        return label_tex
-
 
 class UnitInterval(NumberLine):
     def __init__(
