@@ -21,7 +21,7 @@
 
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
-> NOTE: This repository is maintained by the Manim Community, and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
+> NOTE: This repository is maintained by the Manim Community and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
 
 ## Table of Contents:
 
@@ -34,15 +34,16 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 -  [License](#license)
 
 ## Installation
+
 > **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
-        
+
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
 [in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
 For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
-       
+
 ## Usage
 
 Manim is an extremely versatile package. The following is an example `Scene` you can construct:
@@ -110,31 +111,41 @@ The community also maintains a docker image (`manimcommunity/manim`), which can 
 
 #### Quick Example
 To render a scene `CircleToSquare` in a file `test_scenes.py` contained in your current working directory while preserving your user and group ID, use
-```
+
+```sh
 docker run --rm -it  --user="$(id -u):$(id -g)" -v "$(pwd)":/manim manimcommunity/manim manim test_scenes.py CircleToSquare -qm
 ```
 
 #### Running the image in the background
+
 Instead of using the "throwaway container" approach sketched above, you can also create a named container that you can also modify to your liking. First, run
-```
+
+```sh
 docker run -it --name my-manim-container -v "$(pwd):/manim" manimcommunity/manim /bin/bash
 ```
+
 to obtain an interactive shell inside your container allowing you to, e.g., install further dependencies (like texlive packages using `tlmgr`). Exit the container as soon as you are satisfied. Then, before using it, start the container by running
-```
+
+```sh
 docker start my-manim-container
 ```
+
 Then, to render a scene `CircleToSquare` in a file `test_scenes.py`, call
-```
+
+```sh
 docker exec -it --user="$(id -u):$(id -g)" my-manim-container manim test.py CircleToSquare -qm
 ```
 
 #### Jupyterlab
+
 Another alternative is to use the docker image to spin up a local webserver running
 JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic.
 To use JupyterLab, run
-```
+
+```sh
 docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
 ```
+
 and then follow the instructions in the terminal.
 
 #### Important notes
@@ -161,7 +172,7 @@ Currently, the best way to cite Manim is to reference the
 [Manim home page](https://www.manim.community) using this BibTeX entry (the
 entry is for release `v0.9.0`, but can be adapted easily):
 
-```
+```BibTeX
 @Manual{Manim:v0.9.0,
   key =          {Manim},
   author =       {{The Manim Community Developers}},
