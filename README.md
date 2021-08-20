@@ -37,12 +37,9 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 > **WARNING:** These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/installation/versions.html) and decide which version you wish to install, then only follow the instructions for your desired version.
 
-Manim requires a few dependencies that must be installed prior to using it. If you
-want to try it out first before installing it locally, you can do so
-[in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
+Manim requires a few dependencies that must be installed prior to using it. If you want to try it out first before installing it locally, you can do so [in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
-For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
-and follow the appropriate instructions for your operating system.
+For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html) and follow the appropriate instructions for your operating system.
 
 ## Usage
 
@@ -71,13 +68,9 @@ In order to view the output of this scene, save the code in a file called `examp
 manim -p -ql example.py SquareToCircle
 ```
 
-You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
-[GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
+You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this [GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
-Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-
-[corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and
-[try it out online](https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb).
+Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the [corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and [try it out online](https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb).
 
 ## Command line arguments
 
@@ -138,9 +131,7 @@ docker exec -it --user="$(id -u):$(id -g)" my-manim-container manim test.py Circ
 
 #### Jupyterlab
 
-Another alternative is to use the docker image to spin up a local webserver running
-JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic.
-To use JupyterLab, run
+Another alternative is to use the docker image to spin up a local webserver running JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic. To use JupyterLab, run
 
 ```sh
 docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
@@ -154,8 +145,7 @@ When executing `manim` within a Docker container, several command line flags (in
 
 ## Help with Manim
 
-If you need help installing or using Manim, feel free to reach out to our [Discord
-Server](https://www.manim.community/discord/) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
+If you need help installing or using Manim, feel free to reach out to our [Discord Server](https://www.manim.community/discord/) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
 
 ## Contributing
 
@@ -165,12 +155,7 @@ Most developers on the project use [Poetry](https://python-poetry.org/docs/) for
 
 ## How to Cite Manim
 
-We acknowledge the importance of good software to support research, and we note
-that research becomes more valuable when it is communicated effectively. To
-demonstrate the value of Manim, we ask that you cite Manim in your work.
-Currently, the best way to cite Manim is to reference the
-[Manim home page](https://www.manim.community) using this BibTeX entry (the
-entry is for release `v0.9.0`, but can be adapted easily):
+We acknowledge the importance of good software to support research, and we note that research becomes more valuable when it is communicated effectively. To demonstrate the value of Manim, we ask that you cite Manim in your work. Currently, the best way to cite Manim is to reference the [Manim home page](https://www.manim.community) using this BibTeX entry (the entry is for release `v0.9.0`, but can be adapted easily):
 
 ```BibTeX
 @Manual{Manim:v0.9.0,
