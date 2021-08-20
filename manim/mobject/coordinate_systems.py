@@ -283,7 +283,7 @@ class CoordinateSystem:
             The positioned label along the given axis.
         """
 
-        label = self.create_label_tex(label)
+        label = self._create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
@@ -650,7 +650,7 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        label = self.create_label_tex(label)
+        label = self._create_label_tex(label)
         color = color or graph.get_color()
         label.set_color(color)
 
@@ -1003,11 +1003,11 @@ class CoordinateSystem:
 
         labels = VGroup()
         if dx_label is not None:
-            group.dx_label = self.create_label_tex(dx_label)
+            group.dx_label = self._create_label_tex(dx_label)
             labels.add(group.dx_label)
             group.add(group.dx_label)
         if dy_label is not None:
-            group.df_label = self.create_label_tex(dy_label)
+            group.df_label = self._create_label_tex(dy_label)
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -1141,7 +1141,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self.create_label_tex(label).set_color(label_color)
+            t_label = self._create_label_tex(label).set_color(label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
