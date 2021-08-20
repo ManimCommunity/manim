@@ -1507,6 +1507,7 @@ class NumberPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
         # init
+        print(x_length)
         super().__init__(
             x_range=x_range,
             y_range=y_range,
@@ -1516,12 +1517,6 @@ class NumberPlane(Axes):
             y_axis_config=self.y_axis_config,
             **kwargs,
         )
-
-        # dynamically adjusts x_length and y_length so that the unit_size is one by default
-        if x_length is None:
-            x_length = self.x_range[1] - self.x_range[0]
-        if y_length is None:
-            y_length = self.y_range[1] - self.y_range[0]
 
         self.init_background_lines()
 
