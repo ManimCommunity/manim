@@ -194,7 +194,7 @@ class CoordinateSystem:
         Parameters
         ----------
         label
-            The label. Can be any mobject or `float/str` to be used with :class:`~.MathTex`
+            The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
@@ -239,7 +239,7 @@ class CoordinateSystem:
         Parameters
         ----------
         label
-            The label. Can be any mobject or `float/str` to be used with :class:`~.MathTex`
+            The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
@@ -295,7 +295,7 @@ class CoordinateSystem:
         Parameters
         ----------
         label
-            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+            The label.Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         axis
             The axis to which the label will be added.
         edge
@@ -320,7 +320,7 @@ class CoordinateSystem:
         self,
         x_label: Union[float, str, "Mobject"] = "x",
         y_label: Union[float, str, "Mobject"] = "y",
-    ) -> "VGroup":
+    ) -> VGroup:
         """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and `:meth:`get_y_axis_label`.
 
@@ -673,22 +673,42 @@ class CoordinateSystem:
         """Creates a properly positioned label for the passed graph,
         styled with parameters and an optional dot.
 
+        Examples
+        --------
+
+        .. manim:: GetGraphLabelExample
+            :save_last_frame:
+
+            class GetGraphLabelExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
+                    label = ax.get_graph_label(
+                        graph=sin,
+                        label=r"x = \frac{\pi}{2}",
+                        x_val=PI / 2,
+                        dot=True,
+                        direction=UR,
+                    )
+
+                    self.add(ax, sin, label)
+
         Parameters
         ----------
         graph
-            The curve of the function plotted.
+            The curve.
         label
-            The label for the function's curve. Written with :class:`MathTex` if not specified otherwise.
+            The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         x_val
-            The x_value with which the label should be aligned.
+            The x_value on the curve that positions the label.
         direction
             The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
         buff
-            The buffer space between the curve and the label.
+            The distance between the curve and the label.
         color
-            The color of the label.
+            The color of the label. Defaults to the color of the curve.
         dot
-            Adds a dot at the given point on the graph.
+            Whether to add a dot at the point on the graph.
         dot_config
             Additional parameters to be passed to :class:`~.Dot`.
 
@@ -717,7 +737,9 @@ class CoordinateSystem:
         label.shift_onto_screen()
 
         if dot:
-            label.add(Dot(point=point, **dot_config))
+            dot = Dot(point=point, **dot_config)
+            label.add(dot)
+            label.dot = dot
         return label
 
     # calculus
