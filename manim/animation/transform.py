@@ -73,7 +73,6 @@ class Transform(Animation):
     @path_arc.setter
     def path_arc(self, path_arc: float) -> None:
         self._path_arc = path_arc
-        print(self.path_arc_centers)
         self._path_func = path_along_arc(
             self._path_arc, self.path_arc_axis, self.path_arc_centers
         )
