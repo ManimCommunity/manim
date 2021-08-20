@@ -177,10 +177,24 @@ class CoordinateSystem:
     ) -> "Mobject":
         """Generate an x-axis label.
 
+        Examples
+        --------
+
+        .. manim:: GetXAxisLabelExample
+            :save_last_frame:
+
+            class GetXAxisLabelExample(Scene):
+                def construct(self):
+                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
+                    x_label = ax.get_x_axis_label(
+                        Tex("X-Values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
+                    )
+                    self.add(ax, x_label)
+
         Parameters
         ----------
         label
-            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+            The label. Can be any mobject or `float/str` to be used with :class:`~.MathTex`
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
@@ -195,7 +209,7 @@ class CoordinateSystem:
             The positioned label.
         """
         return self._get_axis_label(
-            label, self.get_x_axis(), edge, direction, buff=buff ** kwargs
+            label, self.get_x_axis(), edge, direction, buff=buff, **kwargs
         )
 
     def get_y_axis_label(
@@ -208,10 +222,24 @@ class CoordinateSystem:
     ):
         """Generate a y-axis label.
 
+        .. manim:: GetYAxisLabelExample
+            :save_last_frame:
+
+            class GetYAxisLabelExample(Scene):
+                def construct(self):
+                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
+                    y_label = ax.get_y_axis_label(
+                        Tex("Y-Values").scale(0.65).rotate(90 * DEGREES),
+                        edge=LEFT,
+                        direction=LEFT,
+                        buff=0.3,
+                    )
+                    self.add(ax, y_label)
+
         Parameters
         ----------
         label
-            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+            The label. Can be any mobject or `float/str` to be used with :class:`~.MathTex`
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
@@ -284,7 +312,7 @@ class CoordinateSystem:
         """
 
         label = self._create_label_tex(label)
-        label.next_to(axis.get_edge_center(edge), direction, buff=buff)
+        label.next_to(axis.get_edge_center(edge), direction=direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
