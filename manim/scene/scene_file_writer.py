@@ -290,9 +290,14 @@ class SceneFileWriter(object):
                 self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
                 target_dir, extension = os.path.splitext(self.image_file_path)
-                Image.fromarray(frame).save(
-                    f"{target_dir}{self.frame_count}{extension}"
-                )
+                if config["zero_pad"]:
+                    Image.fromarray(frame).save(
+                        f"{target_dir}{str(self.frame_count).zfill(config['zero_pad'])}{extension}"
+                    )
+                else:
+                    Image.fromarray(frame).save(
+                        f"{target_dir}{self.frame_count}{extension}"
+                    )
                 self.frame_count += 1
 
     def save_final_image(self, image):
