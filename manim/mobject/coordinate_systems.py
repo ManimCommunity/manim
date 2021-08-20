@@ -1823,10 +1823,6 @@ class PolarPlane(Axes):
             **kwargs,
         )
 
-        # dynamically adjusts size so that the unit_size is one by default
-        if size is None:
-            size = 0
-
         self.init_background_lines()
 
     def init_background_lines(self):
