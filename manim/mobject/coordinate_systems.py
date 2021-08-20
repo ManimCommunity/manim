@@ -33,13 +33,7 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import (
-    Mobject,
-    VDict,
-    VectorizedPoint,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -874,7 +868,6 @@ class CoordinateSystem:
         group = VGroup()
 
         dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
-        dx_line_color = dx_line_color
         dy_line_color = dy_line_color or graph.get_color()
 
         p1 = self.input_to_graph_point(x, graph)
@@ -916,7 +909,6 @@ class CoordinateSystem:
             group.df_label.set_color(group.df_line.get_color())
 
         if include_secant_line:
-            secant_line_color = secant_line_color
             group.secant_line = Line(p1, p2, color=secant_line_color)
             group.secant_line.scale_in_place(
                 secant_line_length / group.secant_line.get_length()
@@ -1517,12 +1509,6 @@ class NumberPlane(Axes):
             **kwargs,
         )
 
-        # dynamically adjusts x_length and y_length so that the unit_size is one by default
-        if x_length is None:
-            x_length = self.x_range[1] - self.x_range[0]
-        if y_length is None:
-            y_length = self.y_range[1] - self.y_range[0]
-
         self.init_background_lines()
 
     def init_background_lines(self):
@@ -1853,10 +1839,6 @@ class PolarPlane(Axes):
             axis_config=self.radius_config,
             **kwargs,
         )
-
-        # dynamically adjusts size so that the unit_size is one by default
-        if size is None:
-            size = 0
 
         self.init_background_lines()
 

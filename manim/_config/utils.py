@@ -295,6 +295,7 @@ class ManimConfig(MutableMapping):
         "window_monitor",
         "write_all",
         "write_to_movie",
+        "zero_pad",
     }
 
     def __init__(self) -> None:
@@ -438,6 +439,15 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be {lo} <= {key} <= {hi}")
 
+    def _set_int_between(self, key: str, val: int, lo: int, hi: int) -> None:
+        """Set ``key`` to ``val`` if lo <= val <= hi."""
+        if lo <= val <= hi:
+            self._d[key] = val
+        else:
+            raise ValueError(
+                f"{key} must be an integer such that {lo} <= {key} <= {hi}"
+            )
+
     def _set_pos_number(self, key: str, val: int, allow_inf: bool) -> None:
         """Set ``key`` to ``val`` if ``val`` is a positive integer."""
         if isinstance(val, int) and val > -1:
@@ -541,6 +551,7 @@ class ManimConfig(MutableMapping):
             "pixel_height",
             "pixel_width",
             "window_monitor",
+            "zero_pad",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -675,6 +686,7 @@ class ManimConfig(MutableMapping):
             "fullscreen",
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
+            "zero_pad",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1223,6 +1235,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["use_projection_stroke_shaders"],
         lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
         doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+    )
+
+    zero_pad = property(
+        lambda self: self._d["zero_pad"],
+        lambda self, val: self._set_int_between("zero_pad", val, 0, 9),
+        doc="PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum).",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
