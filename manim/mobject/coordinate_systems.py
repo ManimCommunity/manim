@@ -1210,19 +1210,36 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             result += axis.number_to_point(coord) - origin
         return result
 
-    def point_to_coords(self, point: float) -> Tuple:
-        """Transforms the coordinates of the point which are with respect to ``manim``'s default
-        basis into the coordinates of that point with respect to the basis defined by :class:`Axes`.
+    def point_to_coords(self, point: Sequence[float]) -> Tuple[float]:
+        """Accepts a point from the scene and returns the respective coordinates with respect to the axes.
+
+        Examples
+        -------
+
+        .. manim::
+            :save_last_frame:
+
+            class PointToCoordsExample(Scene):
+                def construct(self):
+                    ax = Axes(x_range=[0, 10, 2]).add_coordinates()
+                    circ = Circle(radius=0.5).shift(UR * 2)
+
+                    # get the coordinates of the circle wrt to the axes
+                    coords = np.around(ax.point_to_coords(circ.get_right()), decimals=2)
+
+                    label = Matrix([[coords[0]], [coords[1]]]).scale(0.75).next_to(circ, RIGHT)
+
+                    self.add(ax, circ, label, Dot(circ.get_right()))
 
         Parameters
         ----------
         point
-            The point whose coordinates will be found.
+            The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
 
         Returns
         -------
-        Tuple
-            Coordinates of the point with respect to :class:`Axes`'s basis
+        Tuple[float]
+            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
         """
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
 
@@ -1295,6 +1312,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                         stroke_width = 4,
                     )
                     self.add(plane, line_graph)
+
+        Returns
+        -------
+        :class:`~.VDict`
+            A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph["line_graph"]``.
+            The dots can be accessed with: ``line_graph["vertex_dots"]``.
         """
         x_values, y_values = map(np.array, (x_values, y_values))
         if z_values is None:
