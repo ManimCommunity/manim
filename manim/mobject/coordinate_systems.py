@@ -33,13 +33,7 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import (
-    Mobject,
-    VDict,
-    VectorizedPoint,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
 from ..utils.color import (
     BLACK,
     BLUE,
