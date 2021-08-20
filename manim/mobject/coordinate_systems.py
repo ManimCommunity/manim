@@ -415,6 +415,22 @@ class CoordinateSystem:
     def get_vertical_line(self, point: Sequence[float], **kwargs) -> "Line":
         """A vertical line from the x-axis to a given point in the scene.
 
+        Examples
+        --------
+
+        .. manim:: GetVerticalLineExample
+            :save_last_frame:
+
+            class GetVerticalLineExample(Scene):
+                def construct(self):
+                    ax = Axes().add_coordinates()
+                    point = ax.coords_to_point(-4, 1.5)
+
+                    dot = Dot(point)
+                    line = ax.get_horizontal_line(point, line_config={"dashed_ratio": 0.85})
+
+                    self.add(ax, line, dot)
+
         Parameters
         ----------
         point
@@ -433,6 +449,22 @@ class CoordinateSystem:
 
     def get_horizontal_line(self, point: Sequence[float], **kwargs) -> "Line":
         """A horizontal line from the y-axis to a given point in the scene.
+
+        Examples
+        --------
+
+        .. manim:: GetHorizontalLineExample
+            :save_last_frame:
+
+            class GetHorizontalLineExample(Scene):
+                def construct(self):
+                    ax = Axes().add_coordinates()
+                    point = ax.c2p(-4, 2)
+
+                    dot = Dot(ax.c2p(point))
+                    line = ax.get_horizontal_line(point, line_func=Line)
+
+                    self.add(ax, line, dot)
 
         Parameters
         ----------
