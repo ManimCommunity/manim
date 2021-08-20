@@ -11,6 +11,7 @@ from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import OUT, PI, TAU
 from ..utils.rate_functions import linear
+from ..utils.space_ops import rotation_matrix_transpose
 
 if typing.TYPE_CHECKING:
     from ..mobject.mobject import Mobject
@@ -62,7 +63,16 @@ class Rotate(Transform):
         self.axis = axis
         self.about_edge = about_edge
         self.about_point = about_point
-        super().__init__(mobject, **kwargs)
+        self.path_func = self.get_rotation_arc_func(self.angle, self.about_point)
+
+        super().__init__(mobject, path_func=self.path_func, **kwargs)
+
+    def get_rotation_arc_func(self, angle, center):
+        def func(start_points, end_points, alpha):
+            rot_matrix_T = rotation_matrix_transpose(alpha * angle, OUT)
+            return center + np.dot(start_points - center, rot_matrix_T)
+
+        return func
 
     def create_target(self) -> "Mobject":
         target = self.mobject.copy()
