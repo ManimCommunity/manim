@@ -191,9 +191,7 @@ class CoordinateSystem:
         :class:`~.Mobject`
             The positioned label.
         """
-        return self.get_axis_label(
-            label_tex, self.get_x_axis(), edge, direction, **kwargs
-        )
+        return self._get_axis_label(label, self.get_x_axis(), edge, direction, **kwargs)
 
     def get_y_axis_label(
         self,
@@ -202,7 +200,6 @@ class CoordinateSystem:
         direction: Sequence[float] = UP * 0.5 + RIGHT,
         **kwargs,
     ):
-
         """Generate a y-axis label.
 
         Parameters
@@ -222,7 +219,7 @@ class CoordinateSystem:
             The positioned label.
         """
 
-        return self.get_axis_label(label, self.get_y_axis(), edge, direction, **kwargs)
+        return self._get_axis_label(label, self.get_y_axis(), edge, direction, **kwargs)
 
     # move to a util_file, or Mobject()??
     @staticmethod
@@ -286,7 +283,8 @@ class CoordinateSystem:
         x_label: Union[float, str, "Mobject"] = "x",
         y_label: Union[float, str, "Mobject"] = "y",
     ) -> "VGroup":
-        """Defines labels for the x_axis and y_axis of the graph.
+        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
+        use :meth:`get_x_axis_label` and `:meth:`get_y_axis_label`.
 
         Parameters
         ----------
@@ -1124,7 +1122,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
-        self.update_default_configs(
+        self._update_default_configs(
             (self.axis_config, self.x_axis_config, self.y_axis_config),
             (axis_config, x_axis_config, y_axis_config),
         )
@@ -1136,8 +1134,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.axis_config, self.y_axis_config
         )
 
-        self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
-        self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
+        self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
+        self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
 
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
@@ -1151,12 +1149,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.shift(-self.coords_to_point(*lines_center_point))
 
     @staticmethod
-    def update_default_configs(default_configs, passed_configs):
+    def _update_default_configs(default_configs, passed_configs):
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    def create_axis(
+    def _create_axis(
         self,
         range_terms: Sequence[float],
         axis_config: dict,
@@ -1316,7 +1314,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return line_graph
 
     @staticmethod
-    def origin_shift(axis_range: Sequence[float]) -> float:
+    def _origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
@@ -1396,7 +1394,7 @@ class ThreeDAxes(Axes):
         self.z_length = z_length
 
         self.z_axis_config = {}
-        self.update_default_configs((self.z_axis_config,), (z_axis_config,))
+        self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
             self.axis_config, self.z_axis_config
         )
@@ -1408,7 +1406,7 @@ class ThreeDAxes(Axes):
 
         self.dimension = 3
 
-        z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
+        z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
@@ -1419,17 +1417,17 @@ class ThreeDAxes(Axes):
         self.z_axis = z_axis
 
         if not config.renderer == "opengl":
-            self.add_3d_pieces()
-            self.set_axis_shading()
+            self._add_3d_pieces()
+            self._set_axis_shading()
 
-    def add_3d_pieces(self):
+    def _add_3d_pieces(self):
         for axis in self.axes:
             axis.pieces = VGroup(*axis.get_pieces(self.num_axis_pieces))
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
             axis.set_shade_in_3d(True)
 
-    def set_axis_shading(self):
+    def _set_axis_shading(self):
         def make_func(axis):
             vect = self.light_source
             return lambda: (
@@ -1529,7 +1527,7 @@ class NumberPlane(Axes):
             "stroke_opacity": 1,
         }
 
-        self.update_default_configs(
+        self._update_default_configs(
             (self.axis_config, self.y_axis_config, self.background_line_style),
             (
                 kwargs.pop("axis_config", None),
@@ -1554,9 +1552,9 @@ class NumberPlane(Axes):
             **kwargs,
         )
 
-        self.init_background_lines()
+        self._init_background_lines()
 
-    def init_background_lines(self):
+    def _init_background_lines(self):
         """Will init all the lines of NumberPlanes (faded or not)"""
         if self.faded_line_style is None:
             style = dict(self.background_line_style)
@@ -1567,7 +1565,7 @@ class NumberPlane(Axes):
                     style[key] *= 0.5
             self.faded_line_style = style
 
-        self.background_lines, self.faded_lines = self.get_lines()
+        self.background_lines, self.faded_lines = self._get_lines()
 
         self.background_lines.set_style(
             **self.background_line_style,
@@ -1580,7 +1578,7 @@ class NumberPlane(Axes):
             self.background_lines,
         )
 
-    def get_lines(self) -> Tuple[VGroup, VGroup]:
+    def _get_lines(self) -> Tuple[VGroup, VGroup]:
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
@@ -1591,14 +1589,14 @@ class NumberPlane(Axes):
         x_axis = self.get_x_axis()
         y_axis = self.get_y_axis()
 
-        x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
+        x_lines1, x_lines2 = self._get_lines_parallel_to_axis(
             x_axis,
             y_axis,
             self.x_axis.x_step,
             self.faded_line_ratio,
         )
 
-        y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
+        y_lines1, y_lines2 = self._get_lines_parallel_to_axis(
             y_axis,
             x_axis,
             self.y_axis.x_step,
@@ -1614,7 +1612,7 @@ class NumberPlane(Axes):
 
         return lines1, lines2
 
-    def get_lines_parallel_to_axis(
+    def _get_lines_parallel_to_axis(
         self,
         axis_parallel_to: NumberLine,
         axis_perpendicular_to: NumberLine,
@@ -1860,7 +1858,7 @@ class PolarPlane(Axes):
             else azimuth_step
         )
 
-        self.update_default_configs(
+        self._update_default_configs(
             (self.radius_config, self.background_line_style),
             (radius_config, background_line_style),
         )
@@ -1885,9 +1883,9 @@ class PolarPlane(Axes):
             **kwargs,
         )
 
-        self.init_background_lines()
+        self._init_background_lines()
 
-    def init_background_lines(self):
+    def _init_background_lines(self):
         """Will init all the lines of NumberPlanes (faded or not)"""
         if self.faded_line_style is None:
             style = dict(self.background_line_style)
@@ -1898,7 +1896,7 @@ class PolarPlane(Axes):
                     style[key] *= 0.5
             self.faded_line_style = style
 
-        self.background_lines, self.faded_lines = self.get_lines()
+        self.background_lines, self.faded_lines = self._get_lines()
         self.background_lines.set_style(
             **self.background_line_style,
         )
@@ -1910,7 +1908,7 @@ class PolarPlane(Axes):
             self.background_lines,
         )
 
-    def get_lines(self) -> Tuple[VGroup, VGroup]:
+    def _get_lines(self) -> Tuple[VGroup, VGroup]:
         """Generate all the lines and circles, faded and not faded.
 
         Returns
