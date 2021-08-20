@@ -868,7 +868,6 @@ class CoordinateSystem:
         group = VGroup()
 
         dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
-        dx_line_color = dx_line_color
         dy_line_color = dy_line_color or graph.get_color()
 
         p1 = self.input_to_graph_point(x, graph)
@@ -910,7 +909,6 @@ class CoordinateSystem:
             group.df_label.set_color(group.df_line.get_color())
 
         if include_secant_line:
-            secant_line_color = secant_line_color
             group.secant_line = Line(p1, p2, color=secant_line_color)
             group.secant_line.scale_in_place(
                 secant_line_length / group.secant_line.get_length()
