@@ -26,7 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
 
 import numpy as np
 

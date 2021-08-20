@@ -65,6 +65,7 @@ __all__ = [
     "ArrowSquareFilledTip",
 ]
 
+import itertools
 import math
 import warnings
 from typing import Iterable, Optional, Sequence
@@ -81,11 +82,9 @@ from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
-    compass_directions,
     line_intersection,
     normalize,
     perpendicular_bisector,
@@ -2204,11 +2203,11 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = [arc_config for pair in point_pairs]
+            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config
