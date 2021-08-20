@@ -53,10 +53,9 @@ import copy
 import hashlib
 import os
 import re
-import typing
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Union
 
 import manimpango
 import numpy as np
@@ -1229,7 +1228,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: typing.Union[str, Path]):
+def register_font(font_file: Union[str, Path]):
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.

@@ -37,8 +37,7 @@ __all__ = [
     "Wiggle",
 ]
 
-import typing
-from typing import Callable, Type, Union
+from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
@@ -152,9 +151,7 @@ class Indicate(Transform):
         mobject: "Mobject",
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: typing.Callable[
-            [float, typing.Optional[float]], np.ndarray
-        ] = there_and_back,
+        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
         **kwargs
     ) -> None:
         self.color = color
@@ -257,7 +254,7 @@ class Flash(AnimationGroup):
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
-    def create_line_anims(self) -> typing.Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
         return [
             ShowPassingFlash(
                 line,
@@ -307,7 +304,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> typing.Tuple[float]:
+    def _get_bounds(self, alpha: float) -> Tuple[float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -468,7 +465,7 @@ class ApplyWave(Homotopy):
 
         def homotopy(
             x: float, y: float, z: float, t: float
-        ) -> typing.Tuple[float, float, float]:
+        ) -> Tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -518,8 +515,8 @@ class Wiggle(Animation):
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: typing.Optional[np.ndarray] = None,
-        rotate_about_point: typing.Optional[np.ndarray] = None,
+        scale_about_point: Optional[np.ndarray] = None,
+        rotate_about_point: Optional[np.ndarray] = None,
         run_time: float = 2,
         **kwargs
     ) -> None:
