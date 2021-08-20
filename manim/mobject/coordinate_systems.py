@@ -167,21 +167,66 @@ class CoordinateSystem:
     def get_z_axis(self):
         return self.get_axis(2)
 
-    def get_x_axis_label(self, label_tex, edge=UR, direction=UR, **kwargs):
+    def get_x_axis_label(
+        self,
+        label: Union[float, str, "Mobject"],
+        edge: Sequence[float] = UR,
+        direction: Sequence[float] = UR,
+        **kwargs,
+    ) -> "Mobject":
+        """Generate an x-axis label.
+
+        Parameters
+        ----------
+        label_tex
+            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+        edge
+            The edge of the x-axis to which the label will be added, by default ``UR``.
+        direction
+            Allows for further positioning of the label from an edge, by default ``UR``
+        **kwargs
+            Additional arguments to be passed to :meth:`~.get_axis_label`
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label.
+        """
         return self.get_axis_label(
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
     def get_y_axis_label(
-        self, label_tex, edge=UR, direction=UP * 0.5 + RIGHT, **kwargs
+        self,
+        label: Union[float, str, "Mobject"],
+        edge: Sequence[float] = UR,
+        direction: Sequence[float] = UP * 0.5 + RIGHT,
+        **kwargs,
     ):
-        return self.get_axis_label(
-            label_tex, self.get_y_axis(), edge, direction, **kwargs
-        )
+
+        """Generate a y-axis label.
+
+        Parameters
+        ----------
+        label_tex
+            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+        edge
+            The edge of the x-axis to which the label will be added, by default ``UR``.
+        direction
+            Allows for further positioning of the label from an edge, by default ``UR``
+        **kwargs
+            Additional arguments to be passed to :meth:`~.get_axis_label`
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label.
+        """
+
+        return self.get_axis_label(label, self.get_y_axis(), edge, direction, **kwargs)
 
     # move to a util_file, or Mobject()??
     @staticmethod
-    def create_label_tex(label_tex) -> "Mobject":
+    def _create_label_tex(label_tex) -> "Mobject":
         """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
 
         Parameters
@@ -202,7 +247,7 @@ class CoordinateSystem:
             label_tex = MathTex(label_tex)
         return label_tex
 
-    def get_axis_label(
+    def _get_axis_label(
         self,
         label: Union[float, str, "Mobject"],
         axis: "Mobject",
