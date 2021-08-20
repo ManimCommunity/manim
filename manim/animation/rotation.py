@@ -62,9 +62,9 @@ class Rotate(Transform):
         self.angle = angle
         self.axis = axis
         self.about_edge = about_edge
-        self.about_point = about_point
+        if about_point is None:
+            self.about_point = mobject.get_center()
         self.path_func = self.get_rotation_arc_func(self.angle, self.about_point)
-
         super().__init__(mobject, path_func=self.path_func, **kwargs)
 
     def get_rotation_arc_func(self, angle, center):
