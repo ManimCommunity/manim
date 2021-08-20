@@ -76,7 +76,6 @@ from typing import (
     Callable,
     Dict,
     Iterable,
-    List,
     Optional,
     Sequence,
     Tuple,
@@ -96,7 +95,6 @@ from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 

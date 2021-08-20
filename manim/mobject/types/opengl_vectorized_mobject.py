@@ -1,8 +1,7 @@
 import itertools as it
 import operator as op
-import typing
 from functools import reduce, wraps
-from typing import Optional
+from typing import Callable, Iterable, Optional, Tuple
 
 import moderngl
 import numpy as np
@@ -568,7 +567,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_nth_curve_function_with_length(
         self, n: int, sample_points: Optional[int] = None
-    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+    ) -> Tuple[Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -580,7 +579,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        curve : typing.Callable[[float], np.ndarray]
+        curve : Callable[[float], np.ndarray]
             The function for the nth curve.
         length : :class:`float`
             The length of the nth curve.
@@ -604,12 +603,12 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_curve_functions(
         self,
-    ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
+    ) -> Iterable[Callable[[float], np.ndarray]]:
         """Gets the functions for the curves of the mobject.
 
         Returns
         -------
-        typing.Iterable[typing.Callable[[float], np.ndarray]]
+        Iterable[Callable[[float], np.ndarray]]
             The functions for the curves.
         """
 
@@ -620,7 +619,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+    ) -> Iterable[Tuple[Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -630,7 +629,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
+        Iterable[Tuple[Callable[[float], np.ndarray], float]]
             The functions and lengths of the curves.
         """
 

@@ -43,7 +43,6 @@ import numpy as np
 
 from ..constants import *
 from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
