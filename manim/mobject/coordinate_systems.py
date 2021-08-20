@@ -1499,7 +1499,6 @@ class NumberPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
         # init
-        print(x_length)
         super().__init__(
             x_range=x_range,
             y_range=y_range,

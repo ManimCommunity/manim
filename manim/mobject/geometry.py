@@ -65,6 +65,7 @@ __all__ = [
     "ArrowSquareFilledTip",
 ]
 
+import itertools
 import math
 import warnings
 from typing import Iterable, Optional, Sequence
@@ -2202,11 +2203,11 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = [arc_config for pair in point_pairs]
+            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config
