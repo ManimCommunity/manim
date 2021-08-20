@@ -666,7 +666,7 @@ class OpenGLMobject:
         # grid filling is handled bottom up for simplicity reasons.
         def reverse(maybe_list):
             if maybe_list is not None:
-                maybe_list = list(row_alignments)
+                maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 
