@@ -665,7 +665,7 @@ class CoordinateSystem:
             else:
                 return None
 
-    def i2gp(self, x, graph):
+    def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
         Alias for :meth:`input_to_graph_point`.
         """
@@ -931,29 +931,44 @@ class CoordinateSystem:
         opacity: float = 0.3,
         dx_scaling: float = 1,
         bounded: "ParametricFunction" = None,
+        **kwargs,
     ):
         """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
         approximate the area under the graph passed.
 
+        .. manim:: GetAreaExample
+            :save_last_frame:
+
+            class GetAreaExample(Scene):
+                def construct(self):
+                    ax = Axes().add_coordinates()
+                    curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
+                    area = ax.get_area(
+                        curve,
+                        x_range=(PI / 2, 3 * PI / 2),
+                        dx_scaling=10,
+                        color=(GREEN_B, GREEN_D),
+                        opacity=1,
+                    )
+
+                    self.add(ax, curve, area)
+
         Parameters
         ----------
         graph
-            The graph/curve for which the area needs to be gotten.
-
+            The graph/curve for which the area needs to be determined.
         x_range
             The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
-
         color
-            The color of the area. Creates a gradient if a list of colors is provided.
-
+            The color of the area. Creates a gradient if an iterable of colors is provided.
         opacity
             The opacity of the area.
-
         bounded
             If a secondary :attr:`graph` is specified, encloses the area between the two curves.
-
         dx_scaling
             The factor by which the :attr:`dx` value is scaled.
+        kwargs
+            Additional arguments to be passed to :meth:`~.CoordinateSystem.get_area`.
 
         Returns
         -------
@@ -961,7 +976,7 @@ class CoordinateSystem:
             The :class:`~.VGroup` containing the Riemann Rectangles.
         """
 
-        dx = self.x_range[2] / 500
+        dx = kwargs.get("dx", None) or self.x_range[2] / 500
         return self.get_riemann_rectangles(
             graph,
             x_range=x_range,
@@ -969,7 +984,8 @@ class CoordinateSystem:
             bounded_graph=bounded,
             blend=True,
             color=color,
-            show_signed_area=False,
+            show_signed_area=kwargs.get("show_signed_area", None) or False,
+            **kwargs,
         ).set_opacity(opacity=opacity)
 
     def angle_of_tangent(
