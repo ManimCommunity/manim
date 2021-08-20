@@ -14,7 +14,6 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from abc import ABCMeta
 from typing import Optional, Sequence, Union
 
 import colour
