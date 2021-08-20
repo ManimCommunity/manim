@@ -172,46 +172,54 @@ class CoordinateSystem:
         label: Union[float, str, "Mobject"],
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UR,
+        buff: float = MED_SMALL_BUFF,
         **kwargs,
     ) -> "Mobject":
         """Generate an x-axis label.
 
         Parameters
         ----------
-        label_tex
+        label
             The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
-            Allows for further positioning of the label from an edge, by default ``UR``
+            Allows for further positioning of the label from an edge, by default ``UR``.
+        buff
+            The distance of the label from the line.
         **kwargs
-            Additional arguments to be passed to :meth:`~.get_axis_label`
+            Additional arguments to be passed to :meth:`~._get_axis_label`
         Returns
         -------
         :class:`~.Mobject`
             The positioned label.
         """
-        return self._get_axis_label(label, self.get_x_axis(), edge, direction, **kwargs)
+        return self._get_axis_label(
+            label, self.get_x_axis(), edge, direction, buff=buff ** kwargs
+        )
 
     def get_y_axis_label(
         self,
         label: Union[float, str, "Mobject"],
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UP * 0.5 + RIGHT,
+        buff: float = MED_SMALL_BUFF,
         **kwargs,
     ):
         """Generate a y-axis label.
 
         Parameters
         ----------
-        label_tex
+        label
             The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
         edge
             The edge of the x-axis to which the label will be added, by default ``UR``.
         direction
             Allows for further positioning of the label from an edge, by default ``UR``
+        buff
+            The distance of the label from the line.
         **kwargs
-            Additional arguments to be passed to :meth:`~.get_axis_label`
+            Additional arguments to be passed to :meth:`~._get_axis_label`
 
         Returns
         -------
@@ -219,7 +227,9 @@ class CoordinateSystem:
             The positioned label.
         """
 
-        return self._get_axis_label(label, self.get_y_axis(), edge, direction, **kwargs)
+        return self._get_axis_label(
+            label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
+        )
 
     # move to a util_file, or Mobject()??
     @staticmethod
