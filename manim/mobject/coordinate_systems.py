@@ -377,6 +377,7 @@ class CoordinateSystem:
         index: int,
         point: Sequence[float],
         line_func: Line = DashedLine,
+        line_config: Optional[Dict] = None,
         color: Color = LIGHT_GREY,
         stroke_width: float = 2,
     ) -> "Line":
@@ -405,8 +406,9 @@ class CoordinateSystem:
         :class:`get_vertical_line`
         :class:`get_horizontal_line`
         """
+        line_config = line_config if line_config is not None else {}
         axis = self.get_axis(index)
-        line = line_func(axis.get_projection(point), point)
+        line = line_func(axis.get_projection(point), point, **line_config)
         line.set_stroke(color, stroke_width)
         return line
 
@@ -449,6 +451,36 @@ class CoordinateSystem:
         return self.get_line_from_axis_to_point(1, point, **kwargs)
 
     def get_lines_to_point(self, point: Sequence[float], **kwargs) -> VGroup:
+        """Generate both horizontal and vertical lines from the axis to a point.
+
+        Examples
+        --------
+
+        .. manim:: GetLinesToPointExample
+            :save_last_frame:
+
+            class GetLinesToPointExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    circ = Circle(radius=0.5).move_to([-4, -1.5, 0])
+
+                    lines_1 = ax.get_lines_to_point(circ.get_right(), color=GREEN_B)
+                    lines_2 = ax.get_lines_to_point(circ.get_corner(DL), color=BLUE_B)
+                    self.add(ax, lines_1, lines_2, circ)
+
+        Parameters
+        ----------
+        point
+            A point on the scene.
+        kwargs
+            Additional arguments to be provided :meth:`CoordinateSystem.get_line_from_axis_to_point`.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the horizontal and vertical lines.
+        """
+
         return VGroup(
             self.get_horizontal_line(point, **kwargs),
             self.get_vertical_line(point, **kwargs),
@@ -1206,10 +1238,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         --------
 
-        .. manim::
+        .. manim:: CoordsToPointExample
             :save_last_frame:
 
-            class CoordsToPoint(Scene):
+            class CoordsToPointExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
 
@@ -1230,6 +1262,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         np.ndarray
             A point with respect to the scene's coordinate system.
         """
+
         origin = self.x_axis.number_to_point(self._origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
@@ -1242,7 +1275,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         -------
 
-        .. manim::
+        .. manim:: PointToCoordsExample
             :save_last_frame:
 
             class PointToCoordsExample(Scene):
