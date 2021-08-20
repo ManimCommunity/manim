@@ -620,14 +620,26 @@ class CoordinateSystem:
         return graph
 
     def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
-        """Returns the coordinates of the point on the ``graph``
-        corresponding to the input ``x`` value.
+        """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
+
+        .. manim:: InputToGraphPointExample
+            :save_last_frame:
+
+            class InputToGraphPointExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    curve = ax.get_graph(lambda x : np.cos(x))
+
+                    # move a square to PI on the cosine curve.
+                    position = ax.input_to_graph_point(x=PI, graph=curve)
+                    sq = Square(side_length=1, color=YELLOW).move_to(position)
+
+                    self.add(ax, curve, sq)
 
         Parameters
         ----------
         x
-            The x-value for which the coordinates of corresponding point on the :attr:`graph` are to be found.
-
+            The x-value of a point on the ``graph``.
         graph
             The :class:`~.ParametricFunction` on which the x-value and y-value lie.
 
