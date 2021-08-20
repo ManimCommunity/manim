@@ -296,12 +296,26 @@ class CoordinateSystem:
         """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and `:meth:`get_y_axis_label`.
 
+        Examples
+        --------
+
+        .. manim:: GetAxisLabelsExample
+            :save_last_frame:
+
+            class GetAxisLabelsExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    labels = ax.get_axis_labels(
+                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45)
+                    )
+                    self.add(ax, labels)
+
         Parameters
         ----------
         x_label
-            The label for the x_axis
+            The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         y_label
-            The label for the y_axis
+            The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
 
         Returns
         -------
@@ -391,6 +405,8 @@ class CoordinateSystem:
             The point to which the line will be drawn.
         line_func
             The function of the :class:`~.Line` mobject used to construct the line.
+        line_config
+            Optional arguments to passed to :attr:`line_func`.
         color
             The color of the line.
         stroke_width
@@ -403,13 +419,14 @@ class CoordinateSystem:
 
         See Also
         --------
-        :class:`get_vertical_line`
-        :class:`get_horizontal_line`
+        :meth:`~.CoordinateSystem.get_vertical_line`
+        :meth:`~.CoordinateSystem.get_horizontal_line`
         """
         line_config = line_config if line_config is not None else {}
+        line_config["color"] = color
+        line_config["stroke_width"] = stroke_width
         axis = self.get_axis(index)
         line = line_func(axis.get_projection(point), point, **line_config)
-        line.set_stroke(color, stroke_width)
         return line
 
     def get_vertical_line(self, point: Sequence[float], **kwargs) -> "Line":
@@ -424,10 +441,10 @@ class CoordinateSystem:
             class GetVerticalLineExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    point = ax.coords_to_point(-4, 1.5)
+                    point = ax.coords_to_point(-3.5, 2)
 
                     dot = Dot(point)
-                    line = ax.get_horizontal_line(point, line_config={"dashed_ratio": 0.85})
+                    line = ax.get_vertical_line(point, line_config={"dashed_ratio": 0.85})
 
                     self.add(ax, line, dot)
 
@@ -459,9 +476,9 @@ class CoordinateSystem:
             class GetHorizontalLineExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    point = ax.c2p(-4, 2)
+                    point = ax.c2p(-4, 1.5)
 
-                    dot = Dot(ax.c2p(point))
+                    dot = Dot(point)
                     line = ax.get_horizontal_line(point, line_func=Line)
 
                     self.add(ax, line, dot)
@@ -511,6 +528,11 @@ class CoordinateSystem:
         -------
         :class:`~.VGroup`
             A :class:`~.VGroup` of the horizontal and vertical lines.
+
+        See Also
+        --------
+        :meth:`~.CoordinateSystem.get_vertical_line`
+        :meth:`~.CoordinateSystem.get_horizontal_line`
         """
 
         return VGroup(
@@ -907,8 +929,7 @@ class CoordinateSystem:
     def get_derivative_graph(
         self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
-        """Returns the curve of the derivative of the passed
-        graph.
+        """Returns the curve of the derivative of the passed graph.
 
         Parameters
         ----------
