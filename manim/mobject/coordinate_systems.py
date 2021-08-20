@@ -372,14 +372,14 @@ class CoordinateSystem:
 
         return self
 
-    def get_line_from_axis_to_point(
+    def _get_line_from_axis_to_point(
         self,
         index: int,
         point: Sequence[float],
         line_func: Line = DashedLine,
         color: Color = LIGHT_GREY,
         stroke_width: float = 2,
-    ) -> Line:
+    ) -> "Line":
         """Returns a straight line from a given axis to a point in the scene.
 
         Parameters
@@ -410,7 +410,7 @@ class CoordinateSystem:
         line.set_stroke(color, stroke_width)
         return line
 
-    def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
+    def get_vertical_line(self, point: Sequence[float], **kwargs) -> "Line":
         """A vertical line from the x-axis to a given point in the scene.
 
         Parameters
@@ -429,7 +429,7 @@ class CoordinateSystem:
 
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
-    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> Line:
+    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> "Line":
         """A horizontal line from the y-axis to a given point in the scene.
 
         Parameters
@@ -447,6 +447,12 @@ class CoordinateSystem:
         """
 
         return self.get_line_from_axis_to_point(1, point, **kwargs)
+
+    def get_lines_to_point(self, point: Sequence[float], **kwargs) -> VGroup:
+        return VGroup(
+            self.get_horizontal_line(point, **kwargs),
+            self.get_vertical_line(point, **kwargs),
+        )
 
     # graphing
 
@@ -1195,14 +1201,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
-        """Transforms the vector formed from ``coords`` formed by the :class:`Axes`
-        into the corresponding vector with respect to the default basis.
+        """Accepts coordinates from the axes and returns a point with respect to the scene.
+
+        Examples
+        --------
+
+        .. manim::
+            :save_last_frame:
+
+
 
         Returns
         -------
         np.ndarray
-            A point that results from a change of basis from the coordinate system
-            defined by the :class:`Axes` to that of ``manim``'s default coordinate system
+            A point with respect to the scene's coordinate system.
         """
         origin = self.x_axis.number_to_point(self._origin_shift(self.x_range))
         result = np.array(origin)
@@ -1224,7 +1236,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     ax = Axes(x_range=[0, 10, 2]).add_coordinates()
                     circ = Circle(radius=0.5).shift(UR * 2)
 
-                    # get the coordinates of the circle wrt to the axes
+                    # get the coordinates of the circle with respect to the axes
                     coords = np.around(ax.point_to_coords(circ.get_right()), decimals=2)
 
                     label = Matrix([[coords[0]], [coords[1]]]).scale(0.75).next_to(circ, RIGHT)
