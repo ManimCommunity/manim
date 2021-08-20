@@ -372,7 +372,7 @@ class CoordinateSystem:
 
         return self
 
-    def _get_line_from_axis_to_point(
+    def get_line_from_axis_to_point(
         self,
         index: int,
         point: Sequence[float],
@@ -1209,6 +1209,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         .. manim::
             :save_last_frame:
 
+            class CoordsToPoint(Scene):
+                def construct(self):
+                    ax = Axes().add_coordinates()
+
+                    # a dot with respect to the axes
+                    dot_axes = Dot(ax.coords_to_point(2, 2), color=GREEN)
+                    lines = ax.get_lines_to_point(ax.c2p(2,2))
+
+                    # a dot with respect to the scene
+                    # the default plane corresponds to the coordinates of the scene.
+                    plane = NumberPlane()
+                    dot_scene = Dot((2,2,0), color=RED)
+
+                    self.add(plane, dot_scene, ax, dot_axes, lines)
 
 
         Returns
