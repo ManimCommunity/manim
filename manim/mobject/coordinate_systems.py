@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -698,7 +698,7 @@ class CoordinateSystem:
             graph_point = self.input_to_graph_point(sample_input, graph)
 
             if bounded_graph is None:
-                y_point = self.origin_shift(self.y_range)
+                y_point = self._origin_shift(self.y_range)
             else:
                 y_point = bounded_graph.underlying_function(x)
 
@@ -1189,9 +1189,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
 
-        # without the call to origin_shift, graph does not exist when min > 0 or max < 0
+        # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
+        axis.shift(-axis.number_to_point(self._origin_shift(range_terms)))
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -1204,7 +1204,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             A point that results from a change of basis from the coordinate system
             defined by the :class:`Axes` to that of ``manim``'s default coordinate system
         """
-        origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
+        origin = self.x_axis.number_to_point(self._origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -1420,7 +1420,7 @@ class ThreeDAxes(Axes):
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.number_to_point(self.origin_shift(x_range)))
+        z_axis.shift(self.x_axis.number_to_point(self._origin_shift(x_range)))
 
         self.axes.add(z_axis)
         self.add(z_axis)
@@ -1476,7 +1476,8 @@ class NumberPlane(Axes):
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+    .. note::
+        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
 
     Examples
@@ -2207,7 +2208,8 @@ class PolarPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-    """
+    """A :class:`~.NumberPlane` specialized for use with complex numbers.
+
     Examples
     --------
 
@@ -2232,35 +2234,87 @@ class ComplexPlane(NumberPlane):
 
     """
 
-    def __init__(self, color=BLUE, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(
-            color=color,
             **kwargs,
         )
 
-    def number_to_point(self, number):
+    def number_to_point(self, number: Union[float, complex]) -> np.ndarray:
+        """Accepts a float/complex number and returns the equivalent point on the plane
+
+        Parameters
+        ----------
+        number
+            The number. Can be a float or a complex number.
+
+        Returns
+        -------
+        np.ndarray
+            The point on the plane.
+        """
+
         number = complex(number)
         return self.coords_to_point(number.real, number.imag)
 
-    def n2p(self, number):
+    def n2p(self, number: Union[float, complex]) -> np.ndarray:
+        """Abbreviation for number_to_point."""
         return self.number_to_point(number)
 
-    def point_to_number(self, point):
+    def point_to_number(self, point: Sequence[float]) -> complex:
+        """Accepts a point and returns a complex number equivalent to that point on the plane.
+
+        Parameters
+        ----------
+        point
+            The point in manim's coordinate-system
+
+        Returns
+        -------
+        complex
+            A complex number consisting of real and imaginary components.
+        """
+
         x, y = self.point_to_coords(point)
         return complex(x, y)
 
-    def p2n(self, point):
+    def p2n(self, point: Sequence[float]) -> complex:
+        """Abbreviation for point_to_number."""
         return self.point_to_number(point)
 
-    def get_default_coordinate_values(self):
+    def _get_default_coordinate_values(self) -> List[Union[float, complex]]:
+        """Generate a list containing the numerical values of the plane's labels.
+
+        Returns
+        -------
+        List[Union[float, complex]]
+            A list of floats representing the x-axis and complex numbers representing the y-axis.
+        """
         x_numbers = self.get_x_axis().get_tick_range()
         y_numbers = self.get_y_axis().get_tick_range()
         y_numbers = [complex(0, y) for y in y_numbers if y != 0]
         return [*x_numbers, *y_numbers]
 
-    def get_coordinate_labels(self, *numbers, **kwargs):
+    def get_coordinate_labels(
+        self, *numbers: Iterable[Union[float, complex]], **kwargs
+    ) -> VGroup:
+        """Generates the :class:`~.DecimalNumber` mobjects for the coordinates of the plane.
+
+        Parameters
+        ----------
+        numbers
+            An iterable of floats/complex numbers. Floats are positioned along the x-axis, complex numbers along the y-axis.
+        kwargs
+            Additional arguments to be passed to :meth:`~.NumberLine.get_number_mobject`, i.e. :class:`~.DecimalNumber`.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` containing the positioned label mobjects.
+        """
+
+        # TODO: Make this work the same as coord_sys.add_coordinates()
         if len(numbers) == 0:
-            numbers = self.get_default_coordinate_values()
+            numbers = self._get_default_coordinate_values()
 
         self.coordinate_labels = VGroup()
         for number in numbers:
@@ -2276,6 +2330,16 @@ class ComplexPlane(NumberPlane):
             self.coordinate_labels.add(number_mob)
         return self.coordinate_labels
 
-    def add_coordinates(self, *numbers):
-        self.add(self.get_coordinate_labels(*numbers))
+    def add_coordinates(self, *numbers: Iterable[Union[float, complex]], **kwargs):
+        """Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
+
+        Parameters
+        ----------
+        numbers
+            An iterable of floats/complex numbers. Floats are positioned along the x-axis, complex numbers along the y-axis.
+        kwargs
+            Additional arguments to be passed to :meth:`~.NumberLine.get_number_mobject`, i.e. :class:`~.DecimalNumber`.
+        """
+
+        self.add(self.get_coordinate_labels(*numbers, **kwargs))
         return self
