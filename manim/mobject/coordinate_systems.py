@@ -976,7 +976,7 @@ class CoordinateSystem:
             The :class:`~.VGroup` containing the Riemann Rectangles.
         """
 
-        dx = kwargs.get("dx", None) or self.x_range[2] / 500
+        dx = kwargs.pop("dx", None) or self.x_range[2] / 500
         return self.get_riemann_rectangles(
             graph,
             x_range=x_range,
@@ -984,7 +984,7 @@ class CoordinateSystem:
             bounded_graph=bounded,
             blend=True,
             color=color,
-            show_signed_area=kwargs.get("show_signed_area", None) or False,
+            show_signed_area=kwargs.pop("show_signed_area", None) or False,
             **kwargs,
         ).set_opacity(opacity=opacity)
 
@@ -994,22 +994,29 @@ class CoordinateSystem:
         """Returns the angle to the x-axis of the tangent
         to the plotted curve at a particular x-value.
 
+
+        ::
+
+            >>> ax = Axes()
+            >>> curve = ax.get_graph(lambda x : x**2)
+
+            >>> ax.angle_of_tangent(x=3, graph=curve)
+            1.3825747960950903
+
+
         Parameters
         ----------
         x
             The x-value at which the tangent must touch the curve.
-
         graph
             The :class:`~.ParametricFunction` for which to calculate the tangent.
-
         dx
-            The small change in `x` with which a small change in `y`
-            will be compared in order to obtain the tangent.
+            The change in `x` used to determine the angle of the tangent to the curve.
 
         Returns
         -------
         :class:`float`
-            The angle of the tangent with the x axis.
+            The angle of the tangent with the curve to the curve.
         """
 
         p0 = self.input_to_graph_point(x, graph)
@@ -1022,11 +1029,18 @@ class CoordinateSystem:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
+        ::
+
+            >>> ax = Axes()
+            >>> curve = ax.get_graph(lambda x : x**2)
+            >>> ax.slope_of_tangent(x=-2, curve)
+
+            -3.5000000259052038
+
         Parameters
         ----------
         x
             The x-value at which the tangent must touch the curve.
-
         graph
             The :class:`~.ParametricFunction` for which to calculate the tangent.
 
