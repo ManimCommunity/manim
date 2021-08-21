@@ -187,7 +187,7 @@ class CoordinateSystem:
                 def construct(self):
                     ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
                     x_label = ax.get_x_axis_label(
-                        Tex("X-Values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
+                        Tex("$x$-values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
                     )
                     self.add(ax, x_label)
 
@@ -232,7 +232,7 @@ class CoordinateSystem:
                 def construct(self):
                     ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
                     y_label = ax.get_y_axis_label(
-                        Tex("Y-Values").scale(0.65).rotate(90 * DEGREES),
+                        Tex("$y$-values").scale(0.65).rotate(90 * DEGREES),
                         edge=LEFT,
                         direction=LEFT,
                         buff=0.3,
@@ -744,7 +744,7 @@ class CoordinateSystem:
                     sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
-                        label= MathTex("\\frac{\\pi}{2}"),
+                        label= MathTex(r"\\frac{\\pi}{2}"),
                         x_val=PI / 2,
                         dot=True,
                         direction=UR,
