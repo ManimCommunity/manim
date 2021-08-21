@@ -1423,8 +1423,11 @@ class NumberPlane(Axes):
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+
+    .. note::
+
+        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
 
     Examples
     --------
