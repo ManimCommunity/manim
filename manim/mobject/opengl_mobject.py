@@ -1266,6 +1266,19 @@ class OpenGLMobject:
         return self
 
     def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+        """Directly set rgba data from `rgbas` and optionally do the same recursively
+        with submobjects. This can be used if the `rgbas` have already been generated
+        with the correct shape and simply need to be set.
+
+        Parameters
+        ----------
+        rgbas
+            the rgba to be set as data
+        name
+            the name of the data attribute to be set
+        recurse
+            set to true to recursively apply this method to submobjects
+        """
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
 

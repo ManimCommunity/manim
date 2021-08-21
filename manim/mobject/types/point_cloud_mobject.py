@@ -53,7 +53,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     """
 
     # Scaled for consistency with cairo
-    OPENGL_POINT_WIDTH_SCALE_FACTOR = 0.01
+    OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
     shader_folder = "true_dot"
     shader_dtype = [
         ("point", np.float32, (3,)),
@@ -358,7 +358,7 @@ class PointCloudDot(Mobject1D):
         Mobject1D.__init__(
             self, stroke_width=stroke_width, density=density, color=color, **kwargs
         )
-        self.set_point_width_uniform()
+        self.set_point_radius_uniform()
         self.shift(center)
 
     def generate_points(self):
@@ -373,12 +373,12 @@ class PointCloudDot(Mobject1D):
             ]
         )
 
-    def set_point_width_uniform(self):
+    def set_point_radius_uniform(self):
         if config["renderer"] == "opengl":
             self.set_uniforms(
                 {
-                    "point_width": self.stroke_width
-                    * PMobject.OPENGL_POINT_WIDTH_SCALE_FACTOR
+                    "point_radius": self.stroke_width
+                    * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
                 }
             )
 
@@ -407,7 +407,7 @@ class Point(PMobject):
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         self.location = location
         PMobject.__init__(self, color=color, **kwargs)
-        self.set_point_width_uniform()
+        self.set_point_radius_uniform()
 
     def init_points(self):
         self.reset_points()
@@ -423,11 +423,11 @@ class Point(PMobject):
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
-    def set_point_width_uniform(self):
+    def set_point_radius_uniform(self):
         if config["renderer"] == "opengl":
             self.set_uniforms(
                 {
-                    "point_width": self.stroke_width
-                    * PMobject.OPENGL_POINT_WIDTH_SCALE_FACTOR
+                    "point_radius": self.stroke_width
+                    * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
                 }
             )
