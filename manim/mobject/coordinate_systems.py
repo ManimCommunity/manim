@@ -744,7 +744,7 @@ class CoordinateSystem:
                     sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
-                        label= "x = \\frac{\\pi}{2}",
+                        label= MathTex("\\frac{\\pi}{2}"),
                         x_val=PI / 2,
                         dot=True,
                         direction=UR,
