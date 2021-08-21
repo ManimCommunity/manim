@@ -489,7 +489,7 @@ class CoordinateSystem:
         :class:`Line`
             A vertical line from the x-axis to the point.
         """
-
+        print(kwargs)
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
     def get_horizontal_line(self, point: Sequence[float], **kwargs) -> "Line":
@@ -1233,16 +1233,35 @@ class CoordinateSystem:
     ) -> VGroup:
         """Obtains multiple lines from the x-axis to the curve.
 
+        .. manim:: GetVerticalLinesToGraph
+            :save_last_frame:
+
+            class GetVerticalLinesToGraph(Scene):
+                def construct(self):
+                    ax = Axes(
+                        x_range=[0, 8.0, 1],
+                        y_range=[-1, 1, 0.2],
+                        axis_config={"number_scale_value": 0.5},
+                    ).add_coordinates()
+
+                    curve = ax.get_graph(lambda x: np.sin(x) / np.e ** 2 * x)
+
+                    lines = ax.get_vertical_lines_to_graph(
+                        curve, x_range=[0, 4], num_lines=30, color=BLUE
+                    )
+
+                    self.add(ax, curve, lines)
+
         Parameters
         ----------
         graph
-            The graph on which the line should extend to.
-
+            The graph along which the lines are placed.
         x_range
-            A list containing the lower and and upper bounds of the lines -> ``x_range = [x_min, x_max]``.
-
+            A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``.
         num_lines
             The number of evenly spaced lines.
+        kwargs
+            Additional arguments to be passed to :meth:`~.CoordinateSystem.get_vertical_line`
 
         Returns
         -------
