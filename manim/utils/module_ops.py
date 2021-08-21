@@ -85,11 +85,10 @@ def get_scenes_to_render(scene_classes):
             logger.error(constants.SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
-    return (
-        [scene_classes[0]]
-        if len(scene_classes) == 1
-        else prompt_user_for_choice(scene_classes)
-    )
+    if len(scene_classes) == 1:
+        config["scene_names"] = [scene_classes[0].__name__]
+        return [scene_classes[0]]
+    return prompt_user_for_choice(scene_classes)
 
 
 def prompt_user_for_choice(scene_classes):
