@@ -158,6 +158,16 @@ class CoordinateSystem:
     def get_axis(self, index):
         return self.get_axes()[index]
 
+    def get_center_point(self) -> np.ndarray:
+        """Gets the origin of :class:`~.Axes`.
+
+        Returns
+        -------
+        np.ndarray
+            The center point.
+        """
+        return self.coords_to_point(0, 0)
+
     def get_x_axis(self):
         return self.get_axis(0)
 
@@ -166,6 +176,12 @@ class CoordinateSystem:
 
     def get_z_axis(self):
         return self.get_axis(2)
+
+    def get_x_unit_size(self):
+        return self.get_x_axis().get_unit_size()
+
+    def get_y_unit_size(self):
+        return self.get_x_axis().get_unit_size()
 
     def get_x_axis_label(
         self,
@@ -325,7 +341,7 @@ class CoordinateSystem:
         y_label: Union[float, str, "Mobject"] = "y",
     ) -> VGroup:
         """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
-        use :meth:`get_x_axis_label` and `:meth:`get_y_axis_label`.
+        use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
         Examples
         --------
@@ -594,9 +610,13 @@ class CoordinateSystem:
 
             class GetGraphExample(Scene):
                 def construct(self):
-
+                    # construct the axes
                     ax_1 = Axes(
-                        x_range=[0.001, 6], y_range=[-8, 2], x_length=5, y_length=3, tips=False
+                        x_range=[0.001, 6],
+                        y_range=[-8, 2],
+                        x_length=5,
+                        y_length=3,
+                        tips=False,
                     )
                     ax_2 = ax_1.copy()
                     ax_3 = ax_1.copy()
@@ -607,17 +627,21 @@ class CoordinateSystem:
                     ax_3.to_edge(DOWN)
                     axes = VGroup(ax_1, ax_2, ax_3)
 
+                    # create the logarithmic curves
                     log_func = lambda x: np.log(x)
 
-                    # a curve without adjustments; produces error due to poor interpolation.
+                    # a curve without adjustments; poor interpolation.
                     curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
 
-                    # disabling interpolation makes the graph look choppy as not enough inputs are available
+                    # disabling interpolation makes the graph look choppy as not enough
+                    # inputs are available
                     curve_2 = ax_2.get_graph(log_func, use_smoothing=False, color=ORANGE)
 
-                    # taking more inputs of the curve by specifying a step for the x_range yields
-                    # expected results, but increases rendering time.
-                    curve_3 = ax_3.get_graph(log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN)
+                    # taking more inputs of the curve by specifying a step for the
+                    # x_range yields expected results, but increases rendering time.
+                    curve_3 = ax_3.get_graph(
+                        log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN
+                    )
 
                     curves = VGroup(curve_1, curve_2, curve_3)
 
@@ -689,7 +713,7 @@ class CoordinateSystem:
         x
             The x-value of a point on the ``graph``.
         graph
-            The :class:`~.ParametricFunction` on which the x-value and y-value lie.
+            The :class:`~.ParametricFunction` on which the point lies.
 
         Returns
         -------
@@ -832,7 +856,7 @@ class CoordinateSystem:
                     quadratic = ax.get_graph(lambda x: 0.5 * x ** 2 - 0.5)
 
                     # the rectangles are constructed from their top right corner.
-                    # passing an iterable to the color parameter produces a gradient
+                    # passing an iterable to `color` produces a gradient
                     rects_right = ax.get_riemann_rectangles(
                         quadratic,
                         x_range=[-4, -3],
@@ -841,12 +865,15 @@ class CoordinateSystem:
                         input_sample_type="right",
                     )
 
-                    # the colour of rectangles below the x-axis is inverted due to show_signed_area
+                    # the colour of rectangles below the x-axis is inverted
+                    # due to show_signed_area
                     rects_left = ax.get_riemann_rectangles(
                         quadratic, x_range=[-1.5, 1.5], dx=0.15, color=YELLOW
                     )
 
-                    bounding_line = ax.get_graph(lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6])
+                    bounding_line = ax.get_graph(
+                        lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6]
+                    )
                     bounded_rects = ax.get_riemann_rectangles(
                         bounding_line,
                         bounded_graph=quadratic,
@@ -856,7 +883,9 @@ class CoordinateSystem:
                         color=(MAROON_A, RED_B, PURPLE_D),
                     )
 
-                    self.add(ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects)
+                    self.add(
+                        ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects
+                    )
 
         Parameters
         ----------
@@ -1361,25 +1390,18 @@ class CoordinateSystem:
         ----------
         x_val
             The position along the curve at which the label, line and triangle will be constructed.
-
         graph
             The :class:`~.ParametricFunction` for which to construct the label.
-
         label
             The label of the vertical line and triangle.
-
         label_color
             The color of the label.
-
         triangle_size
             The size of the triangle.
-
         triangle_color
             The color of the triangle.
-
         line_func
             The function used to construct the vertical line.
-
         line_color
             The color of the vertical line.
 
@@ -1402,6 +1424,7 @@ class CoordinateSystem:
         -------
         :class:`~.VGroup`
             A :class:`~.VGroup` of the label, triangle and vertical line mobjects.
+
         """
 
         T_label_group = VGroup()
@@ -1558,6 +1581,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(plane, dot_scene, ax, dot_axes, lines)
 
+        Parameters
+        ----------
+        coords
+            The coordinates. Each coord is [assed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
 
         Returns
         -------
@@ -1585,10 +1612,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     ax = Axes(x_range=[0, 10, 2]).add_coordinates()
                     circ = Circle(radius=0.5).shift(UR * 2)
 
-                    # get the coordinates of the circle with respect to the axes
+                    # get the coordinates of the circle wrt to the axes
                     coords = np.around(ax.point_to_coords(circ.get_right()), decimals=2)
 
-                    label = Matrix([[coords[0]], [coords[1]]]).scale(0.75).next_to(circ, RIGHT)
+                    label = (
+                        Matrix([[coords[0]], [coords[1]]]).scale(0.75).next_to(circ, RIGHT)
+                    )
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
 
@@ -2077,33 +2106,6 @@ class NumberPlane(Axes):
                     lines2.add(new_line)
         return lines1, lines2
 
-    def get_center_point(self) -> np.ndarray:
-        """Gets the origin of :class:`NumberPlane`.
-
-        Returns
-        -------
-        np.ndarray
-            The center point.
-        """
-        return self.coords_to_point(0, 0)
-
-    def get_x_unit_size(self):
-        return self.get_x_axis().get_unit_size()
-
-    def get_y_unit_size(self):
-        return self.get_x_axis().get_unit_size()
-
-    def get_axes(self) -> VGroup:
-        # Method Already defined at Axes.get_axes so we could remove this a later PR.
-        """Gets the pair of axes.
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            Axes
-        """
-        return self.axes
-
     def get_vector(self, coords: Sequence[float], **kwargs):
         kwargs["buff"] = 0
         return Arrow(
@@ -2351,15 +2353,6 @@ class PolarPlane(Axes):
         lines1 = VGroup(*rlines1, *alines1)
         lines2 = VGroup(*rlines2, *alines2)
         return lines1, lines2
-
-    def get_center_point(self):
-        return self.coords_to_point(0, 0)
-
-    def get_x_unit_size(self):
-        return self.get_x_axis().get_unit_size()
-
-    def get_y_unit_size(self):
-        return self.get_x_axis().get_unit_size()
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
@@ -2626,7 +2619,7 @@ class ComplexPlane(NumberPlane):
         )
 
     def number_to_point(self, number: Union[float, complex]) -> np.ndarray:
-        """Accepts a float/complex number and returns the equivalent point on the plane
+        """Accepts a float/complex number and returns the equivalent point on the plane.
 
         Parameters
         ----------
@@ -2643,7 +2636,7 @@ class ComplexPlane(NumberPlane):
         return self.coords_to_point(number.real, number.imag)
 
     def n2p(self, number: Union[float, complex]) -> np.ndarray:
-        """Abbreviation for number_to_point."""
+        """Abbreviation for :meth:`number_to_point`."""
         return self.number_to_point(number)
 
     def point_to_number(self, point: Sequence[float]) -> complex:
@@ -2664,7 +2657,7 @@ class ComplexPlane(NumberPlane):
         return complex(x, y)
 
     def p2n(self, point: Sequence[float]) -> complex:
-        """Abbreviation for point_to_number."""
+        """Abbreviation for :meth:`point_to_number`."""
         return self.point_to_number(point)
 
     def _get_default_coordinate_values(self) -> List[Union[float, complex]]:
