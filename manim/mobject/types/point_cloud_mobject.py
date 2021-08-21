@@ -220,7 +220,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
         self.add_points(points, color=color)
 
 
-class Mobject2D(PMobject):
+class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
