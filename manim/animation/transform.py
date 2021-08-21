@@ -50,10 +50,12 @@ class Transform(Animation):
         path_func: Optional[Callable] = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
+        path_arc_centers: np.ndarray = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
+        self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
         self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
@@ -71,7 +73,11 @@ class Transform(Animation):
     @path_arc.setter
     def path_arc(self, path_arc: float) -> None:
         self._path_arc = path_arc
-        self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
+        self._path_func = path_along_arc(
+            arc_angle=self._path_arc,
+            axis=self.path_arc_axis,
+            arc_centers=self.path_arc_centers,
+        )
 
     @property
     def path_func(
