@@ -159,7 +159,6 @@ def scene(**args):
             # file exists so we are going to append new scene to that file
             with open(file_name, "a") as f:
                 f.write("\n\n\n" + scene)
-            pass
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
             with open(file_name, "w") as f:
