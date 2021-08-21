@@ -222,6 +222,9 @@ class CoordinateSystem:
     ):
         """Generate a y-axis label.
 
+        Examples
+        --------
+
         .. manim:: GetYAxisLabelExample
             :save_last_frame:
 
@@ -578,6 +581,11 @@ class CoordinateSystem:
     ):
         """Generates a curve based on a function.
 
+        Examples
+        --------
+
+        ..
+
         Parameters
         ----------
         function
@@ -621,6 +629,9 @@ class CoordinateSystem:
 
     def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
+
+        Examples
+        --------
 
         .. manim:: InputToGraphPointExample
             :save_last_frame:
@@ -770,8 +781,10 @@ class CoordinateSystem:
         blend: bool = False,
         width_scale_factor: float = 1.001,
     ) -> VGroup:
-        """Generates a :class:`~.VGroup` of the Riemann Rectangles for
-        a particular curve.
+        """Generates a :class:`~.VGroup` of the Riemann Rectangles for a given curve.
+
+        Examples
+        --------
 
         .. manim:: GetRiemannRectanglesExample
             :save_last_frame:
@@ -936,6 +949,9 @@ class CoordinateSystem:
         """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
         approximate the area under the graph passed.
 
+        Examples
+        --------
+
         .. manim:: GetAreaExample
             :save_last_frame:
 
@@ -994,6 +1010,8 @@ class CoordinateSystem:
         """Returns the angle to the x-axis of the tangent
         to the plotted curve at a particular x-value.
 
+        Examples
+        --------
 
         ::
 
@@ -1029,6 +1047,9 @@ class CoordinateSystem:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
+        Examples
+        --------
+
         ::
 
             >>> ax = Axes()
@@ -1056,6 +1077,9 @@ class CoordinateSystem:
         self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
+
+        Examples
+        --------
 
         .. manim:: GetDerivativeGraphExample
             :save_last_frame:
@@ -1111,6 +1135,9 @@ class CoordinateSystem:
     ) -> VGroup:
         """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
          the secant to the curve at a particular x-value.
+
+        Examples
+        --------
 
          .. manim:: GetSecantSlopeGroupExample
             :save_last_frame:
@@ -1233,6 +1260,9 @@ class CoordinateSystem:
     ) -> VGroup:
         """Obtains multiple lines from the x-axis to the curve.
 
+        Examples
+        --------
+
         .. manim:: GetVerticalLinesToGraph
             :save_last_frame:
 
@@ -1319,7 +1349,8 @@ class CoordinateSystem:
             The color of the vertical line.
 
         Examples
-        -------
+        --------
+
         .. manim:: T_labelExample
             :save_last_frame:
 
@@ -1506,10 +1537,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return result
 
     def point_to_coords(self, point: Sequence[float]) -> Tuple[float]:
-        """Accepts a point from the scene and returns the respective coordinates with respect to the axes.
+        """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Examples
-        -------
+        --------
 
         .. manim:: PointToCoordsExample
             :save_last_frame:
@@ -2036,13 +2067,13 @@ class NumberPlane(Axes):
         """
         return self.axes
 
-    def get_vector(self, coords, **kwargs):
+    def get_vector(self, coords: Sequence[float], **kwargs):
         kwargs["buff"] = 0
         return Arrow(
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
         )
 
-    def prepare_for_nonlinear_transform(self, num_inserted_curves=50):
+    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50):
         for mob in self.family_members_with_points():
             num_curves = mob.get_num_curves()
             if num_inserted_curves > num_curves:
