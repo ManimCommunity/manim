@@ -2,8 +2,7 @@ __all__ = ["TrueDot", "DotCloud"]
 
 import numpy as np
 
-from manim import ORIGIN, RIGHT, UP
-
+from ...constants import ORIGIN, RIGHT, UP
 from ...utils.color import YELLOW
 from .opengl_point_cloud_mobject import OpenGLPMObject
 

@@ -2,6 +2,12 @@ from abc import ABCMeta
 
 from .. import config
 from .opengl_mobject import OpenGLMobject
+from .types.dot_cloud import DotCloud
+from .types.opengl_point_cloud_mobject import (
+    OpenGLPGroup,
+    OpenGLPMObject,
+    OpenGLPMPoint,
+)
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 
@@ -22,6 +28,7 @@ class ConvertToOpenGL(ABCMeta):
             base_names_to_opengl = {
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
+                "PMobject": OpenGLPMObject,
             }
 
             bases = tuple(

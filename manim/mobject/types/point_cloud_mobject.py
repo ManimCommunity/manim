@@ -2,13 +2,8 @@
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
-import moderngl
 import numpy as np
-from colour import Color
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
-
-from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -21,6 +16,7 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ..opengl_compatibility import ConvertToOpenGL
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -52,20 +48,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     """
 
-    # Scaled for consistency with cairo
-    OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
-    shader_folder = "true_dot"
-    shader_dtype = [
-        ("point", np.float32, (3,)),
-        ("color", np.float32, (4,)),
-    ]
-
     def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
         self.stroke_width = stroke_width
-        self.rgbas = None
-        self.points = None
-        if config["renderer"] == "opengl":
-            kwargs["render_primitive"] = moderngl.POINTS
         super().__init__(**kwargs)
 
     def reset_points(self):
@@ -93,18 +77,12 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def set_color(self, color=None, family=True):
-        if config["renderer"] == "opengl":
-            color = self.color if not color else color
-            # temp fix due to clash between opengl and cairo implementations
-            # as opengl will pass opacity and not family for set_color
-            return super().set_color(color=color, opacity=family)
-        else:
-            rgba = color_to_rgba(color)
-            mobs = self.family_members_with_points() if family else [self]
-            for mob in mobs:
-                mob.rgbas[:, :] = rgba
-            self.color = color
-            return self
+        rgba = color_to_rgba(color)
+        mobs = self.family_members_with_points() if family else [self]
+        for mob in mobs:
+            mob.rgbas[:, :] = rgba
+        self.color = color
+        return self
 
     def get_stroke_width(self):
         return self.stroke_width
@@ -119,8 +97,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(*colors, len(self.points))))
         )
-        if config["renderer"] == "opengl":
-            self.set_rgba_array_direct(self.rgbas)
         return self
 
     def set_colors_by_radial_gradient(
@@ -136,8 +112,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             mob.rgbas = np.array(
                 np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
             )
-            if config["renderer"] == "opengl":
-                self.set_rgba_array_direct(self.rgbas)
         return self
 
     def match_colors(self, mobject):
@@ -158,13 +132,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         """
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
-            if config["renderer"] == "opengl":
-                self.set_points(self.points[np.arange(0, num_points, factor)])
             mob.apply_over_attr_arrays(
                 lambda arr: arr[np.arange(0, num_points, factor)]
             )
-            if config["renderer"] == "opengl":
-                self.set_points(self.points)
         return self
 
     def sort_points(self, function=lambda p: p[0]):
@@ -180,8 +150,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
             mob.fade_to(color, alpha, family)
-        if config["renderer"] == "opengl":
-            self.set_rgba_array_direct(self.rgbas)
         return self
 
     def get_all_rgbas(self):
@@ -250,34 +218,12 @@ class Mobject1D(PMobject):
             points = [interpolate(start, end, t) for t in np.arange(0, 1, epsilon)]
         self.add_points(points, color=color)
 
-    def init_points(self):
-        self.reset_points()
-        self.generate_points()
-        self.set_points(self.points)
-
-    def get_shader_data(self):
-        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
-        self.read_data_to_shader(shader_data, "point", "points")
-        self.read_data_to_shader(shader_data, "color", "rgbas")
-        return shader_data
-
 
 class Mobject2D(PMobject):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
         PMobject.__init__(self, **kwargs)
-
-    def init_points(self):
-        self.reset_points()
-        self.generate_points()
-        self.set_points(self.points)
-
-    def get_shader_data(self):
-        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
-        self.read_data_to_shader(shader_data, "point", "points")
-        self.read_data_to_shader(shader_data, "color", "rgbas")
-        return shader_data
 
 
 class PGroup(PMobject):
@@ -358,7 +304,6 @@ class PointCloudDot(Mobject1D):
         Mobject1D.__init__(
             self, stroke_width=stroke_width, density=density, color=color, **kwargs
         )
-        self.set_point_radius_uniform()
         self.shift(center)
 
     def generate_points(self):
@@ -372,15 +317,6 @@ class PointCloudDot(Mobject1D):
                 )
             ]
         )
-
-    def set_point_radius_uniform(self):
-        if config["renderer"] == "opengl":
-            self.set_uniforms(
-                {
-                    "point_radius": self.stroke_width
-                    * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
-                }
-            )
 
 
 class Point(PMobject):
@@ -407,7 +343,6 @@ class Point(PMobject):
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         self.location = location
         PMobject.__init__(self, color=color, **kwargs)
-        self.set_point_radius_uniform()
 
     def init_points(self):
         self.reset_points()
@@ -416,18 +351,3 @@ class Point(PMobject):
 
     def generate_points(self):
         self.add_points([self.location])
-
-    def get_shader_data(self):
-        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
-        self.read_data_to_shader(shader_data, "point", "points")
-        self.read_data_to_shader(shader_data, "color", "rgbas")
-        return shader_data
-
-    def set_point_radius_uniform(self):
-        if config["renderer"] == "opengl":
-            self.set_uniforms(
-                {
-                    "point_radius": self.stroke_width
-                    * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
-                }
-            )
