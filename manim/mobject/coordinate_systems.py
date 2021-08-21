@@ -172,7 +172,7 @@ class CoordinateSystem:
         label: Union[float, str, "Mobject"],
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UR,
-        buff: float = MED_SMALL_BUFF,
+        buff: float = SMALL_BUFF,
         **kwargs,
     ) -> "Mobject":
         """Generate an x-axis label.
@@ -217,7 +217,7 @@ class CoordinateSystem:
         label: Union[float, str, "Mobject"],
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UP * 0.5 + RIGHT,
-        buff: float = MED_SMALL_BUFF,
+        buff: float = SMALL_BUFF,
         **kwargs,
     ):
         """Generate a y-axis label.
@@ -744,7 +744,7 @@ class CoordinateSystem:
                     sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
-                        label=r"x = \frac{\pi}{2}",
+                        label= "x = \\frac{\\pi}{2}",
                         x_val=PI / 2,
                         dot=True,
                         direction=UR,
