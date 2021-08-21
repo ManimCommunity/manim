@@ -1057,6 +1057,23 @@ class CoordinateSystem:
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
 
+        .. manim:: GetDerivativeGraphExample
+            :save_last_frame:
+
+            class GetDerivativeGraphExample(Scene):
+                def construct(self):
+                    ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
+
+                    curve_1 = ax.get_graph(lambda x: x ** 2, color=PURPLE_B)
+                    curve_2 = ax.get_derivative_graph(curve_1)
+                    curves = VGroup(curve_1, curve_2)
+
+                    label_1 = ax.get_graph_label(curve_1, "x^2", x_val=-2, direction=DL)
+                    label_2 = ax.get_graph_label(curve_2, "2x", x_val=3, direction=RIGHT)
+                    labels = VGroup(label_1, label_2)
+
+                    self.add(ax, curves, labels)
+
         Parameters
         ----------
         graph
@@ -1095,6 +1112,27 @@ class CoordinateSystem:
         """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
          the secant to the curve at a particular x-value.
 
+         .. manim:: GetSecantSlopeGroupExample
+            :save_last_frame:
+
+            class GetSecantSlopeGroupExample(Scene):
+                def construct(self):
+                    ax = Axes(y_range=[-1, 7])
+                    graph = ax.get_graph(lambda x: 1 / 4 * x ** 2, color=BLUE)
+                    slopes = ax.get_secant_slope_group(
+                        x=2.0,
+                        graph=graph,
+                        dx=1.0,
+                        dx_label=Tex("dx = 1.0"),
+                        dy_label="dy",
+                        dx_line_color=GREEN_B,
+                        secant_line_length=4,
+                        secant_line_color=RED_D,
+                    )
+
+                    self.add(ax, graph, slopes)
+
+
         Parameters
         ----------
         x
@@ -1113,14 +1151,14 @@ class CoordinateSystem:
             The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`.
 
         dx_label
-            The label for the `dx` line.
+            The label for the `dx` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
 
         dy_label
-            The label for the `dy` line.
+            The label for the `dy` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
 
         include_secant_line
-            Whether or not to include the secant line in the graph,
-            or just have the df and dx lines and labels.
+            Whether to include the secant line in the graph,
+            or just the df/dx lines and labels.
 
         secant_line_color
             The color of the secant line.
