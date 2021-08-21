@@ -581,10 +581,48 @@ class CoordinateSystem:
     ):
         """Generates a curve based on a function.
 
+        .. warning::
+
+            This method may not produce accurate graphs since Manim currently relies on interpolation between
+            evenly-spaced samples of the curve, instead of intelligent plotting.
+            See the example below for some solutions to this problem.
+
         Examples
         --------
 
-        ..
+        .. manim:: GetGraphExample
+            :save_last_frame:
+
+            class GetGraphExample(Scene):
+                def construct(self):
+
+                    ax_1 = Axes(
+                        x_range=[0.001, 6], y_range=[-8, 2], x_length=5, y_length=3, tips=False
+                    )
+                    ax_2 = ax_1.copy()
+                    ax_3 = ax_1.copy()
+
+                    # position the axes
+                    ax_1.to_corner(UL)
+                    ax_2.to_corner(UR)
+                    ax_3.to_edge(DOWN)
+                    axes = VGroup(ax_1, ax_2, ax_3)
+
+                    log_func = lambda x: np.log(x)
+
+                    # a curve without adjustments; produces error due to poor interpolation.
+                    curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
+
+                    # disabling interpolation makes the graph look choppy as not enough inputs are available
+                    curve_2 = ax_2.get_graph(log_func, use_smoothing=False, color=ORANGE)
+
+                    # taking more inputs of the curve by specifying a step for the x_range yields
+                    # expected results, but increases rendering time.
+                    curve_3 = ax_3.get_graph(log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN)
+
+                    curves = VGroup(curve_1, curve_2, curve_3)
+
+                    self.add(axes, curves)
 
         Parameters
         ----------
@@ -592,7 +630,7 @@ class CoordinateSystem:
             The function used to construct the :class:`~.ParametricFunction`.
 
         x_range
-            The range of the curve along the axes. ``x_range = [x_min, x_max]``.
+            The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
 
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
