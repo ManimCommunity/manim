@@ -298,7 +298,7 @@ class CoordinateSystem:
         Parameters
         ----------
         label
-            The label.Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+            The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         axis
             The axis to which the label will be added.
         edge
@@ -492,7 +492,6 @@ class CoordinateSystem:
         :class:`Line`
             A vertical line from the x-axis to the point.
         """
-        print(kwargs)
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
     def get_horizontal_line(self, point: Sequence[float], **kwargs) -> "Line":
@@ -760,7 +759,7 @@ class CoordinateSystem:
         label
             The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
         x_val
-            The x_value on the curve that positions the label.
+            The x_value along the curve that positions the label.
         direction
             The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
         buff
@@ -1072,7 +1071,7 @@ class CoordinateSystem:
         Returns
         -------
         :class:`float`
-            The angle of the tangent with the curve to the curve.
+            The angle of the tangent to the curve.
         """
 
         p0 = self.input_to_graph_point(x, graph)
