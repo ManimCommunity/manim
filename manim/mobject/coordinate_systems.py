@@ -407,9 +407,10 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
+        You can also specifically control the position and value of the labels using a dict.
+
         .. code-block:: python
 
-            # specifically control the position and value of the labels using a dict
             ax = Axes(x_range=[0, 7])
             x_pos = [x for x in range(1, 8)]
 
@@ -1584,7 +1585,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         coords
-            The coordinates. Each coord is [assed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
+            The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
 
         Returns
         -------
@@ -1612,7 +1613,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     ax = Axes(x_range=[0, 10, 2]).add_coordinates()
                     circ = Circle(radius=0.5).shift(UR * 2)
 
-                    # get the coordinates of the circle wrt to the axes
+                    # get the coordinates of the circle with respect to the axes
                     coords = np.around(ax.point_to_coords(circ.get_right()), decimals=2)
 
                     label = (
