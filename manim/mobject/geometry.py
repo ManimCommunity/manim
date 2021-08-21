@@ -65,6 +65,7 @@ __all__ = [
     "ArrowSquareFilledTip",
 ]
 
+import itertools
 import math
 import warnings
 from typing import Iterable, Optional, Sequence
@@ -81,11 +82,10 @@ from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
-    compass_directions,
+    cartesian_to_spherical,
     line_intersection,
     normalize,
     perpendicular_bisector,
@@ -177,7 +177,18 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(
+            angles[2] - PI - tip.tip_angle
+        )  # Rotates the tip along the azimuthal
+        axis = [
+            np.sin(angles[2]),
+            -np.cos(angles[2]),
+            0,
+        ]  # Obtains the perpendicular of the tip
+        tip.rotate(
+            -angles[1] + PI / 2, axis=axis
+        )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -1469,7 +1480,7 @@ class Arrow(Line):
         --------
         ::
 
-            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            >>> np.round(Arrow().get_normal_vector()) + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
         """
 
@@ -2204,11 +2215,11 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = [arc_config for pair in point_pairs]
+            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config
