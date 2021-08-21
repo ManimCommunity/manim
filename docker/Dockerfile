@@ -3,9 +3,9 @@ FROM python:3.8-slim
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
         ffmpeg \
-	build-essential \
+        build-essential \
         gcc \
-	cmake \
+        cmake \
         libcairo2-dev \
         libffi-dev \
         libpango1.0-dev \
