@@ -29,6 +29,7 @@ class ConvertToOpenGL(ABCMeta):
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
                 "PMobject": OpenGLPMObject,
+                "Mobject1D": OpenGLPMObject,
             }
 
             bases = tuple(

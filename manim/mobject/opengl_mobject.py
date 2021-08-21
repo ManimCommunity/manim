@@ -130,7 +130,7 @@ class OpenGLMobject:
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
-        # Typically implemented in subclass, unlpess purposefully left blank
+        # Typically implemented in subclass, unless purposefully left blank
         pass
 
     def set_data(self, data):

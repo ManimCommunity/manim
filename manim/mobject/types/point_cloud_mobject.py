@@ -17,6 +17,7 @@ from ...utils.color import (
 )
 from ...utils.iterables import stretch_array_to_length
 from ..opengl_compatibility import ConvertToOpenGL
+from ..types.opengl_point_cloud_mobject import OpenGLPMObject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -202,7 +203,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
 
 # TODO, Make the two implementations below non-redundant
-class Mobject1D(PMobject):
+class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -249,8 +250,13 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, PMobject) for m in pmobs]):
-            raise ValueError("All submobjects must be of type PMobject")
+        if not all(
+            [isinstance(m, PMobject) or isinstance(m, OpenGLPMObject) for m in pmobs]
+        ):
+            raise ValueError(
+                "All submobjects must be of type PMobject or OpenGLPMObject"
+                " if using the opengl renderer"
+            )
         super().__init__(**kwargs)
         self.add(*pmobs)
 
@@ -301,10 +307,15 @@ class PointCloudDot(Mobject1D):
         **kwargs
     ):
         self.radius = radius
-        Mobject1D.__init__(
-            self, stroke_width=stroke_width, density=density, color=color, **kwargs
+        self.epsilon = 1.0 / density
+        super().__init__(
+            stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
+
+    def init_points(self):
+        self.reset_points()
+        self.generate_points()
 
     def generate_points(self):
         self.add_points(
@@ -342,7 +353,7 @@ class Point(PMobject):
 
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         self.location = location
-        PMobject.__init__(self, color=color, **kwargs)
+        super().__init__(color=color, **kwargs)
 
     def init_points(self):
         self.reset_points()
