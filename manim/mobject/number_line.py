@@ -36,9 +36,9 @@ class NumberLine(Line):
         The :code:`[x_min, x_max, x_step]` values to create the line.
     length
         The length of the number line.
-    unit_size : class:`float`
+    unit_size
         The distance between each tick of the line. Overwritten by :attr:`length`, if specified.
-    include_ticks : :class:`bool`
+    include_ticks
         Determines whether ticks are included.
     tick_size
         The vertical length of each tick mark.
@@ -132,8 +132,8 @@ class NumberLine(Line):
     )
     def __init__(
         self,
-        x_range: Sequence[float] = None,  # must be first
-        length: float = None,
+        x_range: Optional[Sequence[float]] = None,  # must be first
+        length: Optional[float] = None,
         unit_size: float = 1,
         # ticks
         include_ticks: bool = True,

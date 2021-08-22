@@ -2,6 +2,8 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
+from typing import Optional, Sequence
+
 import numpy as np
 
 from .. import config
@@ -52,9 +54,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         group_with_commas: bool = True,
         digit_buff_per_font_unit: float = 0.001,
         show_ellipsis: bool = False,
-        unit=None,  # Aligned to bottom unless it starts with "^"
+        unit: Optional[str] = None,  # Aligned to bottom unless it starts with "^"
         include_background_rectangle: bool = False,
-        edge_to_fix=LEFT,
+        edge_to_fix: Sequence[float] = LEFT,
         font_size: float = DEFAULT_FONT_SIZE,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
@@ -70,7 +72,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.unit = unit
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
-        self.font_size = font_size
+        self._font_size = font_size
         self.stroke_width = stroke_width
         self.fill_opacity = fill_opacity
 
@@ -112,7 +114,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             self.add(self.unit_sign)
 
         self.arrange(
-            buff=self.digit_buff_per_font_unit * self.font_size, aligned_edge=DOWN
+            buff=self.digit_buff_per_font_unit * self._font_size, aligned_edge=DOWN
         )
 
         # Handle alignment of parts that should be aligned
@@ -149,7 +151,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if string not in string_to_mob_map:
             string_to_mob_map[string] = mob_class(string, font_size=1.0, **kwargs)
         mob = string_to_mob_map[string].copy()
-        mob.scale(self.font_size)
+        mob.scale(self._font_size)
         return mob
 
     def get_formatter(self, **kwargs):
@@ -215,7 +217,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
     def scale(self, scale_factor, **kwargs):
         super().scale(scale_factor, **kwargs)
-        self.font_size *= scale_factor
+        self._font_size *= scale_factor
         return self
 
     def get_value(self):
