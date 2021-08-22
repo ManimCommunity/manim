@@ -51,7 +51,7 @@ class ThreeDScene(Scene):
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
-        zoom: float = None,
+        zoom: Optional[float] = None,
         distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
     ):
