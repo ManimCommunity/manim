@@ -363,6 +363,22 @@ class VectorField(VGroup):
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
+    def get_vectorized_rgb_gradient_function(self, min_value, max_value):
+        rgbs = np.array(DEFAULT_SCALAR_FIELD_COLORS)
+
+        def func(values):
+            alphas = inverse_interpolate(min_value, max_value, np.array(values))
+            alphas = np.clip(alphas, 0, 1)
+            scaled_alphas = alphas * (len(rgbs) - 1)
+            indices = scaled_alphas.astype(int)
+            next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
+            inter_alphas = scaled_alphas % 1
+            inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
+            result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
+            return result
+
+        return func
+
 
 class ArrowVectorField(VectorField):
     """A :class:`VectorField` represented by a set of change vectors.
@@ -687,6 +703,7 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
+            self.values_to_rgbs = self.get_vectorized_rgb_gradient_function(0.0, 2.0)
         for point in start_points:
             points = [point]
             for step in range(max_steps):
@@ -707,12 +724,17 @@ class StreamLines(VectorField):
             if self.single_color:
                 line.set_stroke(self.color)
             else:
+                norms = [self.get_norm(self.func(point)) for point in line.get_points()]
                 # line.set_stroke([color_func(p) for p in line.get_anchors()])
                 # TODO use color_from_background_image
-                line.color_using_background_image(self.background_img)
+                # line.color_using_background_image(self.background_img)
+                line.set_color(self.values_to_rgbs(norms))
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
+
+    def get_norm(self, vect):
+        return sum([x ** 2 for x in vect]) ** 0.5
 
     def create(
         self,

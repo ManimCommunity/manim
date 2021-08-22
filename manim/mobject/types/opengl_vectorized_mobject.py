@@ -328,10 +328,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.background_image = background_image
         self.set_color(WHITE)
         rgbas = self.get_background_array(background_image)
-        self.set_rgba_array_direct(rgbas)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image)
-            submob.set_rgba_array_direct(rgbas)
         return self
 
     def set_rgba_array_direct(
