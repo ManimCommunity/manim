@@ -395,7 +395,7 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-            if hasattr(label, "font_size"):
+            if hasattr(label, "_font_size"):
                 label.font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
