@@ -3,6 +3,7 @@
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 import numpy as np
+from colour import Color
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -77,7 +78,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
-    def set_color(self, color=None, family=True):
+    def set_color(self, color=YELLOW, family=True):
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:

@@ -6,19 +6,10 @@ from ...constants import ORIGIN, RIGHT, UP
 from ...utils.color import YELLOW
 from .opengl_point_cloud_mobject import OpenGLPMObject
 
-DEFAULT_GRID_HEIGHT = 6
-DEFAULT_BUFF_RATIO = 0.5
-DEFAULT_POINT_DENSITY_1D: int = 10
-
 
 class DotCloud(OpenGLPMObject):
     def __init__(
-        self,
-        color=YELLOW,
-        stroke_width=2.0,
-        radius=2.0,
-        density=DEFAULT_POINT_DENSITY_1D,
-        **kwargs
+        self, color=YELLOW, stroke_width=2.0, radius=2.0, density=10, **kwargs
     ):
         self.radius = radius
         self.epsilon = 1.0 / density

@@ -2,12 +2,7 @@ from abc import ABCMeta
 
 from .. import config
 from .opengl_mobject import OpenGLMobject
-from .types.dot_cloud import DotCloud
-from .types.opengl_point_cloud_mobject import (
-    OpenGLPGroup,
-    OpenGLPMObject,
-    OpenGLPMPoint,
-)
+from .types.opengl_point_cloud_mobject import OpenGLPMObject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 

@@ -7,13 +7,12 @@ from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import interpolate
 from ...utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
-from ...utils.iterables import resize_array, resize_with_interpolation
-
-DEFAULT_COLOR = YELLOW
+from ...utils.iterables import resize_with_interpolation
 
 
 class OpenGLPMObject(OpenGLMobject):
     shader_folder = "true_dot"
+    # Scale for consistency with cairo units
     OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
     shader_dtype = [
         ("point", np.float32, (3,)),
@@ -25,13 +24,6 @@ class OpenGLPMObject(OpenGLMobject):
     ):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)
-
-    def resize_points(self, size, resize_func=resize_array):
-        # TODO
-        for key in self.data:
-            if len(self.data[key]) != size:
-                self.data[key] = resize_array(self.data[key], size)
-        return self
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
@@ -52,7 +44,7 @@ class OpenGLPMObject(OpenGLMobject):
         points must be a Nx3 numpy array, as must rgbas if it is not None
         """
         if rgbas is None and color is None:
-            color = DEFAULT_COLOR
+            color = YELLOW
         self.append_points(points)
         # rgbas array will have been resized with points
         if color is not None:
