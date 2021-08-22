@@ -24,7 +24,7 @@ from ..utils.space_ops import rotation_about_z, rotation_matrix
 class ThreeDCamera(Camera):
     def __init__(
         self,
-        distance=20.0,
+        focal_distance=20.0,
         shading_factor=0.2,
         default_distance=5.0,
         light_source_start_point=9 * DOWN + 7 * LEFT + 10 * OUT,
@@ -46,7 +46,7 @@ class ThreeDCamera(Camera):
         """
         self._frame_center = Point(kwargs.get("frame_center", ORIGIN), stroke_width=0)
         super().__init__(**kwargs)
-        self.distance = distance
+        self.focal_distance = focal_distance
         self.phi = phi
         self.theta = theta
         self.gamma = gamma
@@ -59,7 +59,7 @@ class ThreeDCamera(Camera):
         self.max_allowable_norm = 3 * config["frame_width"]
         self.phi_tracker = ValueTracker(self.phi)
         self.theta_tracker = ValueTracker(self.theta)
-        self.distance_tracker = ValueTracker(self.distance)
+        self.focal_distance_tracker = ValueTracker(self.focal_distance)
         self.gamma_tracker = ValueTracker(self.gamma)
         self.fixed_orientation_mobjects = {}
         self.fixed_in_frame_mobjects = set()
@@ -78,7 +78,7 @@ class ThreeDCamera(Camera):
         Camera.capture_mobjects(self, mobjects, **kwargs)
 
     def get_value_trackers(self):
-        """Returns list of ValueTrackers of phi, theta, distance and gamma
+        """Returns list of ValueTrackers of phi, theta, focal_distance and gamma
 
         Returns
         -------
@@ -88,7 +88,7 @@ class ThreeDCamera(Camera):
         return [
             self.phi_tracker,
             self.theta_tracker,
-            self.distance_tracker,
+            self.focal_distance_tracker,
             self.gamma_tracker,
         ]
 
@@ -157,15 +157,15 @@ class ThreeDCamera(Camera):
         """
         return self.theta_tracker.get_value()
 
-    def get_distance(self):
-        """Returns radial distance from ORIGIN.
+    def get_focal_distance(self):
+        """Returns focal_distance of the Camera.
 
         Returns
         -------
         float
-            The radial distance from ORIGIN in MUnits.
+            The focal_distance of the Camera in MUnits.
         """
-        return self.distance_tracker.get_value()
+        return self.focal_distance_tracker.get_value()
 
     def get_gamma(self):
         """Returns the rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -198,15 +198,15 @@ class ThreeDCamera(Camera):
         """
         self.theta_tracker.set_value(value)
 
-    def set_distance(self, value):
-        """Sets the radial distance between the camera and ORIGIN.
+    def set_focal_distance(self, value):
+        """Sets the focal_distance of the Camera.
 
         Parameters
         ----------
         value : int, float
-            The new radial distance.
+            The focal_distance of the Camera.
         """
-        self.distance_tracker.set_value(value)
+        self.focal_distance_tracker.set_value(value)
 
     def set_gamma(self, value):
         """Sets the angle of rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -270,7 +270,7 @@ class ThreeDCamera(Camera):
             The points after projecting.
         """
         frame_center = self.frame_center
-        distance = self.get_distance()
+        focal_distance = self.get_focal_distance()
         rot_matrix = self.get_rotation_matrix()
 
         points = points - frame_center
@@ -282,12 +282,12 @@ class ThreeDCamera(Camera):
                 # x and y by d / (d-z).  But for points with high
                 # z value that causes weird artifacts, and applying
                 # the exponential helps smooth it out.
-                factor = np.exp(zs / distance)
+                factor = np.exp(zs / focal_distance)
                 lt0 = zs < 0
-                factor[lt0] = distance / (distance - zs[lt0])
+                factor[lt0] = focal_distance / (focal_distance - zs[lt0])
             else:
-                factor = distance / (distance - zs)
-                factor[(distance - zs) < 0] = 10 ** 6
+                factor = focal_distance / (focal_distance - zs)
+                factor[(focal_distance - zs) < 0] = 10 ** 6
             points[:, i] *= factor
         return points
 

@@ -47,13 +47,20 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
+    @deprecated_params(
+        params="distance",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use focal_distance instead.",
+    )
     def set_camera_orientation(
         self,
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
-        distance: Optional[float] = None,
+        focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        **kwargs,
     ):
         """
         This method sets the orientation of the camera in the scene.
@@ -66,8 +73,8 @@ class ThreeDScene(Scene):
         theta : int or float, optional
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
 
-        distance : int or float, optional
-            The radial distance between ORIGIN and Camera.
+        focal_distance : int or float, optional
+            The focal_distance of the Camera.
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -76,12 +83,13 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
+        focal_distance = kwargs.pop("distance", None) or focal_distance
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
             self.renderer.camera.set_theta(theta)
-        if distance is not None:
-            self.renderer.camera.set_distance(distance)
+        if focal_distance is not None:
+            self.renderer.camera.set_focal_distance(focal_distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
         if frame_center is not None:
@@ -162,12 +170,18 @@ class ThreeDScene(Scene):
         self.renderer.camera.phi_tracker.clear_updaters()
         self.remove(self.renderer.camera.phi_tracker)
 
+    @deprecated_params(
+        params="distance",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use focal_distance instead.",
+    )
     def move_camera(
         self,
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
-        distance: Optional[float] = None,
+        focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         added_anims: Iterable["Animation"] = [],
         **kwargs,
@@ -184,8 +198,8 @@ class ThreeDScene(Scene):
         theta : int or float, optional
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
 
-        distance : int or float, optional
-            The radial distance between ORIGIN and Camera.
+        focal_distance : int or float, optional
+            The radial focal_distance between ORIGIN and Camera.
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -198,10 +212,11 @@ class ThreeDScene(Scene):
 
         """
         anims = []
+        focal_distance = kwargs.pop("distance", None) or focal_distance
         value_tracker_pairs = [
             (phi, self.renderer.camera.phi_tracker),
             (theta, self.renderer.camera.theta_tracker),
-            (distance, self.renderer.camera.distance_tracker),
+            (focal_distance, self.renderer.camera.focal_distance_tracker),
             (gamma, self.renderer.camera.gamma_tracker),
         ]
         for value, tracker in value_tracker_pairs:
@@ -313,7 +328,7 @@ class ThreeDScene(Scene):
         Parameters
         ----------
         **kwargs
-            Some recognised kwargs are phi, theta, distance, gamma,
+            Some recognised kwargs are phi, theta, focal_distance, gamma,
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
@@ -424,7 +439,7 @@ class SpecialThreeDScene(ThreeDScene):
         Returns
         -------
         dict
-            Dictionary of phi, theta, distance, and gamma.
+            Dictionary of phi, theta, focal_distance, and gamma.
         """
         return self.default_angled_camera_position
 
