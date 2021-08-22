@@ -16,7 +16,6 @@ from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
-from utils.deprecation import deprecated_params
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -47,6 +46,7 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
