@@ -38,7 +38,7 @@ def test_custom_coordinates(scene):
 @frames_comparison
 def test_get_axis_labels(scene):
     ax = Axes()
-    labels = ax.get_axis_labels(Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45))
+    labels = ax.get_axis_labels(Tex("$x$-axis").scale(0.7), Tex("$y$-axis").scale(0.45))
     scene.add(ax, labels)
 
 
