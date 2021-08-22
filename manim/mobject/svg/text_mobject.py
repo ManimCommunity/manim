@@ -401,7 +401,7 @@ class Text(SVGMobject):
         params="size",
         since="v0.10.0",
         until="v0.11.0",
-        message="Use font_size instead.",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
     )
     def __init__(
         self,
@@ -1021,7 +1021,7 @@ class MarkupText(SVGMobject):
         params="size",
         since="v0.10.0",
         until="v0.11.0",
-        message="Use font_size instead.",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
     )
     def __init__(
         self,

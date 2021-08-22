@@ -16,6 +16,7 @@ from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
+from utils.deprecation import deprecated_params
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
@@ -1754,6 +1755,12 @@ class PolarPlane(Axes):
                 self.add(polarplane_pi)
     """
 
+    @deprecated_params(
+        params="azimuth_label_scale",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use azimuth_label_font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -1773,6 +1780,14 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
+        # deprecation
+        azimuth_label_scale = kwargs.pop("azimuth_label_scale", None)
+        if azimuth_label_scale:
+            self.azimuth_label_font_size = (
+                azimuth_label_scale * DEFAULT_FONT_SIZE * 0.75
+            )
+        else:
+            self.azimuth_label_font_size = azimuth_label_font_size
 
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
@@ -1829,7 +1844,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        self.azimuth_label_font_size = azimuth_label_font_size
+        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
