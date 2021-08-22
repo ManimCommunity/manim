@@ -1,6 +1,8 @@
 [flake8]
+# Exclude the grpc generated code
+exclude = ./.*,manim/grpc/gen/*
 max-complexity = 35
-max-line-length = 3454
+max-line-length = 200
                 #Black Compatibility
 extend-ignore = E203, E266,  
                 #Style Changes
