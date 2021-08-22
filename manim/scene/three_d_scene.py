@@ -20,6 +20,7 @@ from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
+from ..utils.deprecation import deprecated_params
 
 
 class ThreeDScene(Scene):
