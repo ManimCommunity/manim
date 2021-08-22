@@ -132,7 +132,7 @@ class Paragraph(VGroup):
     Remove unwanted invisible characters::
 
         self.play(Transform(remove_invisible_chars(paragraph.chars[0:2]),
-                            remove_invisible_chars(paragraph.chars[3][0:3]))
+                            remove_invisible_chars(paragraph.chars[3][0:3])))
 
     """
 
@@ -152,11 +152,12 @@ class Paragraph(VGroup):
             chars_lines_text_list.add(
                 self.lines_text[
                     char_index_counter : char_index_counter
-                    + lines_str_list[line_index].__len__()
-                    + 1
+                    + re.sub(r"\s+", "", lines_str_list[line_index]).__len__()
                 ]
             )
-            char_index_counter += lines_str_list[line_index].__len__() + 1
+            char_index_counter += re.sub(
+                r"\s+", "", lines_str_list[line_index]
+            ).__len__()
         self.lines = []
         self.lines.append([])
         for line_no in range(chars_lines_text_list.__len__()):
@@ -193,11 +194,10 @@ class Paragraph(VGroup):
             chars[line_no].add(
                 *self.lines_text.chars[
                     char_index_counter : char_index_counter
-                    + lines_str_list[line_no].__len__()
-                    + 1
+                    + re.sub(r"\s+", "", lines_str_list[line_no]).__len__()
                 ]
             )
-            char_index_counter += lines_str_list[line_no].__len__() + 1
+            char_index_counter += re.sub(r"\s+", "", lines_str_list[line_no]).__len__()
         return chars
 
     def set_all_lines_alignments(self, alignment):
