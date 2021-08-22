@@ -126,7 +126,7 @@ class SingleStringMathTex(SVGMobject):
     @font_size.setter
     def font_size(self, font_val):
         if font_val <= 0:
-            logger.warning("font_size must be greater than 0.")
+            raise ValueError("font_size must be greater than 0.")
         elif self.height > 0:
             # sometimes manim generates a SingleStringMathex mobject with 0 height.
             # can't be scaled regardless and will error without the elif.

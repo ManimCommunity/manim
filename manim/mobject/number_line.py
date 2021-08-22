@@ -39,11 +39,11 @@ class NumberLine(Line):
     unit_size
         The distance between each tick of the line. Overwritten by :attr:`length`, if specified.
     include_ticks
-        Determines whether ticks are included.
+        Whether to include ticks on the number line.
     tick_size
-        The vertical length of each tick mark.
+        The length of each tick mark.
     numbers_with_elongated_ticks
-        A list of specific values with elongated ticks.
+        An iterable of specific values with elongated ticks.
     longer_tick_multiple
         Influences how many times larger elongated ticks are than regular ticks (2 = 2x).
     color
@@ -53,24 +53,26 @@ class NumberLine(Line):
     stroke_width
         The thickness of the line.
     include_tip
-        Determines whether a tip is added to the end of the line.
+        Whether to add a tip to the end of the line.
     tip_width
         The width of the tip.
     tip_height
         The height of the tip.
     include_numbers
-        Determines whether numbers are added to tick marks. The number of decimal places is determined
+        Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
     font size
-        The size of the numbers. Defaults to 36.
+        The size of the label mobjects. Defaults to 36.
     label_direction
-        The specific position to which number mobjects are added on the line.
+        The specific position to which label mobjects are added on the line.
     line_to_number_buff
-        The distance between the line and the number mobject.
+        The distance between the line and the label mobject.
     decimal_number_config
         Arguments that can be passed to :class:`~.numbers.DecimalNumber` to influence number mobjects.
     numbers_to_exclude
-        An explicit list of numbers to not be added to the line.
+        An explicit iterable of numbers to not be added to the number line.
+    numbers_to_include
+        An explicit iterable of numbers to add to the number line
     kwargs
         Additional arguments to be passed to :class:`~.Line`.
 

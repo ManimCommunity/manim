@@ -539,7 +539,7 @@ class Text(SVGMobject):
     @font_size.setter
     def font_size(self, font_val):
         if font_val <= 0:
-            logger.warning("font_size must be greater than 0.")
+            raise ValueError("font_size must be greater than 0.")
         else:
             # multiply by (1/2.4) because it makes it work.
             self.scale(
@@ -1152,7 +1152,7 @@ class MarkupText(SVGMobject):
     def font_size(self, font_val):
         # TODO: use pango's font size scaling.
         if font_val <= 0:
-            logger.warning("font_size must be greater than 0.")
+            raise ValueError("font_size must be greater than 0.")
         else:
             self.scale(
                 TEXT_MOB_SCALE_FACTOR
