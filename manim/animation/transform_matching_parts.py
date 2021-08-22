@@ -12,6 +12,7 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..scene.scene import Scene
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
@@ -148,7 +149,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
             shape_map[key].add(sm)
         return shape_map
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:
             anim.interpolate(0)
         scene.remove(self.mobject)
