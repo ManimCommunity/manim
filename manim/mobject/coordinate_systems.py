@@ -33,13 +33,7 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import (
-    Mobject,
-    VDict,
-    VectorizedPoint,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -874,7 +868,6 @@ class CoordinateSystem:
         group = VGroup()
 
         dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
-        dx_line_color = dx_line_color
         dy_line_color = dy_line_color or graph.get_color()
 
         p1 = self.input_to_graph_point(x, graph)
@@ -916,7 +909,6 @@ class CoordinateSystem:
             group.df_label.set_color(group.df_line.get_color())
 
         if include_secant_line:
-            secant_line_color = secant_line_color
             group.secant_line = Line(p1, p2, color=secant_line_color)
             group.secant_line.scale_in_place(
                 secant_line_length / group.secant_line.get_length()
@@ -1431,8 +1423,11 @@ class NumberPlane(Axes):
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+
+    .. note::
+
+        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
 
     Examples
     --------
@@ -1470,7 +1465,7 @@ class NumberPlane(Axes):
         y_length: Optional[float] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[float] = 1,
+        faded_line_ratio: int = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -1517,12 +1512,6 @@ class NumberPlane(Axes):
             **kwargs,
         )
 
-        # dynamically adjusts x_length and y_length so that the unit_size is one by default
-        if x_length is None:
-            x_length = self.x_range[1] - self.x_range[0]
-        if y_length is None:
-            y_length = self.y_range[1] - self.y_range[0]
-
         self.init_background_lines()
 
     def init_background_lines(self):
@@ -1537,6 +1526,7 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
+
         self.background_lines.set_style(
             **self.background_line_style,
         )
@@ -1565,22 +1555,29 @@ class NumberPlane(Axes):
             self.x_axis.x_step,
             self.faded_line_ratio,
         )
+
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
             self.y_axis.x_step,
             self.faded_line_ratio,
         )
+
+        # TODO this was added so that we can run tests on NumberPlane
+        # In the future these attributes will be tacked onto self.background_lines
+        self.x_lines = x_lines1
+        self.y_lines = y_lines1
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
+
         return lines1, lines2
 
     def get_lines_parallel_to_axis(
         self,
-        axis_parallel_to: Line,
-        axis_perpendicular_to: Line,
+        axis_parallel_to: NumberLine,
+        axis_perpendicular_to: NumberLine,
         freq: float,
-        ratio_faded_lines: float,
+        ratio_faded_lines: int,
     ) -> Tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
@@ -1611,10 +1608,28 @@ class NumberPlane(Axes):
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
+
+        # min/max used in case range does not include 0. i.e. if (2,6):
+        # the range becomes (0,4), not (0,6), to produce the correct number of lines
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+            np.arange(
+                0,
+                min(
+                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
+                    axis_perpendicular_to.x_max,
+                ),
+                step,
+            ),
+            np.arange(
+                0,
+                max(
+                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
+                    axis_perpendicular_to.x_min,
+                ),
+                -step,
+            ),
         )
+
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()
@@ -1827,10 +1842,6 @@ class PolarPlane(Axes):
             axis_config=self.radius_config,
             **kwargs,
         )
-
-        # dynamically adjusts size so that the unit_size is one by default
-        if size is None:
-            size = 0
 
         self.init_background_lines()
 

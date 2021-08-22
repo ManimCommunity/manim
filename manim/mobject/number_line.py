@@ -36,9 +36,9 @@ class NumberLine(Line):
         The :code:`[x_min, x_max, x_step]` values to create the line.
     length
         The length of the number line.
-    unit_size
-        The distance between each tick of the line.
-    include_ticks
+    unit_size : class:`float`
+        The distance between each tick of the line. Overwritten by :attr:`length`, if specified.
+    include_ticks : :class:`bool`
         Determines whether ticks are included.
     tick_size
         The vertical length of each tick mark.

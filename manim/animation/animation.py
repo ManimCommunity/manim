@@ -5,7 +5,6 @@ from .. import logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
