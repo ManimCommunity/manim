@@ -36,4 +36,4 @@ def test_Data():
     )
 
     assert np.array_equal(a.bounding_box, data_bb)
-    config.renderer = "cairo"
+    config.renderer = "cairo"  # needs to be here or else the following cairo tests fail
