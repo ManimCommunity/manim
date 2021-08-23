@@ -246,7 +246,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         mob_color = interpolate_color(
                             new_colors[i - 1], new_colors[i], color_index
                         )
-                        mob.set_color(mob_color, family=False)
+                        if config.renderer == "opengl":
+                            mob.set_color(mob_color, recurse=False)
+                        else:
+                            mob.set_color(mob_color, family=False)
                         break
 
         return self
@@ -258,39 +261,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     replacement="Surface",
 )
 class ParametricSurface(Surface):
+    # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
     """Creates a parametric surface"""
-
-    def __init__(
-        self,
-        func: Callable[[float, float], np.ndarray],
-        u_range: Sequence[float] = [0, 1],
-        v_range: Sequence[float] = [0, 1],
-        resolution: Sequence[int] = 32,
-        surface_piece_config: dict = {},
-        fill_color: "Color" = BLUE_D,
-        fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
-        stroke_color: "Color" = LIGHT_GREY,
-        stroke_width: float = 0.5,
-        should_make_jagged: bool = False,
-        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
-        **kwargs
-    ):
-        super().__init__(
-            func,
-            u_range,
-            v_range,
-            resolution,
-            surface_piece_config,
-            fill_color,
-            fill_opacity,
-            checkerboard_colors,
-            stroke_color,
-            stroke_width,
-            should_make_jagged,
-            pre_function_handle_to_anchor_scale_factor,
-            **kwargs,
-        )
 
 
 # Specific shapes
