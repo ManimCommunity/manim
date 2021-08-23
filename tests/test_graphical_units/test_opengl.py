@@ -9,7 +9,6 @@ __module_test__ = "opengl"
 
 @frames_comparison(renderer_class=OpenGLRenderer, renderer="opengl")
 def test_Circle(scene):
-    config.renderer = "opengl"
     circle = Circle().set_color(RED)
     scene.add(circle)
     scene.wait()
