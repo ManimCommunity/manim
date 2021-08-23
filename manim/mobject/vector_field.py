@@ -32,9 +32,6 @@ from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
-# def get_norm(p):
-#     return np.linalg.norm(p)
-
 
 class VectorField(VGroup):
     """A vector field.
@@ -364,9 +361,9 @@ class VectorField(VGroup):
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
     def get_vectorized_rgb_gradient_function(self, min_value, max_value):
-        rgbs = np.array(DEFAULT_SCALAR_FIELD_COLORS)
+        rgbs = np.array([color_to_rgb(c) for c in DEFAULT_SCALAR_FIELD_COLORS])
 
-        def func(values):
+        def func(values, opacity=1):
             alphas = inverse_interpolate(min_value, max_value, np.array(values))
             alphas = np.clip(alphas, 0, 1)
             scaled_alphas = alphas * (len(rgbs) - 1)
@@ -375,6 +372,9 @@ class VectorField(VGroup):
             inter_alphas = scaled_alphas % 1
             inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
             result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
+            result = np.concatenate(
+                (result, np.full([len(result), 1], opacity)), axis=1
+            )
             return result
 
         return func
@@ -727,9 +727,13 @@ class StreamLines(VectorField):
                 norms = [self.get_norm(self.func(point)) for point in line.get_points()]
                 # line.set_stroke([color_func(p) for p in line.get_anchors()])
                 # TODO use color_from_background_image
-                # line.color_using_background_image(self.background_img)
-                line.set_color(self.values_to_rgbs(norms))
-            line.set_stroke(width=self.stroke_width, opacity=opacity)
+                if config["renderer"] == "opengl":
+                    line.set_stroke(width=2.0)
+                    line.set_rgba_array_direct(self.values_to_rgbs(norms, 1))
+                else:
+                    line.color_using_background_image(self.background_img)
+            if config["renderer"] != "opengl":
+                line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
 
