@@ -3,6 +3,7 @@
 __all__ = [
     "ThreeDVMobject",
     "Surface",
+    "ParametricSurface",
     "Sphere",
     "Dot3D",
     "Cube",
