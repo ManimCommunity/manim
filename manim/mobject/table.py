@@ -73,9 +73,8 @@ from ..animation.creation import *
 from ..constants import *
 from ..mobject.geometry import Line, Polygon
 from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.text_mobject import Paragraph, Text
+from ..mobject.svg.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, WHITE, YELLOW
 

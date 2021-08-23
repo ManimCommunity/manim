@@ -41,7 +41,6 @@ from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
-from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
 
 
