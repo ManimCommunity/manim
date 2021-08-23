@@ -63,7 +63,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
         end_offset = write_offset + mobject_triangulation.shape[0]
         attributes[write_offset:end_offset] = mobject_triangulation
         attributes["in_color"][write_offset:end_offset] = np.repeat(
-            submob.data["fill_rgba"], mobject_triangulation.shape[0], axis=0
+            submob.fill_rgba, mobject_triangulation.shape[0], axis=0
         )
         write_offset = end_offset
 
@@ -195,7 +195,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
     # Precompute the total number of vertices for which to reserve space.
     total_size = 0
     for submob in mobjects:
-        total_size += submob.data["points"].shape[0]
+        total_size += submob.points.shape[0]
 
     points = np.empty((total_size, 3))
     colors = np.empty((total_size, 4))
@@ -205,14 +205,14 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
     for submob in mobjects:
         if not submob.has_points():
             continue
-        end_offset = write_offset + submob.data["points"].shape[0]
+        end_offset = write_offset + submob.points.shape[0]
 
-        points[write_offset:end_offset] = submob.data["points"]
+        points[write_offset:end_offset] = submob.points
         colors[write_offset:end_offset] = np.repeat(
-            submob.data["stroke_rgba"], submob.data["points"].shape[0], axis=0
+            submob.stroke_rgba, submob.points.shape[0], axis=0
         )
         widths[write_offset:end_offset] = np.repeat(
-            submob.data["stroke_width"], submob.data["points"].shape[0]
+            submob.stroke_width, submob.points.shape[0]
         )
         write_offset = end_offset
 
@@ -266,7 +266,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
         ),
     )
     shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)
-    shader.set_uniform("manim_unit_normal", tuple(-mobjects[0].data["unit_normal"][0]))
+    shader.set_uniform("manim_unit_normal", tuple(-mobjects[0].unit_normal[0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
     vao = renderer.context.simple_vertex_array(

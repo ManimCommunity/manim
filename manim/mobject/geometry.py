@@ -85,6 +85,7 @@ from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
+    cartesian_to_spherical,
     line_intersection,
     normalize,
     perpendicular_bisector,
@@ -176,7 +177,18 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(
+            angles[2] - PI - tip.tip_angle
+        )  # Rotates the tip along the azimuthal
+        axis = [
+            np.sin(angles[2]),
+            -np.cos(angles[2]),
+            0,
+        ]  # Obtains the perpendicular of the tip
+        tip.rotate(
+            -angles[1] + PI / 2, axis=axis
+        )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -1468,7 +1480,7 @@ class Arrow(Line):
         --------
         ::
 
-            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            >>> np.round(Arrow().get_normal_vector()) + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
         """
 
