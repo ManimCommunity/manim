@@ -30,7 +30,6 @@ from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
-    angle_of_vector,
     normalize,
     rotation_matrix_transpose,
 )
@@ -672,7 +671,7 @@ class OpenGLMobject:
         # grid filling is handled bottom up for simplicity reasons.
         def reverse(maybe_list):
             if maybe_list is not None:
-                maybe_list = list(row_alignments)
+                maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 

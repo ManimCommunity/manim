@@ -35,7 +35,7 @@ class NumberLine(Line):
     length : :class:`float`
         The length of the number line.
     unit_size : class:`float`
-        The distance between each tick of the line.
+        The distance between each tick of the line. Overwritten by :attr:`length`, if specified.
     include_ticks : :class:`bool`
         Determines whether ticks are included.
     tick_size : :class:`float`

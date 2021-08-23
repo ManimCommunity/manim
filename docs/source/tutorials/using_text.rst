@@ -412,7 +412,7 @@ may be expected. To color only ``x`` yellow, we have to do the following:
             equation.set_color_by_tex("x", YELLOW)
             self.add(equation)
 
-By setting ``substring_to_isolate`` to ``x``, we split up the
+By setting ``substrings_to_isolate`` to ``x``, we split up the
 :class:`~.MathTex` into substrings automatically and isolate the ``x`` components 
 into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
 to achieve the desired result.
