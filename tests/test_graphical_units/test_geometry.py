@@ -194,3 +194,9 @@ def test_RegularPolygram(scene):
 def test_Star(scene):
     star = Star(outer_radius=2)
     scene.add(star)
+
+
+@frames_comparison
+def test_AngledArrowTip(scene):
+    arrow = Arrow(start=ORIGIN, end=UP + RIGHT + OUT)
+    scene.add(arrow)

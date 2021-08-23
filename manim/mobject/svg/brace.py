@@ -16,7 +16,6 @@ from ...constants import *
 from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ...utils.space_ops import angle_of_vector
@@ -149,6 +148,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         label_constructor=MathTex,
         label_scale=1,
         label_rotate=False,
+        buff=0.2,
         **kwargs
     ):
         self.label_constructor = label_constructor
@@ -157,9 +157,10 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
+        self.buff = buff
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
-        self.brace = Brace(obj, brace_direction, **kwargs)
+        self.brace = Brace(obj, brace_direction, buff, **kwargs)
 
         if isinstance(text, tuple) or isinstance(text, list):
             self.label = self.label_constructor(*text, **kwargs)

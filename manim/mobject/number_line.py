@@ -35,7 +35,7 @@ class NumberLine(Line):
     length : :class:`float`
         The length of the number line.
     unit_size : class:`float`
-        The distance between each tick of the line.
+        The distance between each tick of the line. Overwritten by :attr:`length`, if specified.
     include_ticks : :class:`bool`
         Determines whether ticks are included.
     tick_size : :class:`float`
@@ -183,7 +183,6 @@ class NumberLine(Line):
         self.longer_tick_multiple = longer_tick_multiple
         self.exclude_origin_tick = exclude_origin_tick
         # visuals
-        self.stroke_width = stroke_width
         self.rotation = rotation
         self.color = color
         # tip
@@ -202,7 +201,7 @@ class NumberLine(Line):
         super().__init__(
             self.x_min * RIGHT,
             self.x_max * RIGHT,
-            stroke_width=self.stroke_width,
+            stroke_width=stroke_width,
             color=self.color,
             **kwargs,
         )
