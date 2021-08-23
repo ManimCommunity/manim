@@ -15,7 +15,9 @@ class ConvertToOpenGL(ABCMeta):
     spurious errors.
     """
 
-    def __new__(cls, name, bases, namespace):
+    _converted_classes = []
+
+    def __new__(mcls, name, bases, namespace):
         if config.renderer == "opengl":
             # Must check class names to prevent
             # cyclic importing.
@@ -28,4 +30,8 @@ class ConvertToOpenGL(ABCMeta):
                 base_names_to_opengl.get(base.__name__, base) for base in bases
             )
 
-        return super().__new__(cls, name, bases, namespace)
+        return super().__new__(mcls, name, bases, namespace)
+
+    def __init__(cls, name, bases, namespace):
+        super().__init__(name, bases, namespace)
+        cls._converted_classes.append(cls)
