@@ -14,7 +14,6 @@ from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
-from colour import Color
 
 from ... import config, logger
 from ...constants import *
@@ -518,7 +517,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
                 for mob in mobject.family_members_with_points():
                     if config["renderer"] == "opengl":
-                        mob.data["points"] = np.dot(mob.data["points"], matrix)
+                        mob.points = np.dot(mob.points, matrix)
                     else:
                         mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
