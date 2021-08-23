@@ -207,13 +207,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         y = v
                         z = np.sin(x) * np.cos(y)
                         return z
-                    surface_plane = Surface(
+                    surface_plane = ParametricSurface(
                         lambda u, v: axes.c2p(u, v, param_surface(u, v)),
                         resolution=(resolution_fa, resolution_fa),
-                        v_min=0,
-                        v_max=5,
-                        u_min=0,
-                        u_max=5)
+                        v_range=[0, 5],
+                        u_range=[0, 5],
+                        )
                     surface_plane.set_style(fill_opacity=1)
                     surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
                     self.add(axes, surface_plane)
@@ -255,11 +254,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self
 
 
-@deprecated(
-    since="v0.10.0",
-    until="v0.13.0",
-    replacement="Surface",
-)
 class ParametricSurface(Surface):
     # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
     """Creates a parametric surface"""
