@@ -54,6 +54,7 @@ operating system specific instructions for you to follow.
    installation/win
    installation/mac
    installation/linux
+   installation/troubleshooting
 
 Once Manim is installed locally, you can proceed to our
 :doc:`quickstart guide <tutorials/quickstart>` which walks you
@@ -161,12 +162,12 @@ Interactive Jupyter notebooks for your browser
 Binder
 ------
 
-`Binder <https://mybinder.readthedocs.io/en/latest/>`__ is a online
+`Binder <https://mybinder.readthedocs.io/en/latest/>`__ is an online
 platform that hosts shareable and customizable computing environments
-via Jupyter notebooks. Manim ships with a built-in ``%%manim`` Jupyter
-magic command which makes it easy to use in these notebooks.
+in the form of Jupyter notebooks. Manim ships with a built-in ``%%manim``
+Jupyter magic command which makes it easy to use in these notebooks.
 
-As an example for such an environment, visit our interactive
+To see an example for such an environment, visit our interactive
 tutorial over at https://try.manim.community/.
 
 It is relatively straightforward to prepare your own notebooks in
