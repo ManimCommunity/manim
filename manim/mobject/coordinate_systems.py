@@ -1255,7 +1255,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             for x, y, z in zip(x_values, y_values, z_values)
         ]
         graph.set_points_as_corners(vertices)
-        graph.z_index = -1
         line_graph["line_graph"] = graph
 
         if add_vertex_dots:
