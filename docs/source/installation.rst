@@ -51,8 +51,8 @@ operating system specific instructions for you to follow.
 .. toctree::
    :maxdepth: 2
 
-   installation/win
-   installation/mac
+   installation/windows
+   installation/macos
    installation/linux
    installation/troubleshooting
 
