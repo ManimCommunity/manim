@@ -3,8 +3,6 @@
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 
-from typing importTYPE_CHECKING, List, Optional
-
 import numpy as np
 
 from .._config import config
@@ -15,6 +13,10 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
+
+from typing importTYPE_CHECKING, List, Optional
+
+
 
 if TYPE_CHECKING:
     from ..scene.scene import Scene
