@@ -58,7 +58,13 @@ def test_graph_add_edges():
     assert set(G.vertices.keys()) == {1, 2, 3, 4, 5, 42, 6, 7}
     assert set(G._graph.nodes()) == set(G.vertices.keys())
     assert set(G.edges.keys()) == {
-        (1, 2), (2, 3), (1, 3), (1, 42), (4, 5), (5, 6), (6, 7)
+        (1, 2),
+        (2, 3),
+        (1, 3),
+        (1, 42),
+        (4, 5),
+        (5, 6),
+        (6, 7),
     }
     assert set(G._graph.edges()) == set(G.edges.keys())
 

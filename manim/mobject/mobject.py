@@ -185,10 +185,10 @@ class Mobject:
             cls.animation_overrides[animation_class] = override_func
         else:
             raise MultiAnimationOverrideException(
-                    f"The animation {animation_class.__name__} for "
-                    f"{cls.__name__} is overridden by more than one method: "
-                    f"{cls.animation_overrides[animation_class].__qualname__} and "
-                    f"{override_func.__qualname__}."
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}."
             )
 
     def init_gl_data(self):

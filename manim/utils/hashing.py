@@ -17,7 +17,10 @@ from .. import config, logger
 # Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
 # This is used to filter them out.
 KEYS_TO_FILTER_OUT = {
-    "original_id", "background", "pixel_array", "pixel_array_to_cairo_context"
+    "original_id",
+    "background",
+    "pixel_array",
+    "pixel_array_to_cairo_context",
 }
 
 

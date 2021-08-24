@@ -106,9 +106,9 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                        f"The {cls.__name__} animation has been is overridden for "
-                        f"{type(mobject).__name__} mobjects. use_override = False can "
-                        f" be used as keyword argument to prevent animation overriding."
+                    f"The {cls.__name__} animation has been is overridden for "
+                    f"{type(mobject).__name__} mobjects. use_override = False can "
+                    f" be used as keyword argument to prevent animation overriding."
                 )
                 return anim
         return super().__new__(cls)

@@ -102,8 +102,8 @@ class ShaderWrapper:
     def create_program_id(self):
         return hash(
             "".join(
-                    self.program_code[f"{name}_shader"] or ""
-                    for name in ("vertex", "geometry", "fragment")
+                self.program_code[f"{name}_shader"] or ""
+                for name in ("vertex", "geometry", "fragment")
             )
         )
 
