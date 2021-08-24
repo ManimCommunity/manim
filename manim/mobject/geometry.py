@@ -2990,7 +2990,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 else:
                     angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
-            self.angle_fin = angle_fin
+            self.angle_value = angle_fin
 
             angle_mobject = Arc(
                 radius=radius,
