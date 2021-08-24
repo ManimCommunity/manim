@@ -260,7 +260,7 @@ class ParametricSurface(VGroup):
 # Specific shapes
 
 
-class Plane(ThreeDVMobject):
+class Plane(ParametricSurface):
     """
     A 2D plane :class:`~.VMobject`.
 
@@ -293,12 +293,10 @@ class Plane(ThreeDVMobject):
         A point that lies on the plane.
     normal_vect
         A vector perpendicular to the plane.
-    u_range
-        The dimensions of the plane.
-    v_range
-        The dimensions of the plane.
+    sidelength
+        The side length of the plane.
     kwargs
-        To be passed to :class:`ThreeDVMobject`.
+        To be passed to :class:`ParametricSurface`.
     """
 
     def __init__(
@@ -307,23 +305,16 @@ class Plane(ThreeDVMobject):
         normal_vect: Sequence[float] = [1, 1, 1],
         sidelength: float = 10,
         color: Color = BLUE,
-        fill_opacity: float = 1,
         **kwargs
     ):
         normal_vect = np.array(normal_vect)
         super().__init__(
-            color=color,
-            fill_opacity=fill_opacity,
+            lambda u, v: np.array([u, v, 0]),
+            (-sidelength / 2, sidelength / 2),
+            (-sidelength / 2, sidelength / 2),
+            1,
+            checkerboard_colors=[color],
             **kwargs,
-        )
-        self.set_points_as_corners(
-            [
-                UR * sidelength / 2,
-                DR * sidelength / 2,
-                DL * sidelength / 2,
-                UL * sidelength / 2,
-                UR * sidelength / 2,
-            ]
         )
         spherical = cartesian_to_spherical(normal_vect)
         axis = [np.sin(spherical[1]), -np.cos(spherical[1]), 0]
@@ -332,9 +323,9 @@ class Plane(ThreeDVMobject):
 
     @property
     def normal_vect(self):
-        p0 = self.get_points()
+        p0 = self.get_all_points()
         p1, p2, p3 = p0[0], p0[1], p0[-2]
-        return np.cross(p1 - p2, p3 - p2) / np.linalg.norm(np.cross(p1 - p2, p3 - p2))
+        return -np.cross(p1 - p2, p3 - p2) / np.linalg.norm(np.cross(p1 - p2, p3 - p2))
 
     def line_perp_to_plane(
         self, point: Sequence[float], length: float = 20, **kwargs
