@@ -357,7 +357,7 @@ class Scene:
         families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
-            num_families = sum([(mobject in family) for family in families])
+            num_families = sum((mobject in family) for family in families)
             return num_families == 1
 
         return list(filter(is_top_level, self.mobjects))

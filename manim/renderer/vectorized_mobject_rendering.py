@@ -159,9 +159,9 @@ def triangulate_mobject(mob):
     )
     texture_mode = np.hstack(
         (
-            np.ones((concave_triangle_indices.shape[0])),
-            -1 * np.ones((convex_triangle_indices.shape[0])),
-            np.zeros((inner_tri_indices.shape[0])),
+            np.ones(concave_triangle_indices.shape[0]),
+            -1 * np.ones(convex_triangle_indices.shape[0]),
+            np.zeros(inner_tri_indices.shape[0]),
         ),
     )
 
@@ -199,7 +199,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
 
     points = np.empty((total_size, 3))
     colors = np.empty((total_size, 4))
-    widths = np.empty((total_size))
+    widths = np.empty(total_size)
 
     write_offset = 0
     for submob in mobjects:
