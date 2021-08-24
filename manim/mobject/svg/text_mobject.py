@@ -1,7 +1,8 @@
 """Mobjects used for displaying (non-LaTeX) text.
 
 .. note::
-   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`)
+   to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
 
 .. important::
 
@@ -709,7 +710,13 @@ class MarkupText(SVGMobject):
 
         class MarkupElaborateExample(Scene):
             def construct(self):
-                text = MarkupText('<span foreground="purple">ا</span><span foreground="red">َ</span>ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي<span foreground="green">ّ</span><span foreground="red">َ</span>ة<span foreground="blue">ُ</span>')
+                text = MarkupText(
+                    '<span foreground="purple">ا</span><span foreground="red">َ</span>'
+                    'ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر'
+                    '<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي'
+                    '<span foreground="green">ّ</span><span foreground="red">َ</span>ة'
+                    '<span foreground="blue">ُ</span>'
+                )
                 self.add(text)
 
     PangoMarkup can also contain XML features such as numeric character
