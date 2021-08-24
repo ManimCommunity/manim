@@ -15,8 +15,6 @@ from .opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
-
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.
