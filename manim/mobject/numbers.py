@@ -15,6 +15,8 @@ from .opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
+SCALE_FACTOR_PER_FONT_POINT = 1 / 960
+
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.
@@ -96,6 +98,24 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.set_submobjects_from_number(number)
         self.init_colors()
 
+    @property
+    def font_size(self):
+        """The font size of the tex mobject."""
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_val):
+        if font_val <= 0:
+            raise ValueError("font_size must be greater than 0.")
+        elif self.height > 0:
+            # sometimes manim generates a SingleStringMathex mobject with 0 height.
+            # can't be scaled regardless and will error without the elif.
+
+            # scale to a factor of the initial height so that setting
+            # font_size does not depend on current size.
+            self.scale(1 / 48 * font_val * self.initial_height / self.height)
+            self._font_size = font_val
+
     def set_submobjects_from_number(self, number):
         self.number = number
         self.set_submobjects([])
@@ -131,6 +151,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
+        self.initial_height = self.height
+
     def get_num_string(self, number):
         if isinstance(number, complex):
             formatter = self.get_complex_formatter()
@@ -151,7 +173,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if string not in string_to_mob_map:
             string_to_mob_map[string] = mob_class(string, font_size=1.0, **kwargs)
         mob = string_to_mob_map[string].copy()
-        mob.scale(self._font_size)
+        mob.font_size = self._font_size
         return mob
 
     def get_formatter(self, **kwargs):
