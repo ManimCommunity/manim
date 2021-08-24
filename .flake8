@@ -1,8 +1,8 @@
 [flake8]
-# Exclude the grpc generated code and the svg code
-exclude = ./.*,manim/grpc/gen/*,manim/mobject/svg*
+# Exclude the grpc generated code
+exclude = ./.*,manim/grpc/gen/*
 max-complexity = 35
-max-line-length = 284
+max-line-length = 250
                 #Black Compatibility
 extend-ignore = E203, E266,  
                 #Style Changes
