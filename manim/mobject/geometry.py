@@ -3071,8 +3071,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         """
 
         if degrees:
-            return self.angle_fin / DEGREES
-        return self.angle_fin
+            return self.angle_value / DEGREES
+        return self.angle_value
 
 
 class RightAngle(Angle):
