@@ -13,7 +13,7 @@ extend-ignore = E203, E266,
                 B006
                 #Code Changes - Remove later -remove from .pre-commit-config.yaml
 
-                F405, F403, F401, F821, B008, B009, B010, E731
+                F405, F403, F401, B008, B009, B010, E731
                 #docstring Formatting - Remove Later -remove from .pre-commit-config.yaml
 
                 RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, 
