@@ -3036,7 +3036,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             VGroup(Line, Line)
         """
 
-        return VGroup(self.line1, self.line2)
+        return VGroup(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
         """Get the value of an angle of the :class:`Angle` class.
