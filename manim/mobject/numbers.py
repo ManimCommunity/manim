@@ -149,6 +149,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
+        # track the initial height to enable scaling via font_size
         self.initial_height = self.height
 
     def get_num_string(self, number):
