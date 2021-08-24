@@ -1,135 +1,144 @@
 Windows
 =======
 
-There are two simple ways to download manim's dependencies, using the popular package
-managers `Chocolatey <https://chocolatey.org/install>`__ and `Scoop <https://scoop.sh>`__
+The easiest way of installing Manim and its dependencies is by using a
+package manager like `Chocolatey <https://chocolatey.org/>`__ 
+or `Scoop <https://scoop.sh>`__. If you are not afraid of editing
+your System's ``PATH``, a manual installation is not too difficult
+either, though. In fact, if you already have an existing Python
+installation (3.7 or newer), it might be the easiest way to get
+everything up and running.
 
-.. _choco:
+In case you choose to use one of the package managers, please follow
+their installation instructions
+(`for Chocolatey <https://chocolatey.org/install#install-step2>`__, 
+`for Scoop <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__)
+to make one of them available on your system.
 
-Installing using Chocolatey
-***************************
 
-First, you need to install Chocolatey, which is a package manager for Windows
-systems.  Please refer to `this link <https://chocolatey.org/install>`__ for
-instructions.
+Required Dependencies
+---------------------
 
-You can install manim very easily using chocolatey, by typing the following command.
+Manim requires a recent version of Python (3.7 or above), and ``ffmpeg``
+in order to work.
+
+Chocolatey
+**********
+
+Manim can be installed via Chocolatey simply by running
 
 .. code-block:: powershell
 
-      choco install manimce
+   choco install manimce
+
+That's it, no further steps required. You can continue with installing
+the :ref:`optional dependencies <win-optional-dependencies>` below.
+
+Scoop
+*****
+
+While there is no recipe for installing Manim with Scoop directly,
+we can install all requirements by running
+
+.. code-block:: powershell
+
+   scoop install python ffmpeg
+
+and then Manim can be installed by running
+
+.. code-block:: powershell
+
+   python -m pip install manim
+
+After this, Manim is installed on your system. Continue reading
+the :ref:`optional dependencies <win-optional-dependencies>` section
+below.
+
+Manual Installation
+*******************
+
+As mentioned above, Manim needs a reasonably recent version of
+Python 3 (3.7 or above), and FFmpeg.
+
+**Python:** Head over to https://www.python.org, download an installer
+for Python 3.7 (or newer), and follow its instructions to get Python
+installed on your system.
+
+.. note::
+
+   We have received reports of problems caused by using the version of
+   Python that can be installed from the Windows Store. At this point,
+   we recommend to stay away from the Windows Store and rather install
+   Python directly from https://www.python.org.
+
+**FFmpeg:** In order to install FFmpeg, you can get the source code
+from https://ffmpeg.org/download.html and compile it yourself (only
+recommended if you know exactly what you are doing), or get a
+pre-compiled and ready-to-use version from one of the resources
+linked at https://ffmpeg.org/download.html#build-windows, for example
+`the version available here 
+<https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__.
+
+After downloading the pre-compiled archive 
+`unzip it <https://www.7-zip.org>`__ and, if you like, move the
+extracted directory to some more permanent place (e.g., 
+``C:\Program Files\``). Next, edit the ``PATH`` environment variable:
+first, visit ``Control Panel`` > ``System`` > ``System settings`` > 
+``Environment Variables``, then add the full path to the ``bin``
+directory inside of the (moved) ffmpeg directory to the
+``PATH`` variable, then save your changes and exit.
+
+If you now open a new command line prompt (or PowerShell) and
+run ``ffmpeg``, the command should be recognized.
+
+At this point, you have all required dependencies and are able to
+install Manim via
+
+.. code-block:: powershell
+
+   python -m pip install manim
 
 
-And then you can skip all the other steps and move to installing 
-:ref:`latex-installation`. Please see the :doc:`troubleshooting` section for
-details about OSError.
+.. _win-optional-dependencies:
 
-FFmpeg installation
--------------------
+Optional Dependencies
+---------------------
 
-1. To install ``ffmpeg`` and add it to your PATH, install `Chocolatey
-   <https://chocolatey.org/>`__ and run ``choco install ffmpeg``.
+In order to make use of Manim's interface to LaTeX for, e.g., rendering
+equations, LaTeX has to be installed as well. Note that this is an optional
+dependency: if you don't intend to use LaTeX, you don't have to install it.
 
-2. You can check if you did it right by running ``refreshenv`` to update your
-   environment variable and running ``ffmpeg``.
+For Windows, the recommended LaTeX distribution is 
+`MiKTeX <https://miktex.org/download>`__. You can install it by using the
+installer from the linked MiKTeX site, or by using the package manager
+of your choice (Chocolatey: ``choco install miktex.install``,
+Scoop: ``scoop install latex``).
+
+In case you are concerned about disk space, there are some alternative,
+smaller distributions of LaTeX like 
+`TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
+Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``,
+then ``scoop install tinytex``). In this case, you will have to manage the
+LaTeX packages installed on your system yourself via ``tlmgr``, we only
+recommend this option if you know what you are doing. The full list
+of LaTeX packages which Manim interacts with in some way (a subset might
+be sufficient for your particular application) is::
+
+   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
+   fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
+   mathastext microtype ms physics preview ragged2e relsize rsfs
+   setspace standalone tipa wasy wasysym xcolor xetex xkeyval
+
+.. note::
+
+   For Chocolatey there is a dedicated ``manim-latex`` package providing a
+   small LaTeX distribution based on TinyTeX which contains these packages;
+   if you use Chocolatey you can get it with ``choco install manim-latex``.
 
 
-.. _latex-installation:
-
-LaTeX Installation
+Working with Manim
 ------------------
-You can install latex by either of the two methods below. MiKTex is very large 
-(2 GB) while ManimLaTeX is small  (500Mb).
 
-Using a custom distribution for Manim based on Texlive (recommended for beginners)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-This is the smallest latex distribution just enough to run Manim. Extra latex 
-packages for fonts can be installed using ``tlmgr``. 
-See https://www.tug.org/texlive/tlmgr.html for more information.
-
-1. Install chocolatey if you haven't already.
-
-2. Run the following command
-
-   .. code-block:: powershell
-
-      choco install manim-latex
-
-3. Finally, check whether it installed properly by running an example scene.
-
-Using MiKTex
-++++++++++++
-1. Download the MiKTex installer from `this page
-   <https://miktex.org/download>`__ and execute it.
-
-   .. image:: ../_static/windows_miktex.png
-       :align: center
-       :width: 500px
-       :alt: windows latex download page
-
-2. You can check if you did it right by running ``refreshenv`` to update your
-   environment variable and running ``latex``.
-
-.. _scoop:
-
-Installing using Scoop
-**********************
-
-First, you need to install Scoop, which is a command-line installer for Windows
-systems. Please refer to `this link
-<https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__ for
-instructions.
-
-While a manifest for manim doesn't currently exist, it is sufficient to install 
-the dependencies via scoop and manim itself via ``pip``.
-
-After installing Scoop, add these "buckets" as we'll need to install things from 
-them later:
-
-.. code-block:: powershell
-
-      scoop bucket add extras
-      scoop bucket add r-bucket https://github.com/cderv/r-bucket.git
-
-FFmpeg installation
--------------------
-1. Run ``scoop install ffmpeg``
-2. Check whether ffmpeg has been properly installed by running ``ffmpeg``.
-
-LaTeX Installation
-------------------
-There are two ways of installing a LaTeX distribution that will be covered here:
-
-1. using MikTeX (approx. 2GB, takes a while to install, but provides "on-the-fly"
-package installation, recommended for beginners)
-
-2. using TinyTeX (approx. 500MB, installs quickly, but you have to install the required
-packages manually)
-
-Using Miktex
-++++++++++++
-Run ``scoop install latex`` and wait for the installer to complete its work. Most
-packages required by manim should be installed, but if some aren't you'll get a 
-popup to install them while rendering.
-
-Using TinyTeX
-+++++++++++++
-Run ``scoop install tinytex`` and wait for the install to finish.
-Now run the following command to install all necessary packages for using manim:
-
-.. code-block:: powershell
-
-      tlmgr install standalone everysel preview doublestroke ms setspace rsfs relsize ragged2e
-      fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
-      gnu-freefont mathastext cbfonts-fd
-
-You can check whether they were installed properly by rendering an example scene
-that uses :class:`~.Tex` or :class:`~.MathTex`.
-
-
-Certifying a clean install
-**************************
-
-After making sure you have a clean install following the instructions for each
-dependency above, you can go back to :ref:`installing-manim`.
+At this point, your system should have a working installation of Manim, head
+over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
+how to make your own *Manimations*!
