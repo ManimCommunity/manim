@@ -196,7 +196,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self.ensure_valid_file()
-            with open(self.file_path, "r") as f:
+            with open(self.file_path) as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
@@ -292,7 +292,7 @@ class Code(VGroup):
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
             + f"of these locations: {possible_paths}"
         )
-        raise IOError(error)
+        raise OSError(error)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
