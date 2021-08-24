@@ -255,6 +255,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self
 
 
+@deprecated(since="v0.10.0", replacement=Surface)
 class ParametricSurface(Surface):
     # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
     """Creates a parametric surface"""
