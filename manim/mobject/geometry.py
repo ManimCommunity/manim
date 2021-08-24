@@ -2994,7 +2994,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
             angle_mobject = Arc(
                 radius=radius,
-                angle=self.angle_fin,
+                angle=self.angle_value,
                 start_angle=start_angle,
                 arc_center=inter,
                 **kwargs,
