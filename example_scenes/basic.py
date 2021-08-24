@@ -29,7 +29,7 @@ class OpeningManim(Scene):
         transform_title.to_corner(UP + LEFT)
         self.play(
             Transform(title, transform_title),
-            LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
+            LaggedStart(*(FadeOut(obj, shift=DOWN) for obj in basel)),
         )
         self.wait()
 

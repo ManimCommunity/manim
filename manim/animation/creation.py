@@ -500,12 +500,12 @@ class AddTextWordByWord(Succession):
         self.time_per_char = time_per_char
         tpc = self.time_per_char
         anims = it.chain(
-            *[
+            *(
                 [
                     ShowIncreasingSubsets(word, run_time=tpc * len(word)),
                     Animation(word, run_time=0.005 * len(word) ** 1.5),
                 ]
                 for word in text_mobject
-            ]
+            )
         )
         super().__init__(*anims, **kwargs)

@@ -52,7 +52,7 @@ from ..utils.space_ops import angle_of_vector
 
 
 class CoordinateSystem:
-    """
+    r"""
     Abstract class for Axes and NumberPlane
 
     Examples
@@ -946,10 +946,10 @@ class CoordinateSystem:
         x_range = x_range if x_range is not None else self.x_range
 
         return VGroup(
-            *[
+            *(
                 self.get_vertical_line(self.i2gp(x, graph), **kwargs)
                 for x in np.linspace(x_range[0], x_range[1], num_lines)
-            ]
+            )
         )
 
     def get_T_label(
@@ -1172,7 +1172,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Tuple
             Coordinates of the point with respect to :class:`Axes`'s basis
         """
-        return tuple([axis.point_to_number(point) for axis in self.get_axes()])
+        return tuple(axis.point_to_number(point) for axis in self.get_axes())
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
@@ -1256,16 +1256,15 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             for x, y, z in zip(x_values, y_values, z_values)
         ]
         graph.set_points_as_corners(vertices)
-        graph.z_index = -1
         line_graph["line_graph"] = graph
 
         if add_vertex_dots:
             vertex_dot_style = vertex_dot_style or {}
             vertex_dots = VGroup(
-                *[
+                *(
                     Dot(point=vertex, radius=vertex_dot_radius, **vertex_dot_style)
                     for vertex in vertices
-                ]
+                )
             )
             line_graph["vertex_dots"] = vertex_dots
 

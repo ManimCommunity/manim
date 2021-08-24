@@ -284,7 +284,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         # Keep track of the most recently completed point
         if config["renderer"] == "opengl":
-            points = self.data["points"]
+            points = self.points
         else:
             points = self.points
         start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
@@ -313,7 +313,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         elif command == "S":  # Smooth cubic
             if config["renderer"] == "opengl":
-                points = self.data["points"]
+                points = self.points
             else:
                 points = self.points
             prev_handle = start_point

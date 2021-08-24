@@ -106,11 +106,9 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    (
-                        f"The {cls.__name__} animation has been is overridden for "
-                        f"{type(mobject).__name__} mobjects. use_override = False can "
-                        f" be used as keyword argument to prevent animation overriding."
-                    )
+                    f"The {cls.__name__} animation has been is overridden for "
+                    f"{type(mobject).__name__} mobjects. use_override = False can "
+                    f" be used as keyword argument to prevent animation overriding."
                 )
                 return anim
         return super().__new__(cls)
@@ -224,7 +222,7 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
-            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
 
     def update_mobjects(self, dt: float) -> None:

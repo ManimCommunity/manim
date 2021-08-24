@@ -199,7 +199,6 @@ class NumberLine(Line):
         self.longer_tick_multiple = longer_tick_multiple
         self.exclude_origin_tick = exclude_origin_tick
         # visuals
-        self.stroke_width = stroke_width
         self.rotation = rotation
         self.color = color
         # tip
@@ -217,7 +216,7 @@ class NumberLine(Line):
         super().__init__(
             self.x_min * RIGHT,
             self.x_max * RIGHT,
-            stroke_width=self.stroke_width,
+            stroke_width=stroke_width,
             color=self.color,
             **kwargs,
         )

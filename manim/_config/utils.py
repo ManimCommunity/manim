@@ -1136,6 +1136,36 @@ class ManimConfig(MutableMapping):
     @renderer.setter
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
+        try:
+            from ..mobject.mobject import Mobject
+            from ..mobject.opengl_compatibility import ConvertToOpenGL
+            from ..mobject.opengl_mobject import OpenGLMobject
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+            from ..mobject.types.vectorized_mobject import VMobject
+
+            for cls in ConvertToOpenGL._converted_classes:
+                if val == "opengl":
+                    conversion_dict = {
+                        Mobject: OpenGLMobject,
+                        VMobject: OpenGLVMobject,
+                    }
+                else:
+                    conversion_dict = {
+                        OpenGLMobject: Mobject,
+                        OpenGLVMobject: VMobject,
+                    }
+
+                cls.__bases__ = tuple(
+                    conversion_dict.get(base, base) for base in cls.__bases__
+                )
+        except ImportError:
+            # The renderer is set during the initial import of the
+            # library for the first time. The imports above cause an
+            # ImportError due to circular imports. However, the
+            # metaclass sets stuff up correctly in this case, so we
+            # can just do nothing.
+            pass
+
         self._set_from_list(
             "renderer",
             val,
