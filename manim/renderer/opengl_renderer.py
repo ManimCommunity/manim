@@ -224,6 +224,7 @@ class OpenGLRenderer:
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
+        self.animation_start_time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -416,7 +417,29 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
+        if config["save_last_frame"]:
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
+
+    def get_image(self) -> Image.Image:
+        """Returns an image from the current frame.
+
+        Returns
+        -------
+        PIL.Image
+            The PIL image of the array.
+        """
+        image = Image.frombytes(
+            "RGBA",
+            self.get_pixel_shape(),
+            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            "raw",
+            "RGBA",
+            0,
+            -1,
+        )
+        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
