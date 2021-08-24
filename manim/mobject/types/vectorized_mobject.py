@@ -597,7 +597,7 @@ class VMobject(Mobject):
         self.points = np.zeros((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
         # self.points = [
-        #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1], 
+        #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
         #     handles1[1], ...
         # ]
         arrays = [anchors1, handles1, handles2, anchors2]
