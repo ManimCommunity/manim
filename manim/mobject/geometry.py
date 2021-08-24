@@ -2936,8 +2936,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.line1 = line1
-        self.line2 = line2
+        self.lines = (line1, line2)
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
