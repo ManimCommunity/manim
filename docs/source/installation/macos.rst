@@ -1,80 +1,100 @@
-Mac
-===
+MacOS
+=====
 
-First, you need to install Homebrew.  Homebrew is a package manager similar to
-``apt`` or ``pacman`` on linux that allows you to install packages easily.  If
-it is not installed, please install it with this command (for Apple Silicon useres, please read the tip first):
+For the sake of simplicity, the following instructions assume that you have
+the popular `package manager Homebrew <https://brew.sh>`__ installed. While
+you can certainly also install all dependencies without it, using Homebrew
+makes the process very easy.
 
-.. code-block:: bash
+In case you want to use Homebrew but do not have it installed yet, please
+follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>`__.
 
-   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null
+.. note::
 
+   For a while after Apple released its new ARM-based processors (the *"M1 chip"*),
+   the recommended way of installing Manim relied on *Rosetta*, Apple's compatibility
+   layer between Intel and ARM architectures. This is no longer necessary, Manim can
+   (and is recommended to) be installed natively.
 
-.. tip:: 
+   
+Required Dependencies
+---------------------
 
-    As of February 2020, the installation with ``brew`` has some issues with scipy and cairo packages in Apple Silicon mode. This can be solved by installing brew in the rosetta2 mode.
-    Therefore, a rosetta terminal needs to be created (see here: https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/). In case you installed ``brew`` in the normal terminal before, you have to make sure you are using the correct brew when installing packages. On default, the rosetta brew is located at "/usr/local/bin/brew" and the Apple Silicon brew is located at "/opt/homebrew/bin/brew" (For more details on this, visit 
-    https://stackoverflow.com/questions/64882584/how-to-run-the-homebrew-installer-under-rosetta-2-on-m1-macbook ). Next, install cairo, ffmpeg and mactex as described below with the rosetta brew. If not already there, install python 3.9 with ``brew install python@3.9``. Finally, make sure that you are using the right pip version to install manim, for example by running ``/usr/local/opt/python@3.9/bin/python3.9 -m pip install manim``.
-
-
-
-
-To install cairo:
-
-.. code-block:: bash
-
-   brew install cairo
-
-To install ffmpeg:
+To install all required dependencies for installing Manim (mainly: ffmpeg, Python,
+and some required Python packages), run
 
 .. code-block:: bash
 
-   brew install ffmpeg
+   brew install py3cairo ffmpeg
 
-To install LaTeX:
+On *Apple Silicon* based machines (i.e., devices with the M1 chip or similar; if
+you are unsure which processor you have check by opening the Apple menu, select 
+*About This Mac* and check the entry next to *Chip*), some additional dependencies
+are required, namely:
+
+.. code-block:: bash
+
+   brew install cmake pango scipy
+
+After all required dependencies are installed, simply run
+
+.. code-block:: bash
+
+   pip3 install manim
+
+to install Manim.
+
+.. note::
+
+   A frequent source for installation problems is if ``pip3``
+   does not point to the correct Python installation on your system.
+   To check this, run ``pip3 -V``: for MacOS Intel, the path should
+   start with ``/usr/local``, and for Apple Silicon with
+   ``/opt/homebrew``. If this is not the case, you either forgot
+   to modify your shell profile (``.zprofile``) during the installation
+   of Homebrew, or did not reload your shell (e.g., by opening a new
+   terminal) after doing so. It is also possible that some other
+   software (like Pycharm) changed the ``PATH`` variable – to fix this,
+   make sure that the Homebrew-related lines in your ``.zprofile`` are
+   at the very end of the file.
+
+
+Optional Dependencies
+---------------------
+
+In order to make use of Manim's interface to LaTeX for, e.g., rendering
+equations, LaTeX has to be installed as well. Note that this is an optional
+dependency: if you don't intend to use LaTeX, you don't have to install it.
+
+For MacOS, the recommended LaTeX distribution is 
+`MacTeX <http://www.tug.org/mactex/>`__. You can install it by following
+the instructions from the link, or alternatively also via Homebrew by
+running
 
 .. code-block:: bash
 
    brew install --cask mactex
 
-.. warning:: Note that MacTeX will require at least 4.5GB of hard disk space.
-	     This is due to the fact that it installs every LaTeX addon package
-	     offered by `CTAN <https://ctan.org/>`_.  Only a few of these
-	     packages are required by Manim.  If you would like a smaller LaTeX
-	     install which only contains the packages needed by Manim alone,
-	     consider installing BasicTeX with the instructions below. This
-	     will require only about 1.5GB of space.  If you have installed
-	     MacTeX and are comfortable with it, do not install BasicTeX.
+.. warning::
 
-(Alternative) To install BasicTeX:
+   MacTeX is a *full* LaTeX distribution and will require more than 4GB of
+   disk space. If this is an issue for you, consider installing a smaller
+   distribution like 
+   `BasicTeX <http://www.tug.org/mactex/morepackages.html>`__.
 
-.. code-block:: bash
+Should you choose to work with some partial TeX distribution, the full list
+of LaTeX packages which Manim interacts with in some way (a subset might
+be sufficient for your particular application) is::
 
-   brew install --cask basictex
-
-Ensure that the TeXLiveManager tool ``tlmgr`` works by running ``tlmgr
---version`` in the terminal (a reboot might be necessary). Now update ``tlmgr``
-
-.. code-block:: bash
-   
-   sudo tlmgr update --self
-
-Finally, run
-
-.. code-block:: bash
-
-   sudo tlmgr install standalone preview doublestroke relsize fundus-calligra \
-   wasysym physics dvisvgm rsfs wasy cm-super
+   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
+   fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
+   mathastext microtype ms physics preview ragged2e relsize rsfs
+   setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
 
-Certifying a clean install
-**************************
+Working with Manim
+------------------
 
-To check that all dependencies have been installed properly, you can execute
-the commands ``ffmpeg -version`` and ``latex`` (regardless of whether you
-installed MacTeX or BasicTeX).  If LaTeX is installed properly, you will be
-taken to a command-line program that captures your cursor. Press CTRL+C to
-exit.
-
-After making sure you have a clean install, you can go back to
-:ref:`installing-manim`.
+At this point, your system should have a working installation of Manim, head
+over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
+how to make your own *Manimations*!
