@@ -327,7 +327,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         max_time_width = kwargs.pop("time_width", self.time_width)
         AnimationGroup.__init__(
             self,
-            *[
+            *(
                 ShowPassingFlash(
                     vmobject.deepcopy().set_stroke(width=stroke_width),
                     time_width=time_width,
@@ -337,7 +337,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
                     np.linspace(0, max_stroke_width, self.n_segments),
                     np.linspace(max_time_width, 0, self.n_segments),
                 )
-            ],
+            ),
         )
 
 

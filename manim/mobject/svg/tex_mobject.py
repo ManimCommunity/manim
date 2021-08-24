@@ -148,10 +148,10 @@ class SingleStringMathTex(SVGMobject):
             tex = tex.replace("\\\\", "\\quad\\\\")
 
         # Handle imbalanced \left and \right
-        num_lefts, num_rights = [
+        num_lefts, num_rights = (
             len([s for s in tex.split(substr)[1:] if s and s[0] in "(){}[]|.\\"])
             for substr in ("\\left", "\\right")
-        ]
+        )
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
@@ -296,7 +296,7 @@ class MathTex(SingleStringMathTex):
         patterns = []
         patterns.extend(
             [
-                "({})".format(re.escape(ss))
+                f"({re.escape(ss)})"
                 for ss in it.chain(
                     self.substrings_to_isolate, self.tex_to_color_map.keys()
                 )
@@ -353,7 +353,7 @@ class MathTex(SingleStringMathTex):
             else:
                 return tex1 == tex2
 
-        return VGroup(*[m for m in self.submobjects if test(tex, m.get_tex_string())])
+        return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
 
     def get_part_by_tex(self, tex, **kwargs):
         all_parts = self.get_parts_by_tex(tex, **kwargs)
