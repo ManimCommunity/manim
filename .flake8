@@ -2,25 +2,26 @@
 # Exclude the grpc generated code
 exclude = ./.*,manim/grpc/gen/*
 max-complexity = 35
-max-line-length = 250
-                #Black Compatibility
-extend-ignore = E203, E266,  
-                #Style Changes
-                
-                #Temp
-                F841, B007,
-                #I believe these are unfixable
-                B006
-                #Code Changes - Remove later -remove from .pre-commit-config.yaml
+max-line-length = 211
+statistics = True
+                # Black Compatibility
+extend-ignore = E203, W503,
 
-                F405, F403, F401, B008, B009, B010, E731
-                #docstring Formatting - Remove Later -remove from .pre-commit-config.yaml
+                # Unused imports, wildcard imports, and unused variables
+                F401, F403, F405, F841,
 
-                RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, 
-                D412, D202, RST305, RST301, D301, RST213, D104, RST201, RST215, RST203, D104, D209, RST205, D402, 
-                D210, RST202
+                # Plug-in: flake8-builtins
+                A001, A002, A003,
 
-                #Issue #1148 needs to be closed before removal -remove from .pre-commit-config.yaml
-                A003,
-                #Issue #1149 needs to be closed before removal -remove from .pre-commit-config.yaml
-                W605,
+                # Plug-in: flake8-bugbear
+                B006, B007, B008, B009, B010, B011, B015,
+
+                # Plug-in: flake8-docstrings
+                D100, D101, D102, D103, D104, D105, D106, D107,
+                D200, D202, D204, D205, D209,
+                D301,
+                D400, D401, D402, D403, D412, D414,
+
+                # Plug-in: flake8-rst-docstrings
+                RST201, RST203, RST205, RST210, RST212, RST213, RST215,
+                RST301, RST303, RST304,
