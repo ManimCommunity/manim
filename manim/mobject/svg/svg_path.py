@@ -1,7 +1,7 @@
 """Mobjects generated from an SVG pathstring."""
 
 
-__all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
+__all__ = ["SVGPathMobject", "string_to_numbers"]
 
 
 import re
@@ -12,7 +12,6 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...utils.deprecation import deprecated
 from ..opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
 
@@ -285,7 +284,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         # Keep track of the most recently completed point
         if config["renderer"] == "opengl":
-            points = self.data["points"]
+            points = self.points
         else:
             points = self.points
         start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
@@ -314,7 +313,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         elif command == "S":  # Smooth cubic
             if config["renderer"] == "opengl":
-                points = self.data["points"]
+                points = self.points
             else:
                 points = self.points
             prev_handle = start_point
@@ -467,9 +466,3 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         self.current_path_start = point
         super().start_new_path(point)
         return self
-
-
-@deprecated(until="v0.7.0", replacement="SVGPathMobject")
-class VMobjectFromSVGPathstring(SVGPathMobject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)

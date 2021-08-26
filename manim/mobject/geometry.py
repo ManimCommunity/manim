@@ -59,8 +59,13 @@ __all__ = [
     "Cutout",
     "Angle",
     "RightAngle",
+    "ArrowCircleFilledTip",
+    "ArrowCircleTip",
+    "ArrowSquareTip",
+    "ArrowSquareFilledTip",
 ]
 
+import itertools
 import math
 import warnings
 from typing import Iterable, Optional, Sequence
@@ -75,14 +80,15 @@ from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
+from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
-    compass_directions,
+    cartesian_to_spherical,
     line_intersection,
     normalize,
+    perpendicular_bisector,
     regular_vertices,
     rotate_vector,
 )
@@ -171,7 +177,18 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(
+            angles[2] - PI - tip.tip_angle
+        )  # Rotates the tip along the azimuthal
+        axis = [
+            np.sin(angles[2]),
+            -np.cos(angles[2]),
+            0,
+        ]  # Obtains the perpendicular of the tip
+        tip.rotate(
+            -angles[1] + PI / 2, axis=axis
+        )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -395,6 +412,21 @@ class Arc(TipableVMobject):
 class ArcBetweenPoints(Arc):
     """
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
+
+    Example
+    --------------------
+    .. manim:: ArcBetweenPointsExample
+
+      class ArcBetweenPointsExample(Scene):
+          def construct(self):
+              circle = Circle(radius=2, stroke_color=GREY)
+              dot_1 = Dot(color=GREEN).move_to([2, 0, 0]).scale(0.5)
+              dot_1_text = Tex("(2,0)").scale(0.5).next_to(dot_1, RIGHT).set_color(BLUE)
+              dot_2 = Dot(color=GREEN).move_to([0, 2, 0]).scale(0.5)
+              dot_2_text = Tex("(0,2)").scale(0.5).next_to(dot_2, UP).set_color(BLUE)
+              arc= ArcBetweenPoints(start=2 * RIGHT, end=2 * UP, stroke_color=YELLOW)
+              self.add(circle, dot_1, dot_2, dot_1_text, dot_2_text)
+              self.play(Create(arc))
     """
 
     def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
@@ -564,6 +596,36 @@ class Circle(Arc):
         start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
+    @staticmethod
+    def from_three_points(
+        p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
+    ):
+        """Returns a circle passing through the specified
+        three points.
+
+        Example
+        -------
+
+        .. manim:: CircleFromPointsExample
+            :save_last_frame:
+
+            class CircleFromPointsExample(Scene):
+                def construct(self):
+                    circle = Circle.from_three_points(LEFT, LEFT + UP, UP * 2, color=RED)
+                    dots = VGroup(
+                        Dot(LEFT),
+                        Dot(LEFT + UP),
+                        Dot(UP * 2),
+                    )
+                    self.add(NumberPlane(), circle, dots)
+        """
+        center = line_intersection(
+            perpendicular_bisector([p1, p2]),
+            perpendicular_bisector([p2, p3]),
+        )
+        radius = np.linalg.norm(p1 - center)
+        return Circle(radius=radius, **kwargs).shift(center)
+
 
 class Dot(Circle):
     """A circle with a very small radius.
@@ -722,6 +784,52 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
+    """
+
+    Parameters
+    ----------
+    inner_radius
+       The inside radius of the Annular Sector.
+    outer_radius
+       The outside radius of the Annular Sector.
+    angle
+       The clockwise angle of the Annular Sector.
+    start_angle
+       The starting clockwise angle of the Annular Sector.
+    fill_opacity
+       The opacity of the color filled in the Annular Sector.
+    stroke_width
+       The stroke width of the Annular Sector.
+    color
+       The color filled into the Annular Sector.
+
+    Examples
+    --------
+    .. manim:: AnnularSectorExample
+        :save_last_frame:
+
+        class AnnularSectorExample(Scene):
+            def construct(self):
+                # Changes background color to clearly visualize changes in fill_opacity.
+                self.camera.background_color = WHITE
+
+                # The default parameter start_angle is 0, so the AnnularSector starts from the +x-axis.
+                s1 = AnnularSector(color=YELLOW).move_to(2 * UL)
+
+                # Different inner_radius and outer_radius than the default.
+                s2 = AnnularSector(inner_radius=1.5, outer_radius=2, angle=45 * DEGREES, color=RED).move_to(2 * UR)
+
+                # fill_opacity is typically a number > 0 and <= 1. If fill_opacity=0, the AnnularSector is transparent.
+                s3 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=PI, fill_opacity=0.25, color=BLUE).move_to(2 * DL)
+
+                # With a negative value for the angle, the AnnularSector is drawn clockwise from the start value.
+                s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
+
+                self.add(s1, s2, s3, s4)
+
+
+    """
+
     def __init__(
         self,
         inner_radius=1,
@@ -745,7 +853,7 @@ class AnnularSector(Arc):
         )
 
     def generate_points(self):
-        inner_arc, outer_arc = [
+        inner_arc, outer_arc = (
             Arc(
                 start_angle=self.start_angle,
                 angle=self.angle,
@@ -753,7 +861,7 @@ class AnnularSector(Arc):
                 arc_center=self.arc_center,
             )
             for radius in (self.inner_radius, self.outer_radius)
-        ]
+        )
         outer_arc.reverse_points()
         self.append_points(inner_arc.get_points())
         self.add_line_to(outer_arc.get_points()[0])
@@ -764,6 +872,23 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
+    """
+
+    Examples
+    --------
+
+    .. manim:: ExampleSector
+        :save_last_frame:
+
+        class ExampleSector(Scene):
+            def construct(self):
+                sector = Sector(outer_radius=2, inner_radius=1)
+                sector2 = Sector(outer_radius=2.5, inner_radius=0.8).move_to([-3, 0, 0])
+                sector.set_color(RED)
+                sector2.set_color(PINK)
+                self.add(sector, sector2)
+    """
+
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
@@ -976,10 +1101,8 @@ class DashedLine(Line):
         Arguments to be passed to :class:`Line`
     dash_length : :class:`float`, optional
         The length of each individual dash of the line.
-    dash_spacing : Optional[:class:`float`]
-        The spacing between the dashes.
-    positive_space_ratio : :class:`float`, optional
-        The ratio of empty space to dash space. Range of 0-1.
+    dashed_ratio : :class:`float`, optional
+        The ratio of dash space to empty space. Range of 0-1.
     kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
@@ -994,8 +1117,8 @@ class DashedLine(Line):
                 dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
                 # normal
                 dashed_2 = DashedLine(config.left_side, config.right_side)
-                # positive_space_ratio decreased
-                dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
+                # dashed_ratio decreased
+                dashed_3 = DashedLine(config.left_side, config.right_side, dashed_ratio=0.1).shift(DOWN*2)
                 self.add(dashed_1, dashed_2, dashed_3)
 
     See Also
@@ -1003,22 +1126,29 @@ class DashedLine(Line):
     :class:`~.DashedVMobject`
     """
 
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+        redirections=[("positive_space_ratio", "dashed_ratio")],
+    )
     def __init__(
         self,
         *args,
         dash_length=DEFAULT_DASH_LENGTH,
-        dash_spacing=None,
-        positive_space_ratio=0.5,
+        dashed_ratio=0.5,
         **kwargs,
     ):
+        self.dash_spacing = kwargs.pop(
+            "dash_spacing", None
+        )  # Unused param, remove with deprecation warning
         self.dash_length = dash_length
-        self.dash_spacing = (dash_spacing,)
-        self.positive_space_ratio = positive_space_ratio
+        self.dashed_ratio = dashed_ratio
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
             num_dashes=self.calculate_num_dashes(),
-            positive_space_ratio=positive_space_ratio,
+            dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
@@ -1034,14 +1164,10 @@ class DashedLine(Line):
             20
         """
 
-        try:
-            full_length = self.dash_length / self.positive_space_ratio
-            return int(np.ceil(self.get_length() / full_length))
-        except ZeroDivisionError:
-            return 1
-
-    def calculate_positive_space_ratio(self):
-        return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
+        # Minimum number of dashes has to be 2
+        return max(
+            2, int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio))
+        )
 
     def get_start(self) -> np.ndarray:
         """Returns the start point of the line.
@@ -1067,7 +1193,7 @@ class DashedLine(Line):
         ::
 
             >>> DashedLine().get_end()
-            array([0.99871795, 0.        , 0.        ])
+            array([1., 0., 0.])
         """
 
         if len(self.submobjects) > 0:
@@ -1096,7 +1222,7 @@ class DashedLine(Line):
         ::
 
             >>> DashedLine().get_last_handle()
-            array([0.98205128, 0.        , 0.        ])
+            array([0.98333333, 0.        , 0.        ])
         """
 
         return self.submobjects[-1].get_points()[-2]
@@ -1232,6 +1358,46 @@ class Arrow(Line):
 
                 self.add(Group(g1, g2, g3).arrange(buff=2))
 
+
+    .. manim:: ArrowExample
+        :save_last_frame:
+
+        class ArrowExample(Scene):
+            def construct(self):
+                left_group = VGroup()
+                # As buff increases, the size of the arrow decreases.
+                for buff in np.arange(0, 2.2, 0.45):
+                    left_group += Arrow(buff=buff, start=2 * LEFT, end=2 * RIGHT)
+                # Required to arrange arrows.
+                left_group.arrange(DOWN)
+                left_group.move_to(4 * LEFT)
+
+                middle_group = VGroup()
+                # As max_stroke_width_to_length_ratio gets bigger,
+                # the width of stroke increases.
+                for i in np.arange(0, 5, 0.5):
+                    middle_group += Arrow(max_stroke_width_to_length_ratio=i)
+                middle_group.arrange(DOWN)
+
+                UR_group = VGroup()
+                # As max_tip_length_to_length_ratio increases,
+                # the length of the tip increases.
+                for i in np.arange(0, 0.3, 0.1):
+                    UR_group += Arrow(max_tip_length_to_length_ratio=i)
+                UR_group.arrange(DOWN)
+                UR_group.move_to(4 * RIGHT + 2 * UP)
+
+                DR_group = VGroup()
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
+                DR_group.arrange(DOWN)
+                DR_group.move_to(4 * RIGHT + 2 * DOWN)
+
+                self.add(left_group, middle_group, UR_group, DR_group)
+
+
     See Also
     --------
     :class:`ArrowTip`
@@ -1314,7 +1480,7 @@ class Arrow(Line):
         --------
         ::
 
-            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            >>> np.round(Arrow().get_normal_vector()) + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
         """
 
@@ -1468,6 +1634,21 @@ class DoubleArrow(Arrow):
                 group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
                 self.add(group)
 
+
+    .. manim:: DoubleArrowExample2
+        :save_last_frame:
+
+        class DoubleArrowExample2(Scene):
+            def construct(self):
+                box = Square()
+                p1 = box.get_left()
+                p2 = box.get_right()
+                d1 = DoubleArrow(p1, p2, buff=0)
+                d2 = DoubleArrow(p1, p2, buff=0, tip_length=0.2, color=YELLOW)
+                d3 = DoubleArrow(p1, p2, buff=0, tip_length=0.4, color=BLUE)
+                Group(d1, d2, d3).arrange(DOWN)
+                self.add(box, d1, d2, d3)
+
     See Also
     --------
     :class:`ArrowTip`
@@ -1556,7 +1737,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             self.start_new_path(first_vertex)
             self.add_points_as_corners(
-                [*[np.array(vertex) for vertex in vertices], first_vertex]
+                [*(np.array(vertex) for vertex in vertices), first_vertex]
             )
 
     def get_vertices(self) -> np.ndarray:
@@ -2034,11 +2215,11 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = [arc_config for pair in point_pairs]
+            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config
@@ -2271,28 +2452,28 @@ class Rectangle(Polygon):
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
-                *[
+                *(
                     Line(
                         v[1] + i * grid_xstep * RIGHT,
                         v[1] + i * grid_xstep * RIGHT + height * DOWN,
                         color=color,
                     )
                     for i in range(1, count)
-                ]
+                )
             )
             self.add(grid)
         if grid_ystep is not None:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
-                *[
+                *(
                     Line(
                         v[1] + i * grid_ystep * DOWN,
                         v[1] + i * grid_ystep * DOWN + width * RIGHT,
                         color=color,
                     )
                     for i in range(1, count)
-                ]
+                )
             )
             self.add(grid)
 
@@ -2384,9 +2565,8 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: CustomTipExample
 
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
-        ...     def __init__(self, **kwargs):
+        ...     def __init__(self, length=0.35, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
-        ...         length = 0.35
         ...         self.width = length
         ...         self.stretch_to_fit_height(length)
         >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),

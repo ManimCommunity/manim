@@ -58,30 +58,30 @@ For first-time contributors
       poetry run pre-commit install
    
    This will ensure during development that each of your commits is properly
-   formatted against our linter and formatters, ``black``, ``flake8``, and
-   ``isort``.
+   formatted against our linter and formatters, ``black``, ``flake8``,
+   ``isort`` and ``codespell``.
 
 You are now ready to work on manim!
 
 Develop your contribution
 -------------------------
 
-#. Checkout your local repository's master branch and pull the latest
+#. Checkout your local repository's main branch and pull the latest
    changes from ManimCommunity, ``upstream``, into your local repository:
 
    .. code-block:: shell
 
-      git checkout master 
-      git pull --rebase upstream master
+      git checkout main
+      git pull --rebase upstream main
 
 #. Create a branch for the changes you want to work on rather than working
-   off of master:
+   off of your local main branch:
 
    .. code-block:: shell
 
-      git checkout -b <new branch name> upstream/master
+      git checkout -b <new branch name> upstream/main
 
-   This ensures you can easily update your local repository's master with the
+   This ensures you can easily update your local repository's main with the
    first step and switch branches to work on multiple features.
 
 #. Write some awesome code!
@@ -114,7 +114,7 @@ Develop your contribution
 
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   See the :doc:`documentation guide <documentation>` for more information about how we
+   See the :doc:`documentation guide <docstrings>` for more information about how we
    prefer our code to be documented. The content of the docstrings will be
    rendered in the :doc:`reference manual <../reference>`.
 
@@ -124,7 +124,7 @@ Develop your contribution
       to the documentation!
 
       .. autosummary::
-         :toctree: reference
+         :toctree: ../reference
 
          manim_directive
 
@@ -185,8 +185,8 @@ Your changes are eligible to be merged if:
 #. the tests in our pipeline pass
 #. at least one (two for more complex changes) Community Developer approves the changes
 
-You can check for merge conflicts between the current upstream/master and
-your branch by executing ``git pull upstream master`` locally. If this
+You can check for merge conflicts between the current upstream/main and
+your branch by executing ``git pull upstream main`` locally. If this
 generates any merge conflicts, you need to resolve them and push an
 updated version of the branch to your fork of the repository.
 

@@ -46,6 +46,43 @@ class Code(VGroup):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
+    Examples
+    --------
+
+    Normal usage::
+
+        listing = Code(
+            "helloworldcpp.cpp",
+            tab_width=4,
+            background_stroke_width=1,
+            background_stroke_color=WHITE,
+            insert_line_no=True,
+            style=Code.styles_list[15],
+            background="window",
+            language="cpp",
+        )
+
+    We can also render code passed as a string (but note that
+    the language has to be specified in this case):
+
+    .. manim:: CodeFromString
+        :save_last_frame:
+
+        class CodeFromString(Scene):
+            def construct(self):
+                code = '''from manim import Scene, Square
+
+        class FadeInSquare(Scene):
+            def construct(self):
+                s = Square()
+                self.play(FadeIn(s))
+                self.play(s.animate.scale(2))
+                self.wait()
+        '''
+                rendered_code = Code(code=code, tab_width=4, background="window",
+                                    language="Python", font="Monospace")
+                self.add(rendered_code)
+
     Parameters
     ----------
     file_name : :class:`str`
@@ -101,42 +138,6 @@ class Code(VGroup):
     code : :class:`~.Paragraph`
         The highlighted code.
 
-    Examples
-    --------
-    Normal usage::
-
-        listing = Code(
-            "helloworldcpp.cpp",
-            tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=True,
-            style=Code.styles_list[15],
-            background="window",
-            language="cpp",
-        )
-
-    We can also render code passed as a string (but note that
-    the language has to be specified in this case):
-
-    .. manim:: CodeFromString
-        :save_last_frame:
-
-        class CodeFromString(Scene):
-            def construct(self):
-                code = '''from manim import Scene, Square
-
-        class FadeInSquare(Scene):
-            def construct(self):
-                s = Square()
-                self.play(FadeIn(s))
-                self.play(s.animate.scale(2))
-                self.wait()
-        '''
-                rendered_code = Code(code=code, tab_width=4, background="window",
-                                    language="Python", font="Monospace")
-                self.add(rendered_code)
-
     """
 
     # tuples in the form (name, aliases, filetypes, mimetypes)
@@ -170,13 +171,12 @@ class Code(VGroup):
         generate_html_file=False,
         **kwargs,
     ):
-        VGroup.__init__(
-            self,
+        super().__init__(
             stroke_width=stroke_width,
-            background_stroke_color=background_stroke_color,
-            background_stroke_width=background_stroke_width,
             **kwargs,
         )
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.scale_factor = scale_factor
@@ -196,7 +196,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self.ensure_valid_file()
-            with open(self.file_path, "r") as f:
+            with open(self.file_path) as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
@@ -264,12 +264,11 @@ class Code(VGroup):
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, self.code, **kwargs
+            super().__init__(
+                self.background_mobject, self.line_numbers, self.code, **kwargs
             )
         else:
-            VGroup.__init__(
-                self,
+            super().__init__(
                 self.background_mobject,
                 Dot(fill_opacity=0, stroke_opacity=0),
                 self.code,
@@ -293,7 +292,7 @@ class Code(VGroup):
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
             + f"of these locations: {possible_paths}"
         )
-        raise IOError(error)
+        raise OSError(error)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.

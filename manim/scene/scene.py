@@ -9,10 +9,16 @@ import inspect
 import platform
 import random
 import threading
+import time
 import types
-import warnings
 from queue import Queue
 
+try:
+    import dearpygui.dearpygui as dpg
+
+    dearpygui_imported = True
+except ImportError:
+    dearpygui_imported = False
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -22,17 +28,17 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
+from ..gui.gui import configure_pygui
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.shader import Mesh
+from ..renderer.opengl_renderer import OpenGLRenderer
+from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -46,7 +52,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue.put(("rerun_file", [], {}))
 
 
-class Scene(Container):
+class Scene:
     """A Scene is the canvas of your animation.
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
@@ -84,16 +90,17 @@ class Scene(Container):
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
-        **kwargs,
+        skip_animations=False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self.skip_animations = skip_animations
 
         self.animations = None
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
         self.time_progression = None
         self.duration = None
         self.last_t = None
@@ -101,16 +108,25 @@ class Scene(Container):
         self.skip_animation_preview = False
         self.meshes = []
         self.camera_target = ORIGIN
+        self.widgets = []
+        self.dearpygui_imported = dearpygui_imported
+        self.updaters = []
+        self.point_lights = []
+        self.ambient_light = None
+        self.key_to_function_map = {}
+        self.mouse_press_callbacks = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
+            if renderer is None:
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
+                skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
@@ -122,8 +138,6 @@ class Scene(Container):
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-        Container.__init__(self, **kwargs)
 
     @property
     def camera(self):
@@ -308,8 +322,13 @@ class Scene(Container):
             mobject.update(dt)
 
     def update_meshes(self, dt):
-        for mesh in self.meshes:
-            mesh.update(dt)
+        for obj in self.meshes:
+            for mesh in obj.get_family():
+                mesh.update(dt)
+
+    def update_self(self, dt):
+        for func in self.updaters:
+            func(dt)
 
     def should_update_mobjects(self):
         """
@@ -338,7 +357,7 @@ class Scene(Container):
         families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
-            num_families = sum([(mobject in family) for family in families])
+            num_families = sum((mobject in family) for family in families)
             return num_families == 1
 
         return list(filter(is_top_level, self.mobjects))
@@ -385,7 +404,7 @@ class Scene(Container):
             new_mobjects = []
             new_meshes = []
             for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Mesh):
+                if isinstance(mobject_or_mesh, Object3D):
                     new_meshes.append(mobject_or_mesh)
                 else:
                     new_mobjects.append(mobject_or_mesh)
@@ -405,7 +424,6 @@ class Scene(Container):
             return self
 
     def add_mobjects_from_animations(self, animations):
-
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             # Anything animated that's not already in the
@@ -430,7 +448,7 @@ class Scene(Container):
             mobjects_to_remove = []
             meshes_to_remove = set()
             for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Mesh):
+                if isinstance(mobject_or_mesh, Object3D):
                     meshes_to_remove.add(mobject_or_mesh)
                 else:
                     mobjects_to_remove.append(mobject_or_mesh)
@@ -445,6 +463,12 @@ class Scene(Container):
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
+
+    def add_updater(self, func):
+        self.updaters.append(func)
+
+    def remove_updater(self, func):
+        self.updaters = [f for f in self.updaters if f is not func]
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -872,9 +896,10 @@ class Scene(Container):
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(self, *animations: Animation, **play_kwargs):
-        """Given a list of animations, compile statics and moving mobjects, duration from them.
+        """Given a list of animations, compile the corresponding
+        static and moving mobjects, and gather the animation durations.
 
-        This also begin the animations.
+        This also begins the animations.
 
         Parameters
         ----------
@@ -896,8 +921,8 @@ class Scene(Container):
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
 
         if not config.renderer == "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
@@ -971,6 +996,8 @@ class Scene(Container):
         """
         Like embed(), but allows for screen interaction.
         """
+        if self.skip_animation_preview or config["write_to_movie"]:
+            return
 
         def ipython(shell, namespace):
             import manim
@@ -1012,7 +1039,23 @@ class Scene(Container):
             target=ipython,
             args=(shell, local_namespace),
         )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
         keyboard_thread.start()
+
+        if self.dearpygui_imported and config["enable_gui"]:
+            if not dpg.is_dearpygui_running():
+                gui_thread = threading.Thread(
+                    target=configure_pygui,
+                    args=(self.renderer, self.widgets),
+                    kwargs={"update": False},
+                )
+                gui_thread.start()
+            else:
+                configure_pygui(self.renderer, self.widgets, update=True)
+
+        self.camera.model_matrix = self.camera.default_model_matrix
 
         self.interact(shell, keyboard_thread)
 
@@ -1023,14 +1066,20 @@ class Scene(Container):
         file_observer.start()
 
         self.quit_interaction = False
-        keyboard_thread_needs_join = True
+        keyboard_thread_needs_join = shell.pt_app is not None
+        assert self.queue.qsize() == 0
+
+        last_time = time.time()
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
                     # Intentionally skip calling join() on the file thread to save time.
                     if not tup[0].endswith("keyboard"):
-                        shell.pt_app.app.exit(exception=EOFError)
+                        if shell.pt_app:
+                            shell.pt_app.app.exit(exception=EOFError)
+                        file_observer.unschedule_all()
+                        raise RerunSceneException
                     keyboard_thread.join()
 
                     kwargs = tup[2]
@@ -1046,9 +1095,16 @@ class Scene(Container):
                     #     ]
 
                     keyboard_thread.join()
+                    file_observer.unschedule_all()
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
+                        shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
+                    # Remove exit_keyboard from the queue if necessary.
+                    while self.queue.qsize() > 0:
+                        self.queue.get()
                     keyboard_thread_needs_join = False
                     break
                 else:
@@ -1056,15 +1112,26 @@ class Scene(Container):
                     getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
-                dt = 1 / config["frame_rate"]
+                dt = time.time() - last_time
+                last_time = time.time()
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
+                self.update_self(dt)
 
         # Join the keyboard thread if necessary.
         if shell is not None and keyboard_thread_needs_join:
             shell.pt_app.app.exit(exception=EOFError)
             keyboard_thread.join()
+            # Remove exit_keyboard from the queue if necessary.
+            while self.queue.qsize() > 0:
+                self.queue.get()
+
+        file_observer.stop()
+        file_observer.join()
+
+        if self.dearpygui_imported and config["enable_gui"]:
+            dpg.stop_dearpygui()
 
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
@@ -1120,6 +1187,7 @@ class Scene(Container):
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
+        self.update_self(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
@@ -1154,7 +1222,7 @@ class Scene(Container):
                     dot.set_color(RED)
                     self.wait()
 
-        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return
@@ -1172,8 +1240,9 @@ class Scene(Container):
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        factor = 1 + np.arctan(-2.1 * offset[1])
-        self.camera.scale(factor, about_point=self.camera_target)
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
@@ -1188,6 +1257,9 @@ class Scene(Container):
             self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
+        else:
+            if char in self.key_to_function_map:
+                self.key_to_function_map[char]()
 
     def on_key_release(self, symbol, modifiers):
         pass
@@ -1234,8 +1306,8 @@ class Scene(Container):
                 d_point[1], axis_of_rotation, homogeneous=True
             )
 
-            maximum_polar_angle = PI / 2
-            minimum_polar_angle = -PI / 2
+            maximum_polar_angle = self.camera.maximum_polar_angle
+            minimum_polar_angle = self.camera.minimum_polar_angle
 
             potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
             potential_camera_location = potential_camera_model_matrix[:3, 3]
@@ -1281,3 +1353,10 @@ class Scene(Container):
                 @ self.camera.model_matrix
             )
             self.camera_target += total_shift_vector
+
+    def set_key_function(self, char, func):
+        self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()

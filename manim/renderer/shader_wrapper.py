@@ -8,9 +8,6 @@ import numpy as np
 
 from .. import logger
 
-# from manimlib.utils.directories import get_shader_dir
-# from manimlib.utils.file_ops import find_file
-
 # Mobjects that should be rendered with
 # the same shader will be organized and
 # clumped together based on keeping track
@@ -32,10 +29,10 @@ def find_file(file_name, directories=None):
             return path
         else:
             logger.debug(f"{path} does not exist.")
-    raise IOError(f"{file_name} not Found")
+    raise OSError(f"{file_name} not Found")
 
 
-class ShaderWrapper(object):
+class ShaderWrapper:
     def __init__(
         self,
         vert_data=None,
@@ -105,10 +102,8 @@ class ShaderWrapper(object):
     def create_program_id(self):
         return hash(
             "".join(
-                (
-                    self.program_code[f"{name}_shader"] or ""
-                    for name in ("vertex", "geometry", "fragment")
-                )
+                self.program_code[f"{name}_shader"] or ""
+                for name in ("vertex", "geometry", "fragment")
             )
         )
 
@@ -151,7 +146,7 @@ class ShaderWrapper(object):
             self.vert_data = np.hstack(data_list)
         else:
             self.vert_data = np.hstack(
-                [self.vert_data, *[sw.vert_data for sw in shader_wrappers]]
+                [self.vert_data, *(sw.vert_data for sw in shader_wrappers)]
             )
         return self
 
@@ -171,10 +166,10 @@ def get_shader_code_from_file(filename):
             filename,
             directories=[get_shader_dir(), "/"],
         )
-    except IOError:
+    except OSError:
         return None
 
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         result = f.read()
 
     # To share functionality between shaders, some functions are read in

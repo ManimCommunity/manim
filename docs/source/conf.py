@@ -20,24 +20,10 @@ import manim
 sys.path.insert(0, os.path.abspath("."))
 
 
-if os.environ.get("READTHEDOCS") == "True":
-    site_path = get_python_lib()
-    # we need to add ffmpeg to the path
-    ffmpeg_path = os.path.join(site_path, "imageio_ffmpeg", "binaries")
-    # the included binary is named ffmpeg-linux..., create a symlink
-    [ffmpeg_bin] = [
-        file for file in os.listdir(ffmpeg_path) if file.startswith("ffmpeg-")
-    ]
-    os.symlink(
-        os.path.join(ffmpeg_path, ffmpeg_bin), os.path.join(ffmpeg_path, "ffmpeg")
-    )
-    os.environ["PATH"] += os.pathsep + ffmpeg_path
-
-
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020, The Manim Community Dev Team"
+copyright = "2020-2021, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
@@ -81,6 +67,8 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
+html_extra_path = ["robots.txt"]
+
 exclude_patterns = []
 
 
@@ -102,15 +90,16 @@ html_theme_options = {
     "light_logo": "manim-logo-sidebar.svg",
     "dark_logo": "manim-logo-sidebar-dark.svg",
     "light_css_variables": {
-        "color-content-foreground": "#413c3c",
-        "color-background-primary": "#f1ece9",
-        "color-background-border": "#ded6d4",
-        "color-sidebar-background": "#ece6e2",
-        "color-brand-content": "#2196f3",
-        "color-brand-primary": "#525893",
-        "color-link": "#e07a5f",
-        "color-link--hover": "#a05744",
-        "color-inline-code-background": "#f9f9f9",
+        "color-content-foreground": "#000000",
+        "color-background-primary": "#ffffff",
+        "color-background-border": "#ffffff",
+        "color-sidebar-background": "#f8f9fb",
+        "color-brand-content": "#1c00e3",
+        "color-brand-primary": "#192bd0",
+        "color-link": "#c93434",
+        "color-link--hover": "#5b0000",
+        "color-inline-code-background": "#f6f6f6;",
+        "color-foreground-secondary": "#000",
     },
     "dark_css_variables": {
         "color-content-foreground": "#ffffffd9",
@@ -118,10 +107,11 @@ html_theme_options = {
         "color-background-border": "#303335",
         "color-sidebar-background": "#1a1c1e",
         "color-brand-content": "#2196f3",
-        "color-brand-primary": "#87c2a5",
-        "color-link": "#e07a5f",
-        "color-link--hover": "#ffb7a4",
-        "color-inline-code-background": "#383838",
+        "color-brand-primary": "#007fff",
+        "color-link": "#51ba86",
+        "color-link--hover": "#9cefc6",
+        "color-inline-code-background": "#262626",
+        "color-foreground-secondary": "#ffffffd9",
     },
 }
 html_title = f"Manim Community v{manim.__version__}"

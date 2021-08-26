@@ -74,6 +74,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity=1.0,
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
+        color=None,
         **kwargs,
     ):
         self.def_map = {}
@@ -81,11 +82,17 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        self.path_string_config = {
-            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
-            "should_remove_null_curves": should_remove_null_curves,
-        }
-        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
+        self.path_string_config = (
+            {
+                "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+                "should_remove_null_curves": should_remove_null_curves,
+            }
+            if config.renderer == "opengl"
+            else {}
+        )
+        super().__init__(
+            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -117,7 +124,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 self.file_path = path
                 return
         error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
-        raise IOError(error)
+        raise OSError(error)
 
     def generate_points(self):
         """Called by the Mobject abstract base class. Responsible for generating
@@ -126,7 +133,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, {})
+            mobjects = self.get_mobjects_from(svg, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -174,12 +181,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
-                *[
+                *(
                     self.get_mobjects_from(
                         child, style, within_defs=within_defs or is_defs
                     )
                     for child in element.childNodes
-                ]
+                )
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
@@ -218,6 +225,19 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         return result
 
+    def generate_style(self):
+        style = {
+            "fill-opacity": self.fill_opacity,
+            "stroke-opacity": self.stroke_opacity,
+        }
+        if self.color:
+            style["fill"] = style["stroke"] = self.color.get_hex_l()
+        if self.fill_color:
+            style["fill"] = self.fill_color
+        if self.stroke_color:
+            style["stroke"] = self.stroke_color
+        return style
+
     def path_string_to_mobject(self, path_string: str, style: dict):
         """Converts a SVG path element's ``d`` attribute to a mobject.
 
@@ -231,7 +251,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject from the given path string, or d attribute.
         """
         return SVGPathMobject(
@@ -311,12 +331,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Line
             A Line VMobject
         """
-        x1, y1, x2, y2 = [
+        x1, y1, x2, y2 = (
             self.attribute_to_float(line_element.getAttribute(key))
             if line_element.hasAttribute(key)
             else 0.0
             for key in ("x1", "y1", "x2", "y2")
-        ]
+        )
         return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
 
     def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
@@ -384,12 +404,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Circle
             A Circle VMobject
         """
-        x, y, r = [
+        x, y, r = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "r")
-        ]
+        )
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
@@ -409,12 +429,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Circle
             A Circle VMobject
         """
-        x, y, rx, ry = [
+        x, y, rx, ry = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "rx", "ry")
-        ]
+        )
         return (
             Circle(**parse_style(style))
             .scale(rx * RIGHT + ry * UP)
@@ -434,7 +454,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject representing the polygon.
         """
         # This seems hacky... yes it is.
@@ -497,7 +517,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
                 for mob in mobject.family_members_with_points():
                     if config["renderer"] == "opengl":
-                        mob.data["points"] = np.dot(mob.data["points"], matrix)
+                        mob.points = np.dot(mob.points, matrix)
                     else:
                         mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)

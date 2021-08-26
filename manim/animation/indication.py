@@ -29,24 +29,15 @@ __all__ = [
     "FocusOn",
     "Indicate",
     "Flash",
-    "CircleIndicate",
     "ShowPassingFlash",
     "ShowPassingFlashWithThinningStrokeWidth",
-    "ShowCreationThenDestruction",
     "ShowCreationThenFadeOut",
-    "AnimationOnSurroundingRectangle",
-    "ShowPassingFlashAround",
-    "ShowCreationThenDestructionAround",
-    "ShowCreationThenFadeAround",
     "ApplyWave",
-    "WiggleOutThenIn",
-    "TurnInsideOut",
     "Circumscribe",
     "Wiggle",
 ]
 
-import typing
-from typing import Callable, Type, Union
+from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
@@ -65,7 +56,6 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -112,7 +102,7 @@ class FocusOn(Transform):
         remover = True
         # Initialize with blank mobject, while create_target
         # and create_starting_mobject handle the meat
-        super().__init__(VMobject(), run_time=run_time, remover=remover, **kwargs)
+        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
 
     def create_target(self) -> "Dot":
         little_dot = Dot(radius=0)
@@ -161,9 +151,7 @@ class Indicate(Transform):
         mobject: "Mobject",
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: typing.Callable[
-            [float, typing.Optional[float]], np.ndarray
-        ] = there_and_back,
+        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
         **kwargs
     ) -> None:
         self.color = color
@@ -266,7 +254,7 @@ class Flash(AnimationGroup):
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
-    def create_line_anims(self) -> typing.Iterable["ShowPassingFlash"]:
+    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
         return [
             ShowPassingFlash(
                 line,
@@ -276,32 +264,6 @@ class Flash(AnimationGroup):
             )
             for line in self.lines
         ]
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class CircleIndicate(Indicate):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        circle_config: typing.Dict[str, typing.Any] = {"color": YELLOW},
-        rate_func: typing.Callable[
-            [float, typing.Optional[float]], np.ndarray
-        ] = there_and_back,
-        remover: bool = True,
-        **kwargs
-    ) -> None:
-        self.circle_config = circle_config
-        circle = self.get_circle(mobject)
-        super().__init__(circle, rate_func=rate_func, remover=remover, **kwargs)
-
-    def get_circle(self, mobject: "Mobject") -> Circle:
-        circle = Circle(**self.circle_config)
-        circle.add_updater(lambda c: c.surround(mobject))
-        return circle
-
-    def interpolate_mobject(self, alpha: float) -> None:
-        super().interpolate_mobject(alpha)
-        self.mobject.set_stroke(opacity=alpha)
 
 
 class ShowPassingFlash(ShowPartial):
@@ -342,7 +304,7 @@ class ShowPassingFlash(ShowPartial):
         self.time_width = time_width
         super().__init__(mobject, remover=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> typing.Tuple[float]:
+    def _get_bounds(self, alpha: float) -> Tuple[float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -365,7 +327,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         max_time_width = kwargs.pop("time_width", self.time_width)
         AnimationGroup.__init__(
             self,
-            *[
+            *(
                 ShowPassingFlash(
                     vmobject.deepcopy().set_stroke(width=stroke_width),
                     time_width=time_width,
@@ -375,16 +337,8 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
                     np.linspace(0, max_stroke_width, self.n_segments),
                     np.linspace(max_time_width, 0, self.n_segments),
                 )
-            ],
+            ),
         )
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="ShowPassingFlash")
-class ShowCreationThenDestruction(ShowPassingFlash):
-    def __init__(
-        self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
-    ) -> None:
-        super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
 # TODO Decide what to do with this class:
@@ -394,64 +348,6 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class AnimationOnSurroundingRectangle(AnimationGroup):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = Animation,
-        surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
-        **kwargs
-    ) -> None:
-        # Callable which takes in a rectangle, and spits out some animation.  Could be
-        # some animation class, could be something more
-        self.rect_animation = rect_animation
-        self.surrounding_rectangle_config = surrounding_rectangle_config
-        self.mobject_to_surround = mobject
-
-        rect = self.get_rect()
-        rect.add_updater(lambda r: r.move_to(mobject))
-
-        super().__init__(
-            self.rect_animation(rect, **kwargs),
-        )
-
-    def get_rect(self) -> SurroundingRectangle:
-        return SurroundingRectangle(
-            self.mobject_to_surround, **self.surrounding_rectangle_config
-        )
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self, mobject: "Mobject", rect_animation: Animation = ShowPassingFlash, **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenDestruction,
-        **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
-class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
-    def __init__(
-        self,
-        mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenFadeOut,
-        **kwargs
-    ) -> None:
-        super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ApplyWave(Homotopy):
@@ -569,7 +465,7 @@ class ApplyWave(Homotopy):
 
         def homotopy(
             x: float, y: float, z: float, t: float
-        ) -> typing.Tuple[float, float, float]:
+        ) -> Tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -619,8 +515,8 @@ class Wiggle(Animation):
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: typing.Optional[np.ndarray] = None,
-        rotate_about_point: typing.Optional[np.ndarray] = None,
+        scale_about_point: Optional[np.ndarray] = None,
+        rotate_about_point: Optional[np.ndarray] = None,
         run_time: float = 2,
         **kwargs
     ) -> None:
@@ -651,25 +547,6 @@ class Wiggle(Animation):
             wiggle(alpha, self.n_wiggles) * self.rotation_angle,
             about_point=self.get_rotate_about_point(),
         )
-
-
-@deprecated(since="v0.5.0", until="v0.7.0", replacement="Wiggle")
-class WiggleOutThenIn(Wiggle):
-    def __init__(*args, **kwargs):
-        super().__init(*args, **kwargs)
-
-
-@deprecated(
-    since="v0.5.0",
-    until="v0.7.0",
-    message="Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to.",
-)
-class TurnInsideOut(Transform):
-    def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
-        super().__init__(mobject, path_arc=path_arc, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        return self.mobject.copy().reverse_points()
 
 
 class Circumscribe(Succession):

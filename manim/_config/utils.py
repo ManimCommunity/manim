@@ -15,6 +15,7 @@ import copy
 import errno
 import logging
 import os
+import re
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -243,6 +244,7 @@ class ManimConfig(MutableMapping):
         "background_opacity",
         "custom_folders",
         "disable_caching",
+        "disable_caching_warning",
         "ffmpeg_loglevel",
         "format",
         "flush_cache",
@@ -267,7 +269,6 @@ class ManimConfig(MutableMapping):
         "pixel_height",
         "pixel_width",
         "plugins",
-        "png_mode",
         "preview",
         "progress_bar",
         "save_as_gif",
@@ -282,10 +283,19 @@ class ManimConfig(MutableMapping):
         "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
+        "enable_gui",
+        "gui_location",
+        "use_projection_fill_shaders",
+        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
+        "fullscreen",
+        "window_position",
+        "window_size",
+        "window_monitor",
         "write_all",
         "write_to_movie",
+        "zero_pad",
     }
 
     def __init__(self) -> None:
@@ -407,6 +417,12 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be boolean")
 
+    def _set_tuple(self, key: str, val: tuple) -> None:
+        if isinstance(val, tuple):
+            self._d[key] = val
+        else:
+            raise ValueError(f"{key} must be tuple")
+
     def _set_str(self, key: str, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is a string."""
         if isinstance(val, str):
@@ -422,6 +438,15 @@ class ManimConfig(MutableMapping):
             self._d[key] = val
         else:
             raise ValueError(f"{key} must be {lo} <= {key} <= {hi}")
+
+    def _set_int_between(self, key: str, val: int, lo: int, hi: int) -> None:
+        """Set ``key`` to ``val`` if lo <= val <= hi."""
+        if lo <= val <= hi:
+            self._d[key] = val
+        else:
+            raise ValueError(
+                f"{key} must be an integer such that {lo} <= {key} <= {hi}"
+            )
 
     def _set_pos_number(self, key: str, val: int, allow_inf: bool) -> None:
         """Set ``key`` to ``val`` if ``val`` is a positive integer."""
@@ -505,10 +530,15 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "log_to_file",
             "disable_caching",
+            "disable_caching_warning",
             "flush_cache",
             "custom_folders",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -520,6 +550,8 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "window_monitor",
+            "zero_pad",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -536,11 +568,11 @@ class ManimConfig(MutableMapping):
             "partial_movie_dir",
             "input_file",
             "output_file",
-            "png_mode",
             "movie_file_extension",
             "background_color",
             "renderer",
             "webgl_renderer_path",
+            "window_position",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -553,6 +585,18 @@ class ManimConfig(MutableMapping):
             # "frame_height",
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
+
+        # tuple keys
+        gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
+        setattr(self, "gui_location", gui_location)
+
+        window_size = parser["CLI"][
+            "window_size"
+        ]  # if not "default", get a tuple of the position
+        if window_size != "default":
+            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+        setattr(self, "window_size", window_size)
+
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
@@ -638,6 +682,11 @@ class ManimConfig(MutableMapping):
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
+            "zero_pad",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -715,6 +764,10 @@ class ManimConfig(MutableMapping):
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
 
+        # Handle --gui_location flag.
+        if getattr(args, "gui_location") is not None:
+            self.gui_location = args.gui_location
+
         return self
 
     def digest_file(self, filename: str) -> "ManimConfig":
@@ -760,7 +813,7 @@ class ManimConfig(MutableMapping):
 
     # config options are properties
     preview = property(
-        lambda self: self._d["preview"],
+        lambda self: self._d["preview"] or self._d["enable_gui"],
         lambda self, val: self._set_boolean("preview", val),
         doc="Whether to play the rendered movie (-p).",
     )
@@ -846,7 +899,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def format(self):
-        """File format; "png", "gif", "mp4", or "mov"."""
+        """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
     @format.setter
@@ -855,8 +908,12 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "format",
             val,
-            [None, "png", "gif", "mp4", "mov"],
+            [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        if self.format == "webm":
+            logging.getLogger("manim").warning(
+                "Output format set as webm, this can be slower than other formats"
+            )
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
@@ -969,6 +1026,11 @@ class ManimConfig(MutableMapping):
         doc="Maximum number of files cached.  Use -1 for infinity (no flag).",
     )
 
+    window_monitor = property(
+        lambda self: self._d["window_monitor"],
+        lambda self, val: self._set_pos_number("window_monitor", val, True),
+        doc="The monitor on which the scene will be rendered",
+    )
     flush_cache = property(
         lambda self: self._d["flush_cache"],
         lambda self, val: self._set_boolean("flush_cache", val),
@@ -981,18 +1043,18 @@ class ManimConfig(MutableMapping):
         doc="Whether to use scene caching.",
     )
 
-    png_mode = property(
-        lambda self: self._d["png_mode"],
-        lambda self, val: self._set_from_list("png_mode", val, ["RGB", "RGBA"]),
-        doc="Either RGA (no transparency) or RGBA (with transparency) (no flag).",
+    disable_caching_warning = property(
+        lambda self: self._d["disable_caching_warning"],
+        lambda self, val: self._set_boolean("disable_caching_warning", val),
+        doc="Whether a warning is raised if there are too much submobjects to hash.",
     )
 
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
-            "movie_file_extension", val, [".mp4", ".mov"]
+            "movie_file_extension", val, [".mp4", ".mov", ".webm"]
         ),
-        doc="Either .mp4 or .mov (no flag).",
+        doc="Either .mp4, .webm or .mov.",
     )
 
     background_opacity = property(
@@ -1036,14 +1098,8 @@ class ManimConfig(MutableMapping):
 
     @transparent.setter
     def transparent(self, val: bool) -> None:
-        if val:
-            self.png_mode = "RGBA"
-            self.movie_file_extension = ".mov"
-            self.background_opacity = 0.0
-        else:
-            self.png_mode = "RGB"
-            self.movie_file_extension = ".mp4"
-            self.background_opacity = 1.0
+        self._d["background_opacity"] = float(not val)
+        self.resolve_movie_file_extension(val)
 
     @property
     def dry_run(self):
@@ -1080,6 +1136,36 @@ class ManimConfig(MutableMapping):
     @renderer.setter
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
+        try:
+            from ..mobject.mobject import Mobject
+            from ..mobject.opengl_compatibility import ConvertToOpenGL
+            from ..mobject.opengl_mobject import OpenGLMobject
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+            from ..mobject.types.vectorized_mobject import VMobject
+
+            for cls in ConvertToOpenGL._converted_classes:
+                if val == "opengl":
+                    conversion_dict = {
+                        Mobject: OpenGLMobject,
+                        VMobject: OpenGLVMobject,
+                    }
+                else:
+                    conversion_dict = {
+                        OpenGLMobject: Mobject,
+                        OpenGLVMobject: VMobject,
+                    }
+
+                cls.__bases__ = tuple(
+                    conversion_dict.get(base, base) for base in cls.__bases__
+                )
+        except ImportError:
+            # The renderer is set during the initial import of the
+            # library for the first time. The imports above cause an
+            # ImportError due to circular imports. However, the
+            # metaclass sets stuff up correctly in this case, so we
+            # can just do nothing.
+            pass
+
         self._set_from_list(
             "renderer",
             val,
@@ -1111,8 +1197,8 @@ class ManimConfig(MutableMapping):
         self._d["use_webgl_renderer"] = val
         if val:
             self._set_from_list(
-                "renderer",
                 "webgl",
+                "renderer",
                 ["cairo", "opengl", "webgl"],
             )
             self["disable_caching"] = True
@@ -1127,6 +1213,64 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["media_dir"],
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    window_position = property(
+        lambda self: self._d["window_position"],
+        lambda self, val: self._d.__setitem__("window_position", val),
+        doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
+    )
+
+    window_size = property(
+        lambda self: self._d["window_size"],
+        lambda self, val: self._d.__setitem__("window_size", val),
+        doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
+    )
+
+    def resolve_movie_file_extension(self, is_transparent):
+        if is_transparent:
+            self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
+        elif self.format == "webm":
+            self.movie_file_extension = ".webm"
+        elif self.format == "mov":
+            self.movie_file_extension = ".mov"
+        else:
+            self.movie_file_extension = ".mp4"
+
+    enable_gui = property(
+        lambda self: self._d["enable_gui"],
+        lambda self, val: self._set_boolean("enable_gui", val),
+        doc="Enable GUI interaction.",
+    )
+
+    gui_location = property(
+        lambda self: self._d["gui_location"],
+        lambda self, val: self._set_tuple("gui_location", val),
+        doc="Enable GUI interaction.",
+    )
+
+    fullscreen = property(
+        lambda self: self._d["fullscreen"],
+        lambda self, val: self._set_boolean("fullscreen", val),
+        doc="Expand the window to its maximum possible size.",
+    )
+
+    use_projection_fill_shaders = property(
+        lambda self: self._d["use_projection_fill_shaders"],
+        lambda self, val: self._set_boolean("use_projection_fill_shaders", val),
+        doc="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+    )
+
+    use_projection_stroke_shaders = property(
+        lambda self: self._d["use_projection_stroke_shaders"],
+        lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
+        doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+    )
+
+    zero_pad = property(
+        lambda self: self._d["zero_pad"],
+        lambda self, val: self._set_int_between("zero_pad", val, 0, 9),
+        doc="PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum).",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:

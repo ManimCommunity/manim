@@ -3,14 +3,18 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+from typing import Iterable, Optional, Sequence, Union
+
 import numpy as np
 
 from .. import config
+from ..animation.animation import Animation
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
+from ..mobject.mobject import Mobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
@@ -42,7 +46,14 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def set_camera_orientation(self, phi=None, theta=None, distance=None, gamma=None):
+    def set_camera_orientation(
+        self,
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+    ):
         """
         This method sets the orientation of the camera in the scene.
 
@@ -59,6 +70,10 @@ class ThreeDScene(Scene):
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
+
+        frame_center : list, tuple or np.array, optional
+            The new center of the camera frame in cartesian coordinates.
+
         """
         if phi is not None:
             self.renderer.camera.set_phi(phi)
@@ -68,6 +83,8 @@ class ThreeDScene(Scene):
             self.renderer.camera.set_distance(distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
+        if frame_center is not None:
+            self.renderer.camera._frame_center.move_to(frame_center)
 
     def begin_ambient_camera_rotation(self, rate=0.02, about="theta"):
         """
@@ -146,12 +163,12 @@ class ThreeDScene(Scene):
 
     def move_camera(
         self,
-        phi=None,
-        theta=None,
-        distance=None,
-        gamma=None,
-        frame_center=None,
-        added_anims=[],
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        added_anims: Iterable["Animation"] = [],
         **kwargs,
     ):
         """
@@ -173,7 +190,7 @@ class ThreeDScene(Scene):
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
         frame_center : list, tuple or np.array, optional
-            The new center of the camera frame in cartesian coordinates
+            The new center of the camera frame in cartesian coordinates.
 
         added_anims : list, optional
             Any other animations to be played at the same time.
@@ -191,10 +208,19 @@ class ThreeDScene(Scene):
                 anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
         if frame_center is not None:
             anims.append(
-                ApplyMethod(self.renderer.camera._frame_center.move_to, frame_center)
+                ApplyMethod(
+                    self.renderer.camera._frame_center.move_to, frame_center, **kwargs
+                )
             )
 
         self.play(*anims + added_anims)
+
+        # These lines are added to improve performance. If manim thinks that frame_center is moving,
+        # it is required to redraw every object. These lines remove frame_center from the Scene once
+        # its animation is done, ensuring that manim does not think that it is moving. Since the
+        # frame_center is never actually drawn, this shouldn't break anything.
+        if frame_center is not None:
+            self.remove(self.renderer.camera._frame_center)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -207,7 +233,9 @@ class ThreeDScene(Scene):
             The animations whose mobjects will be checked.
         """
         moving_mobjects = Scene.get_moving_mobjects(self, *animations)
-        camera_mobjects = self.renderer.camera.get_value_trackers()
+        camera_mobjects = self.renderer.camera.get_value_trackers() + [
+            self.renderer.camera._frame_center
+        ]
         if any([cm in moving_mobjects for cm in camera_mobjects]):
             return self.mobjects
         return moving_mobjects

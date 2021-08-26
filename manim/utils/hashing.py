@@ -12,13 +12,16 @@ from typing import Any
 
 import numpy as np
 
-from .. import logger
+from .. import config, logger
 
 # Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
 # This is used to filter them out.
-KEYS_TO_FILTER_OUT = set(
-    ["original_id", "background", "pixel_array", "pixel_array_to_cairo_context"]
-)
+KEYS_TO_FILTER_OUT = {
+    "original_id",
+    "background",
+    "pixel_array",
+    "pixel_array_to_cairo_context",
+}
 
 
 class _Memoizer:
@@ -33,7 +36,8 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = "ALREADY PROCESSED"
+    ALREADY_PROCESSED_PLACEHOLDER = "AP"
+    THRESHOLD_WARNING = 170_000
 
     @classmethod
     def reset_already_processed(cls):
@@ -125,11 +129,22 @@ class _Memoizer:
         default_func,
         memoizing=True,
     ) -> typing.Union[str, Any]:
-
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
         if memoizing:
+            if (
+                not config.disable_caching_warning
+                and len(cls._already_processed) == cls.THRESHOLD_WARNING
+            ):
+                logger.warning(
+                    "It looks like the scene contains a lot of sub-mobjects. Caching is sometimes not suited to handle such large scenes, you might consider disabling caching with\
+                            --disable_caching to potentially speed up the rendering process."
+                )
+                logger.warning(
+                    "You can disable this warning by setting disable_caching_warning to True in your config file."
+                )
+
             cls._already_processed.add(obj_membership_sign)
         return default_func(obj)
 
@@ -188,7 +203,8 @@ class _CustomEncoder(json.JSONEncoder):
             return self._cleaned_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
-        return f"Unsupported type for serializing -> {str(type(obj))}"
+        # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
+        return str(type(obj))
 
     def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
@@ -308,10 +324,10 @@ def get_hash_from_play_call(
     camera_json = get_json(camera_object)
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
-    hash_camera, hash_animations, hash_current_mobjects = [
+    hash_camera, hash_animations, hash_current_mobjects = (
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
-    ]
+    )
     hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})

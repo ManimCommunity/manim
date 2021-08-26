@@ -176,7 +176,11 @@ class VectorField(VGroup):
             The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
-            Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it.
+            Whether to move the mobject along the vector field. If `True` the
+            vector field takes effect on the center of the given
+            :class:`~.Mobject`. If `False` the vector field takes effect on the
+            points of the individual points of the :class:`~.Mobject`,
+            potentially distorting it.
 
         Returns
         -------

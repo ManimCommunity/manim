@@ -163,8 +163,6 @@ __all__ = [
     "OpenGLTex",
     "OpenGLBulletedList",
     "OpenGLTitle",
-    "OpenGLTexMobject",
-    "OpenGLTextMobject",
 ]
 
 
@@ -253,6 +251,8 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
+        for mob in self.submobjects:
+            mob.orientation = -1
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.tex_string)})"
@@ -294,10 +294,10 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             tex = tex.replace("\\\\", "\\quad\\\\")
 
         # Handle imbalanced \left and \right
-        num_lefts, num_rights = [
+        num_lefts, num_rights = (
             len([s for s in tex.split(substr)[1:] if s and s[0] in "(){}[]|.\\"])
             for substr in ("\\left", "\\right")
-        ]
+        )
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
@@ -469,7 +469,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
                 return tex1 == tex2
 
         return OpenGLVGroup(
-            *[m for m in self.submobjects if test(tex, m.get_tex_string())]
+            *(m for m in self.submobjects if test(tex, m.get_tex_string()))
         )
 
     def get_part_by_tex(self, tex, **kwargs):
@@ -597,15 +597,3 @@ class OpenGLTitle(OpenGLTex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-@deprecated(until="v0.7.0", replacement="MathTex")
-class OpenGLTexMobject(OpenGLMathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-@deprecated(until="v0.7.0", replacement="Tex")
-class OpenGLTextMobject(OpenGLTex):
-    def __init__(self, *text_parts, **kwargs):
-        Tex.__init__(self, *text_parts, **kwargs)

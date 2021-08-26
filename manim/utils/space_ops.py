@@ -1,7 +1,6 @@
 """Utility functions for two- and three-dimensional vectors."""
 
 __all__ = [
-    "get_norm",
     "quaternion_mult",
     "quaternion_from_angle_axis",
     "angle_axis_from_quaternion",
@@ -11,12 +10,10 @@ __all__ = [
     "rotation_matrix",
     "rotation_about_z",
     "z_to_vector",
-    "angle_between",
     "angle_of_vector",
     "angle_between_vectors",
     "project_along_vector",
     "normalize",
-    "cross",
     "get_unit_normal",
     "compass_directions",
     "regular_vertices",
@@ -30,6 +27,7 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "perpendicular_bisector",
 ]
 
 
@@ -43,13 +41,7 @@ from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
-from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
-def get_norm(vect):
-    return np.linalg.norm(vect)
 
 
 def norm_squared(v: float) -> float:
@@ -321,11 +313,6 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     return np.dot(rotation_about_z(theta), phi_down)
 
 
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
-def angle_between(v1, v2):
-    return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
-
-
 def angle_of_vector(vector: Sequence[float]) -> float:
     """Returns polar coordinate theta when vector is projected on xy plane.
 
@@ -364,14 +351,11 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     np.ndarray
         The angle between the vectors.
     """
-    if config["renderer"] == "opengl":
-        diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
-        return min(diff, TAU - diff)
-    else:
-        return 2 * np.arctan2(
-            np.linalg.norm(normalize(v1) - normalize(v2)),
-            np.linalg.norm(normalize(v1) + normalize(v2)),
-        )
+
+    return 2 * np.arctan2(
+        np.linalg.norm(normalize(v1) - normalize(v2)),
+        np.linalg.norm(normalize(v1) + normalize(v2)),
+    )
 
 
 def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
@@ -424,11 +408,6 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     buffed_norms = np.repeat(norms, array.shape[axis]).reshape(array.shape)
     array /= buffed_norms
     return array
-
-
-@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
-def cross(v1, v2):
-    return np.cross(v1, v2)
 
 
 def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
@@ -709,7 +688,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     loop_connections = {}
 
     while detached_rings:
-        i_range, j_range = [
+        i_range, j_range = (
             list(
                 filter(
                     # Ignore indices that are already being
@@ -719,7 +698,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
                 )
             )
             for ring_group in (attached_rings, detached_rings)
-        ]
+        )
 
         # Closest point on the attached rings to an estimated midpoint
         # of the detached rings
@@ -766,3 +745,52 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
     meta_indices = earcut(verts[indices, :2], [len(indices)])
     return [indices[mi] for mi in meta_indices]
+
+
+def cartesian_to_spherical(vec):
+    norm = np.linalg.norm(vec)
+    if norm == 0:
+        return 0, 0, 0
+    r = norm
+    theta = np.arccos(vec[2] / r)
+    phi = np.arctan2(vec[1], vec[0])
+    return r, theta, phi
+
+
+def spherical_to_cartesian(r, theta, phi):
+    return np.array(
+        [
+            r * np.cos(phi) * np.sin(theta),
+            r * np.sin(phi) * np.sin(theta),
+            r * np.cos(theta),
+        ]
+    )
+
+
+def perpendicular_bisector(
+    line: Sequence[np.ndarray], norm_vector=OUT
+) -> Sequence[np.ndarray]:
+    """Returns a list of two points that correspond
+    to the ends of the perpendicular bisector of the
+    two points given.
+
+    Parameters
+    ----------
+    line
+        a list of two numpy array points (corresponding
+        to the ends of a line).
+    norm_vector
+        the vector perpendicular to both the line given
+        and the perpendicular bisector.
+
+    Returns
+    -------
+    list
+        A list of two numpy array points that correspond
+        to the ends of the perpendicular bisector
+    """
+    p1 = line[0]
+    p2 = line[1]
+    direction = np.cross(p1 - p2, norm_vector)
+    m = midpoint(p1, p2)
+    return [m + direction, m - direction]
