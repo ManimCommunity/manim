@@ -124,7 +124,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 self.file_path = path
                 return
         error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
-        raise IOError(error)
+        raise OSError(error)
 
     def generate_points(self):
         """Called by the Mobject abstract base class. Responsible for generating
@@ -181,12 +181,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
-                *[
+                *(
                     self.get_mobjects_from(
                         child, style, within_defs=within_defs or is_defs
                     )
                     for child in element.childNodes
-                ]
+                )
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
@@ -331,12 +331,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Line
             A Line VMobject
         """
-        x1, y1, x2, y2 = [
+        x1, y1, x2, y2 = (
             self.attribute_to_float(line_element.getAttribute(key))
             if line_element.hasAttribute(key)
             else 0.0
             for key in ("x1", "y1", "x2", "y2")
-        ]
+        )
         return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
 
     def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
@@ -404,12 +404,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Circle
             A Circle VMobject
         """
-        x, y, r = [
+        x, y, r = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "r")
-        ]
+        )
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
@@ -429,12 +429,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         Circle
             A Circle VMobject
         """
-        x, y, rx, ry = [
+        x, y, rx, ry = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "rx", "ry")
-        ]
+        )
         return (
             Circle(**parse_style(style))
             .scale(rx * RIGHT + ry * UP)

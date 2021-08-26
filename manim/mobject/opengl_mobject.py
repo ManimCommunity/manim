@@ -637,7 +637,7 @@ class OpenGLMobject:
                 # Use cell_alignment as fallback
                 return [cell_alignment * dir] * num
             if len(alignments) != num:
-                raise ValueError("{}_alignments has a mismatching size.".format(name))
+                raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
@@ -687,10 +687,10 @@ class OpenGLMobject:
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
-            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+            max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
-            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+            max(grid[r][c].width for r in range(rows)) for c in range(cols)
         ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
@@ -698,7 +698,7 @@ class OpenGLMobject:
             if sizes is None:
                 sizes = [None] * num
             if len(sizes) != num:
-                raise ValueError("{} has a mismatching size.".format(name))
+                raise ValueError(f"{name} has a mismatching size.")
             return [
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
@@ -783,7 +783,7 @@ class OpenGLMobject:
         copy_mobject.uniforms = dict(self.uniforms)
 
         copy_mobject.submobjects = []
-        copy_mobject.add(*[sm.copy() for sm in self.submobjects])
+        copy_mobject.add(*(sm.copy() for sm in self.submobjects))
         copy_mobject.match_updaters(self)
 
         copy_mobject.needs_new_bounding_box = self.needs_new_bounding_box
@@ -864,7 +864,7 @@ class OpenGLMobject:
         return self.time_based_updaters + self.non_time_updaters
 
     def get_family_updaters(self):
-        return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(self, update_function, index=None, call_updater=True):
         if "dt" in get_parameters(update_function):
@@ -1458,10 +1458,10 @@ class OpenGLMobject:
         template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
         return OpenGLGroup(
-            *[
+            *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            ]
+            )
         )
 
     def get_z_index_reference_point(self):
@@ -1777,7 +1777,7 @@ class OpenGLMobject:
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
-            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
+            *(sm.get_shader_wrapper_list() for sm in self.submobjects),
         )
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 
@@ -1867,7 +1867,7 @@ class OpenGLMobject:
         return self.event_listners
 
     def get_family_event_listners(self):
-        return list(it.chain(*[sm.get_event_listners() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_event_listners() for sm in self.get_family())))
 
     def get_has_event_listner(self):
         return any(mob.get_event_listners() for mob in self.get_family())

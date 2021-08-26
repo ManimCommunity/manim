@@ -95,7 +95,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             else:
                 num_string = num_string[1:]
 
-        self.add(*[SingleStringMathTex(char, **kwargs) for char in num_string])
+        self.add(*(SingleStringMathTex(char, **kwargs) for char in num_string))
 
         # Add non-numerical bits
         if self.show_ellipsis:

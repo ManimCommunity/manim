@@ -20,7 +20,7 @@ def test_TransformFromCopy(scene):
 
 @frames_comparison(last_frame=False)
 def test_FullRotation(scene):
-    s = VGroup(*[Square() for _ in range(4)]).arrange()
+    s = VGroup(*(Square() for _ in range(4))).arrange()
     scene.play(
         Rotate(s[0], -2 * TAU),
         Rotate(s[1], -1 * TAU),
