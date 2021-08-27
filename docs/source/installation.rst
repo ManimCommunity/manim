@@ -75,81 +75,12 @@ Using Manim via Docker
 `Docker <https://www.docker.com>`__ is a virtualization tool that
 allows to distribute encapsulated software environments (containers).
 
-The community maintains a docker image, which can be found
-`on DockerHub <https://hub.docker.com/r/manimcommunity/manim>`__. 
-For our image ``manimcommunity/manim``, there are the following tags:
+The following pages contain more information about the docker image
+maintained by the community, ``manimcommunity/manim``:
 
-- ``latest``: the most recent version corresponding 
-  to `the main branch <https://github.com/ManimCommunity/manim>`__,
-- ``stable``: the latest released version (according to 
-  `the releases page <https://github.com/ManimCommunity/manim/releases>`__),
-- ``vX.Y.Z``: any particular released version (according to 
-  `the releases page <https://github.com/ManimCommunity/manim/releases>`__).
+.. toctree::
 
-.. note::
-
-   When using Manim's CLI within a Docker container, some flags like 
-   ``-p`` (preview file) and ``-f`` (show output file in the file browser)
-   are not supported.
-
-
-Basic usage of the Docker container
------------------------------------
-
-Assuming that you can access the docker installation on your system
-from a terminal (bash / PowerShell) via ``docker``, you can 
-render a scene ``CircleToSquare`` in a file `test_scenes.py`
-with the following command.
-
-.. code-block:: bash
-
-   docker run --rm -it -v "/full/path/to/your/directory:/manim" manimcommunity/manim manim -qm test_scenes.py CircleToSquare
-
-.. tip::
-
-   For Linux users there might be permission problems when letting the
-   user in the container write to the mounted volume.
-   Add ``--user="$(id -u):$(id -g)"`` to the ``docker`` CLI arguments
-   to prevent the creation of output files not belonging to your user.
-
-
-Instead of using the "throwaway container" approach sketched
-above, you can also create a named container that you can
-modify to your liking. First, run
-
-.. code-block:: sh
-
-   docker run -it --name my-manim-container -v "/full/path/to/your/directory:/manim" manimcommunity/manim /bin/bash   
-
-
-to obtain an interactive shell inside your container allowing you
-to, e.g., install further dependencies (like texlive packages using
-``tlmgr``). Exit the container as soon as you are satisfied. Then,
-before using it, start the container by running
-
-.. code-block:: sh
-
-   docker start my-manim-container
-
-which starts the container in the background. Then, to render
-a scene ``CircleToSquare`` in a file ``test_scenes.py``, run
-
-.. code-block:: sh
-
-   docker exec -it my-manim-container manim -qm test_scenes.py CircleToSquare
-
-
-Running JupyterLab via Docker
------------------------------
-
-Another alternative is to use the Docker image to spin up a
-local JupyterLab instance. To do that, simply run
-
-.. code-block:: sh
-
-   docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
-
-and then follow the instructions in the terminal.
+   installation/docker
 
 
 .. _interactive-online:
@@ -157,103 +88,17 @@ and then follow the instructions in the terminal.
 Interactive Jupyter notebooks for your browser
 **********************************************
 
-Binder
-------
+Manim ships with a built-in ``%%manim`` IPython magic command
+designed for the use within `Jupyter notebooks <https://jupyter.org>`__.
+Our interactive tutorial over at https://try.manim.community illustrates
+how Manim can be used from within a Jupyter notebook.
 
-`Binder <https://mybinder.readthedocs.io/en/latest/>`__ is an online
-platform that hosts shareable and customizable computing environments
-in the form of Jupyter notebooks. Manim ships with a built-in ``%%manim``
-Jupyter magic command which makes it easy to use in these notebooks.
+The following pages explain how you can setup interactive environments
+like that yourself:
 
-To see an example for such an environment, visit our interactive
-tutorial over at https://try.manim.community/.
+.. toctree::
 
-It is relatively straightforward to prepare your own notebooks in
-a way that allows them to be shared interactively via Binder as well:
-
-#. First, prepare a directory containing one or multiple notebooks
-   which you would like to share in an interactive environment. You
-   can create these notebooks by using Jupyter notebooks with a
-   local installation of Manim, or also by working in our pre-existing
-   `interactive tutorial environment <https://try.manim.community/>`__.
-#. In the same directory containing your notebooks, you need to add a
-   file named ``Dockerfile`` with the following content:
-
-   .. code-block:: dockerfile
-
-      FROM manimcommunity/manim:v0.9.0
-
-      COPY --chown=manimuser:manimuser . /manim
-   
-   Don't forget to change the version tag ``v0.9.0`` to the version you
-   were working with locally when creating your notebooks.
-#. Make the directory with your worksheets and the ``Dockerfile``
-   available to the public (and in particular: to Binder!). There are
-   `several different options to do so 
-   <https://mybinder.readthedocs.io/en/latest/introduction.html#how-can-i-prepare-a-repository-for-binder>`__,
-   within the community we usually work with GitHub
-   repositories or gists.
-#. Once your material is publicly available, visit
-   https://mybinder.org and follow the instructions there to
-   generate an interactive environment for your worksheets.
-
-.. hint::
-
-   The repository containing our `interactive tutorial 
-   <https://try.manim.community>`__ can be found at
-   https://github.com/ManimCommunity/jupyter_examples.
-
-
-Google Colaboratory
--------------------
-
-It is also possible to install Manim in a
-`Google Colaboratory <https://colab.research.google.com/>`__ environment.
-In contrast to Binder, where we can customize and prepare the environment
-for you (such that Manim is already installed and ready to be used), you
-will have to take care of that yourself in Google Colab. Fortunately, this
-is not particularly difficult.
-
-After creating a new notebook, paste the following code block in a cell,
-and then execute the cell.
-
-.. code-block::
-
-   !sudo apt update
-   !sudo apt install libcairo2-dev ffmpeg \
-       texlive texlive-latex-extra texlive-fonts-extra \
-       texlive-latex-recommended texlive-science \
-       tipa libpango1.0-dev
-   !pip install manim
-   !pip install IPython --upgrade
-
-You should start to see Colab installing all the dependencies specified
-in these commands. After the execution has completed, you will be prompted
-to restart the runtime. Click the "restart runtime" button at the bottom of
-the cell output. You are now ready to use Manim in Colab!
-
-To check that everything works as expected, first import Manim by running
-
-.. code-block::
-
-   from manim import *
-
-in a new code cell, and then create another cell containing the
-following code::
-
-   %%manim -qm -v WARNING SquareToCircle
-      
-   class SquareToCircle(Scene):
-      def construct(self):
-         square = Square()
-         circle = Circle()  
-         circle.set_fill(PINK, opacity=0.5)  
-         self.play(Create(square))
-         self.play(Transform(square, circle))
-         self.wait()
-
-Upon running this cell, a short animation transforming a square
-into a circle should be rendered and displayed.
+   installation/jupyter
 
 
 Installation for developers
