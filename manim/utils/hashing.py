@@ -16,9 +16,12 @@ from .. import config, logger
 
 # Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
 # This is used to filter them out.
-KEYS_TO_FILTER_OUT = set(
-    ["original_id", "background", "pixel_array", "pixel_array_to_cairo_context"]
-)
+KEYS_TO_FILTER_OUT = {
+    "original_id",
+    "background",
+    "pixel_array",
+    "pixel_array_to_cairo_context",
+}
 
 
 class _Memoizer:
@@ -321,10 +324,10 @@ def get_hash_from_play_call(
     camera_json = get_json(camera_object)
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
-    hash_camera, hash_animations, hash_current_mobjects = [
+    hash_camera, hash_animations, hash_current_mobjects = (
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
-    ]
+    )
     hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})

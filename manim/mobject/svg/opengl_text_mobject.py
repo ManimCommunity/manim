@@ -91,9 +91,9 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
     else:
-        mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
+        mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
         code.code = mobject_without_dots
         return code
@@ -163,7 +163,7 @@ class OpenGLParagraph(OpenGLVGroup):
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
         OpenGLVGroup.__init__(
-            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
+            self, *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
         )
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
