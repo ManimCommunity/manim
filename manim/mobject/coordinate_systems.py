@@ -46,6 +46,7 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
@@ -70,7 +71,7 @@ class CoordinateSystem:
                     y_length=5.5,
                     axis_config={
                         "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
-                        "number_scale_value": 0.5,
+                        "font_size": 24,
                     },
                     tips=False,
                 )
@@ -96,7 +97,7 @@ class CoordinateSystem:
                     # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
                     include_underline=False,
-                    scale_factor=0.85,
+                    font_size=40,
                 )
 
                 self.add(title, graphs, grid, grid_labels)
@@ -1477,7 +1478,7 @@ class NumberPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
         self.y_axis_config = {"label_direction": DR}
         self.background_line_style = {
@@ -1729,8 +1730,8 @@ class PolarPlane(Axes):
     azimuth_label_buff
         The buffer for the azimuth labels.
 
-    azimuth_label_scale
-        The scale of the azimuth labels.
+    azimuth_label_font_size
+        The font size of the azimuth labels.
 
     radius_config
         The axis config for the radius.
@@ -1747,12 +1748,18 @@ class PolarPlane(Axes):
                 polarplane_pi = PolarPlane(
                     azimuth_units="PI radians",
                     size=6,
-                    azimuth_label_scale=0.7,
-                    radius_config={"number_scale_value": 0.7},
+                    azimuth_label_font_size=33.6,
+                    radius_config={"font_size": 33.6},
                 ).add_coordinates()
                 self.add(polarplane_pi)
     """
 
+    @deprecated_params(
+        params="azimuth_label_scale",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use azimuth_label_font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -1764,7 +1771,7 @@ class PolarPlane(Axes):
         azimuth_offset: float = 0,
         azimuth_direction: str = "CCW",
         azimuth_label_buff: float = SMALL_BUFF,
-        azimuth_label_scale: float = 0.5,
+        azimuth_label_font_size: float = 24,
         radius_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
@@ -1772,6 +1779,14 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
+        # deprecation
+        azimuth_label_scale = kwargs.pop("azimuth_label_scale", None)
+        if azimuth_label_scale:
+            self.azimuth_label_font_size = (
+                azimuth_label_scale * DEFAULT_FONT_SIZE * 0.75
+            )
+        else:
+            self.azimuth_label_font_size = azimuth_label_font_size
 
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
@@ -1794,7 +1809,7 @@ class PolarPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DL,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
 
         self.background_line_style = {
@@ -1828,7 +1843,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        self.azimuth_label_scale = azimuth_label_scale
+        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
@@ -2047,9 +2062,9 @@ class PolarPlane(Axes):
         ]
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
-                self.get_radian_label(i["label"])
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                self.get_radian_label(
+                    i["label"], font_size=self.azimuth_label_font_size
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2059,9 +2074,10 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units == "degrees":
             a_tex = [
-                MathTex(f'{360 * i["label"]:g}' + r"^{\circ}")
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{360 * i["label"]:g}' + r"^{\circ}",
+                    font_size=self.azimuth_label_font_size,
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2071,9 +2087,10 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units == "gradians":
             a_tex = [
-                MathTex(f'{400 * i["label"]:g}' + r"^{g}")
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{400 * i["label"]:g}' + r"^{g}",
+                    font_size=self.azimuth_label_font_size,
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2083,9 +2100,9 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units is None:
             a_tex = [
-                MathTex(f'{i["label"]:g}')
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{i["label"]:g}', font_size=self.azimuth_label_font_size
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2113,30 +2130,29 @@ class PolarPlane(Axes):
         self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
-    def get_radian_label(self, number, stacked=True):
+    def get_radian_label(self, number, font_size=24, **kwargs):
         constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
             self.azimuth_units
         ]
         division = number * {"PI radians": 2, "TAU radians": 1}[self.azimuth_units]
         frac = fr.Fraction(division).limit_denominator(max_denominator=100)
         if frac.numerator == 0 & frac.denominator == 0:
-            return MathTex(r"0")
+            string = r"0"
         elif frac.numerator == 1 and frac.denominator == 1:
-            return MathTex(constant_label)
+            string = constant_label
         elif frac.numerator == 1:
             if self.azimuth_compact_fraction:
-                return MathTex(
+                string = (
                     r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}"
                 )
             else:
-                return MathTex(
-                    r"\tfrac{1}{" + str(frac.denominator) + "}" + constant_label
-                )
+                string = r"\tfrac{1}{" + str(frac.denominator) + "}" + constant_label
         elif frac.denominator == 1:
-            return MathTex(str(frac.numerator) + constant_label)
+            string = str(frac.numerator) + constant_label
+
         else:
             if self.azimuth_compact_fraction:
-                return MathTex(
+                string = (
                     r"\tfrac{"
                     + str(frac.numerator)
                     + constant_label
@@ -2145,7 +2161,7 @@ class PolarPlane(Axes):
                     + r"}"
                 )
             else:
-                return MathTex(
+                string = (
                     r"\tfrac{"
                     + str(frac.numerator)
                     + r"}{"
@@ -2153,6 +2169,8 @@ class PolarPlane(Axes):
                     + r"}"
                     + constant_label
                 )
+
+        return MathTex(string, font_size=font_size, **kwargs)
 
 
 class ComplexPlane(NumberPlane):
