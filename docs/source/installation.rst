@@ -1,15 +1,8 @@
 Installation
 ============
 
-There are a few different options for making Manim available to you:
-
-#. :ref:`Installing Manim to your system's Python <local-installation>`
-#. :ref:`Using Manim via Docker <docker-installation>`
-#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab 
-   <interactive-online>`
-
-Depending on your use case, different options are recommended: if you
-just want to play around with Manim for a bit, interactive in-browser
+Depending on your use case, different installation options are recommended:
+if you just want to play around with Manim for a bit, interactive in-browser
 worksheets are a really simple way of exploring the library as they
 require virtually no additional installation. Head over to
 https://try.manim.community to give our interactive tutorial a try.
@@ -17,6 +10,11 @@ https://try.manim.community to give our interactive tutorial a try.
 Otherwise, if you intend to use Manim to work on an animation project,
 we recommend installing the library locally (either to your system's
 Python, or via Docker).
+
+#. :ref:`Installing Manim to your system's Python <local-installation>`
+#. :ref:`Using Manim via Docker <docker-installation>`
+#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab 
+   <interactive-online>`
 
 .. warning:: 
 
