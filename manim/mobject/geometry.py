@@ -446,7 +446,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(self, radius=radius, angle=angle, **kwargs)
+        super().__init__(radius=radius, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -506,8 +506,7 @@ class Circle(Arc):
         color=RED,
         **kwargs,
     ):
-        Arc.__init__(
-            self,
+        super().__init__(
             radius=radius,
             start_angle=0,
             angle=TAU,

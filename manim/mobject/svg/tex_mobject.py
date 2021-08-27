@@ -35,11 +35,14 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK, WHITE
+from ...utils.deprecation import deprecated_params
 from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
-TEX_MOB_SCALE_FACTOR = 0.05
+SCALE_FACTOR_PER_FONT_POINT = 1 / 960
+
+tex_string_to_mob_map = {}
 
 
 class TexSymbol(SVGPathMobject):
@@ -71,9 +74,12 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
+        font_size=DEFAULT_FONT_SIZE,
         color=Color(WHITE),
         **kwargs,
     ):
+
+        self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
@@ -87,8 +93,7 @@ class SingleStringMathTex(SVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
@@ -101,13 +106,40 @@ class SingleStringMathTex(SVGMobject):
             color=color,
             **kwargs,
         )
+        # used for scaling via font_size.setter
+        self.initial_height = self.height
+
         if height is None:
-            self.scale(TEX_MOB_SCALE_FACTOR)
+            self.font_size = self._font_size
+
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.tex_string)})"
+
+    @property
+    def font_size(self):
+        """The font size of the tex mobject."""
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, font_val):
+        if font_val <= 0:
+            raise ValueError("font_size must be greater than 0.")
+        elif self.height > 0:
+            # sometimes manim generates a SingleStringMathex mobject with 0 height.
+            # can't be scaled regardless and will error without the elif.
+
+            # scale to a factor of the initial height so that setting
+            # font_size does not depend on current size.
+            self.scale(
+                SCALE_FACTOR_PER_FONT_POINT
+                * font_val
+                * self.initial_height
+                / self.height
+            )
+            self._font_size = font_val
 
     def get_modified_expression(self, tex_string):
         result = tex_string
@@ -255,8 +287,7 @@ class MathTex(SingleStringMathTex):
         self.brace_notation_split_occurred = False
         self.tex_strings = self.break_up_tex_strings(tex_strings)
         try:
-            SingleStringMathTex.__init__(
-                self,
+            super().__init__(
                 self.arg_separator.join(self.tex_strings),
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
@@ -407,8 +438,7 @@ class Tex(MathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        MathTex.__init__(
-            self,
+        super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
             tex_environment=tex_environment,
@@ -445,8 +475,8 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(
-            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+        super().__init__(
+            *line_separated_items, tex_environment=tex_environment, **kwargs
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
@@ -486,21 +516,28 @@ class Title(Tex):
 
     """
 
+    @deprecated_params(
+        params="scale_factor",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         *text_parts,
-        scale_factor=1,
         include_underline=True,
         match_underline_width_to_text=False,
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-        self.scale_factor = scale_factor
+        scale_factor = kwargs.pop("scale_factor", None)
+        if scale_factor:
+            kwargs["font_size"] = DEFAULT_FONT_SIZE * scale_factor
+
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff
-        Tex.__init__(self, *text_parts, **kwargs)
-        self.scale(self.scale_factor)
+        super().__init__(*text_parts, **kwargs)
         self.to_edge(UP)
         if self.include_underline:
             underline_width = config["frame_width"] - 2

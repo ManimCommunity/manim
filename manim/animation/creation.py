@@ -15,17 +15,17 @@ r"""Animate the display or removal of a mobject from a scene.
             s6 = Square()
             s7 = Square()
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
-            t1 = Text("Write").scale(0.5).next_to(s1, UP)
-            t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("Create").scale(0.5).next_to(s3, UP)
-            t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
-            t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
-            t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
-            t7 = Text("ShowSubmobjectsOneByOne").scale(0.45).next_to(s7, UP)
+            t1 = Text("Write", font_size=24).next_to(s1, UP)
+            t2 = Text("AddTextLetterByLetter", font_size=24).next_to(s2, UP)
+            t3 = Text("Create", font_size=24).next_to(s3, UP)
+            t4 = Text("Uncreate", font_size=24).next_to(s4, UP)
+            t5 = Text("DrawBorderThenFill", font_size=24).next_to(s5, UP)
+            t6 = Text("ShowIncreasingSubsets", font_size=22).next_to(s6, UP)
+            t7 = Text("ShowSubmobjectsOneByOne", font_size=22).next_to(s7, UP)
 
             self.add(s1, s2, s3, s4, s5, s6, s7, t1, t2, t3, t4, t5, t6, t7)
 
-            texts = [Text("manim").scale(0.6), Text("manim").scale(0.6)]
+            texts = [Text("manim", font_size=29), Text("manim", font_size=29)]
             texts[0].move_to(s1.get_center())
             texts[1].move_to(s2.get_center())
             self.add(*texts)
@@ -275,13 +275,13 @@ class Write(DrawBorderThenFill):
 
         class ShowWrite(Scene):
             def construct(self):
-                self.play(Write(Text("Hello").scale(3)))
+                self.play(Write(Text("Hello", font_size=144)))
 
     .. manim:: ShowWriteReversed
 
         class ShowWriteReversed(Scene):
             def construct(self):
-                self.play(Write(Text("Hello").scale(3), reverse=True))
+                self.play(Write(Text("Hello", font_size=144), reverse=True))
     """
 
     def __init__(
