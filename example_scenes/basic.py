@@ -29,13 +29,12 @@ class OpeningManim(Scene):
         transform_title.to_corner(UP + LEFT)
         self.play(
             Transform(title, transform_title),
-            LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
+            LaggedStart(*(FadeOut(obj, shift=DOWN) for obj in basel)),
         )
         self.wait()
 
         grid = NumberPlane()
-        grid_title = Tex("This is a grid")
-        grid_title.scale(1.5)
+        grid_title = Tex("This is a grid", font_size=72)
         grid_title.move_to(transform_title)
 
         self.add(grid, grid_title)  # Make sure title is on top of grid

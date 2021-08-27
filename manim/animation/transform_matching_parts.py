@@ -2,8 +2,7 @@
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
 
@@ -15,6 +14,9 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
+
+if TYPE_CHECKING:
+    from ..scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
