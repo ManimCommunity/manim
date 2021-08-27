@@ -214,10 +214,10 @@ class VectorScene(Scene):
             VGroup of the Vector Mobjects representing the basis vectors.
         """
         return VGroup(
-            *[
+            *(
                 Vector(vect, color=color, stroke_width=self.basis_vector_stroke_width)
                 for vect, color in [([1, 0], i_hat_color), ([0, 1], j_hat_color)]
-            ]
+            )
         )
 
     def get_basis_vector_labels(self, **kwargs):
@@ -238,7 +238,7 @@ class VectorScene(Scene):
         """
         i_hat, j_hat = self.get_basis_vectors()
         return VGroup(
-            *[
+            *(
                 self.get_vector_label(
                     vect, label, color=color, label_scale_factor=1, **kwargs
                 )
@@ -246,7 +246,7 @@ class VectorScene(Scene):
                     (i_hat, "\\hat{\\imath}", X_COLOR),
                     (j_hat, "\\hat{\\jmath}", Y_COLOR),
                 ]
-            ]
+            )
         )
 
     def get_vector_label(
@@ -402,7 +402,7 @@ class VectorScene(Scene):
             FadeOut(array.get_brackets()),
         ]
         self.play(*animations)
-        y_coord, _ = [anim.mobject for anim in animations]
+        y_coord, _ = (anim.mobject for anim in animations)
         self.play(Create(y_line))
         self.play(Create(arrow))
         self.wait()
@@ -487,11 +487,11 @@ class VectorScene(Scene):
         x_max = int(config["frame_x_radius"] + abs(vector[0]))
         y_max = int(config["frame_y_radius"] + abs(vector[1]))
         dots = VMobject(
-            *[
+            *(
                 Dot(x * RIGHT + y * UP)
                 for x in range(-x_max, x_max)
                 for y in range(-y_max, y_max)
-            ]
+            )
         )
         dots.set_fill(BLACK, opacity=0)
         dots_halfway = dots.copy().shift(vector / 2).set_fill(WHITE, 1)
@@ -852,7 +852,7 @@ class LinearTransformationScene(VectorScene):
         if new_label:
             label_mob.target_text = new_label
         else:
-            label_mob.target_text = "%s(%s)" % (
+            label_mob.target_text = "{}({})".format(
                 transformation_name,
                 label_mob.get_tex_string(),
             )
@@ -945,7 +945,7 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
         start = VGroup(*pieces)
-        target = VGroup(*[mob.target for mob in pieces])
+        target = VGroup(*(mob.target for mob in pieces))
         if self.leave_ghost_vectors:
             self.add(start.copy().fade(0.7))
         return Transform(start, target, lag_ratio=0)

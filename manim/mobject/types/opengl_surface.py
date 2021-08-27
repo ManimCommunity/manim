@@ -5,6 +5,7 @@ from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate, interpolate
 from ...utils.color import *
+from ...utils.config_ops import _Data, _Uniforms
 from ...utils.images import get_full_raster_image_path
 from ...utils.iterables import listify
 from ...utils.space_ops import normalize_along_axis
@@ -114,7 +115,7 @@ class OpenGLSurface(OpenGLMobject):
         return self.triangle_indices
 
     def get_surface_points_and_nudged_points(self):
-        points = self.get_points()
+        points = self.points
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
 
@@ -175,7 +176,7 @@ class OpenGLSurface(OpenGLMobject):
     def sort_faces_back_to_front(self, vect=OUT):
         tri_is = self.triangle_indices
         indices = list(range(len(tri_is) // 3))
-        points = self.get_points()
+        points = self.points
 
         def index_dot(index):
             return np.dot(points[tri_is[3 * index]], vect)
@@ -223,10 +224,15 @@ class OpenGLTexturedSurface(OpenGLSurface):
         ("opacity", np.float32, (1,)),
     ]
     shader_folder = "textured_surface"
+    im_coords = _Data()
+    opacity = _Data()
+    num_textures = _Uniforms()
 
     def __init__(
         self, uv_surface, image_file, dark_image_file=None, shader_folder=None, **kwargs
     ):
+        self.uniforms = {}
+
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
         # Set texture information
@@ -250,13 +256,13 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
     def init_data(self):
         super().init_data()
-        self.data["im_coords"] = np.zeros((0, 2))
-        self.data["opacity"] = np.zeros((0, 1))
+        self.im_coords = np.zeros((0, 2))
+        self.opacity = np.zeros((0, 1))
 
     def init_points(self):
         nu, nv = self.uv_surface.resolution
-        self.set_points(self.uv_surface.get_points())
-        self.data["im_coords"] = np.array(
+        self.set_points(self.uv_surface.points)
+        self.im_coords = np.array(
             [
                 [u, v]
                 for u in np.linspace(0, 1, nu)
@@ -264,22 +270,18 @@ class OpenGLTexturedSurface(OpenGLSurface):
             ]
         )
 
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["num_textures"] = self.num_textures
-
     def init_colors(self):
-        self.data["opacity"] = np.array([self.uv_surface.data["rgbas"][:, 3]])
+        self.opacity = np.array([self.uv_surface.rgbas[:, 3]])
 
     def set_opacity(self, opacity, recurse=True):
         for mob in self.get_family(recurse):
-            mob.data["opacity"] = np.array([[o] for o in listify(opacity)])
+            mob.opacity = np.array([[o] for o in listify(opacity)])
         return self
 
     def pointwise_become_partial(self, tsmobject, a, b, axis=1):
         super().pointwise_become_partial(tsmobject, a, b, axis)
-        im_coords = self.data["im_coords"]
-        im_coords[:] = tsmobject.data["im_coords"]
+        im_coords = self.im_coords
+        im_coords[:] = tsmobject.im_coords
         if a <= 0 and b >= 1:
             return self
         nu, nv = tsmobject.resolution

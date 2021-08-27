@@ -2,20 +2,21 @@
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
 
 from .._config import config
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
+
+if TYPE_CHECKING:
+    from ..scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
