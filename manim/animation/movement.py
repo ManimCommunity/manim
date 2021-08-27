@@ -8,15 +8,14 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-import typing
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple
 
 import numpy as np
 
 from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
 
 

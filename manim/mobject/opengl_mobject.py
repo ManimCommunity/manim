@@ -14,6 +14,7 @@ from .. import config
 from ..constants import *
 from ..utils.bezier import interpolate
 from ..utils.color import *
+from ..utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -29,7 +30,6 @@ from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
-    angle_of_vector,
     normalize,
     rotation_matrix_transpose,
 )
@@ -44,6 +44,15 @@ class OpenGLMobject:
         ("point", np.float32, (3,)),
     ]
     shader_folder = ""
+
+    # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
+    points = _Data()
+    bounding_box = _Data()
+    rgbas = _Data()
+
+    is_fixed_in_frame = _Uniforms()
+    gloss = _Uniforms()
+    shadow = _Uniforms()
 
     def __init__(
         self,
@@ -67,6 +76,9 @@ class OpenGLMobject:
         model_matrix=None,
         **kwargs,
     ):
+        # getattr in case data/uniforms are already defined in parent classes.
+        self.data = getattr(self, "data", {})
+        self.uniforms = getattr(self, "uniforms", {})
 
         self.color = Color(color)
         self.opacity = opacity
@@ -81,7 +93,7 @@ class OpenGLMobject:
         self.texture_paths = texture_paths
         self.depth_test = depth_test
         # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = is_fixed_in_frame
+        self.is_fixed_in_frame = float(is_fixed_in_frame)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -98,7 +110,6 @@ class OpenGLMobject:
             self.model_matrix = model_matrix
 
         self.init_data()
-        self.init_uniforms()
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
@@ -113,18 +124,11 @@ class OpenGLMobject:
         return self.__class__.__name__
 
     def init_data(self):
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
-
-    def init_uniforms(self):
-        self.uniforms = {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "gloss": self.gloss,
-            "shadow": self.shadow,
-        }
+        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
+        Subclasses can inherit and overwrite this method to extend `self.data`."""
+        self.points = np.zeros((0, 3))
+        self.bounding_box = np.zeros((3, 3))
+        self.rgbas = np.zeros((1, 4))
 
     def init_colors(self):
         self.set_color(self.color, self.opacity)
@@ -247,23 +251,23 @@ class OpenGLMobject:
         self.rescale_to_fit(value, 2, stretch=False)
 
     def resize_points(self, new_length, resize_func=resize_array):
-        if new_length != len(self.data["points"]):
-            self.data["points"] = resize_func(self.data["points"], new_length)
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
         self.refresh_bounding_box()
         return self
 
     def set_points(self, points):
-        if len(points) == len(self.data["points"]):
-            self.data["points"][:] = points
+        if len(points) == len(self.points):
+            self.points[:] = points
         elif isinstance(points, np.ndarray):
-            self.data["points"] = points.copy()
+            self.points = points.copy()
         else:
-            self.data["points"] = np.array(points)
+            self.points = np.array(points)
         self.refresh_bounding_box()
         return self
 
     def append_points(self, new_points):
-        self.data["points"] = np.vstack([self.data["points"], new_points])
+        self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
         return self
 
@@ -305,33 +309,33 @@ class OpenGLMobject:
         self.set_points(mobject.get_points())
 
     def get_points(self):
-        return self.data["points"]
+        return self.points
 
     def clear_points(self):
         self.resize_points(0)
 
     def get_num_points(self):
-        return len(self.data["points"])
+        return len(self.points)
 
     def get_all_points(self):
         if self.submobjects:
             return np.vstack([sm.get_points() for sm in self.get_family()])
         else:
-            return self.get_points()
+            return self.points
 
     def has_points(self):
         return self.get_num_points() > 0
 
     def get_bounding_box(self):
         if self.needs_new_bounding_box:
-            self.data["bounding_box"] = self.compute_bounding_box()
+            self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
-        return self.data["bounding_box"]
+        return self.bounding_box
 
     def compute_bounding_box(self):
         all_points = np.vstack(
             [
-                self.get_points(),
+                self.points,
                 *(
                     mob.get_bounding_box()
                     for mob in self.get_family()[1:]
@@ -635,7 +639,7 @@ class OpenGLMobject:
                 # Use cell_alignment as fallback
                 return [cell_alignment * dir] * num
             if len(alignments) != num:
-                raise ValueError("{}_alignments has a mismatching size.".format(name))
+                raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
@@ -669,7 +673,7 @@ class OpenGLMobject:
         # grid filling is handled bottom up for simplicity reasons.
         def reverse(maybe_list):
             if maybe_list is not None:
-                maybe_list = list(row_alignments)
+                maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 
@@ -685,10 +689,10 @@ class OpenGLMobject:
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
-            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+            max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
-            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+            max(grid[r][c].width for r in range(rows)) for c in range(cols)
         ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
@@ -696,7 +700,7 @@ class OpenGLMobject:
             if sizes is None:
                 sizes = [None] * num
             if len(sizes) != num:
-                raise ValueError("{} has a mismatching size.".format(name))
+                raise ValueError(f"{name} has a mismatching size.")
             return [
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
@@ -781,7 +785,7 @@ class OpenGLMobject:
         copy_mobject.uniforms = dict(self.uniforms)
 
         copy_mobject.submobjects = []
-        copy_mobject.add(*[sm.copy() for sm in self.submobjects])
+        copy_mobject.add(*(sm.copy() for sm in self.submobjects))
         copy_mobject.match_updaters(self)
 
         copy_mobject.needs_new_bounding_box = self.needs_new_bounding_box
@@ -862,7 +866,7 @@ class OpenGLMobject:
         return self.time_based_updaters + self.non_time_updaters
 
     def get_family_updaters(self):
-        return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(self, update_function, index=None, call_updater=True):
         if "dt" in get_parameters(update_function):
@@ -1279,10 +1283,10 @@ class OpenGLMobject:
         return self
 
     def get_color(self):
-        return rgb_to_hex(self.data["rgbas"][0, :3])
+        return rgb_to_hex(self.rgbas[0, :3])
 
     def get_opacity(self):
-        return self.data["rgbas"][0, 3]
+        return self.rgbas[0, 3]
 
     def set_color_by_gradient(self, *colors):
         self.set_submobject_colors_by_gradient(*colors)
@@ -1306,19 +1310,19 @@ class OpenGLMobject:
         self.set_opacity(1.0 - darkness, recurse=recurse)
 
     def get_gloss(self):
-        return self.uniforms["gloss"]
+        return self.gloss
 
     def set_gloss(self, gloss, recurse=True):
         for mob in self.get_family(recurse):
-            mob.uniforms["gloss"] = gloss
+            mob.gloss = gloss
         return self
 
     def get_shadow(self):
-        return self.uniforms["shadow"]
+        return self.shadow
 
     def set_shadow(self, shadow, recurse=True):
         for mob in self.get_family(recurse):
-            mob.uniforms["shadow"] = shadow
+            mob.shadow = shadow
         return self
 
     # Background rectangle
@@ -1433,17 +1437,17 @@ class OpenGLMobject:
 
     def get_start(self):
         self.throw_error_if_no_points()
-        return np.array(self.get_points()[0])
+        return np.array(self.points[0])
 
     def get_end(self):
         self.throw_error_if_no_points()
-        return np.array(self.get_points()[-1])
+        return np.array(self.points[-1])
 
     def get_start_and_end(self):
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
-        points = self.get_points()
+        points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
@@ -1456,10 +1460,10 @@ class OpenGLMobject:
         template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
         return OpenGLGroup(
-            *[
+            *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            ]
+            )
         )
 
     def get_z_index_reference_point(self):
@@ -1692,12 +1696,12 @@ class OpenGLMobject:
 
     @affects_shader_info_id
     def fix_in_frame(self):
-        self.uniforms["is_fixed_in_frame"] = 1.0
+        self.is_fixed_in_frame = 1.0
         return self
 
     @affects_shader_info_id
     def unfix_from_frame(self):
-        self.uniforms["is_fixed_in_frame"] = 0.0
+        self.is_fixed_in_frame = 0.0
         return self
 
     @affects_shader_info_id
@@ -1775,7 +1779,7 @@ class OpenGLMobject:
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
-            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
+            *(sm.get_shader_wrapper_list() for sm in self.submobjects),
         )
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 
@@ -1803,7 +1807,7 @@ class OpenGLMobject:
     def get_resized_shader_data_array(self, length):
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
-        points = self.data["points"]
+        points = self.points
         shader_data = np.zeros(len(points), dtype=self.shader_dtype)
         return shader_data
 
@@ -1865,7 +1869,7 @@ class OpenGLMobject:
         return self.event_listners
 
     def get_family_event_listners(self):
-        return list(it.chain(*[sm.get_event_listners() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_event_listners() for sm in self.get_family())))
 
     def get_has_event_listner(self):
         return any(mob.get_event_listners() for mob in self.get_family())
@@ -1945,7 +1949,7 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self):
-        return self.get_points()[0].copy()
+        return self.points[0].copy()
 
     def get_bounding_box_point(self, *args, **kwargs):
         return self.get_location()

@@ -41,7 +41,6 @@ from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
-from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
 
 
@@ -689,7 +688,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     loop_connections = {}
 
     while detached_rings:
-        i_range, j_range = [
+        i_range, j_range = (
             list(
                 filter(
                     # Ignore indices that are already being
@@ -699,7 +698,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
                 )
             )
             for ring_group in (attached_rings, detached_rings)
-        ]
+        )
 
         # Closest point on the attached rings to an estimated midpoint
         # of the detached rings

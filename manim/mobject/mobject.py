@@ -185,12 +185,10 @@ class Mobject:
             cls.animation_overrides[animation_class] = override_func
         else:
             raise MultiAnimationOverrideException(
-                (
-                    f"The animation {animation_class.__name__} for "
-                    f"{cls.__name__} is overridden by more than one method: "
-                    f"{cls.animation_overrides[animation_class].__qualname__} and "
-                    f"{override_func.__qualname__}."
-                )
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}."
             )
 
     def init_gl_data(self):
@@ -306,8 +304,12 @@ class Mobject:
         .. warning::
 
             ``.animate``
-             will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations.
-             If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead.
+             will interpolate the :class:`~.Mobject` between its points prior to
+             ``.animate`` and its points after applying ``.animate`` to it. This may
+             result in unexpected behavior when attempting to interpolate along paths,
+             or rotations.
+             If you want animations to consider the points between, consider using
+             :class:`~.ValueTracker` with updaters instead.
 
         """
         return _AnimationBuilder(self)
@@ -334,14 +336,16 @@ class Mobject:
     def init_colors(self):
         """Initializes the colors.
 
-        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        Gets called upon creation. This is an empty method that can be implemented by
+        subclasses.
         """
         pass
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
 
-        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        Gets called upon creation. This is an empty method that can be implemented by
+        subclasses.
         """
         pass
 
@@ -440,7 +444,8 @@ class Mobject:
     def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
+        If :attr:`submobjects` already contains the given mobjects, they just get moved
+        to the back instead.
 
         Parameters
         ----------
@@ -594,7 +599,8 @@ class Mobject:
 
             def getter(self):
                 warnings.warn(
-                    "This method is not guaranteed to stay around. Please prefer getting the attribute normally.",
+                    "This method is not guaranteed to stay around. Please prefer "
+                    "getting the attribute normally.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -610,7 +616,8 @@ class Mobject:
 
             def setter(self, value):
                 warnings.warn(
-                    "This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().",
+                    "This method is not guaranteed to stay around. Please prefer "
+                    "setting the attribute normally or with Mobject.set().",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -744,13 +751,15 @@ class Mobject:
         self.get_image(camera=camera).show()
 
     def save_image(self, name=None):
-        """Saves an image of only this :class:`Mobject` at its position to a png file."""
+        """Saves an image of only this :class:`Mobject` at its position to a png
+        file."""
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
     def copy(self: T) -> T:
-        """Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`.
+        """Create and return an identical copy of the :class:`Mobject` including all
+        :attr:`submobjects`.
 
         Returns
         -------
@@ -781,7 +790,8 @@ class Mobject:
         Parameters
         ----------
         dt
-            The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
+            The parameter ``dt`` to pass to the update functions. Usually this is the
+            time in seconds since the last call of ``update``.
         recursive
             Whether to recursively update all submobjects.
 
@@ -833,7 +843,8 @@ class Mobject:
         Returns
         -------
         class:`bool`
-            ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise.
+            ``True`` if at least one updater uses the ``dt`` parameter, ``False``
+            otherwise.
 
         See Also
         --------
@@ -862,7 +873,7 @@ class Mobject:
         return self.updaters
 
     def get_family_updaters(self):
-        return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
@@ -872,18 +883,24 @@ class Mobject:
     ) -> "Mobject":
         """Add an update function to this mobject.
 
-        Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
+        Update functions, or updaters in short, are functions that are applied to the
+        Mobject in every frame.
 
         Parameters
         ----------
         update_function
             The update function to be added.
-            Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter.
-            The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
+            Whenever :meth:`update` is called, this update function gets called using
+            ``self`` as the first parameter.
+            The updater can have a second parameter ``dt``. If it uses this parameter,
+            it gets called using a second value ``dt``, usually representing the time
+            in seconds since the last call of :meth:`update`.
         index
-            The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
+            The index at which the new updater should be added in ``self.updaters``.
+            In case ``index`` is ``None`` the updater will be added at the end.
         call_updater
-            Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+            Whether or not to call the updater initially. If ``True``, the updater will
+            be called using ``dt=0``.
 
         Returns
         -------
@@ -1001,7 +1018,8 @@ class Mobject:
 
         Note
         ----
-        All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects.
+        All updaters from submobjects are removed, but only updaters of the given
+        mobject are matched, not those of it's submobjects.
 
         See also
         --------
@@ -1076,7 +1094,8 @@ class Mobject:
         Parameters
         ----------
         func
-            The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter.
+            The function to apply to each mobject. ``func`` gets passed the respective
+            (sub)mobject as parameter.
 
         Returns
         -------
@@ -1097,7 +1116,8 @@ class Mobject:
         Parameters
         ----------
         vectors
-            Vectors to shift by. If multiple vectors are given, they are added together.
+            Vectors to shift by. If multiple vectors are given, they are added
+            together.
 
         Returns
         -------
@@ -1134,10 +1154,11 @@ class Mobject:
         ----------
         scale_factor
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
-            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore, if :math:`\alpha < 0`,
-            the mobject is also flipped.
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
         kwargs
-            Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
+            Additional keyword arguments passed to
+            :meth:`apply_points_function_about_point`.
 
         Returns
         -------
@@ -2032,10 +2053,10 @@ class Mobject:
         template.submobjects = []
         alphas = np.linspace(0, 1, n_pieces + 1)
         return Group(
-            *[
+            *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            ]
+            )
         )
 
     def get_z_index_reference_point(self):
@@ -2329,7 +2350,7 @@ class Mobject:
                 # Use cell_alignment as fallback
                 return [cell_alignment * dir] * num
             if len(alignments) != num:
-                raise ValueError("{}_alignments has a mismatching size.".format(name))
+                raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
@@ -2363,7 +2384,7 @@ class Mobject:
         # grid filling is handled bottom up for simplicity reasons.
         def reverse(maybe_list):
             if maybe_list is not None:
-                maybe_list = list(row_alignments)
+                maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 
@@ -2379,10 +2400,10 @@ class Mobject:
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
-            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+            max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
-            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+            max(grid[r][c].width for r in range(rows)) for c in range(cols)
         ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
@@ -2390,7 +2411,7 @@ class Mobject:
             if sizes is None:
                 sizes = [None] * num
             if len(sizes) != num:
-                raise ValueError("{} has a mismatching size.".format(name))
+                raise ValueError(f"{name} has a mismatching size.")
             return [
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
@@ -2422,7 +2443,10 @@ class Mobject:
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
-            submob_func = lambda m: point_to_num_func(m.get_center())
+
+            def submob_func(m):
+                return point_to_num_func(m.get_center())
+
         self.submobjects.sort(key=submob_func)
         return self
 

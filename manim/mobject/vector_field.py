@@ -20,7 +20,7 @@ from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..animation.update import UpdateFromAlphaFunc
-from ..constants import *
+from ..constants import RIGHT, UP
 from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -76,7 +76,10 @@ class VectorField(VGroup):
         if color is None:
             self.single_color = False
             if color_scheme is None:
-                color_scheme = lambda p: np.linalg.norm(p)
+
+                def color_scheme(p):
+                    return np.linalg.norm(p)
+
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
@@ -176,7 +179,11 @@ class VectorField(VGroup):
             The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
-            Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it.
+            Whether to move the mobject along the vector field. If `True` the
+            vector field takes effect on the center of the given
+            :class:`~.Mobject`. If `False` the vector field takes effect on the
+            points of the individual points of the :class:`~.Mobject`,
+            potentially distorting it.
 
         Returns
         -------

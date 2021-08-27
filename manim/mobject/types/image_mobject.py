@@ -26,8 +26,11 @@ class AbstractImageMobject(Mobject):
     Parameters
     ----------
     scale_to_resolution : :class:`int`
-        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-        This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
+        At this resolution the image is placed pixel by pixel onto the screen, so it
+        will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with
+        e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering
+        won't effect the position of the image on the screen.
     """
 
     def __init__(
@@ -51,12 +54,16 @@ class AbstractImageMobject(Mobject):
 
     def set_resampling_algorithm(self, resampling_algorithm):
         """
-        Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it.
-        Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+        Sets the interpolation method for upscaling the image. By default the image is
+        interpolated using bicubic algorithm. This method lets you change it.
+        Interpolation is done internally using Pillow, and the function besides the
+        string constants describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------
-        resampling_algorithm : :class:`int`, an integer constant described in the Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under the following keys:
+        resampling_algorithm : :class:`int`, an integer constant described in the
+        Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under
+        the following keys:
          * 'bicubic' or 'cubic'
          * 'nearest' or 'none'
          * 'box'
@@ -68,7 +75,10 @@ class AbstractImageMobject(Mobject):
             self.resampling_algorithm = resampling_algorithm
         else:
             raise ValueError(
-                "resampling_algorithm has to be an int, one of the values defined in RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
+                "resampling_algorithm has to be an int, one of the values defined in "
+                "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
+                "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
+                "'hamming', 'lanczos'."
             )
 
     def reset_points(self):
@@ -96,8 +106,11 @@ class ImageMobject(AbstractImageMobject):
     Parameters
     ----------
     scale_to_resolution : :class:`int`
-        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-        This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
+        At this resolution the image is placed pixel by pixel onto the screen, so it
+        will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with
+        e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering
+        won't effect the position of the image on the screen.
 
 
     Example
