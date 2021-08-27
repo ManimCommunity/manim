@@ -14,7 +14,6 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from abc import ABCMeta
 from typing import Optional, Sequence, Union
 
 import colour
@@ -35,6 +34,7 @@ from ...utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.deprecation import deprecated_params
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -580,9 +580,13 @@ class VMobject(Mobject):
         handles2: Sequence[float],
         anchors2: Sequence[float],
     ) -> "VMobject":
-        """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
+        """Given two sets of anchors and handles, process them to set them as anchors
+        and handles of the VMobject.
 
-        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
+        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier
+        curve of the vmobject. There are four hardcoded parameters and this is a
+        problem as it makes the number of points per cubic curve unchangeable from 4
+        (two anchors and two handles).
 
         Returns
         -------
@@ -593,7 +597,11 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
         self.points = np.zeros((total_len, self.dim))
-        # the following will, from the four sets, dispatch them in points such that self.points = [anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1], handles1[1], ...]
+        # the following will, from the four sets, dispatch them in points such that
+        # self.points = [
+        #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
+        #     handles1[1], ...
+        # ]
         arrays = [anchors1, handles1, handles2, anchors2]
         for index, array in enumerate(arrays):
             self.points[index::nppcc] = array
@@ -672,10 +680,10 @@ class VMobject(Mobject):
         """
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
-            *[
+            *(
                 interpolate(self.get_last_point(), point, a)
                 for a in np.linspace(0, 1, nppcc)[1:]
-            ]
+            )
         )
         return self
 
@@ -759,7 +767,7 @@ class VMobject(Mobject):
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
+            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc))
         )
         return self
 
@@ -1276,7 +1284,7 @@ class VMobject(Mobject):
 
     def get_points_defining_boundary(self):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
-        return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
+        return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
     def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
         """Return the approximated length of the whole curve.
@@ -1753,7 +1761,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.submobjects[key] = value
 
 
-class VDict(VMobject):
+class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
     key, like a python dict
 
@@ -1852,7 +1860,7 @@ class VDict(VMobject):
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
         self.add(mapping_or_iterable)
@@ -2065,7 +2073,7 @@ class VDict(VMobject):
             self.add_key_value_pair('s', square_obj)
 
         """
-        if not isinstance(value, VMobject):
+        if not isinstance(value, (VMobject, OpenGLVMobject)):
             raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
@@ -2161,10 +2169,10 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = VGroup()  # Increasing positive_space_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
-                        Circle(radius=r, color=WHITE), positive_space_ratio=ratio
+                        Circle(radius=r, color=WHITE), dashed_ratio=ratio
                     )
                     middle_row.add(circ)
 
@@ -2180,37 +2188,36 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
+    @deprecated_params(
+        params="positive_space_ratio dash_spacing",
+        since="v0.9.0",
+        message="Use dashed_ratio instead of positive_space_ratio.",
+    )
     def __init__(
-        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
+        # Simplify with removal of deprecation warning
+        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
+        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
         self.num_dashes = num_dashes
-        self.positive_space_ratio = positive_space_ratio
         super().__init__(color=color, **kwargs)
-        ps_ratio = self.positive_space_ratio
+        r = self.dashed_ratio
+        n = self.num_dashes
         if num_dashes > 0:
-            # End points of the unit interval for division
-            alphas = np.linspace(0, 1, num_dashes + 1)
-
-            # This determines the length of each "dash"
-            full_d_alpha = 1.0 / num_dashes
-            partial_d_alpha = full_d_alpha * ps_ratio
-
-            # Shifts the alphas and removes the last dash
-            # to give closed shapes even spacing
+            # Assuming total length is 1
+            dash_len = r / n
             if vmobject.is_closed():
-                alphas += partial_d_alpha / 2
-                np.delete(alphas, -1)
-
-            # Rescale so that the last point of vmobject will
-            # be the end of the last dash
+                void_len = (1 - r) / n
             else:
-                alphas /= 1 - full_d_alpha + partial_d_alpha
+                void_len = (1 - r) / (n - 1)
 
             self.add(
-                *[
-                    vmobject.get_subcurve(alpha, alpha + partial_d_alpha)
-                    for alpha in alphas[:-1]
-                ]
+                *(
+                    vmobject.get_subcurve(
+                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                    )
+                    for i in range(n)
+                )
             )
         # Family is already taken care of by get_subcurve
         # implementation

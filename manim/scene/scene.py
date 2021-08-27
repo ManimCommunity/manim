@@ -8,15 +8,13 @@ import copy
 import inspect
 import platform
 import random
-import string
-import sys
 import threading
 import time
 import types
 from queue import Queue
 
 try:
-    import dearpygui.core
+    import dearpygui.dearpygui as dpg
 
     dearpygui_imported = True
 except ImportError:
@@ -31,10 +29,10 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
-from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.shader import Mesh, Object3D
+from ..renderer.opengl_renderer import OpenGLRenderer
+from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -122,6 +120,8 @@ class Scene:
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
+            if renderer is None:
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self.renderer = CairoRenderer(
@@ -357,7 +357,7 @@ class Scene:
         families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
-            num_families = sum([(mobject in family) for family in families])
+            num_families = sum((mobject in family) for family in families)
             return num_families == 1
 
         return list(filter(is_top_level, self.mobjects))
@@ -1039,10 +1039,13 @@ class Scene:
             target=ipython,
             args=(shell, local_namespace),
         )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
         keyboard_thread.start()
 
         if self.dearpygui_imported and config["enable_gui"]:
-            if not dearpygui.core.is_dearpygui_running():
+            if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
                     target=configure_pygui,
                     args=(self.renderer, self.widgets),
@@ -1063,7 +1066,7 @@ class Scene:
         file_observer.start()
 
         self.quit_interaction = False
-        keyboard_thread_needs_join = True
+        keyboard_thread_needs_join = shell.pt_app is not None
         assert self.queue.qsize() == 0
 
         last_time = time.time()
@@ -1073,7 +1076,10 @@ class Scene:
                 if tup[0].startswith("rerun"):
                     # Intentionally skip calling join() on the file thread to save time.
                     if not tup[0].endswith("keyboard"):
-                        shell.pt_app.app.exit(exception=EOFError)
+                        if shell.pt_app:
+                            shell.pt_app.app.exit(exception=EOFError)
+                        file_observer.unschedule_all()
+                        raise RerunSceneException
                     keyboard_thread.join()
 
                     kwargs = tup[2]
@@ -1089,10 +1095,11 @@ class Scene:
                     #     ]
 
                     keyboard_thread.join()
+                    file_observer.unschedule_all()
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
                     # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard"):
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
                     # Remove exit_keyboard from the queue if necessary.
@@ -1120,8 +1127,11 @@ class Scene:
             while self.queue.qsize() > 0:
                 self.queue.get()
 
+        file_observer.stop()
+        file_observer.join()
+
         if self.dearpygui_imported and config["enable_gui"]:
-            dearpygui.core.stop_dearpygui()
+            dpg.stop_dearpygui()
 
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()

@@ -4,7 +4,7 @@ import grpc
 import renderserver_pb2 as renderserver__pb2
 
 
-class RenderServerStub(object):
+class RenderServerStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -20,7 +20,7 @@ class RenderServerStub(object):
         )
 
 
-class RenderServerServicer(object):
+class RenderServerServicer:
     """Missing associated documentation comment in .proto file."""
 
     def UpdateSceneData(self, request, context):
@@ -45,7 +45,7 @@ def add_RenderServerServicer_to_server(servicer, server):
 
 
 # This class is part of an EXPERIMENTAL API.
-class RenderServer(object):
+class RenderServer:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod

@@ -18,7 +18,7 @@ __all__ = [
     "FadeIn",
 ]
 
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -28,8 +28,6 @@ from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
-from ..utils.deprecation import deprecated
-from ..utils.rate_functions import there_and_back
 
 
 class _Fade(Transform):

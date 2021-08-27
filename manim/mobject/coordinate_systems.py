@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -33,13 +33,7 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import (
-    Mobject,
-    VDict,
-    VectorizedPoint,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -52,14 +46,13 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
-# TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
-
 
 class CoordinateSystem:
-    """
+    r"""
     Abstract class for Axes and NumberPlane
 
     Examples
@@ -78,7 +71,7 @@ class CoordinateSystem:
                     y_length=5.5,
                     axis_config={
                         "numbers_to_include": np.arange(0, 1 + 0.1, 0.1),
-                        "number_scale_value": 0.5,
+                        "font_size": 24,
                     },
                     tips=False,
                 )
@@ -104,7 +97,7 @@ class CoordinateSystem:
                     # spaces between braces to prevent SyntaxError
                     r"Graphs of $y=x^{ {1}\over{n} }$ and $y=x^n (n=1,2,3,...,20)$",
                     include_underline=False,
-                    scale_factor=0.85,
+                    font_size=40,
                 )
 
                 self.add(title, graphs, grid, grid_labels)
@@ -276,9 +269,16 @@ class CoordinateSystem:
         return self.axis_labels
 
     def add_coordinates(
-        self, *axes_numbers: Optional[Iterable[float]], **kwargs
-    ) -> VGroup:
+        self,
+        *axes_numbers: Union[
+            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+        ],
+        **kwargs,
+    ):
         """Adds labels to the axes.
+
+        Parameters
+        ----------
 
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
@@ -294,10 +294,16 @@ class CoordinateSystem:
             ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
-        Returns
-        -------
-        VGroup
-            A :class:`VGroup` of the number mobjects.
+        .. code-block:: python
+
+            # specifically control the position and value of the labels using a dict
+            ax = Axes(x_range=[0, 7])
+            x_pos = [x for x in range(1, 8)]
+
+            # strings are automatically converted into a `Tex` mobject.
+            x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            x_dict = dict(zip(x_pos, x_vals))
+            ax.add_coordinates(x_dict)
         """
 
         self.coordinate_labels = VGroup()
@@ -306,10 +312,13 @@ class CoordinateSystem:
             axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
-            labels = axis.add_numbers(values, **kwargs)
+            if isinstance(values, dict):
+                labels = axis.add_labels(values, **kwargs)
+            else:
+                labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
 
-        return self.coordinate_labels
+        return self
 
     def get_line_from_axis_to_point(
         self,
@@ -860,7 +869,6 @@ class CoordinateSystem:
         group = VGroup()
 
         dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
-        dx_line_color = dx_line_color
         dy_line_color = dy_line_color or graph.get_color()
 
         p1 = self.input_to_graph_point(x, graph)
@@ -902,7 +910,6 @@ class CoordinateSystem:
             group.df_label.set_color(group.df_line.get_color())
 
         if include_secant_line:
-            secant_line_color = secant_line_color
             group.secant_line = Line(p1, p2, color=secant_line_color)
             group.secant_line.scale_in_place(
                 secant_line_length / group.secant_line.get_length()
@@ -939,10 +946,10 @@ class CoordinateSystem:
         x_range = x_range if x_range is not None else self.x_range
 
         return VGroup(
-            *[
+            *(
                 self.get_vertical_line(self.i2gp(x, graph), **kwargs)
                 for x in np.linspace(x_range[0], x_range[1], num_lines)
-            ]
+            )
         )
 
     def get_T_label(
@@ -1165,7 +1172,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Tuple
             Coordinates of the point with respect to :class:`Axes`'s basis
         """
-        return tuple([axis.point_to_number(point) for axis in self.get_axes()])
+        return tuple(axis.point_to_number(point) for axis in self.get_axes())
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
@@ -1242,22 +1249,22 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
+        graph = VGroup(color=line_color, **kwargs)
+
         vertices = [
             self.coords_to_point(x, y, z)
             for x, y, z in zip(x_values, y_values, z_values)
         ]
         graph.set_points_as_corners(vertices)
-        graph.z_index = -1
         line_graph["line_graph"] = graph
 
         if add_vertex_dots:
             vertex_dot_style = vertex_dot_style or {}
             vertex_dots = VGroup(
-                *[
+                *(
                     Dot(point=vertex, radius=vertex_dot_radius, **vertex_dot_style)
                     for vertex in vertices
-                ]
+                )
             )
             line_graph["vertex_dots"] = vertex_dots
 
@@ -1416,8 +1423,11 @@ class NumberPlane(Axes):
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+
+    .. note::
+
+        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
 
     Examples
     --------
@@ -1455,7 +1465,7 @@ class NumberPlane(Axes):
         y_length: Optional[float] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[float] = 1,
+        faded_line_ratio: int = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -1468,7 +1478,7 @@ class NumberPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
         self.y_axis_config = {"label_direction": DR}
         self.background_line_style = {
@@ -1502,12 +1512,6 @@ class NumberPlane(Axes):
             **kwargs,
         )
 
-        # dynamically adjusts x_length and y_length so that the unit_size is one by default
-        if x_length is None:
-            x_length = self.x_range[1] - self.x_range[0]
-        if y_length is None:
-            y_length = self.y_range[1] - self.y_range[0]
-
         self.init_background_lines()
 
     def init_background_lines(self):
@@ -1522,6 +1526,7 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
+
         self.background_lines.set_style(
             **self.background_line_style,
         )
@@ -1550,22 +1555,29 @@ class NumberPlane(Axes):
             self.x_axis.x_step,
             self.faded_line_ratio,
         )
+
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
             self.y_axis.x_step,
             self.faded_line_ratio,
         )
+
+        # TODO this was added so that we can run tests on NumberPlane
+        # In the future these attributes will be tacked onto self.background_lines
+        self.x_lines = x_lines1
+        self.y_lines = y_lines1
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
+
         return lines1, lines2
 
     def get_lines_parallel_to_axis(
         self,
-        axis_parallel_to: Line,
-        axis_perpendicular_to: Line,
+        axis_parallel_to: NumberLine,
+        axis_perpendicular_to: NumberLine,
         freq: float,
-        ratio_faded_lines: float,
+        ratio_faded_lines: int,
     ) -> Tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
@@ -1596,10 +1608,28 @@ class NumberPlane(Axes):
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
+
+        # min/max used in case range does not include 0. i.e. if (2,6):
+        # the range becomes (0,4), not (0,6), to produce the correct number of lines
         ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+            np.arange(
+                0,
+                min(
+                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
+                    axis_perpendicular_to.x_max,
+                ),
+                step,
+            ),
+            np.arange(
+                0,
+                max(
+                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
+                    axis_perpendicular_to.x_min,
+                ),
+                -step,
+            ),
         )
+
         for inputs in ranges:
             for k, x in enumerate(inputs):
                 new_line = line.copy()
@@ -1700,8 +1730,8 @@ class PolarPlane(Axes):
     azimuth_label_buff
         The buffer for the azimuth labels.
 
-    azimuth_label_scale
-        The scale of the azimuth labels.
+    azimuth_label_font_size
+        The font size of the azimuth labels.
 
     radius_config
         The axis config for the radius.
@@ -1718,12 +1748,18 @@ class PolarPlane(Axes):
                 polarplane_pi = PolarPlane(
                     azimuth_units="PI radians",
                     size=6,
-                    azimuth_label_scale=0.7,
-                    radius_config={"number_scale_value": 0.7},
+                    azimuth_label_font_size=33.6,
+                    radius_config={"font_size": 33.6},
                 ).add_coordinates()
                 self.add(polarplane_pi)
     """
 
+    @deprecated_params(
+        params="azimuth_label_scale",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use azimuth_label_font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -1735,7 +1771,7 @@ class PolarPlane(Axes):
         azimuth_offset: float = 0,
         azimuth_direction: str = "CCW",
         azimuth_label_buff: float = SMALL_BUFF,
-        azimuth_label_scale: float = 0.5,
+        azimuth_label_font_size: float = 24,
         radius_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
@@ -1743,6 +1779,14 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
+        # deprecation
+        azimuth_label_scale = kwargs.pop("azimuth_label_scale", None)
+        if azimuth_label_scale:
+            self.azimuth_label_font_size = (
+                azimuth_label_scale * DEFAULT_FONT_SIZE * 0.75
+            )
+        else:
+            self.azimuth_label_font_size = azimuth_label_font_size
 
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
@@ -1765,7 +1809,7 @@ class PolarPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DL,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
 
         self.background_line_style = {
@@ -1799,7 +1843,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        self.azimuth_label_scale = azimuth_label_scale
+        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
@@ -1812,10 +1856,6 @@ class PolarPlane(Axes):
             axis_config=self.radius_config,
             **kwargs,
         )
-
-        # dynamically adjusts size so that the unit_size is one by default
-        if size is None:
-            size = 0
 
         self.init_background_lines()
 
@@ -2022,9 +2062,9 @@ class PolarPlane(Axes):
         ]
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
-                self.get_radian_label(i["label"])
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                self.get_radian_label(
+                    i["label"], font_size=self.azimuth_label_font_size
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2034,9 +2074,10 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units == "degrees":
             a_tex = [
-                MathTex(f'{360 * i["label"]:g}' + r"^{\circ}")
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{360 * i["label"]:g}' + r"^{\circ}",
+                    font_size=self.azimuth_label_font_size,
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2046,9 +2087,10 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units == "gradians":
             a_tex = [
-                MathTex(f'{400 * i["label"]:g}' + r"^{g}")
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{400 * i["label"]:g}' + r"^{g}",
+                    font_size=self.azimuth_label_font_size,
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2058,9 +2100,9 @@ class PolarPlane(Axes):
             ]
         elif self.azimuth_units is None:
             a_tex = [
-                MathTex(f'{i["label"]:g}')
-                .scale(self.azimuth_label_scale)
-                .next_to(
+                MathTex(
+                    f'{i["label"]:g}', font_size=self.azimuth_label_font_size
+                ).next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
@@ -2088,30 +2130,29 @@ class PolarPlane(Axes):
         self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
-    def get_radian_label(self, number, stacked=True):
+    def get_radian_label(self, number, font_size=24, **kwargs):
         constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
             self.azimuth_units
         ]
         division = number * {"PI radians": 2, "TAU radians": 1}[self.azimuth_units]
         frac = fr.Fraction(division).limit_denominator(max_denominator=100)
         if frac.numerator == 0 & frac.denominator == 0:
-            return MathTex(r"0")
+            string = r"0"
         elif frac.numerator == 1 and frac.denominator == 1:
-            return MathTex(constant_label)
+            string = constant_label
         elif frac.numerator == 1:
             if self.azimuth_compact_fraction:
-                return MathTex(
+                string = (
                     r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}"
                 )
             else:
-                return MathTex(
-                    r"\tfrac{1}{" + str(frac.denominator) + "}" + constant_label
-                )
+                string = r"\tfrac{1}{" + str(frac.denominator) + "}" + constant_label
         elif frac.denominator == 1:
-            return MathTex(str(frac.numerator) + constant_label)
+            string = str(frac.numerator) + constant_label
+
         else:
             if self.azimuth_compact_fraction:
-                return MathTex(
+                string = (
                     r"\tfrac{"
                     + str(frac.numerator)
                     + constant_label
@@ -2120,7 +2161,7 @@ class PolarPlane(Axes):
                     + r"}"
                 )
             else:
-                return MathTex(
+                string = (
                     r"\tfrac{"
                     + str(frac.numerator)
                     + r"}{"
@@ -2128,6 +2169,8 @@ class PolarPlane(Axes):
                     + r"}"
                     + constant_label
                 )
+
+        return MathTex(string, font_size=font_size, **kwargs)
 
 
 class ComplexPlane(NumberPlane):

@@ -13,22 +13,26 @@ class Window(PygletWindow):
     vsync = True
     cursor = True
 
-    def __init__(self, renderer, size=None, **kwargs):
-        if size is None:
-            # Default to making window half the screen size
-            # but make it full screen if --fullscreen is passed in
-            monitors = get_monitors()
-            mon_index = config.window_monitor
-            monitor = monitors[min(mon_index, len(monitors) - 1)]
-            window_width = monitor.width
+    def __init__(self, renderer, size=config.window_size, **kwargs):
+        monitors = get_monitors()
+        mon_index = config.window_monitor
+        monitor = monitors[min(mon_index, len(monitors) - 1)]
 
+        if size == "default":
+            # make window_width half the width of the monitor
+            # but make it full screen if --fullscreen
+
+            window_width = monitor.width
             if not config.fullscreen:
                 window_width //= 2
 
+            #  by default window_height = 9/16 * window_width
             window_height = int(
                 window_width * config.frame_height // config.frame_width
             )
             size = (window_width, window_height)
+        else:
+            size = tuple(size)
 
         super().__init__(size=size)
 

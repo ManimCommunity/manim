@@ -1,6 +1,12 @@
 """Animate mobjects."""
 
 
+from .. import logger
+from ..mobject import mobject, opengl_mobject
+from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
+from ..utils.rate_functions import smooth
+
 __all__ = ["Animation", "Wait", "override_animation"]
 
 
@@ -20,12 +26,6 @@ from typing import (
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
-from .. import logger
-from ..mobject import mobject, opengl_mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.deprecation import deprecated
-from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -79,9 +79,9 @@ class Animation:
                 self.add(groups)
 
                 # Label groups
-                self.add(Text("lag_ratio = ").scale(0.7).next_to(groups, UP, buff=1.5))
+                self.add(Text("lag_ratio = ", font_size=36).next_to(groups, UP, buff=1.5))
                 for group, ratio in zip(groups, ratios):
-                    self.add(Text(str(ratio)).scale(0.7).next_to(group, UP))
+                    self.add(Text(str(ratio), font_size=36).next_to(group, UP))
 
                 #Animate groups with different lag_ratios
                 self.play(AnimationGroup(*[
@@ -106,11 +106,9 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    (
-                        f"The {cls.__name__} animation has been is overridden for "
-                        f"{type(mobject).__name__} mobjects. use_override = False can "
-                        f" be used as keyword argument to prevent animation overriding."
-                    )
+                    f"The {cls.__name__} animation has been is overridden for "
+                    f"{type(mobject).__name__} mobjects. use_override = False can "
+                    f" be used as keyword argument to prevent animation overriding."
                 )
                 return anim
         return super().__new__(cls)
@@ -224,7 +222,7 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
-            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -278,6 +276,15 @@ class Animation:
         self.interpolate_mobject(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        """Interpolates the mobject of the :class:`Animation` based on alpha value.
+
+        Parameters
+        ----------
+        alpha
+            A float between 0 and 1 expressing the ratio to which the animation
+            is completed. For example, alpha-values of 0, 0.5, and 1 correspond
+            to the animation being completed 0%, 50%, and 100%, respectively.
+        """
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))

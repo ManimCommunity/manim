@@ -457,8 +457,8 @@ Special Camera Settings
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
             image.height = 7
-            frame_text = Text("Frame", color=PURPLE).scale(1.4)
-            zoomed_camera_text = Text("Zoomed camera", color=RED).scale(1.4)
+            frame_text = Text("Frame", color=PURPLE, font_size=67)
+            zoomed_camera_text = Text("Zoomed camera", color=RED, font_size=67)
 
             self.add(image, dot)
             zoomed_camera = self.zoomed_camera
@@ -579,9 +579,9 @@ Special Camera Settings
            def param_gauss(u, v):
                x = u
                y = v
-               d = np.sqrt(x * x + y * y)
-               sigma, mu = 0.4, 0.0
-               z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
+               sigma, mu = 0.4, [0.0, 0.0]
+               d = np.linalg.norm(np.array([x - mu[0], y - mu[1]]))
+               z = np.exp(-(d ** 2 / (2.0 * sigma ** 2)))
                return np.array([x, y, z])
 
            gauss_plane = ParametricSurface(
@@ -627,8 +627,7 @@ Advanced Projects
             self.wait()
 
             grid = NumberPlane()
-            grid_title = Tex("This is a grid")
-            grid_title.scale(1.5)
+            grid_title = Tex("This is a grid", font_size=72)
             grid_title.move_to(transform_title)
 
             self.add(grid, grid_title)  # Make sure title is on top of grid

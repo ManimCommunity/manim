@@ -291,9 +291,11 @@ class ManimConfig(MutableMapping):
         "video_dir",
         "fullscreen",
         "window_position",
+        "window_size",
         "window_monitor",
         "write_all",
         "write_to_movie",
+        "zero_pad",
     }
 
     def __init__(self) -> None:
@@ -437,6 +439,15 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be {lo} <= {key} <= {hi}")
 
+    def _set_int_between(self, key: str, val: int, lo: int, hi: int) -> None:
+        """Set ``key`` to ``val`` if lo <= val <= hi."""
+        if lo <= val <= hi:
+            self._d[key] = val
+        else:
+            raise ValueError(
+                f"{key} must be an integer such that {lo} <= {key} <= {hi}"
+            )
+
     def _set_pos_number(self, key: str, val: int, allow_inf: bool) -> None:
         """Set ``key`` to ``val`` if ``val`` is a positive integer."""
         if isinstance(val, int) and val > -1:
@@ -540,6 +551,7 @@ class ManimConfig(MutableMapping):
             "pixel_height",
             "pixel_width",
             "window_monitor",
+            "zero_pad",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -577,6 +589,13 @@ class ManimConfig(MutableMapping):
         # tuple keys
         gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
         setattr(self, "gui_location", gui_location)
+
+        window_size = parser["CLI"][
+            "window_size"
+        ]  # if not "default", get a tuple of the position
+        if window_size != "default":
+            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+        setattr(self, "window_size", window_size)
 
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
@@ -667,6 +686,7 @@ class ManimConfig(MutableMapping):
             "fullscreen",
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
+            "zero_pad",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1116,6 +1136,36 @@ class ManimConfig(MutableMapping):
     @renderer.setter
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
+        try:
+            from ..mobject.mobject import Mobject
+            from ..mobject.opengl_compatibility import ConvertToOpenGL
+            from ..mobject.opengl_mobject import OpenGLMobject
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+            from ..mobject.types.vectorized_mobject import VMobject
+
+            for cls in ConvertToOpenGL._converted_classes:
+                if val == "opengl":
+                    conversion_dict = {
+                        Mobject: OpenGLMobject,
+                        VMobject: OpenGLVMobject,
+                    }
+                else:
+                    conversion_dict = {
+                        OpenGLMobject: Mobject,
+                        OpenGLVMobject: VMobject,
+                    }
+
+                cls.__bases__ = tuple(
+                    conversion_dict.get(base, base) for base in cls.__bases__
+                )
+        except ImportError:
+            # The renderer is set during the initial import of the
+            # library for the first time. The imports above cause an
+            # ImportError due to circular imports. However, the
+            # metaclass sets stuff up correctly in this case, so we
+            # can just do nothing.
+            pass
+
         self._set_from_list(
             "renderer",
             val,
@@ -1171,6 +1221,12 @@ class ManimConfig(MutableMapping):
         doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
     )
 
+    window_size = property(
+        lambda self: self._d["window_size"],
+        lambda self, val: self._d.__setitem__("window_size", val),
+        doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
+    )
+
     def resolve_movie_file_extension(self, is_transparent):
         if is_transparent:
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
@@ -1209,6 +1265,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["use_projection_stroke_shaders"],
         lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
         doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+    )
+
+    zero_pad = property(
+        lambda self: self._d["zero_pad"],
+        lambda self, val: self._set_int_between("zero_pad", val, 0, 9),
+        doc="PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum).",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:

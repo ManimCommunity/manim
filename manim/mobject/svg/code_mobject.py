@@ -20,6 +20,7 @@ from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE
+from ...utils.deprecation import deprecated_params
 
 
 class Code(VGroup):
@@ -46,6 +47,43 @@ class Code(VGroup):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
+    Examples
+    --------
+
+    Normal usage::
+
+        listing = Code(
+            "helloworldcpp.cpp",
+            tab_width=4,
+            background_stroke_width=1,
+            background_stroke_color=WHITE,
+            insert_line_no=True,
+            style=Code.styles_list[15],
+            background="window",
+            language="cpp",
+        )
+
+    We can also render code passed as a string (but note that
+    the language has to be specified in this case):
+
+    .. manim:: CodeFromString
+        :save_last_frame:
+
+        class CodeFromString(Scene):
+            def construct(self):
+                code = '''from manim import Scene, Square
+
+        class FadeInSquare(Scene):
+            def construct(self):
+                s = Square()
+                self.play(FadeIn(s))
+                self.play(s.animate.scale(2))
+                self.wait()
+        '''
+                rendered_code = Code(code=code, tab_width=4, background="window",
+                                    language="Python", font="Monospace")
+                self.add(rendered_code)
+
     Parameters
     ----------
     file_name : :class:`str`
@@ -57,8 +95,8 @@ class Code(VGroup):
         Number of space characters corresponding to a tab character. Defaults to 3.
     line_spacing : :class:`float`, optional
         Amount of space between lines in relation to font size. Defaults to 0.3, which means 30% of font size.
-    scale_factor : class:`float`, optional
-        A number which scales displayed code. Defaults to 0.5.
+    font_size : class:`float`, optional
+        A number which scales displayed code. Defaults to 24.
     font : :class:`str`, optional
          The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
     stroke_width : class:`float`, optional
@@ -101,42 +139,6 @@ class Code(VGroup):
     code : :class:`~.Paragraph`
         The highlighted code.
 
-    Examples
-    --------
-    Normal usage::
-
-        listing = Code(
-            "helloworldcpp.cpp",
-            tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=True,
-            style=Code.styles_list[15],
-            background="window",
-            language="cpp",
-        )
-
-    We can also render code passed as a string (but note that
-    the language has to be specified in this case):
-
-    .. manim:: CodeFromString
-        :save_last_frame:
-
-        class CodeFromString(Scene):
-            def construct(self):
-                code = '''from manim import Scene, Square
-
-        class FadeInSquare(Scene):
-            def construct(self):
-                s = Square()
-                self.play(FadeIn(s))
-                self.play(s.animate.scale(2))
-                self.wait()
-        '''
-                rendered_code = Code(code=code, tab_width=4, background="window",
-                                    language="Python", font="Monospace")
-                self.add(rendered_code)
-
     """
 
     # tuples in the form (name, aliases, filetypes, mimetypes)
@@ -147,13 +149,19 @@ class Code(VGroup):
     styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
+    @deprecated_params(
+        params="scale_factor",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         file_name=None,
         code=None,
         tab_width=3,
         line_spacing=0.3,
-        scale_factor=0.5,
+        font_size=24,
         font="Monospac821 BT",
         stroke_width=0,
         margin=0.3,
@@ -174,11 +182,17 @@ class Code(VGroup):
             stroke_width=stroke_width,
             **kwargs,
         )
+        # deprecation handling
+        scale_factor = kwargs.pop("scale_factor", None)
+        if scale_factor:
+            self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
+        else:
+            self.font_size = font_size
+
         self.background_stroke_color = background_stroke_color
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        self.scale_factor = scale_factor
         self.font = font
         self.margin = margin
         self.indentation_chars = indentation_chars
@@ -195,7 +209,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self.ensure_valid_file()
-            with open(self.file_path, "r") as f:
+            with open(self.file_path) as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
@@ -229,7 +243,7 @@ class Code(VGroup):
                 fill_opacity=1,
             )
             rect.round_corners(self.corner_radius)
-            self.background_mobject = VGroup(rect)
+            self.background_mobject = rect
         else:
             if self.insert_line_no:
                 foreground = VGroup(self.code, self.line_numbers)
@@ -291,7 +305,7 @@ class Code(VGroup):
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
             + f"of these locations: {possible_paths}"
         )
-        raise IOError(error)
+        raise OSError(error)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
@@ -309,10 +323,11 @@ class Code(VGroup):
             *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
-        ).scale(self.scale_factor)
+        )
         for i in line_numbers:
             i.set_color(self.default_color)
         return line_numbers
@@ -335,10 +350,11 @@ class Code(VGroup):
             *list(lines_text),
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
-        ).scale(self.scale_factor)
+        )
         for line_no in range(code.__len__()):
             line = code.chars[line_no]
             line_char_index = self.tab_spaces[line_no]
