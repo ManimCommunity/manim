@@ -21,7 +21,7 @@ Required Dependencies
 ---------------------
 
 To install all required dependencies for installing Manim (mainly: ffmpeg, Python,
-and some required Python packages), run
+and some required Python packages), run:
 
 .. code-block:: bash
 
@@ -36,7 +36,7 @@ are required, namely:
 
    brew install cmake pango scipy
 
-After all required dependencies are installed, simply run
+After all required dependencies are installed, simply run:
 
 .. code-block:: bash
 
@@ -69,7 +69,7 @@ dependency: if you don't intend to use LaTeX, you don't have to install it.
 For MacOS, the recommended LaTeX distribution is 
 `MacTeX <http://www.tug.org/mactex/>`__. You can install it by following
 the instructions from the link, or alternatively also via Homebrew by
-running
+running:
 
 .. code-block:: bash
 

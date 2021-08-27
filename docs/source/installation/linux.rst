@@ -3,7 +3,7 @@ Linux
 
 The installation instructions depend on your particular operating
 system and package manager. In case you know exactly what you are doing,
-you can also simply ensure that your system has
+you can also simply ensure that your system has:
 
 - a reasonably recent version of Python 3 (3.7 or above),
 - with working Cairo bindings in the form of 
@@ -11,7 +11,7 @@ you can also simply ensure that your system has
 - FFmpeg accessible from the command line as ``ffmpeg``,
 - and `Pango <https://pango.gnome.org>`__ headers.
 
-Then, installing Manim is just a matter of running
+Then, installing Manim is just a matter of running:
 
 .. code-block:: bash
 
@@ -34,20 +34,20 @@ apt – Ubuntu / Mint / Debian
 ****************************
 
 To first update your sources, and then install Cairo, Pango, and FFmpeg
-simply run
+simply run:
 
 .. code-block:: bash
 
    sudo apt update 
    sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
 
-If you don't have python3-pip installed, install it via
+If you don't have python3-pip installed, install it via:
 
 .. code-block:: bash
    
    sudo apt install python3-pip
 
-Then, in order to install Manim, run
+Then, in order to install Manim, run:
 
 .. code-block:: bash
 
@@ -81,7 +81,7 @@ instructions. Then, install FFmpeg:
    sudo dnf install ffmpeg
 
 At this point you have all required dependencies and can install
-Manim by running 
+Manim by running:
 
 .. code-block:: bash
 
@@ -107,13 +107,13 @@ Cairo, Pango, and FFmpeg:
    sudo pacman -Syu
    sudo pacman -S cairo pango ffmpeg
 
-If you don't have ``python-pip`` installed, get it by running
+If you don't have ``python-pip`` installed, get it by running:
 
 .. code-block:: bash
    
    sudo pacman -S python-pip
 
-then simply install Manim via
+then simply install Manim via:
 
 .. code-block:: bash
 

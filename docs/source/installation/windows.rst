@@ -25,7 +25,7 @@ in order to work.
 Chocolatey
 **********
 
-Manim can be installed via Chocolatey simply by running
+Manim can be installed via Chocolatey simply by running:
 
 .. code-block:: powershell
 
@@ -38,13 +38,13 @@ Scoop
 *****
 
 While there is no recipe for installing Manim with Scoop directly,
-we can install all requirements by running
+we can install all requirements by running:
 
 .. code-block:: powershell
 
    scoop install python ffmpeg
 
-and then Manim can be installed by running
+and then Manim can be installed by running:
 
 .. code-block:: powershell
 
