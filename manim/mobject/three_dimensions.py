@@ -41,7 +41,7 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Surface(VGroup, metaclass=ConvertToOpenGL):
-    """Creates a Parametric Surface
+    """Creates a Parametric Surface using a checkerboard pattern.
 
     Parameters
     ----------
@@ -208,7 +208,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         y = v
                         z = np.sin(x) * np.cos(y)
                         return z
-                    surface_plane = ParametricSurface(
+                    surface_plane = Surface(
                         lambda u, v: axes.c2p(u, v, param_surface(u, v)),
                         resolution=(resolution_fa, resolution_fa),
                         v_range=[0, 5],

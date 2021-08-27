@@ -410,7 +410,7 @@ class SpecialThreeDScene(ThreeDScene):
 
         Returns
         -------
-        :class:`.Sphere`
+        :class:`~.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)
