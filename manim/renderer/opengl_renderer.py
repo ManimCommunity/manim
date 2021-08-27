@@ -16,6 +16,7 @@ from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
+from ..utils.config_ops import _Data
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
@@ -32,6 +33,8 @@ from .vectorized_mobject_rendering import (
 
 
 class OpenGLCamera(OpenGLMobject):
+    euler_angles = _Data()
+
     def __init__(
         self,
         frame_shape=None,
@@ -72,10 +75,8 @@ class OpenGLCamera(OpenGLMobject):
         else:
             self.center_point = center_point
 
-        if euler_angles is None:
-            self.euler_angles = [0, 0, 0]
-        else:
-            self.euler_angles = euler_angles
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
         self.focal_distance = focal_distance
 
@@ -85,12 +86,15 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        if model_matrix is None:
-            model_matrix = opengl.translation_matrix(0, 0, 11)
-
+        self.default_model_matrix = model_matrix
         super().__init__(model_matrix=model_matrix, **kwargs)
 
-        self.default_model_matrix = model_matrix
+        if euler_angles is None:
+            euler_angles = [0, 0, 0]
+        euler_angles = np.array(euler_angles, dtype=float)
+
+        self.euler_angles = euler_angles
+        self.refresh_rotation_matrix()
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
@@ -104,11 +108,6 @@ class OpenGLCamera(OpenGLMobject):
             return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
         else:
             return np.linalg.inv(self.model_matrix)
-
-    def init_data(self):
-        super().init_data()
-        self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
-        self.refresh_rotation_matrix()
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -126,7 +125,7 @@ class OpenGLCamera(OpenGLMobject):
 
     def refresh_rotation_matrix(self):
         # Rotate based on camera orientation
-        theta, phi, gamma = self.data["euler_angles"]
+        theta, phi, gamma = self.euler_angles
         quat = quaternion_mult(
             quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
             quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
@@ -151,11 +150,11 @@ class OpenGLCamera(OpenGLMobject):
 
     def set_euler_angles(self, theta=None, phi=None, gamma=None):
         if theta is not None:
-            self.data["euler_angles"][0] = theta
+            self.euler_angles[0] = theta
         if phi is not None:
-            self.data["euler_angles"][1] = phi
+            self.euler_angles[1] = phi
         if gamma is not None:
-            self.data["euler_angles"][2] = gamma
+            self.euler_angles[2] = gamma
         self.refresh_rotation_matrix()
         return self
 
@@ -169,19 +168,19 @@ class OpenGLCamera(OpenGLMobject):
         return self.set_euler_angles(gamma=gamma)
 
     def increment_theta(self, dtheta):
-        self.data["euler_angles"][0] += dtheta
+        self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
     def increment_phi(self, dphi):
-        phi = self.data["euler_angles"][1]
+        phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
-        self.data["euler_angles"][1] = new_phi
+        self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
     def increment_gamma(self, dgamma):
-        self.data["euler_angles"][2] += dgamma
+        self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
 
