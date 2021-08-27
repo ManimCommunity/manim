@@ -33,8 +33,6 @@ from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Mesh, Object3D
-
-
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
