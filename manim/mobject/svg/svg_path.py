@@ -105,7 +105,7 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
-    ## Out of range parameters
+    # Out of range parameters
     # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
     # If rx or ry are 0 then this arc is treated as a
     # straight line segment (a "lineto") joining the endpoints.
