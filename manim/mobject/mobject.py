@@ -171,12 +171,10 @@ class Mobject:
             cls.animation_overrides[animation_class] = override_func
         else:
             raise MultiAnimationOverrideException(
-                (
-                    f"The animation {animation_class.__name__} for "
-                    f"{cls.__name__} is overridden by more than one method: "
-                    f"{cls.animation_overrides[animation_class].__qualname__} and "
-                    f"{override_func.__qualname__}."
-                )
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}."
             )
 
     @property
@@ -792,7 +790,7 @@ class Mobject:
         return self.updaters
 
     def get_family_updaters(self):
-        return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
+        return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
@@ -1901,10 +1899,10 @@ class Mobject:
         template.submobjects = []
         alphas = np.linspace(0, 1, n_pieces + 1)
         return Group(
-            *[
+            *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            ]
+            )
         )
 
     def get_z_index_reference_point(self):
@@ -2192,7 +2190,7 @@ class Mobject:
                 # Use cell_alignment as fallback
                 return [cell_alignment * dir] * num
             if len(alignments) != num:
-                raise ValueError("{}_alignments has a mismatching size.".format(name))
+                raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
@@ -2242,10 +2240,10 @@ class Mobject:
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
-            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+            max(grid[r][c].height for c in range(cols)) for r in range(rows)
         ]
         measured_widths = [
-            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+            max(grid[r][c].width for r in range(rows)) for c in range(cols)
         ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
@@ -2253,7 +2251,7 @@ class Mobject:
             if sizes is None:
                 sizes = [None] * num
             if len(sizes) != num:
-                raise ValueError("{} has a mismatching size.".format(name))
+                raise ValueError(f"{name} has a mismatching size.")
             return [
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]

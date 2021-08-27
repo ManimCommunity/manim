@@ -434,7 +434,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         points = np.array(points)
         self.set_anchors_and_handles(
-            *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppc)]
+            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppc))
         )
         return self
 
@@ -1248,12 +1248,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
                 void_len = (1 - r) / (n - 1)
 
             self.add(
-                *[
+                *(
                     vmobject.get_subcurve(
                         i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
                     )
                     for i in range(n)
-                ]
+                )
             )
         # Family is already taken care of by get_subcurve
         # implementation
