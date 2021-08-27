@@ -26,7 +26,7 @@ else:
     @magics_class
     class ManimMagic(Magics):
         def __init__(self, shell):
-            super(ManimMagic, self).__init__(shell)
+            super().__init__(shell)
             self.rendered_files = {}
 
         @needs_local_scope
