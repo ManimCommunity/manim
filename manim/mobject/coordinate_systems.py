@@ -313,9 +313,11 @@ class CoordinateSystem:
 
         for axis, values in zip(self.axes, axes_numbers):
             if isinstance(values, dict):
-                labels = axis.add_labels(values, **kwargs)
+                axis.add_labels(values, **kwargs)
+                labels = axis.labels
             else:
-                labels = axis.add_numbers(values, **kwargs)
+                axis.add_numbers(values, **kwargs)
+                labels = axis.numbers
             self.coordinate_labels.add(labels)
 
         return self
