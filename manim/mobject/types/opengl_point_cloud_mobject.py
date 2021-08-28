@@ -31,10 +31,10 @@ class OpenGLPMobject(OpenGLMobject):
             self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
-    # def reset_points(self):
-    #     self.rgbas = np.zeros((0, 4))
-    #     self.points = np.zeros((0, 3))
-    #     return self
+    def reset_points(self):
+        self.rgbas = np.zeros((1, 4))
+        self.points = np.zeros((0, 3))
+        return self
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
@@ -69,8 +69,8 @@ class OpenGLPMobject(OpenGLMobject):
                 return np.arange(0, num_points, factor)
 
             if len(mob.points) == len(mob.rgbas):
-                mob.set_rgba_array_direct(mob.data["rgbas"][thin_func()])
-            mob.set_points(mob.data["points"][thin_func()])
+                mob.set_rgba_array_direct(mob.rgbas[thin_func()])
+            mob.set_points(mob.points[thin_func()])
 
         return self
 
@@ -87,22 +87,20 @@ class OpenGLPMobject(OpenGLMobject):
         if center is None:
             center = self.get_center()
         for mob in self.family_members_with_points():
-            distances = np.abs(self.data["points"] - center)
+            distances = np.abs(self.points - center)
             alphas = np.linalg.norm(distances, axis=1) / radius
 
-            mob.data["rgbas"] = np.array(
+            mob.rgbas = np.array(
                 np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
             )
         return self
 
     def match_colors(self, pmobject):
-        self.data["rgbas"][:] = resize_with_interpolation(
-            pmobject.data["rgbas"], self.get_num_points()
-        )
+        self.rgbas[:] = resize_with_interpolation(pmobject.rgbas, self.get_num_points())
         return self
 
     def fade_to(self, color, alpha, family=True):
-        rgbas = interpolate(self.data["rgbas"], color_to_rgba(color), alpha)
+        rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
             mob.fade_to(color, alpha, family)
         self.set_rgba_array_direct(rgbas)
@@ -171,4 +169,4 @@ class OpenGLPMPoint(OpenGLPMobject):
         super().__init__(stroke_width=stroke_width, **kwargs)
 
     def init_points(self):
-        self.data["points"] = np.array([self.location], dtype=np.float32)
+        self.points = np.array([self.location], dtype=np.float32)
