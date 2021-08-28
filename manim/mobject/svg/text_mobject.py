@@ -374,7 +374,7 @@ class Text(SVGMobject):
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
                 chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
