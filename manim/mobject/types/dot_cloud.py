@@ -19,7 +19,7 @@ class DotCloud(OpenGLPMobject):
 
     def init_points(self):
         self.reset_points()
-        self.data["points"] = np.array(self.generate_points(), dtype=np.float32)
+        self.points = np.array(self.generate_points(), dtype=np.float32)
 
     def generate_points(self):
         return [

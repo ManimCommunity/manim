@@ -49,13 +49,13 @@ class OpenGLPMobject(OpenGLMobject):
         # rgbas array will have been resized with points
         if color is not None:
             if opacity is None:
-                opacity = self.data["rgbas"][-1, 3]
+                opacity = self.rgbas[-1, 3]
             new_rgbas = np.repeat([color_to_rgba(color, opacity)], len(points), axis=0)
         elif rgbas is not None:
             new_rgbas = rgbas
         elif len(rgbas) != len(points):
             raise ValueError("points and rgbas must have same shape")
-        self.data["rgbas"] = np.append(self.data["rgbas"], new_rgbas, axis=0)
+        self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
     def thin_out(self, factor=5):
@@ -75,7 +75,7 @@ class OpenGLPMobject(OpenGLMobject):
         return self
 
     def set_color_by_gradient(self, *colors):
-        self.data["rgbas"] = np.array(
+        self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(*colors, self.get_num_points())))
         )
         return self
