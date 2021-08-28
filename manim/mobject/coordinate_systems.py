@@ -307,6 +307,7 @@ class CoordinateSystem:
 
         Attributes
         ----------
+
         coordinate_labels : :class:`~.VGroup`
             A :class:`~.VGroup` of the added labels.
         """
