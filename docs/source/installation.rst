@@ -3,8 +3,8 @@ Installation
 
 Depending on your use case, different installation options are recommended:
 if you just want to play around with Manim for a bit, interactive in-browser
-worksheets are a really simple way of exploring the library as they
-require virtually no additional installation. Head over to
+notebooks are a really simple way of exploring the library as they
+require no local installation. Head over to
 https://try.manim.community to give our interactive tutorial a try.
 
 Otherwise, if you intend to use Manim to work on an animation project,
@@ -21,7 +21,7 @@ Python, or via Docker).
    Note that there are several different versions of Manim. The
    instructions on this website are **only** for the *community edition*.
    Find out more about the :doc:`differences between Manim
-   versions <installation/versions>` in case you are unsure which
+   versions <installation/versions>` if you are unsure which
    version you should install.
 
 
@@ -32,7 +32,7 @@ Installing Manim locally
 
 Manim is a Python library, and it can be
 `installed via pip <https://pypi.org/project/manim/>`__. However,
-in order to enable all features of Manim, some additional system
+in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.
 
@@ -73,7 +73,7 @@ Using Manim via Docker
 **********************
 
 `Docker <https://www.docker.com>`__ is a virtualization tool that
-allows to distribute encapsulated software environments (containers).
+allows the distribution of encapsulated software environments (containers).
 
 The following pages contain more information about the docker image
 maintained by the community, ``manimcommunity/manim``:

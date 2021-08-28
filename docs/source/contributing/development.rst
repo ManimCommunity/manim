@@ -52,10 +52,10 @@ For first-time contributors
      <../installation>` to install **Manim's dependencies**,
      primarily ``ffmpeg`` and ``LaTeX``.
    
-   - We recommend `Poetry <https://python-poetry.org>`__ to manage your
+   - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
      developer installation of Manim. Poetry is a tool for dependency
-     management and packaging in Python. It allows to declare the libraries
-     your project depends on and it will manage (install / update) them 
+     management and packaging in Python. It allows you to declare the libraries
+     your project depends on, and it will manage (install / update) them 
      for you. In addition, Poetry provides a simple interface for
      managing virtual environments.
 

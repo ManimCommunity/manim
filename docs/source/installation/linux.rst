@@ -2,7 +2,7 @@ Linux
 =====
 
 The installation instructions depend on your particular operating
-system and package manager. In case you know exactly what you are doing,
+system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
 - a reasonably recent version of Python 3 (3.7 or above),
@@ -25,7 +25,7 @@ Then, installing Manim is just a matter of running:
    ran into missing dependencies while installing.
    
 In any case, we have also compiled instructions for several common
-combinations of operating systems and package managers, see below.
+combinations of operating systems and package managers below.
 
 Required Dependencies
 ---------------------
@@ -47,7 +47,7 @@ If you don't have python3-pip installed, install it via:
    
    sudo apt install python3-pip
 
-Then, in order to install Manim, run:
+Then, to install Manim, run:
 
 .. code-block:: bash
 
@@ -134,7 +134,7 @@ equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
 You can use whichever LaTeX distribution you like or whichever is easiest
-available via your package manager. Usually, 
+to install with your package manager. Usually, 
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 

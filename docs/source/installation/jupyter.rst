@@ -21,7 +21,7 @@ a way that allows them to be shared interactively via Binder as well:
    can create these notebooks by using Jupyter notebooks with a
    local installation of Manim, or also by working in our pre-existing
    `interactive tutorial environment <https://try.manim.community/>`__.
-#. In the same directory containing your notebooks, you need to add a
+#. In the same directory containing your notebooks, add a
    file named ``Dockerfile`` with the following content:
 
    .. code-block:: dockerfile
@@ -83,7 +83,7 @@ To check that everything works as expected, first import Manim by running
 
    from manim import *
 
-in a new code cell, and then create another cell containing the
+in a new code cell. Then create another cell containing the
 following code::
 
    %%manim -qm -v WARNING SquareToCircle

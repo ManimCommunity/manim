@@ -39,7 +39,7 @@ with the following command.
    to prevent the creation of output files not belonging to your user.
 
 
-Instead of using the "throwaway container" approach sketched
+Instead of using the "throwaway container" approach outlined
 above, you can also create a named container that you can
 modify to your liking. First, run
 
@@ -68,7 +68,7 @@ a scene ``CircleToSquare`` in a file ``test_scenes.py``, run
 Running JupyterLab via Docker
 -----------------------------
 
-Another alternative is to use the Docker image to spin up a
+Another alternative to using the Docker image is to spin up a
 local JupyterLab instance. To do that, simply run
 
 .. code-block:: sh

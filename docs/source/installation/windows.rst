@@ -4,12 +4,12 @@ Windows
 The easiest way of installing Manim and its dependencies is by using a
 package manager like `Chocolatey <https://chocolatey.org/>`__ 
 or `Scoop <https://scoop.sh>`__. If you are not afraid of editing
-your System's ``PATH``, a manual installation is not too difficult
-either, though. In fact, if you already have an existing Python
+your System's ``PATH``, a manual installation is also possible.
+In fact, if you already have an existing Python
 installation (3.7 or newer), it might be the easiest way to get
 everything up and running.
 
-In case you choose to use one of the package managers, please follow
+If you choose to use one of the package managers, please follow
 their installation instructions
 (`for Chocolatey <https://chocolatey.org/install#install-step2>`__, 
 `for Scoop <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__)
@@ -19,7 +19,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.7 or above), and ``ffmpeg``
+Manim requires a recent version of Python (3.7 or above) and ``ffmpeg``
 in order to work.
 
 Chocolatey
@@ -38,7 +38,7 @@ Scoop
 *****
 
 While there is no recipe for installing Manim with Scoop directly,
-we can install all requirements by running:
+you can install all requirements by running:
 
 .. code-block:: powershell
 
@@ -50,7 +50,7 @@ and then Manim can be installed by running:
 
    python -m pip install manim
 
-After this, Manim is installed on your system. Continue reading
+Manim should now be installed on your system. Continue reading
 the :ref:`optional dependencies <win-optional-dependencies>` section
 below.
 
@@ -68,7 +68,7 @@ installed on your system.
 
    We have received reports of problems caused by using the version of
    Python that can be installed from the Windows Store. At this point,
-   we recommend to stay away from the Windows Store and rather install
+   we recommend staying away from the Windows Store version. Instead,
    Python directly from https://www.python.org.
 
 **FFmpeg:** In order to install FFmpeg, you can get the source code
@@ -79,7 +79,7 @@ linked at https://ffmpeg.org/download.html#build-windows, for example
 `the version available here 
 <https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__.
 
-After downloading the pre-compiled archive 
+After downloading the pre-compiled archive, 
 `unzip it <https://www.7-zip.org>`__ and, if you like, move the
 extracted directory to some more permanent place (e.g., 
 ``C:\Program Files\``). Next, edit the ``PATH`` environment variable:
@@ -104,7 +104,7 @@ install Manim via
 Optional Dependencies
 ---------------------
 
-In order to make use of Manim's interface to LaTeX for, e.g., rendering
+In order to make use of Manim's interface to LaTeX to, for example, render
 equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
@@ -114,12 +114,12 @@ installer from the linked MiKTeX site, or by using the package manager
 of your choice (Chocolatey: ``choco install miktex.install``,
 Scoop: ``scoop install latex``).
 
-In case you are concerned about disk space, there are some alternative,
+If you are concerned about disk space, there are some alternative,
 smaller distributions of LaTeX like 
 `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
 Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``,
 then ``scoop install tinytex``). In this case, you will have to manage the
-LaTeX packages installed on your system yourself via ``tlmgr``, we only
+LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only
 recommend this option if you know what you are doing. The full list
 of LaTeX packages which Manim interacts with in some way (a subset might
 be sufficient for your particular application) is::
@@ -139,6 +139,6 @@ be sufficient for your particular application) is::
 Working with Manim
 ------------------
 
-At this point, your system should have a working installation of Manim, head
+At this point, you should have a working installation of Manim, head
 over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
 how to make your own *Manimations*!

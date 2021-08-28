@@ -4,9 +4,9 @@ MacOS
 For the sake of simplicity, the following instructions assume that you have
 the popular `package manager Homebrew <https://brew.sh>`__ installed. While
 you can certainly also install all dependencies without it, using Homebrew
-makes the process very easy.
+makes the process much easier.
 
-In case you want to use Homebrew but do not have it installed yet, please
+If you want to use Homebrew but do not have it installed yet, please
 follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>`__.
 
 .. note::
@@ -95,6 +95,6 @@ be sufficient for your particular application) is::
 Working with Manim
 ------------------
 
-At this point, your system should have a working installation of Manim, head
+At this point, you should have a working installation of Manim. Head
 over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn
 how to make your own *Manimations*!
