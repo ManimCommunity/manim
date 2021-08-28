@@ -8,7 +8,7 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.svg.tex_mobject import MathTex, Tex
-from manim.utils.scale import LinearBase, LogBase
+from manim.utils.scale import LinearBase, _ScaleBase
 
 from .. import config
 from ..constants import *
@@ -24,7 +24,6 @@ from ..utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.utils.scale import _ScaleBase
 
 
 class NumberLine(Line):
