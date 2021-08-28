@@ -11,11 +11,6 @@ Otherwise, if you intend to use Manim to work on an animation project,
 we recommend installing the library locally (either to your system's
 Python, or via Docker).
 
-#. :ref:`Installing Manim to your system's Python <local-installation>`
-#. :ref:`Using Manim via Docker <docker-installation>`
-#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab 
-   <interactive-online>`
-
 .. warning:: 
 
    Note that there are several different versions of Manim. The
@@ -23,6 +18,11 @@ Python, or via Docker).
    Find out more about the :doc:`differences between Manim
    versions <installation/versions>` if you are unsure which
    version you should install.
+
+#. :ref:`Installing Manim to your system's Python <local-installation>`
+#. :ref:`Using Manim via Docker <docker-installation>`
+#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab 
+   <interactive-online>`
 
 
 .. _local-installation:
