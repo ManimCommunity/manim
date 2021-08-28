@@ -307,8 +307,8 @@ class CoordinateSystem:
 
         Attributes
         ----------
-        coordinate_labels : :class:`~VGroup`
-            A :class:`~VGroup` of the added labels.
+        coordinate_labels : :class:`~.VGroup`
+            A :class:`~.VGroup` of the added labels.
         """
 
         self.coordinate_labels = VGroup()
