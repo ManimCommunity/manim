@@ -54,9 +54,10 @@ Google Colaboratory
 
 It is also possible to install Manim in a
 `Google Colaboratory <https://colab.research.google.com/>`__ environment.
-In contrast to Binder, where we can customize and prepare the environment
-for you (such that Manim is already installed and ready to be used), you
-will have to take care of that yourself in Google Colab. Fortunately, this
+In contrast to Binder, where you can customize and prepare the environment
+beforehand (such that Manim is already installed and ready to be used), you
+will have to take care of that every time you start
+a new notebook in Google Colab. Fortunately, this
 is not particularly difficult.
 
 After creating a new notebook, paste the following code block in a cell,
