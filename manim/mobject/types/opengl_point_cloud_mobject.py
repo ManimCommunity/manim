@@ -31,10 +31,10 @@ class OpenGLPMobject(OpenGLMobject):
             self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
-    def reset_points(self):
-        self.rgbas = np.zeros((0, 4))
-        self.points = np.zeros((0, 3))
-        return self
+    # def reset_points(self):
+    #     self.rgbas = np.zeros((0, 4))
+    #     self.points = np.zeros((0, 3))
+    #     return self
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
@@ -171,5 +171,4 @@ class OpenGLPMPoint(OpenGLPMobject):
         super().__init__(stroke_width=stroke_width, **kwargs)
 
     def init_points(self):
-        self.reset_points()
         self.data["points"] = np.array([self.location], dtype=np.float32)

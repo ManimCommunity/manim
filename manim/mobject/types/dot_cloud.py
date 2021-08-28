@@ -18,18 +18,17 @@ class DotCloud(OpenGLPMobject):
         )
 
     def init_points(self):
-        self.reset_points()
-        self.points = np.array(self.generate_points(), dtype=np.float32)
-
-    def generate_points(self):
-        return [
-            r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
-            for r in np.arange(self.epsilon, self.radius, self.epsilon)
-            # Num is equal to int(stop - start)/ (step + 1) reformulated.
-            for theta in np.linspace(
-                0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
-            )
-        ]
+        self.points = np.array(
+            [
+                r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
+                for r in np.arange(self.epsilon, self.radius, self.epsilon)
+                # Num is equal to int(stop - start)/ (step + 1) reformulated.
+                for theta in np.linspace(
+                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                )
+            ],
+            dtype=np.float32,
+        )
 
     def make_3d(self, gloss=0.5, shadow=0.2):
         self.set_gloss(gloss)
