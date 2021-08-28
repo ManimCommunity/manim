@@ -218,8 +218,7 @@ class CoordinateSystem:
             Allows for further positioning of the label from an edge, by default ``UR``.
         buff
             The distance of the label from the line.
-        **kwargs
-            Additional arguments to be passed to :meth:`~._get_axis_label`
+
         Returns
         -------
         :class:`~.Mobject`
@@ -266,8 +265,6 @@ class CoordinateSystem:
             Allows for further positioning of the label from an edge, by default ``UR``
         buff
             The distance of the label from the line.
-        **kwargs
-            Additional arguments to be passed to :meth:`~._get_axis_label`
 
         Returns
         -------
@@ -630,7 +627,7 @@ class CoordinateSystem:
                     axes = VGroup(ax_1, ax_2, ax_3)
 
                     # create the logarithmic curves
-                    log_func = lambda x: np.log(x)
+                    def log_func(x): np.log(x)
 
                     # a curve without adjustments; poor interpolation.
                     curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
@@ -1864,6 +1861,58 @@ class ThreeDAxes(Axes):
                 submob.get_gradient_start_and_end_points = make_func(axis)
                 submob.get_unit_normal = lambda a: np.ones(3)
                 submob.set_sheen(0.2)
+
+    def get_z_axis_label(
+        self,
+        label: Union[float, str, "Mobject"],
+        edge: Sequence[float] = OUT,
+        direction: Sequence[float] = RIGHT,
+        buff: float = SMALL_BUFF,
+        rotation=PI / 2,
+        rotation_axis=RIGHT,
+        **kwargs,
+    ) -> "Mobject":
+        """Generate an x-axis label.
+
+        Examples
+        --------
+
+        .. manim:: GetZAxisLabelExample
+            :save_last_frame:
+
+            class GetZAxisLabelExample(ThreeDScene):
+                def construct(self):
+                    ax = ThreeDAxes()
+                    lab = ax.get_z_axis_label(Tex("$z$-label"))
+                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.add(ax, lab)
+
+        Parameters
+        ----------
+        label
+            The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        edge
+            The edge of the x-axis to which the label will be added, by default ``UR``.
+        direction
+            Allows for further positioning of the label from an edge, by default ``UR``.
+        buff
+            The distance of the label from the line.
+        rotation
+            The angle at which to rotate the label, by default ``PI/2``.
+        rotation_axis
+            The axis about which to rotate the label, by default ``RIGHT``.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label.
+        """
+
+        positioned_label = self._get_axis_label(
+            label, self.get_z_axis(), edge, direction, buff=buff, **kwargs
+        )
+        positioned_label.rotate(rotation, axis=rotation_axis)
+        return positioned_label
 
 
 class NumberPlane(Axes):

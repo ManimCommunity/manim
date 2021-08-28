@@ -93,7 +93,8 @@ def test_get_graph(scene):
     axes = VGroup(ax_1, ax_2, ax_3)
 
     # create the logarithmic curves
-    log_func = lambda x: np.log(x)
+    def log_func(x):
+        np.log(x)
 
     # a curve without adjustments; poor interpolation.
     curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
@@ -217,3 +218,11 @@ def test_get_riemann_rectangles(scene):
     )
 
     scene.add(ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_get_z_axis_label(scene):
+    ax = ThreeDAxes()
+    lab = ax.get_z_axis_label(Tex("$z$-label"))
+    scene.set_camera_orientation(phi=2 * PI / 5, theta=PI / 5)
+    scene.add(ax, lab)
