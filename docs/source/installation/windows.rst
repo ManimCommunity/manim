@@ -72,13 +72,15 @@ installed on your system.
    install Python directly from the 
    `official website <https://www.python.org>`__.
 
-**FFmpeg:** In order to install FFmpeg, you can get the source code
-from https://ffmpeg.org/download.html and compile it yourself (only
-recommended if you know exactly what you are doing), or get a
+**FFmpeg:** In order to install FFmpeg, you can get a
 pre-compiled and ready-to-use version from one of the resources
 linked at https://ffmpeg.org/download.html#build-windows, such as
 `the version available here 
-<https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__.
+<https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__
+(recommended), or if you know exactly what you are doing
+you can alternatively get the source code
+from https://ffmpeg.org/download.html and compile it yourself.
+
 
 After downloading the pre-compiled archive, 
 `unzip it <https://www.7-zip.org>`__ and, if you like, move the
