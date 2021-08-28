@@ -55,7 +55,7 @@ class OpenGLPMobject(OpenGLMobject):
             new_rgbas = rgbas
         elif len(rgbas) != len(points):
             raise ValueError("points and rgbas must have same shape")
-        self.data["rgbas"] = np.append(self.data["rgbas"], new_rgbas, axis=0)
+        self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
     def thin_out(self, factor=5):
