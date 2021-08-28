@@ -20,7 +20,7 @@ follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>
 Required Dependencies
 ---------------------
 
-To install all required dependencies for installing Manim (mainly: ffmpeg, Python,
+To install all required dependencies for installing Manim (namely: ffmpeg, Python,
 and some required Python packages), run:
 
 .. code-block:: bash

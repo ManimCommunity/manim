@@ -61,7 +61,7 @@ a new notebook in Google Colab. Fortunately, this
 is not particularly difficult.
 
 After creating a new notebook, paste the following code block in a cell,
-and then execute the cell.
+then execute it.
 
 .. code-block::
 

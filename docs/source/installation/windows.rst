@@ -58,7 +58,7 @@ Manual Installation
 *******************
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.7 or above), and FFmpeg.
+Python 3 (3.7 or above) and FFmpeg.
 
 **Python:** Head over to https://www.python.org, download an installer
 for Python 3.7 (or newer), and follow its instructions to get Python
@@ -69,13 +69,14 @@ installed on your system.
    We have received reports of problems caused by using the version of
    Python that can be installed from the Windows Store. At this point,
    we recommend staying away from the Windows Store version. Instead,
-   Python directly from https://www.python.org.
+   install Python directly from the 
+   `official website <https://www.python.org>`__.
 
 **FFmpeg:** In order to install FFmpeg, you can get the source code
 from https://ffmpeg.org/download.html and compile it yourself (only
 recommended if you know exactly what you are doing), or get a
 pre-compiled and ready-to-use version from one of the resources
-linked at https://ffmpeg.org/download.html#build-windows, for example
+linked at https://ffmpeg.org/download.html#build-windows, such as
 `the version available here 
 <https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__.
 
@@ -86,12 +87,12 @@ extracted directory to some more permanent place (e.g.,
 first, visit ``Control Panel`` > ``System`` > ``System settings`` > 
 ``Environment Variables``, then add the full path to the ``bin``
 directory inside of the (moved) ffmpeg directory to the
-``PATH`` variable, then save your changes and exit.
+``PATH`` variable. Finally, save your changes and exit.
 
 If you now open a new command line prompt (or PowerShell) and
 run ``ffmpeg``, the command should be recognized.
 
-At this point, you have all required dependencies and are able to
+At this point, you have all the required dependencies and can now
 install Manim via
 
 .. code-block:: powershell

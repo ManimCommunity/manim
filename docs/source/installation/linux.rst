@@ -73,7 +73,7 @@ need the Python development headers:
    sudo dnf install python3-devel
 
 FFmpeg is only available via the RPMfusion repository which you have to
-configure first, please consult https://rpmfusion.org/Configuration/ for
+configure first – please consult https://rpmfusion.org/Configuration/ for
 instructions. Then, install FFmpeg:
 
 .. code-block:: bash
