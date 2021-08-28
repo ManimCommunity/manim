@@ -1,0 +1,13 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: 
+    given-names: "Manim Community Developers"
+cff-version: "1.1.0"
+date-released: 2021-08-02
+license: MIT
+message: "We acknowledge the importance of good software to support research, and we note that research becomes more valuable when it is communicated effectively. To demonstrate the value of Manim, we ask that you cite Manim in your work."
+title: Manim
+version: "v0.9.0"
+...
