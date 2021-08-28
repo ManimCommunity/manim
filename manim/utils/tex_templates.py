@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A library of LaTeX templates."""
 __all__ = [
     "TexTemplateLibrary",
@@ -47,7 +46,7 @@ _3b1b_preamble = r"""
 
 # TexTemplateLibrary
 #
-class TexTemplateLibrary(object):
+class TexTemplateLibrary:
     """
     A collection of basic TeX template objects
 
@@ -918,7 +917,7 @@ italichelveticaf.add_to_preamble(
 )
 
 
-class TexFontTemplates(object):
+class TexFontTemplates:
     """
     A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html
 
