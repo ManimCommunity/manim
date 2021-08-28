@@ -275,7 +275,7 @@ class CoordinateSystem:
         ],
         **kwargs,
     ):
-        """Adds labels to the axes.
+        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to access the coordinates after creation.
 
         Parameters
         ----------
@@ -304,12 +304,6 @@ class CoordinateSystem:
             x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
-
-        Attributes
-        ----------
-
-        coordinate_labels : :class:`~.VGroup`
-            A :class:`~.VGroup` of the added labels.
         """
 
         self.coordinate_labels = VGroup()
