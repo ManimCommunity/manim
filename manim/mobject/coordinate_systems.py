@@ -283,6 +283,8 @@ class CoordinateSystem:
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
 
+        :ivar coordinate_labels: A :class:`~VGroup` of the added labels.
+
         Examples
         --------
 
