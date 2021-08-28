@@ -80,7 +80,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
 
     result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
     if not os.path.exists(result):
-        logger.info('Writing "%s" to %s' % ("".join(expression), result))
+        logger.info('Writing "{}" to {}'.format("".join(expression), result))
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
     return result
@@ -141,7 +141,7 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
 def insight_inputenc_error(match):
     code_point = chr(int(match[1], 16))
     name = unicodedata.name(code_point)
-    yield "TexTemplate does not support character '{}' (U+{})".format(name, match[1])
+    yield f"TexTemplate does not support character '{name}' (U+{match[1]})"
     yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
 
 
@@ -187,13 +187,13 @@ def compile_tex(tex_file, tex_compiler, output_format):
                     f"{tex_compiler} failed but did not produce a log file. "
                     "Check your LaTeX installation."
                 )
-            with open(log_file, "r") as f:
+            with open(log_file) as f:
                 log = f.readlines()
                 error_pos = [
                     index for index, line in enumerate(log) if line.startswith("!")
                 ]
                 if error_pos:
-                    with open(tex_file, "r") as g:
+                    with open(tex_file) as g:
                         tex = g.readlines()
                         for log_index in error_pos:
                             logger.error(
