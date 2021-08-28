@@ -364,7 +364,7 @@ class Text(SVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
+                japanese = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", weight=BOLD)
@@ -373,7 +373,7 @@ class Text(SVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
                 self.add(morning,chin,mess,russ,hin,arb,japanese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
