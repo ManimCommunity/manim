@@ -30,7 +30,7 @@ from ..utils.file_ops import (
 from ..utils.sounds import get_full_sound_file_path
 
 
-class SceneFileWriter(object):
+class SceneFileWriter:
     """
     SceneFileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.

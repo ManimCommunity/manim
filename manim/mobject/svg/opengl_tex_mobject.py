@@ -294,10 +294,10 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             tex = tex.replace("\\\\", "\\quad\\\\")
 
         # Handle imbalanced \left and \right
-        num_lefts, num_rights = [
+        num_lefts, num_rights = (
             len([s for s in tex.split(substr)[1:] if s and s[0] in "(){}[]|.\\"])
             for substr in ("\\left", "\\right")
-        ]
+        )
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
@@ -469,7 +469,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
                 return tex1 == tex2
 
         return OpenGLVGroup(
-            *[m for m in self.submobjects if test(tex, m.get_tex_string())]
+            *(m for m in self.submobjects if test(tex, m.get_tex_string()))
         )
 
     def get_part_by_tex(self, tex, **kwargs):

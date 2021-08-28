@@ -47,9 +47,36 @@ For first-time contributors
    - ``upstream`` the ManimCommunity repository
 
 #. Install Manim:
- 
-   - See our :doc:`instructions for developers<../installation/for_dev>` for
-     details and continue here afterwards.
+
+   - Follow the steps in our :doc:`installation instructions 
+     <../installation>` to install **Manim's dependencies**,
+     primarily ``ffmpeg`` and ``LaTeX``.
+   
+   - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
+     developer installation of Manim. Poetry is a tool for dependency
+     management and packaging in Python. It allows you to declare the libraries
+     your project depends on, and it will manage (install / update) them 
+     for you. In addition, Poetry provides a simple interface for
+     managing virtual environments.
+
+     If you choose to use Poetry as well, follow `Poetry's installation
+     guidelines <https://python-poetry.org/docs/master/#installation>`__
+     to install it on your system, then run ``poetry install`` from
+     your cloned repository. Poetry will then install Manim, as well
+     as create and enter a virtual environment. You can always re-enter
+     that environment by running ``poetry shell``.
+   
+   - In case you decided against Poetry, you can install Manim via pip
+     by running ``python3 -m pip install .``. Note that due to our
+     development infrastructure being based on Poetry, we currently
+     do not support editable installs via ``pip``, so you will have
+     to re-run this command every time you make changes to the source
+     code.
+
+   .. note::
+
+      The following steps assume that you chose to install and work with
+      Poetry.
 
 #. Install Pre-Commit:
 

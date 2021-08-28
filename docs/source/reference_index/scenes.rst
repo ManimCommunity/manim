@@ -6,7 +6,6 @@ Inheritance Graph
 -----------------
 
 .. inheritance-diagram::
-   manim.scene.graph_scene
    manim.scene.moving_camera_scene
    manim.scene.reconfigurable_scene
    manim.scene.sample_space_scene
@@ -27,7 +26,6 @@ Module Index
 .. autosummary::
    :toctree: ../reference
 
-   ~scene.graph_scene
    ~scene.moving_camera_scene
    ~scene.reconfigurable_scene
    ~scene.sample_space_scene
