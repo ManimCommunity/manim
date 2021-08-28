@@ -283,8 +283,6 @@ class CoordinateSystem:
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
 
-        :ivar coordinate_labels: A :class:`~VGroup` of the added labels.
-
         Examples
         --------
 
@@ -306,6 +304,11 @@ class CoordinateSystem:
             x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
+
+        Attributes
+        ----------
+        coordinate_labels : :class:`~VGroup`
+            A :class:`~VGroup` of the added labels.
         """
 
         self.coordinate_labels = VGroup()
