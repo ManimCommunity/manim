@@ -710,11 +710,11 @@ class StreamLines(VectorField):
         def outside_box(p):
             return (
                 p[0] < self.x_range[0] - self.padding
-                or p[0] > self.x_range[1] + self.padding
+                or p[0] > self.x_range[1] + self.padding - self.x_range[2]
                 or p[1] < self.y_range[0] - self.padding
-                or p[1] > self.y_range[1] + self.padding
+                or p[1] > self.y_range[1] + self.padding - self.y_range[2]
                 or p[2] < self.z_range[0] - self.padding
-                or p[2] > self.z_range[1] + self.padding
+                or p[2] > self.z_range[1] + self.padding - self.z_range[2]
             )
 
         max_steps = ceil(virtual_time / dt) + 1
