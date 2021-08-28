@@ -1093,7 +1093,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x**2)
+            curve = ax.get_graph(lambda x: x ** 2)
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.3825747960950903
 
@@ -1129,7 +1129,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x**2)
+            curve = ax.get_graph(lambda x: x ** 2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
 
