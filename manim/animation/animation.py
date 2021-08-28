@@ -79,9 +79,9 @@ class Animation:
                 self.add(groups)
 
                 # Label groups
-                self.add(Text("lag_ratio = ").scale(0.7).next_to(groups, UP, buff=1.5))
+                self.add(Text("lag_ratio = ", font_size=36).next_to(groups, UP, buff=1.5))
                 for group, ratio in zip(groups, ratios):
-                    self.add(Text(str(ratio)).scale(0.7).next_to(group, UP))
+                    self.add(Text(str(ratio), font_size=36).next_to(group, UP))
 
                 #Animate groups with different lag_ratios
                 self.play(AnimationGroup(*[
