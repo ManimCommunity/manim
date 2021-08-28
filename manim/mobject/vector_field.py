@@ -20,7 +20,7 @@ from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..animation.update import UpdateFromAlphaFunc
-from ..constants import RIGHT, UP
+from ..constants import OUT, RIGHT, UP
 from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -463,12 +463,10 @@ class ArrowVectorField(VectorField):
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
-        x_min: float = -(config["frame_width"] + 1) / 2,
-        x_max: float = (config["frame_width"] + 1) / 2,
-        y_min: float = -(config["frame_height"] + 1) / 2,
-        y_max: float = (config["frame_height"] + 1) / 2,
-        delta_x: float = 0.5,
-        delta_y: float = 0.5,
+        x_range: Sequence[float] = None,
+        y_range: Sequence[float] = None,
+        z_range: Sequence[float] = None,
+        three_dimensions: bool = False,  # Automatically True if z_range is set
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
@@ -484,13 +482,28 @@ class ArrowVectorField(VectorField):
             colors,
             **kwargs,
         )
-        # Rounding min and max values to fit delta value
-        self.x_min = floor(x_min / delta_x) * delta_x
-        self.x_max = ceil(x_max / delta_x) * delta_x
-        self.y_min = floor(y_min / delta_y) * delta_y
-        self.y_max = ceil(y_max / delta_y) * delta_y
-        self.delta_x = delta_x
-        self.delta_y = delta_y
+        self.x_range = x_range or [
+            floor(-config["frame_width"] / 2),
+            ceil(config["frame_width"] / 2),
+        ]
+        self.y_range = y_range or [
+            floor(-config["frame_height"] / 2),
+            ceil(config["frame_height"] / 2),
+        ]
+        self.ranges = [self.x_range, self.y_range]
+
+        if three_dimensions or z_range:
+            self.z_range = z_range or self.y_range.copy()
+            self.ranges += [self.z_range]
+        else:
+            self.ranges += [[0, 0]]
+
+        for i in range(len(self.ranges)):
+            if len(self.ranges[i]) == 2:
+                self.ranges[i] += [0.5]
+            self.ranges[i][1] += self.ranges[i][2]
+
+        self.x_range, self.y_range, self.z_range = self.ranges
 
         self.length_func = length_func
         self.opacity = opacity
@@ -499,10 +512,11 @@ class ArrowVectorField(VectorField):
         self.vector_config = vector_config
         self.func = func
 
-        x_range = np.arange(self.x_min, self.x_max, self.delta_x)
-        y_range = np.arange(self.y_min, self.y_max, self.delta_y)
-        for x, y in it.product(x_range, y_range):
-            self.add(self.get_vector(x * RIGHT + y * UP))
+        x_range = np.arange(*self.x_range)
+        y_range = np.arange(*self.y_range)
+        z_range = np.arange(*self.z_range)
+        for x, y, z in it.product(x_range, y_range, z_range):
+            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
@@ -629,12 +643,10 @@ class StreamLines(VectorField):
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line starting positions:
-        x_min: float = -(config["frame_width"] + 1) / 2,
-        x_max: float = (config["frame_width"] + 1) / 2,
-        y_min: float = -(config["frame_height"] + 1) / 2,
-        y_max: float = (config["frame_height"] + 1) / 2,
-        delta_x: float = 0.5,
-        delta_y: float = 0.5,
+        x_range: Sequence[float] = None,
+        y_range: Sequence[float] = None,
+        z_range: Sequence[float] = None,
+        three_dimensions: bool = False,
         noise_factor: Optional[float] = None,
         n_repeats=1,
         # Determining how lines are drawn
@@ -656,13 +668,32 @@ class StreamLines(VectorField):
             colors,
             **kwargs,
         )
-        self.x_min = x_min
-        self.x_max = x_max
-        self.y_min = y_min
-        self.y_max = y_max
-        self.delta_x = delta_x
-        self.delta_y = delta_y
-        self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
+        self.x_range = x_range or [
+            floor(-config["frame_width"] / 2),
+            ceil(config["frame_width"] / 2),
+        ]
+        self.y_range = y_range or [
+            floor(-config["frame_height"] / 2),
+            ceil(config["frame_height"] / 2),
+        ]
+        self.ranges = [self.x_range, self.y_range]
+
+        if three_dimensions or z_range:
+            self.z_range = z_range or self.y_range.copy()
+            self.ranges += [self.z_range]
+        else:
+            self.ranges += [[0, 0]]
+
+        for i in range(len(self.ranges)):
+            if len(self.ranges[i]) == 2:
+                self.ranges[i] += [0.5]
+            self.ranges[i][1] += self.ranges[i][2]
+
+        self.x_range, self.y_range, self.z_range = self.ranges
+
+        self.noise_factor = (
+            noise_factor if noise_factor is not None else self.y_range[2] / 2
+        )
         self.n_repeats = n_repeats
         self.virtual_time = virtual_time
         self.max_anchors_per_line = max_anchors_per_line
@@ -675,19 +706,23 @@ class StreamLines(VectorField):
             [
                 (x - half_noise) * RIGHT
                 + (y - half_noise) * UP
+                + (z - half_noise) * OUT
                 + self.noise_factor * np.random.random(3)
                 for n in range(self.n_repeats)
-                for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
-                for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
+                for x in np.arange(*self.x_range)
+                for y in np.arange(*self.y_range)
+                for z in np.arange(*self.z_range)
             ]
         )
 
         def outside_box(p):
             return (
-                p[0] < self.x_min - self.padding
-                or p[0] > self.x_max + self.padding
-                or p[1] < self.y_min - self.padding
-                or p[1] > self.y_max + self.padding
+                p[0] < self.x_range[0] - self.padding
+                or p[0] > self.x_range[1] + self.padding
+                or p[1] < self.y_range[0] - self.padding
+                or p[1] > self.y_range[1] + self.padding
+                or p[2] < self.z_range[0] - self.padding
+                or p[2] > self.z_range[1] + self.padding
             )
 
         max_steps = ceil(virtual_time / dt) + 1
