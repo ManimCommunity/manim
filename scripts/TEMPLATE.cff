@@ -2,8 +2,7 @@
 ---
 authors: 
   -
-    family-names: 
-    given-names: "Manim Community Developers"
+    name: "Manim Community Developers"
 cff-version: "1.1.0"
 date-released: <date_released>
 license: MIT

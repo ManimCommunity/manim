@@ -1,9 +1,8 @@
 # YAML 1.2
 ---
 authors: 
-  -
-    family-names: 
-    given-names: "Manim Community Developers"
+  - 
+    name: "Manim Community Developers"
 cff-version: "1.1.0"
 date-released: 2021-08-02
 license: MIT
