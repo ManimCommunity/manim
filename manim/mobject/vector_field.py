@@ -146,7 +146,7 @@ class VectorField(VGroup):
 
             class ScaleVectorFieldFunction(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[1])*RIGHT+np.cos(pos[0])*UP
+                    func = lambda pos: np.sin(pos[1]) * RIGHT + np.cos(pos[0]) * UP
                     vector_field = ArrowVectorField(func)
                     self.add(vector_field)
                     self.wait()
@@ -775,15 +775,17 @@ class StreamLines(VectorField):
 
             class StreamLineCreation(Scene):
                 def construct(self):
-                    func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
+                    func = lambda pos: (pos[0] * UR + pos[1] * LEFT) - pos
                     stream_lines = StreamLines(
                         func,
                         color=YELLOW,
-                        x_range=[-7, 7, 1], y_range=[-4, 4, 1], stroke_width=3,
-                        virtual_time=1,          # use shorter lines
-                        max_anchors_per_line=5,  #better performance with fewer anchors
+                        x_range=[-7, 7, 1],
+                        y_range=[-4, 4, 1],
+                        stroke_width=3,
+                        virtual_time=1,  # use shorter lines
+                        max_anchors_per_line=5,  # better performance with fewer anchors
                     )
-                    self.play(stream_lines.create()) # uses virtual_time as run_time
+                    self.play(stream_lines.create())  # uses virtual_time as run_time
                     self.wait()
 
         """
@@ -831,11 +833,8 @@ class StreamLines(VectorField):
 
             class ContinuousMotion(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
-                    stream_lines = StreamLines(
-                        func, stroke_width=3,
-                        max_anchors_per_line=30
-                    )
+                    func = lambda pos: np.sin(pos[0] / 2) * UR + np.cos(pos[1] / 2) * LEFT
+                    stream_lines = StreamLines(func, stroke_width=3, max_anchors_per_line=30)
                     self.add(stream_lines)
                     stream_lines.start_animation(warm_up=False, flow_speed=1.5)
                     self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
@@ -891,18 +890,12 @@ class StreamLines(VectorField):
 
             class EndAnimation(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
+                    func = lambda pos: np.sin(pos[0] / 2) * UR + np.cos(pos[1] / 2) * LEFT
                     stream_lines = StreamLines(
-                        func, stroke_width=3,
-                        max_anchors_per_line=5,
-                        virtual_time=1, color=BLUE
+                        func, stroke_width=3, max_anchors_per_line=5, virtual_time=1, color=BLUE
                     )
                     self.add(stream_lines)
-                    stream_lines.start_animation(
-                        warm_up=False,
-                        flow_speed=1.5,
-                        time_width=0.5
-                    )
+                    stream_lines.start_animation(warm_up=False, flow_speed=1.5, time_width=0.5)
                     self.wait(1)
                     self.play(stream_lines.end_animation())
 
