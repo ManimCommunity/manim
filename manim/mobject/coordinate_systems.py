@@ -46,7 +46,7 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
-from ..utils.deprecation import deprecated_params
+from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
@@ -159,7 +159,18 @@ class CoordinateSystem:
     def get_axis(self, index):
         return self.get_axes()[index]
 
+    @deprecated(since="v0.10.0", until="v0.11.0", message="Use get_origin instead.")
     def get_center_point(self) -> np.ndarray:
+        """Gets the origin of :class:`~.Axes`.
+
+        Returns
+        -------
+        np.ndarray
+            The center point.
+        """
+        return self.coords_to_point(0, 0)
+
+    def get_origin(self) -> np.ndarray:
         """Gets the origin of :class:`~.Axes`.
 
         Returns
