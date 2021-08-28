@@ -611,7 +611,7 @@ class StreamLines(VectorField):
             def construct(self):
                 func = lambda pos: np.sin(pos[0]) * UR + np.cos(pos[1]) * LEFT + pos / 5
                 stream_lines = StreamLines(
-                    func, x_range=[-2, 2, 0.2], y_range=[-2, 2, 0.2], padding=1
+                    func, x_range=[-3, 3, 0.2], y_range=[-2, 2, 0.2], padding=1
                 )
 
                 spawning_area = Rectangle(width=6, height=4)
@@ -777,7 +777,7 @@ class StreamLines(VectorField):
                     stream_lines = StreamLines(
                         func,
                         color=YELLOW,
-                        x_range=[-7, 7, 1], y_range=[-7, 7, 1], stroke_width=3,
+                        x_range=[-7, 7, 1], y_range=[-4, 4, 1], stroke_width=3,
                         virtual_time=1,          # use shorter lines
                         max_anchors_per_line=5,  #better performance with fewer anchors
                     )
