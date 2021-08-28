@@ -7,6 +7,7 @@ from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import interpolate
 from ...utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
+from ...utils.config_ops import _Uniforms
 from ...utils.iterables import resize_with_interpolation
 
 
@@ -19,22 +20,21 @@ class OpenGLPMobject(OpenGLMobject):
         ("color", np.float32, (4,)),
     ]
 
+    point_radius = _Uniforms()
+
     def __init__(
         self, stroke_width=2.0, color=YELLOW, render_primitive=moderngl.POINTS, **kwargs
     ):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)
+        self.point_radius = (
+            self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
+        )
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
         self.points = np.zeros((0, 3))
         return self
-
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["point_radius"] = (
-            self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
-        )
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
