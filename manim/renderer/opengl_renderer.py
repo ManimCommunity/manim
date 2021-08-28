@@ -423,7 +423,12 @@ class OpenGLRenderer:
         self.file_writer.finish()
 
     def get_image(self) -> Image.Image:
-        """Returns an image from the current frame.
+        """Returns an image from the current frame. The first argument passed to image represents
+        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
+        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
+        used for the decoder tand represent the stride and orientation. 0 means there is no
+        padding expected between bytes and -1 represents the orientation and means the first
+        line of the image is the bottom line on the screen.
 
         Returns
         -------
