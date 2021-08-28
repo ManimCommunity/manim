@@ -1025,7 +1025,7 @@ class OpenGLVMobject(OpenGLMobject):
             new_points = np.empty((0, 3))
             for mob in self.family_members_with_points():
                 new_points = np.concatenate((new_points, mob.get_points()), axis=0)
-            if not np.all(new_points == old_points):
+            if not np.array_equal(new_points, old_points):
                 self.refresh_triangulation()
                 self.refresh_unit_normal()
 
