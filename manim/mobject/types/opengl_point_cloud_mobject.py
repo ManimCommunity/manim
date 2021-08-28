@@ -68,7 +68,7 @@ class OpenGLPMobject(OpenGLMobject):
             def thin_func():
                 return np.arange(0, num_points, factor)
 
-            if len(mob.data["points"]) == len(mob.data["rgbas"]):
+            if len(mob.points) == len(mob.rgbas):
                 mob.set_rgba_array_direct(mob.data["rgbas"][thin_func()])
             mob.set_points(mob.data["points"][thin_func()])
 
