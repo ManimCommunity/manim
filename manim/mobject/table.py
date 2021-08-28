@@ -73,9 +73,8 @@ from ..animation.creation import *
 from ..constants import *
 from ..mobject.geometry import Line, Polygon
 from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.text_mobject import Paragraph, Text
+from ..mobject.svg.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, WHITE, YELLOW
 
@@ -472,10 +471,10 @@ class Table(VGroup):
                     self.add(table)
         """
         return VGroup(
-            *[
-                VGroup(*[row[i] for row in self.mob_table])
+            *(
+                VGroup(*(row[i] for row in self.mob_table))
                 for i in range(len(self.mob_table[0]))
-            ]
+            )
         )
 
     def get_rows(self) -> VGroup:
@@ -502,7 +501,7 @@ class Table(VGroup):
                     table.add(SurroundingRectangle(table.get_rows()[1]))
                     self.add(table)
         """
-        return VGroup(*[VGroup(*row) for row in self.mob_table])
+        return VGroup(*(VGroup(*row) for row in self.mob_table))
 
     def set_column_colors(self, *colors: Iterable[Color]) -> "Table":
         """Set individual colors for each column of the table.

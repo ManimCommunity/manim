@@ -74,9 +74,9 @@ def split_string_list_to_isolate_substrings(string_list, *substrings_to_isolate)
     """
     return list(
         it.chain(
-            *[
+            *(
                 split_string_to_isolate_substrings(s, *substrings_to_isolate)
                 for s in string_list
-            ]
+            )
         )
     )

@@ -202,7 +202,7 @@ class ManimDirective(Directive):
             ".. code-block:: python",
             "",
             "    from manim import *\n",
-            *["    " + line for line in self.content],
+            *("    " + line for line in self.content),
         ]
         source_block = "\n".join(source_block)
 
@@ -286,7 +286,7 @@ def _write_rendering_stats(scene_name, run_time, file_name):
     with open(rendering_times_file_path, "a") as file:
         csv.writer(file).writerow(
             [
-                re.sub("^(reference\/)|(manim\.)", "", file_name),
+                re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
                 "%.3f" % run_time,
             ]
@@ -302,7 +302,7 @@ def _log_rendering_times(*args):
 
             print("\nRendering Summary\n-----------------\n")
 
-            max_file_length = max([len(row[0]) for row in data])
+            max_file_length = max(len(row[0]) for row in data)
             for key, group in it.groupby(data, key=lambda row: row[0]):
                 key = key.ljust(max_file_length + 1, ".")
                 group = list(group)
@@ -310,7 +310,7 @@ def _log_rendering_times(*args):
                     row = group[0]
                     print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
                     continue
-                time_sum = sum([float(row[2]) for row in group])
+                time_sum = sum(float(row[2]) for row in group)
                 print(
                     f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES"
                 )
