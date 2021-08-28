@@ -1,4 +1,4 @@
-__all__ = ["OpenGLPMObject", "OpenGLPGroup", "OpenGLPMPoint"]
+__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
 import moderngl
 import numpy as np
@@ -10,7 +10,7 @@ from ...utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
 from ...utils.iterables import resize_with_interpolation
 
 
-class OpenGLPMObject(OpenGLMobject):
+class OpenGLPMobject(OpenGLMobject):
     shader_folder = "true_dot"
     # Scale for consistency with cairo units
     OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
@@ -33,7 +33,7 @@ class OpenGLPMObject(OpenGLMobject):
     def init_uniforms(self):
         super().init_uniforms()
         self.uniforms["point_radius"] = (
-            self.stroke_width * OpenGLPMObject.OPENGL_POINT_RADIUS_SCALE_FACTOR
+            self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
     def get_array_attrs(self):
@@ -64,7 +64,10 @@ class OpenGLPMObject(OpenGLMobject):
         """
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
-            thin_func = lambda: np.arange(0, num_points, factor)
+
+            def thin_func():
+                return np.arange(0, num_points, factor)
+
             if len(mob.data["points"]) == len(mob.data["rgbas"]):
                 mob.set_rgba_array_direct(mob.data["rgbas"][thin_func()])
             mob.set_points(mob.data["points"][thin_func()])
@@ -145,9 +148,9 @@ class OpenGLPMObject(OpenGLMobject):
         return shader_data
 
 
-class OpenGLPGroup(OpenGLPMObject):
+class OpenGLPGroup(OpenGLPMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, OpenGLPMObject) for m in pmobs]):
+        if not all([isinstance(m, OpenGLPMobject) for m in pmobs]):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)
@@ -158,7 +161,7 @@ class OpenGLPGroup(OpenGLPMObject):
                 mob.fade_to(color, alpha, family)
 
 
-class OpenGLPMPoint(OpenGLPMObject):
+class OpenGLPMPoint(OpenGLPMobject):
     CONFIG = {
         "color": BLACK,
     }

@@ -18,7 +18,7 @@ from ...utils.color import (
 )
 from ...utils.iterables import stretch_array_to_length
 from ..opengl_compatibility import ConvertToOpenGL
-from ..types.opengl_point_cloud_mobject import OpenGLPMObject
+from ..types.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -252,7 +252,7 @@ class PGroup(PMobject):
 
     def __init__(self, *pmobs, **kwargs):
         if not all(
-            [isinstance(m, PMobject) or isinstance(m, OpenGLPMObject) for m in pmobs]
+            [isinstance(m, PMobject) or isinstance(m, OpenGLPMobject) for m in pmobs]
         ):
             raise ValueError(
                 "All submobjects must be of type PMobject or OpenGLPMObject"

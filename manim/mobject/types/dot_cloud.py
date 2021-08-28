@@ -4,10 +4,10 @@ import numpy as np
 
 from ...constants import ORIGIN, RIGHT, UP
 from ...utils.color import YELLOW
-from .opengl_point_cloud_mobject import OpenGLPMObject
+from .opengl_point_cloud_mobject import OpenGLPMobject
 
 
-class DotCloud(OpenGLPMObject):
+class DotCloud(OpenGLPMobject):
     def __init__(
         self, color=YELLOW, stroke_width=2.0, radius=2.0, density=10, **kwargs
     ):
