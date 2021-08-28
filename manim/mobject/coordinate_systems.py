@@ -638,7 +638,8 @@ class CoordinateSystem:
                     axes = VGroup(ax_1, ax_2, ax_3)
 
                     # create the logarithmic curves
-                    def log_func(x): np.log(x)
+                    def log_func(x):
+                        return np.log(x)
 
                     # a curve without adjustments; poor interpolation.
                     curve_1 = ax_1.get_graph(log_func, color=PURE_RED)

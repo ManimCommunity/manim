@@ -94,7 +94,7 @@ def test_get_graph(scene):
 
     # create the logarithmic curves
     def log_func(x):
-        np.log(x)
+        return np.log(x)
 
     # a curve without adjustments; poor interpolation.
     curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
