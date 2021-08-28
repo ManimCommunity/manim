@@ -49,7 +49,7 @@ class OpenGLPMobject(OpenGLMobject):
         # rgbas array will have been resized with points
         if color is not None:
             if opacity is None:
-                opacity = self.data["rgbas"][-1, 3]
+                opacity = self.rgbas[-1, 3]
             new_rgbas = np.repeat([color_to_rgba(color, opacity)], len(points), axis=0)
         elif rgbas is not None:
             new_rgbas = rgbas
