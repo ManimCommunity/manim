@@ -110,6 +110,8 @@ Weight specifies the boldness of a font. You can see a list of weights in
                 g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
 
+.. _using-colors:
+
 Using Colors
 ------------
 
@@ -165,7 +167,8 @@ be an iterable of any length:
             self.add(t)
 
 You can also use :attr:`~.Text.t2g` for gradients with specific 
-characters of the text. It shares a similar syntax to :ref:`Using Colors`:
+characters of the text. It shares a similar syntax to :ref:`the
+interface for colors <using-colors>`:
 
 .. manim:: t2gExample
     :save_last_frame:
