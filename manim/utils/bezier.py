@@ -430,13 +430,16 @@ def proportions_along_bezier_curve_for_point(
                 term.append(subterm)
                 sign *= -1
             terms.append(outercoeff * sum(np.array(term)))
-
+        if all(term == 0 for term in terms):
+            # Then both Bezier curve and Point lie on the same plane.
+            # Roots will be none, but in this specific instance, we don't need to consider that.
+            continue
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
         polynom_roots = bezier_polynom.roots()
         if len(polynom_roots) > 0:
-            roots.append(polynom_roots)
+            polynom_roots = np.around(polynom_roots, int(np.log10(1 / round_to)))
+        roots.append(polynom_roots)
 
-    roots = np.around(roots, int(np.log10(1 / round_to)))
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
     roots = np.array([r.real for r in roots])
