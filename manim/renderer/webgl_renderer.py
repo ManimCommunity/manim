@@ -60,7 +60,6 @@ class WebGLRenderer:
         pass
 
 
-@dataclass
 class WebGLCamera:
     def __init__(self, use_z_index=True):
         self.use_z_index = use_z_index

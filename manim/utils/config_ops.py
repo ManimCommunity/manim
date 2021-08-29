@@ -42,7 +42,6 @@ def update_dict_recursively(current_dict, *others):
 # (and less in keeping with all other attr accesses) dict["x"]
 
 
-@dataclass
 class DictAsObject:
     def __init__(self, dictin):
         self.__dict__ = dictin

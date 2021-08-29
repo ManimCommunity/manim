@@ -6,8 +6,11 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: mixed-line-ending
+      - id: end-of-file-fixer
+      - id: check-yaml
+        name: Validate Poetry
   - repo: https://github.com/psf/black
-    rev: 21.7b0
+    rev: 21.8b0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
@@ -29,7 +32,23 @@ repos:
   - repo: https://github.com/asottile/add-trailing-comma
     rev: v2.1.0
     hooks:
-    -   id: add-trailing-comma
+      - id: add-trailing-comma
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.25.0
+    hooks:
+      - id: pyupgrade
+        name: Update code to new python versions
+        args: [--py37-plus]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.9.0  # Use the ref you want to point at
+    hooks:
+      - id: python-check-blanket-noqa
+        name: Precision flake ignores
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.2.3
+    hooks:
+      - id: yesqa
+        name: Remove unneeded flake ignores
   - repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
@@ -41,7 +60,8 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.2.3
+  - repo: https://github.com/sondrelg/pep585-upgrade
+    rev: 21d5a73ab32e847e6fd76ad6760baf244c0d6a2a
     hooks:
-    -   id: yesqa
+    - id: upgrade-type-hints
+      args: [ '--futures=true' ]
