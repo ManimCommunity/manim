@@ -1,174 +1,149 @@
 Linux
 =====
 
-The following instructions are given for different Linux distributions that use
-different package managers.  After executing the instructions corresponding to
-your distribution, go to `Certifying a clean install`_ to check whether the
-dependencies are installed correctly.  All distributions will follow the same
-instructions in `Certifying a clean install`_.
+The installation instructions depend on your particular operating
+system and package manager. If you happen to know exactly what you are doing,
+you can also simply ensure that your system has:
 
-The two necessary dependencies are cairo and ffmpeg.  LaTeX is strongly
-recommended, as it is necessary to have access to the ``Tex`` and ``MathTex`` classes.
+- a reasonably recent version of Python 3 (3.7 or above),
+- with working Cairo bindings in the form of 
+  `pycairo <https://cairographics.org/pycairo/>`__,
+- FFmpeg accessible from the command line as ``ffmpeg``,
+- and `Pango <https://pango.gnome.org>`__ headers.
 
-Ubuntu/Mint/Debian
-******************
-
-Before installing anything, make sure that your system is up to date.
+Then, installing Manim is just a matter of running:
 
 .. code-block:: bash
 
-   sudo apt update
-   sudo apt upgrade
+   pip3 install manim
 
-To install cairo:
+.. note::
 
-.. code-block:: bash
+   In light of the current efforts of migrating to rendering via OpenGL,
+   this list might be incomplete. Please `let us know 
+   <https://github.com/ManimCommunity/manim/issues/new/choose>` if you
+   ran into missing dependencies while installing.
+   
+In any case, we have also compiled instructions for several common
+combinations of operating systems and package managers below.
 
-   sudo apt install libcairo2-dev
+Required Dependencies
+---------------------
 
-To install Pango:
+apt – Ubuntu / Mint / Debian
+****************************
 
-.. code-block:: bash
-
-   sudo apt install libpango1.0-dev
-
-To install ffmpeg:
-
-.. code-block:: bash
-
-   sudo apt install ffmpeg
-
-To install LaTeX:
-(For minimal LaTeX installation, see `TinyTex Installation`_)
+To first update your sources, and then install Cairo, Pango, and FFmpeg
+simply run:
 
 .. code-block:: bash
 
-   sudo apt install texlive texlive-latex-extra texlive-fonts-extra \
-   texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+   sudo apt update 
+   sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
 
-If you don't have python3-pip installed, install it:
+If you don't have python3-pip installed, install it via:
 
 .. code-block:: bash
    
    sudo apt install python3-pip
-  
-.. note:: These instructions are also valid for other Debian-based
-          distributions or distributions that use the ``apt`` package manager.
 
-
-Fedora/CentOS/RHEL
-******************
-
-To install cairo:
+Then, to install Manim, run:
 
 .. code-block:: bash
 
-  sudo dnf install cairo-devel
+   pip3 install manim
 
-To install Pango:
+Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>`
+section.
 
-.. code-block:: bash
+dnf – Fedora / CentOS / RHEL
+****************************
 
-   sudo dnf install pango-devel
-
-To install ffmpeg, you have to add RPMfusion repository (If it's not already added). Please follow the instructions for your specific distribution in the following URL:
-
-https://rpmfusion.org/Configuration/
-
-Install ffmpeg from RPMfusion repository:
+To install Cairo and Pango:
 
 .. code-block:: bash
 
-   sudo dnf install ffmpeg
+  sudo dnf install cairo-devel pango-devel
 
-Install python development headers in order to successfully build pycairo wheel:
+In order to successfully build the ``pycairo`` wheel, you will also
+need the Python development headers:
 
 .. code-block:: bash
 
    sudo dnf install python3-devel
 
-To install LaTeX:
-(For minimal LaTeX installation, see `TinyTex Installation`_)
+FFmpeg is only available via the RPMfusion repository which you have to
+configure first – please consult https://rpmfusion.org/Configuration/ for
+instructions. Then, install FFmpeg:
 
 .. code-block:: bash
 
-   sudo dnf install texlive-scheme-medium
+   sudo dnf install ffmpeg
 
+At this point you have all required dependencies and can install
+Manim by running:
 
-Arch/Manjaro
-************
+.. code-block:: bash
 
-Before installing anything, make sure that your system is up to date.
+   pip3 install manim
+
+Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>`
+section.
+
+pacman – Arch / Manjaro
+***********************
+
+.. tip::
+
+   Thanks to *groctel*, there is a `dedicated Manim package 
+   on the AUR! <https://aur.archlinux.org/packages/manim/>`
+
+If you don't want to use the packaged version from AUR, here is what
+you need to do manually: Update your package sources, then install 
+Cairo, Pango, and FFmpeg:
 
 .. code-block:: bash
 
    sudo pacman -Syu
+   sudo pacman -S cairo pango ffmpeg
 
-To install cairo:
-
-.. code-block:: bash
-
-   sudo pacman -S cairo
-
-To install pango:
-
-.. code-block:: bash
-
-   sudo pacman -S pango
-
-To install ffmpeg:
-
-.. code-block:: bash
-
-   sudo pacman -S ffmpeg
-
-To install LaTeX:
-(For minimal LaTeX installation, see `TinyTex Installation`_)
-
-.. code-block:: bash
-
-   sudo pacman -S texlive-most
-
-If you don't have python-pip installed, install it:
+If you don't have ``python-pip`` installed, get it by running:
 
 .. code-block:: bash
    
    sudo pacman -S python-pip
 
+then simply install Manim via:
 
-.. note:: These instructions are also valid for other Arch-based
-          distributions or distributions that use the ``pacman`` package
-          manager.
+.. code-block:: bash
 
-TinyTex Installation
-********************
-
-If you do not want to install full LaTeX (~2GB), you can install TinyTex (~500MB)
-and some extra packages for a minimal LaTeX installation. This is what done for
-choco ``manim-latex`` package for Windows.
-
-Install `TinyTex`_ and make sure to add ``bin`` folder created in your home
-directory to your ``PATH``.
-
-For extra packages, see "Files > tools\chocolateyinstall.ps1" `here`_ and
-find ``tlmgr install ...`` command. Run that in terminal and
-finally ``tlmgr path add`` to add all the symlinks correctly.
-
-.. _TinyTex: https://yihui.org/tinytex/#for-other-users
-.. _here: https://community.chocolatey.org/packages/manim-latex#files
+   pip3 install manim
 
 
-Certifying a clean install
-**************************
+Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>`
+section.
 
-To check that all dependencies have been installed properly, you can execute
-the commands ``ffmpeg -version`` and ``latex``.  (If LaTeX is installed
-properly, you will be taken to a command-line program that captures your
-cursor. Press CTRL+C to exit.)
 
-.. note:: Note the LaTeX installation may take up a lot of space.  The manim
-          community developers are currently working on providing a simpler,
-          lighter LaTeX package for you to install.
+.. _linux-optional-dependencies:
 
-After making sure you have a clean install, you can go back to
-:ref:`installing-manim`.
+Optional Dependencies
+---------------------
+
+In order to make use of Manim's interface to LaTeX for, e.g., rendering
+equations, LaTeX has to be installed as well. Note that this is an optional
+dependency: if you don't intend to use LaTeX, you don't have to install it.
+
+You can use whichever LaTeX distribution you like or whichever is easiest
+to install with your package manager. Usually, 
+`TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
+care too much about disk space.
+
+Should you choose to work with some smaller TeX distribution like
+`TinyTeX <https://yihui.org/tinytex/>`__ , the full list
+of LaTeX packages which Manim interacts with in some way (a subset might
+be sufficient for your particular application) is::
+
+   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
+   fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
+   mathastext microtype ms physics preview ragged2e relsize rsfs
+   setspace standalone tipa wasy wasysym xcolor xetex xkeyval
