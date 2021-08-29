@@ -160,11 +160,7 @@ class OpenGLPGroup(OpenGLPMobject):
 
 
 class OpenGLPMPoint(OpenGLPMobject):
-    CONFIG = {
-        "color": BLACK,
-    }
-
-    def __init__(self, location=ORIGIN, stroke_width=4.0, **kwargs):
+    def __init__(self, location=ORIGIN, stroke_width=4.0, color=BLACK, **kwargs):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)
 
