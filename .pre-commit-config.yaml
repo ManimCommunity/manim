@@ -34,3 +34,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+  - repo: https://github.com/pre-commit/mirrors-mypy 
+    rev: ''
+    hooks:
+    -   id: mypy
