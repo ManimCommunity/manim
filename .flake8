@@ -9,7 +9,7 @@ statistics = True
 extend-ignore = E203, W503,
 
                 # Unused imports, wildcard imports, and unused variables
-                F401, F403, F405, F841,
+                F401, F403, F405,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
