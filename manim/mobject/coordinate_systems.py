@@ -1716,7 +1716,9 @@ class PolarPlane(Axes):
         - ``None``: Decimal labels in the interval :math:`\left[0, 1\right]`.
 
     azimuth_compact_fraction
-        If the ``azimuth_units`` choice has fractional labels, choose whether to combine the constant in a compact form :math:`\tfrac{xu}{y}` as opposed to :math:`\tfrac{x}{y}u`, where :math:`u` is the constant.
+        If the ``azimuth_units`` choice has fractional labels, choose whether to
+        combine the constant in a compact form :math:`\tfrac{xu}{y}` as opposed to
+        :math:`\tfrac{x}{y}u`, where :math:`u` is the constant.
 
     azimuth_offset
         The angle offset of the azimuth, expressed in radians.
