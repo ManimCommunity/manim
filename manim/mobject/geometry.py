@@ -1509,7 +1509,6 @@ class Arrow(Line):
     def set_stroke_width_from_length(self):
         """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
-        # import ipdb; ipdb.set_trace(context=7)
         if config.renderer == "opengl":
             self.set_stroke(
                 width=min(self.initial_stroke_width, max_ratio * self.get_length()),
