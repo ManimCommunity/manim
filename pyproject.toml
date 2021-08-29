@@ -76,6 +76,13 @@ flake8 = "^3.9.0"
 isort = "^5.8.0"
 pytest-xdist = "^2.2"
 psutil = ">=3.0"
+mypy = "^0.910"
+types-requests = "^2.25.6"
+types-protobuf = "^3.17.4"
+types-decorator = "^0.1.7"
+types-setuptools = "^57.0.2"
+types-Pillow = "^8.3.3"
+types-Pygments = "^2.9.2"
 
 
 [tool.poetry.urls]
