@@ -60,8 +60,3 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-  - repo: https://github.com/sondrelg/pep585-upgrade
-    rev: 21d5a73ab32e847e6fd76ad6760baf244c0d6a2a
-    hooks:
-    - id: upgrade-type-hints
-      args: [ '--futures=true' ]
