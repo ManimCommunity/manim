@@ -604,7 +604,7 @@ class Table(VGroup):
                 and self.col_labels is not None
                 and self.top_left_entry is None
             ):
-                index = self.col_dim * (pos[0] - 1) + pos[1] - 2
+                index = len(self.mob_table[0]) * (pos[0] - 1) + pos[1] - 2
                 return self.elements[index]
             else:
                 index = self.col_dim * (pos[0] - 1) + pos[1] - 1
