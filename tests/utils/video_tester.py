@@ -27,7 +27,7 @@ def _get_config_from_video(path_to_video):
 
 
 def _load_video_data(path_to_data):
-    with open(path_to_data, "r") as f:
+    with open(path_to_data) as f:
         return json.load(f)
 
 

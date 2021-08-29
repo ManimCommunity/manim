@@ -108,6 +108,3 @@ In order to change code in the library, it is recommended to
 install Manim in a different way. Please follow the instructions
 in our :doc:`contribution guide <contributing>` if you are
 interested in that.
-
-
-

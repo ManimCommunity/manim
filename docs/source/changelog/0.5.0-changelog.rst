@@ -304,4 +304,3 @@ Code quality improvements and similar refactors
    - `renderer` starts the animation with `scene.begin_animations` (`scene.compile_animation_data` used to do this)
    - The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later.
    - Added a bunch of cool tests thanks to mocks, and thanks to the new syntax `scene.render`
-

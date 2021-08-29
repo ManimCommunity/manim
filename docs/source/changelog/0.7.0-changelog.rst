@@ -397,5 +397,3 @@ New releases
 ------------
 
 * `#1601 <https://github.com/ManimCommunity/manim/pull/1601>`__: Preparation for v0.7.0: added changelog and bumped version number
-
-
