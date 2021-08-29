@@ -224,6 +224,7 @@ class OpenGLRenderer:
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
+        self.animation_start_time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -416,7 +417,34 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
+        if config["save_last_frame"]:
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
+
+    def get_image(self) -> Image.Image:
+        """Returns an image from the current frame. The first argument passed to image represents
+        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
+        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
+        used for the decoder tand represent the stride and orientation. 0 means there is no
+        padding expected between bytes and -1 represents the orientation and means the first
+        line of the image is the bottom line on the screen.
+
+        Returns
+        -------
+        PIL.Image
+            The PIL image of the array.
+        """
+        image = Image.frombytes(
+            "RGBA",
+            self.get_pixel_shape(),
+            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            "raw",
+            "RGBA",
+            0,
+            -1,
+        )
+        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
