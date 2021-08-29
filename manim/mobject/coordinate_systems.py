@@ -275,7 +275,8 @@ class CoordinateSystem:
         ],
         **kwargs,
     ):
-        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to access the coordinates after creation.
+        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
+        access the coordinates after creation.
 
         Parameters
         ----------
