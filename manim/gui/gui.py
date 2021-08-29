@@ -58,7 +58,8 @@ def configure_pygui(renderer, widgets, update=True):
         dpg.add_separator()
         if len(widgets) != 0:
             with dpg.collapsing_header(
-                label=f"{config['scene_names'][0]} widgets", default_open=True
+                label=f"{config['scene_names'][0]} widgets",
+                default_open=True,
             ):
                 for widget_config in widgets:
                     widget_config_copy = widget_config.copy()

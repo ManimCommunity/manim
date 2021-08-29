@@ -204,7 +204,7 @@ Some team members may have a conflict of interest and may be excluded from discu
 
 Once the team has approved the behavioral modification plans and consequences, they will communicate the recommended response to the Manim Community moderators. The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report.
 
-Moderators are required to respond with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week. 
+Moderators are required to respond with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week.
 
 In cases where the moderators disagree on the suggested resolution for a report, the Manim Community Code of Conduct team may choose to notify the Manim Community Moderators.
 

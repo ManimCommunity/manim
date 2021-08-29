@@ -89,7 +89,8 @@ class Mobject:
         super().__init_subclass__(**kwargs)
 
         cls.animation_overrides: Dict[
-            Type["Animation"], Callable[["Mobject"], "Animation"]
+            Type["Animation"],
+            Callable[["Mobject"], "Animation"],
         ] = {}
         cls._add_intrinsic_animation_overrides()
 
@@ -123,7 +124,8 @@ class Mobject:
 
     @classmethod
     def animation_override_for(
-        cls, animation_class: Type["Animation"]
+        cls,
+        animation_class: Type["Animation"],
     ) -> "Optional[Callable[[Mobject, ...], Animation]]":
         """Returns the function defining a specific animation override for this class.
 
@@ -188,7 +190,7 @@ class Mobject:
                 f"The animation {animation_class.__name__} for "
                 f"{cls.__name__} is overridden by more than one method: "
                 f"{cls.animation_overrides[animation_class].__qualname__} and "
-                f"{override_func.__qualname__}."
+                f"{override_func.__qualname__}.",
             )
 
     def init_gl_data(self):
@@ -215,7 +217,7 @@ class Mobject:
                     for mob in self.get_family()[1:]
                     if mob.has_points()
                 ),
-            ]
+            ],
         )
         if len(all_points) == 0:
             return np.zeros((3, self.dim))
@@ -763,7 +765,7 @@ class Mobject:
         """Saves an image of only this :class:`Mobject` at its position to a png
         file."""
         self.get_image().save(
-            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
+            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
 
     def copy(self: T) -> T:
@@ -860,10 +862,7 @@ class Mobject:
         :meth:`get_time_based_updaters`
 
         """
-        for updater in self.updaters:
-            if "dt" in get_parameters(updater):
-                return True
-        return False
+        return any("dt" in get_parameters(updater) for updater in self.updaters)
 
     def get_updaters(self) -> List[Updater]:
         """Return all updaters.
@@ -1355,7 +1354,11 @@ class Mobject:
     # Note, much of these are now redundant with default behavior of
     # above methods
     def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
     ):
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
@@ -1381,7 +1384,10 @@ class Mobject:
         return self
 
     def apply_points_function_about_point(
-        self, func, about_point=None, about_edge=None
+        self,
+        func,
+        about_point=None,
+        about_edge=None,
     ):
         if about_point is None:
             if about_edge is None:
@@ -1664,7 +1670,10 @@ class Mobject:
         return self
 
     def move_to(
-        self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
+        self,
+        point_or_mobject,
+        aligned_edge=ORIGIN,
+        coor_mask=np.array([1, 1, 1]),
     ):
         """Move center of the :class:`~.Mobject` to certain coordinate."""
         if isinstance(point_or_mobject, Mobject):
@@ -1683,13 +1692,19 @@ class Mobject:
             self.stretch_to_fit_height(mobject.height)
         else:
             self.rescale_to_fit(
-                mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
+                mobject.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False,
             )
         self.shift(mobject.get_center() - self.get_center())
         return self
 
     def surround(
-        self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF
+        self,
+        mobject: "Mobject",
+        dim_to_match=0,
+        stretch=False,
+        buff=MED_SMALL_BUFF,
     ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
@@ -1790,10 +1805,17 @@ class Mobject:
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         self.set_submobject_colors_by_radial_gradient(
-            center, radius, inner_color, outer_color
+            center,
+            radius,
+            inner_color,
+            outer_color,
         )
         return self
 
@@ -1811,7 +1833,11 @@ class Mobject:
         return self
 
     def set_submobject_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         if center is None:
             center = self.get_center()
@@ -1936,7 +1962,9 @@ class Mobject:
             return result
         for dim in range(self.dim):
             result[dim] = self.get_extremum_along_dim(
-                all_points, dim=dim, key=direction[dim]
+                all_points,
+                dim=dim,
+                key=direction[dim],
             )
         return result
 
@@ -2011,9 +2039,14 @@ class Mobject:
 
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return self.reduce_across_dimension(
-            np.max, np.max, dim
-        ) - self.reduce_across_dimension(np.min, np.min, dim)
+        return (
+            self.reduce_across_dimension(
+                np.max,
+                np.max,
+                dim,
+            )
+            - self.reduce_across_dimension(np.min, np.min, dim)
+        )
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2363,10 +2396,18 @@ class Mobject:
             return alignments
 
         row_alignments = init_alignments(
-            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+            row_alignments,
+            rows,
+            {"u": UP, "c": ORIGIN, "d": DOWN},
+            "row",
+            RIGHT,
         )
         col_alignments = init_alignments(
-            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+            col_alignments,
+            cols,
+            {"l": LEFT, "c": ORIGIN, "r": RIGHT},
+            "col",
+            UP,
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
@@ -2382,7 +2423,7 @@ class Mobject:
         }
         if flow_order not in mapper:
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
         flow_order = mapper[flow_order]
 
@@ -2637,7 +2678,9 @@ class Mobject:
         """
         if config.renderer == "opengl":
             self.data["points"][:] = path_func(
-                mobject1.data["points"], mobject2.data["points"], alpha
+                mobject1.data["points"],
+                mobject2.data["points"],
+                alpha,
             )
         else:
             self.points = path_func(mobject1.points, mobject2.points, alpha)
@@ -2698,13 +2741,13 @@ class Mobject:
             if len(self.data["points"]) == 0:
                 caller_name = sys._getframe(1).f_code.co_name
                 raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
+                    f"Cannot call Mobject.{caller_name} for a Mobject with no points",
                 )
         else:
             if self.has_no_points():
                 caller_name = sys._getframe(1).f_code.co_name
                 raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
+                    f"Cannot call Mobject.{caller_name} for a Mobject with no points",
                 )
 
     # About z-index
@@ -2788,7 +2831,7 @@ class _AnimationBuilder:
     def __call__(self, **kwargs):
         if self.cannot_pass_args:
             raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once"
+                "Animation arguments must be passed before accessing methods and can only be passed once",
             )
 
         self.anim_args = kwargs
@@ -2804,7 +2847,7 @@ class _AnimationBuilder:
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
                 "Method chaining is currently not supported for "
-                "overridden animations"
+                "overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):

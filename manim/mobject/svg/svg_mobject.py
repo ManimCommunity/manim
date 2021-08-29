@@ -183,7 +183,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             result += it.chain(
                 *(
                     self.get_mobjects_from(
-                        child, style, within_defs=within_defs or is_defs
+                        child,
+                        style,
+                        within_defs=within_defs or is_defs,
                     )
                     for child in element.childNodes
                 )
@@ -272,12 +274,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + ".-e"]
+            [char for char in attr if char in string.digits + ".-e"],
         )
         return float(stripped_attr)
 
     def use_to_mobjects(
-        self, use_element: MinidomElement, local_style: Dict
+        self,
+        use_element: MinidomElement,
+        local_style: Dict,
     ) -> List[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
 
@@ -543,7 +547,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 # TODO: handle rotate, skewX and skewY
                 # for now adding a warning message
                 logger.warning(
-                    "Handling of %s transform is not supported yet!", op_name
+                    "Handling of %s transform is not supported yet!",
+                    op_name,
                 )
 
     def flatten(self, input_list):

@@ -15,13 +15,13 @@ def test_SingleStringMathTex():
     assert Path(config.media_dir, "Tex", "79822967f1fa1935.svg").exists()
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # : PT006
     "text_input,length_sub",
     [("{{ a }} + {{ b }} = {{ c }}", 5), (r"\frac{1}{a+b\sqrt{2}}", 1)],
 )
 def test_double_braces_testing(text_input, length_sub):
     t1 = MathTex(text_input)
-    len(t1.submobjects) == length_sub
+    assert len(t1.submobjects) == length_sub
 
 
 def test_tex():

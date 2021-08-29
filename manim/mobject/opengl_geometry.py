@@ -219,7 +219,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.n_components,
-            )
+            ),
         )
         # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
@@ -235,7 +235,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                     start_angle + angle,
                     2 * n_components + 1,
                 )
-            ]
+            ],
         )
         theta = angle / n_components
         samples[1::2] /= np.cos(theta / 2)
@@ -541,14 +541,17 @@ class OpenGLDashedLine(OpenGLLine):
         dashed_ratio = self.dashed_ratio
         num_dashes = self.calculate_num_dashes(dashed_ratio)
         dashes = OpenGLDashedVMobject(
-            self, num_dashes=num_dashes, dashed_ratio=dashed_ratio
+            self,
+            num_dashes=num_dashes,
+            dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
     def calculate_num_dashes(self, dashed_ratio):
         return max(
-            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
+            2,
+            int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio)),
         )
 
     def get_start(self):
@@ -688,7 +691,9 @@ class OpenGLArrow(OpenGLLine):
 
     def reset_points_around_ends(self):
         self.set_points_by_ends(
-            self.get_start(), self.get_end(), path_arc=self.path_arc
+            self.get_start(),
+            self.get_end(),
+            path_arc=self.path_arc,
         )
         return self
 

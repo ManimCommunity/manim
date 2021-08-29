@@ -97,12 +97,16 @@ class PMobject(Mobject):
     # def set_color_by_gradient(self, start_color, end_color):
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(colors, len(self.points))))
+            list(map(color_to_rgba, color_gradient(colors, len(self.points)))),
         )
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
         if center is None:
@@ -133,7 +137,7 @@ class PMobject(Mobject):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr: arr[np.arange(0, num_points, factor)]
+                lambda arr: arr[np.arange(0, num_points, factor)],
             )
         return self
 
@@ -174,7 +178,7 @@ class PMobject(Mobject):
     def align_points_with_larger(self, larger_mobject):
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
-            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points())
+            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
         )
 
     def get_point_mobject(self, center=None):
@@ -189,7 +193,7 @@ class PMobject(Mobject):
                 mobject1.get_stroke_width(),
                 mobject2.get_stroke_width(),
                 alpha,
-            )
+            ),
         )
         return self
 
@@ -308,9 +312,11 @@ class PointCloudDot(Mobject1D):
                 for r in np.arange(self.epsilon, self.radius, self.epsilon)
                 # Num is equal to int(stop - start)/ (step + 1) reformulated.
                 for theta in np.linspace(
-                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                    0,
+                    2 * np.pi,
+                    num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
                 )
-            ]
+            ],
         )
 
 

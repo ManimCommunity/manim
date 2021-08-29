@@ -13,7 +13,7 @@ TemplateForFrenchCursive = TexTemplate(
 \usepackage[default]{frcursive}
 \usepackage[eulergreek,noplusnominus,noequal,nohbar,%
 nolessnomore,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -33,9 +33,9 @@ class TexFontTemplateManual(Scene):
         self.play(
             Create(
                 Tex(
-                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html"
-                ).shift(2 * DOWN)
-            )
+                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html",
+                ).shift(2 * DOWN),
+            ),
         )
         self.wait(2)
 
@@ -132,8 +132,8 @@ class TexFontTemplateLibrary(Scene):
         self.play(
             Create(
                 Tex(
-                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html"
-                ).shift(2 * DOWN)
-            )
+                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html",
+                ).shift(2 * DOWN),
+            ),
         )
         self.wait(2)

@@ -105,7 +105,7 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     reviewer_names = []
     for reviewer in reviewers:
         reviewer_names.append(
-            reviewer.name if reviewer.name is not None else reviewer.login
+            reviewer.name if reviewer.name is not None else reviewer.login,
         )
 
     return {
@@ -126,10 +126,13 @@ def get_pr_nums(lst, cur):
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
-        "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
+        "--oneline",
+        "--no-merges",
+        "--first-parent",
+        f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n"))
+        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n")),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
@@ -161,7 +164,10 @@ def get_summary(body):
     type=int,
 )
 @click.option(
-    "-o", "--outfile", type=str, help="Path and file name of the changelog output."
+    "-o",
+    "--outfile",
+    type=str,
+    help="Path and file name of the changelog output.",
 )
 def main(token, prior, tag, additional, outfile):
     """Generate Changelog/List of contributors/PRs for release.
@@ -215,8 +221,8 @@ def main(token, prior, tag, additional, outfile):
                 A total of {len(set(authors).union(set(reviewers)))} people contributed to this
                 release. People with a '+' by their names authored a patch for the first
                 time.\n
-                """
-            )
+                """,
+            ),
         )
 
         for author in authors:
@@ -228,8 +234,8 @@ def main(token, prior, tag, additional, outfile):
                 """
                 The patches included in this release have been reviewed by
                 the following contributors.\n
-                """
-            )
+                """,
+            ),
         )
 
         for reviewer in reviewers:
@@ -241,7 +247,7 @@ def main(token, prior, tag, additional, outfile):
         f.write(heading + "\n")
         f.write("=" * len(heading) + "\n\n")
         f.write(
-            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
+            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n",
         )
 
         pr_by_labels = contributions["PRs"]

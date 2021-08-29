@@ -9,7 +9,8 @@ def test_Data():
     a = OpenGLSquare().move_to(RIGHT)
     data_bb = a.data["bounding_box"]
     assert np.array_equal(
-        data_bb, np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [2.0, 1.0, 0.0]])
+        data_bb,
+        np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [2.0, 1.0, 0.0]]),
     )
 
     # test that calling the attribute equals calling it from self.data
@@ -30,7 +31,8 @@ def test_Data():
 
     data_bb = a.data["bounding_box"]
     assert np.array_equal(
-        data_bb, np.array([[0.0, -1.0, 0.0], [300.0, 300.0, 300.0], [2.0, 1.0, 0.0]])
+        data_bb,
+        np.array([[0.0, -1.0, 0.0], [300.0, 300.0, 300.0], [2.0, 1.0, 0.0]]),
     )
 
     assert np.array_equal(a.bounding_box, data_bb)

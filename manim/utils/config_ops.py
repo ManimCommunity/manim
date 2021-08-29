@@ -8,6 +8,7 @@ __all__ = [
 
 
 import itertools as it
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -41,6 +42,7 @@ def update_dict_recursively(current_dict, *others):
 # (and less in keeping with all other attr accesses) dict["x"]
 
 
+@dataclass
 class DictAsObject:
     def __init__(self, dictin):
         self.__dict__ = dictin

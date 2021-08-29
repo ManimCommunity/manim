@@ -149,7 +149,7 @@ class ParametricSurface(VGroup):
                         [u2, v2, 0],
                         [u1, v2, 0],
                         [u1, v1, 0],
-                    ]
+                    ],
                 )
                 faces.add(face)
                 face.u_index = i
@@ -226,7 +226,9 @@ class ParametricSurface(VGroup):
             pivot_max = axes.z_range[1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
-                start=pivot_min, stop=pivot_max + pivot_frequency, step=pivot_frequency
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
             )
 
         for mob in self.family_members_with_points():
@@ -243,7 +245,9 @@ class ParametricSurface(VGroup):
                         )
                         color_index = min(color_index, 1)
                         mob_color = interpolate_color(
-                            new_colors[i - 1], new_colors[i], color_index
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
                         )
                         mob.set_color(mob_color, family=False)
                         break
@@ -305,7 +309,9 @@ class Sphere(ParametricSurface):
         self.shift(center)
 
     def func(
-        self, u, v
+        self,
+        u,
+        v,
     ):  # FIXME: An attribute defined in manim.mobject.three_dimensions line 56 hides this method
         return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
 
@@ -499,7 +505,7 @@ class Cone(ParametricSurface):
                 r * np.sin(self.theta) * np.cos(phi),
                 r * np.sin(self.theta) * np.sin(phi),
                 r * np.cos(self.theta),
-            ]
+            ],
         )
 
     def _rotate_to_direction(self):

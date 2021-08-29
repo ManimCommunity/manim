@@ -409,7 +409,8 @@ def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
 
 
 def color_gradient(
-    reference_colors: Iterable[Color], length_of_output: int
+    reference_colors: Iterable[Color],
+    length_of_output: int,
 ) -> List[Color]:
     if length_of_output == 0:
         return reference_colors[0]

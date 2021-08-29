@@ -65,7 +65,7 @@ class OpenGLSphere(OpenGLSurface):
 
     def uv_func(self, u, v):
         return self.radius * np.array(
-            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
+            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
         )
 
 

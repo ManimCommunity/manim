@@ -41,7 +41,7 @@ def get_plane_mesh(context):
             [-1, 0, -1, 1],
             [1, 0, -1, 1],
             [1, 0, 1, 1],
-        ]
+        ],
     )
     attributes["in_color"] = np.array(
         [
@@ -66,7 +66,7 @@ def get_plane_mesh(context):
             [0, 0, 1, 1],
             [0, 0, 1, 1],
             [0, 0, 1, 1],
-        ]
+        ],
     )
     return Mesh(shader, attributes)
 
@@ -76,7 +76,9 @@ class TextTest(Scene):
         import string
 
         text = OpenGLText(
-            string.ascii_lowercase, stroke_width=4, stroke_color=BLUE
+            string.ascii_lowercase,
+            stroke_width=4,
+            stroke_color=BLUE,
         ).scale(2)
         text2 = (
             OpenGLText(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
@@ -97,7 +99,8 @@ class GuiTest(Scene):
 
         def update_mesh(mesh, dt):
             mesh.model_matrix = np.matmul(
-                opengl.rotation_matrix(z=dt), mesh.model_matrix
+                opengl.rotation_matrix(z=dt),
+                mesh.model_matrix,
             )
 
         mesh.add_updater(update_mesh)
@@ -126,7 +129,7 @@ class GuiTest2(Scene):
                 "min_value": 0,
                 "max_value": 1,
                 "default_value": 1,
-            }
+            },
         )
 
         self.interactive_embed()
@@ -147,7 +150,8 @@ class ThreeDMobjectTest(Scene):
 
         def update_mesh(mesh, dt):
             mesh.model_matrix = np.matmul(
-                opengl.rotation_matrix(z=dt), mesh.model_matrix
+                opengl.rotation_matrix(z=dt),
+                mesh.model_matrix,
             )
 
         mesh.add_updater(update_mesh)
@@ -159,7 +163,8 @@ class NamedFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
         surface.shader.set_uniform(
-            "u_resolution", (config["pixel_width"], config["pixel_height"], 0.0)
+            "u_resolution",
+            (config["pixel_width"], config["pixel_height"], 0.0),
         )
         surface.shader.set_uniform("u_time", 0)
         self.add(surface)
@@ -221,7 +226,8 @@ class InlineFullScreenQuad(Scene):
             """,
         )
         surface.shader.set_uniform(
-            "u_resolution", (config["pixel_width"], config["pixel_height"])
+            "u_resolution",
+            (config["pixel_width"], config["pixel_height"]),
         )
         shader_time = 0
 
@@ -324,7 +330,8 @@ class InlineShaderExample(Scene):
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
+            "u_projection_matrix",
+            opengl.orthographic_projection_matrix(),
         )
 
         attributes = np.zeros(
@@ -342,7 +349,7 @@ class InlineShaderExample(Scene):
                 [-1, -1, 0, 1],
                 [1, -1, 0, 1],
                 [1, 1, 0, 1],
-            ]
+            ],
         )
         attributes["in_color"] = np.array(
             [
@@ -352,7 +359,7 @@ class InlineShaderExample(Scene):
                 [0, 0, 1, 1],
                 [0, 0, 1, 1],
                 [0, 0, 1, 1],
-            ]
+            ],
         )
         mesh = Mesh(shader, attributes)
         self.add(mesh)
@@ -369,7 +376,8 @@ class NamedShaderExample(Scene):
         view_matrix = self.camera.get_view_matrix()
         shader.set_uniform("u_model_view_matrix", view_matrix)
         shader.set_uniform(
-            "u_projection_matrix", opengl.perspective_projection_matrix()
+            "u_projection_matrix",
+            opengl.perspective_projection_matrix(),
         )
         attributes = np.zeros(
             6,
@@ -385,7 +393,7 @@ class NamedShaderExample(Scene):
                 [-1, -1, 0, 1],
                 [1, -1, 0, 1],
                 [1, 1, 0, 1],
-            ]
+            ],
         )
         mesh = Mesh(shader, attributes)
         self.add(mesh)

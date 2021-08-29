@@ -90,12 +90,14 @@ def quaternion_mult(
                 w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
                 w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
                 w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ]
+            ],
         )
 
 
 def quaternion_from_angle_axis(
-    angle: float, axis: np.ndarray, axis_normalized: bool = False
+    angle: float,
+    axis: np.ndarray,
+    axis_normalized: bool = False,
 ) -> List[float]:
     """Gets a quaternion from an angle and an axis.
     For more information, check `this Wikipedia page
@@ -252,7 +254,9 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
 
 
 def rotation_matrix(
-    angle: float, axis: np.ndarray, homogeneous: bool = False
+    angle: float,
+    axis: np.ndarray,
+    homogeneous: bool = False,
 ) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
@@ -308,7 +312,7 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     else:
         theta = 0
     phi_down = np.array(
-        [[np.cos(phi), 0, np.sin(phi)], [0, 1, 0], [-np.sin(phi), 0, np.cos(phi)]]
+        [[np.cos(phi), 0, np.sin(phi)], [0, 1, 0], [-np.sin(phi), 0, np.cos(phi)]],
     )
     return np.dot(rotation_about_z(theta), phi_down)
 
@@ -533,7 +537,8 @@ def center_of_mass(points: Sequence[float]) -> np.ndarray:
 
 
 def midpoint(
-    point1: Sequence[float], point2: Sequence[float]
+    point1: Sequence[float],
+    point2: Sequence[float],
 ) -> Union[float, np.ndarray]:
     """Gets the midpoint of two points.
 
@@ -695,7 +700,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
                     # used to draw some connection
                     lambda i: i not in loop_connections,
                     it.chain(*ring_group),
-                )
+                ),
             )
             for ring_group in (attached_rings, detached_rings)
         )
@@ -763,12 +768,13 @@ def spherical_to_cartesian(r, theta, phi):
             r * np.cos(phi) * np.sin(theta),
             r * np.sin(phi) * np.sin(theta),
             r * np.cos(theta),
-        ]
+        ],
     )
 
 
 def perpendicular_bisector(
-    line: Sequence[np.ndarray], norm_vector=OUT
+    line: Sequence[np.ndarray],
+    norm_vector=OUT,
 ) -> Sequence[np.ndarray]:
     """Returns a list of two points that correspond
     to the ends of the perpendicular bisector of the

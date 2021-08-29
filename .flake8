@@ -4,6 +4,7 @@ exclude = ./.*,manim/grpc/gen/*
 max-complexity = 35
 max-line-length = 211
 statistics = True
+
                 # Black Compatibility
 extend-ignore = E203, W503,
 
@@ -14,7 +15,16 @@ extend-ignore = E203, W503,
                 A001, A002, A003,
 
                 # Plug-in: flake8-bugbear
-                B006, B007, B008, B009, B010, B011, B015,
+                B006, B008, B009, B010,
+
+                # Plug-in: flake8-simplify
+                SIM105, SIM106, SIM119,
+
+                # Plug-in: flake8-comprehensions
+                C408,
+
+                # Plug-in: flake8-pytest-style
+                PT001, PT004, PT006, PT011, PT018, PT022, PT023,
 
                 # Plug-in: flake8-docstrings
                 D100, D101, D102, D103, D104, D105, D106, D107,
@@ -25,3 +35,5 @@ extend-ignore = E203, W503,
                 # Plug-in: flake8-rst-docstrings
                 RST201, RST203, RST205, RST210, RST212, RST213, RST215,
                 RST301, RST303, RST304,
+
+# I believe B009 and B010 can be removed but I don't want to break things
