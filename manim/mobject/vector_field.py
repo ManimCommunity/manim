@@ -28,6 +28,7 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
+from ..utils.deprecation import deprecated_params
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
@@ -455,6 +456,12 @@ class ArrowVectorField(VectorField):
 
     """
 
+    @deprecated_params(
+        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Please use x_range and y_range instead.",
+    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -474,22 +481,13 @@ class ArrowVectorField(VectorField):
         vector_config: Optional[dict] = None,
         **kwargs
     ):
-        super().__init__(
-            func,
-            color,
-            color_scheme,
-            min_color_scheme_value,
-            max_color_scheme_value,
-            colors,
-            **kwargs,
-        )
         self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
+            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
+            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
         ]
         self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
+            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
+            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -504,7 +502,24 @@ class ArrowVectorField(VectorField):
                 self.ranges[i] += [0.5]
             self.ranges[i][1] += self.ranges[i][2]
 
+        if "delta_x" in kwargs:
+            self.ranges[0][2] = kwargs.pop("delta_x")
+            self.ranges[0][1] += self.ranges[0][2] - 0.5
+        if "delta_y" in kwargs:
+            self.ranges[1][2] = kwargs.pop("delta_y")
+            self.ranges[1][1] += self.ranges[1][2] - 0.5
+
         self.x_range, self.y_range, self.z_range = self.ranges
+
+        super().__init__(
+            func,
+            color,
+            color_scheme,
+            min_color_scheme_value,
+            max_color_scheme_value,
+            colors,
+            **kwargs,
+        )
 
         self.length_func = length_func
         self.opacity = opacity
@@ -626,6 +641,12 @@ class StreamLines(VectorField):
 
     """
 
+    @deprecated_params(
+        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Please use x_range and y_range instead.",
+    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -651,22 +672,13 @@ class StreamLines(VectorField):
         opacity=1,
         **kwargs
     ):
-        super().__init__(
-            func,
-            color,
-            color_scheme,
-            min_color_scheme_value,
-            max_color_scheme_value,
-            colors,
-            **kwargs,
-        )
         self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
+            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
+            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
         ]
         self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
+            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
+            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -681,7 +693,24 @@ class StreamLines(VectorField):
                 self.ranges[i] += [0.5]
             self.ranges[i][1] += self.ranges[i][2]
 
+        if "delta_x" in kwargs:
+            self.ranges[0][2] = kwargs.pop("delta_x")
+            self.ranges[0][1] += self.ranges[0][2] - 0.5
+        if "delta_y" in kwargs:
+            self.ranges[1][2] = kwargs.pop("delta_y")
+            self.ranges[1][1] += self.ranges[1][2] - 0.5
+
         self.x_range, self.y_range, self.z_range = self.ranges
+
+        super().__init__(
+            func,
+            color,
+            color_scheme,
+            min_color_scheme_value,
+            max_color_scheme_value,
+            colors,
+            **kwargs,
+        )
 
         self.noise_factor = (
             noise_factor if noise_factor is not None else self.y_range[2] / 2
