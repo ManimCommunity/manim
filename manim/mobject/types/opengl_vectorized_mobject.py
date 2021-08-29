@@ -1,13 +1,10 @@
 import itertools as it
 import operator as op
-import pathlib
-import typing
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Tuple, Union
+from typing import Callable, Iterable, Optional, Tuple
 
 import moderngl
 import numpy as np
-from PIL import Image
 
 from ... import config
 from ...constants import *
@@ -23,7 +20,6 @@ from ...utils.bezier import (
 from ...utils.color import *
 from ...utils.config_ops import _Data
 from ...utils.deprecation import deprecated_params
-from ...utils.images import get_full_raster_image_path
 from ...utils.iterables import listify, make_even, resize_with_interpolation
 from ...utils.space_ops import (
     angle_between_vectors,
@@ -303,7 +299,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_fill_color()
 
     def has_stroke(self):
-        return any(self.get_stroke_widths()) and self.get_stroke_opacities().any()
+        return any(self.get_stroke_widths()) and any(self.get_stroke_opacities())
 
     def has_fill(self):
         return any(self.get_fill_opacities())

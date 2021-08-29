@@ -709,9 +709,10 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                min_color_scheme_value, max_color_scheme_value
-            )
+            if config["renderer"] == "opengl":
+                self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
+                    min_color_scheme_value, max_color_scheme_value
+                )
         for point in start_points:
             points = [point]
             for step in range(max_steps):
@@ -731,15 +732,16 @@ class StreamLines(VectorField):
             else:
                 if config["renderer"] == "opengl":
                     # scaled for compatibility with cairo
-                    line.set_stroke(width=line.get_stroke_width() / 2.0)
+                    line.set_stroke(width=line.get_stroke_width() / 4.0)
                     norms = [
                         self.get_norm(self.func(point)) for point in line.get_points()
                     ]
-                    line.set_rgba_array_direct(self.values_to_rgbas(norms, 1))
+                    line.set_rgba_array_direct(
+                        self.values_to_rgbas(norms, self.stroke_opacity)
+                    )
                 else:
                     line.color_using_background_image(self.background_img)
-            if config["renderer"] != "opengl":
-                line.set_stroke(width=self.stroke_width, opacity=opacity)
+                    line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
 
