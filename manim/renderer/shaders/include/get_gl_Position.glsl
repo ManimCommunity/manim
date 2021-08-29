@@ -15,13 +15,6 @@ vec4 get_gl_Position(vec3 point){
     if(!bool(is_fixed_in_frame)){
         result.x *= 2.0 / frame_shape.x;
         result.y *= 2.0 / frame_shape.y;
-        float psf = perspective_scale_factor(result.z, focal_distance);
-        if (psf > 0){
-            result.xy *= psf;
-            // TODO, what's the better way to do this?
-            // This is to keep vertices too far out of frame from getting cut.
-            result.z *= 0.01;
-        }
     } else{
         result.x *= 2.0 / DEFAULT_FRAME_SHAPE.x;
         result.y *= 2.0 / DEFAULT_FRAME_SHAPE.y;

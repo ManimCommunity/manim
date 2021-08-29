@@ -3,6 +3,9 @@
 #include ../include/camera_uniform_declarations.glsl
 
 uniform sampler2D Texture;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 in vec3 point;
 in vec2 im_coords;

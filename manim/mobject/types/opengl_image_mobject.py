@@ -16,24 +16,45 @@ class OpenGLImageMobject(OpenGLMobject):
     ]
     shader_folder = "image"
 
-    def __init__(self, filename, opacity=1, height=4, **kwargs):
-        self.img_height = height
-
+    def __init__(self, filename, width=None, height=None, opacity=1, **kwargs):
         path = get_full_raster_image_path(filename)
         self.image = Image.open(path)
-        super().__init__(opacity=opacity, texture_paths={"Texture": path}, **kwargs)
+        self.size = self.image.size
+        if width is None and height is None:
+            width = self.size[0] / self.size[1]
+            height = 1
+        if height is None:
+            height = width * self.size[1] / self.size[0]
+        if width is None:
+            width = height * self.size[0] / self.size[1]
+
+        self.tmp_width = width
+        self.tmp_height = height
+        super().__init__(
+            opacity=opacity,
+            texture_paths={"Texture": path},
+            width=width,
+            height=height,
+            **kwargs
+        )
 
     def init_data(self):
+        w = self.tmp_width / 2
+        h = self.tmp_height / 2
         self.data = {
-            "points": np.array([UL, DL, UR, UR, DR, DL]),
+            "points": np.array(
+                [
+                    UP * h + LEFT * w,
+                    DOWN * h + LEFT * w,
+                    UP * h + RIGHT * w,
+                    UP * h + RIGHT * w,
+                    DOWN * h + RIGHT * w,
+                    DOWN * h + LEFT * w,
+                ]
+            ),
             "im_coords": np.array([(0, 0), (0, 1), (1, 0), (1, 0), (1, 1), (0, 1)]),
             "opacity": np.array([[self.opacity]], dtype=np.float32),
         }
-
-    def init_points(self):
-        size = self.image.size
-        self.width = 2 * size[0] / size[1]
-        self.height = self.img_height
 
     def set_opacity(self, opacity, recurse=True):
         for mob in self.get_family(recurse):
