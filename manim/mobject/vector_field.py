@@ -766,9 +766,10 @@ class StreamLines(VectorField):
             if self.single_color:
                 line.set_stroke(self.color)
             else:
-                # line.set_stroke([color_func(p) for p in line.get_anchors()])
-                # TODO use color_from_background_image
-                line.color_using_background_image(self.background_img)
+                if np.any(self.z_range[:2] != 0):
+                    line.set_stroke([self.pos_to_color(p) for p in line.get_anchors()])
+                else:
+                    line.color_using_background_image(self.background_img)
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
