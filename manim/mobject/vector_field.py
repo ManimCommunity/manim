@@ -732,7 +732,7 @@ class StreamLines(VectorField):
             else:
                 if config["renderer"] == "opengl":
                     # scaled for compatibility with cairo
-                    line.set_stroke(width=line.get_stroke_width() / 4.0)
+                    line.set_stroke(width=self.stroke_width / 4.0)
                     norms = [
                         self.get_norm(self.func(point)) for point in line.get_points()
                     ]
