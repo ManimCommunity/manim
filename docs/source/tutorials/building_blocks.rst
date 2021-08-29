@@ -385,9 +385,9 @@ and :meth:`~.Mobject.get_start`. Here is an example of some important coordinate
             point_start= a.get_start()
             point_end  = a.get_end()
             point_center = a.get_center()
-            self.add(Text(f"a.get_start() = {np.round(point_start,2).tolist()}").scale(0.5).to_edge(UR).set_color(YELLOW))
-            self.add(Text(f"a.get_end() = {np.round(point_end,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN).set_color(RED))
-            self.add(Text(f"a.get_center() = {np.round(point_center,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN).set_color(BLUE))
+            self.add(Text(f"a.get_start() = {np.round(point_start,2).tolist()}", font_size=24).to_edge(UR).set_color(YELLOW))
+            self.add(Text(f"a.get_end() = {np.round(point_end,2).tolist()}", font_size=24).next_to(self.mobjects[-1],DOWN).set_color(RED))
+            self.add(Text(f"a.get_center() = {np.round(point_center,2).tolist()}", font_size=24).next_to(self.mobjects[-1],DOWN).set_color(BLUE))
 
             self.add(Dot(a.get_start()).set_color(YELLOW).scale(2))
             self.add(Dot(a.get_end()).set_color(RED).scale(2))

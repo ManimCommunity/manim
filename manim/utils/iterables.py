@@ -82,7 +82,7 @@ def all_elements_are_instances(iterable, Class):
 
 
 def adjacent_n_tuples(objects, n):
-    return zip(*[[*objects[k:], *objects[:k]] for k in range(n)])
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
 def adjacent_pairs(objects):
