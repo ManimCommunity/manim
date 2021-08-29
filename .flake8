@@ -9,7 +9,7 @@ statistics = True
 extend-ignore = E203, W503,
 
                 # Unused imports, wildcard imports, and unused variables
-                F401, F403, F405,
+                F401, F403, F405, F841,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
@@ -36,4 +36,4 @@ extend-ignore = E203, W503,
                 RST201, RST203, RST205, RST210, RST212, RST213, RST215,
                 RST301, RST303, RST304,
 
-# I believe B009 and B010 can be removed but I don't want to break things
+# I believe B009, B010, and F841 can be removed but I don't want to break things
