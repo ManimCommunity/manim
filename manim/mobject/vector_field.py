@@ -717,7 +717,7 @@ class StreamLines(VectorField):
                 if outside_box(new_point):
                     break
                 points.append(new_point)
-            step = len(max_steps)
+            step = max_steps
             if not step:
                 continue
             line = VMobject()
