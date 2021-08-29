@@ -26,9 +26,9 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
+from ..utils.deprecation import deprecated_params
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
-from ..utils.deprecation import deprecated_params
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
