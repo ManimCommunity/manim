@@ -321,87 +321,11 @@ class OpenGLVMobject(OpenGLMobject):
     def get_flat_stroke(self):
         return self.flat_stroke
 
-    def color_using_background_image(self, background_image: Union[Image.Image, str]):
-        self.background_image = background_image
-        self.set_color(WHITE)
-        rgbas = self.get_background_array(background_image)
-        for submob in self.submobjects:
-            submob.color_using_background_image(background_image)
-        return self
-
     def set_rgba_array_direct(
         self, rgbas: np.ndarray, name="stroke_rgba", recurse=True
     ):
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
-
-    def get_background_array(self, image: Union[Image.Image, pathlib.Path, str]):
-        """Gets the background array that has the passed file_name.
-
-        Parameters
-        ----------
-        image
-            The background image or its file name.
-
-        Returns
-        -------
-        np.ndarray
-            The pixel array of the image.
-        """
-        if isinstance(image, str):
-            full_path = get_full_raster_image_path(image)
-            image = Image.open(full_path)
-        back_array = np.array(image)
-
-        pixel_array = self.get_points()
-        if not np.all(pixel_array.shape == back_array.shape):
-            back_array = self.resize_background_array_to_match(back_array, pixel_array)
-        return back_array
-
-    def resize_background_array_to_match(self, background_array, pixel_array):
-        """Resizes the background array to match the passed pixel array.
-
-        Parameters
-        ----------
-        background_array : np.array
-            The prospective pixel array.
-        pixel_array : np.array
-            The pixel array whose width and height should be matched.
-
-        Returns
-        -------
-        np.array
-            The resized background array.
-        """
-        width = config["pixel_width"]
-        height = config["pixel_height"]
-        return self.resize_background_array(background_array, width, height, "RGBA")
-
-    def resize_background_array(
-        self, background_array, new_width, new_height, mode="RGBA"
-    ):
-        """Resizes the pixel array representing the background.
-
-        Parameters
-        ----------
-        background_array : np.array
-            The pixel
-        new_width : int, float
-            The new width of the background
-        new_height : int, float
-            The new height of the background
-        mode : str, optional
-            The PIL image mode, by default "RGBA"
-
-        Returns
-        -------
-        np.array
-            The numpy pixel array of the resized background.
-        """
-        image = Image.fromarray(background_array)
-        image = image.convert(mode)
-        resized_image = image.resize((new_width, new_height))
-        return np.array(resized_image)
 
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
