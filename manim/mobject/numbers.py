@@ -102,7 +102,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        # 1.0 / 0.5 * 48 --> font_size of 24.
         return self.height / self.initial_height * 48
 
     @font_size.setter

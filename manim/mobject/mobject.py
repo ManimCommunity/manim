@@ -343,6 +343,7 @@ class Mobject:
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
+
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """

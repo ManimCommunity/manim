@@ -121,7 +121,7 @@ class SingleStringMathTex(SVGMobject):
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        return self._font_size
+        return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
 
     @font_size.setter
     def font_size(self, font_val):
@@ -139,7 +139,6 @@ class SingleStringMathTex(SVGMobject):
                 * self.initial_height
                 / self.height
             )
-            self._font_size = font_val
 
     def get_modified_expression(self, tex_string):
         result = tex_string

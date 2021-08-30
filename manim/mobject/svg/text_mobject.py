@@ -535,14 +535,14 @@ class Text(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return self.height / self.initial_height / TEXT_MOB_SCALE_FACTOR * 2.4
 
     @font_size.setter
     def font_size(self, font_val):
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         else:
-            # multiply by (1/2.4) because it makes it work.
+            # multiply by (1/2.4) because it makes it work, not sure why.
             self.scale(
                 TEXT_MOB_SCALE_FACTOR
                 * (1 / 2.4)
@@ -1153,7 +1153,7 @@ class MarkupText(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return self.height / self.initial_height / TEXT_MOB_SCALE_FACTOR * 2.4
 
     @font_size.setter
     def font_size(self, font_val):
