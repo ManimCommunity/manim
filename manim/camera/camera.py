@@ -732,10 +732,8 @@ class Camera:
         ctx.set_line_width(
             width
             * self.cairo_line_width_multiple
-            *
-            # This ensures lines have constant width
-            # as you zoom in on them.
-            (self.frame_width / self.frame_width)
+            # This ensures lines have constant width as you zoom in on them.
+            * (self.frame_width / self.frame_width)
         )
         ctx.stroke_preserve()
         return self
