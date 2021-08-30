@@ -115,7 +115,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
             def construct(self):
                 path = NumberPlane().get_graph(lambda x: np.sin(x))
                 a = Dot(path.get_start())
-                b = TracedPath(a.get_center, dissipating_time=1.5, stroke_opacity=[1, 0])
+                b = TracedPath(a.get_center, dissipating_time=0.5, stroke_opacity=[1, 0])
                 self.add(a, b)
                 self.play(
                     MoveAlongPath(a, path),
@@ -150,7 +150,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self.add_line_to(new_point)
         if self.time:
             self.t += dt
-            if self.t > self.time:
+            if self.t - 1 > self.time:
                 if config["renderer"] == "opengl":
                     nppcc = self.n_points_per_curve
                 else:
