@@ -139,8 +139,8 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func
-        self.time = dissipating_time
-        self.t = 1 if self.time else None
+        self.dissipating_time = dissipating_time
+        self.time = 1 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
     def update_path(self, mob, dt):
@@ -148,9 +148,9 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         if not self.has_points():
             self.start_new_path(new_point)
         self.add_line_to(new_point)
-        if self.time:
-            self.t += dt
-            if self.t - 1 > self.time:
+        if self.dissipating_time:
+            self.time += dt
+            if self.time - 1 > self.dissipating_time:
                 if config["renderer"] == "opengl":
                     nppcc = self.n_points_per_curve
                 else:
