@@ -4,12 +4,9 @@
 __all__ = ["print_family", "index_labels"]
 
 
-from os import replace
-
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
-from .deprecation import deprecated
 
 
 def print_family(mobject, n_tabs=0):

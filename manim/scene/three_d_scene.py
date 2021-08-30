@@ -406,11 +406,11 @@ class SpecialThreeDScene(ThreeDScene):
         Parameters
         ----------
         **kwargs
-            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
+            Any valid parameter of :class:`~.Sphere` or :class:`~.Surface`.
 
         Returns
         -------
-        :class:`.Sphere`
+        :class:`~.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)

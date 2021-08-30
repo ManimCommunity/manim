@@ -51,32 +51,3 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             path = OpenGLVMobject()
             path.set_points_smoothly(nudged_points[vi::full_nv])
             self.add(path)
-
-
-class OpenGLSphere(OpenGLSurface):
-    def __init__(self, resolution=None, radius=1, u_range=None, v_range=None, **kwargs):
-        resolution = resolution if resolution is not None else (101, 51)
-        u_range = u_range if u_range is not None else (0, TAU)
-        v_range = v_range if v_range is not None else (0, PI)
-        self.radius = radius
-        super().__init__(
-            resolution=resolution, u_range=u_range, v_range=v_range, **kwargs
-        )
-
-    def uv_func(self, u, v):
-        return self.radius * np.array(
-            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
-        )
-
-
-class OpenGLTorus(OpenGLSurface):
-    def __init__(self, u_range=None, v_range=None, r1=3, r2=1, **kwargs):
-        u_range = u_range if u_range is not None else (0, TAU)
-        v_range = v_range if v_range is not None else (0, TAU)
-        self.r1 = r1
-        self.r2 = r2
-        super().__init__(u_range=u_range, v_range=v_range, **kwargs)
-
-    def uv_func(self, u, v):
-        P = np.array([math.cos(u), math.sin(u), 0])
-        return (self.r1 - self.r2 * math.cos(v)) * P - math.sin(v) * OUT
