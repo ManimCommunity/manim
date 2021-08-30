@@ -461,8 +461,9 @@ class ArcBetweenPoints(Arc):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
+        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(start_point, end_point, **kwargs)
-        self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
+        self.add_tip(tip_shape=tip_shape)
 
 
 class CurvedDoubleArrow(CurvedArrow):
