@@ -804,18 +804,17 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        if self.updating_speed == 0:
-            return self
-        for updater in self.updaters:
-            parameters = get_parameters(updater)
-            if "dt" in parameters:
-                updater(self, rate_func(self.updating_speed * dt))
-                if 0 < self.updating_speed < 1:
-                    self.updating_speed = np.clip(
-                        self.updating_speed + self.updating_variation, 0, 1
-                    )
-            else:
-                updater(self)
+        if self.updating_speed != 0:
+            for updater in self.updaters:
+                parameters = get_parameters(updater)
+                if "dt" in parameters:
+                    updater(self, rate_func(self.updating_speed * dt))
+                    if 0 < self.updating_speed < 1:
+                        self.updating_speed = np.clip(
+                            self.updating_speed + self.updating_variation, 0, 1
+                        )
+                else:
+                    updater(self)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive, rate_func)
@@ -1072,7 +1071,6 @@ class Mobject:
                 submob.suspend_updating(
                     recursive=recursive, run_time=run_time, rate_func=rate_func
                 )
-            self.update(dt=0, recursive=recursive, rate_func=rate_func)
         return self
 
     def resume_updating(
@@ -1120,7 +1118,6 @@ class Mobject:
                 submob.resume_updating(
                     recursive=recursive, run_time=run_time, rate_func=rate_func
                 )
-            self.update(dt=0, recursive=recursive, rate_func=rate_func)
         return self
 
     # Transforming operations
