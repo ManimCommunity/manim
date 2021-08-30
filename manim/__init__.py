@@ -2,12 +2,9 @@
 
 # flake8: noqa
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
+import pkg_resources
 
-__version__ = importlib_metadata.version(__name__)
+__version__ = pkg_resources.get_distribution(__name__).version
 
 
 import sys

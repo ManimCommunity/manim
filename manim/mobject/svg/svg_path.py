@@ -12,7 +12,6 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...utils.deprecation import deprecated
 from ..opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
 
@@ -106,7 +105,7 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
-    ## Out of range parameters
+    # Out of range parameters
     # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
     # If rx or ry are 0 then this arc is treated as a
     # straight line segment (a "lineto") joining the endpoints.
@@ -285,7 +284,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         # Keep track of the most recently completed point
         if config["renderer"] == "opengl":
-            points = self.data["points"]
+            points = self.points
         else:
             points = self.points
         start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
@@ -314,7 +313,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         elif command == "S":  # Smooth cubic
             if config["renderer"] == "opengl":
-                points = self.data["points"]
+                points = self.points
             else:
                 points = self.points
             prev_handle = start_point

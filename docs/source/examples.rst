@@ -457,8 +457,8 @@ Special Camera Settings
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
             image.height = 7
-            frame_text = Text("Frame", color=PURPLE).scale(1.4)
-            zoomed_camera_text = Text("Zoomed camera", color=RED).scale(1.4)
+            frame_text = Text("Frame", color=PURPLE, font_size=67)
+            zoomed_camera_text = Text("Zoomed camera", color=RED, font_size=67)
 
             self.add(image, dot)
             zoomed_camera = self.zoomed_camera
@@ -627,8 +627,7 @@ Advanced Projects
             self.wait()
 
             grid = NumberPlane()
-            grid_title = Tex("This is a grid")
-            grid_title.scale(1.5)
+            grid_title = Tex("This is a grid", font_size=72)
             grid_title.move_to(transform_title)
 
             self.add(grid, grid_title)  # Make sure title is on top of grid
