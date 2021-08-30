@@ -65,6 +65,7 @@ __all__ = [
     "ArrowSquareFilledTip",
 ]
 
+import itertools
 import math
 import warnings
 from typing import Iterable, Optional, Sequence
@@ -81,11 +82,10 @@ from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
-    compass_directions,
+    cartesian_to_spherical,
     line_intersection,
     normalize,
     perpendicular_bisector,
@@ -177,7 +177,18 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        angles = cartesian_to_spherical(handle - anchor)
+        tip.rotate(
+            angles[2] - PI - tip.tip_angle
+        )  # Rotates the tip along the azimuthal
+        axis = [
+            np.sin(angles[2]),
+            -np.cos(angles[2]),
+            0,
+        ]  # Obtains the perpendicular of the tip
+        tip.rotate(
+            -angles[1] + PI / 2, axis=axis
+        )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -435,7 +446,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(self, radius=radius, angle=angle, **kwargs)
+        super().__init__(radius=radius, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -450,8 +461,9 @@ class ArcBetweenPoints(Arc):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
+        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(start_point, end_point, **kwargs)
-        self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
+        self.add_tip(tip_shape=tip_shape)
 
 
 class CurvedDoubleArrow(CurvedArrow):
@@ -495,8 +507,7 @@ class Circle(Arc):
         color=RED,
         **kwargs,
     ):
-        Arc.__init__(
-            self,
+        super().__init__(
             radius=radius,
             start_angle=0,
             angle=TAU,
@@ -842,7 +853,7 @@ class AnnularSector(Arc):
         )
 
     def generate_points(self):
-        inner_arc, outer_arc = [
+        inner_arc, outer_arc = (
             Arc(
                 start_angle=self.start_angle,
                 angle=self.angle,
@@ -850,7 +861,7 @@ class AnnularSector(Arc):
                 arc_center=self.arc_center,
             )
             for radius in (self.inner_radius, self.outer_radius)
-        ]
+        )
         outer_arc.reverse_points()
         self.append_points(inner_arc.get_points())
         self.add_line_to(outer_arc.get_points()[0])
@@ -1469,7 +1480,7 @@ class Arrow(Line):
         --------
         ::
 
-            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            >>> np.round(Arrow().get_normal_vector()) + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
         """
 
@@ -1726,7 +1737,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             self.start_new_path(first_vertex)
             self.add_points_as_corners(
-                [*[np.array(vertex) for vertex in vertices], first_vertex]
+                [*(np.array(vertex) for vertex in vertices), first_vertex]
             )
 
     def get_vertices(self) -> np.ndarray:
@@ -2204,11 +2215,11 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"radius": radius}, len(point_pairs))
             else:
-                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = [arc_config for pair in point_pairs]
+            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config
@@ -2441,28 +2452,28 @@ class Rectangle(Polygon):
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
-                *[
+                *(
                     Line(
                         v[1] + i * grid_xstep * RIGHT,
                         v[1] + i * grid_xstep * RIGHT + height * DOWN,
                         color=color,
                     )
                     for i in range(1, count)
-                ]
+                )
             )
             self.add(grid)
         if grid_ystep is not None:
             grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
-                *[
+                *(
                     Line(
                         v[1] + i * grid_ystep * DOWN,
                         v[1] + i * grid_ystep * DOWN + width * RIGHT,
                         color=color,
                     )
                     for i in range(1, count)
-                ]
+                )
             )
             self.add(grid)
 

@@ -114,7 +114,7 @@ def test_SurfaceColorscale(scene):
         z = y ** 2 / 2 - x ** 2 / 2
         return z
 
-    trig_plane = ParametricSurface(
+    trig_plane = Surface(
         lambda x, y: axes.c2p(x, y, param_trig(x, y)),
         resolution=(resolution_fa, resolution_fa),
         v_min=-3,

@@ -32,7 +32,7 @@ Here is a simple *Hello World* animation.
 
     class HelloWorld(Scene):
         def construct(self):
-            text = Text("Hello world").scale(3)
+            text = Text("Hello world", font_size=144)
             self.add(text)
 
 You can also use :class:`~.MarkupText` which allows the use of PangoMarkup
@@ -110,6 +110,8 @@ Weight specifies the boldness of a font. You can see a list of weights in
                 g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
 
+.. _using-colors:
+
 Using Colors
 ------------
 
@@ -161,11 +163,12 @@ be an iterable of any length:
 
     class GradientExample(Scene):
         def construct(self):
-            t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
+            t = Text("Hello", gradient=(RED, BLUE, GREEN), font_size=96)
             self.add(t)
 
 You can also use :attr:`~.Text.t2g` for gradients with specific 
-characters of the text. It shares a similar syntax to :ref:`Using Colors`:
+characters of the text. It shares a similar syntax to :ref:`the
+interface for colors <using-colors>`:
 
 .. manim:: t2gExample
     :save_last_frame:
@@ -223,8 +226,8 @@ You can disable ligatures by passing ``disable_ligatures`` to
 
     class DisableLigature(Scene):
         def construct(self):
-            li = Text("fl ligature").scale(2)
-            nli = Text("fl ligature", disable_ligatures=True).scale(2)
+            li = Text("fl ligature",font_size=96)
+            nli = Text("fl ligature", disable_ligatures=True, font_size=96)
             self.add(Group(li, nli).arrange(DOWN, buff=.8))
 
 .. _iterating-text:
@@ -242,7 +245,7 @@ For example, you can set each letter to different color by iterating it.
 
     class IterateColor(Scene):
         def construct(self):
-            text = Text("Colors").scale(2)
+            text = Text("Colors", font_size=96)
             for letter in text:
                 letter.set_color(random_bright_color())
             self.add(text)
@@ -274,7 +277,8 @@ and further references about PangoMarkup.
             text = MarkupText(
                 f'<span underline="double" underline_color="green">double green underline</span> in red text<span fgcolor="{YELLOW}"> except this</span>',
                 color=RED,
-            ).scale(0.7)
+                font_size=34
+            )
             self.add(text)
 
 .. _rendering-with-latex:
@@ -292,7 +296,7 @@ For example,
 
     class HelloLaTeX(Scene):
         def construct(self):
-            tex = Tex(r"\LaTeX").scale(3)
+            tex = Tex(r"\LaTeX", font_size=144)
             self.add(tex)
 
 .. note::
@@ -315,8 +319,8 @@ similar effect with :class:`~.Tex` by enclosing your formula with ``$`` symbols:
 
     class MathTeXDemo(Scene):
         def construct(self):
-            rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
-            rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
+            rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}", font_size=96)
+            rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$", font_size=96)
             
             self.add(VGroup(rtarrow0, rtarrow1).arrange(DOWN))
 
@@ -332,7 +336,7 @@ as the ``mathtt`` math-text type or the ``looparrowright`` arrow.
 
     class AMSLaTeX(Scene):
         def construct(self):
-            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
+            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX', font_size=144)
             self.add(tex)
 
 On the Manim side, the :class:`~.Tex` class also accepts attributes to 
@@ -345,7 +349,7 @@ color of the TeX mobject.
 
     class LaTeXAttributes(Scene):
         def construct(self):
-            tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
+            tex = Tex(r'Hello \LaTeX', color=BLUE, font_size=144)
             self.add(tex)
 
 Extra LaTeX Packages
@@ -363,7 +367,7 @@ we have to add it manually.
         def construct(self):
             myTemplate = TexTemplate()
             myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
+            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate, font_size=144)
             self.add(tex)
 
 Substrings and parts
@@ -379,7 +383,7 @@ of the ``\bigstar`` using :func:`~.set_color_by_tex`:
 
     class LaTeXSubstrings(Scene):
         def construct(self):
-            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX').scale(3)
+            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX', font_size=144)
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
@@ -412,7 +416,7 @@ may be expected. To color only ``x`` yellow, we have to do the following:
             equation.set_color_by_tex("x", YELLOW)
             self.add(equation)
 
-By setting ``substring_to_isolate`` to ``x``, we split up the
+By setting ``substrings_to_isolate`` to ``x``, we split up the
 :class:`~.MathTex` into substrings automatically and isolate the ``x`` components 
 into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
 to achieve the desired result.
@@ -438,7 +442,7 @@ ready for you to use. These templates will all work in math mode:
 
     class LaTeXMathFonts(Scene):
         def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive).scale(3)
+            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive, font_size=144)
             self.add(tex)
 
 Manim also has a :class:`~.TexTemplateLibrary` containing the TeX 
@@ -453,7 +457,7 @@ should use :class:`~.Text` instead.
 
     class LaTeXTemplateLibrary(Scene):
         def construct(self):
-            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
+            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex, font_size=144)
             self.add(tex)
 
 
@@ -469,5 +473,5 @@ when typesetting multiline formulae:
 
     class LaTeXAlignEnvironment(Scene):
         def construct(self):
-            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6').scale(2)
+            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6', font_size=96)
             self.add(tex)

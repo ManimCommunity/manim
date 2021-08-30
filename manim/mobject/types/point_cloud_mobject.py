@@ -194,7 +194,7 @@ class PMobject(Mobject):
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
-        lower_index, upper_index = [int(x * mobject.get_num_points()) for x in (a, b)]
+        lower_index, upper_index = (int(x * mobject.get_num_points()) for x in (a, b))
         for attr in self.get_array_attrs():
             full_array = getattr(mobject, attr)
             partial_array = full_array[lower_index:upper_index]
