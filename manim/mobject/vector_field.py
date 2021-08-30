@@ -9,7 +9,7 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Optional, Sequence, Tuple, Type
+from typing import Callable, Iterable, Optional, Sequence, Tuple, Type
 
 import numpy as np
 from colour import Color
@@ -366,8 +366,10 @@ class VectorField(VGroup):
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
-    def get_vectorized_rgba_gradient_function(self, min_value, max_value):
-        rgbs = np.array([color_to_rgb(c) for c in DEFAULT_SCALAR_FIELD_COLORS])
+    def get_vectorized_rgba_gradient_function(
+        self, min_value: float, max_value: float, colors: Iterable
+    ):
+        rgbs = np.array([color_to_rgb(c) for c in colors])
 
         def func(values, opacity=1):
             alphas = inverse_interpolate(min_value, max_value, np.array(values))
@@ -711,7 +713,7 @@ class StreamLines(VectorField):
             self.background_img = self.get_colored_background_image()
             if config["renderer"] == "opengl":
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                    min_color_scheme_value, max_color_scheme_value
+                    min_color_scheme_value, max_color_scheme_value, colors
                 )
         for point in start_points:
             points = [point]
@@ -736,9 +738,7 @@ class StreamLines(VectorField):
                     norms = [
                         self.get_norm(self.func(point)) for point in line.get_points()
                     ]
-                    line.set_rgba_array_direct(
-                        self.values_to_rgbas(norms, self.stroke_opacity)
-                    )
+                    line.set_rgba_array_direct(self.values_to_rgbas(norms, opacity))
                 else:
                     line.color_using_background_image(self.background_img)
                     line.set_stroke(width=self.stroke_width, opacity=opacity)
