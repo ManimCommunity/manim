@@ -151,7 +151,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         dissipating_time: Optional[float] = None,
         **kwargs
     ):
-        kwargs.pop("min_distance_to_new_point", None) # 
+        kwargs.pop("min_distance_to_new_point", None)  #
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
