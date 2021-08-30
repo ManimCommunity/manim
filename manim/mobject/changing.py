@@ -2,7 +2,10 @@
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
+from typing import Callable, Optional
+
 import numpy as np
+from colour import Color
 
 from .._config import config
 from ..constants import *
@@ -142,11 +145,11 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     )
     def __init__(
         self,
-        traced_point_func,
-        stroke_width=2,
-        stroke_color=WHITE,
         min_distance_to_new_point=0.1,
-        dissipating_time=None,
+        traced_point_func: Callable,
+        stroke_width: float = 2,
+        stroke_color: Color = WHITE,
+        dissipating_time: Optional[float] = None,
         **kwargs
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
