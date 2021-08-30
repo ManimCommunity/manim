@@ -350,7 +350,7 @@ class OpenGLText(OpenGLSVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
+                japanese = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", style=BOLD)
@@ -359,8 +359,8 @@ class OpenGLText(OpenGLSVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
@@ -871,14 +871,14 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         class MultiLanguage(Scene):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
-                chin = MarkupText(
+                japanese = MarkupText(
                     '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", style=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
-                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
-                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                chinese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, japanese, mess, russ, hin, chinese).arrange(DOWN)
                 self.add(group)
 
 
