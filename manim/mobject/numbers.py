@@ -96,13 +96,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.set_submobjects_from_number(number)
         self.init_colors()
 
-        # track the initial height to enable scaling via font_size
-        self.initial_height = self.height
-
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        return self.height / self.initial_height * 48
+        return self.height / self.initial_height * self._font_size
 
     @font_size.setter
     def font_size(self, font_val):
@@ -114,7 +111,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
             # scale to a factor of the initial height so that setting
             # font_size does not depend on current size.
-            self.scale(1 / 48 * font_val * self.initial_height / self.height)
+            self.scale(
+                1 / self._font_size * font_val * self.initial_height / self.height
+            )
 
     def set_submobjects_from_number(self, number):
         self.number = number
@@ -147,6 +146,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 self[i].shift(self[i].height * DOWN / 2)
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
+
+        # track the initial height to enable scaling via font_size
+        self.initial_height = self.height
 
         if self.include_background_rectangle:
             self.add_background_rectangle()

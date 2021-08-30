@@ -6,7 +6,7 @@ __module_test__ = "numbers"
 
 @frames_comparison(last_frame=False)
 def test_set_value_with_updaters(scene):
-    """tests that the position of the decimal updates properly"""
+    """Test that the position of the decimal updates properly"""
     decimal = DecimalNumber(
         0,
         show_ellipsis=True,

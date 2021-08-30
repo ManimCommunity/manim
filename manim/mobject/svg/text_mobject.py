@@ -535,7 +535,14 @@ class Text(SVGMobject):
 
     @property
     def font_size(self):
-        return self.height / self.initial_height / TEXT_MOB_SCALE_FACTOR * 2.4
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
@@ -550,6 +557,7 @@ class Text(SVGMobject):
                 * self.initial_height
                 / self.height
             )
+            self._font_size = 48
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -1153,7 +1161,14 @@ class MarkupText(SVGMobject):
 
     @property
     def font_size(self):
-        return self.height / self.initial_height / TEXT_MOB_SCALE_FACTOR * 2.4
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
@@ -1168,6 +1183,7 @@ class MarkupText(SVGMobject):
                 * self.initial_height
                 / self.height
             )
+            self._font_size = 48
 
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
