@@ -116,27 +116,26 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         stroke_width=2,
         stroke_color=WHITE,
         min_distance_to_new_point=0.1,
+        dissipating_time=None,
         **kwargs
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.min_distance_to_new_point = min_distance_to_new_point
         self.traced_point_func = traced_point_func
-        self.add_updater(lambda m: m.update_path())
+        self.time = dissipating_time
+        self.t = 1 if self.time else None
+        self.add_updater(self.update_path)
 
-    def update_path(self):
+    def update_path(self, mob, dt):
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)
-            self.add_line_to(new_point)
-        else:
-            # Set the end to be the new point
-            self.get_points()[-1] = new_point
-
-            # Second to last point
-            if config["renderer"] == "opengl":
-                nppcc = self.n_points_per_curve
-            else:
-                nppcc = self.n_points_per_cubic_curve
-            dist = np.linalg.norm(new_point - self.get_points()[-nppcc])
-            if dist >= self.min_distance_to_new_point:
-                self.add_line_to(new_point)
+        self.add_line_to(new_point)
+        if self.time:
+            self.t += dt
+            if self.t > self.time:
+                if config["renderer"] == "opengl":
+                    nppcc = self.n_points_per_curve
+                else:
+                    nppcc = self.n_points_per_cubic_curve
+                self.set_points(self.get_points()[nppcc:])
