@@ -8,6 +8,7 @@ from .._config import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
+from ..utils.deprecation import deprecated_params
 from ..utils.rate_functions import smooth
 from .opengl_compatibility import ConvertToOpenGL
 
@@ -124,6 +125,9 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
+    @deprecated_params(
+        params="min_distance_to_new_point", since="v0.10.0", until="v0.11.0"
+    )
     def __init__(
         self,
         traced_point_func,
@@ -134,7 +138,6 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         **kwargs
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
-        self.min_distance_to_new_point = min_distance_to_new_point
         self.traced_point_func = traced_point_func
         self.time = dissipating_time
         self.t = 1 if self.time else None
