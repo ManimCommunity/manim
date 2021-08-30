@@ -108,6 +108,20 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                 self.add(trace, rolling_circle)
                 self.play(rolling_circle.animate.shift(8*RIGHT), run_time=4, rate_func=linear)
 
+    .. manim:: DissipatingPathExample
+
+        class DissipatingPathExample(Scene):
+            def construct(self):
+                path = NumberPlane().get_graph(lambda x: np.sin(x))
+                a = Dot(path.get_start())
+                b = TracedPath(a.get_center, dissipating_time=1.5, stroke_opacity=[1, 0])
+                self.add(a, b)
+                self.play(
+                    MoveAlongPath(a, path),
+                    run_time=5,
+                )
+                self.wait()
+
     """
 
     def __init__(
