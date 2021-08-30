@@ -365,7 +365,7 @@ class Text(SVGMobject):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
                 japanese = Text(
-                    "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
+                    "日本へようこそ", t2c={"日本": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", weight=BOLD)
                 russ = Text("Здравствуйте मस नम म ", font="sans-serif")
@@ -971,7 +971,7 @@ class MarkupText(SVGMobject):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
                 japanese = MarkupText(
-                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
+                    '<span fgcolor="blue">日本</span>へようこそ'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", weight=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
