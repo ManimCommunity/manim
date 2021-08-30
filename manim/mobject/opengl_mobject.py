@@ -12,7 +12,7 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..utils.bezier import interpolate
+from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.config_ops import _Data, _Uniforms
 
@@ -274,6 +274,9 @@ class OpenGLMobject:
             for key in mob.data:
                 mob.data[key] = mob.data[key][::-1]
         return self
+
+    def get_midpoint(self):
+        return self.point_from_proportion(0.5)
 
     def apply_points_function(
         self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
