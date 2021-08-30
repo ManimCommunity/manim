@@ -11,6 +11,14 @@ def test_font_size():
     assert round(num.font_size, 5) == 14.4
 
 
+def test_changing_font_size():
+    """Test that the font_size property properly scales DecimalNumber."""
+    num = DecimalNumber(0, font_size=12)
+    num.font_size = 48
+
+    assert num.height == DecimalNumber(0, font_size=48).height
+
+
 def test_set_value_size():
     """Test that the size of DecimalNumber after set_value is correct."""
     num = DecimalNumber(0).scale(0.3)
