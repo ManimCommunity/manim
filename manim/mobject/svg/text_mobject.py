@@ -571,19 +571,7 @@ class Text(SVGMobject):
 
     def find_indexes(self, word: str, text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
-        temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
-        if temp:
-            start = int(temp.group(1)) if temp.group(1) != "" else 0
-            end = int(temp.group(2)) if temp.group(2) != "" else len(text)
-            start = len(text) + start if start < 0 else start
-            end = len(text) + end if end < 0 else end
-            return [(start, end)]
-        indexes = []
-        index = text.find(word)
-        while index != -1:
-            indexes.append((index, index + len(word)))
-            index = text.find(word, index + len(word))
-        return indexes
+        return [[i.start(), i.start() + len(word)] for i in re.finditer(word, text)]
 
     # def full2short(self, kwargs):
     #     """Internally used function. Formats some expansion to short forms.
