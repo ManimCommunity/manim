@@ -4,10 +4,12 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
+      - id: check-ast
+        name: Validate Python
       - id: trailing-whitespace
       - id: mixed-line-ending
       - id: end-of-file-fixer
-      - id: check-yaml
+      - id: check-toml
         name: Validate Poetry
   - repo: https://github.com/psf/black
     rev: 21.8b0
