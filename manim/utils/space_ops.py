@@ -57,7 +57,7 @@ def quaternion_mult(
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
     """Gets the Hamilton product of the quaternions provided.
     For more information, check `this Wikipedia page
-    <https://en.wikipedia.org/wiki/Quaternion>`_.
+    <https://en.wikipedia.org/wiki/Quaternion>`__.
 
     Returns
     -------
@@ -99,7 +99,7 @@ def quaternion_from_angle_axis(
 ) -> List[float]:
     """Gets a quaternion from an angle and an axis.
     For more information, check `this Wikipedia page
-    <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`_.
+    <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
 
     Parameters
     ----------
