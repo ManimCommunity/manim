@@ -5,8 +5,8 @@ from functools import wraps
 
 
 def _check_logs(reference_logfile, generated_logfile):
-    with open(reference_logfile, "r") as reference_logs, open(
-        generated_logfile, "r"
+    with open(reference_logfile) as reference_logs, open(
+        generated_logfile
     ) as generated_logs:
         reference_logs = reference_logs.readlines()
         generated_logs = generated_logs.readlines()

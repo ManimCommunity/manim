@@ -2,6 +2,7 @@ from abc import ABCMeta
 
 from .. import config
 from .opengl_mobject import OpenGLMobject
+from .opengl_three_dimensions import OpenGLSurface
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 
@@ -15,17 +16,24 @@ class ConvertToOpenGL(ABCMeta):
     spurious errors.
     """
 
-    def __new__(cls, name, bases, namespace):
+    _converted_classes = []
+
+    def __new__(mcls, name, bases, namespace):
         if config.renderer == "opengl":
             # Must check class names to prevent
             # cyclic importing.
             base_names_to_opengl = {
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
+                "Surface": OpenGLSurface,
             }
 
             bases = tuple(
                 base_names_to_opengl.get(base.__name__, base) for base in bases
             )
 
-        return super().__new__(cls, name, bases, namespace)
+        return super().__new__(mcls, name, bases, namespace)
+
+    def __init__(cls, name, bases, namespace):
+        super().__init__(name, bases, namespace)
+        cls._converted_classes.append(cls)

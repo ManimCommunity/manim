@@ -363,7 +363,7 @@ class OpenGLAnnularSector(OpenGLArc):
         )
 
     def init_points(self):
-        inner_arc, outer_arc = [
+        inner_arc, outer_arc = (
             OpenGLArc(
                 start_angle=self.start_angle,
                 angle=self.angle,
@@ -371,7 +371,7 @@ class OpenGLAnnularSector(OpenGLArc):
                 arc_center=self.arc_center,
             )
             for radius in (self.inner_radius, self.outer_radius)
-        ]
+        )
         outer_arc.reverse_points()
         self.append_points(inner_arc.get_points())
         self.add_line_to(outer_arc.get_points()[0])

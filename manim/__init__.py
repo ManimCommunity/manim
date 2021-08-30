@@ -2,12 +2,9 @@
 
 # flake8: noqa
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
+import pkg_resources
 
-__version__ = importlib_metadata.version(__name__)
+__version__ = pkg_resources.get_distribution(__name__).version
 
 
 import sys
@@ -83,7 +80,6 @@ from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
-from .scene.graph_scene import *
 from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
 from .scene.sample_space_scene import *

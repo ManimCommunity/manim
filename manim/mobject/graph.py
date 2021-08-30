@@ -16,7 +16,7 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
-from .mobject import Group, Mobject, override_animate
+from .mobject import Mobject, override_animate
 from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
@@ -327,7 +327,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     .. manim:: Tree
 
-        from manim import *
         import networkx as nx
 
         class Tree(Scene):
@@ -630,7 +629,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         vertex_mobjects = self.add_vertices(*args, **kwargs)
-        return AnimationGroup(*[animation(v, **anim_args) for v in vertex_mobjects])
+        return AnimationGroup(*(animation(v, **anim_args) for v in vertex_mobjects))
 
     def _remove_vertex(self, vertex):
         """Remove a vertex (as well as all incident edges) from the graph.
@@ -701,7 +700,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertices(*vertices)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     def _add_edge(
         self,
@@ -795,12 +794,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         edge_config = base_edge_config
 
         added_mobjects = sum(
-            [
+            (
                 self._add_edge(
                     edge, edge_type=edge_type, edge_config=edge_config[edge]
                 ).submobjects
                 for edge in edges
-            ],
+            ),
             [],
         )
         return self.get_group_class()(*added_mobjects)
@@ -812,7 +811,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         mobjects = self.add_edges(*args, **kwargs)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     def _remove_edge(self, edge: Tuple[Hashable]):
         """Remove an edge from the graph.
@@ -868,7 +867,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_edges(*edges)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
