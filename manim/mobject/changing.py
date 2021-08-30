@@ -95,6 +95,18 @@ class AnimatedBoundary(VGroup):
 class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     """Traces the path of a point returned by a function call.
 
+    Parameters
+    ----------
+    traced_point_func
+        The function to be traced.
+    stroke_width
+        The width of the trace.
+    stroke_color
+        The color of the trace.
+    dissipating_time
+        The time taken for the path to dissipate. Default set to `None`
+        which disables dissipation.
+
     Examples
     --------
     .. manim:: TracedPathExample
