@@ -5,6 +5,7 @@ Constant definitions.
 import typing
 
 import numpy as np
+from cloup import Context, HelpFormatter, HelpTheme, Style
 from PIL import Image
 
 __all__ = [
@@ -268,6 +269,21 @@ DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
 HELP_OPTIONS = ["-h", "--help"]
-CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
+
+FORMATTER = HelpFormatter.settings(
+    theme=HelpTheme(
+        invoked_command=Style(fg="bright_yellow"),
+        heading=Style(fg="bright_white", bold=True),
+        constraint=Style(fg="magenta"),
+        col1=Style(fg="bright_yellow"),
+    )
+)
+CONTEXT_SETTINGS = Context.settings(
+    align_option_groups=False,
+    align_sections=True,
+    show_constraints=True,
+    help_option_names=HELP_OPTIONS,
+    formatter_settings=FORMATTER,
+)
