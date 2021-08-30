@@ -275,7 +275,8 @@ class CoordinateSystem:
         ],
         **kwargs,
     ):
-        """Adds labels to the axes.
+        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
+        access the coordinates after creation.
 
         Parameters
         ----------
@@ -313,9 +314,11 @@ class CoordinateSystem:
 
         for axis, values in zip(self.axes, axes_numbers):
             if isinstance(values, dict):
-                labels = axis.add_labels(values, **kwargs)
+                axis.add_labels(values, **kwargs)
+                labels = axis.labels
             else:
-                labels = axis.add_numbers(values, **kwargs)
+                axis.add_numbers(values, **kwargs)
+                labels = axis.numbers
             self.coordinate_labels.add(labels)
 
         return self
