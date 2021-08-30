@@ -145,13 +145,13 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     )
     def __init__(
         self,
-        min_distance_to_new_point=0.1,
         traced_point_func: Callable,
         stroke_width: float = 2,
         stroke_color: Color = WHITE,
         dissipating_time: Optional[float] = None,
         **kwargs
     ):
+        kwargs.pop("min_distance_to_new_point", None) # 
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
