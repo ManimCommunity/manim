@@ -17,4 +17,5 @@ def test_set_value_size():
     test_num = num.copy()
     num.set_value(0)
 
-    assert num.height == test_num.height
+    # round because the height is off by 1e-17
+    assert round(num.height, 12) == round(test_num.height, 12)
