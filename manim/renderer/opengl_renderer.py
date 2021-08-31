@@ -242,7 +242,7 @@ class OpenGLRenderer:
         )
         self.scene = scene
         if not hasattr(self, "window"):
-            if config["preview"]:
+            if config["preview"] and not config["format"] == "png":
                 from .opengl_renderer_window import Window
 
                 self.window = Window(self)
@@ -392,8 +392,7 @@ class OpenGLRenderer:
         if self.skip_animations:
             return
 
-        if config["write_to_movie"]:
-            self.file_writer.write_frame(self)
+        self.file_writer.write_frame(self)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -417,7 +416,11 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
-        if config["save_last_frame"]:
+        # When num_plays is 0, no images have been output, so output a single
+        # image in this case
+        if config["save_last_frame"] or (
+            config["format"] == "png" and self.num_plays == 0
+        ):
             self.update_frame(scene)
             self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
@@ -435,10 +438,11 @@ class OpenGLRenderer:
         PIL.Image
             The PIL image of the array.
         """
+        raw_buffer_data = self.get_raw_frame_buffer_object_data()
         image = Image.frombytes(
             "RGBA",
             self.get_pixel_shape(),
-            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            raw_buffer_data,
             "raw",
             "RGBA",
             0,

@@ -1108,8 +1108,7 @@ class ManimConfig(MutableMapping):
             self.write_to_movie is False
             and self.write_all is False
             and self.save_last_frame is False
-            and self.save_pngs is False
-            and self.save_as_gif is False
+            and not self.format
         )
 
     @dry_run.setter
@@ -1118,8 +1117,7 @@ class ManimConfig(MutableMapping):
             self.write_to_movie = False
             self.write_all = False
             self.save_last_frame = False
-            self.save_pngs = False
-            self.save_as_gif = False
+            self.format = None
         else:
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
