@@ -1603,7 +1603,7 @@ class Vector(Arrow):
         vect = vect[:n_dim]
         vect = vect.reshape((n_dim, 1))
 
-        label = Matrix(vect, add_background_rectangles_to_entries=show_bg_rec)
+        label = Matrix(vect, include_background_rectangle=show_bg_rec)
         label.scale(LARGE_BUFF - 0.2)
 
         shift_dir = np.array(self.get_end())
@@ -1613,9 +1613,6 @@ class Vector(Arrow):
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
         label.set_color(color)
-        if show_bg_rec:
-            label.rect = BackgroundRectangle(label)
-            label.add_to_back(label.rect)
         return label
 
 
