@@ -1579,7 +1579,7 @@ class Vector(Arrow):
         Examples
         --------
 
-        .. manim:: VectorCoordinateLabel
+        .. manim:: CoordinateLabelExample
             :save_last_frame:
 
             class VectorCoordinateLabel(Scene):
