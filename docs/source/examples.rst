@@ -457,8 +457,8 @@ Special Camera Settings
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
             image.height = 7
-            frame_text = Text("Frame", color=PURPLE).scale(1.4)
-            zoomed_camera_text = Text("Zoomed camera", color=RED).scale(1.4)
+            frame_text = Text("Frame", color=PURPLE, font_size=67)
+            zoomed_camera_text = Text("Zoomed camera", color=RED, font_size=67)
 
             self.add(image, dot)
             zoomed_camera = self.zoomed_camera
@@ -518,13 +518,13 @@ Special Camera Settings
 
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
-    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
+    :ref_classes: ThreeDScene ThreeDAxes Surface
     :ref_methods: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
             axes = ThreeDAxes()
-            sphere = ParametricSurface(
+            sphere = Surface(
                 lambda u, v: np.array([
                     1.5 * np.cos(u) * np.cos(v),
                     1.5 * np.cos(u) * np.sin(v),
@@ -569,7 +569,7 @@ Special Camera Settings
 
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
-   :ref_classes: ThreeDScene ParametricSurface
+   :ref_classes: ThreeDScene Surface
    
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
@@ -584,7 +584,7 @@ Special Camera Settings
                z = np.exp(-(d ** 2 / (2.0 * sigma ** 2)))
                return np.array([x, y, z])
 
-           gauss_plane = ParametricSurface(
+           gauss_plane = Surface(
                param_gauss,
                resolution=(resolution_fa, resolution_fa),
                v_range=[-2, +2],
@@ -627,8 +627,7 @@ Advanced Projects
             self.wait()
 
             grid = NumberPlane()
-            grid_title = Tex("This is a grid")
-            grid_title.scale(1.5)
+            grid_title = Tex("This is a grid", font_size=72)
             grid_title.move_to(transform_title)
 
             self.add(grid, grid_title)  # Make sure title is on top of grid

@@ -61,6 +61,7 @@ information here will make it easier for newcomers to get started using
    examples
    changelog
    reference
+   plugins
    reporting_bugs
    contributing
    conduct

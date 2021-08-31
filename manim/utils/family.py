@@ -29,7 +29,7 @@ def extract_mobject_family_members(
     else:
         method = Mobject.get_family
     extracted_mobjects = remove_list_redundancies(
-        list(it.chain(*[method(m) for m in mobjects]))
+        list(it.chain(*(method(m) for m in mobjects)))
     )
     if use_z_index:
         return sorted(extracted_mobjects, key=lambda m: m.z_index)
