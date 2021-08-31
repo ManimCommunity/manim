@@ -75,11 +75,9 @@ class TextTest(Scene):
     def construct(self):
         import string
 
-        text = OpenGLText(
-            string.ascii_lowercase, stroke_width=4, stroke_color=BLUE
-        ).scale(2)
+        text = Text(string.ascii_lowercase, stroke_width=4, stroke_color=BLUE).scale(2)
         text2 = (
-            OpenGLText(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
+            Text(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
             .scale(2)
             .next_to(text, DOWN)
         )
@@ -136,10 +134,10 @@ class ThreeDMobjectTest(Scene):
     def construct(self):
         # config["background_color"] = "#333333"
 
-        s = OpenGLSquare(fill_opacity=0.5).shift(2 * RIGHT)
+        s = Square(fill_opacity=0.5).shift(2 * RIGHT)
         self.add(s)
 
-        sp = OpenGLSphere().shift(2 * LEFT)
+        sp = Sphere().shift(2 * LEFT)
         self.add(sp)
 
         mesh = get_plane_mesh(self.renderer.context)
@@ -288,7 +286,7 @@ class InlineShaderExample(Scene):
     def construct(self):
         config["background_color"] = "#333333"
 
-        c = OpenGLCircle(fill_opacity=0.7).shift(UL)
+        c = Circle(fill_opacity=0.7).shift(UL)
         self.add(c)
 
         shader = Shader(
@@ -395,10 +393,10 @@ class NamedShaderExample(Scene):
 
 class InteractiveDevelopment(Scene):
     def construct(self):
-        circle = OpenGLCircle()
+        circle = Circle()
         circle.set_fill(BLUE, opacity=0.5)
         circle.set_stroke(BLUE_E, width=4)
-        square = OpenGLSquare()
+        square = Square()
 
         self.play(Create(square))
         self.wait()
@@ -449,9 +447,9 @@ class SurfaceExample(Scene):
         # self.add(surface_text)
         # self.wait(0.1)
 
-        torus1 = OpenGLTorus(r1=1, r2=1)
-        torus2 = OpenGLTorus(r1=3, r2=1)
-        sphere = OpenGLSphere(radius=3, resolution=torus1.resolution)
+        torus1 = Torus(major_radius=1, minor_radius=1)
+        torus2 = Torus(major_radius=3, minor_radius=1)
+        sphere = Sphere(radius=3, resolution=torus1.resolution)
         # You can texture a surface with up to two images, which will
         # be interpreted as the side towards the light, and away from
         # the light.  These can be either urls, or paths to a local file
