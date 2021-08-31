@@ -2,8 +2,8 @@
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
-
 import numpy as np
+from colour import Color
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -12,15 +12,16 @@ from ...utils.color import (
     BLACK,
     WHITE,
     YELLOW,
-    YELLOW_C,
     color_gradient,
     color_to_rgba,
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.opengl_point_cloud_mobject import OpenGLPMobject
 
 
-class PMobject(Mobject):
+class PMobject(Mobject, metaclass=ConvertToOpenGL):
     """A disc made of a cloud of Dots
 
     Examples
@@ -77,7 +78,7 @@ class PMobject(Mobject):
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
-    def set_color(self, color=YELLOW_C, family=True):
+    def set_color(self, color=YELLOW, family=True):
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:
@@ -94,24 +95,25 @@ class PMobject(Mobject):
             mob.stroke_width = width
         return self
 
-    # def set_color_by_gradient(self, start_color, end_color):
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(colors, len(self.points))))
+            list(map(color_to_rgba, color_gradient(*colors, len(self.points))))
         )
         return self
 
     def set_colors_by_radial_gradient(
         self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
     ):
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
+        start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
             center = self.get_center()
         for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            t = min(1, np.abs(mob.get_center() - center) / radius)
+            distances = np.abs(self.points - center)
+            alphas = np.linalg.norm(distances, axis=1) / radius
 
-            mob.rgbas = np.array([interpolate(start_rgba, end_rgba, t)] * num_points)
+            mob.rgbas = np.array(
+                np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
+            )
         return self
 
     def match_colors(self, mobject):
@@ -146,10 +148,10 @@ class PMobject(Mobject):
             mob.apply_over_attr_arrays(lambda arr: arr[indices])
         return self
 
-    def fade_to(self, color, alpha):
+    def fade_to(self, color, alpha, family=True):
         self.rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
-            mob.fade_to(color, alpha)
+            mob.fade_to(color, alpha, family)
         return self
 
     def get_all_rgbas(self):
@@ -202,7 +204,7 @@ class PMobject(Mobject):
 
 
 # TODO, Make the two implementations below non-redundant
-class Mobject1D(PMobject):
+class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -219,7 +221,7 @@ class Mobject1D(PMobject):
         self.add_points(points, color=color)
 
 
-class Mobject2D(PMobject):
+class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -249,10 +251,20 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, PMobject) for m in pmobs]):
-            raise ValueError("All submobjects must be of type PMobject")
+        if not all(
+            [isinstance(m, PMobject) or isinstance(m, OpenGLPMobject) for m in pmobs]
+        ):
+            raise ValueError(
+                "All submobjects must be of type PMobject or OpenGLPMObject"
+                " if using the opengl renderer"
+            )
         super().__init__(**kwargs)
         self.add(*pmobs)
+
+    def fade_to(self, color, alpha, family=True):
+        if family:
+            for mob in self.submobjects:
+                mob.fade_to(color, alpha, family)
 
 
 class PointCloudDot(Mobject1D):
@@ -296,10 +308,15 @@ class PointCloudDot(Mobject1D):
         **kwargs
     ):
         self.radius = radius
-        Mobject1D.__init__(
-            self, stroke_width=stroke_width, density=density, color=color, **kwargs
+        self.epsilon = 1.0 / density
+        super().__init__(
+            stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
+
+    def init_points(self):
+        self.reset_points()
+        self.generate_points()
 
     def generate_points(self):
         self.add_points(
@@ -336,5 +353,13 @@ class Point(PMobject):
     """
 
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
-        PMobject.__init__(self, color=color, **kwargs)
-        self.add_points([location])
+        self.location = location
+        super().__init__(color=color, **kwargs)
+
+    def init_points(self):
+        self.reset_points()
+        self.generate_points()
+        self.set_points([self.location])
+
+    def generate_points(self):
+        self.add_points([self.location])

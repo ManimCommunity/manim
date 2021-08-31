@@ -65,7 +65,7 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow=0.0,
         # For shaders
-        render_primitive=moderngl.TRIANGLE_STRIP,
+        render_primitive=moderngl.TRIANGLES,
         texture_paths=None,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
@@ -134,7 +134,7 @@ class OpenGLMobject:
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
-        # Typically implemented in subclass, unlpess purposefully left blank
+        # Typically implemented in subclass, unless purposefully left blank
         pass
 
     def set_data(self, data):
@@ -262,6 +262,11 @@ class OpenGLMobject:
         else:
             self.points = np.array(points)
         self.refresh_bounding_box()
+        return self
+
+    def apply_over_attr_arrays(self, func):
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
         return self
 
     def append_points(self, new_points):
@@ -1266,6 +1271,23 @@ class OpenGLMobject:
             for mob in self.get_family(recurse):
                 mob.data[name] = rgbas.copy()
         return self
+
+    def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+        """Directly set rgba data from `rgbas` and optionally do the same recursively
+        with submobjects. This can be used if the `rgbas` have already been generated
+        with the correct shape and simply need to be set.
+
+        Parameters
+        ----------
+        rgbas
+            the rgba to be set as data
+        name
+            the name of the data attribute to be set
+        recurse
+            set to true to recursively apply this method to submobjects
+        """
+        for mob in self.get_family(recurse):
+            mob.data[name] = rgbas.copy()
 
     def set_color(self, color, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
