@@ -1159,11 +1159,11 @@ class CoordinateSystem:
         if bounded_graph is None:
             points = (
                 [self.c2p(a)]
-                + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b]
+                + [p for p in graph.points if a <= self.p2c(p)[0] <= b]
                 + [self.c2p(b)]
             )
         else:
-            points = [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b] + [
+            points = [p for p in graph.points if a <= self.p2c(p)[0] <= b] + [
                 p for p in bounded_graph.points if a <= self.p2c(p)[0] <= b
             ][::-1]
         return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
