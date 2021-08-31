@@ -28,8 +28,9 @@ from ..mobject.geometry import (
     DashedLine,
     Dot,
     Line,
+    Polygon,
     Rectangle,
-    RegularPolygon, Polygon,
+    RegularPolygon,
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
@@ -738,12 +739,12 @@ class CoordinateSystem:
         ).set_opacity(opacity=opacity)
 
     def get_area(
-            self,
-            graph: "ParametricFunction",
-            x_range: Optional[Sequence[float]] = None,
-            color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
-            opacity: float = 0.3,
-            **kwargs,
+        self,
+        graph: "ParametricFunction",
+        x_range: Optional[Sequence[float]] = None,
+        color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
+        opacity: float = 0.3,
+        **kwargs,
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
@@ -770,8 +771,12 @@ class CoordinateSystem:
             The :class:`~.Polygon` representing the area.
         """
         a, b = x_range
-        points = [self.c2p(a)] + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b] + [self.c2p(b)]
-        return Polygon(*points, color=color, **kwargs).set_opacity(opacity)
+        points = (
+            [self.c2p(a)]
+            + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b]
+            + [self.c2p(b)]
+        )
+        return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 
     def angle_of_tangent(
         self, x: float, graph: "ParametricFunction", dx: float = 1e-8
