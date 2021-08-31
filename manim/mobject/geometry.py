@@ -1557,7 +1557,11 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(
-        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+        self,
+        integer_labels: bool = True,
+        n_dim: int = 2,
+        color: str = WHITE,
+        show_bg_rec=False,
     ):
         """Creates a label based on the coordinates of the vector.
 
@@ -1569,6 +1573,8 @@ class Vector(Arrow):
             The number of dimensions of the vector.
         color
             The color of the label.
+        show_bg_rec
+            Display background rectangle for a number.
 
         Examples
         --------
@@ -1582,12 +1588,13 @@ class Vector(Arrow):
 
                     vect_1 = Vector([1, 2])
                     vect_2 = Vector([-3, -2])
-                    label_1 = vect1.coordinate_label()
+                    label_1 = vect1.coordinate_label(show_bg_rec=True)
                     label_2 = vect2.coordinate_label(color=YELLOW)
 
                     self.add(plane, vect_1, vect_2, label_1, label_2)
         """
         # avoiding circular imports
+        from ..mobject.shape_matchers import BackgroundRectangle
         from .matrix import Matrix
 
         vect = np.array(self.get_end())
@@ -1596,7 +1603,7 @@ class Vector(Arrow):
         vect = vect[:n_dim]
         vect = vect.reshape((n_dim, 1))
 
-        label = Matrix(vect)
+        label = Matrix(vect, add_background_rectangles_to_entries=show_bg_rec)
         label.scale(LARGE_BUFF - 0.2)
 
         shift_dir = np.array(self.get_end())
@@ -1606,6 +1613,9 @@ class Vector(Arrow):
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
         label.set_color(color)
+        if show_bg_rec:
+            label.rect = BackgroundRectangle(label)
+            label.add_to_back(label.rect)
         return label
 
 
