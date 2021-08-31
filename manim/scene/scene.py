@@ -1,11 +1,10 @@
 """Basic canvas for animations."""
 
-
 __all__ = ["Scene"]
-
 
 import copy
 import inspect
+import logging
 import platform
 import random
 import threading
@@ -115,6 +114,7 @@ class Scene:
         self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
+        self.interactive_embed_enabled = True
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -992,11 +992,29 @@ class Scene:
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def check_interactive_embed_is_valid(self):
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled"
+            )
+            self.interactive_embed_enabled = False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            self.interactive_embed_enabled = False
+        elif config["format"] == "png":
+            logger.warning("Disabling interactive embed as '--format png' is set")
+            self.interactive_embed_enabled = False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as '--format png' is set")
+            self.interactive_embed_enabled = False
+
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
-        if self.skip_animation_preview or config["write_to_movie"]:
+        self.check_interactive_embed_is_valid()
+        if not self.interactive_embed_enabled:
+            logger.info("interactive embed is disabled and will not be launched")
             return
 
         def ipython(shell, namespace):
