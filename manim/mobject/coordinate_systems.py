@@ -744,6 +744,7 @@ class CoordinateSystem:
         x_range: Optional[Sequence[float]] = None,
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
+        bounded: "ParametricFunction" = None,
         **kwargs,
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
@@ -762,6 +763,9 @@ class CoordinateSystem:
         opacity
             The opacity of the area.
 
+        bounded
+            If a secondary :attr:`graph` is specified, encloses the area between the two curves.
+
         kwargs
             Additional parameters passed to :class:`~.Polygon`
 
@@ -771,11 +775,16 @@ class CoordinateSystem:
             The :class:`~.Polygon` representing the area.
         """
         a, b = x_range
-        points = (
-            [self.c2p(a)]
-            + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b]
-            + [self.c2p(b)]
-        )
+        if bounded is None:
+            points = (
+                [self.c2p(a)]
+                + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b]
+                + [self.c2p(b)]
+            )
+        else:
+            points = [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b] + [
+                p for p in bounded.get_points() if a <= self.p2c(p)[0] <= b
+            ][::-1]
         return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 
     def angle_of_tangent(
