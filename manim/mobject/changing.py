@@ -131,8 +131,8 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                 a = Dot(RIGHT * 2)
                 b = TracedPath(a.get_center, dissipating_time=0.5, stroke_opacity=[0, 1])
                 self.add(a, b)
-                self.play(a.animate(path_arc=PI / 4).shift(LEFT * 4))
-                self.play(a.animate(path_arc=PI / 4).shift(RIGHT * 4))
+                self.play(a.animate(path_arc=PI / 4).shift(LEFT * 2))
+                self.play(a.animate(path_arc=-PI / 4).shift(LEFT * 2))
                 self.wait()
 
     """
