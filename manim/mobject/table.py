@@ -604,10 +604,10 @@ class Table(VGroup):
                 and self.col_labels is not None
                 and self.top_left_entry is None
             ):
-                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
+                index = len(self.mob_table[0]) * (pos[0] - 1) + pos[1] - 2
                 return self.elements[index]
             else:
-                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
+                index = len(self.mob_table[0]) * (pos[0] - 1) + pos[1] - 1
                 return self.elements[index]
         else:
             return self.elements
@@ -651,7 +651,7 @@ class Table(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            index = self.row_dim * (pos[0] - 1) + pos[1] - 1
+            index = self.col_dim * (pos[0] - 1) + pos[1] - 1
             return self.elements_without_labels[index]
         else:
             return self.elements_without_labels
