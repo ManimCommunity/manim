@@ -1135,8 +1135,28 @@ class CoordinateSystem:
         :class:`~.Polygon`
             The :class:`~.Polygon` representing the area.
         """
-        a, b = x_range
-        if bounded is None:
+        if x_range is None:
+            a = graph.t_min
+            b = graph.t_max
+        else:
+            a, b = x_range
+        if bounded_graph is not None:
+            if bounded_graph.t_min > graph.t_max:
+                raise ValueError(
+                    "Range of graphs not matching: {} > {}".format(
+                        bounded_graph.t_min, graph.t_max
+                    )
+                )
+            if bounded_graph.t_max < graph.t_min:
+                raise ValueError(
+                    "Range of graphs not matching: {} < {}".format(
+                        bounded_graph.t_max, graph.t_min
+                    )
+                )
+            a = max(graph.t_min, bounded_graph.t_min)
+            b = min(graph.t_max, bounded_graph.t_max)
+
+        if bounded_graph is None:
             points = (
                 [self.c2p(a)]
                 + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b]
