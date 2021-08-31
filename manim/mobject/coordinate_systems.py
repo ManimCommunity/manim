@@ -29,7 +29,7 @@ from ..mobject.geometry import (
     Dot,
     Line,
     Rectangle,
-    RegularPolygon,
+    RegularPolygon, Polygon,
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
@@ -736,6 +736,42 @@ class CoordinateSystem:
             color=color,
             show_signed_area=False,
         ).set_opacity(opacity=opacity)
+
+    def get_area(
+            self,
+            graph: "ParametricFunction",
+            x_range: Optional[Sequence[float]] = None,
+            color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
+            opacity: float = 0.3,
+            **kwargs,
+    ):
+        """Returns a :class:`~.Polygon` representing the area under the graph passed.
+
+        Parameters
+        ----------
+        graph
+            The graph/curve for which the area needs to be gotten.
+
+        x_range
+            The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
+
+        color
+            The color of the area. Creates a gradient if a list of colors is provided.
+
+        opacity
+            The opacity of the area.
+
+        kwargs
+            Additional parameters passed to :class:`~.Polygon`
+
+        Returns
+        -------
+        :class:`~.Polygon`
+            The :class:`~.Polygon` representing the area.
+        """
+        a, b = x_range
+        points = [self.c2p(a)] + [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b] + [self.c2p(b)]
+        return Polygon(*points, color=color, **kwargs).set_opacity(opacity)
 
     def angle_of_tangent(
         self, x: float, graph: "ParametricFunction", dx: float = 1e-8
