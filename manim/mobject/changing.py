@@ -130,13 +130,13 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
             self.add_line_to(new_point)
         else:
             # Set the end to be the new point
-            self.get_points()[-1] = new_point
+            self.points[-1] = new_point
 
             # Second to last point
             if config["renderer"] == "opengl":
                 nppcc = self.n_points_per_curve
             else:
                 nppcc = self.n_points_per_cubic_curve
-            dist = np.linalg.norm(new_point - self.get_points()[-nppcc])
+            dist = np.linalg.norm(new_point - self.points[-nppcc])
             if dist >= self.min_distance_to_new_point:
                 self.add_line_to(new_point)
