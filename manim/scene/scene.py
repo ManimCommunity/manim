@@ -113,7 +113,6 @@ class Scene:
         self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
-        self.interactive_embed_enabled = True
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -996,28 +995,27 @@ class Scene:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled"
             )
-            self.interactive_embed_enabled = False
+            return False
         elif config["write_to_movie"]:
             logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
-            self.interactive_embed_enabled = False
+            return False
         elif config["format"] == "png":
             logger.warning("Disabling interactive embed as '--format png' is set")
-            self.interactive_embed_enabled = False
+            return False
         elif not self.renderer.window:
             logger.warning("Disabling interactive embed as '--format png' is set")
-            self.interactive_embed_enabled = False
+            return False
+        return True
 
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
-        self.check_interactive_embed_is_valid()
-        if not self.interactive_embed_enabled:
+        if not self.check_interactive_embed_is_valid():
             logger.info("interactive embed is disabled and will not be launched")
             return
 
         def ipython(shell, namespace):
-            import manim
             import manim.opengl
 
             def load_module_into_namespace(module, namespace):
