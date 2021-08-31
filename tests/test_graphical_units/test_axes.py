@@ -172,13 +172,27 @@ def test_t_label(scene):
 
 
 @frames_comparison
+def test_get_area_with_riemann_rectangles(scene):
+    ax = Axes().add_coordinates()
+    curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
+    area = ax.get_area_with_riemann_rectangles(
+        curve,
+        x_range=(PI / 2, 3 * PI / 2),
+        dx_scaling=10,
+        color=(GREEN_B, GREEN_D),
+        opacity=1,
+    )
+
+    scene.add(ax, curve, area)
+
+
+@frames_comparison
 def test_get_area(scene):
     ax = Axes().add_coordinates()
     curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
     area = ax.get_area(
         curve,
         x_range=(PI / 2, 3 * PI / 2),
-        dx_scaling=10,
         color=(GREEN_B, GREEN_D),
         opacity=1,
     )
