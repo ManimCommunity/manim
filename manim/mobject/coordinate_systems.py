@@ -1033,14 +1033,14 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetAreaExample
+        .. manim:: GetAreaWithRiemannRectanglesExample
             :save_last_frame:
 
-            class GetAreaExample(Scene):
+            class GetAreaWithRiemannRectanglesExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
                     curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
-                    area = ax.get_area(
+                    area = ax.get_area_with_riemann_rectangles(
                         curve,
                         x_range=(PI / 2, 3 * PI / 2),
                         dx_scaling=10,
