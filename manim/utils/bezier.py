@@ -44,10 +44,8 @@ def bezier(
     """
     n = len(points) - 1
     return lambda t: sum(
-        [
-            ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
-            for k, point in enumerate(points)
-        ]
+        ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
+        for k, point in enumerate(points)
     )
 
 

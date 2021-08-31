@@ -267,10 +267,10 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
 
         return VGroup(
-            *[
-                VGroup(*[row[i] for row in self.mob_matrix])
+            *(
+                VGroup(*(row[i] for row in self.mob_matrix))
                 for i in range(len(self.mob_matrix[0]))
-            ]
+            )
         )
 
     def set_column_colors(self, *colors):
@@ -323,7 +323,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     m0.add(SurroundingRectangle(m0.get_rows()[1]))
                     self.add(m0)
         """
-        return VGroup(*[VGroup(*row) for row in self.mob_matrix])
+        return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix.

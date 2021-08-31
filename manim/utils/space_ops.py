@@ -57,7 +57,7 @@ def quaternion_mult(
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
     """Gets the Hamilton product of the quaternions provided.
     For more information, check `this Wikipedia page
-    <https://en.wikipedia.org/wiki/Quaternion>`_.
+    <https://en.wikipedia.org/wiki/Quaternion>`__.
 
     Returns
     -------
@@ -99,7 +99,7 @@ def quaternion_from_angle_axis(
 ) -> List[float]:
     """Gets a quaternion from an angle and an axis.
     For more information, check `this Wikipedia page
-    <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`_.
+    <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
 
     Parameters
     ----------
@@ -688,7 +688,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     loop_connections = {}
 
     while detached_rings:
-        i_range, j_range = [
+        i_range, j_range = (
             list(
                 filter(
                     # Ignore indices that are already being
@@ -698,7 +698,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
                 )
             )
             for ring_group in (attached_rings, detached_rings)
-        ]
+        )
 
         # Closest point on the attached rings to an estimated midpoint
         # of the detached rings
