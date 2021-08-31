@@ -128,14 +128,11 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
 
         class DissipatingPathExample(Scene):
             def construct(self):
-                path = NumberPlane().get_graph(lambda x: np.sin(x))
-                a = Dot(path.get_start())
-                b = TracedPath(a.get_center, dissipating_time=0.5, stroke_opacity=[1, 0])
+                a = Dot(RIGHT * 2)
+                b = TracedPath(a.get_center, dissipating_time=0.5, stroke_opacity=[0, 1])
                 self.add(a, b)
-                self.play(
-                    MoveAlongPath(a, path),
-                    run_time=5,
-                )
+                self.play(a.animate(path_arc=PI / 4).shift(LEFT * 4))
+                self.play(a.animate(path_arc=PI / 4).shift(RIGHT * 4))
                 self.wait()
 
     """
