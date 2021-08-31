@@ -91,6 +91,14 @@ def test_font_size():
     assert round(string.font_size, 5) == 14.4
 
 
+def test_font_size_vs_scale():
+    """Test that scale produces the same results as .scale()"""
+    num = MathTex(0, font_size=12)
+    num_scale = MathTex(0).scale(1 / 4)
+
+    assert num.height == num_scale.height
+
+
 def test_changing_font_size():
     """Test that the font_size property properly scales tex_mobject.py classes."""
     num = Tex("0", font_size=12)
