@@ -107,7 +107,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     stroke_color
         The color of the trace.
     dissipating_time
-        The time taken for the path to dissipate. Default set to `None`
+        The time taken for the path to dissipate. Default set to ``None``
         which disables dissipation.
 
     Examples
