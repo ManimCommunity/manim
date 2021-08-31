@@ -224,7 +224,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         number
-            The value that will overwrite the current number of the class:`~.DecimalNumber`.
+            The value that will overwrite the current number of the :class:`~.DecimalNumber`.
 
         """
         # creates a new number mob via `set_submobjects_from_number`
