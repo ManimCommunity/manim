@@ -1096,23 +1096,37 @@ class CoordinateSystem:
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
+        Examples
+        --------
+
+        .. manim:: GetAreaExample
+            :save_last_frame:
+
+            class GetAreaExample(Scene):
+                def construct(self):
+                    ax = Axes().add_coordinates()
+                    curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
+                    area = ax.get_area(
+                        curve,
+                        x_range=(PI / 2, 3 * PI / 2),
+                        color=(GREEN_B, GREEN_D),
+                        opacity=1,
+                    )
+
+                    self.add(ax, curve, area)
+
         Parameters
         ----------
         graph
             The graph/curve for which the area needs to be gotten.
-
         x_range
             The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
-
         color
             The color of the area. Creates a gradient if a list of colors is provided.
-
         opacity
             The opacity of the area.
-
         bounded
             If a secondary :attr:`graph` is specified, encloses the area between the two curves.
-
         kwargs
             Additional parameters passed to :class:`~.Polygon`
 
