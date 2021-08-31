@@ -14,9 +14,10 @@ def test_font_size():
 def test_changing_font_size():
     """Test that the font_size property properly scales DecimalNumber."""
     num = DecimalNumber(0, font_size=12)
+    num_scale = DecimalNumber(0).scale(1 / 4)
     num.font_size = 48
 
-    assert num.height == DecimalNumber(0, font_size=48).height
+    assert num.height == DecimalNumber(0, font_size=48).height == num_scale.height
 
 
 def test_set_value_size():
