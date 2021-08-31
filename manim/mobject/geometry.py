@@ -1588,8 +1588,8 @@ class Vector(Arrow):
 
                     vect_1 = Vector([1, 2])
                     vect_2 = Vector([-3, -2])
-                    label_1 = vect1.coordinate_label(show_bg_rec=True)
-                    label_2 = vect2.coordinate_label(color=YELLOW)
+                    label_1 = vect_1.coordinate_label(show_bg_rec=True)
+                    label_2 = vect_2.coordinate_label(color=YELLOW)
 
                     self.add(plane, vect_1, vect_2, label_1, label_2)
         """
