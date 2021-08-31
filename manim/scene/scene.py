@@ -4,7 +4,6 @@ __all__ = ["Scene"]
 
 import copy
 import inspect
-import logging
 import platform
 import random
 import threading
