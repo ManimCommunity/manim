@@ -1561,7 +1561,7 @@ class Vector(Arrow):
         integer_labels: bool = True,
         n_dim: int = 2,
         color: str = WHITE,
-        show_bg_rec=False,
+        show_bg_rec: bool = False,
     ):
         """Creates a label based on the coordinates of the vector.
 
