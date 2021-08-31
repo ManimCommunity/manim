@@ -1024,7 +1024,7 @@ class CoordinateSystem:
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
         dx_scaling: float = 1,
-        bounded: "ParametricFunction" = None,
+        bounded_graph: "ParametricFunction" = None,
         **kwargs,
     ):
         """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
@@ -1060,7 +1060,7 @@ class CoordinateSystem:
             The color of the area. Creates a gradient if an iterable of colors is provided.
         opacity
             The opacity of the area.
-        bounded
+        bounded_graph
             If a secondary :attr:`graph` is specified, encloses the area between the two curves.
         dx_scaling
             The factor by which the :attr:`dx` value is scaled.
@@ -1078,7 +1078,7 @@ class CoordinateSystem:
             graph,
             x_range=x_range,
             dx=dx * dx_scaling,
-            bounded_graph=bounded,
+            bounded_graph=bounded_graph,
             blend=True,
             color=color,
             show_signed_area=kwargs.pop("show_signed_area", None) or False,
@@ -1091,7 +1091,7 @@ class CoordinateSystem:
         x_range: Optional[Sequence[float]] = None,
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
-        bounded: "ParametricFunction" = None,
+        bounded_graph: "ParametricFunction" = None,
         **kwargs,
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
@@ -1125,7 +1125,7 @@ class CoordinateSystem:
             The color of the area. Creates a gradient if a list of colors is provided.
         opacity
             The opacity of the area.
-        bounded
+        bounded_graph
             If a secondary :attr:`graph` is specified, encloses the area between the two curves.
         kwargs
             Additional parameters passed to :class:`~.Polygon`
@@ -1144,7 +1144,7 @@ class CoordinateSystem:
             )
         else:
             points = [p for p in graph.get_points() if a <= self.p2c(p)[0] <= b] + [
-                p for p in bounded.get_points() if a <= self.p2c(p)[0] <= b
+                p for p in bounded_graph.points if a <= self.p2c(p)[0] <= b
             ][::-1]
         return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 
