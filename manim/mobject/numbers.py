@@ -111,9 +111,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
             # scale to a factor of the initial height so that setting
             # font_size does not depend on current size.
-            self.scale(
-                1 / self._font_size * font_val * self.initial_height / self.height
-            )
+            self.scale(font_val / self.font_size)
 
     def set_submobjects_from_number(self, number):
         self.number = number
