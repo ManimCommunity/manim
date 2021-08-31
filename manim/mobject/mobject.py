@@ -41,6 +41,7 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
@@ -593,6 +594,7 @@ class Mobject:
         self.add(*submobject_list)
         return self
 
+    @deprecated(replacement="points")
     def set_points(self, points):
         self.points = points
 
