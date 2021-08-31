@@ -242,7 +242,7 @@ class OpenGLRenderer:
         )
         self.scene = scene
         if not hasattr(self, "window"):
-            if config["preview"] and not config["format"] == "png":
+            if self.should_create_window():
                 from .opengl_renderer_window import Window
 
                 self.window = Window(self)
@@ -265,6 +265,13 @@ class OpenGLRenderer:
                 moderngl.ONE,
                 moderngl.ONE,
             )
+
+    def should_create_window(self):
+        return (
+            config["preview"]
+            and not config["format"] == "png"
+            and not config["write_to_movie"]
+        )
 
     def get_pixel_shape(self):
         if hasattr(self, "frame_buffer_object"):
