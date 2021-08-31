@@ -688,7 +688,7 @@ class CoordinateSystem:
 
         return rectangles
 
-    def get_area(
+    def get_area_with_riemann_rectangles(
         self,
         graph: "ParametricFunction",
         x_range: Optional[Sequence[float]] = None,
