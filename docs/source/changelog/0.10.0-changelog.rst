@@ -2,7 +2,7 @@
 v0.10.0
 *******
 
-:Date: August 31, 2021
+:Date: September 01, 2021
 
 Contributors
 ============
@@ -69,7 +69,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 54 pull requests were merged for this release.
+A total of 57 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -99,8 +99,8 @@ Enhancements
 * `#1881 <https://github.com/ManimCommunity/manim/pull/1881>`__: Added methods :meth:`~.get_lines` and :meth:`~.get_value` to :class:`~.Angle`
 
 
-* `#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Implement option to save last frame for OpenGL
-   Implemented save_last_frame option for opengl
+* `#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Added the option to save last frame for OpenGL
+
 
 * `#1694 <https://github.com/ManimCommunity/manim/pull/1694>`__: Add `font_size` parameter for `Tex` and `Text` mobjects. 
 
@@ -109,7 +109,7 @@ Enhancements
 
 
 * `#1923 <https://github.com/ManimCommunity/manim/pull/1923>`__: Fixed init help text formatting so that it's not truncated
-   Fixed init help text formatting
+
 
 * `#1868 <https://github.com/ManimCommunity/manim/pull/1868>`__: Add OpenGL support to IPython magic
    The OpenGL renderer can now be used in jupyter notebooks when using the `%%manim` magic command. However, it is required to set the renderer via a configuration file, as the manim import must happen after setting the renderer.
@@ -122,6 +122,12 @@ Enhancements
 
 Fixed bugs
 ----------
+
+* `#1985 <https://github.com/ManimCommunity/manim/pull/1985>`__: Use `height` to determine `font_size` instead of the `_font_size` attribute.
+
+
+* `#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fixed opengl scene selection
+   Fixed an issue where scene selection was ignored when using the opengl renderer
 
 * `#1871 <https://github.com/ManimCommunity/manim/pull/1871>`__: Fixed broken :meth:`.VectorScene.vector_to_coords`
 
@@ -139,6 +145,9 @@ Fixed bugs
 * `#1951 <https://github.com/ManimCommunity/manim/pull/1951>`__: Fixed the positioning of line graph that was under the graph 
    Removed a part of code that caused the `line_graph` to be positioned behind the `Axes` / `NumberPlane`. Fixes the issue #1464.
 
+* `#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Added buff parameter to :class:`~.BraceLabel`.
+   Quickfix for #1769
+
 * `#1938 <https://github.com/ManimCommunity/manim/pull/1938>`__: Fixed :class:`~.Rotate` for angles that are multiples of :math:`2\pi`
    Fixed Rotate animation when trying to rotate by multiples of 2π
    Closes #1935
@@ -148,6 +157,9 @@ Fixed bugs
 
 * `#1931 <https://github.com/ManimCommunity/manim/pull/1931>`__: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`
 
+
+* `#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fixed single-scene issue with gui
+   Fixed issue where the gui crashes when not specifying the scene
 
 * `#1744 <https://github.com/ManimCommunity/manim/pull/1744>`__: Fix :class:`~.NumberPlane` bug with positive/negative `x_range`/`y_range` values.
 
@@ -242,29 +254,29 @@ Code quality improvements and similar refactors
 
    Python f-strings simplify the code and [should speed up execution](https://www.scivision.dev/python-f-string-speed).
 
+* `#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced `self.data["attr"]` and `self.uniforms["attr"]` with `self.attr`.
+
+
+* `#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated dearpygui version to 0.8.x
+
+
+New releases
+------------
+
+* `#1989 <https://github.com/ManimCommunity/manim/pull/1989>`__: Prepare new release v0.10.0
+
+
 Unclassified changes
 --------------------
 
-* `#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fix opengl scene selection
-   Fixed issue where scene selection was ignored when using the opengl renderer
+* `#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Add OpenGL support for :class:`~.PMobject`
+   Added opengl support for PMobject and its subclasses
 
 * `#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow to switch the renderer to opengl at runtime
 
 
-* `#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced `self.data["attr"]` and `self.uniforms["attr"]` with `self.attr`.
-
-
-* `#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Add buff parameter to :class:`~.BraceLabel`.
-   Quickfix for #1769
-
-* `#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fix single-scene issue with gui
-   Fixed issue where the gui crashes when not specifying the scene
-
 * `#1934 <https://github.com/ManimCommunity/manim/pull/1934>`__: Improve code quality by implementing suggestions from LGTM
 
-
-* `#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated dearpygui version
-   Updated dearpygui to 0.8.x
 
 * `#1879 <https://github.com/ManimCommunity/manim/pull/1879>`__: Fix version stated in poetry
 
