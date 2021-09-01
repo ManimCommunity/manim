@@ -743,8 +743,8 @@ class CoordinateSystem:
                     0
                 ],
                 target=x,
-                lower_bound=self.x_range[0],
-                upper_bound=self.x_range[1],
+                lower_bound=0,
+                upper_bound=1,
             )
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
