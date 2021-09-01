@@ -7,7 +7,7 @@ v0.10.0
 Contributors
 ============
 
-A total of 39 people contributed to this
+A total of 40 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -49,6 +49,7 @@ the following contributors.
 * Darylgolden
 * Devin Neal
 * Eric Biedert
+* GameDungeon
 * Harivinay
 * Hugues Devimeux
 * Jan-Hendrik Müller
@@ -97,7 +98,7 @@ New features
 * `#1929 <https://github.com/ManimCommunity/manim/pull/1929>`__: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`
    Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method.
 
-* `#1980 <https://github.com/ManimCommunity/manim/pull/1980>`__: Added a 'dissipating' feature for `TracedPath`
+* `#1980 <https://github.com/ManimCommunity/manim/pull/1980>`__: Added a ``dissipating_time`` keyword argument to :class:`~.TracedPath` to allow animating a dissipating path
 
 
 * `#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow switching the renderer to OpenGL at runtime
@@ -247,7 +248,7 @@ Changes to our development infrastructure
 * `#1864 <https://github.com/ManimCommunity/manim/pull/1864>`__: Shortened and simplified PR template
 
 
-* `#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Update Sphinx to 4.1.2
+* `#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Updated Sphinx to 4.1.2
 
 
 Code quality improvements and similar refactors
