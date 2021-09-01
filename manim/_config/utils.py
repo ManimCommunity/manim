@@ -1080,8 +1080,8 @@ class ManimConfig(MutableMapping):
         for qual in constants.QUALITIES:
             if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
                 return qual
-        else:
-            return None
+            else:
+                return None
 
     @quality.setter
     def quality(self, qual: str) -> None:
