@@ -618,7 +618,7 @@ class Text(SVGMobject):
                         start - start_offset : end - end_offset
                     ].set_color_by_gradient(*gradient)
                 else:
-                    self.chars[start: end].set_color_by_gradient(*gradient)
+                    self.chars[start:end].set_color_by_gradient(*gradient)
 
     def text2hash(self):
         """Internally used function.
