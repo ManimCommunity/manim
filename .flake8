@@ -1,8 +1,7 @@
 [flake8]
-# Exclude the grpc generated code
 exclude = ./.*,manim/grpc/gen/*
 max-complexity = 15
-max-line-length = 80
+max-line-length = 88
 statistics = True
 rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
 rst-directives = manim, SEEALSO, seealso
