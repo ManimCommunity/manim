@@ -8,6 +8,7 @@ import warnings
 from pathlib import Path
 
 from .. import config, console, constants, logger
+from ..scene.scene_file_writer import SceneFileWriter
 
 
 def get_module(file_name: Path):
@@ -95,7 +96,7 @@ def get_scenes_to_render(scene_classes):
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
-    config["write_all"] = True
+    SceneFileWriter.force_output_as_scene_name = True
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")

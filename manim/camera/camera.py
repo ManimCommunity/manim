@@ -347,6 +347,7 @@ class Camera:
         coords_to_colors_func : function
             The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
+
         Returns
         -------
         np.array
@@ -861,6 +862,7 @@ class Camera:
             The thickness of each point of the PMobject
         pixel_array : np.array
             The pixel array to modify.
+
         """
         if len(points) == 0:
             return

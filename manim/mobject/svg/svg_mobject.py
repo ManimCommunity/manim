@@ -40,6 +40,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         class Sample(Scene):
             def construct(self):
                 self.play(FadeIn(SVGMobject("manim-logo-sidebar.svg")))
+
     Parameters
     --------
     file_name : :class:`str`

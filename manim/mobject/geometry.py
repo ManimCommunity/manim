@@ -464,8 +464,9 @@ class ArcBetweenPoints(Arc):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
+        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(start_point, end_point, **kwargs)
-        self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
+        self.add_tip(tip_shape=tip_shape)
 
 
 class CurvedDoubleArrow(CurvedArrow):
@@ -2963,6 +2964,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        self.lines = (line1, line2)
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
@@ -3017,9 +3019,11 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 else:
                     angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
+            self.angle_value = angle_fin
+
             angle_mobject = Arc(
                 radius=radius,
-                angle=angle_fin,
+                angle=self.angle_value,
                 start_angle=start_angle,
                 arc_center=inter,
                 **kwargs,
@@ -3042,6 +3046,62 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 self.add(right_dot)
 
         self.set_points(angle_mobject.points)
+
+    def get_lines(self) -> VGroup:
+        """Get the lines forming an angle of the :class:`Angle` class.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` containing the lines that form the angle of the :class:`Angle` class.
+
+        Examples
+        --------
+        ::
+
+            >>> line_1, line_2 = Line(ORIGIN, RIGHT), Line(ORIGIN, UR)
+            >>> angle = Angle(line_1, line_2)
+            >>> angle.get_lines()
+            VGroup(Line, Line)
+        """
+
+        return VGroup(*self.lines)
+
+    def get_value(self, degrees: bool = False) -> float:
+        """Get the value of an angle of the :class:`Angle` class.
+
+        Parameters
+        ----------
+        degrees
+            A boolean to decide the unit (deg/rad) in which the value of the angle is returned.
+
+        Returns
+        -------
+        :class:`float`
+            The value in degrees/radians of an angle of the :class:`Angle` class.
+
+        Examples
+        --------
+
+        .. manim:: GetValueExample
+            :save_last_frame:
+
+            class GetValueExample(Scene):
+                def construct(self):
+                    line1 = Line(LEFT+(1/3)*UP, RIGHT+(1/3)*DOWN)
+                    line2 = Line(DOWN+(1/3)*RIGHT, UP+(1/3)*LEFT)
+
+                    angle = Angle(line1, line2, radius=0.4)
+
+                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
+                    value.next_to(angle, UR)
+
+                    self.add(line1, line2, angle, value)
+        """
+
+        if degrees:
+            return self.angle_value / DEGREES
+        return self.angle_value
 
 
 class RightAngle(Angle):

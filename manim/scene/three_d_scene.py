@@ -51,6 +51,7 @@ class ThreeDScene(Scene):
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
         distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
     ):
@@ -71,6 +72,9 @@ class ThreeDScene(Scene):
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
+        zoom : float, optional
+            The zoom factor of the scene.
+
         frame_center : list, tuple or np.array, optional
             The new center of the camera frame in cartesian coordinates.
 
@@ -83,6 +87,8 @@ class ThreeDScene(Scene):
             self.renderer.camera.set_distance(distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
+        if zoom is not None:
+            self.renderer.camera.set_zoom(zoom)
         if frame_center is not None:
             self.renderer.camera._frame_center.move_to(frame_center)
 
@@ -169,6 +175,7 @@ class ThreeDScene(Scene):
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
         distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         added_anims: Iterable["Animation"] = [],
@@ -192,6 +199,9 @@ class ThreeDScene(Scene):
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
+        zoom : int or float, optional
+            The zoom factor of the camera.
+
         frame_center : list, tuple or np.array, optional
             The new center of the camera frame in cartesian coordinates.
 
@@ -205,6 +215,7 @@ class ThreeDScene(Scene):
             (theta, self.renderer.camera.theta_tracker),
             (distance, self.renderer.camera.distance_tracker),
             (gamma, self.renderer.camera.gamma_tracker),
+            (zoom, self.renderer.camera.zoom_tracker),
         ]
         for value, tracker in value_tracker_pairs:
             if value is not None:
@@ -409,11 +420,11 @@ class SpecialThreeDScene(ThreeDScene):
         Parameters
         ----------
         **kwargs
-            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
+            Any valid parameter of :class:`~.Sphere` or :class:`~.Surface`.
 
         Returns
         -------
-        :class:`.Sphere`
+        :class:`~.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)

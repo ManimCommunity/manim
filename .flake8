@@ -1,15 +1,18 @@
 [flake8]
 # Exclude the grpc generated code
 exclude = ./.*,manim/grpc/gen/*
-max-complexity = 35
-max-line-length = 211
+max-complexity = 15
+max-line-length = 80
 statistics = True
+rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
+rst-directives = manim, SEEALSO, seealso
+select = B9
 
                 # Black Compatibility
 extend-ignore = E203, W503,
 
                 # Unused imports, wildcard imports, and unused variables
-                F401, F403, F405, F841,
+                F401, F403, F405, F841, E501,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
@@ -33,7 +36,7 @@ extend-ignore = E203, W503,
                 D400, D401, D402, D403, D412, D414,
 
                 # Plug-in: flake8-rst-docstrings
-                RST201, RST203, RST205, RST210, RST212, RST213, RST215,
-                RST301, RST303, RST304,
+                RST201, RST203, RST210, RST212, RST213, RST215,
+                RST301,
 
 # I believe B009, B010, and F841 can be removed but I don't want to break things

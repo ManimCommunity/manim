@@ -48,6 +48,8 @@ class SceneFileWriter:
 
     """
 
+    force_output_as_scene_name = False
+
     def __init__(self, renderer, scene_name, **kwargs):
         self.renderer = renderer
         self.stream_lock = False
@@ -74,7 +76,9 @@ class SceneFileWriter:
         else:
             module_name = ""
 
-        if config["output_file"] and not config["write_all"]:
+        if SceneFileWriter.force_output_as_scene_name:
+            default_name = Path(scene_name)
+        elif config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)

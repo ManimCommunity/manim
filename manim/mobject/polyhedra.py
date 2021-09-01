@@ -90,7 +90,7 @@ class Polyhedron(VGroup):
         faces_config: Dict[str, Union[str, int, float, bool]] = {},
         graph_config: Dict[str, Union[str, int, float, bool]] = {},
     ):
-        VGroup.__init__(self)
+        super().__init__()
         self.faces_config = dict(
             {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
         )
