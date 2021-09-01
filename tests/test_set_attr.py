@@ -1,12 +1,14 @@
 import numpy as np
 import pytest
 
+from manim import config
 from manim.constants import RIGHT
-from manim.opengl import OpenGLSquare
+from manim.mobject.geometry import Square
 
 
 def test_Data():
-    a = OpenGLSquare().move_to(RIGHT)
+    config.renderer = "opengl"
+    a = Square().move_to(RIGHT)
     data_bb = a.data["bounding_box"]
     assert np.array_equal(
         data_bb, np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [2.0, 1.0, 0.0]])
@@ -34,3 +36,4 @@ def test_Data():
     )
 
     assert np.array_equal(a.bounding_box, data_bb)
+    config.renderer = "cairo"  # needs to be here or else the following cairo tests fail
