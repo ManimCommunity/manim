@@ -33,7 +33,13 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup, VMobject
+from ..mobject.types.vectorized_mobject import (
+    Mobject,
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -702,7 +708,9 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x: float, graph: Union["ParametricFunction", VMobject]) -> np.ndarray:
+    def input_to_graph_point(
+        self, x: float, graph: Union["ParametricFunction", VMobject]
+    ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Examples
@@ -749,7 +757,11 @@ class CoordinateSystem:
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
             else:
-                raise ValueError("x={} not located in the range of the graph ([{}, {}])".format(x, self.p2c(graph.get_start())[0], self.p2c(graph.get_end())[0]))
+                raise ValueError(
+                    "x={} not located in the range of the graph ([{}, {}])".format(
+                        x, self.p2c(graph.get_start())[0], self.p2c(graph.get_end())[0]
+                    )
+                )
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
