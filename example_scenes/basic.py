@@ -137,7 +137,7 @@ class UnionExample(Scene):
         self.add(a, b)
         self.wait(.7)
         self.play(FadeIn(union))
-        self.play(union.animate.move_to(RIGHT))
+        self.play(union.animate.next_to(b))
 
 
 

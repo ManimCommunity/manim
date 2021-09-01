@@ -82,18 +82,20 @@ class Union(_BooleanOps):
         self._convert_skia_path_to_vmobject(outpen)
 
 class Difference(_BooleanOps):
-    def __init__(self, vmobject1, vmobject2, **kwargs) -> None:
+    def __init__(self, subject, clip, **kwargs) -> None:
         super().__init__(self, **kwargs)
         #paths = []
         #for vmobject in vmobjects:
         #    paths.append(self._convert_vmobject_to_skia_path(vmobject))
         outpen = SkiaPath()
-        difference([self._convert_vmobject_to_skia_path(vmobject1)],[self._convert_vmobject_to_skia_path(vmobject2)], outpen.getPen())
+        difference([self._convert_vmobject_to_skia_path(subject)],[self._convert_vmobject_to_skia_path(clip)], outpen.getPen())
         self._convert_skia_path_to_vmobject(outpen)
 
 
 class Intersection(_BooleanOps):
     def __init__(self, *vmobjects, **kwargs) -> None:
         super().__init__(self, **kwargs)
+        outpen = SkiaPath()
+#        intersection([])
 
 
