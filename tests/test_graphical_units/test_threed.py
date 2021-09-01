@@ -55,14 +55,14 @@ def test_CameraMoveAxes(scene):
     axes = ThreeDAxes()
     scene.add(axes)
     scene.add(Dot([1, 2, 3]))
-    scene.move_camera(phi=PI / 8, theta=-PI / 8, frame_center=[1, 2, 3])
+    scene.move_camera(phi=PI / 8, theta=-PI / 8, frame_center=[1, 2, 3], zoom=2)
 
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_CameraMove(scene):
     cube = Cube()
     scene.add(cube)
-    scene.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1])
+    scene.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1], zoom=0.5)
 
 
 @frames_comparison(base_scene=ThreeDScene)
