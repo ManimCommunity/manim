@@ -12,6 +12,7 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import final
 
 try:
     import dearpygui.dearpygui as dpg
@@ -104,6 +105,8 @@ class Scene:
         self.time_progression = None
         self.duration = None
         self.last_t = None
+        self.to_speed = None
+        self.speed = 1
         self.queue = Queue()
         self.skip_animation_preview = False
         self.meshes = []
@@ -755,7 +758,7 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations, duration):
+    def _get_animation_time_progression(self, animations, duration, to_speed):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -786,10 +789,11 @@ class Scene:
                     f"Waiting for {stop_condition.__name__}",
                     n_iterations=-1,  # So it doesn't show % progress
                     override_skip_animations=True,
+                    to_speed=to_speed,
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration, f"Waiting {self.renderer.num_plays}"
+                    duration, f"Waiting {self.renderer.num_plays}", to_speed=to_speed
                 )
         else:
             time_progression = self.get_time_progression(
@@ -801,11 +805,17 @@ class Scene:
                         (", etc." if len(animations) > 1 else ""),
                     ]
                 ),
+                to_speed=to_speed,
             )
         return time_progression
 
     def get_time_progression(
-        self, run_time, description, n_iterations=None, override_skip_animations=False
+        self,
+        run_time,
+        description,
+        n_iterations=None,
+        override_skip_animations=False,
+        to_speed=None,
     ):
         """
         You will hardly use this when making your own animations.
@@ -836,8 +846,17 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            step = 1 / config["frame_rate"]
-            times = np.arange(0, run_time, step)
+            init_dt = self.speed / config["frame_rate"]
+            if to_speed is not None:
+                final_dt = to_speed / config["frame_rate"]
+                n = 2 / (init_dt + final_dt)
+                d = (final_dt - init_dt) / (1 - n)
+                times = []
+                for i in range(int(n)):
+                    times.append(run_time * 0.5 * i * (2 * init_dt + (1 - i) * d))
+
+            else:
+                times = np.arange(0, run_time, init_dt)
         time_progression = tqdm(
             times,
             desc=description,
@@ -876,8 +895,10 @@ class Scene:
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
 
-    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.play(Wait(run_time=duration, stop_condition=stop_condition))
+    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None, to_speed=None):
+        self.play(
+            Wait(run_time=duration, stop_condition=stop_condition), to_speed=to_speed
+        )
 
     def wait_until(self, stop_condition, max_time=60):
         """
@@ -916,6 +937,7 @@ class Scene:
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
+        self.to_speed = play_kwargs.pop("to_speed", None)
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
@@ -973,8 +995,9 @@ class Scene:
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration
+            self.animations, self.duration, self.to_speed
         )
+        print(list(self.time_progression))
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
@@ -982,7 +1005,8 @@ class Scene:
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
-
+        if self.to_speed is not None:
+            self.speed = self.to_speed
         for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
