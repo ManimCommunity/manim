@@ -535,21 +535,22 @@ class Text(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
+        # TODO: use pango's font size scaling.
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         else:
-            # multiply by (1/2.4) because it makes it work.
-            self.scale(
-                TEXT_MOB_SCALE_FACTOR
-                * (1 / 2.4)
-                * font_val
-                * self.initial_height
-                / self.height
-            )
+            self.scale(font_val / self.font_size)
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -1153,7 +1154,14 @@ class MarkupText(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
@@ -1161,13 +1169,7 @@ class MarkupText(SVGMobject):
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         else:
-            self.scale(
-                TEXT_MOB_SCALE_FACTOR
-                * (1 / 2.4)
-                * font_val
-                * self.initial_height
-                / self.height
-            )
+            self.scale(font_val / self.font_size)
 
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
