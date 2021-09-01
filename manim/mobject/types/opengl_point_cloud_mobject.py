@@ -96,7 +96,7 @@ class OpenGLPMobject(OpenGLMobject):
 
             mob.rgbas = np.array(
                 np.array(
-                    [interpolate(start_rgba, end_rgba, alpha) for alpha in alphas]
+                    [interpolate(start_rgba, end_rgba, alpha) for alpha in alphas],
                 ),
             )
         return self
