@@ -12,7 +12,7 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..utils.bezier import interpolate
+from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.config_ops import _Data, _Uniforms
 from ..utils.deprecation import deprecated
@@ -66,7 +66,7 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow=0.0,
         # For shaders
-        render_primitive=moderngl.TRIANGLE_STRIP,
+        render_primitive=moderngl.TRIANGLES,
         texture_paths=None,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
@@ -135,7 +135,7 @@ class OpenGLMobject:
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
-        # Typically implemented in subclass, unlpess purposefully left blank
+        # Typically implemented in subclass, unless purposefully left blank
         pass
 
     def set_data(self, data):
@@ -265,6 +265,11 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
+    def apply_over_attr_arrays(self, func):
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
+
     def append_points(self, new_points):
         self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
@@ -275,6 +280,9 @@ class OpenGLMobject:
             for key in mob.data:
                 mob.data[key] = mob.data[key][::-1]
         return self
+
+    def get_midpoint(self):
+        return self.point_from_proportion(0.5)
 
     def apply_points_function(
         self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
@@ -1265,6 +1273,23 @@ class OpenGLMobject:
             for mob in self.get_family(recurse):
                 mob.data[name] = rgbas.copy()
         return self
+
+    def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+        """Directly set rgba data from `rgbas` and optionally do the same recursively
+        with submobjects. This can be used if the `rgbas` have already been generated
+        with the correct shape and simply need to be set.
+
+        Parameters
+        ----------
+        rgbas
+            the rgba to be set as data
+        name
+            the name of the data attribute to be set
+        recurse
+            set to true to recursively apply this method to submobjects
+        """
+        for mob in self.get_family(recurse):
+            mob.data[name] = rgbas.copy()
 
     def set_color(self, color, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)

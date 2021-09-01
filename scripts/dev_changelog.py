@@ -44,9 +44,11 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
 import datetime
+import os
 import re
 from collections import defaultdict
 from pathlib import Path
+from posixpath import dirname
 from textwrap import dedent, indent
 
 import click
@@ -73,6 +75,18 @@ PR_LABELS = {
     "release": "New releases",
     "unlabeled": "Unclassified changes",
 }
+
+
+def update_citation(version, date):
+    current_directory = os.path.dirname(__file__)
+    parent_directory = os.path.split(current_directory)[0]
+    with open(os.path.join(current_directory, "TEMPLATE.cff"), "r") as a, open(
+        os.path.join(parent_directory, "CITATION.cff"), "w"
+    ) as b:
+        contents = a.read()
+        contents = contents.replace("<version>", version)
+        contents = contents.replace("<date_released>", date)
+        b.write(contents)
 
 
 def process_pullrequests(lst, cur, github_repo, pr_nums):
@@ -190,6 +204,10 @@ def main(token, prior, tag, additional, outfile):
     authors = contributions["authors"]
     reviewers = contributions["reviewers"]
 
+    # update citation file
+    today = datetime.date.today()
+    update_citation(tag, str(today))
+
     if not outfile:
         outfile = (
             Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
@@ -203,7 +221,6 @@ def main(token, prior, tag, additional, outfile):
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
 
-        today = datetime.date.today()
         f.write(f":Date: {today.strftime('%B %d, %Y')}\n\n")
 
         heading = "Contributors"
