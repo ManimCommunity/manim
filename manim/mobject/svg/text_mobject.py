@@ -598,9 +598,12 @@ class Text(SVGMobject):
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(word, self.original_text):
-                start_offset = self.original_text[:start].count(" ")
-                end_offset = self.original_text[:end].count(" ")
-                self.chars[start - start_offset : end - end_offset].set_color(color)
+                if not self.disable_ligatures:
+                    start_offset = self.original_text[:start].count(" ")
+                    end_offset = self.original_text[:end].count(" ")
+                    self.chars[start - start_offset:end - end_offset].set_color(color)
+                else:
+                    self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
         """Internally used. Sets gradient colors for specified
@@ -608,11 +611,14 @@ class Text(SVGMobject):
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
             for start, end in self.find_indexes(word, self.original_text):
-                start_offset = self.original_text[:start].count(" ")
-                end_offset = self.original_text[:end].count(" ")
-                self.chars[
-                    start - start_offset : end - end_offset
-                ].set_color_by_gradient(*gradient)
+                if not self.disable_ligatures:
+                    start_offset = self.original_text[:start].count(" ")
+                    end_offset = self.original_text[:end].count(" ")
+                    self.chars[
+                        start - start_offset : end - end_offset
+                    ].set_color_by_gradient(*gradient)
+                else:
+                    self.chars[start: end].set_color_by_gradient(*gradient)
 
     def text2hash(self):
         """Internally used function.
