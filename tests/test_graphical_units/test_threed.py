@@ -62,7 +62,7 @@ def test_CameraMoveAxes(scene):
 def test_CameraMove(scene):
     cube = Cube()
     scene.add(cube)
-    scene.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1], zoom=1.5)
+    scene.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1], zoom=0.5)
 
 
 @frames_comparison(base_scene=ThreeDScene)
