@@ -113,7 +113,7 @@ Enhancements
 * `#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Added OpenGL support for :class:`~.PMobject` and its subclasses
 
 
-* `#1881 <https://github.com/ManimCommunity/manim/pull/1881>`__: Added methods :meth:`~.get_lines` and :meth:`~.get_value` to :class:`~.Angle`
+* `#1881 <https://github.com/ManimCommunity/manim/pull/1881>`__: Added methods :meth:`.Angle.get_lines` and :meth:`.Angle.get_value` to :class:`~.Angle`
 
 
 * `#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Added the option to save last frame for OpenGL
