@@ -1,11 +1,13 @@
 import pytest
 
-from manim.mobject.svg.text_mobject import MarkupText, Text
 from manim import RED
+from manim.mobject.svg.text_mobject import MarkupText, Text
+
 
 def get_color(mobject):
 
     return mobject.get_color().get_hex()
+
 
 def test_font_size():
     """Test that Text and MarkupText return the
@@ -15,6 +17,7 @@ def test_font_size():
 
     assert round(text_string.font_size, 5) == 14.4
     assert round(markuptext_string.font_size, 5) == 14.4
+
 
 def test_set_color_by_t2c():
     """Test Text.set_color_by_t2c()."""
