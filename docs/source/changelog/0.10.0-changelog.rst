@@ -7,7 +7,7 @@ v0.10.0
 Contributors
 ============
 
-A total of 38 people contributed to this
+A total of 39 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -25,7 +25,7 @@ time.
 * Laith Bahodi
 * Lalourche +
 * Max Stoumen
-* Naveen
+* Naveen M K
 * Oliver
 * Partha Das +
 * Raj Dandekar +
@@ -55,8 +55,9 @@ the following contributors.
 * Jason Villanueva
 * Jephian Lin
 * Joy Bhalla
+* KingWampy
 * Laith Bahodi
-* Naveen
+* Naveen M K
 * Oliver
 * Raghav Goel
 * Raj Dandekar
@@ -69,19 +70,22 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 57 pull requests were merged for this release.
+A total of 59 pull requests were merged for this release.
 
 Breaking changes
 ----------------
 
-* `#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Drop redundant OpenGL files and add metaclass support for `Surface`
-   `OpenGL<x>` classes from `opengl_geometry.py`, `opengl_text_mobject.py`, `opengl_tex_mobject.py`, `opengl_svg_path.py`, `opengl_svg_mobject.py` and most of `opengl_three_dimensions.py` have been removed. 
-   `ParametricSurface` has been renamed to `Surface`
+* `#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`
+   - ``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed. 
+   - ``ParametricSurface`` has been renamed to :class:`~.Surface`
 
 Deprecated classes and functions
 --------------------------------
 
 * `#1941 <https://github.com/ManimCommunity/manim/pull/1941>`__: Added examples, tests and improved documentation for :mod:`~.coordinate_systems`
+
+
+* `#1694 <https://github.com/ManimCommunity/manim/pull/1694>`__: Added ``font_size`` parameter for :class:`~.Tex` and :class:`~.Text`, replaced ``scale`` parameters with ``font_size``
 
 
 * `#1860 <https://github.com/ManimCommunity/manim/pull/1860>`__: Removed :class:`~.GraphScene`, :class:`~.NumberLineOld` and parameters for :class:`~.ChangingDecimal`
@@ -90,11 +94,23 @@ Deprecated classes and functions
 New features
 ------------
 
-* `#1828 <https://github.com/ManimCommunity/manim/pull/1828>`__: Add configuration option ``zero_pad`` for zero padding PNGs.
+* `#1929 <https://github.com/ManimCommunity/manim/pull/1929>`__: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`
+   Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method.
+
+* `#1980 <https://github.com/ManimCommunity/manim/pull/1980>`__: Added a 'dissipating' feature for `TracedPath`
+
+
+* `#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow switching the renderer to OpenGL at runtime
+   Previously, the metaclass approach only changed the inheritance chain to switch between OpenGL and cairo mobjects when the class objects are initialized, i.e., at import time. This PR also triggers the changes to the inheritance chain when the value of ``config.renderer`` is changed.
+
+* `#1828 <https://github.com/ManimCommunity/manim/pull/1828>`__: Added configuration option ``zero_pad`` for zero padding PNG file names
 
 
 Enhancements
 ------------
+
+* `#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Added OpenGL support for :class:`~.PMobject` and its subclasses
+
 
 * `#1881 <https://github.com/ManimCommunity/manim/pull/1881>`__: Added methods :meth:`~.get_lines` and :meth:`~.get_value` to :class:`~.Angle`
 
@@ -102,81 +118,82 @@ Enhancements
 * `#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Added the option to save last frame for OpenGL
 
 
-* `#1694 <https://github.com/ManimCommunity/manim/pull/1694>`__: Add `font_size` parameter for `Tex` and `Text` mobjects. 
+* `#1922 <https://github.com/ManimCommunity/manim/pull/1922>`__: Fixed IPython interface to exit cleanly when OpenGL renderer raises an error
 
 
-* `#1922 <https://github.com/ManimCommunity/manim/pull/1922>`__: Clean up when OpenGL renderer raises an error using IPython
+* `#1923 <https://github.com/ManimCommunity/manim/pull/1923>`__: Fixed CLI help text for ``manim init`` subcommand so that it is not truncated
 
 
-* `#1923 <https://github.com/ManimCommunity/manim/pull/1923>`__: Fixed init help text formatting so that it's not truncated
-
-
-* `#1868 <https://github.com/ManimCommunity/manim/pull/1868>`__: Add OpenGL support to IPython magic
-   The OpenGL renderer can now be used in jupyter notebooks when using the `%%manim` magic command. However, it is required to set the renderer via a configuration file, as the manim import must happen after setting the renderer.
+* `#1868 <https://github.com/ManimCommunity/manim/pull/1868>`__: Added OpenGL support to IPython magic
+   The OpenGL renderer can now be used in jupyter notebooks when using the ``%%manim`` magic command.
 
 * `#1841 <https://github.com/ManimCommunity/manim/pull/1841>`__: Reduced default resolution of :class:`~.Dot3D`
 
 
-* `#1847 <https://github.com/ManimCommunity/manim/pull/1847>`__: Allow :class:`~.Cross` to be created without requiring a mobject.
+* `#1866 <https://github.com/ManimCommunity/manim/pull/1866>`__: Allow passing keyword argument ``corner_radius`` to :class:`~.SurroundingRectangle`
+
+
+* `#1847 <https://github.com/ManimCommunity/manim/pull/1847>`__: Allow :class:`~.Cross` to be created without requiring a mobject
 
 
 Fixed bugs
 ----------
 
-* `#1985 <https://github.com/ManimCommunity/manim/pull/1985>`__: Use `height` to determine `font_size` instead of the `_font_size` attribute.
+* `#1985 <https://github.com/ManimCommunity/manim/pull/1985>`__: Use ``height`` to determine ``font_size`` instead of the ``_font_size`` attribute
 
 
-* `#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fixed opengl scene selection
-   Fixed an issue where scene selection was ignored when using the opengl renderer
+* `#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fixed scene selection being ignored when using the OpenGL renderer
+
 
 * `#1871 <https://github.com/ManimCommunity/manim/pull/1871>`__: Fixed broken :meth:`.VectorScene.vector_to_coords`
 
 
 * `#1973 <https://github.com/ManimCommunity/manim/pull/1973>`__: Fixed indexing of :meth:`.Table.get_entries` to respect row length
-   Change 1: The original get_entries and get_entries_without_label used self.row_dim to calculate the flattened index. row_dim, however, refers to the number of rows and since python unrolls row major, it should be the width or column dim.
-   Change 2: L607 was also using len(self.mob_table), while get_entries_without_label uses self.row. This was changed to self.col to be consistent and to also fix the same issue as Change 1.
+
 
 * `#1950 <https://github.com/ManimCommunity/manim/pull/1950>`__: Fixed passing custom arrow shapes to :class:`~.CurvedArrow`
 
 
-* `#1967 <https://github.com/ManimCommunity/manim/pull/1967>`__: Fix :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels.
+* `#1967 <https://github.com/ManimCommunity/manim/pull/1967>`__: Fixed :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels
 
 
-* `#1951 <https://github.com/ManimCommunity/manim/pull/1951>`__: Fixed the positioning of line graph that was under the graph 
-   Removed a part of code that caused the `line_graph` to be positioned behind the `Axes` / `NumberPlane`. Fixes the issue #1464.
+* `#1951 <https://github.com/ManimCommunity/manim/pull/1951>`__: Fixed :meth:`.Axes.get_line_graph` returning a graph rendered below the axes
 
-* `#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Added buff parameter to :class:`~.BraceLabel`.
-   Quickfix for #1769
+
+* `#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Added ``buff`` keyword argument to :class:`~.BraceLabel`
+
 
 * `#1938 <https://github.com/ManimCommunity/manim/pull/1938>`__: Fixed :class:`~.Rotate` for angles that are multiples of :math:`2\pi`
-   Fixed Rotate animation when trying to rotate by multiples of 2π
-   Closes #1935
 
-* `#1924 <https://github.com/ManimCommunity/manim/pull/1924>`__: Made arrow tips rotate up/down
-   Arrow tips will rotate according to the difference in the z-coordinates
+
+* `#1924 <https://github.com/ManimCommunity/manim/pull/1924>`__: Made arrow tips rotate ``IN`` and ``OUT`` properly
+
 
 * `#1931 <https://github.com/ManimCommunity/manim/pull/1931>`__: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`
 
 
-* `#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fixed single-scene issue with gui
-   Fixed issue where the gui crashes when not specifying the scene
-
-* `#1744 <https://github.com/ManimCommunity/manim/pull/1744>`__: Fix :class:`~.NumberPlane` bug with positive/negative `x_range`/`y_range` values.
+* `#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fixed CLI error when rendering a file containing a single scene without specifying the scene name
 
 
-* `#1887 <https://github.com/ManimCommunity/manim/pull/1887>`__: Fix ``custom_config`` not working in ``frames_comparison``
-   Fix arguments passed into custom_config not working in graphical unit tests.
+* `#1744 <https://github.com/ManimCommunity/manim/pull/1744>`__: Fixed bug in :class:`~.NumberPlane` with strictly positive or strictly negative values for ``x_range`` and ``y_range``
+
+
+* `#1887 <https://github.com/ManimCommunity/manim/pull/1887>`__: Fixed ``custom_config`` not working in ``frames_comparison``
+
+
+* `#1879 <https://github.com/ManimCommunity/manim/pull/1879>`__: Fixed how the installed version is determined by Poetry
+
 
 Documentation-related changes
 -----------------------------
 
-* `#1979 <https://github.com/ManimCommunity/manim/pull/1979>`__: Correct Japanese phrases in documentation
-   Adjusts Japanese test phrases in `manim/mobject/svg/text_mobject.py`.
-
-* `#1976 <https://github.com/ManimCommunity/manim/pull/1976>`__: Fix labelling of languages in documentation example
+* `#1979 <https://github.com/ManimCommunity/manim/pull/1979>`__: Corrected Japanese phrases in documentation
 
 
-* `#1949 <https://github.com/ManimCommunity/manim/pull/1949>`__: Reworked installation instructions
+* `#1976 <https://github.com/ManimCommunity/manim/pull/1976>`__: Fixed labelling of languages in documentation example
+
+
+* `#1949 <https://github.com/ManimCommunity/manim/pull/1949>`__: Rewrite installation instructions from scratch
 
 
 * `#1963 <https://github.com/ManimCommunity/manim/pull/1963>`__: Added sitemap to ``robots.txt``
@@ -188,18 +205,13 @@ Documentation-related changes
 * `#1918 <https://github.com/ManimCommunity/manim/pull/1918>`__: Fixed a typo in the text tutorial
 
 
-* `#1915 <https://github.com/ManimCommunity/manim/pull/1915>`__: Fix wording problem in colab installation docs
-   Fixes wording problem in colab installation docs.
+* `#1915 <https://github.com/ManimCommunity/manim/pull/1915>`__: Improved the wording of the installation instructions for Google Colab
 
-* `#1906 <https://github.com/ManimCommunity/manim/pull/1906>`__: Consistency and language improvements for README
-   - Add `BibTex` language hint to citation code fence
-   - Add missing `sh` language hint to code fences
-   - Correct grammar
-   - Make code fence spacing consistent
-   - Make header spacing consistent
-   - Remove trailing whitespace
 
-* `#1880 <https://github.com/ManimCommunity/manim/pull/1880>`__: Update an example to use .animate instead of ApplyMethod
+* `#1906 <https://github.com/ManimCommunity/manim/pull/1906>`__: Improved language and overall consistency in ``README``
+
+
+* `#1880 <https://github.com/ManimCommunity/manim/pull/1880>`__: Updated tutorials to use ``.animate`` instead of :class:`~.ApplyMethod`
 
 
 * `#1877 <https://github.com/ManimCommunity/manim/pull/1877>`__: Remove duplicated imports in some documentation examples
@@ -211,8 +223,8 @@ Documentation-related changes
 Changes concerning the testing system
 -------------------------------------
 
-* `#1894 <https://github.com/ManimCommunity/manim/pull/1894>`__: Fix test_opengl::test_Circle 
-   Fix test_opengl::test_Circle xfailing due to an error.
+* `#1894 <https://github.com/ManimCommunity/manim/pull/1894>`__: Fixed an OpenGL test
+
 
 Changes to our development infrastructure
 -----------------------------------------
@@ -220,7 +232,7 @@ Changes to our development infrastructure
 * `#1987 <https://github.com/ManimCommunity/manim/pull/1987>`__: Added support for using OpenGL in subprocess in Windows pipeline
 
 
-* `#1964 <https://github.com/ManimCommunity/manim/pull/1964>`__: Add `CITATION.cff` and a method to automatically update this citation with new releases
+* `#1964 <https://github.com/ManimCommunity/manim/pull/1964>`__: Added ``CITATION.cff`` and a method to automatically update this citation with new releases
 
 
 * `#1856 <https://github.com/ManimCommunity/manim/pull/1856>`__: Modified Dockerfile to support multi-platform builds via ``docker buildx``
@@ -235,13 +247,14 @@ Changes to our development infrastructure
 * `#1864 <https://github.com/ManimCommunity/manim/pull/1864>`__: Shortened and simplified PR template
 
 
+* `#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Update Sphinx to 4.1.2
+
+
 Code quality improvements and similar refactors
 -----------------------------------------------
 
 * `#1960 <https://github.com/ManimCommunity/manim/pull/1960>`__: Ignore fewer flake8 errors
-   Remove flake8 tests that are passing and shorten some long lines to get to --max-line-length=211.
 
-   Are docstrings used to build docs?  If so, does wrapping long lines mess up the docs?
 
 * `#1947 <https://github.com/ManimCommunity/manim/pull/1947>`__: Set flake8 not to ignore undefined names in Python code
 
@@ -250,40 +263,21 @@ Code quality improvements and similar refactors
 
 
 * `#1956 <https://github.com/ManimCommunity/manim/pull/1956>`__:  Upgrade to modern Python syntax
-   This pull request was created with the command [`pyupgrade --py36-plus **/*.py`](https://github.com/asottile/pyupgrade#readme)
+   - This pull request was created `with the command <https://github.com/asottile/pyupgrade#readme>`__ ``pyupgrade --py36-plus **/*.py``
+   - Python f-strings simplify the code and `should speed up execution <https://www.scivision.dev/python-f-string-speed>`__.
 
-   Python f-strings simplify the code and [should speed up execution](https://www.scivision.dev/python-f-string-speed).
+* `#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced ``self.data["attr"]`` and ``self.uniforms["attr"]`` with ``self.attr``
+   In particular, ``OpenGLVMobject.points`` can now be accessed directly.
 
-* `#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced `self.data["attr"]` and `self.uniforms["attr"]` with `self.attr`.
+* `#1934 <https://github.com/ManimCommunity/manim/pull/1934>`__: Improved code quality by implementing suggestions from LGTM
 
 
-* `#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated dearpygui version to 0.8.x
+* `#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated ``dearpygui`` version to 0.8.x
 
 
 New releases
 ------------
 
 * `#1989 <https://github.com/ManimCommunity/manim/pull/1989>`__: Prepare new release v0.10.0
-
-
-Unclassified changes
---------------------
-
-* `#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Add OpenGL support for :class:`~.PMobject`
-   Added opengl support for PMobject and its subclasses
-
-* `#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow to switch the renderer to opengl at runtime
-
-
-* `#1934 <https://github.com/ManimCommunity/manim/pull/1934>`__: Improve code quality by implementing suggestions from LGTM
-
-
-* `#1879 <https://github.com/ManimCommunity/manim/pull/1879>`__: Fix version stated in poetry
-
-
-* `#1866 <https://github.com/ManimCommunity/manim/pull/1866>`__: Use parameter `corner_radius` also in `SurroundingRectangle`
-
-
-* `#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Update sphinx to 4.1.2
 
 
