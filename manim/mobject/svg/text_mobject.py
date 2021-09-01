@@ -601,7 +601,7 @@ class Text(SVGMobject):
                 if not self.disable_ligatures:
                     start_offset = self.original_text[:start].count(" ")
                     end_offset = self.original_text[:end].count(" ")
-                    self.chars[start - start_offset:end - end_offset].set_color(color)
+                    self.chars[start - start_offset : end - end_offset].set_color(color)
                 else:
                     self.chars[start:end].set_color(color)
 
@@ -618,7 +618,7 @@ class Text(SVGMobject):
                         start - start_offset : end - end_offset
                     ].set_color_by_gradient(*gradient)
                 else:
-                    self.chars[start: end].set_color_by_gradient(*gradient)
+                    self.chars[start:end].set_color_by_gradient(*gradient)
 
     def text2hash(self):
         """Internally used function.
