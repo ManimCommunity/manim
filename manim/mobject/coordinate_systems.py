@@ -33,7 +33,7 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup, VMobject
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -702,7 +702,7 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
+    def input_to_graph_point(self, x: float, graph: Union["ParametricFunction", VMobject]) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Examples
