@@ -339,6 +339,7 @@ class OpenGLRenderer:
                 shader_wrapper.vert_data,
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
+                primitive=mobject.render_primitive,
             )
             mesh.set_uniforms(self)
             mesh.render()
