@@ -750,6 +750,14 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
 
 def cartesian_to_spherical(vec: Sequence[float]) -> Tuple[float, float, float]:
+    """Returns a tuple of numbers corresponding to each
+    polar coordinate value (distance, phi, theta).
+
+    Parameters
+    ----------
+    vec
+        A numpy array ``[x, y, z]``.
+    """
     norm = np.linalg.norm(vec)
     if norm == 0:
         return 0, 0, 0
@@ -760,6 +768,18 @@ def cartesian_to_spherical(vec: Sequence[float]) -> Tuple[float, float, float]:
 
 
 def spherical_to_cartesian(r: float, theta: float, phi: float) -> np.ndarray:
+    """Returns a numpy array ``[x, y, z]`` based on the spherical
+    coordinates given.
+
+    Parameters
+    ----------
+    r
+        The distance between the point and the origin.
+    theta
+        The azimuthal angle of the point to the positive x-axis.
+    phi
+        The vertical angle of the point to the positive z-axis.
+    """
     return np.array(
         [
             r * np.cos(theta) * np.sin(phi),
