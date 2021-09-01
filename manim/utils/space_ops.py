@@ -27,6 +27,8 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "cartesian_to_spherical",
+    "spherical_to_cartesian",
     "perpendicular_bisector",
 ]
 
@@ -747,22 +749,22 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def cartesian_to_spherical(vec):
+def cartesian_to_spherical(vec: Sequence[float]) -> Tuple[float, float, float]:
     norm = np.linalg.norm(vec)
     if norm == 0:
         return 0, 0, 0
     r = norm
-    theta = np.arccos(vec[2] / r)
-    phi = np.arctan2(vec[1], vec[0])
-    return r, theta, phi
+    phi = np.arccos(vec[2] / r)
+    theta = np.arctan2(vec[1], vec[0])
+    return r, phi, theta
 
 
-def spherical_to_cartesian(r, theta, phi):
+def spherical_to_cartesian(r: float, theta: float, phi: float) -> np.ndarray:
     return np.array(
         [
-            r * np.cos(phi) * np.sin(theta),
-            r * np.sin(phi) * np.sin(theta),
-            r * np.cos(theta),
+            r * np.cos(theta) * np.sin(phi),
+            r * np.sin(theta) * np.sin(phi),
+            r * np.cos(phi),
         ]
     )
 
