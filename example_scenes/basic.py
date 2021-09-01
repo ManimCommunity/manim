@@ -129,8 +129,9 @@ class UpdatersExample(Scene):
 
 class UnionExample(Scene):
     def construct(self):
-        a = Square()
-        b = Circle().move_to([0.2, 0.2, 0])
+#        a = Square()
+        a = ArcPolygon([0,0,0], [0,1,0], [0,2,0])
+        b = Circle().move_to([0.3, 0.2, 0])
         union = Difference(a, b)
         union.set_color(BLUE)
         self.add(a, b)
