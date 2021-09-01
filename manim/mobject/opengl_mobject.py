@@ -315,7 +315,7 @@ class OpenGLMobject:
     def match_points(self, mobject):
         self.set_points(mobject.points)
 
-    @deprecated(since="0.10.0", replacement="self.points")
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return self.points
 
