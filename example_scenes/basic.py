@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from manim.mobject.boolean_ops import Difference, Union
 from manim import *
 
 # To watch one of these scenes, run the following:
