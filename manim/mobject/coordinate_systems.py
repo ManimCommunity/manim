@@ -1088,7 +1088,7 @@ class CoordinateSystem:
     def get_area(
         self,
         graph: "ParametricFunction",
-        x_range: Optional[Sequence[float]] = None,
+        x_range: Optional[Tuple[float, float]] = None,
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
         bounded_graph: "ParametricFunction" = None,
