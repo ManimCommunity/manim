@@ -295,6 +295,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         )
 
         if command == "M":  # moveto
+            print(new_points)
             self.start_new_path(new_points[0])
             for p in new_points[1:]:
                 self.add_line_to(p)
