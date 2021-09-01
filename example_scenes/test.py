@@ -29,7 +29,7 @@ def convert_2d_to_3d_array(points, z_dim=0):
 def convert_vmobject_to_skia_path(vmobject: VMobject) -> Path:
     path = Path()
     
-    path.transform(**matrix)
+    #path.transform(**matrix)
     
     if not np.all(np.isfinite(vmobject.points)):
         points = np.zeros((1,3)) # point invalid?
@@ -107,8 +107,8 @@ class Test(Scene):
         d = convert_vmobject_to_skia_path(b)
         
         t = Path()
-        #union([c, d], t.getPen())
-        intersection([c], [d], t.getPen())
+        union([c, d], t.getPen())
+        #intersection([c], [d], t.getPen())
 
         s = convert_skia_path_to_vmobject(t)
         s.set_color(BLUE)

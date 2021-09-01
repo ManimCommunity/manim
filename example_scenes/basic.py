@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from manim.mobject.boolean_ops import Difference, Union
 from manim import *
 
 # To watch one of these scenes, run the following:
@@ -126,6 +127,18 @@ class UpdatersExample(Scene):
             run_time=5,
         )
         self.wait()
+
+class UnionExample(Scene):
+    def construct(self):
+        a = Square()
+        b = Circle().move_to([0.2, 0.2, 0])
+        union = Difference(a, b)
+        union.set_color(BLUE)
+        self.add(a, b)
+        self.wait(.7)
+        self.play(FadeIn(union))
+        self.play(union.animate.move_to(RIGHT))
+
 
 
 # See many more examples at https://docs.manim.community/en/stable/examples.html
