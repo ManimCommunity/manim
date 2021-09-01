@@ -1153,8 +1153,8 @@ class CoordinateSystem:
                         bounded_graph.t_max, graph.t_min
                     )
                 )
-            a = max(graph.t_min, bounded_graph.t_min)
-            b = min(graph.t_max, bounded_graph.t_max)
+            a = max(a, bounded_graph.t_min)
+            b = min(b, bounded_graph.t_max)
 
         if bounded_graph is None:
             points = (
