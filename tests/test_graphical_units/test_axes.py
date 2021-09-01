@@ -201,7 +201,7 @@ def test_get_area(scene):
     )
     area2 = ax.get_area(
         curve1,
-        x_range=(PI / 2, 3 * PI / 2),
+        x_range=(-4.5, -2),
         color=(RED, YELLOW),
         opacity=0.2,
         bounded_graph=curve2,

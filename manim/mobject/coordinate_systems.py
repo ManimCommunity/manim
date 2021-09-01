@@ -1141,17 +1141,13 @@ class CoordinateSystem:
         else:
             a, b = x_range
         if bounded_graph is not None:
-            if bounded_graph.t_min > graph.t_max:
+            if bounded_graph.t_min > b:
                 raise ValueError(
-                    "Range of graphs not matching: {} > {}".format(
-                        bounded_graph.t_min, graph.t_max
-                    )
+                    "Ranges not matching: {} < {}".format(bounded_graph.t_min, b)
                 )
-            if bounded_graph.t_max < graph.t_min:
+            if bounded_graph.t_max < a:
                 raise ValueError(
-                    "Range of graphs not matching: {} < {}".format(
-                        bounded_graph.t_max, graph.t_min
-                    )
+                    "Ranges not matching: {} > {}".format(bounded_graph.t_max, a)
                 )
             a = max(a, bounded_graph.t_min)
             b = min(b, bounded_graph.t_max)
