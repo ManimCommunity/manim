@@ -741,6 +741,11 @@ class CoordinateSystem:
         -------
         :class:`np.ndarray`
             The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            When the target x is not in the range of the line graph.
         """
 
         if hasattr(graph, "underlying_function"):
