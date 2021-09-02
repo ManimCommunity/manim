@@ -849,11 +849,11 @@ class Scene:
             init_dt = self.speed / config["frame_rate"]
             if to_speed is not None:
                 final_dt = to_speed / config["frame_rate"]
-                n = 2 / (init_dt + final_dt)
+                n = 2 * run_time / (init_dt + final_dt)
                 d = (final_dt - init_dt) / (1 - n)
                 times = []
                 for i in range(int(n)):
-                    times.append(run_time * 0.5 * i * (2 * init_dt + (1 - i) * d))
+                    times.append(0.5 * i * (2 * init_dt + (1 - i) * d))
 
             else:
                 times = np.arange(0, run_time, init_dt)
@@ -997,7 +997,7 @@ class Scene:
         self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration, self.to_speed
         )
-        print(list(self.time_progression))
+        # print(list(self.time_progression))
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
