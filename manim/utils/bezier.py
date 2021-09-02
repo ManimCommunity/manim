@@ -378,6 +378,11 @@ def proportions_along_bezier_curve_for_point(
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
 
+    The bezier polynomial is constructed using the coordinates of the given point
+    as well as the bezier curve's control points. On solving the polynomial for each dimension,
+    if there are roots common to every dimension, those roots give the proportion along the
+    curve the point is at. If there are no real roots, the point does not lie on the curve.
+
     Parameters
     ----------
     point
@@ -406,6 +411,9 @@ def proportions_along_bezier_curve_for_point(
     :class:`ValueError`
         When ``point`` and the control points have different shapes.
     """
+    # Method taken from
+    # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
+
     if not all(np.shape(point) == np.shape(c_p) for c_p in control_points):
         raise ValueError(
             f"Point {point} and Control Points {control_points} have different shapes."
@@ -453,6 +461,9 @@ def point_lies_on_bezier(
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.
 
+    This is done by solving the bezier polynomial with the point as the constant term; if
+    any real roots exist, the point lies on the bezier curve.
+
     Parameters
     ----------
     point
@@ -470,8 +481,6 @@ def point_lies_on_bezier(
     bool
         Whether the point lies on the curve.
     """
-    # Method taken from
-    # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
 
     roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
 
