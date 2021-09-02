@@ -81,3 +81,27 @@ def test_tex_size():
     horizontal = text.get_right() - text.get_left()
     assert round(vertical[1], 4) == 0.3512
     assert round(horizontal[0], 4) == 1.0420
+
+
+def test_font_size():
+    """Test that tex_mobject classes return
+    the correct font_size value after being scaled."""
+    string = MathTex(0).scale(0.3)
+
+    assert round(string.font_size, 5) == 14.4
+
+
+def test_font_size_vs_scale():
+    """Test that scale produces the same results as .scale()"""
+    num = MathTex(0, font_size=12)
+    num_scale = MathTex(0).scale(1 / 4)
+
+    assert num.height == num_scale.height
+
+
+def test_changing_font_size():
+    """Test that the font_size property properly scales tex_mobject.py classes."""
+    num = Tex("0", font_size=12)
+    num.font_size = 48
+
+    assert num.height == Tex("0", font_size=48).height

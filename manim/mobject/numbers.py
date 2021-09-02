@@ -99,7 +99,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        return self._font_size
+        return self.height / self.initial_height * self._font_size
 
     @font_size.setter
     def font_size(self, font_val):
@@ -111,8 +111,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
             # scale to a factor of the initial height so that setting
             # font_size does not depend on current size.
-            self.scale(1 / 48 * font_val * self.initial_height / self.height)
-            self._font_size = font_val
+            self.scale(font_val / self.font_size)
 
     def set_submobjects_from_number(self, number):
         self.number = number
@@ -146,11 +145,11 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
 
-        if self.include_background_rectangle:
-            self.add_background_rectangle()
-
         # track the initial height to enable scaling via font_size
         self.initial_height = self.height
+
+        if self.include_background_rectangle:
+            self.add_background_rectangle()
 
     def get_num_string(self, number):
         if isinstance(number, complex):
@@ -217,11 +216,28 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             ]
         )
 
-    def set_value(self, number):
+    def set_value(self, number: float):
+        """Set the value of the :class:`~.DecimalNumber` to a new number.
+
+        Parameters
+        ----------
+        number
+            The value that will overwrite the current number of the :class:`~.DecimalNumber`.
+
+        """
+        # creates a new number mob via `set_submobjects_from_number`
+        # then matches the properties (color, font_size, etc...)
+        # of the previous mobject to the new one
+
+        # old_family needed with cairo
         old_family = self.get_family()
+
+        old_font_size = self.font_size
         move_to_point = self.get_edge_center(self.edge_to_fix)
         old_submobjects = self.submobjects
+
         self.set_submobjects_from_number(number)
+        self.font_size = old_font_size
         self.move_to(move_to_point, self.edge_to_fix)
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
@@ -234,11 +250,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 # not needed with opengl renderer
                 mob.points[:] = 0
 
-        return self
-
-    def scale(self, scale_factor, **kwargs):
-        super().scale(scale_factor, **kwargs)
-        self._font_size *= scale_factor
         return self
 
     def get_value(self):
