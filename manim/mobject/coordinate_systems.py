@@ -1134,6 +1134,11 @@ class CoordinateSystem:
         -------
         :class:`~.Polygon`
             The :class:`~.Polygon` representing the area.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
         """
         if x_range is None:
             a = graph.t_min
