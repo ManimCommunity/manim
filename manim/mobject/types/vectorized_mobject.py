@@ -14,7 +14,6 @@ __all__ = [
 import itertools as it
 import sys
 import typing
-from abc import ABCMeta
 from typing import Optional, Sequence, Union
 
 import colour
@@ -33,7 +32,7 @@ from ...utils.bezier import (
     partial_bezier_points,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
-from ...utils.deprecation import deprecated_params
+from ...utils.deprecation import deprecated, deprecated_params
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -569,6 +568,7 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return np.array(self.points)
 
@@ -579,9 +579,13 @@ class VMobject(Mobject):
         handles2: Sequence[float],
         anchors2: Sequence[float],
     ) -> "VMobject":
-        """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
+        """Given two sets of anchors and handles, process them to set them as anchors
+        and handles of the VMobject.
 
-        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
+        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier
+        curve of the vmobject. There are four hardcoded parameters and this is a
+        problem as it makes the number of points per cubic curve unchangeable from 4
+        (two anchors and two handles).
 
         Returns
         -------
@@ -592,7 +596,11 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
         self.points = np.zeros((total_len, self.dim))
-        # the following will, from the four sets, dispatch them in points such that self.points = [anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1], handles1[1], ...]
+        # the following will, from the four sets, dispatch them in points such that
+        # self.points = [
+        #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
+        #     handles1[1], ...
+        # ]
         arrays = [anchors1, handles1, handles2, anchors2]
         for index, array in enumerate(arrays):
             self.points[index::nppcc] = array
@@ -671,10 +679,10 @@ class VMobject(Mobject):
         """
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
-            *[
+            *(
                 interpolate(self.get_last_point(), point, a)
                 for a in np.linspace(0, 1, nppcc)[1:]
-            ]
+            )
         )
         return self
 
@@ -758,7 +766,7 @@ class VMobject(Mobject):
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
+            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc))
         )
         return self
 
@@ -930,7 +938,7 @@ class VMobject(Mobject):
         return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
 
     def get_cubic_bezier_tuples(self):
-        return self.get_cubic_bezier_tuples_from_points(self.get_points())
+        return self.get_cubic_bezier_tuples_from_points(self.points)
 
     def _gen_subpaths_from_points(
         self, points: np.ndarray, filter_func: typing.Callable[[int], bool]
@@ -988,7 +996,7 @@ class VMobject(Mobject):
         typing.Tuple
             subpaths.
         """
-        return self.get_subpaths_from_points(self.get_points())
+        return self.get_subpaths_from_points(self.points)
 
     def get_nth_curve_points(self, n: int) -> np.ndarray:
         """Returns the points defining the nth curve of the vmobject.
@@ -1129,7 +1137,7 @@ class VMobject(Mobject):
 
         self.throw_error_if_no_points()
         if alpha == 1:
-            return self.get_points()[-1]
+            return self.points[-1]
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
@@ -1198,7 +1206,7 @@ class VMobject(Mobject):
 
     def get_points_defining_boundary(self):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
-        return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
+        return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
     def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
         """Return the approximated length of the whole curve.
@@ -1285,7 +1293,7 @@ class VMobject(Mobject):
         if self.has_new_path_started():
             new_path_point = self.get_last_point()
 
-        new_points = self.insert_n_curves_to_point_list(n, self.get_points())
+        new_points = self.insert_n_curves_to_point_list(n, self.points)
         self.set_points(new_points)
 
         if new_path_point is not None:
@@ -2126,12 +2134,12 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 void_len = (1 - r) / (n - 1)
 
             self.add(
-                *[
+                *(
                     vmobject.get_subcurve(
                         i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
                     )
                     for i in range(n)
-                ]
+                )
             )
         # Family is already taken care of by get_subcurve
         # implementation

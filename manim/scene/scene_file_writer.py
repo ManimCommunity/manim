@@ -30,7 +30,7 @@ from ..utils.file_ops import (
 from ..utils.sounds import get_full_sound_file_path
 
 
-class SceneFileWriter(object):
+class SceneFileWriter:
     """
     SceneFileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.
@@ -47,6 +47,8 @@ class SceneFileWriter(object):
             List of all the partial-movie files.
 
     """
+
+    force_output_as_scene_name = False
 
     def __init__(self, renderer, scene_name, **kwargs):
         self.renderer = renderer
@@ -74,7 +76,9 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"] and not config["write_all"]:
+        if SceneFileWriter.force_output_as_scene_name:
+            default_name = Path(scene_name)
+        elif config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
@@ -290,9 +294,14 @@ class SceneFileWriter(object):
                 self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
                 target_dir, extension = os.path.splitext(self.image_file_path)
-                Image.fromarray(frame).save(
-                    f"{target_dir}{self.frame_count}{extension}"
-                )
+                if config["zero_pad"]:
+                    Image.fromarray(frame).save(
+                        f"{target_dir}{str(self.frame_count).zfill(config['zero_pad'])}{extension}"
+                    )
+                else:
+                    Image.fromarray(frame).save(
+                        f"{target_dir}{self.frame_count}{extension}"
+                    )
                 self.frame_count += 1
 
     def save_final_image(self, image):
