@@ -222,7 +222,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         mobject.save_state()
         mobject.center()
         mobject.set_height(1)
-        result = hash(np.round(mobject.get_points(), 3).tobytes())
+        result = hash(np.round(mobject.points, 3).tobytes())
         mobject.restore()
         return result
 

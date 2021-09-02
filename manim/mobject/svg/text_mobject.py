@@ -504,9 +504,9 @@ class Text(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -1112,9 +1112,9 @@ class MarkupText(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):

@@ -15,6 +15,7 @@ from ..constants import *
 from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.config_ops import _Data, _Uniforms
+from ..utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -296,7 +297,7 @@ class OpenGLMobject:
         for mob in self.get_family():
             arrs = []
             if mob.has_points():
-                arrs.append(mob.get_points())
+                arrs.append(mob.points)
             if works_on_bounding_box:
                 arrs.append(mob.get_bounding_box())
 
@@ -316,8 +317,9 @@ class OpenGLMobject:
     # Others related to points
 
     def match_points(self, mobject):
-        self.set_points(mobject.get_points())
+        self.set_points(mobject.points)
 
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return self.points
 
@@ -329,7 +331,7 @@ class OpenGLMobject:
 
     def get_all_points(self):
         if self.submobjects:
-            return np.vstack([sm.get_points() for sm in self.get_family()])
+            return np.vstack([sm.points for sm in self.get_family()])
         else:
             return self.points
 
@@ -1048,12 +1050,12 @@ class OpenGLMobject:
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
-            alphas = np.dot(mob.get_points(), np.transpose(axis))
+            alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
             alphas = alphas ** wag_factor
             mob.set_points(
-                mob.get_points()
+                mob.points
                 + np.dot(
                     alphas.reshape((len(alphas), 1)),
                     np.array(direction).reshape((1, mob.dim)),
