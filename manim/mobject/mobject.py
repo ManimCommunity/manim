@@ -520,18 +520,6 @@ class Mobject:
 
         return self
 
-    # ------------------- These exist to please __getattr__ ----------------------
-    def set_submobjects(self, submobject_list):
-        self.remove(*self.submobjects)
-        self.add(*submobject_list)
-        return self
-
-    @deprecated(replacement="points")
-    def set_points(self, points):
-        self.points = points
-
-    # -----------------------------------------------------------------------------
-
     def __getattr__(self, attr):
         # Add automatic compatibility layer
         # between properties and get_* and set_*

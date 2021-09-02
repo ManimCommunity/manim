@@ -573,7 +573,6 @@ class VMobject(Mobject):
                 submob.z_index_group = self
         return self
 
-    # Points
     def set_points(self, points):
         self.points = np.array(points)
         return self
