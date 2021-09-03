@@ -55,5 +55,6 @@ def save_control_data_from_video(path_to_video, name):
         "config": json.loads(config_video)["streams"][0],
     }
     path_saved = os.path.join(path_control_data, f"{name}.json")
-    json.dump(data, open(path_saved, "w"), indent=4)
+    with open(path_saved, "w") as f:
+        json.dump(data, f, indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")

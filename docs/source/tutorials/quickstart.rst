@@ -60,7 +60,7 @@ the following command:
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareToCircle 
+   manim -pql scene.py SquareToCircle
 
 After showing some output, manim should render the scene into a .mp4 file,
 and open that file with the default movie player application.  You should see a
@@ -158,7 +158,7 @@ And render it using the following command:
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareToCircle 
+   manim -pql scene.py SquareToCircle
 
 The output should look as follows.
 

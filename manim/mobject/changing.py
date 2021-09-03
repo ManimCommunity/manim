@@ -138,7 +138,9 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     """
 
     @deprecated_params(
-        params="min_distance_to_new_point", since="v0.10.0", until="v0.12.0"
+        params="min_distance_to_new_point",
+        since="v0.10.0",
+        until="v0.12.0",
     )
     def __init__(
         self,
