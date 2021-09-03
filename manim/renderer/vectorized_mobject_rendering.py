@@ -98,7 +98,7 @@ def triangulate_mobject(mob):
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
     # normal_vector = mob.get_unit_normal()
-    points = mob.get_points()
+    points = mob.points
 
     b0s = points[0::3]
     b1s = points[1::3]

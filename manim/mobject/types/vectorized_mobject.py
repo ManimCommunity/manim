@@ -32,7 +32,7 @@ from ...utils.bezier import (
     partial_bezier_points,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
-from ...utils.deprecation import deprecated_params
+from ...utils.deprecation import deprecated, deprecated_params
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -568,6 +568,7 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return np.array(self.points)
 
@@ -937,7 +938,7 @@ class VMobject(Mobject):
         return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
 
     def get_cubic_bezier_tuples(self):
-        return self.get_cubic_bezier_tuples_from_points(self.get_points())
+        return self.get_cubic_bezier_tuples_from_points(self.points)
 
     def _gen_subpaths_from_points(
         self, points: np.ndarray, filter_func: typing.Callable[[int], bool]
@@ -995,7 +996,7 @@ class VMobject(Mobject):
         typing.Tuple
             subpaths.
         """
-        return self.get_subpaths_from_points(self.get_points())
+        return self.get_subpaths_from_points(self.points)
 
     def get_nth_curve_points(self, n: int) -> np.ndarray:
         """Returns the points defining the nth curve of the vmobject.
@@ -1136,7 +1137,7 @@ class VMobject(Mobject):
 
         self.throw_error_if_no_points()
         if alpha == 1:
-            return self.get_points()[-1]
+            return self.points[-1]
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
@@ -1292,7 +1293,7 @@ class VMobject(Mobject):
         if self.has_new_path_started():
             new_path_point = self.get_last_point()
 
-        new_points = self.insert_n_curves_to_point_list(n, self.get_points())
+        new_points = self.insert_n_curves_to_point_list(n, self.points)
         self.set_points(new_points)
 
         if new_path_point is not None:
