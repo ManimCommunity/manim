@@ -36,6 +36,7 @@ class MappingCamera(Camera):
         )  # TODO: There is an error here, but I don't know how to fix it:
         # FIXME: Call to method Camera.points_to_pixel_coords with too few arguments; should be no fewer than 3.
 
+
     def capture_mobjects(self, mobjects, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         if self.allow_object_intrusion:
@@ -75,7 +76,7 @@ class OldMultiCamera(Camera):
                     + camera_with_start_positions[0].pixel_width,
                     "end_y": camera_with_start_positions[1][0]
                     + camera_with_start_positions[0].pixel_height,
-                }
+                },
             )
             for camera_with_start_positions in cameras_with_start_positions
         ]

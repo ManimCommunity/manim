@@ -109,8 +109,9 @@ def test_ApplyComplexFunction(scene):
     square = Square()
     scene.play(
         ApplyComplexFunction(
-            lambda complex_num: complex_num + 2 * np.complex(0, 1), square
-        )
+            lambda complex_num: complex_num + 2 * complex(0, 1),
+            square,
+        ),
     )
 
 

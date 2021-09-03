@@ -175,7 +175,7 @@ class Scene:
                         raise Exception(
                             f"{free_variable_name} is referenced from an updater "
                             "but is not an attribute of the Scene, which isn't "
-                            "allowed."
+                            "allowed.",
                         )
 
                     # Add the cloned object's name to the free variable list.
@@ -184,7 +184,7 @@ class Scene:
                     # Add a cell containing the cloned object's reference to the
                     # closure list.
                     cloned_closure.append(
-                        types.CellType(clone_from_id[id(free_variable_value)])
+                        types.CellType(clone_from_id[id(free_variable_value)]),
                     )
 
                 cloned_updater = types.FunctionType(
@@ -231,7 +231,7 @@ class Scene:
             or config["save_last_frame"]
         ):
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
@@ -340,7 +340,7 @@ class Scene:
             bool
         """
         return self.always_update_mobjects or any(
-            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()]
+            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
         )
 
     def get_top_level_mobjects(self):
@@ -381,7 +381,8 @@ class Scene:
             return family_members
         else:
             return extract_mobject_family_members(
-                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+                self.mobjects,
+                use_z_index=self.renderer.camera.use_z_index,
             )
 
     def add(self, *mobjects):
@@ -418,7 +419,8 @@ class Scene:
             self.mobjects += mobjects
             if self.moving_mobjects:
                 self.restructure_mobjects(
-                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                    to_remove=mobjects,
+                    mobject_list_name="moving_mobjects",
                 )
                 self.moving_mobjects += mobjects
             return self
@@ -453,10 +455,11 @@ class Scene:
                 else:
                     mobjects_to_remove.append(mobject_or_mesh)
             self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects, mobjects_to_remove
+                self.mobjects,
+                mobjects_to_remove,
             )
             self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes)
+                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
             )
             return self
         else:
@@ -471,7 +474,10 @@ class Scene:
         self.updaters = [f for f in self.updaters if f is not func]
 
     def restructure_mobjects(
-        self, to_remove, mobject_list_name="mobjects", extract_families=True
+        self,
+        to_remove,
+        mobject_list_name="mobjects",
+        extract_families=True,
     ):
         """
         tl:wr
@@ -502,7 +508,8 @@ class Scene:
         """
         if extract_families:
             to_remove = extract_mobject_family_members(
-                to_remove, use_z_index=self.renderer.camera.use_z_index
+                to_remove,
+                use_z_index=self.renderer.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -715,7 +722,8 @@ class Scene:
             use_z_index=self.renderer.camera.use_z_index,
         )
         static_mobjects = list_difference_update(
-            all_mobject_families, all_moving_mobject_families
+            all_mobject_families,
+            all_moving_mobject_families,
         )
         return all_moving_mobject_families, static_mobjects
 
@@ -742,11 +750,11 @@ class Scene:
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
-                        " supported. Use Mobject.animate instead."
+                        " supported. Use Mobject.animate instead.",
                     )
                 else:
                     raise TypeError(
-                        f"Unexpected argument {arg} passed to Scene.play()."
+                        f"Unexpected argument {arg} passed to Scene.play().",
                     )
 
         for animation in animations:
@@ -789,7 +797,8 @@ class Scene:
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration, f"Waiting {self.renderer.num_plays}"
+                    duration,
+                    f"Waiting {self.renderer.num_plays}",
                 )
         else:
             time_progression = self.get_time_progression(
@@ -799,13 +808,17 @@ class Scene:
                         f"Animation {self.renderer.num_plays}: ",
                         str(animations[0]),
                         (", etc." if len(animations) > 1 else ""),
-                    ]
+                    ],
                 ),
             )
         return time_progression
 
     def get_time_progression(
-        self, run_time, description, n_iterations=None, override_skip_animations=False
+        self,
+        run_time,
+        description,
+        n_iterations=None,
+        override_skip_animations=False,
     ):
         """
         You will hardly use this when making your own animations.
@@ -924,7 +937,7 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
-        if not config.renderer == "opengl":
+        if config.renderer != "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
                 self.update_mobjects(dt=0)  # Any problems with this?
                 if self.should_update_mobjects():
@@ -973,7 +986,8 @@ class Scene:
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration
+            self.animations,
+            self.duration,
         )
         for t in self.time_progression:
             self.update_to_time(t)
@@ -1300,10 +1314,12 @@ class Scene:
             camera_position = self.camera.get_position()
             camera_y_axis = self.camera.model_matrix[:3, 1]
             axis_of_rotation = space_ops.normalize(
-                np.cross(camera_y_axis, camera_position)
+                np.cross(camera_y_axis, camera_position),
             )
             rotation_matrix = space_ops.rotation_matrix(
-                d_point[1], axis_of_rotation, homogeneous=True
+                d_point[1],
+                axis_of_rotation,
+                homogeneous=True,
             )
 
             maximum_polar_angle = self.camera.maximum_polar_angle
@@ -1318,21 +1334,24 @@ class Scene:
                 else 1
             )
             potential_polar_angle = sign * np.arccos(
-                potential_camera_location[2] / np.linalg.norm(potential_camera_location)
+                potential_camera_location[2]
+                / np.linalg.norm(potential_camera_location),
             )
             if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
                 self.camera.model_matrix = potential_camera_model_matrix
             else:
                 sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
                 current_polar_angle = sign * np.arccos(
-                    camera_position[2] / np.linalg.norm(camera_position)
+                    camera_position[2] / np.linalg.norm(camera_position),
                 )
                 if potential_polar_angle > maximum_polar_angle:
                     polar_angle_delta = maximum_polar_angle - current_polar_angle
                 else:
                     polar_angle_delta = minimum_polar_angle - current_polar_angle
                 rotation_matrix = space_ops.rotation_matrix(
-                    polar_angle_delta, axis_of_rotation, homogeneous=True
+                    polar_angle_delta,
+                    axis_of_rotation,
+                    homogeneous=True,
                 )
                 self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
 

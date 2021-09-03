@@ -157,7 +157,8 @@ class Table(VGroup):
         include_background_rectangle: bool = False,
         background_rectangle_color: Color = BLACK,
         element_to_mobject: Callable[
-            [Union[float, str, "VMobject"]], "VMobject"
+            [Union[float, str, "VMobject"]],
+            "VMobject",
         ] = Paragraph,
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
@@ -247,7 +248,8 @@ class Table(VGroup):
             self.add_background_rectangle(color=self.background_rectangle_color)
 
     def _table_to_mob_table(
-        self, table: Iterable[Iterable[Union[float, str, "VMobject"]]]
+        self,
+        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
     ) -> List:
         """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
 
@@ -562,7 +564,8 @@ class Table(VGroup):
         return self
 
     def get_entries(
-        self, pos: Optional[Sequence[int]] = None
+        self,
+        pos: Optional[Sequence[int]] = None,
     ) -> Union[VMobject, VGroup]:
         """Return the individual entries of the table (including labels) or one specific entry
         if the parameter, ``pos``,  is set.
@@ -613,7 +616,8 @@ class Table(VGroup):
             return self.elements
 
     def get_entries_without_labels(
-        self, pos: Optional[Sequence[int]] = None
+        self,
+        pos: Optional[Sequence[int]] = None,
     ) -> Union[VMobject, VGroup]:
         """Return the individual entries of the table (without labels) or one specific entry
         if the parameter, ``pos``, is set.

@@ -111,7 +111,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
                 target_map.pop(key2, None)
         if len(key_mapped_source) > 0:
             anims.append(
-                FadeTransformPieces(key_mapped_source, key_mapped_target, **kwargs)
+                FadeTransformPieces(key_mapped_source, key_mapped_target, **kwargs),
             )
 
         fade_source = group_type()
@@ -130,7 +130,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         else:
             anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs)
+                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs),
             )
 
         super().__init__(*anims)
