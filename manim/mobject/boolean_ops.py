@@ -7,7 +7,7 @@ from pathops import difference, intersection, union, xor
 from .. import config
 from .types.vectorized_mobject import VMobject
 
-__all__ = ["Union", "Intersection", "Difference", "Xor"]
+__all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
 class _BooleanOps(VMobject):
