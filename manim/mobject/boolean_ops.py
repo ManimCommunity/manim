@@ -24,7 +24,7 @@ class _BooleanOps(VMobject):
         points: typing.Iterable,
         z_dim: float = 0.0,
     ) -> typing.List[np.ndarray]:
-        """Converts an iterable with co-ordinates in 2d to 3d by adding
+        """Converts an iterable with coordinates in 2d to 3d by adding
         :attr:`z_dim` as the z coordinate.
 
         Parameters
