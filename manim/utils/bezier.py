@@ -13,18 +13,19 @@ __all__ = [
     "get_smooth_cubic_bezier_handle_points",
     "diag_to_matrix",
     "is_closed",
+    "proportions_along_bezier_curve_for_point",
+    "point_lies_on_bezier",
 ]
 
 
 import typing
+from functools import reduce
 
 import numpy as np
 from scipy import linalg
 
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
-
-CLOSED_THRESHOLD: float = 0.001
 
 
 def bezier(
@@ -367,3 +368,120 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
 
 def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
+
+
+def proportions_along_bezier_curve_for_point(
+    point: typing.Iterable[typing.Union[float, int]],
+    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+) -> np.ndarray:
+    """Obtains the proportion along the bezier curve corresponding to a given point
+    given the bezier curve's control points.
+
+    The bezier polynomial is constructed using the coordinates of the given point
+    as well as the bezier curve's control points. On solving the polynomial for each dimension,
+    if there are roots common to every dimension, those roots give the proportion along the
+    curve the point is at. If there are no real roots, the point does not lie on the curve.
+
+    Parameters
+    ----------
+    point
+        The Cartesian Coordinates of the point whose parameter
+        should be obtained.
+    control_points
+        The Cartesian Coordinates of the ordered control
+        points of the bezier curve on which the point may
+        or may not lie.
+    round_to
+        A float whose number of decimal places all values
+        such as coordinates of points will be rounded.
+
+    Returns
+    -------
+        np.ndarray[float]
+            List containing possible parameters (the proportions along the bezier curve)
+            for the given point on the given bezier curve.
+            This usually only contains one or zero elements, but if the
+            point is, say, at the beginning/end of a closed loop, may return
+            a list with more than 1 value, corresponding to the beginning and
+            end etc. of the loop.
+
+    Raises
+    ------
+    :class:`ValueError`
+        When ``point`` and the control points have different shapes.
+    """
+    # Method taken from
+    # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
+
+    if not all(np.shape(point) == np.shape(c_p) for c_p in control_points):
+        raise ValueError(
+            f"Point {point} and Control Points {control_points} have different shapes."
+        )
+
+    control_points = np.array(control_points)
+    n = len(control_points) - 1
+
+    roots = []
+    for dim, coord in enumerate(point):
+        control_coords = control_points[:, dim]
+        terms = []
+        for term_power in range(n, -1, -1):
+            outercoeff = choose(n, term_power)
+            term = []
+            sign = 1
+            for subterm_num in range(term_power, -1, -1):
+                innercoeff = choose(term_power, subterm_num) * sign
+                subterm = innercoeff * control_coords[subterm_num]
+                if term_power == 0:
+                    subterm -= coord
+                term.append(subterm)
+                sign *= -1
+            terms.append(outercoeff * sum(np.array(term)))
+        if all(term == 0 for term in terms):
+            # Then both Bezier curve and Point lie on the same plane.
+            # Roots will be none, but in this specific instance, we don't need to consider that.
+            continue
+        bezier_polynom = np.polynomial.Polynomial(terms[::-1])
+        polynom_roots = bezier_polynom.roots()
+        if len(polynom_roots) > 0:
+            polynom_roots = np.around(polynom_roots, int(np.log10(1 / round_to)))
+        roots.append(polynom_roots)
+
+    roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
+    roots = reduce(np.intersect1d, roots)  # Get common roots.
+    roots = np.array([r.real for r in roots])
+    return roots
+
+
+def point_lies_on_bezier(
+    point: typing.Iterable[typing.Union[float, int]],
+    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+) -> bool:
+    """Checks if a given point lies on the bezier curves with the given control points.
+
+    This is done by solving the bezier polynomial with the point as the constant term; if
+    any real roots exist, the point lies on the bezier curve.
+
+    Parameters
+    ----------
+    point
+        The Cartesian Coordinates of the point to check.
+    control_points
+        The Cartesian Coordinates of the ordered control
+        points of the bezier curve on which the point may
+        or may not lie.
+    round_to
+        A float whose number of decimal places all values
+        such as coordinates of points will be rounded.
+
+    Returns
+    -------
+    bool
+        Whether the point lies on the curve.
+    """
+
+    roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
+
+    return len(roots) > 0

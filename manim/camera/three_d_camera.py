@@ -33,6 +33,7 @@ class ThreeDCamera(Camera):
         phi=0,
         theta=-90 * DEGREES,
         gamma=0,
+        zoom=1,
         **kwargs
     ):
         """Initializes the ThreeDCamera
@@ -50,6 +51,7 @@ class ThreeDCamera(Camera):
         self.phi = phi
         self.theta = theta
         self.gamma = gamma
+        self.zoom = zoom
         self.shading_factor = shading_factor
         self.default_distance = default_distance
         self.light_source_start_point = light_source_start_point
@@ -61,6 +63,7 @@ class ThreeDCamera(Camera):
         self.theta_tracker = ValueTracker(self.theta)
         self.distance_tracker = ValueTracker(self.distance)
         self.gamma_tracker = ValueTracker(self.gamma)
+        self.zoom_tracker = ValueTracker(self.zoom)
         self.fixed_orientation_mobjects = {}
         self.fixed_in_frame_mobjects = set()
         self.reset_rotation_matrix()
@@ -90,6 +93,7 @@ class ThreeDCamera(Camera):
             self.theta_tracker,
             self.distance_tracker,
             self.gamma_tracker,
+            self.zoom_tracker,
         ]
 
     def modified_rgbas(self, vmobject, rgbas):
@@ -178,6 +182,16 @@ class ThreeDCamera(Camera):
         """
         return self.gamma_tracker.get_value()
 
+    def get_zoom(self):
+        """Returns the zoom amount of the camera.
+
+        Returns
+        -------
+        float
+            The zoom amount of the camera.
+        """
+        return self.zoom_tracker.get_value()
+
     def set_phi(self, value):
         """Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
 
@@ -217,6 +231,16 @@ class ThreeDCamera(Camera):
             The new angle of rotation of the camera.
         """
         self.gamma_tracker.set_value(value)
+
+    def set_zoom(self, value):
+        """Sets the zoom amount of the camera.
+
+        Parameters
+        ----------
+        value : int, float
+            The zoom amount of the camera.
+        """
+        self.zoom_tracker.set_value(value)
 
     def reset_rotation_matrix(self):
         """Sets the value of self.rotation_matrix to
@@ -271,6 +295,7 @@ class ThreeDCamera(Camera):
         """
         frame_center = self.frame_center
         distance = self.get_distance()
+        zoom = self.get_zoom()
         rot_matrix = self.get_rotation_matrix()
 
         points = points - frame_center
@@ -288,7 +313,7 @@ class ThreeDCamera(Camera):
             else:
                 factor = distance / (distance - zs)
                 factor[(distance - zs) < 0] = 10 ** 6
-            points[:, i] *= factor
+            points[:, i] *= factor * zoom
         return points
 
     def project_point(self, point):
