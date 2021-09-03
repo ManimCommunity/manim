@@ -1947,6 +1947,9 @@ class Mobject:
     def point_from_proportion(self, alpha):
         raise NotImplementedError("Please override in a child class.")
 
+    def proportion_from_point(self, point):
+        raise NotImplementedError("Please override in a child class.")
+
     def get_pieces(self, n_pieces):
         template = self.copy()
         template.submobjects = []
