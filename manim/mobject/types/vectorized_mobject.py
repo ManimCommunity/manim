@@ -30,6 +30,8 @@ from ...utils.bezier import (
     integer_interpolate,
     interpolate,
     partial_bezier_points,
+    point_lies_on_bezier,
+    proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated, deprecated_params
@@ -1030,6 +1032,28 @@ class VMobject(Mobject):
         """
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_length(
+        self, n: int, sample_points: Optional[int] = None
+    ) -> float:
+        """Returns the (approximate) length of the nth curve.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        _, length = self.get_nth_curve_function_with_length(n, sample_points)
+
+        return length
+
     def get_nth_curve_function_with_length(
         self, n: int, sample_points: Optional[int] = None
     ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
@@ -1154,6 +1178,61 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
+
+    def proportion_from_point(
+        self,
+        point: typing.Iterable[typing.Union[float, int]],
+    ) -> float:
+        """Returns the proportion along the path of the :class:`VMobject`
+        a particular given point is at.
+
+        Parameters
+        ----------
+        point
+            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
+
+        Returns
+        -------
+        float
+            The proportion along the path of the :class:`VMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``point`` does not lie on the curve.
+        :exc:`Exception`
+            If the :class:`VMobject` has no points.
+        """
+        self.throw_error_if_no_points()
+
+        # Iterate over each bezier curve that the ``VMobject`` is composed of, checking
+        # if the point lies on that curve. If it does not lie on that curve, add
+        # the whole length of the curve to ``target_length`` and move onto the next
+        # curve. If the point does lie on the curve, add how far along the curve
+        # the point is to ``target_length``.
+        # Then, divide ``target_length`` by the total arc length of the shape to get
+        # the proportion along the ``VMobject`` the point is at.
+
+        num_curves = self.get_num_curves()
+        total_length = self.get_arc_length()
+        target_length = 0
+        for n in range(num_curves):
+            control_points = self.get_nth_curve_points(n)
+            length = self.get_nth_curve_length(n)
+            proportions_along_bezier = proportions_along_bezier_curve_for_point(
+                point, control_points
+            )
+            if len(proportions_along_bezier) > 0:
+                proportion_along_nth_curve = max(proportions_along_bezier)
+                target_length += length * proportion_along_nth_curve
+                break
+            target_length += length
+        else:
+            raise ValueError(f"Point {point} does not lie on this curve.")
+
+        alpha = target_length / total_length
+
+        return alpha
 
     def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
         """Returns anchors1, handles1, handles2, anchors2,
