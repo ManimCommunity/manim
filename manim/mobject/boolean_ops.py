@@ -1,24 +1,30 @@
-from .types.vectorized_mobject import VMobject
-from pathops import Path as SkiaPath, union, intersection, difference
-import numpy as np
 import typing
-from .. import config
 
-__all__ = ["Union", "Intersection", "Difference"]
+import numpy as np
+from pathops import Path as SkiaPath
+from pathops import difference, intersection, union
+
+from .. import config
+from .types.vectorized_mobject import VMobject
+
+__all__ = ["Union", "Intersection", "Difference", "Xor"]
 
 
 class _BooleanOps(VMobject):
     """This class contains some helper functions which
     helps to convert to and from skia objects to manim
-    object(VMobjects). 
+    object(VMobjects).
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def _convert_2d_to_3d_array(
-        self, points: typing.Iterable, z_dim: float = 0.0,
+        self,
+        points: typing.Iterable,
+        z_dim: float = 0.0,
     ) -> typing.List[np.ndarray]:
-        """Converts an iterable with co-ordinates in 2d to 3d by adding 
+        """Converts an iterable with co-ordinates in 2d to 3d by adding
         :attr:`z_dim` as the z coordinate.
 
         Parameters
@@ -27,13 +33,13 @@ class _BooleanOps(VMobject):
             An iterable which has the coordinates.
         z_dim:
             The default value of z coordinate.
-    
+
         Example
         =======
         >>> a = _BooleanOps()
         >>> p = [(1, 2), (3, 4)]
         >>> a._convert_2d_to_3d_array(p)
-        [array([1., 2., 0.]), array([3., 4., 0.])] 
+        [array([1., 2., 0.]), array([3., 4., 0.])]
 
         Returns
         =======
@@ -49,7 +55,7 @@ class _BooleanOps(VMobject):
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
         """Converts a :class:`~.VMobject` to SkiaPath. This method only works for
         cairo renderer because it treats the points as Cubic beizer curves.
-        
+
         Parameters
         ==========
         vmobject:
@@ -118,11 +124,11 @@ class _BooleanOps(VMobject):
                     vmobject.close_path()
                 else:
                     vmobject.add_line_to(current_path_start)
-            elif segment[0] == 'qCurveTo':
+            elif segment[0] == "qCurveTo":
                 parts = segment[1]
                 n1, n2 = self._convert_2d_to_3d_array(parts)
                 vmobject.add_quadratic_bezier_curve_to(n1, n2)
-            elif segment[0] == 'endPath': # usually will not be executed
+            elif segment[0] == "endPath":  # usually will not be executed
                 pass
             else:
                 raise Exception("Unsupported: %s" % segment[0])
@@ -131,7 +137,7 @@ class _BooleanOps(VMobject):
 
 class Union(_BooleanOps):
     def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
         paths = []
         for vmobject in vmobjects:
             paths.append(self._convert_vmobject_to_skia_path(vmobject))
@@ -142,10 +148,7 @@ class Union(_BooleanOps):
 
 class Difference(_BooleanOps):
     def __init__(self, subject, clip, **kwargs) -> None:
-        super().__init__(self, **kwargs)
-        # paths = []
-        # for vmobject in vmobjects:
-        #    paths.append(self._convert_vmobject_to_skia_path(vmobject))
+        super().__init__(**kwargs)
         outpen = SkiaPath()
         difference(
             [self._convert_vmobject_to_skia_path(subject)],
@@ -157,7 +160,7 @@ class Difference(_BooleanOps):
 
 class Intersection(_BooleanOps):
     def __init__(self, subject, clip, **kwargs) -> None:
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
         outpen = SkiaPath()
         intersection(
             [self._convert_vmobject_to_skia_path(subject)],
@@ -166,4 +169,14 @@ class Intersection(_BooleanOps):
         )
         self._convert_skia_path_to_vmobject(outpen)
 
-#        intersection([]) 
+
+class Xor(_BooleanOps):
+    def __init__(self, subject, clip, **kwargs) -> None:
+        super().__init__(**kwargs)
+        outpen = SkiaPath()
+        intersection(
+            [self._convert_vmobject_to_skia_path(subject)],
+            [self._convert_vmobject_to_skia_path(clip)],
+            outpen.getPen(),
+        )
+        self._convert_skia_path_to_vmobject(outpen)
