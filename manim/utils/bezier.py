@@ -425,7 +425,7 @@ def proportions_along_bezier_curve_for_point(
 
     if not all(np.shape(point) == np.shape(c_p) for c_p in control_points):
         raise ValueError(
-            f"Point {point} and Control Points {control_points} have different shapes."
+            f"Point {point} and Control Points {control_points} have different shapes.",
         )
 
     control_points = np.array(control_points)

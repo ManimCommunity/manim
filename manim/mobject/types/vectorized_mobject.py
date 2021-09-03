@@ -1053,7 +1053,9 @@ class VMobject(Mobject):
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_length(
-        self, n: int, sample_points: Optional[int] = None
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
     ) -> float:
         """Returns the (approximate) length of the nth curve.
 
@@ -1242,7 +1244,8 @@ class VMobject(Mobject):
             control_points = self.get_nth_curve_points(n)
             length = self.get_nth_curve_length(n)
             proportions_along_bezier = proportions_along_bezier_curve_for_point(
-                point, control_points
+                point,
+                control_points,
             )
             if len(proportions_along_bezier) > 0:
                 proportion_along_nth_curve = max(proportions_along_bezier)
