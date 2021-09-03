@@ -159,7 +159,7 @@ class Paragraph(VGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
         self.lines = []
@@ -171,7 +171,7 @@ class Paragraph(VGroup):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
+            [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
@@ -235,7 +235,7 @@ class Paragraph(VGroup):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
-                self.get_center() + self.lines_initial_positions[line_no]
+                self.get_center() + self.lines_initial_positions[line_no],
             )
         return self
 
@@ -264,7 +264,7 @@ class Paragraph(VGroup):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
-                np.array([self.get_center()[0], self[line_no].get_center()[1], 0])
+                np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
@@ -273,8 +273,8 @@ class Paragraph(VGroup):
                         self.get_right()[0] - self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
         elif self.lines[1][line_no] == "left":
             self[line_no].move_to(
@@ -283,8 +283,8 @@ class Paragraph(VGroup):
                         self.get_left()[0] + self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
 
 
@@ -562,7 +562,7 @@ class Text(SVGMobject):
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
+                        self.submobjects[submobjects_char_index - 1].get_center(),
                     )
                 chars.add(space)
             else:
@@ -1078,7 +1078,7 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
             logger.warning(
-                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
             )
         gradientmap = self.extract_gradient_tags()
         validate_error = MarkupUtils.validate(self.text)
@@ -1263,7 +1263,7 @@ class MarkupText(SVGMobject):
                     "to": tag.group(2),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
@@ -1305,7 +1305,7 @@ class MarkupText(SVGMobject):
                     "color": tag.group(1),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap

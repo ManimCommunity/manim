@@ -30,7 +30,7 @@ def test_custom_coordinates(scene):
     ax = Axes(x_range=[0, 10])
 
     ax.add_coordinates(
-        dict(zip([x for x in range(1, 10)], [Tex("str") for _ in range(1, 10)]))
+        dict(zip(list(range(1, 10)), [Tex("str") for _ in range(1, 10)])),
     )
     scene.add(ax)
 
@@ -46,7 +46,10 @@ def test_get_axis_labels(scene):
 def test_get_x_axis_label(scene):
     ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
     x_label = ax.get_x_axis_label(
-        Tex("$x$-values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
+        Tex("$x$-values").scale(0.65),
+        edge=DOWN,
+        direction=DOWN,
+        buff=0.5,
     )
     scene.add(ax, x_label)
 
@@ -204,7 +207,10 @@ def test_get_riemann_rectangles(scene):
     # the colour of rectangles below the x-axis is inverted
     # due to show_signed_area
     rects_left = ax.get_riemann_rectangles(
-        quadratic, x_range=[-1.5, 1.5], dx=0.15, color=YELLOW
+        quadratic,
+        x_range=[-1.5, 1.5],
+        dx=0.15,
+        color=YELLOW,
     )
 
     bounding_line = ax.get_graph(lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6])

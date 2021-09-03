@@ -55,7 +55,7 @@ vec4 bboxBezier(in vec2 p0, in vec2 p1, in vec2 p2) {
         mi = min(mi, q);
         ma = max(ma, q);
     }
-    
+
     return vec4(mi, ma);
 }
 

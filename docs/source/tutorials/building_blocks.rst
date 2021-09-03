@@ -274,7 +274,7 @@ the use of :meth:`.animate`.
             self.play(square.animate.shift(UP).rotate(PI / 3))
             self.wait(1)
 
-:meth:`.animate` is a property of all mobjects that animates the methods that come 
+:meth:`.animate` is a property of all mobjects that animates the methods that come
 afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
 the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
 
@@ -368,7 +368,7 @@ Using coordinates of a mobject
 ==============================
 
 Mobjects contain points that define their boundaries.
-These points can be used to add other mobjects respectively to each other, 
+These points can be used to add other mobjects respectively to each other,
 e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
 and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:
 
@@ -411,12 +411,12 @@ It is also possible to transform a mobject into another mobject like this:
             m2 = Rectangle().set_color(RED).rotate(0.2)
             self.play(Transform(m1,m2))
 
-The Transform function maps points of the previous mobject to the points of the 
+The Transform function maps points of the previous mobject to the points of the
 next mobject.
-This might result in strange behaviour, e.g. when the dots of one mobject are 
+This might result in strange behaviour, e.g. when the dots of one mobject are
 arranged clockwise and the other points are arranged counterclockwise.
-Here it might help to use the `flip` function and reposition the points via the  
-`roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ 
+Here it might help to use the `flip` function and reposition the points via the
+`roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_
 function of numpy:
 
 .. manim:: ExampleRotation
@@ -428,11 +428,11 @@ function of numpy:
             m1b = Circle().set_color(RED).shift(LEFT)
             m2a= Square().set_color(BLUE).shift(RIGHT)
             m2b= Circle().set_color(BLUE).shift(RIGHT)
-            
+
             points = m2a.points
             points = np.roll(points, int(len(points)/4), axis=0)
             m2a.points = points
-            
+
             self.play(Transform(m1a,m1b),Transform(m2a,m2b), run_time=1)
 
 ******
