@@ -1,10 +1,13 @@
 [flake8]
+# Exclude the grpc generated code
 exclude = ./.*,manim/grpc/gen/*
 max-complexity = 15
 max-line-length = 88
 statistics = True
+# Prevents some flake8-rst-docstrings errors
 rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
 rst-directives = manim, SEEALSO, seealso
+# Adds some more bugbear checks
 select = B9
 
                 # Black Compatibility
