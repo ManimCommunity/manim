@@ -130,4 +130,3 @@ class UpdatersExample(Scene):
 
 
 # See many more examples at https://docs.manim.community/en/stable/examples.html
-
