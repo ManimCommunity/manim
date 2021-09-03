@@ -128,17 +128,5 @@ class UpdatersExample(Scene):
         self.wait()
 
 
-class UnionExample(Scene):
-    def construct(self):
-        #        a = Square()
-        a = ArcPolygon([0, 0, 0], [0, 1, 0], [0, 2, 0])
-        b = Circle().move_to([0.3, 0.2, 0])
-        union = Difference(a, b)
-        union.set_color(BLUE)
-        self.add(a, b)
-        self.wait(0.7)
-        self.play(FadeIn(union))
-        self.play(union.animate.next_to(b))
-
-
 # See many more examples at https://docs.manim.community/en/stable/examples.html
+
