@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 from pathops import Path as SkiaPath
-from pathops import difference, intersection, union
+from pathops import difference, intersection, union, xor
 
 from .. import config
 from .types.vectorized_mobject import VMobject
@@ -136,7 +136,40 @@ class _BooleanOps(VMobject):
 
 
 class Union(_BooleanOps):
+    """Union of 2 or more :class:`~.VMobject`. This finds the commom outline of
+    the two :class:`VMobject`.
+
+    Parameters
+    ==========
+    vmobjects
+        The :class:`~.VMobject` to find the union.
+
+    Raises
+    ======
+    ValueError
+        If less the 2 :class:`~.VMobject` are passed.
+
+    Example
+    =======
+
+    .. manim:: UnionExample
+        :save_last_frame:
+
+        class UnionExample(Scene):
+            def construct(self):
+                sq = Square(color=RED, fill_opacity=1)
+                sq.move_to([-2, 0, 0])
+                cr = Circle(color=BLUE, fill_opacity=1)
+                cr.move_to([-1.3, 0.7, 0])
+                un = Union(sq, cr, color=GREEN, fill_opacity=1)
+                un.move_to([1.5, 0.3, 0])
+                self.add(sq, cr, un)
+
+    """
+
     def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
+        if len(vmobjects) < 2:
+            raise ValueError("Atleast 2 mobjects needed for Union.")
         super().__init__(**kwargs)
         paths = []
         for vmobject in vmobjects:
@@ -147,6 +180,31 @@ class Union(_BooleanOps):
 
 
 class Difference(_BooleanOps):
+    """Subracts one :class:`~.VMobject` from another one.
+    Parameters
+    ==========
+    subject
+        The 1st :class:`~.VMobject`.
+    clip
+        The 2nd :class:`~.VMobject`
+
+    Example
+    =======
+    .. manim:: DifferenceExample
+        :save_last_frame:
+
+        class DifferenceExample(Scene):
+            def construct(self):
+                sq = Square(color=RED, fill_opacity=1)
+                sq.move_to([-2, 0, 0])
+                cr = Circle(color=BLUE, fill_opacity=1)
+                cr.move_to([-1.3, 0.7, 0])
+                un = Difference(sq, cr, color=GREEN, fill_opacity=1)
+                un.move_to([1.5, 0, 0])
+            self.add(sq, cr, un)
+
+    """
+
     def __init__(self, subject, clip, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
@@ -159,6 +217,33 @@ class Difference(_BooleanOps):
 
 
 class Intersection(_BooleanOps):
+    """Find intersection between two :class:`~.VMobject`.
+    This keeps the parts covered by both :class:`VMobject`.
+
+    Parameters
+    ==========
+    subject
+        The 1st :class:`~.VMobject`.
+    clip
+        The 2nd :class:`~.VMobject`.
+
+    Example
+    =======
+    .. manim:: IntersectionExample
+        :save_last_frame:
+
+        class IntersectionExample(Scene):
+            def construct(self):
+                sq = Square(color=RED, fill_opacity=1)
+                sq.move_to([-2, 0, 0])
+                cr = Circle(color=BLUE, fill_opacity=1)
+                cr.move_to([-1.3, 0.7, 0])
+                un = Intersection(sq, cr, color=GREEN, fill_opacity=1)
+            un.move_to([1.5, 0, 0])
+            self.add(sq, cr, un)
+
+    """
+
     def __init__(self, subject, clip, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
@@ -170,11 +255,40 @@ class Intersection(_BooleanOps):
         self._convert_skia_path_to_vmobject(outpen)
 
 
-class Xor(_BooleanOps):
+class Exclusion(_BooleanOps):
+    """Find the XOR between two :class:`VMobject`.
+    This creates a new :class:`~.VMobject` which keeps the region
+    which is covered by both of them.
+
+    Parameters
+    ==========
+    subject
+        The 1st :class:`~.VMobject`.
+    clip
+        The 2nd :class:`~.VMobject`
+
+    Example
+    =======
+
+    .. manim:: IntersectionExample
+        :save_last_frame:
+
+        class IntersectionExample(Scene):
+            def construct(self):
+                sq = Square(color=RED, fill_opacity=1)
+                sq.move_to([-2, 0, 0])
+                cr = Circle(color=BLUE, fill_opacity=1)
+                cr.move_to([-1.3, 0.7, 0])
+                un = Xor(sq, cr, color=GREEN, fill_opacity=1)
+            un.move_to([1.5, 0.4, 0])
+            self.add(sq, cr, un)
+
+    """
+
     def __init__(self, subject, clip, **kwargs) -> None:
         super().__init__(**kwargs)
         outpen = SkiaPath()
-        intersection(
+        xor(
             [self._convert_vmobject_to_skia_path(subject)],
             [self._convert_vmobject_to_skia_path(clip)],
             outpen.getPen(),

@@ -5,6 +5,7 @@ Inheritance Graph
 -----------------
 
 .. inheritance-diagram::
+   manim.mobject.boolean_ops
    manim.mobject.changing
    manim.mobject.coordinate_systems
    manim.mobject.frame
@@ -47,6 +48,7 @@ Module Index
 .. autosummary::
    :toctree: ../reference
 
+   ~mobject.boolean_ops
    ~mobject.changing
    ~mobject.coordinate_systems
    ~mobject.frame
