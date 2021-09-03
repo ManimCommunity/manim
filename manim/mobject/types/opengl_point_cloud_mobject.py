@@ -76,12 +76,16 @@ class OpenGLPMobject(OpenGLMobject):
 
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, self.get_num_points())))
+            list(map(color_to_rgba, color_gradient(*colors, self.get_num_points()))),
         )
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
@@ -91,7 +95,9 @@ class OpenGLPMobject(OpenGLMobject):
             alphas = np.linalg.norm(distances, axis=1) / radius
 
             mob.rgbas = np.array(
-                np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
+                np.array(
+                    [interpolate(start_rgba, end_rgba, alpha) for alpha in alphas],
+                ),
             )
         return self
 

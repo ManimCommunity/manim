@@ -473,4 +473,3 @@ New releases
 ------------
 
 * `#1434 <https://github.com/ManimCommunity/manim/pull/1434>`__: Prepare v0.6.0
-
