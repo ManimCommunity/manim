@@ -43,10 +43,10 @@ class DefaultGroup(cloup.Group):
             # No command name matched.
             ctx.arg0 = cmd_name
             cmd_name = self.default_cmd_name
-        return super(DefaultGroup, self).get_command(ctx, cmd_name)
+        return super().get_command(ctx, cmd_name)
 
     def resolve_command(self, ctx, args):
-        base = super(DefaultGroup, self)
+        base = super()
         cmd_name, cmd, args = base.resolve_command(ctx, args)
         if hasattr(ctx, "arg0"):
             args.insert(0, ctx.arg0)
@@ -55,7 +55,7 @@ class DefaultGroup(cloup.Group):
 
     def command(self, *args, **kwargs):
         default = kwargs.pop("default", False)
-        decorator = super(DefaultGroup, self).command(*args, **kwargs)
+        decorator = super().command(*args, **kwargs)
         if not default:
             return decorator
         logger.log(
