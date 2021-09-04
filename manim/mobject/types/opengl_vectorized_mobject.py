@@ -323,7 +323,10 @@ class OpenGLVMobject(OpenGLMobject):
         return self.flat_stroke
 
     def set_rgba_array_direct(
-        self, rgbas: np.ndarray, name="stroke_rgba", recurse=True
+        self,
+        rgbas: np.ndarray,
+        name="stroke_rgba",
+        recurse=True,
     ):
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()

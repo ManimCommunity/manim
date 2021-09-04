@@ -383,7 +383,10 @@ class VectorField(VGroup):
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
     def get_vectorized_rgba_gradient_function(
-        self, min_value: float, max_value: float, colors: Iterable
+        self,
+        min_value: float,
+        max_value: float,
+        colors: Iterable,
     ):
         rgbs = np.array([color_to_rgb(c) for c in colors])
 
@@ -397,7 +400,8 @@ class VectorField(VGroup):
             inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
             result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
             result = np.concatenate(
-                (result, np.full([len(result), 1], opacity)), axis=1
+                (result, np.full([len(result), 1], opacity)),
+                axis=1,
             )
             return result
 
@@ -729,7 +733,9 @@ class StreamLines(VectorField):
             self.background_img = self.get_colored_background_image()
             if config["renderer"] == "opengl":
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                    min_color_scheme_value, max_color_scheme_value, colors
+                    min_color_scheme_value,
+                    max_color_scheme_value,
+                    colors,
                 )
         for point in start_points:
             points = [point]
@@ -763,7 +769,7 @@ class StreamLines(VectorField):
         self.stream_lines = [*self.submobjects]
 
     def get_norm(self, vect):
-        return sum([x ** 2 for x in vect]) ** 0.5
+        return sum(x ** 2 for x in vect) ** 0.5
 
     def create(
         self,
