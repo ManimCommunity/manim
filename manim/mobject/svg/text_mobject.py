@@ -158,7 +158,7 @@ class Paragraph(VGroup):
                 self.lines_text[
                     char_index_counter : char_index_counter
                     + len(Text(lines_str_list[line_index]))
-                ]
+                ],
             )
             char_index_counter += len(Text(lines_str_list[line_index]))
         self.lines = []
@@ -170,7 +170,7 @@ class Paragraph(VGroup):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(len(chars_lines_text_list))]
+            [self.alignment for _ in range(len(chars_lines_text_list))],
         )
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
