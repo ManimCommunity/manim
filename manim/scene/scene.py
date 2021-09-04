@@ -1026,7 +1026,6 @@ class Scene:
         Like embed(), but allows for screen interaction.
         """
         if not self.check_interactive_embed_is_valid():
-            logger.info("interactive embed is disabled and will not be launched")
             return
 
         def ipython(shell, namespace):
