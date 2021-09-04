@@ -322,7 +322,7 @@ Plotting with Manim
                x_range=[0, 10], y_range=[0, 100, 10], axis_config={"include_tip": False}
            )
            labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
-           
+
            t = ValueTracker(0)
 
            def func(x):
@@ -518,13 +518,13 @@ Special Camera Settings
 
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
-    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
+    :ref_classes: ThreeDScene ThreeDAxes Surface
     :ref_methods: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
             axes = ThreeDAxes()
-            sphere = ParametricSurface(
+            sphere = Surface(
                 lambda u, v: np.array([
                     1.5 * np.cos(u) * np.cos(v),
                     1.5 * np.cos(u) * np.sin(v),
@@ -569,8 +569,8 @@ Special Camera Settings
 
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
-   :ref_classes: ThreeDScene ParametricSurface
-   
+   :ref_classes: ThreeDScene Surface
+
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
            resolution_fa = 42
@@ -584,7 +584,7 @@ Special Camera Settings
                z = np.exp(-(d ** 2 / (2.0 * sigma ** 2)))
                return np.array([x, y, z])
 
-           gauss_plane = ParametricSurface(
+           gauss_plane = Surface(
                param_gauss,
                resolution=(resolution_fa, resolution_fa),
                v_range=[-2, +2],

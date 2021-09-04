@@ -34,7 +34,8 @@ def test_decimal_determined_by_step():
 def test_decimal_config_overrides_defaults():
     """Checks that ``num_decimal_places`` is determined by step size and gets overridden by ``decimal_number_config``."""
     axis = NumberLine(
-        x_range=[-2, 2, 0.5], decimal_number_config={"num_decimal_places": 0}
+        x_range=[-2, 2, 0.5],
+        decimal_number_config={"num_decimal_places": 0},
     )
     expected_decimal_places = 0
     actual_decimal_places = axis.decimal_number_config["num_decimal_places"]
@@ -57,7 +58,7 @@ def test_add_labels():
     expected_label_length = 6
     num_line = NumberLine(x_range=[-4, 4])
     num_line.add_labels(
-        dict(zip([x for x in range(-3, 3)], [Integer(m) for m in range(-1, 5)]))
+        dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)])),
     )
     actual_label_length = len(num_line.labels)
     assert (
