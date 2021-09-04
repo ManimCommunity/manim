@@ -138,7 +138,8 @@ def cfg(ctx):
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
-        "[yellow bold]Manim Configuration File Writer[/yellow bold]", justify="center"
+        "[yellow bold]Manim Configuration File Writer[/yellow bold]",
+        justify="center",
     )
 
     USER_CONFIG_MSG = f"""A configuration file at [yellow]{config_paths[1]}[/yellow] has been created with your required changes.
@@ -182,17 +183,21 @@ To save your config please save that file and place it in your current working d
                     raise Exception(
                         """Not enough values in input.
 You may have added a new entry to default.cfg, in which case you will have to
-modify write_cfg_subcmd_input to account for it."""
+modify write_cfg_subcmd_input to account for it.""",
                     )
                 if temp:
                     while temp and not _is_expected_datatype(
-                        temp, default[key], bool(style)
+                        temp,
+                        default[key],
+                        bool(style),
                     ):
                         console.print(
-                            f"[red bold]Invalid {desc}. Try again.[/red bold]"
+                            f"[red bold]Invalid {desc}. Try again.[/red bold]",
                         )
                         console.print(
-                            f"Enter the {desc} for {key}:", style=style, end=""
+                            f"Enter the {desc} for {key}:",
+                            style=style,
+                            end="",
                         )
                         temp = input()
                     else:
@@ -259,7 +264,7 @@ Are you sure you want to continue? (y/n)""",
             style="red bold",
             end="",
         )
-        proceed = True if input().lower() == "y" else False
+        proceed = input().lower() == "y"
     else:
         proceed = True
     if proceed:

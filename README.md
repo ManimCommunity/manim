@@ -169,7 +169,7 @@ We acknowledge the importance of good software to support research, and we note
 that research becomes more valuable when it is communicated effectively. To
 demonstrate the value of Manim, we ask that you cite Manim in your work.
 Currently, the best way to cite Manim is to go to our
-[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and 
+[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and
 click the "cite this repository" button on the right sidebar. This will generate
 a citation in your preferred format, and will also integrate well with citation managers.
 

@@ -138,7 +138,9 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     """
 
     @deprecated_params(
-        params="min_distance_to_new_point", since="v0.10.0", until="v0.12.0"
+        params="min_distance_to_new_point",
+        since="v0.10.0",
+        until="v0.12.0",
     )
     def __init__(
         self,
@@ -167,4 +169,4 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                     nppcc = self.n_points_per_curve
                 else:
                     nppcc = self.n_points_per_cubic_curve
-                self.set_points(self.get_points()[nppcc:])
+                self.set_points(self.points[nppcc:])

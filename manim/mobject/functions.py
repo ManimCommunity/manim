@@ -77,7 +77,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def generate_points(self):
 
         discontinuities = filter(
-            lambda t: self.t_min <= t <= self.t_max, self.discontinuities
+            lambda t: self.t_min <= t <= self.t_max,
+            self.discontinuities,
         )
         discontinuities = np.array(list(discontinuities))
         boundary_times = np.array(
@@ -86,7 +87,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.t_max,
                 *(discontinuities - self.dt),
                 *(discontinuities + self.dt),
-            ]
+            ],
         )
         boundary_times.sort()
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):

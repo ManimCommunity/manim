@@ -39,7 +39,9 @@ def test_stroke_opacity():
 def test_fill_overrides_color():
     expected_color = "#343434"
     svg = SVGMobject(
-        get_svg_resource("heart.svg"), color="#123123", fill_color=expected_color
+        get_svg_resource("heart.svg"),
+        color="#123123",
+        fill_color=expected_color,
     )
     assert svg.fill_color == expected_color
 
@@ -47,6 +49,8 @@ def test_fill_overrides_color():
 def test_stroke_overrides_color():
     expected_color = "#767676"
     svg = SVGMobject(
-        get_svg_resource("heart.svg"), color="#334433", stroke_color=expected_color
+        get_svg_resource("heart.svg"),
+        color="#334433",
+        stroke_color=expected_color,
     )
     assert svg.stroke_color == expected_color
