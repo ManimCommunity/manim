@@ -43,12 +43,14 @@ def set_test_scene(scene_object, module_name):
         data = scene.renderer.get_frame()
 
     assert not np.all(
-        data == np.array([0, 0, 0, 255])
+        data == np.array([0, 0, 0, 255]),
     ), f"Control data generated for {str(scene)} only contains empty pixels."
     assert data.shape == (480, 854, 4)
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(
-        tests_directory, "control_data", "graphical_units_data"
+        tests_directory,
+        "control_data",
+        "graphical_units_data",
     )
     path = os.path.join(path_control_data, module_name)
     if not os.path.isdir(path):

@@ -278,5 +278,3 @@ New releases
 ------------
 
 * `#1850 <https://github.com/ManimCommunity/manim/pull/1850>`__: Bump version number to ``v0.9.0`` and generate changelog
-
-

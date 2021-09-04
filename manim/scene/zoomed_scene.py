@@ -124,7 +124,8 @@ class ZoomedScene(MovingCameraScene):
             zoomed_display.move_to(self.zoomed_display_center)
         else:
             zoomed_display.to_corner(
-                self.zoomed_display_corner, buff=self.zoomed_display_corner_buff
+                self.zoomed_display_corner,
+                buff=self.zoomed_display_corner_buff,
             )
 
         self.zoomed_camera = zoomed_camera
