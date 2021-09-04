@@ -269,9 +269,7 @@ class OpenGLRenderer:
 
     def should_create_window(self):
         return (
-            config["preview"]
-            and not config["format"] == "png"
-            and not config["write_to_movie"]
+            config["preview"] and not config["format"] and not config["write_to_movie"]
         )
 
     def get_pixel_shape(self):
