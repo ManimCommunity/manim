@@ -1030,6 +1030,7 @@ class Scene:
             return
 
         def ipython(shell, namespace):
+            import manim
             import manim.opengl
 
             def load_module_into_namespace(module, namespace):
