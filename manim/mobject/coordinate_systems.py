@@ -706,7 +706,9 @@ class CoordinateSystem:
         return graph
 
     def input_to_graph_point(
-        self, x: float, graph: Union["ParametricFunction", VMobject]
+        self,
+        x: float,
+        graph: Union["ParametricFunction", VMobject],
     ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
@@ -761,8 +763,10 @@ class CoordinateSystem:
             else:
                 raise ValueError(
                     "x={} not located in the range of the graph ([{}, {}])".format(
-                        x, self.p2c(graph.get_start())[0], self.p2c(graph.get_end())[0]
-                    )
+                        x,
+                        self.p2c(graph.get_start())[0],
+                        self.p2c(graph.get_end())[0],
+                    ),
                 )
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
