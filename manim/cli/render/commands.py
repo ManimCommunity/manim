@@ -105,8 +105,8 @@ def render(
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
                     scene = SceneClass(renderer)
-                    status = scene.render()
-                    if status or config["write_all"]:
+                    rerun = scene.render()
+                    if rerun or config["write_all"]:
                         renderer.num_plays = 0
                         continue
                     else:
