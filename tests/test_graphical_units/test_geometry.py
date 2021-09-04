@@ -194,3 +194,25 @@ def test_RegularPolygram(scene):
 def test_Star(scene):
     star = Star(outer_radius=2)
     scene.add(star)
+
+
+@frames_comparison
+def test_AngledArrowTip(scene):
+    arrow = Arrow(start=ORIGIN, end=UP + RIGHT + OUT)
+    scene.add(arrow)
+
+
+@frames_comparison
+def test_CurvedArrowCustomTip(scene):
+    arrow = CurvedArrow(
+        LEFT,
+        RIGHT,
+        tip_shape=ArrowCircleTip,
+    )
+    double_arrow = CurvedDoubleArrow(
+        LEFT,
+        RIGHT,
+        tip_shape_start=ArrowCircleTip,
+        tip_shape_end=ArrowSquareFilledTip,
+    )
+    scene.add(arrow, double_arrow)

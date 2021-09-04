@@ -678,7 +678,7 @@ class Camera:
         else:
             points = vmobject.get_gradient_start_and_end_points()
             points = self.transform_points_pre_display(vmobject, points)
-            pat = cairo.LinearGradient(*it.chain(*[point[:2] for point in points]))
+            pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
             step = 1.0 / (len(rgbas) - 1)
             offsets = np.arange(0, 1 + step, step)
             for rgba, offset in zip(rgbas, offsets):
@@ -732,10 +732,8 @@ class Camera:
         ctx.set_line_width(
             width
             * self.cairo_line_width_multiple
-            *
-            # This ensures lines have constant width
-            # as you zoom in on them.
-            (self.frame_width / self.frame_width)
+            # This ensures lines have constant width as you zoom in on them.
+            * (self.frame_width / self.frame_width)
         )
 
         # Set stroke style attributes.

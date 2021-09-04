@@ -91,9 +91,9 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
     else:
-        mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
+        mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
         code.code = mobject_without_dots
         return code
@@ -163,7 +163,7 @@ class OpenGLParagraph(OpenGLVGroup):
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
         OpenGLVGroup.__init__(
-            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
+            self, *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
         )
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
@@ -350,7 +350,7 @@ class OpenGLText(OpenGLSVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
+                japanese = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", style=BOLD)
@@ -359,8 +359,8 @@ class OpenGLText(OpenGLSVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
@@ -871,14 +871,14 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         class MultiLanguage(Scene):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
-                chin = MarkupText(
+                japanese = MarkupText(
                     '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", style=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
-                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
-                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                chinese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, japanese, mess, russ, hin, chinese).arrange(DOWN)
                 self.add(group)
 
 
