@@ -141,7 +141,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
         if os.path.exists(path):
             return path
     error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
-    raise IOError(error)
+    raise OSError(error)
 
 
 def modify_atime(file_path):
@@ -239,10 +239,10 @@ def copy_template_files(project_dir=Path("."), template_name="Default"):
             Name of template.
     """
     template_cfg_path = Path.resolve(
-        Path(__file__).parent.parent / "templates/template.cfg"
+        Path(__file__).parent.parent / "templates/template.cfg",
     )
     template_scene_path = Path.resolve(
-        Path(__file__).parent.parent / f"templates/{template_name}.mtp"
+        Path(__file__).parent.parent / f"templates/{template_name}.mtp",
     )
 
     if not template_cfg_path.exists():

@@ -5,7 +5,6 @@ from .. import logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
@@ -80,9 +79,9 @@ class Animation:
                 self.add(groups)
 
                 # Label groups
-                self.add(Text("lag_ratio = ").scale(0.7).next_to(groups, UP, buff=1.5))
+                self.add(Text("lag_ratio = ", font_size=36).next_to(groups, UP, buff=1.5))
                 for group, ratio in zip(groups, ratios):
-                    self.add(Text(str(ratio)).scale(0.7).next_to(group, UP))
+                    self.add(Text(str(ratio), font_size=36).next_to(group, UP))
 
                 #Animate groups with different lag_ratios
                 self.play(AnimationGroup(*[
@@ -107,11 +106,9 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    (
-                        f"The {cls.__name__} animation has been is overridden for "
-                        f"{type(mobject).__name__} mobjects. use_override = False can "
-                        f" be used as keyword argument to prevent animation overriding."
-                    )
+                    f"The {cls.__name__} animation has been is overridden for "
+                    f"{type(mobject).__name__} mobjects. use_override = False can "
+                    f" be used as keyword argument to prevent animation overriding.",
                 )
                 return anim
         return super().__new__(cls)
@@ -144,7 +141,7 @@ class Animation:
                 (
                     "CONFIG has been removed from ManimCommunity.",
                     "Please use keyword arguments instead.",
-                )
+                ),
             )
 
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
@@ -225,7 +222,7 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
-            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -421,7 +418,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Union["Animation", "mobject._AnimationBuilder"]
+    anim: Union["Animation", "mobject._AnimationBuilder"],
 ) -> "Animation":
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

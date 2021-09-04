@@ -26,7 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
 
 import numpy as np
 
@@ -50,10 +50,12 @@ class Transform(Animation):
         path_func: Optional[Callable] = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
+        path_arc_centers: np.ndarray = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
+        self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
         self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
@@ -71,13 +73,18 @@ class Transform(Animation):
     @path_arc.setter
     def path_arc(self, path_arc: float) -> None:
         self._path_arc = path_arc
-        self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
+        self._path_func = path_along_arc(
+            arc_angle=self._path_arc,
+            axis=self.path_arc_axis,
+            arc_centers=self.path_arc_centers,
+        )
 
     @property
     def path_func(
         self,
     ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        [Iterable[np.ndarray], Iterable[np.ndarray], float],
+        Iterable[np.ndarray],
     ]:
         return self._path_func
 
@@ -85,7 +92,8 @@ class Transform(Animation):
     def path_func(
         self,
         path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+            [Iterable[np.ndarray], Iterable[np.ndarray], float],
+            Iterable[np.ndarray],
         ],
     ) -> None:
         if path_func is not None:
@@ -130,7 +138,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(*[mob.family_members_with_points() for mob in mobs])
+        return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
         self,
@@ -239,7 +247,7 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'"
+                "MoveToTarget called on mobject" "without attribute 'target'",
             )
 
 
@@ -270,7 +278,7 @@ class ApplyMethod(Transform):
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
-                "the method you want to animate"
+                "the method you want to animate",
             )
         assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
@@ -358,7 +366,7 @@ class ApplyFunction(Transform):
         target = self.function(self.mobject.copy())
         if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
-                "Functions passed to ApplyFunction must return object of type Mobject"
+                "Functions passed to ApplyFunction must return object of type Mobject",
             )
         return target
 

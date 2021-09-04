@@ -173,10 +173,10 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return self.tip_length
 
     def get_first_handle(self):
-        return self.get_points()[1]
+        return self.points[1]
 
     def get_last_handle(self):
-        return self.get_points()[-2]
+        return self.points[-2]
 
     def get_end(self):
         if self.has_tip():
@@ -219,7 +219,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.n_components,
-            )
+            ),
         )
         # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
@@ -235,7 +235,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                     start_angle + angle,
                     2 * n_components + 1,
                 )
-            ]
+            ],
         )
         theta = angle / n_components
         samples[1::2] /= np.cos(theta / 2)
@@ -252,7 +252,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         anchors, and finds their intersection points
         """
         # First two anchors and handles
-        a1, h, a2 = self.get_points()[:3]
+        a1, h, a2 = self.points[:3]
         # Tangent vectors
         t1 = h - a1
         t2 = h - a2
@@ -363,7 +363,7 @@ class OpenGLAnnularSector(OpenGLArc):
         )
 
     def init_points(self):
-        inner_arc, outer_arc = [
+        inner_arc, outer_arc = (
             OpenGLArc(
                 start_angle=self.start_angle,
                 angle=self.angle,
@@ -371,12 +371,12 @@ class OpenGLAnnularSector(OpenGLArc):
                 arc_center=self.arc_center,
             )
             for radius in (self.inner_radius, self.outer_radius)
-        ]
+        )
         outer_arc.reverse_points()
-        self.append_points(inner_arc.get_points())
-        self.add_line_to(outer_arc.get_points()[0])
-        self.append_points(outer_arc.get_points())
-        self.add_line_to(inner_arc.get_points()[0])
+        self.append_points(inner_arc.points)
+        self.add_line_to(outer_arc.points[0])
+        self.append_points(outer_arc.points)
+        self.add_line_to(inner_arc.points[0])
 
 
 class OpenGLSector(OpenGLAnnularSector):
@@ -413,8 +413,8 @@ class OpenGLAnnulus(OpenGLCircle):
         outer_circle = OpenGLCircle(radius=self.outer_radius)
         inner_circle = OpenGLCircle(radius=self.inner_radius)
         inner_circle.reverse_points()
-        self.append_points(outer_circle.get_points())
-        self.append_points(inner_circle.get_points())
+        self.append_points(outer_circle.points)
+        self.append_points(inner_circle.points)
         self.shift(self.arc_center)
 
 
@@ -541,14 +541,17 @@ class OpenGLDashedLine(OpenGLLine):
         dashed_ratio = self.dashed_ratio
         num_dashes = self.calculate_num_dashes(dashed_ratio)
         dashes = OpenGLDashedVMobject(
-            self, num_dashes=num_dashes, dashed_ratio=dashed_ratio
+            self,
+            num_dashes=num_dashes,
+            dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
     def calculate_num_dashes(self, dashed_ratio):
         return max(
-            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
+            2,
+            int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio)),
         )
 
     def get_start(self):
@@ -564,10 +567,10 @@ class OpenGLDashedLine(OpenGLLine):
             return OpenGLLine.get_end(self)
 
     def get_first_handle(self):
-        return self.submobjects[0].get_points()[1]
+        return self.submobjects[0].points[1]
 
     def get_last_handle(self):
-        return self.submobjects[-1].get_points()[-2]
+        return self.submobjects[-1].points[-2]
 
 
 class OpenGLTangentLine(OpenGLLine):
@@ -667,7 +670,7 @@ class OpenGLArrow(OpenGLLine):
         # Tip
         self.add_line_to(tip_width * UP / 2)
         self.add_line_to(tip_length * LEFT)
-        self.tip_index = len(self.get_points()) - 1
+        self.tip_index = len(self.points) - 1
         self.add_line_to(tip_width * DOWN / 2)
         self.add_line_to(points2[0])
         # Close it out
@@ -688,17 +691,19 @@ class OpenGLArrow(OpenGLLine):
 
     def reset_points_around_ends(self):
         self.set_points_by_ends(
-            self.get_start(), self.get_end(), path_arc=self.path_arc
+            self.get_start(),
+            self.get_end(),
+            path_arc=self.path_arc,
         )
         return self
 
     def get_start(self):
         nppc = self.n_points_per_curve
-        points = self.get_points()
+        points = self.points
         return (points[0] + points[-nppc]) / 2
 
     def get_end(self):
-        return self.get_points()[self.tip_index]
+        return self.points[self.tip_index]
 
     def put_start_and_end_on(self, start, end):
         self.set_points_by_ends(start, end, buff=0, path_arc=self.path_arc)
@@ -779,12 +784,12 @@ class OpenGLPolygon(OpenGLVMobject):
         # To ensure that we loop through starting with last
         arcs = [arcs[-1], *arcs[:-1]]
         for arc1, arc2 in adjacent_pairs(arcs):
-            self.append_points(arc1.get_points())
+            self.append_points(arc1.points)
             line = OpenGLLine(arc1.get_end(), arc2.get_start())
             # Make sure anchors are evenly distributed
             len_ratio = line.get_length() / arc1.get_arc_length()
             line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
-            self.append_points(line.get_points())
+            self.append_points(line.points)
         return self
 
 
@@ -832,7 +837,7 @@ class OpenGLArrowTip(OpenGLTriangle):
         return self.point_from_proportion(0.5)
 
     def get_tip_point(self):
-        return self.get_points()[0]
+        return self.points[0]
 
     def get_vector(self):
         return self.get_tip_point() - self.get_base()

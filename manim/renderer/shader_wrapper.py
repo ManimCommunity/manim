@@ -29,10 +29,10 @@ def find_file(file_name, directories=None):
             return path
         else:
             logger.debug(f"{path} does not exist.")
-    raise IOError(f"{file_name} not Found")
+    raise OSError(f"{file_name} not Found")
 
 
-class ShaderWrapper(object):
+class ShaderWrapper:
     def __init__(
         self,
         vert_data=None,
@@ -71,7 +71,7 @@ class ShaderWrapper(object):
                 self.vert_data is not None,
                 self.program_code["vertex_shader"] is not None,
                 self.program_code["fragment_shader"] is not None,
-            ]
+            ],
         )
 
     def get_id(self):
@@ -92,7 +92,7 @@ class ShaderWrapper(object):
                     self.depth_test,
                     self.render_primitive,
                 ],
-            )
+            ),
         )
 
     def refresh_id(self):
@@ -102,17 +102,15 @@ class ShaderWrapper(object):
     def create_program_id(self):
         return hash(
             "".join(
-                (
-                    self.program_code[f"{name}_shader"] or ""
-                    for name in ("vertex", "geometry", "fragment")
-                )
-            )
+                self.program_code[f"{name}_shader"] or ""
+                for name in ("vertex", "geometry", "fragment")
+            ),
         )
 
     def init_program_code(self):
         def get_code(name):
             return get_shader_code_from_file(
-                os.path.join(self.shader_folder, f"{name}.glsl")
+                os.path.join(self.shader_folder, f"{name}.glsl"),
             )
 
         self.program_code = {
@@ -126,7 +124,7 @@ class ShaderWrapper(object):
 
     def replace_code(self, old, new):
         code_map = self.program_code
-        for (name, code) in code_map.items():
+        for (name, _code) in code_map.items():
             if code_map[name] is None:
                 continue
             code_map[name] = re.sub(old, new, code_map[name])
@@ -148,7 +146,7 @@ class ShaderWrapper(object):
             self.vert_data = np.hstack(data_list)
         else:
             self.vert_data = np.hstack(
-                [self.vert_data, *[sw.vert_data for sw in shader_wrappers]]
+                [self.vert_data, *(sw.vert_data for sw in shader_wrappers)],
             )
         return self
 
@@ -168,10 +166,10 @@ def get_shader_code_from_file(filename):
             filename,
             directories=[get_shader_dir(), "/"],
         )
-    except IOError:
+    except OSError:
         return None
 
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         result = f.read()
 
     # To share functionality between shaders, some functions are read in
@@ -179,11 +177,13 @@ def get_shader_code_from_file(filename):
     # passing to ctx.program for compiling
     # Replace "#INSERT " lines with relevant code
     insertions = re.findall(
-        r"^#include ../include/.*\.glsl$", result, flags=re.MULTILINE
+        r"^#include ../include/.*\.glsl$",
+        result,
+        flags=re.MULTILINE,
     )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            os.path.join("inserts", line.replace("#include ../include/", ""))
+            os.path.join("inserts", line.replace("#include ../include/", "")),
         )
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result

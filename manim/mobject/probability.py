@@ -3,7 +3,6 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-import typing
 from typing import Iterable, List
 
 import numpy as np
@@ -120,7 +119,12 @@ class SampleSpace(Rectangle):
         self.add(self.vertical_parts)
 
     def get_subdivision_braces_and_labels(
-        self, parts, labels, direction, buff=SMALL_BUFF, min_num_quads=1
+        self,
+        parts,
+        labels,
+        direction,
+        buff=SMALL_BUFF,
+        min_num_quads=1,
     ):
         label_mobs = VGroup()
         braces = VGroup()

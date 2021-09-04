@@ -133,7 +133,8 @@ class ManimDirective(Directive):
     option_spec = {
         "hide_source": bool,
         "quality": lambda arg: directives.choice(
-            arg, ("low", "medium", "high", "fourk")
+            arg,
+            ("low", "medium", "high", "fourk"),
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
@@ -148,7 +149,9 @@ class ManimDirective(Directive):
         if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
             node = skip_manim_node()
             self.state.nested_parse(
-                StringList(self.content[0]), self.content_offset, node
+                StringList(self.content[0]),
+                self.content_offset,
+                node,
             )
             return [node]
 
@@ -202,7 +205,7 @@ class ManimDirective(Directive):
             ".. code-block:: python",
             "",
             "    from manim import *\n",
-            *["    " + line for line in self.content],
+            *("    " + line for line in self.content),
         ]
         source_block = "\n".join(source_block)
 
@@ -273,7 +276,8 @@ class ManimDirective(Directive):
             ref_block=ref_block,
         )
         state_machine.insert_input(
-            rendered_template.split("\n"), source=document.attributes["source"]
+            rendered_template.split("\n"),
+            source=document.attributes["source"],
         )
 
         return []
@@ -286,10 +290,10 @@ def _write_rendering_stats(scene_name, run_time, file_name):
     with open(rendering_times_file_path, "a") as file:
         csv.writer(file).writerow(
             [
-                re.sub("^(reference\/)|(manim\.)", "", file_name),
+                re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
                 "%.3f" % run_time,
-            ]
+            ],
         )
 
 
@@ -302,7 +306,7 @@ def _log_rendering_times(*args):
 
             print("\nRendering Summary\n-----------------\n")
 
-            max_file_length = max([len(row[0]) for row in data])
+            max_file_length = max(len(row[0]) for row in data)
             for key, group in it.groupby(data, key=lambda row: row[0]):
                 key = key.ljust(max_file_length + 1, ".")
                 group = list(group)
@@ -310,9 +314,9 @@ def _log_rendering_times(*args):
                     row = group[0]
                     print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
                     continue
-                time_sum = sum([float(row[2]) for row in group])
+                time_sum = sum(float(row[2]) for row in group)
                 print(
-                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES"
+                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
                 )
                 for row in group:
                     print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")

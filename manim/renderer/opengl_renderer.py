@@ -16,6 +16,7 @@ from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
+from ..utils.config_ops import _Data
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
@@ -24,7 +25,6 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
-from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -33,6 +33,8 @@ from .vectorized_mobject_rendering import (
 
 
 class OpenGLCamera(OpenGLMobject):
+    euler_angles = _Data()
+
     def __init__(
         self,
         frame_shape=None,
@@ -55,12 +57,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False
+                format=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False
+                format=False,
             )
 
         if frame_shape is None:
@@ -73,10 +75,8 @@ class OpenGLCamera(OpenGLMobject):
         else:
             self.center_point = center_point
 
-        if euler_angles is None:
-            self.euler_angles = [0, 0, 0]
-        else:
-            self.euler_angles = euler_angles
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
         self.focal_distance = focal_distance
 
@@ -86,12 +86,15 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        if model_matrix is None:
-            model_matrix = opengl.translation_matrix(0, 0, 11)
-
+        self.default_model_matrix = model_matrix
         super().__init__(model_matrix=model_matrix, **kwargs)
 
-        self.default_model_matrix = model_matrix
+        if euler_angles is None:
+            euler_angles = [0, 0, 0]
+        euler_angles = np.array(euler_angles, dtype=float)
+
+        self.euler_angles = euler_angles
+        self.refresh_rotation_matrix()
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
@@ -105,11 +108,6 @@ class OpenGLCamera(OpenGLMobject):
             return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
         else:
             return np.linalg.inv(self.model_matrix)
-
-    def init_data(self):
-        super().init_data()
-        self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
-        self.refresh_rotation_matrix()
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -127,7 +125,7 @@ class OpenGLCamera(OpenGLMobject):
 
     def refresh_rotation_matrix(self):
         # Rotate based on camera orientation
-        theta, phi, gamma = self.data["euler_angles"]
+        theta, phi, gamma = self.euler_angles
         quat = quaternion_mult(
             quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
             quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
@@ -152,11 +150,11 @@ class OpenGLCamera(OpenGLMobject):
 
     def set_euler_angles(self, theta=None, phi=None, gamma=None):
         if theta is not None:
-            self.data["euler_angles"][0] = theta
+            self.euler_angles[0] = theta
         if phi is not None:
-            self.data["euler_angles"][1] = phi
+            self.euler_angles[1] = phi
         if gamma is not None:
-            self.data["euler_angles"][2] = gamma
+            self.euler_angles[2] = gamma
         self.refresh_rotation_matrix()
         return self
 
@@ -170,19 +168,19 @@ class OpenGLCamera(OpenGLMobject):
         return self.set_euler_angles(gamma=gamma)
 
     def increment_theta(self, dtheta):
-        self.data["euler_angles"][0] += dtheta
+        self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
     def increment_phi(self, dphi):
-        phi = self.data["euler_angles"][1]
+        phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
-        self.data["euler_angles"][1] = new_phi
+        self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
     def increment_gamma(self, dgamma):
-        self.data["euler_angles"][2] += dgamma
+        self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
 
@@ -191,14 +189,14 @@ class OpenGLCamera(OpenGLMobject):
 
     def get_center(self):
         # Assumes first point is at the center
-        return self.get_points()[0]
+        return self.points[0]
 
     def get_width(self):
-        points = self.get_points()
+        points = self.points
         return points[2, 0] - points[1, 0]
 
     def get_height(self):
-        points = self.get_points()
+        points = self.points
         return points[4, 1] - points[3, 1]
 
     def get_focal_distance(self):
@@ -226,6 +224,7 @@ class OpenGLRenderer:
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
+        self.animation_start_time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -244,12 +243,20 @@ class OpenGLRenderer:
         self.scene = scene
         if not hasattr(self, "window"):
             if config["preview"]:
+                from .opengl_renderer_window import Window
+
                 self.window = Window(self)
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
                 self.window = None
-                self.context = moderngl.create_standalone_context()
+                try:
+                    self.context = moderngl.create_context(standalone=True)
+                except Exception:
+                    self.context = moderngl.create_context(
+                        standalone=True,
+                        backend="egl",
+                    )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)
@@ -307,7 +314,8 @@ class OpenGLRenderer:
 
             # Set uniforms.
             for name, value in it.chain(
-                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+                shader_wrapper.uniforms.items(),
+                self.perspective_uniforms.items(),
             ):
                 try:
                     shader.set_uniform(name, value)
@@ -316,7 +324,8 @@ class OpenGLRenderer:
             try:
                 shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
-                    "u_projection_matrix", self.scene.camera.projection_matrix
+                    "u_projection_matrix",
+                    self.scene.camera.projection_matrix,
                 )
             except KeyError:
                 pass
@@ -333,6 +342,7 @@ class OpenGLRenderer:
                 shader_wrapper.vert_data,
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
+                primitive=mobject.render_primitive,
             )
             mesh.set_uniforms(self)
             mesh.render()
@@ -359,13 +369,17 @@ class OpenGLRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
-                self.skip_animations = True
-        if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
-                self.skip_animations = True
-                raise EndSceneEarlyException()
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
 
     @handle_caching_play
     @handle_play_like_call
@@ -411,7 +425,34 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
+        if config["save_last_frame"]:
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
+
+    def get_image(self) -> Image.Image:
+        """Returns an image from the current frame. The first argument passed to image represents
+        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
+        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
+        used for the decoder tand represent the stride and orientation. 0 means there is no
+        padding expected between bytes and -1 represents the orientation and means the first
+        line of the image is the bottom line on the screen.
+
+        Returns
+        -------
+        PIL.Image
+            The PIL image of the array.
+        """
+        image = Image.frombytes(
+            "RGBA",
+            self.get_pixel_shape(),
+            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            "raw",
+            "RGBA",
+            0,
+            -1,
+        )
+        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
@@ -427,7 +468,8 @@ class OpenGLRenderer:
                 samples=samples,
             ),
             depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height), samples=samples
+                (pixel_width, pixel_height),
+                samples=samples,
             ),
         )
 

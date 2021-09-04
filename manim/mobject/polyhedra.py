@@ -90,7 +90,7 @@ class Polyhedron(VGroup):
         faces_config: Dict[str, Union[str, int, float, bool]] = {},
         graph_config: Dict[str, Union[str, int, float, bool]] = {},
     ):
-        VGroup.__init__(self)
+        super().__init__()
         self.faces_config = dict(
             {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
         )
@@ -124,7 +124,8 @@ class Polyhedron(VGroup):
         return edges
 
     def create_faces(
-        self, face_coords: List[List[Union[List, np.ndarray]]]
+        self,
+        face_coords: List[List[Union[List, np.ndarray]]],
     ) -> "VGroup":
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
