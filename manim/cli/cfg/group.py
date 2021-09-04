@@ -10,12 +10,13 @@ from ast import literal_eval
 from typing import Union
 
 import click
+import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import config, console
+from ... import cli_ctx_settings, config, console
 from ..._config.utils import config_file_paths, make_config_parser
-from ...constants import CONTEXT_SETTINGS, EPILOG
+from ...constants import EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
@@ -113,8 +114,8 @@ def replace_keys(default: dict) -> dict:
     return default
 
 
-@click.group(
-    context_settings=CONTEXT_SETTINGS,
+@cloup.group(
+    context_settings=cli_ctx_settings,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
@@ -126,7 +127,7 @@ def cfg(ctx):
     pass
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+@cfg.command(context_settings=cli_ctx_settings, no_args_is_help=True)
 @click.option(
     "-l",
     "--level",
@@ -229,7 +230,7 @@ modify write_cfg_subcmd_input to account for it."""
         open_file(cfg_file_path)
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS)
+@cfg.command(context_settings=cli_ctx_settings)
 def show():
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
@@ -247,7 +248,7 @@ def show():
         console.print("\n")
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS)
+@cfg.command(context_settings=cli_ctx_settings)
 @click.option("-d", "--directory", default=os.getcwd())
 @click.pass_context
 def export(ctx, directory):

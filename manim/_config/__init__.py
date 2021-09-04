@@ -4,6 +4,7 @@ import logging
 from contextlib import _GeneratorContextManager, contextmanager
 from typing import Union
 
+from .cli_colors import parse_cli_ctx
 from .logger_utils import make_logger
 from .utils import ManimConfig, ManimFrame, make_config_parser
 
@@ -14,6 +15,7 @@ __all__ = [
     "config",
     "frame",
     "tempconfig",
+    "cli_ctx_settings",
 ]
 
 parser = make_config_parser()
@@ -25,6 +27,7 @@ parser = make_config_parser()
 logger, console, error_console = make_logger(
     parser["logger"], parser["CLI"]["verbosity"]
 )
+cli_ctx_settings = parse_cli_ctx(parser["CLI_CTX"])
 # TODO: temporary to have a clean terminal output when working with PIL or matplotlib
 logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)

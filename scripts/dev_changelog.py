@@ -50,6 +50,7 @@ from pathlib import Path
 from textwrap import dedent, indent
 
 import click
+import cloup
 from git import Repo
 from github import Github
 from tqdm import tqdm
@@ -147,7 +148,7 @@ def get_summary(body):
         return has_changelog_pattern.group()[22:-21].strip()
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
