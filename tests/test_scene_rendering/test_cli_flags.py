@@ -34,7 +34,8 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
 
 @pytest.mark.slow
 @video_comparison(
-    "SquareToCircleWithlFlag.json", "videos/simple_scenes/480p15/SquareToCircle.mp4"
+    "SquareToCircleWithlFlag.json",
+    "videos/simple_scenes/480p15/SquareToCircle.mp4",
 )
 def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
@@ -170,7 +171,7 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     assert is_not_empty, "running manim with -s, -r flag did not render a file"
 
     filename = add_version_before_extension(
-        tmp_path / "images" / "simple_scenes" / "SquareToCircle.png"
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle.png",
     )
     assert np.asarray(Image.open(filename)).shape == (100, 200, 4)
 
@@ -247,7 +248,7 @@ def test_dash_as_filename(tmp_path):
     result = runner.invoke(main, command, input=code)
     assert result.exit_code == 0
     exists = add_version_before_extension(
-        tmp_path / "images" / "-" / "Test.png"
+        tmp_path / "images" / "-" / "Test.png",
     ).exists()
     assert exists, result.output
 
@@ -275,7 +276,7 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
     )
     assert not unexpected_mp4_path.exists(), "unexpected mp4 file found at " + str(
-        unexpected_mp4_path
+        unexpected_mp4_path,
     )
 
     expected_gif_path = (
@@ -315,20 +316,22 @@ def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         / add_version_before_extension("SquareToCircle.gif")
     )
     assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
-        unexpected_gif_path
+        unexpected_gif_path,
     )
 
     expected_mp4_path = (
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
     )
     assert expected_mp4_path.exists(), "expected mp4 file not found at " + str(
-        expected_mp4_path
+        expected_mp4_path,
     )
 
 
 @pytest.mark.slow
 def test_videos_not_created_when_png_format_set(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test mp4 and gifs are not created when --format png is set"""
     scene_name = "SquareToCircle"
@@ -355,20 +358,22 @@ def test_videos_not_created_when_png_format_set(
         / add_version_before_extension("SquareToCircle.gif")
     )
     assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
-        unexpected_gif_path
+        unexpected_gif_path,
     )
 
     unexpected_mp4_path = (
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
     )
     assert not unexpected_mp4_path.exists(), "expected mp4 file not found at " + str(
-        unexpected_mp4_path
+        unexpected_mp4_path,
     )
 
 
 @pytest.mark.slow
 def test_images_are_created_when_png_format_set(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test images are created in media directory when --format png is set"""
     scene_name = "SquareToCircle"
@@ -393,7 +398,9 @@ def test_images_are_created_when_png_format_set(
 
 @pytest.mark.slow
 def test_images_are_created_when_png_format_set_for_opengl(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test images are created in media directory when --format png is set for opengl"""
     scene_name = "SquareToCircle"
@@ -420,7 +427,9 @@ def test_images_are_created_when_png_format_set_for_opengl(
 
 @pytest.mark.slow
 def test_images_are_zero_padded_when_zero_pad_set(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test images are zero padded when --format png and --zero_pad n are set"""
     scene_name = "SquareToCircle"
@@ -443,7 +452,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
 
     unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
-        unexpected_png_path
+        unexpected_png_path,
     )
 
     expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
@@ -452,7 +461,9 @@ def test_images_are_zero_padded_when_zero_pad_set(
 
 @pytest.mark.slow
 def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
     scene_name = "SquareToCircle"
@@ -477,7 +488,7 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
 
     unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
-        unexpected_png_path
+        unexpected_png_path,
     )
 
     expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
@@ -507,20 +518,22 @@ def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
     )
     assert not unexpected_mp4_path.exists(), "unexpected mp4 file found at " + str(
-        unexpected_mp4_path
+        unexpected_mp4_path,
     )
 
     expected_webm_path = (
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
     )
     assert expected_webm_path.exists(), "expected webm file not found at " + str(
-        expected_webm_path
+        expected_webm_path,
     )
 
 
 @pytest.mark.slow
 def test_default_format_output_for_transparent_flag(
-    tmp_path, manim_cfg_file, simple_scenes_path
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
 ):
     """Test .mov is created by default when transparent flag is set"""
     scene_name = "SquareToCircle"
@@ -542,14 +555,14 @@ def test_default_format_output_for_transparent_flag(
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
     )
     assert not unexpected_webm_path.exists(), "unexpected webm file found at " + str(
-        unexpected_webm_path
+        unexpected_webm_path,
     )
 
     expected_mov_path = (
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mov"
     )
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
-        expected_mov_path
+        expected_mov_path,
     )
 
 
@@ -576,12 +589,12 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
     )
     assert not unexpected_webm_path.exists(), "unexpected webm file found at " + str(
-        unexpected_webm_path
+        unexpected_webm_path,
     )
 
     expected_mov_path = (
         tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mov"
     )
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
-        expected_mov_path
+        expected_mov_path,
     )

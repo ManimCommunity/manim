@@ -322,7 +322,7 @@ Plotting with Manim
                x_range=[0, 10], y_range=[0, 100, 10], axis_config={"include_tip": False}
            )
            labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
-           
+
            t = ValueTracker(0)
 
            def func(x):
@@ -570,7 +570,7 @@ Special Camera Settings
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
    :ref_classes: ThreeDScene Surface
-   
+
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
            resolution_fa = 42

@@ -2,19 +2,19 @@ Docker
 ======
 
 The community maintains a docker image, which can be found
-`on DockerHub <https://hub.docker.com/r/manimcommunity/manim>`__. 
+`on DockerHub <https://hub.docker.com/r/manimcommunity/manim>`__.
 For our image ``manimcommunity/manim``, there are the following tags:
 
-- ``latest``: the most recent version corresponding 
+- ``latest``: the most recent version corresponding
   to `the main branch <https://github.com/ManimCommunity/manim>`__,
-- ``stable``: the latest released version (according to 
+- ``stable``: the latest released version (according to
   `the releases page <https://github.com/ManimCommunity/manim/releases>`__),
-- ``vX.Y.Z``: any particular released version (according to 
+- ``vX.Y.Z``: any particular released version (according to
   `the releases page <https://github.com/ManimCommunity/manim/releases>`__).
 
 .. note::
 
-   When using Manim's CLI within a Docker container, some flags like 
+   When using Manim's CLI within a Docker container, some flags like
    ``-p`` (preview file) and ``-f`` (show output file in the file browser)
    are not supported.
 
@@ -23,7 +23,7 @@ Basic usage of the Docker container
 -----------------------------------
 
 Assuming that you can access the docker installation on your system
-from a terminal (bash / PowerShell) via ``docker``, you can 
+from a terminal (bash / PowerShell) via ``docker``, you can
 render a scene ``CircleToSquare`` in a file `test_scenes.py`
 with the following command.
 
@@ -45,7 +45,7 @@ modify to your liking. First, run
 
 .. code-block:: sh
 
-   docker run -it --name my-manim-container -v "/full/path/to/your/directory:/manim" manimcommunity/manim /bin/bash   
+   docker run -it --name my-manim-container -v "/full/path/to/your/directory:/manim" manimcommunity/manim /bin/bash
 
 
 to obtain an interactive shell inside your container allowing you

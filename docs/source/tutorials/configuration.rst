@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   manim -ql <file.py> SceneName 
+   manim -ql <file.py> SceneName
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   manim -sqh <file.py> SceneName 
+   manim -sqh <file.py> SceneName
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +120,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
+   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim render --help``.  A complete list
@@ -162,7 +162,7 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   manim -o myscene -i -c WHITE <file.py> SceneName 
+   manim -o myscene -i -c WHITE <file.py> SceneName
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -377,8 +377,8 @@ A list of all CLI flags
      plugins  Manages Manim plugins.
 
      Made with <3 by Manim Community developers.
-     
-Each of the subcommands has its own help page which can be 
+
+Each of the subcommands has its own help page which can be
 
 .. code::
 

@@ -11,7 +11,7 @@ Otherwise, if you intend to use Manim to work on an animation project,
 we recommend installing the library locally (either to your system's
 Python, or via Docker).
 
-.. warning:: 
+.. warning::
 
    Note that there are several different versions of Manim. The
    instructions on this website are **only** for the *community edition*.
@@ -21,7 +21,7 @@ Python, or via Docker).
 
 #. :ref:`Installing Manim to your system's Python <local-installation>`
 #. :ref:`Using Manim via Docker <docker-installation>`
-#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab 
+#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab
    <interactive-online>`
 
 
@@ -43,7 +43,7 @@ operating system specific instructions for you to follow.
    follow the steps on the following pages carefully, but in case
    you hit a wall we are happy to help: either `join our Discord
    <https://www.manim.community/discord/>`__, or start a new
-   Discussion `directly on GitHub 
+   Discussion `directly on GitHub
    <https://github.com/ManimCommunity/manim/discussions>`__.
 
 .. toctree::
@@ -59,12 +59,12 @@ Once Manim is installed locally, you can proceed to our
 through rendering a first simple scene.
 
 As mentioned above, do not worry if there are errors or other
-problems: consult our :doc:`troubleshooting 
+problems: consult our :doc:`troubleshooting
 guide <installation/troubleshooting>` for help, or get in touch
-with the community via `GitHub discussions 
-<https://github.com/ManimCommunity/manim/discussions>`__ or 
+with the community via `GitHub discussions
+<https://github.com/ManimCommunity/manim/discussions>`__ or
 `Discord <https://www.manim.community/discord/>`__.
-   
+
 
 
 .. _docker-installation:
@@ -108,6 +108,3 @@ In order to change code in the library, it is recommended to
 install Manim in a different way. Please follow the instructions
 in our :doc:`contribution guide <contributing>` if you are
 interested in that.
-
-
-
