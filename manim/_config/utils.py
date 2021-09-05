@@ -1027,22 +1027,25 @@ class ManimConfig(MutableMapping):
     @theme.setter
     def theme(
         self,
-        th: str,
+        th: typing.Union[str, typing.Dict[str, str]],
     ) -> None:
-        if th.startswith("{"):  # a custom dictionary
-            try:
-                th = eval(th)
-            except:
-                raise
-            t = constants.THEMES["dark_mode"]
-            t.update(th)
-        else:  # predefined theme
-            if th not in constants.THEMES:
-                raise KeyError(f"themes must be one of {list(constants.THEMES.keys())}")
-            t = constants.THEMES[th]
-        self._d["theme"] = t
-        self.mobject_color = t["mobject_color"]
-        self.background_color = t["background_color"]
+        if type(th) == str:
+            if th.startswith("{"):  # a custom dictionary
+                try:
+                    t = eval(th)
+                except:
+                    raise
+                th = constants.THEMES["dark_mode"]
+                th.update(t)
+            else:  # predefined theme
+                if th not in constants.THEMES:
+                    raise KeyError(
+                        f"themes must be one of {list(constants.THEMES.keys())}",
+                    )
+                th = constants.THEMES[th]
+        self._d["theme"] = th
+        self.mobject_color = th["mobject_color"]
+        self.background_color = th["background_color"]
 
     from_animation_number = property(
         lambda self: self._d["from_animation_number"],
