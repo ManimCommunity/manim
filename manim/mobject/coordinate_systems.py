@@ -762,11 +762,7 @@ class CoordinateSystem:
                 return graph.point_from_proportion(alpha)
             else:
                 raise ValueError(
-                    "x={} not located in the range of the graph ([{}, {}])".format(
-                        x,
-                        self.p2c(graph.get_start())[0],
-                        self.p2c(graph.get_end())[0],
-                    ),
+                    f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
