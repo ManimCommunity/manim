@@ -3,10 +3,12 @@ import json
 import os
 from functools import wraps
 
+import pytest
+
 
 def _check_logs(reference_logfile, generated_logfile):
     with open(reference_logfile) as reference_logs, open(
-        generated_logfile
+        generated_logfile,
     ) as generated_logs:
         reference_logs = reference_logs.readlines()
         generated_logs = generated_logs.readlines()
@@ -22,7 +24,7 @@ def _check_logs(reference_logfile, generated_logfile):
             for log in generated_logs[len(reference_logs) :]:
                 msg_assert += log
         msg_assert += f"\nPath of reference log: {reference_logfile}\nPath of generated logs: {generated_logfile}"
-        assert 0, msg_assert + reference_logfile + " " + generated_logfile
+        pytest.fail(msg_assert + reference_logfile + " " + generated_logfile)
 
     for index, ref, gen in zip(itertools.count(), reference_logs, generated_logs):
         # As they are string, we only need to check if they are equal. If they are not, we then compute a more precise difference, to debug.
@@ -68,19 +70,22 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
             tests_directory = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))
+                os.path.dirname(os.path.abspath(__file__)),
             )
             control_data_path = os.path.join(
-                tests_directory, "control_data", "logs_data", control_data_file
+                tests_directory,
+                "control_data",
+                "logs_data",
+                control_data_file,
             )
             path_log_generated = tmp_path / log_path_from_media_dir
             # The following will say precisely which subdir does not exist.
             if not os.path.exists(path_log_generated):
                 for parent in reversed(path_log_generated.parents):
                     if not parent.exists():
-                        assert (
-                            False
-                        ), f"'{parent.name}' does not exist in '{parent.parent}' (which exists). "
+                        pytest.fail(
+                            f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
+                        )
                         break
             _check_logs(control_data_path, str(path_log_generated))
             return result

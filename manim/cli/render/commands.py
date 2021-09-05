@@ -44,13 +44,13 @@ def render(
 
     if args["use_opengl_renderer"]:
         logger.warning(
-            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
+            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!",
         )
         args["renderer"] = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
-            "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
+            "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!",
         )
         args["renderer"] = "webgl"
 
@@ -68,7 +68,7 @@ def render(
 
     if args["show_in_file_browser"]:
         logger.warning(
-            "The short form of show_in_file_browser is deprecated and will be moved to support --format."
+            "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
         )
 
     class ClickArgs:
@@ -124,7 +124,7 @@ def render(
         except ModuleNotFoundError:
             console.print(
                 "Dependencies for the WebGL render are missing. Run "
-                "pip install manim[webgl_renderer] to install them."
+                "pip install manim[webgl_renderer] to install them.",
             )
             error_console.print_exception()
             sys.exit(1)
@@ -149,10 +149,10 @@ def render(
             stable = req_info.json()["info"]["version"]
             if stable != __version__:
                 console.print(
-                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available.",
                 )
                 console.print(
-                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
+                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]",
                 )
         except requests.exceptions.HTTPError:
             logger.debug(f"HTTP Error: {warn_prompt}")

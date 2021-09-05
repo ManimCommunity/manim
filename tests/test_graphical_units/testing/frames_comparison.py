@@ -65,17 +65,17 @@ def frames_comparison(
             not in inspect.getfullargspec(tested_scene_construct).args
         ):
             raise Exception(
-                f"Invalid graphical test function test function : must have '{SCENE_PARAMETER_NAME}'as one of the parameters."
+                f"Invalid graphical test function test function : must have '{SCENE_PARAMETER_NAME}'as one of the parameters.",
             )
 
         # Exclude "scene" from the argument list of the signature.
         old_sig = inspect.signature(
-            functools.partial(tested_scene_construct, scene=None)
+            functools.partial(tested_scene_construct, scene=None),
         )
 
         if "__module_test__" not in tested_scene_construct.__globals__:
             raise Exception(
-                "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file."
+                "There is no module test name indicated for the graphical unit test. You have to declare __module_test__ in the test file.",
             )
         module_name = tested_scene_construct.__globals__.get("__module_test__")
         test_name = tested_scene_construct.__name__[len("test_") :]
@@ -90,7 +90,7 @@ def frames_comparison(
             # This modify the test_name so the it is defined by the parametrization arguments too.
             # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items())
+                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items()),
             )
 
             config_tests = _config_test(last_frame)
@@ -105,7 +105,9 @@ def frames_comparison(
             setting_test = request.config.getoption("--set_test")
             real_test = _make_test_comparing_frames(
                 file_path=_control_data_path(
-                    module_name, test_name_with_param, setting_test
+                    module_name,
+                    test_name_with_param,
+                    setting_test,
                 ),
                 base_scene=base_scene,
                 construct=construct,
@@ -127,7 +129,7 @@ def frames_comparison(
             parameters += [inspect.Parameter("request", inspect.Parameter.KEYWORD_ONLY)]
         if "tmp_path" not in old_sig.parameters:
             parameters += [
-                inspect.Parameter("tmp_path", inspect.Parameter.KEYWORD_ONLY)
+                inspect.Parameter("tmp_path", inspect.Parameter.KEYWORD_ONLY),
             ]
         new_sig = old_sig.replace(parameters=parameters)
         wrapper.__signature__ = new_sig
@@ -201,7 +203,8 @@ def _make_test_comparing_frames(
                 test_renderer=testRenderer(file_writer_class=file_writer_class)
                 if base_scene is not ThreeDScene
                 else testRenderer(
-                    file_writer_class=file_writer_class, camera_class=ThreeDCamera
+                    file_writer_class=file_writer_class,
+                    camera_class=ThreeDCamera,
                 ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
@@ -223,7 +226,7 @@ def _control_data_path(module_name: str, test_name: str, setting_test: bool) -> 
     if not setting_test and not path.is_file():
         raise Exception(
             f"The control frame for the test {test_name} cannot be found in {path.parent}. "
-            "Make sure you generated the control frames first."
+            "Make sure you generated the control frames first.",
         )
     return path
 
@@ -236,6 +239,6 @@ def _config_test(last_frame: bool) -> ManimConfig:
                 "config_graphical_tests_monoframe.cfg"
                 if last_frame
                 else "config_graphical_tests_multiframes.cfg"
-            )
-        )
+            ),
+        ),
     )
