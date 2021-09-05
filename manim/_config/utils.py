@@ -1026,7 +1026,8 @@ class ManimConfig(MutableMapping):
 
     @theme.setter
     def theme(
-        self, th: typing.Union[typing.Dict[str, typing.Dict[str, str]], str]
+        self,
+        th: typing.Union[typing.Dict[str, typing.Dict[str, str]], str],
     ) -> None:
         if type(th) == str:
             if th not in constants.THEMES:
