@@ -1,6 +1,8 @@
 import math
 from typing import TYPE_CHECKING, Any, Dict, Iterable
 
+__all__ = ["LogBase", "LinearBase"]
+
 from ..mobject.numbers import Integer
 
 if TYPE_CHECKING:
@@ -51,7 +53,8 @@ class _ScaleBase:
         raise NotImplementedError
 
     def get_custom_labels(
-        self, val_range: Iterable[float]
+        self,
+        val_range: Iterable[float],
     ) -> Dict[Iterable[float], Iterable["Mobject"]]:
         """Custom instructions for generating labels along an axis.
 
