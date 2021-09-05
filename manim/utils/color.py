@@ -25,9 +25,111 @@ from typing import Iterable, List, Union
 import numpy as np
 from colour import Color
 
+from .. import config, constants
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
+
+
+def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
+    if isinstance(color, str):
+        return hex_to_rgb(color)
+    elif isinstance(color, Color):
+        return np.array(color.get_rgb())
+    else:
+        raise ValueError("Invalid color type: " + str(color))
+
+
+def color_to_rgba(color: Union[Color, str], alpha: float = 1) -> np.ndarray:
+    return np.array([*color_to_rgb(color), alpha])
+
+
+def rgb_to_color(rgb: Iterable[float]) -> Color:
+    return Color(rgb=rgb)
+
+
+def rgba_to_color(rgba: Iterable[float]) -> Color:
+    return rgb_to_color(rgba[:3])
+
+
+def rgb_to_hex(rgb: Iterable[float]) -> str:
+    return "#" + "".join("%02x" % int(255 * x) for x in rgb)
+
+
+def hex_to_rgb(hex_code: str) -> np.ndarray:
+    hex_part = hex_code[1:]
+    if len(hex_part) == 3:
+        hex_part = "".join([2 * c for c in hex_part])
+    return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
+
+
+def invert_color(color: Color) -> Color:
+    return rgb_to_color(1.0 - color_to_rgb(color))
+
+
+def color_to_int_rgb(color: Color) -> np.ndarray:
+    return (255 * color_to_rgb(color)).astype("uint8")
+
+
+def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
+    alpha = int(255 * opacity)
+    return np.append(color_to_int_rgb(color), alpha)
+
+
+def color_gradient(
+    reference_colors: Iterable[Color],
+    length_of_output: int,
+) -> List[Color]:
+    if length_of_output == 0:
+        return reference_colors[0]
+    rgbs = list(map(color_to_rgb, reference_colors))
+    alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
+    floors = alphas.astype("int")
+    alphas_mod1 = alphas % 1
+    # End edge case
+    alphas_mod1[-1] = 1
+    floors[-1] = len(rgbs) - 2
+    return [
+        rgb_to_color(interpolate(rgbs[i], rgbs[i + 1], alpha))
+        for i, alpha in zip(floors, alphas_mod1)
+    ]
+
+
+def interpolate_color(color1: Color, color2: Color, alpha: float) -> Color:
+    rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
+    return rgb_to_color(rgb)
+
+
+def average_color(*colors: Color) -> Color:
+    rgbs = np.array(list(map(color_to_rgb, colors)))
+    mean_rgb = np.apply_along_axis(np.mean, 0, rgbs)
+    return rgb_to_color(mean_rgb)
+
+
+def random_bright_color() -> Color:
+    color = random_color()
+    curr_rgb = color_to_rgb(color)
+    new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
+    return Color(rgb=new_rgb)
+
+
+def random_color() -> Color:
+    return random.choice([c.value for c in list(Colors)])
+
+
+def get_shaded_rgb(
+    rgb: np.ndarray,
+    point: np.ndarray,
+    unit_normal_vect: np.ndarray,
+    light_source: np.ndarray,
+) -> np.ndarray:
+    to_sun = normalize(light_source - point)
+    factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
+    if factor < 0:
+        factor *= 0.5
+    result = rgb + factor
+    clip_in_place(rgb + factor, 0, 1)
+    return result
 
 
 class Colors(Enum):
@@ -178,13 +280,17 @@ class Colors(Enum):
 
     """
 
-    white = "#FFFFFF"
-    gray_a = "#DDDDDD"
-    gray_b = "#BBBBBB"
-    gray_c = "#888888"
-    gray_d = "#444444"
-    gray_e = "#222222"
-    black = "#000000"
+    white = config["mobject_color"]
+    black = config["background_color"]
+
+    if config["theme"] != constants.THEMES["dark_mode"]:
+        gray_a, gray_b, gray_c, gray_d, gray_e = color_gradient([white, black], 7)[1:6]
+    else:
+        gray_a = "#DDDDDD"
+        gray_b = "#BBBBBB"
+        gray_c = "#888888"
+        gray_d = "#444444"
+        gray_e = "#222222"
     lighter_gray = gray_a
     light_gray = gray_b
     gray = gray_c
@@ -361,104 +467,3 @@ __all__ += [  # used to stop flake8 from complaining about undefined vars
     "GRAY_BROWN",
     "GREY_BROWN",
 ]
-
-
-def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
-    if isinstance(color, str):
-        return hex_to_rgb(color)
-    elif isinstance(color, Color):
-        return np.array(color.get_rgb())
-    else:
-        raise ValueError("Invalid color type: " + str(color))
-
-
-def color_to_rgba(color: Union[Color, str], alpha: float = 1) -> np.ndarray:
-    return np.array([*color_to_rgb(color), alpha])
-
-
-def rgb_to_color(rgb: Iterable[float]) -> Color:
-    return Color(rgb=rgb)
-
-
-def rgba_to_color(rgba: Iterable[float]) -> Color:
-    return rgb_to_color(rgba[:3])
-
-
-def rgb_to_hex(rgb: Iterable[float]) -> str:
-    return "#" + "".join("%02x" % int(255 * x) for x in rgb)
-
-
-def hex_to_rgb(hex_code: str) -> np.ndarray:
-    hex_part = hex_code[1:]
-    if len(hex_part) == 3:
-        hex_part = "".join([2 * c for c in hex_part])
-    return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
-
-
-def invert_color(color: Color) -> Color:
-    return rgb_to_color(1.0 - color_to_rgb(color))
-
-
-def color_to_int_rgb(color: Color) -> np.ndarray:
-    return (255 * color_to_rgb(color)).astype("uint8")
-
-
-def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
-    alpha = int(255 * opacity)
-    return np.append(color_to_int_rgb(color), alpha)
-
-
-def color_gradient(
-    reference_colors: Iterable[Color],
-    length_of_output: int,
-) -> List[Color]:
-    if length_of_output == 0:
-        return reference_colors[0]
-    rgbs = list(map(color_to_rgb, reference_colors))
-    alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
-    floors = alphas.astype("int")
-    alphas_mod1 = alphas % 1
-    # End edge case
-    alphas_mod1[-1] = 1
-    floors[-1] = len(rgbs) - 2
-    return [
-        rgb_to_color(interpolate(rgbs[i], rgbs[i + 1], alpha))
-        for i, alpha in zip(floors, alphas_mod1)
-    ]
-
-
-def interpolate_color(color1: Color, color2: Color, alpha: float) -> Color:
-    rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
-    return rgb_to_color(rgb)
-
-
-def average_color(*colors: Color) -> Color:
-    rgbs = np.array(list(map(color_to_rgb, colors)))
-    mean_rgb = np.apply_along_axis(np.mean, 0, rgbs)
-    return rgb_to_color(mean_rgb)
-
-
-def random_bright_color() -> Color:
-    color = random_color()
-    curr_rgb = color_to_rgb(color)
-    new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
-    return Color(rgb=new_rgb)
-
-
-def random_color() -> Color:
-    return random.choice([c.value for c in list(Colors)])
-
-
-def get_shaded_rgb(
-    rgb: np.ndarray,
-    point: np.ndarray,
-    unit_normal_vect: np.ndarray,
-    light_source: np.ndarray,
-) -> np.ndarray:
-    to_sun = normalize(light_source - point)
-    factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
-    if factor < 0:
-        factor *= 0.5
-    result = rgb + factor
-    clip_in_place(rgb + factor, 0, 1)
-    return result
