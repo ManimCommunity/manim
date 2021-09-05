@@ -119,6 +119,12 @@ def test_Vector(scene):
 
 
 @frames_comparison
+def test_VectorCoordLabel(scene):
+    vec = Vector([1, 2]).coordinate_label(show_bg_rec=True)
+    scene.add(vec)
+
+
+@frames_comparison
 def test_Polygon(scene):
     a = Polygon(*[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
     scene.add(a)
