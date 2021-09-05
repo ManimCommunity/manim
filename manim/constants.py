@@ -271,3 +271,22 @@ HELP_OPTIONS = ["-h", "--help"]
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
+
+THEMES: dict[str, dict[str, str]] = {
+    "dark_mode": {
+        "mobject_color": "#fff",
+        "background_color": "#000",
+    },
+    "light_mode": {
+        "mobject_color": "#000",
+        "background_color": "#fff",
+    },
+    "sepia": {
+        "mobject_color": "#bcac80",
+        "background_color": "#704214",
+    },
+    "seagreen": {
+        "mobject_color": "#fff",
+        "background_color": "#0f7d63",
+    },
+}
