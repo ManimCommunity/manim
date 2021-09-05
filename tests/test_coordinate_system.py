@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from manim import LEFT, ORIGIN, Axes, ComplexPlane
+from manim import LEFT, ORIGIN, PI, UR, Axes, Circle, ComplexPlane
 from manim import CoordinateSystem as CS
 from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
 
@@ -85,3 +85,29 @@ def test_NumberPlane():
 
         assert len(plane.y_lines) == num_y_lines
         assert len(plane.x_lines) == num_x_lines
+
+
+def test_point_to_coords():
+    ax = Axes(x_range=[0, 10, 2])
+    circ = Circle(radius=0.5).shift(UR * 2)
+
+    # get the coordinates of the circle with respect to the axes
+    coords = np.around(ax.point_to_coords(circ.get_right()), decimals=4)
+    assert np.array_equal(coords, (7.0833, 2.6667))
+
+
+def test_coords_to_point():
+    ax = Axes()
+
+    # a point with respect to the axes
+    c2p_coord = np.around(ax.coords_to_point(2, 2), decimals=4)
+    assert np.array_equal(c2p_coord, (1.7143, 1.5, 0))
+
+
+def test_input_to_graph_point():
+    ax = Axes()
+    curve = ax.get_graph(lambda x: np.cos(x))
+
+    # move a square to PI on the cosine curve.
+    position = np.around(ax.input_to_graph_point(x=PI, graph=curve), decimals=4)
+    assert np.array_equal(position, (2.6928, -0.75, 0))

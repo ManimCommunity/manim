@@ -78,7 +78,7 @@ class AbstractImageMobject(Mobject):
                 "resampling_algorithm has to be an int, one of the values defined in "
                 "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
                 "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
-                "'hamming', 'lanczos'."
+                "'hamming', 'lanczos'.",
             )
 
     def reset_points(self):
@@ -88,7 +88,7 @@ class AbstractImageMobject(Mobject):
                 UP + LEFT,
                 UP + RIGHT,
                 DOWN + LEFT,
-            ]
+            ],
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
@@ -196,7 +196,8 @@ class ImageMobject(AbstractImageMobject):
             pa = pa.repeat(3, axis=2)
         if pa.shape[2] == 3:
             alphas = 255 * np.ones(
-                list(pa.shape[:2]) + [1], dtype=self.pixel_array_dtype
+                list(pa.shape[:2]) + [1],
+                dtype=self.pixel_array_dtype,
             )
             pa = np.append(pa, alphas, axis=2)
         self.pixel_array = pa
@@ -265,13 +266,19 @@ class ImageMobject(AbstractImageMobject):
             f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.fill_opacity = interpolate(
-            mobject1.fill_opacity, mobject2.fill_opacity, alpha
+            mobject1.fill_opacity,
+            mobject2.fill_opacity,
+            alpha,
         )
         self.stroke_opacity = interpolate(
-            mobject1.stroke_opacity, mobject2.stroke_opacity, alpha
+            mobject1.stroke_opacity,
+            mobject2.stroke_opacity,
+            alpha,
         )
         self.pixel_array = interpolate(
-            mobject1.pixel_array, mobject2.pixel_array, alpha
+            mobject1.pixel_array,
+            mobject2.pixel_array,
+            alpha,
         ).astype(self.pixel_array_dtype)
 
     def get_style(self):
@@ -318,5 +325,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
             f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.pixel_array = interpolate(
-            mobject1.pixel_array, mobject2.pixel_array, alpha
+            mobject1.pixel_array,
+            mobject2.pixel_array,
+            alpha,
         ).astype(self.pixel_array_dtype)

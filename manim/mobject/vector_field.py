@@ -88,7 +88,9 @@ class VectorField(VGroup):
                     max_color_scheme_value,
                 )
                 alpha = inverse_interpolate(
-                    min_color_scheme_value, max_color_scheme_value, color_value
+                    min_color_scheme_value,
+                    max_color_scheme_value,
+                    color_value,
                 )
                 alpha *= len(self.rgbs) - 1
                 c1 = self.rgbs[int(alpha)]
@@ -105,7 +107,8 @@ class VectorField(VGroup):
 
     @staticmethod
     def shift_func(
-        func: Callable[[np.ndarray], np.ndarray], shift_vector: np.ndarray
+        func: Callable[[np.ndarray], np.ndarray],
+        shift_vector: np.ndarray,
     ) -> Callable[[np.ndarray], np.ndarray]:
         """Shift a vector field function.
 
@@ -126,7 +129,8 @@ class VectorField(VGroup):
 
     @staticmethod
     def scale_func(
-        func: Callable[[np.ndarray], np.ndarray], scalar: float
+        func: Callable[[np.ndarray], np.ndarray],
+        scalar: float,
     ) -> Callable[[np.ndarray], np.ndarray]:
         """Scale a vector field function.
 
@@ -161,7 +165,11 @@ class VectorField(VGroup):
         return lambda p: func(p * scalar)
 
     def nudge(
-        self, mob: Mobject, dt: float = 1, substeps: int = 1, pointwise: bool = False
+        self,
+        mob: Mobject,
+        dt: float = 1,
+        substeps: int = 1,
+        pointwise: bool = False,
     ) -> "VectorField":
         """Nudge a :class:`~.Mobject` along the vector field.
 
@@ -232,7 +240,7 @@ class VectorField(VGroup):
             return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
 
         step_size = dt / substeps
-        for i in range(substeps):
+        for _ in range(substeps):
             if pointwise:
                 mob.apply_function(lambda p: p + runge_kutta(self, p, step_size))
             else:
@@ -240,7 +248,10 @@ class VectorField(VGroup):
         return self
 
     def nudge_submobjects(
-        self, dt: float = 1, substeps: int = 1, pointwise: bool = False
+        self,
+        dt: float = 1,
+        substeps: int = 1,
+        pointwise: bool = False,
     ) -> "VectorField":
         """Apply a nudge along the vector field to all submobjects.
 
@@ -266,7 +277,9 @@ class VectorField(VGroup):
         return self
 
     def get_nudge_updater(
-        self, speed: float = 1, pointwise: bool = False
+        self,
+        speed: float = 1,
+        pointwise: bool = False,
     ) -> Callable[[Mobject, float], Mobject]:
         """Get an update function to move a :class:`~.Mobject` along the vector field.
 
@@ -287,7 +300,9 @@ class VectorField(VGroup):
         return lambda mob, dt: self.nudge(mob, dt * speed, pointwise=pointwise)
 
     def start_submobject_movement(
-        self, speed: float = 1, pointwise: bool = False
+        self,
+        speed: float = 1,
+        pointwise: bool = False,
     ) -> "VectorField":
         """Start continuously moving all submobjects along the vector field.
 
@@ -309,7 +324,8 @@ class VectorField(VGroup):
 
         self.stop_submobject_movement()
         self.submob_movement_updater = lambda mob, dt: mob.nudge_submobjects(
-            dt * speed, pointwise=pointwise
+            dt * speed,
+            pointwise=pointwise,
         )
         self.add_updater(self.submob_movement_updater)
         return self
@@ -348,7 +364,7 @@ class VectorField(VGroup):
         """
         if self.single_color:
             raise ValueError(
-                "There is no point in generating an image if the vector field uses a single color."
+                "There is no point in generating an image if the vector field uses a single color.",
             )
         ph = int(config["pixel_height"] / sampling_rate)
         pw = int(config["pixel_width"] / sampling_rate)
@@ -367,7 +383,10 @@ class VectorField(VGroup):
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
     def get_vectorized_rgba_gradient_function(
-        self, start: float, end: float, colors: Iterable
+        self,
+        start: float,
+        end: float,
+        colors: Iterable,
     ):
         """
         Generates a gradient of rgbas as a numpy array
@@ -397,7 +416,8 @@ class VectorField(VGroup):
             inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
             result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
             result = np.concatenate(
-                (result, np.full([len(result), 1], opacity)), axis=1
+                (result, np.full([len(result), 1], opacity)),
+                axis=1,
             )
             return result
 
@@ -556,7 +576,7 @@ class ArrowVectorField(VectorField):
         """
         output = np.array(self.func(point))
         norm = np.linalg.norm(output)
-        if not norm == 0:
+        if norm != 0:
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
         vect.shift(point)
@@ -713,7 +733,7 @@ class StreamLines(VectorField):
                 for n in range(self.n_repeats)
                 for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
                 for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
-            ]
+            ],
         )
 
         def outside_box(p):
@@ -729,17 +749,20 @@ class StreamLines(VectorField):
             self.background_img = self.get_colored_background_image()
             if config["renderer"] == "opengl":
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                    min_color_scheme_value, max_color_scheme_value, colors
+                    min_color_scheme_value,
+                    max_color_scheme_value,
+                    colors,
                 )
         for point in start_points:
             points = [point]
-            for step in range(max_steps):
+            for _ in range(max_steps):
                 last_point = points[-1]
                 new_point = last_point + dt * func(last_point)
                 if outside_box(new_point):
                     break
                 points.append(new_point)
-            if step == 0:
+            step = max_steps
+            if not step:
                 continue
             line = Line()
             line.duration = step * dt
@@ -751,18 +774,15 @@ class StreamLines(VectorField):
                 if config["renderer"] == "opengl":
                     # scaled for compatibility with cairo
                     line.set_stroke(width=self.stroke_width / 4.0)
-                    norms = [
-                        self.get_norm(self.func(point)) for point in line.get_points()
-                    ]
+                    norms = np.array(
+                        [np.linalg.norm(self.func(point)) for point in line.points],
+                    )
                     line.set_rgba_array_direct(self.values_to_rgbas(norms, opacity))
                 else:
                     line.color_using_background_image(self.background_img)
                     line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
-
-    def get_norm(self, vect):
-        return sum([x ** 2 for x in vect]) ** 0.5
 
     def create(
         self,
@@ -968,10 +988,12 @@ class StreamLines(VectorField):
                 animations.append(
                     Succession(
                         UpdateFromAlphaFunc(
-                            line, hide_and_wait, run_time=-line.time / self.flow_speed
+                            line,
+                            hide_and_wait,
+                            run_time=-line.time / self.flow_speed,
                         ),
                         create,
-                    )
+                    ),
                 )
                 self.remove(line.anim.mobject)
                 line.anim.finish()
@@ -980,10 +1002,12 @@ class StreamLines(VectorField):
                 animations.append(
                     Succession(
                         UpdateFromAlphaFunc(
-                            line, finish_updater_cycle, run_time=remaining_time
+                            line,
+                            finish_updater_cycle,
+                            run_time=remaining_time,
                         ),
                         create,
-                    )
+                    ),
                 )
         return AnimationGroup(*animations)
 

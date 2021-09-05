@@ -108,7 +108,7 @@ class Animation:
                 logger.debug(
                     f"The {cls.__name__} animation has been is overridden for "
                     f"{type(mobject).__name__} mobjects. use_override = False can "
-                    f" be used as keyword argument to prevent animation overriding."
+                    f" be used as keyword argument to prevent animation overriding.",
                 )
                 return anim
         return super().__new__(cls)
@@ -141,7 +141,7 @@ class Animation:
                 (
                     "CONFIG has been removed from ManimCommunity.",
                     "Please use keyword arguments instead.",
-                )
+                ),
             )
 
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
@@ -418,7 +418,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Union["Animation", "mobject._AnimationBuilder"]
+    anim: Union["Animation", "mobject._AnimationBuilder"],
 ) -> "Animation":
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

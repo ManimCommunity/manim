@@ -142,7 +142,11 @@ inheritance_graph_attrs = dict(
 )
 
 inheritance_node_attrs = dict(
-    penwidth=0, shape="box", width=0.05, height=0.05, margin=0.05
+    penwidth=0,
+    shape="box",
+    width=0.05,
+    height=0.05,
+    margin=0.05,
 )
 
 inheritance_edge_attrs = dict(

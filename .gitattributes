@@ -8,4 +8,3 @@
 *.wav binary
 
 manim/grpc/gen/** linguist-generated=true
-
