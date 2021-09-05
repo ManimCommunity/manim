@@ -6,14 +6,14 @@ Version incompatibility
 
 Confusion and conflict between versions is by far the most common reason
 for installation failures. Some signs and errors resulting from this are
-as follows: 
+as follows:
 
-- ``There are no scenes in that module`` 
-- ``ModuleNotFoundError: No module named 'manim'`` 
-- ``ModuleNotFoundError: No module named 'manimlib'`` 
-- You followed any tutorial created before October 2020 (because the community edition did not exist before then) 
-- You cloned a repository on GitHub (installation of the community version for normal use does not require the cloning of any repository) 
-- Different import statements (explained below) 
+- ``There are no scenes in that module``
+- ``ModuleNotFoundError: No module named 'manim'``
+- ``ModuleNotFoundError: No module named 'manimlib'``
+- You followed any tutorial created before October 2020 (because the community edition did not exist before then)
+- You cloned a repository on GitHub (installation of the community version for normal use does not require the cloning of any repository)
+- Different import statements (explained below)
 - You used documentation for multiple versions (such as the readme for 3b1b/manim and this documentation)
 
 .. note::
@@ -41,7 +41,7 @@ generally not work without some modification.
 Identifying the version you are running
 ---------------------------------------
 
-The community edition of manim should always state `Manim Community <version_number>` 
+The community edition of manim should always state `Manim Community <version_number>`
 as its first line of any command you run.
 
 Identifying and removing conflicting versions of manim
@@ -120,7 +120,7 @@ First, make sure your ``dvisvgm`` version is at least 2.4:
 
 If you do not know how to update ``dvisvgm``, please refer to your operating system's documentation.
 
-Second, check whether your ``dvisvgm`` supports PostScript specials. This is 
+Second, check whether your ``dvisvgm`` supports PostScript specials. This is
 needed to convert from PDF to SVG.
 
 .. code-block:: bash
@@ -128,7 +128,7 @@ needed to convert from PDF to SVG.
   dvisvgm -l
 
 
-If the output to this command does **not** contain ``ps  dvips PostScript specials``, 
+If the output to this command does **not** contain ``ps  dvips PostScript specials``,
 this is a bad sign. In this case, run
 
 .. code-block:: bash
@@ -136,16 +136,16 @@ this is a bad sign. In this case, run
   dvisvgm -h
 
 
-If the output does **not** contain ``--libgs=filename``, this means your 
+If the output does **not** contain ``--libgs=filename``, this means your
 ``dvisvgm`` does not currently support PostScript. You must get another binary.
 
-If, however, ``--libgs=filename`` appears in the help, that means that your 
-``dvisvgm`` needs the Ghostscript library to support PostScript. Search for 
-``libgs.so`` (on Linux, probably in ``/usr/local/lib`` or ``/usr/lib``) or 
-``gsdll32.dll`` (on 32-bit Windows, probably in ``C:\windows\system32``) or 
-``gsdll64.dll`` (on 64-bit Windows, probably in ``c:\windows\system32`` -- yes 
-32) or ``libgsl.dylib`` (on Mac OS, probably in ``/usr/local/lib`` or 
-``/opt/local/lib``). Please look carefully, as the file might be located 
+If, however, ``--libgs=filename`` appears in the help, that means that your
+``dvisvgm`` needs the Ghostscript library to support PostScript. Search for
+``libgs.so`` (on Linux, probably in ``/usr/local/lib`` or ``/usr/lib``) or
+``gsdll32.dll`` (on 32-bit Windows, probably in ``C:\windows\system32``) or
+``gsdll64.dll`` (on 64-bit Windows, probably in ``c:\windows\system32`` -- yes
+32) or ``libgsl.dylib`` (on Mac OS, probably in ``/usr/local/lib`` or
+``/opt/local/lib``). Please look carefully, as the file might be located
 elsewhere, e.g. in the directory where Ghostscript is installed.
 
 As soon as you have found the library, try (on Mac OS or Linux)
@@ -163,8 +163,8 @@ or (on Windows)
   dvisvgm -l
 
 
-You should now see ``ps    dvips PostScript specials`` in the output. Refer to 
-your operating system's documentation to find out how you can set or export the 
+You should now see ``ps    dvips PostScript specials`` in the output. Refer to
+your operating system's documentation to find out how you can set or export the
 environment variable ``LIBGS`` automatically whenever you open a shell.
 
 As a last check, you can run
@@ -173,12 +173,12 @@ As a last check, you can run
 
   dvisvgm -V1
 
-while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm`` 
-can find your Ghostscript installation, it will be shown in the output together 
+while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm``
+can find your Ghostscript installation, it will be shown in the output together
 with the version number.
 
-If you do not have the necessary library on your system, please refer to your 
-operating system's documentation to find out where you can get it and how you 
+If you do not have the necessary library on your system, please refer to your
+operating system's documentation to find out where you can get it and how you
 have to install it.
 
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.

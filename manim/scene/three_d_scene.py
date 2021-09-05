@@ -136,7 +136,10 @@ class ThreeDScene(Scene):
         self.remove(x)
 
     def begin_3dillusion_camera_rotation(
-        self, rate=1, origin_theta=-60 * DEGREES, origin_phi=75 * DEGREES
+        self,
+        rate=1,
+        origin_theta=-60 * DEGREES,
+        origin_phi=75 * DEGREES,
     ):
         val_tracker_theta = ValueTracker(0)
 
@@ -221,7 +224,7 @@ class ThreeDScene(Scene):
             anims.append(
                 ApplyMethod(
                     self.renderer.camera._frame_center.move_to, frame_center, **kwargs
-                )
+                ),
             )
 
         self.play(*anims + added_anims)
@@ -245,7 +248,7 @@ class ThreeDScene(Scene):
         """
         moving_mobjects = Scene.get_moving_mobjects(self, *animations)
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
-            self.renderer.camera._frame_center
+            self.renderer.camera._frame_center,
         ]
         if any([cm in moving_mobjects for cm in camera_mobjects]):
             return self.mobjects
@@ -327,7 +330,7 @@ class ThreeDScene(Scene):
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
-            self.default_camera_orientation_kwargs
+            self.default_camera_orientation_kwargs,
         )  # Where doe this come from?
         config.update(kwargs)
         self.set_camera_orientation(**config)

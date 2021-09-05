@@ -44,16 +44,16 @@ window.addEventListener("load", function () {
                 .node text {
                     fill: ${colors.text};
                 }
-                
+
                 .node polygon {
                     fill: ${colors.box};
                 }
-                
+
                 .edge polygon {
                     fill: ${colors.edge};
                     stroke: ${colors.edge};
                 }
-                
+
                 .edge path {
                     stroke: ${colors.edge};
                 }
