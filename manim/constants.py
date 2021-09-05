@@ -73,7 +73,6 @@ __all__ = [
     "DEFAULT_QUALITY",
     "DEFAULT_QUALITY_SHORT",
     "EPILOG",
-    "HELP_OPTIONS",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
     "CTRL_VALUE",
@@ -268,7 +267,6 @@ DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
 EPILOG = "Made with <3 by Manim Community developers."
-HELP_OPTIONS = ["-h", "--help"]
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
 
@@ -276,5 +274,4 @@ CONTEXT_SETTINGS = Context.settings(
     align_option_groups=True,
     align_sections=True,
     show_constraints=True,
-    help_option_names=HELP_OPTIONS,
 )

@@ -359,7 +359,7 @@ A list of all config options
 Accessing CLI command options
 *****************************
 
-Entering ``manim``, ``manim -h``, or ``manim --help`` will open the main help page.
+Entering ``manim``, or ``manim --help``, will open the main help page.
 
 .. code::
 
@@ -368,8 +368,8 @@ Entering ``manim``, ``manim -h``, or ``manim --help`` will open the main help pa
      Animation engine for explanatory math videos.
 
    Options:
-     --version   Show version and exit.
-     -h, --help  Show this message and exit.
+     --version  Show version and exit.
+     --help     Show this message and exit.
 
    Commands:
      cfg      Manages Manim configuration files.
@@ -391,5 +391,4 @@ Each of the subcommands has its own help page which can be accessed similarly:
 .. code::
 
    manim render
-   manim render -h
    manim render --help

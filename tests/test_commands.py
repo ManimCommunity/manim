@@ -34,7 +34,7 @@ Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
   Manages Manim configuration files.
 
 Options:
-  -h, --help  Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
   export
@@ -57,7 +57,7 @@ Usage: manim plugins [OPTIONS]
 
 Options:
   -l, --list  List available plugins.
-  -h, --help  Show this message and exit.
+  --help      Show this message and exit.
 
 Made with <3 by Manim Community developers.
 """
@@ -111,7 +111,7 @@ Usage: manim new [OPTIONS] COMMAND [ARGS]...
   Create a new project or insert a new scene.
 
 Options:
-  -h, --help  Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
   project  Creates a new project.

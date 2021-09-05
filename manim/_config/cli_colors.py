@@ -2,8 +2,6 @@ import configparser
 
 from cloup import Context, HelpFormatter, HelpTheme, Style
 
-from manim.constants import HELP_OPTIONS
-
 
 def parse_cli_ctx(parser: configparser.ConfigParser) -> Context:
     formatter_settings = {
@@ -23,6 +21,7 @@ def parse_cli_ctx(parser: configparser.ConfigParser) -> Context:
         "section_help",
         "col1",
         "col2",
+        "epilog",
     }
     for k, v in parser.items():
         if k in theme_keys and v:
@@ -47,6 +46,5 @@ def parse_cli_ctx(parser: configparser.ConfigParser) -> Context:
         align_option_groups=parser["align_option_groups"].lower() == "true",
         align_sections=parser["align_sections"].lower() == "true",
         show_constraints=True,
-        help_option_names=HELP_OPTIONS,
         formatter_settings=formatter,
     )
