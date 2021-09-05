@@ -768,7 +768,6 @@ class StreamLines(VectorField):
             self.add(line)
         self.stream_lines = [*self.submobjects]
 
-
     def create(
         self,
         lag_ratio: Optional[float] = None,
