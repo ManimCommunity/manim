@@ -1015,7 +1015,7 @@ class ManimConfig(MutableMapping):
     @background_color.setter
     def background_color(self, val):
         if val != "None":
-            self._d.__setitem__("background_color", colour.Color(val))
+            self._d.__setitem__("background_color", val)
         else:
             pass
 
@@ -1027,15 +1027,19 @@ class ManimConfig(MutableMapping):
     @theme.setter
     def theme(
         self,
-        th: typing.Union[typing.Dict[str, typing.Dict[str, str]], str],
+        th: str,
     ) -> None:
-        if type(th) == str:
+        if th.startswith("{"):  # a custom dictionary
+            try:
+                th = eval(th)
+            except:
+                raise
+            t = constants.THEMES["dark_mode"]
+            t.update(th)
+        else:  # predefined theme
             if th not in constants.THEMES:
                 raise KeyError(f"themes must be one of {list(constants.THEMES.keys())}")
             t = constants.THEMES[th]
-        elif type(th) == dict:
-            t = constants.THEMES["dark_mode"]
-            t.update(th)
         self._d["theme"] = t
         self.mobject_color = t["mobject_color"]
         self.background_color = t["background_color"]
