@@ -1567,14 +1567,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             axis.scaling.function((axis.x_range[1] + axis.x_range[0]) / 2)
             for axis in self.axes
         ]
-        self.origin = self.x_axis.number_to_point(
-            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
-        )
-        self.shift(-self.coords_to_point(*lines_center_point))
 
-        self.origin = self.x_axis.number_to_point(
-            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
-        )
+        self.shift(-self.coords_to_point(*lines_center_point))
 
     @staticmethod
     def _update_default_configs(default_configs, passed_configs):
@@ -1646,10 +1640,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         np.ndarray
             A point with respect to the scene's coordinate system.
         """
-
-        result = np.array(self.origin)
+        origin = self.x_axis.number_to_point(
+            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+        )
+        result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - self.origin
+            result += axis.number_to_point(coord) - origin
         return result
 
     def point_to_coords(self, point: Sequence[float]) -> Tuple[float]:
