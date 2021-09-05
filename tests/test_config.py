@@ -64,6 +64,15 @@ def test_background_color():
         assert np.allclose(frame[0, 0], [255, 255, 255, 255])
 
 
+def test_theme():
+    """Test the 'theme' config option."""
+    with tempconfig({"theme": "seagreen"}):
+        scene = MyScene()
+        scene.render()
+        frame = scene.renderer.get_frame()
+        assert np.allclose(frame[0, 0], [15, 125, 99, 255])
+
+
 def test_digest_file(tmp_path):
     """Test that a config file can be digested programmatically."""
     with tempconfig({}):
