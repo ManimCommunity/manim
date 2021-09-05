@@ -768,8 +768,6 @@ class StreamLines(VectorField):
             self.add(line)
         self.stream_lines = [*self.submobjects]
 
-    def get_norm(self, vect):
-        return sum(x ** 2 for x in vect) ** 0.5
 
     def create(
         self,
