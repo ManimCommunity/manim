@@ -278,7 +278,7 @@ for name, value in Colors.__members__.items():
 
 # print(constants_names)
 
-__all__ += [  # noqa: F822 # used to stop flake8 from complaining about undefined vars
+__all__ += [  # used to stop flake8 from complaining about undefined vars
     "WHITE",
     "GRAY_A",
     "GREY_A",
@@ -369,7 +369,7 @@ def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
     elif isinstance(color, Color):
         return np.array(color.get_rgb())
     else:
-        raise ValueError("Invalid color type")
+        raise ValueError("Invalid color type: " + str(color))
 
 
 def color_to_rgba(color: Union[Color, str], alpha: float = 1) -> np.ndarray:
@@ -409,7 +409,8 @@ def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
 
 
 def color_gradient(
-    reference_colors: Iterable[Color], length_of_output: int
+    reference_colors: Iterable[Color],
+    length_of_output: int,
 ) -> List[Color]:
     if length_of_output == 0:
         return reference_colors[0]

@@ -464,7 +464,10 @@ class ApplyWave(Homotopy):
                 return (1 - 2 * wave_func(t * ripples)) * (1 - 2 * ((phase) % 2))
 
         def homotopy(
-            x: float, y: float, z: float, t: float
+            x: float,
+            y: float,
+            z: float,
+            t: float,
         ) -> Tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
@@ -536,7 +539,10 @@ class Wiggle(Animation):
             return self.mobject.get_center()
 
     def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
+        self,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
+        alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
         submobject.scale(
@@ -606,11 +612,15 @@ class Circumscribe(Succession):
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
-                mobject, color, buff, stroke_width=stroke_width
+                mobject,
+                color,
+                buff,
+                stroke_width=stroke_width,
             )
         elif shape is Circle:
             frame = Circle(color=color, stroke_width=stroke_width).surround(
-                mobject, buffer_factor=1
+                mobject,
+                buffer_factor=1,
             )
             radius = frame.width / 2
             frame.scale((radius + buff) / radius)

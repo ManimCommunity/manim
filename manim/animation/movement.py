@@ -42,7 +42,10 @@ class Homotopy(Animation):
         return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
+        self,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
+        alpha: float,
     ) -> None:
         submobject.points = starting_submobject.points
         submobject.apply_function(
@@ -52,7 +55,10 @@ class Homotopy(Animation):
 
 class SmoothedVectorizedHomotopy(Homotopy):
     def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
+        self,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
+        alpha: float,
     ) -> None:
         Homotopy.interpolate_submobject(self, submobject, starting_submobject, alpha)
         submobject.make_smooth()
@@ -67,7 +73,10 @@ class ComplexHomotopy(Homotopy):
         """
 
         def homotopy(
-            x: float, y: float, z: float, t: float
+            x: float,
+            y: float,
+            z: float,
+            t: float,
         ) -> Tuple[float, float, float]:
             c = complex_homotopy(complex(x, y), t)
             return (c.real, c.imag, z)

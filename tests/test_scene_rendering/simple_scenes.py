@@ -12,7 +12,7 @@ class SceneWithMultipleCalls(Scene):
     def construct(self):
         number = Integer(0)
         self.add(number)
-        for i in range(10):
+        for _i in range(10):
             self.play(Animation(Square()))
 
 

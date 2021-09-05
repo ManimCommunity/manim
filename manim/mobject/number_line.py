@@ -250,7 +250,7 @@ class NumberLine(Line):
                     self.scaling.get_custom_labels(
                         self.get_tick_range(),
                         unit_decimal_places=decimal_number_config["num_decimal_places"],
-                    )
+                    ),
                 )
 
             else:
@@ -350,7 +350,8 @@ class NumberLine(Line):
         **number_config,
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(
-            self.decimal_number_config, number_config
+            self.decimal_number_config,
+            number_config,
         )
         if direction is None:
             direction = self.label_direction
@@ -441,7 +442,7 @@ class NumberLine(Line):
             The label.
         """
 
-        if isinstance(label_tex, float) or isinstance(label_tex, int):
+        if isinstance(label_tex, (float, int)):
             label_tex = MathTex(label_tex)
         elif isinstance(label_tex, str):
             label_tex = Tex(label_tex)

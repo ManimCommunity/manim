@@ -148,7 +148,7 @@ class OpenGLParagraph(OpenGLVGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
         self.lines = []
@@ -160,7 +160,7 @@ class OpenGLParagraph(OpenGLVGroup):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
+            [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
         OpenGLVGroup.__init__(
             self, *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
@@ -226,7 +226,7 @@ class OpenGLParagraph(OpenGLVGroup):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
-                self.get_center() + self.lines_initial_positions[line_no]
+                self.get_center() + self.lines_initial_positions[line_no],
             )
         return self
 
@@ -255,7 +255,7 @@ class OpenGLParagraph(OpenGLVGroup):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
-                np.array([self.get_center()[0], self[line_no].get_center()[1], 0])
+                np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
@@ -264,8 +264,8 @@ class OpenGLParagraph(OpenGLVGroup):
                         self.get_right()[0] - self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
         elif self.lines[1][line_no] == "left":
             self[line_no].move_to(
@@ -274,8 +274,8 @@ class OpenGLParagraph(OpenGLVGroup):
                         self.get_left()[0] + self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
 
 
@@ -350,7 +350,7 @@ class OpenGLText(OpenGLSVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
+                japanese = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", style=BOLD)
@@ -359,8 +359,8 @@ class OpenGLText(OpenGLSVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
@@ -514,7 +514,7 @@ class OpenGLText(OpenGLSVGMobject):
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
+                        self.submobjects[submobjects_char_index - 1].get_center(),
                     )
                 chars.add(space)
             else:
@@ -871,14 +871,14 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         class MultiLanguage(Scene):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
-                chin = MarkupText(
+                japanese = MarkupText(
                     '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", style=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
-                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
-                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                chinese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, japanese, mess, russ, hin, chinese).arrange(DOWN)
                 self.add(group)
 
 
@@ -931,7 +931,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
             logger.warning(
-                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
             )
         gradientmap = self.extract_gradient_tags()
 
@@ -939,7 +939,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
             raise ValueError(
                 f"Pango cannot parse your markup in {self.text}. "
                 "Please check for typos, unmatched tags or unescaped "
-                "special chars like < and &."
+                "special chars like < and &.",
             )
 
         if self.line_spacing == -1:
@@ -1095,7 +1095,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
                     "to": tag.group(2),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
@@ -1137,7 +1137,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
                     "color": tag.group(1),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap

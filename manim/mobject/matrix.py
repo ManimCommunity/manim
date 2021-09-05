@@ -532,7 +532,10 @@ class MobjectMatrix(Matrix):
 
 
 def get_det_text(
-    matrix, determinant=None, background_rect=False, initial_scale_factor=2
+    matrix,
+    determinant=None,
+    background_rect=False,
+    initial_scale_factor=2,
 ):
     r"""Helper function to create determinant.
 

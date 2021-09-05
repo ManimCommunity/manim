@@ -34,7 +34,7 @@ def pytest_collection_modifyitems(config, items):
         return
     else:
         slow_skip = pytest.mark.skip(
-            reason="Slow test skipped due to --disable_slow flag."
+            reason="Slow test skipped due to --disable_slow flag.",
         )
         for item in items:
             if "slow" in item.keywords:

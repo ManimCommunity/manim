@@ -82,7 +82,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         if self.discontinuities:
             discontinuities = filter(
-                lambda t: self.t_min <= t <= self.t_max, self.discontinuities
+                lambda t: self.t_min <= t <= self.t_max,
+                self.discontinuities,
             )
             discontinuities = np.array(list(discontinuities))
             boundary_times = np.array(
@@ -91,7 +92,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                     self.t_max,
                     *(discontinuities - self.dt),
                     *(discontinuities + self.dt),
-                ]
+                ],
             )
             boundary_times.sort()
         else:
@@ -99,7 +100,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
             t_range = np.array(
-                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2]
+                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
             )
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
