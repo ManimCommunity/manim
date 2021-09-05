@@ -1005,6 +1005,8 @@ class Scene:
         self.time_progression.close()
 
     def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
         if self.skip_animation_preview:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
@@ -1013,8 +1015,11 @@ class Scene:
         elif config["write_to_movie"]:
             logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
             return False
-        elif config["format"] == "png":
-            logger.warning("Disabling interactive embed as '--format png' is set")
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
             return False
         elif not self.renderer.window:
             logger.warning("Disabling interactive embed as '--format png' is set")

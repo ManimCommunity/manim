@@ -5,7 +5,7 @@ import moderngl
 import numpy as np
 from PIL import Image
 
-from manim import config
+from manim import config, logger
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
@@ -268,6 +268,12 @@ class OpenGLRenderer:
             )
 
     def should_create_window(self):
+        if config["force_window"]:
+            logger.warning(
+                "'--force_window' is enabled, this is intended for debugging purposes "
+                "and may impact performance if used when outputting files",
+            )
+            return True
         return (
             config["preview"] and not config["format"] and not config["write_to_movie"]
         )

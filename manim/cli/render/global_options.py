@@ -78,4 +78,10 @@ global_options = option_group(
         help="Expand the window to its maximum possible size.",
         default=None,
     ),
+    option(
+        "--force_window",
+        is_flag=True,
+        help="Force window to open when using the opengl renderer, intended for debugging as it may impact performance",
+        default=False,
+    ),
 )

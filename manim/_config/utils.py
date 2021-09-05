@@ -296,6 +296,7 @@ class ManimConfig(MutableMapping):
         "write_all",
         "write_to_movie",
         "zero_pad",
+        "force_window",
     }
 
     def __init__(self) -> None:
@@ -539,6 +540,7 @@ class ManimConfig(MutableMapping):
             "fullscreen",
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
+            "force_window",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -687,6 +689,7 @@ class ManimConfig(MutableMapping):
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
             "zero_pad",
+            "force_window",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -880,6 +883,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["save_as_gif"],
         lambda self, val: self._set_boolean("save_as_gif", val),
         doc="Whether to save the rendered scene in .gif format (-i).",
+    )
+
+    force_window = property(
+        lambda self: self._d["force_window"],
+        lambda self, val: self._set_boolean("force_window", val),
+        doc="Set to force window when using the opengl renderer",
     )
 
     @property
