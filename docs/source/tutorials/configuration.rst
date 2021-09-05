@@ -356,32 +356,40 @@ A list of all config options
     'window_monitor', 'window_size', 'write_all', 'write_to_movie']
 
 
-A list of all CLI flags
-***********************
+Accessing CLI command options
+*****************************
+
+Entering ``manim``, ``manim -h``, or ``manim --help`` will open the main help page.
 
 .. code::
-
-   manim --help
 
    Usage: manim [OPTIONS] COMMAND [ARGS]...
 
-     Animation engine for explanatory math videos
+     Animation engine for explanatory math videos.
 
    Options:
-     --version   Show the version and exit.
-     --help  Show this message and exit.
+     --version   Show version and exit.
+     -h, --help  Show this message and exit.
 
    Commands:
-     render*  Render SCENE(S) from the input FILE.
      cfg      Manages Manim configuration files.
+     init     Sets up a new project in current working directory with default
+              settings.
+
+              It copies files from templates directory and pastes them in the
+              current working dir.
+     new      Create a new project or insert a new scene.
      plugins  Manages Manim plugins.
+     render   Render SCENE(S) from the input FILE.
 
-     Made with <3 by Manim Community developers.
+   See 'manim <command>' to read about a specific subcommand.
 
-Each of the subcommands has its own help page which can be
+   Made with <3 by Manim Community developers.
+
+Each of the subcommands has its own help page which can be accessed similarly:
 
 .. code::
 
+   manim render
+   manim render -h
    manim render --help
-   manim cfg --help
-   manim plugins --help
