@@ -272,7 +272,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
 
-THEMES: dict[str, dict[str, str]] = {
+THEMES: typing.Dict[str, typing.Dict[str, str]] = {
     "dark_mode": {
         "mobject_color": "#fff",
         "background_color": "#000",
