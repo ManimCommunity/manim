@@ -758,9 +758,9 @@ class StreamLines(VectorField):
                 if config["renderer"] == "opengl":
                     # scaled for compatibility with cairo
                     line.set_stroke(width=self.stroke_width / 4.0)
-                    norms = np.array([
-                        np.linalg.norm(self.func(point)) for point in line.points
-                    ])
+                    norms = np.array(
+                        [np.linalg.norm(self.func(point)) for point in line.points]
+                    )
                     line.set_rgba_array_direct(self.values_to_rgbas(norms, opacity))
                 else:
                     line.color_using_background_image(self.background_img)
