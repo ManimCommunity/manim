@@ -322,15 +322,6 @@ class OpenGLVMobject(OpenGLMobject):
     def get_flat_stroke(self):
         return self.flat_stroke
 
-    def set_rgba_array_direct(
-        self,
-        rgbas: np.ndarray,
-        name="stroke_rgba",
-        recurse=True,
-    ):
-        for mob in self.get_family(recurse):
-            mob.data[name] = rgbas.copy()
-
     # Points
     def set_anchors_and_handles(self, anchors1, handles, anchors2):
         assert len(anchors1) == len(handles) == len(anchors2)

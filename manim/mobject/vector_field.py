@@ -781,7 +781,10 @@ class StreamLines(VectorField):
                     norms = np.array(
                         [np.linalg.norm(self.func(point)) for point in line.points],
                     )
-                    line.set_rgba_array_direct(self.values_to_rgbas(norms, opacity))
+                    line.set_rgba_array_direct(
+                        self.values_to_rgbas(norms, opacity),
+                        name="stroke_rgba",
+                    )
                 else:
                     line.color_using_background_image(self.background_img)
                     line.set_stroke(width=self.stroke_width, opacity=opacity)
