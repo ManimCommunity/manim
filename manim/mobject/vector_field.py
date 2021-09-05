@@ -367,12 +367,28 @@ class VectorField(VGroup):
         return Image.fromarray((rgbs * 255).astype("uint8"))
 
     def get_vectorized_rgba_gradient_function(
-        self, min_value: float, max_value: float, colors: Iterable
+        self, start: float, end: float, colors: Iterable
     ):
+        """
+        Generates a gradient of rgbas as a numpy array
+
+        Parameters
+        ----------
+        start
+            start value used for inverse interpolation at :func:`~.inverse_interpolate`
+        end
+            end value used for inverse interpolation at :func:`~.inverse_interpolate`
+        colors
+            list of colors to generate the gradient
+
+        Returns
+        -------
+            function to generate the gradients as numpy arrays representing rgba values
+        """
         rgbs = np.array([color_to_rgb(c) for c in colors])
 
         def func(values, opacity=1):
-            alphas = inverse_interpolate(min_value, max_value, np.array(values))
+            alphas = inverse_interpolate(start, end, np.array(values))
             alphas = np.clip(alphas, 0, 1)
             scaled_alphas = alphas * (len(rgbs) - 1)
             indices = scaled_alphas.astype(int)
