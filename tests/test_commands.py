@@ -41,7 +41,7 @@ Commands:
   show
   write
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.stdout
 
@@ -59,7 +59,7 @@ Options:
   -l, --list  List available plugins.
   -h, --help  Show this message and exit.
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
 
@@ -117,6 +117,6 @@ Commands:
   project  Creates a new project.
   scene    Inserts a SCENE to an existing FILE or creates a new FILE.
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
