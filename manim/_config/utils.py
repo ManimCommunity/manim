@@ -279,6 +279,7 @@ class ManimConfig(MutableMapping):
         "tex_dir",
         "tex_template_file",
         "text_dir",
+        "theme",
         "upto_animation_number",
         "renderer",
         "use_opengl_renderer",
@@ -569,6 +570,7 @@ class ManimConfig(MutableMapping):
             "input_file",
             "output_file",
             "movie_file_extension",
+            "theme",
             "background_color",
             "renderer",
             "webgl_renderer_path",
@@ -679,6 +681,7 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "renderer",
+            "theme",
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
@@ -1004,9 +1007,33 @@ class ManimConfig(MutableMapping):
 
     background_color = property(
         lambda self: self._d["background_color"],
-        lambda self, val: self._d.__setitem__("background_color", colour.Color(val)),
         doc="Background color of the scene (-c).",
     )
+
+    @background_color.setter
+    def background_color(self, val):
+        if val != "None":
+            self._d.__setitem__("background_color", colour.Color(val))
+        else:
+            pass
+
+    theme = property(
+        lambda self: self._d["theme"],
+        doc="Color theme of the scene (-c).",
+    )
+
+    @theme.setter
+    def theme(self, th: typing.Union[dict[str, dict[str]], str]) -> None:
+        if type(th) == str:
+            if th not in constants.THEMES:
+                raise KeyError(f"themes must be one of {list(constants.THEMES.keys())}")
+            t = constants.THEMES[th]
+        elif type(th) == dict:
+            t = constants.THEMES["dark_mode"]
+            t.update(th)
+        self._d["theme"] = t
+        self.mobject_color = t["mobject_color"]
+        self.background_color = t["background_color"]
 
     from_animation_number = property(
         lambda self: self._d["from_animation_number"],
