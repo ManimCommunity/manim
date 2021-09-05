@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 from pathops import Path as SkiaPath
-from pathops import difference, intersection, union, xor
+from pathops import PathVerb, difference, intersection, union, xor
 
 from .. import config
 from .types.vectorized_mobject import VMobject
@@ -102,36 +102,31 @@ class _BooleanOps(VMobject):
             The converted VMobject.
         """
         vmobject = self
-        segments = path.segments
         current_path_start = np.array([0, 0, 0])
-        for segment in segments:
-            if segment[0] == "moveTo":
-                parts = self._convert_2d_to_3d_array(segment[1])
+
+        for path_verb, points in path:
+            if path_verb == PathVerb.MOVE:
+                parts = self._convert_2d_to_3d_array(points)
                 for part in parts:
-                    a = part
-                    current_path_start = a
-                    vmobject.start_new_path(a)
+                    current_path_start = part
+                    vmobject.start_new_path(part)
                     # vmobject.move_to(*part)
-            elif segment[0] == "curveTo":
-                parts = segment[1]
-                n1, n2, n3 = self._convert_2d_to_3d_array(parts)
+            elif path_verb == PathVerb.CUBIC:
+                n1, n2, n3 = self._convert_2d_to_3d_array(points)
                 vmobject.add_cubic_bezier_curve_to(n1, n2, n3)
-            elif segment[0] == "lineTo":
-                part = self._convert_2d_to_3d_array(segment[1])
-                vmobject.add_line_to(part[0])
-            elif segment[0] == "closePath":
+            elif path_verb == PathVerb.LINE:
+                parts = self._convert_2d_to_3d_array(points)
+                vmobject.add_line_to(parts[0])
+            elif path_verb == PathVerb.CLOSE:
                 if config.renderer == "opengl":
                     vmobject.close_path()
                 else:
                     vmobject.add_line_to(current_path_start)
-            elif segment[0] == "qCurveTo":
-                parts = segment[1]
-                n1, n2 = self._convert_2d_to_3d_array(parts)
+            elif path_verb == PathVerb.QUAD:
+                n1, n2 = self._convert_2d_to_3d_array(points)
                 vmobject.add_quadratic_bezier_curve_to(n1, n2)
-            elif segment[0] == "endPath":  # usually will not be executed
-                pass
             else:
-                raise Exception("Unsupported: %s" % segment[0])
+                raise Exception("Unsupported: %s" % path_verb)
         return vmobject
 
 
