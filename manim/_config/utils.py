@@ -236,6 +236,41 @@ class ManimConfig(MutableMapping):
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
 
+    Themes
+    ------
+    There are options to set manim to follow a specific color scheme. You need to
+    make a ``.cfg`` file with which contains the line:
+    .. code-block:: cfg
+
+        [CLI]
+
+        theme = light_mode
+
+    The options of the themes include
+    - dark_mode (default)
+    - light_mode (white background and black mobjects)
+    - sepia (brown-esque)
+    - seagreen
+
+    .. important::
+        The theme cannot be stated from within your manim script.
+
+    You could also pass your own theme:
+
+    .. code-block:: cfg
+
+        [CLI]
+
+        theme = {"mobject_color": "#000", "background_color": "#555"}
+
+    .. note::
+        The theme changes the definition of some colors, namely the greyscale
+        family. ``WHITE`` will refer to the newly set "mobject_color" and
+        ``BLACK`` will refer to the new "background_color". Every grey in between
+        (GREY_A, GREY_B and so on) will be a gradient between the two ``WHITE``
+        and ``BLACK``. If you wish to refer to the pure colors, you may pass
+        their hex codes instead.
+
     """
 
     _OPTS = {
