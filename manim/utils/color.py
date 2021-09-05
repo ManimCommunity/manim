@@ -283,7 +283,7 @@ class Colors(Enum):
     white = config["mobject_color"]
     black = config["background_color"]
 
-    if config["theme"] != constants.THEMES["dark_mode"]:
+    if [white, black] != ["#FFFFFF", "#000000"]:
         gray_a, gray_b, gray_c, gray_d, gray_e = color_gradient([white, black], 7)[1:6]
     else:
         gray_a = "#DDDDDD"

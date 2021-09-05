@@ -274,19 +274,19 @@ CTRL_VALUE = 65507
 
 THEMES: typing.Dict[str, typing.Dict[str, str]] = {
     "dark_mode": {
-        "mobject_color": "#fff",
-        "background_color": "#000",
+        "mobject_color": "#FFFFFF",
+        "background_color": "#000000",
     },
     "light_mode": {
-        "mobject_color": "#000",
-        "background_color": "#fff",
+        "mobject_color": "#000000",
+        "background_color": "#FFFFFF",
     },
     "sepia": {
-        "mobject_color": "#bcac80",
+        "mobject_color": "#BCAC80",
         "background_color": "#704214",
     },
     "seagreen": {
-        "mobject_color": "#fff",
-        "background_color": "#0f7d63",
+        "mobject_color": "#FFFFFF",
+        "background_color": "#0F7D63",
     },
 }
