@@ -1568,12 +1568,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             for axis in self.axes
         ]
         self.origin = self.x_axis.number_to_point(
-            self.origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
         self.shift(-self.coords_to_point(*lines_center_point))
 
         self.origin = self.x_axis.number_to_point(
-            self.origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
 
     @staticmethod
