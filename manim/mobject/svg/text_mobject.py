@@ -572,7 +572,7 @@ class Text(SVGMobject):
 
     def find_indexes(self, word: str, text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
-        return [(i.start(), i.start() + len(word)) for i in re.finditer(word, text)]
+        return [(i.start(), i.end()) for i in re.finditer(word, text)]
 
     # def full2short(self, kwargs):
     #     """Internally used function. Formats some expansion to short forms.
