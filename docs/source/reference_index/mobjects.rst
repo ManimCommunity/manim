@@ -77,4 +77,3 @@ Module Index
    ~mobject.types.image_mobject
    ~mobject.types.point_cloud_mobject
    ~mobject.types.vectorized_mobject
-

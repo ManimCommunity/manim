@@ -160,7 +160,7 @@ Example:
         d: "SomeClassFromFarAway",
         test: Optional[int] = 45
     ) -> "EpicClassInThisFile":  # typings are optional for now
-        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given 
+        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given
             parameters.
 
         Parameters

@@ -90,7 +90,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 "font_size": font_size,
                 "stroke_width": stroke_width,
                 "fill_opacity": fill_opacity,
-            }
+            },
         )
 
         self.set_submobjects_from_number(number)
@@ -123,7 +123,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         # Add non-numerical bits
         if self.show_ellipsis:
             self.add(
-                self.string_to_mob("\\dots", SingleStringMathTex, color=self.color)
+                self.string_to_mob("\\dots", SingleStringMathTex, color=self.color),
             )
 
         if self.unit is not None:
@@ -131,7 +131,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             self.add(self.unit_sign)
 
         self.arrange(
-            buff=self.digit_buff_per_font_unit * self._font_size, aligned_edge=DOWN
+            buff=self.digit_buff_per_font_unit * self._font_size,
+            aligned_edge=DOWN,
         )
 
         # Handle alignment of parts that should be aligned
@@ -204,7 +205,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 str(config["num_decimal_places"]),
                 "f",
                 "}",
-            ]
+            ],
         )
 
     def get_complex_formatter(self):
@@ -213,7 +214,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 self.get_formatter(field_name="0.real"),
                 self.get_formatter(field_name="0.imag", include_sign=True),
                 "i",
-            ]
+            ],
         )
 
     def set_value(self, number: float):
@@ -400,13 +401,15 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
         if var_type == DecimalNumber:
             self.value = DecimalNumber(
-                self.tracker.get_value(), num_decimal_places=num_decimal_places
+                self.tracker.get_value(),
+                num_decimal_places=num_decimal_places,
             )
         elif var_type == Integer:
             self.value = Integer(self.tracker.get_value())
 
         self.value.add_updater(lambda v: v.set_value(self.tracker.get_value())).next_to(
-            self.label, RIGHT
+            self.label,
+            RIGHT,
         )
 
         super().__init__(**kwargs)

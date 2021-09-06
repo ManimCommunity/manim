@@ -145,7 +145,10 @@ class ManimBanner(VGroup):
 
         return AnimationGroup(
             UpdateFromAlphaFunc(
-                self.shapes, spiral_updater, run_time=run_time, rate_func=ease_out_sine
+                self.shapes,
+                spiral_updater,
+                run_time=run_time,
+                rate_func=ease_out_sine,
             ),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
@@ -257,6 +260,9 @@ class ManimBanner(VGroup):
                 rate_func=ease_in_out_cubic,
             ),
             UpdateFromAlphaFunc(
-                self, slide_back, run_time=run_time * 1 / 3, rate_func=smooth
+                self,
+                slide_back,
+                run_time=run_time * 1 / 3,
+                rate_func=smooth,
             ),
         )

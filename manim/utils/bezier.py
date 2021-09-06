@@ -108,7 +108,9 @@ def interpolate(start: int, end: int, alpha: float) -> float:
 
 
 def integer_interpolate(
-    start: float, end: float, alpha: float
+    start: float,
+    end: float,
+    alpha: float,
 ) -> typing.Tuple[int, float]:
     """
     Alpha is a float between 0 and 1.  This returns
@@ -139,10 +141,16 @@ def inverse_interpolate(start: float, end: float, value: float) -> np.ndarray:
 
 
 def match_interpolate(
-    new_start: float, new_end: float, old_start: float, old_end: float, old_value: float
+    new_start: float,
+    new_end: float,
+    old_start: float,
+    old_end: float,
+    old_value: float,
 ) -> np.ndarray:
     return interpolate(
-        new_start, new_end, inverse_interpolate(old_start, old_end, old_value)
+        new_start,
+        new_end,
+        inverse_interpolate(old_start, old_end, old_value),
     )
 
 
@@ -291,7 +299,8 @@ def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndar
     matrix = np.zeros((dim, dim))
     for i in range(l + u + 1):
         np.fill_diagonal(
-            matrix[max(0, i - u) :, max(0, u - i) :], diag[i, max(0, u - i) :]
+            matrix[max(0, i - u) :, max(0, u - i) :],
+            diag[i, max(0, u - i) :],
         )
     return matrix
 
@@ -416,7 +425,7 @@ def proportions_along_bezier_curve_for_point(
 
     if not all(np.shape(point) == np.shape(c_p) for c_p in control_points):
         raise ValueError(
-            f"Point {point} and Control Points {control_points} have different shapes."
+            f"Point {point} and Control Points {control_points} have different shapes.",
         )
 
     control_points = np.array(control_points)
