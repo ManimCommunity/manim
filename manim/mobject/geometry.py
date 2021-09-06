@@ -1620,7 +1620,10 @@ class Vector(Arrow):
         else:  # Pointing left
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
-        label.set_color(color)
+        if show_bg_rec:
+            label[1:].set_color(color)
+        else:
+            label.set_color(color)
         return label
 
 
