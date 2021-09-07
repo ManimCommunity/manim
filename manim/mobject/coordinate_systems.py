@@ -193,7 +193,7 @@ class CoordinateSystem:
         return self.get_x_axis().get_unit_size()
 
     def get_y_unit_size(self):
-        return self.get_x_axis().get_unit_size()
+        return self.get_y_axis().get_unit_size()
 
     def get_x_axis_label(
         self,
