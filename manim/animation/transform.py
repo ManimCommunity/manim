@@ -138,7 +138,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(*(mob.family_members_with_points() for mob in mobs))
+        return zip(*(mob.get_family() for mob in mobs))
 
     def interpolate_submobject(
         self,

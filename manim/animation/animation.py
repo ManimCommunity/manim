@@ -221,9 +221,7 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
-        return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
-        )
+        return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
 
     def update_mobjects(self, dt: float) -> None:
         """
