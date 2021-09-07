@@ -758,7 +758,7 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations, duration, to_speed):
+    def _get_animation_time_progression(self, animations, duration, nodes, speeds):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -789,11 +789,15 @@ class Scene:
                     f"Waiting for {stop_condition.__name__}",
                     n_iterations=-1,  # So it doesn't show % progress
                     override_skip_animations=True,
-                    to_speed=to_speed,
+                    nodes=nodes,
+                    speeds=speeds,
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration, f"Waiting {self.renderer.num_plays}", to_speed=to_speed
+                    duration,
+                    f"Waiting {self.renderer.num_plays}",
+                    nodes=nodes,
+                    speeds=speeds,
                 )
         else:
             time_progression = self.get_time_progression(
@@ -805,7 +809,8 @@ class Scene:
                         (", etc." if len(animations) > 1 else ""),
                     ]
                 ),
-                to_speed=to_speed,
+                nodes=nodes,
+                speeds=speeds,
             )
         return time_progression
 
@@ -815,7 +820,8 @@ class Scene:
         description,
         n_iterations=None,
         override_skip_animations=False,
-        to_speed=None,
+        nodes=None,
+        speeds=None,
     ):
         """
         You will hardly use this when making your own animations.
@@ -846,17 +852,23 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            init_dt = self.speed / config["frame_rate"]
-            if to_speed is not None:
-                final_dt = to_speed / config["frame_rate"]
-                n = 2 * run_time / (init_dt + final_dt)
-                d = (final_dt - init_dt) / (1 - n)
-                times = []
-                for i in range(int(n)):
-                    times.append(0.5 * i * (2 * init_dt + (1 - i) * d))
+            if nodes is not None:
+                if nodes[-1] != 1:
+                    nodes.append(1)
+                    speeds.append(speeds[-1])
+                for n, s in zip(nodes, speeds):
+                    init_dt = self.speed / config["frame_rate"]
+                    final_dt = s / config["frame_rate"]
+                    num = 2 * n * run_time / (init_dt + final_dt)
+                    d = (final_dt - init_dt) / (1 - num)
+                    times = []
+                    for i in range(int(num)):
+                        times.append(0.5 * i * (2 * init_dt + (1 - i) * d))
+                    self.speed = s
 
             else:
-                times = np.arange(0, run_time, init_dt)
+                dt = self.speed / config["frame_rate"]
+                times = np.arange(0, run_time, dt)
         time_progression = tqdm(
             times,
             desc=description,
@@ -937,7 +949,8 @@ class Scene:
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
-        self.to_speed = play_kwargs.pop("to_speed", None)
+        self.nodes = play_kwargs.pop("nodes", None)
+        self.speeds = play_kwargs.pop("speeds", None)
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
@@ -995,9 +1008,21 @@ class Scene:
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration, self.to_speed
+            self.animations, self.duration, self.nodes, self.speeds
         )
-        # print(list(self.time_progression))
+        a = []
+        for i in range(len(list(self.time_progression)) - 1):
+            a.append(
+                round(
+                    (
+                        list(self.time_progression)[i + 1]
+                        - list(self.time_progression)[i]
+                    )
+                    * 100000
+                )
+                / 100000
+            )
+        print(a)
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
@@ -1005,8 +1030,6 @@ class Scene:
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
-        if self.to_speed is not None:
-            self.speed = self.to_speed
         for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
