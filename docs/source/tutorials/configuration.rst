@@ -213,8 +213,8 @@ The user-wide config file lives in a special folder, depending on the operating
 system.
 
 * Windows: :code:`UserDirectory`/AppData/Roaming/Manim/manim.cfg
-* MacOS: :code:`UserDirectory`/config/manim/manim.cfg
-* Linux: :code:`UserDirectory`/config/manim/manim.cfg
+* MacOS: :code:`UserDirectory`/.config/manim/manim.cfg
+* Linux: :code:`UserDirectory`/.config/manim/manim.cfg
 
 Here, :code:`UserDirectory` is the user's home folder.
 
