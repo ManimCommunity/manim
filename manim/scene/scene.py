@@ -855,7 +855,6 @@ class Scene:
             if nodes is not None:
                 if nodes[0] != 0:
                     nodes.insert(0, 0)
-                    speeds.insert(0, speeds[0])
                 if nodes[-1] != 1:
                     nodes.append(1)
                     speeds.append(speeds[-1])
