@@ -853,19 +853,26 @@ class Scene:
             times = [run_time]
         else:
             if nodes is not None:
+                if nodes[0] != 0:
+                    nodes.insert(0, 0)
+                    speeds.insert(0, speeds[0])
                 if nodes[-1] != 1:
                     nodes.append(1)
                     speeds.append(speeds[-1])
-                for n, s in zip(nodes, speeds):
+                times = []
+                on_node = 0
+                for dur, s in zip(np.diff(nodes), speeds):
                     init_dt = self.speed / config["frame_rate"]
                     final_dt = s / config["frame_rate"]
-                    num = 2 * n * run_time / (init_dt + final_dt)
+                    num = 2 * dur * run_time / (init_dt + final_dt)
                     d = (final_dt - init_dt) / (1 - num)
-                    times = []
-                    for i in range(int(num)):
-                        times.append(0.5 * i * (2 * init_dt + (1 - i) * d))
+                    for i in range(round(num)):
+                        times.append(
+                            0.5 * i * (2 * init_dt + (1 - i) * d)
+                            + nodes[on_node] * run_time
+                        )
                     self.speed = s
-
+                    on_node += 1
             else:
                 dt = self.speed / config["frame_rate"]
                 times = np.arange(0, run_time, dt)
@@ -1010,19 +1017,12 @@ class Scene:
         self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration, self.nodes, self.speeds
         )
-        a = []
-        for i in range(len(list(self.time_progression)) - 1):
-            a.append(
-                round(
-                    (
-                        list(self.time_progression)[i + 1]
-                        - list(self.time_progression)[i]
-                    )
-                    * 100000
-                )
-                / 100000
-            )
-        print(a)
+        # a = [0]
+        # b = list(self.time_progression)
+        # for i in range(len(b) - 1):
+        #     a.append(round((b[i + 1] - b[i]) * 100000) / 100000)
+        # for i, j in zip(b, a):
+        #     print(i, j)
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
