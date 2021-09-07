@@ -1268,14 +1268,17 @@ class Mobject:
             mob.points += about_point
         return self
 
+    @deprecated
     def rotate_in_place(self, angle, axis=OUT):
         # redundant with default behavior of rotate now.
         return self.rotate(angle, axis=axis)
 
+    @deprecated
     def scale_in_place(self, scale_factor, **kwargs):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, **kwargs)
 
+    @deprecated
     def scale_about_point(self, scale_factor, point):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, about_point=point)
@@ -1385,6 +1388,7 @@ class Mobject:
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
 
+    @deprecated
     def stretch_in_place(self, factor, dim):
         # Now redundant with stretch
         return self.stretch(factor, dim)
