@@ -1268,17 +1268,26 @@ class Mobject:
             mob.points += about_point
         return self
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+    )
     def rotate_in_place(self, angle, axis=OUT):
         # redundant with default behavior of rotate now.
         return self.rotate(angle, axis=axis)
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+    )
     def scale_in_place(self, scale_factor, **kwargs):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, **kwargs)
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+    )
     def scale_about_point(self, scale_factor, point):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, about_point=point)
