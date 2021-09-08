@@ -29,12 +29,12 @@ a way that allows them to be shared interactively via Binder as well:
       FROM manimcommunity/manim:v0.9.0
 
       COPY --chown=manimuser:manimuser . /manim
-   
+
    Don't forget to change the version tag ``v0.9.0`` to the version you
    were working with locally when creating your notebooks.
 #. Make the directory with your worksheets and the ``Dockerfile``
    available to the public (and in particular: to Binder!). There are
-   `several different options to do so 
+   `several different options to do so
    <https://mybinder.readthedocs.io/en/latest/introduction.html#how-can-i-prepare-a-repository-for-binder>`__,
    within the community we usually work with GitHub
    repositories or gists.
@@ -44,7 +44,7 @@ a way that allows them to be shared interactively via Binder as well:
 
 .. hint::
 
-   The repository containing our `interactive tutorial 
+   The repository containing our `interactive tutorial
    <https://try.manim.community>`__ can be found at
    https://github.com/ManimCommunity/jupyter_examples.
 
@@ -88,12 +88,12 @@ in a new code cell. Then create another cell containing the
 following code::
 
    %%manim -qm -v WARNING SquareToCircle
-      
+
    class SquareToCircle(Scene):
       def construct(self):
          square = Square()
-         circle = Circle()  
-         circle.set_fill(PINK, opacity=0.5)  
+         circle = Circle()
+         circle.set_fill(PINK, opacity=0.5)
          self.play(Create(square))
          self.play(Transform(square, circle))
          self.wait()

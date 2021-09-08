@@ -51,7 +51,7 @@ def test_when_animation_is_cached(using_temp_config):
     scene.update_to_time = Mock()
     scene.render()
     assert scene.renderer.file_writer.is_already_cached(
-        scene.renderer.animations_hashes[0]
+        scene.renderer.animations_hashes[0],
     )
     # Check that the same partial movie files has been used (with he same hash).
     # As there might have been several hashes, a list is used.
@@ -63,7 +63,8 @@ def test_when_animation_is_cached(using_temp_config):
 
 
 def test_hash_logic_is_not_called_when_caching_is_disabled(
-    using_temp_config, disabling_caching
+    using_temp_config,
+    disabling_caching,
 ):
     with patch("manim.renderer.cairo_renderer.get_hash_from_play_call") as mocked:
         scene = SquareToCircle()

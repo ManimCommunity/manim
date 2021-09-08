@@ -151,7 +151,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         [u2, v2, 0],
                         [u1, v2, 0],
                         [u1, v1, 0],
-                    ]
+                    ],
                 )
                 faces.add(face)
                 face.u_index = i
@@ -227,7 +227,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             pivot_max = axes.z_range[1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
-                start=pivot_min, stop=pivot_max + pivot_frequency, step=pivot_frequency
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
             )
 
         for mob in self.family_members_with_points():
@@ -244,7 +246,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         )
                         color_index = min(color_index, 1)
                         mob_color = interpolate_color(
-                            new_colors[i - 1], new_colors[i], color_index
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
                         )
                         if config.renderer == "opengl":
                             mob.set_color(mob_color, recurse=False)
@@ -323,7 +327,7 @@ class Sphere(Surface):
 
     def func(self, u, v):
         return self.radius * np.array(
-            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
+            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
         )
 
 
@@ -515,7 +519,7 @@ class Cone(Surface):
                 r * np.sin(self.theta) * np.cos(phi),
                 r * np.sin(self.theta) * np.sin(phi),
                 r * np.cos(self.theta),
-            ]
+            ],
         )
 
     def _rotate_to_direction(self):

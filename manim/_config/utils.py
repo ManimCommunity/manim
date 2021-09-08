@@ -445,18 +445,18 @@ class ManimConfig(MutableMapping):
             self._d[key] = val
         else:
             raise ValueError(
-                f"{key} must be an integer such that {lo} <= {key} <= {hi}"
+                f"{key} must be an integer such that {lo} <= {key} <= {hi}",
             )
 
     def _set_pos_number(self, key: str, val: int, allow_inf: bool) -> None:
         """Set ``key`` to ``val`` if ``val`` is a positive integer."""
         if isinstance(val, int) and val > -1:
             self._d[key] = val
-        elif allow_inf and (val == -1 or val == float("inf")):
+        elif allow_inf and val in [-1, float("inf")]:
             self._d[key] = float("inf")
         else:
             raise ValueError(
-                f"{key} must be a non-negative integer (use -1 for infinity)"
+                f"{key} must be a non-negative integer (use -1 for infinity)",
             )
 
     def __repr__(self) -> str:
@@ -696,9 +696,8 @@ class ManimConfig(MutableMapping):
                     self[key] = attr
 
         # dry_run is special because it can only be set to True
-        if hasattr(args, "dry_run"):
-            if getattr(args, "dry_run"):
-                self["dry_run"] = True
+        if getattr(args, "dry_run", False):
+            self["dry_run"] = True
 
         for key in [
             "media_dir",  # always set this one first
@@ -723,7 +722,7 @@ class ManimConfig(MutableMapping):
                 self.upto_animation_number = nflag[1]
             except Exception:
                 logging.getLogger("manim").info(
-                    f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards..."
+                    f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards...",
                 )
 
         # Handle the quality flags
@@ -759,10 +758,9 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.renderer == "opengl":
-            if getattr(args, "write_to_movie") is None:
-                # --write_to_movie was not passed on the command line, so don't generate video.
-                self["write_to_movie"] = False
+        if self.renderer == "opengl" and getattr(args, "write_to_movie") is None:
+            # --write_to_movie was not passed on the command line, so don't generate video.
+            self["write_to_movie"] = False
 
         # Handle --gui_location flag.
         if getattr(args, "gui_location") is not None:
@@ -827,7 +825,9 @@ class ManimConfig(MutableMapping):
     progress_bar = property(
         lambda self: self._d["progress_bar"],
         lambda self, val: self._set_from_list(
-            "progress_bar", val, ["none", "display", "leave"]
+            "progress_bar",
+            val,
+            ["none", "display", "leave"],
         ),
         doc="Whether to show progress bars while rendering animations.",
     )
@@ -912,13 +912,15 @@ class ManimConfig(MutableMapping):
         )
         if self.format == "webm":
             logging.getLogger("manim").warning(
-                "Output format set as webm, this can be slower than other formats"
+                "Output format set as webm, this can be slower than other formats",
             )
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
         lambda self, val: self._set_from_list(
-            "ffmpeg_loglevel", val, ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            "ffmpeg_loglevel",
+            val,
+            ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
     )
@@ -1052,7 +1054,9 @@ class ManimConfig(MutableMapping):
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
-            "movie_file_extension", val, [".mp4", ".mov", ".webm"]
+            "movie_file_extension",
+            val,
+            [".mp4", ".mov", ".webm"],
         ),
         doc="Either .mp4, .webm or .mov.",
     )
@@ -1125,7 +1129,7 @@ class ManimConfig(MutableMapping):
                 "It is unclear what it means to set dry_run to "
                 "False.  Instead, try setting each option "
                 "individually. (write_to_movie, write_all, "
-                "save_last_frame, save_pngs, or save_as_gif)"
+                "save_last_frame, save_pngs, or save_as_gif)",
             )
 
     @property
@@ -1401,7 +1405,7 @@ class ManimConfig(MutableMapping):
             raise KeyError(
                 "must pass one of "
                 "{media,video,images,text,tex,log}_dir "
-                "or {input,output}_file"
+                "or {input,output}_file",
             )
 
         dirs.remove(key)  # a path cannot contain itself
@@ -1418,7 +1422,7 @@ class ManimConfig(MutableMapping):
                 raise KeyError(
                     f"{key} {self._d[key]} requires the following "
                     + "keyword arguments: "
-                    + " ".join(exc.args)
+                    + " ".join(exc.args),
                 ) from exc
         return Path(path) if path else None
 
@@ -1520,7 +1524,7 @@ class ManimConfig(MutableMapping):
         if val:
             if not os.access(val, os.R_OK):
                 logging.getLogger("manim").warning(
-                    f"Custom TeX template {val} not found or not readable."
+                    f"Custom TeX template {val} not found or not readable.",
                 )
             else:
                 self._d["tex_template_file"] = Path(val)

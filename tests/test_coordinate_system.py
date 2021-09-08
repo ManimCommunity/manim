@@ -107,7 +107,14 @@ def test_coords_to_point():
 def test_input_to_graph_point():
     ax = Axes()
     curve = ax.get_graph(lambda x: np.cos(x))
+    line_graph = ax.get_line_graph([1, 3, 5], [-1, 2, -2], add_vertex_dots=False)[
+        "line_graph"
+    ]
 
     # move a square to PI on the cosine curve.
     position = np.around(ax.input_to_graph_point(x=PI, graph=curve), decimals=4)
     assert np.array_equal(position, (2.6928, -0.75, 0))
+
+    # test the line_graph implementation
+    position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
+    assert np.array_equal(position, (2.6928, 1.2876, 0))

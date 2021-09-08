@@ -15,6 +15,7 @@ from ..constants import *
 from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.config_ops import _Data, _Uniforms
+from ..utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -284,7 +285,11 @@ class OpenGLMobject:
         return self.point_from_proportion(0.5)
 
     def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
     ):
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
@@ -292,7 +297,7 @@ class OpenGLMobject:
         for mob in self.get_family():
             arrs = []
             if mob.has_points():
-                arrs.append(mob.get_points())
+                arrs.append(mob.points)
             if works_on_bounding_box:
                 arrs.append(mob.get_bounding_box())
 
@@ -312,8 +317,9 @@ class OpenGLMobject:
     # Others related to points
 
     def match_points(self, mobject):
-        self.set_points(mobject.get_points())
+        self.set_points(mobject.points)
 
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return self.points
 
@@ -325,7 +331,7 @@ class OpenGLMobject:
 
     def get_all_points(self):
         if self.submobjects:
-            return np.vstack([sm.get_points() for sm in self.get_family()])
+            return np.vstack([sm.points for sm in self.get_family()])
         else:
             return self.points
 
@@ -347,7 +353,7 @@ class OpenGLMobject:
                     for mob in self.get_family()[1:]
                     if mob.has_points()
                 ),
-            ]
+            ],
         )
         if len(all_points) == 0:
             return np.zeros((3, self.dim))
@@ -652,10 +658,18 @@ class OpenGLMobject:
             return alignments
 
         row_alignments = init_alignments(
-            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+            row_alignments,
+            rows,
+            {"u": UP, "c": ORIGIN, "d": DOWN},
+            "row",
+            RIGHT,
         )
         col_alignments = init_alignments(
-            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+            col_alignments,
+            cols,
+            {"l": LEFT, "c": ORIGIN, "r": RIGHT},
+            "col",
+            UP,
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
@@ -671,7 +685,7 @@ class OpenGLMobject:
         }
         if flow_order not in mapper:
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
         flow_order = mapper[flow_order]
 
@@ -1036,16 +1050,16 @@ class OpenGLMobject:
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
-            alphas = np.dot(mob.get_points(), np.transpose(axis))
+            alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
             alphas = alphas ** wag_factor
             mob.set_points(
-                mob.get_points()
+                mob.points
                 + np.dot(
                     alphas.reshape((len(alphas), 1)),
                     np.array(direction).reshape((1, mob.dim)),
-                )
+                ),
             )
         return self
 
@@ -1094,7 +1108,7 @@ class OpenGLMobject:
             else:
                 target_aligner = mob
             target_point = target_aligner.get_bounding_box_point(
-                aligned_edge + direction
+                aligned_edge + direction,
             )
         else:
             target_point = mobject_or_point
@@ -1192,7 +1206,10 @@ class OpenGLMobject:
         return self
 
     def move_to(
-        self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
+        self,
+        point_or_mobject,
+        aligned_edge=ORIGIN,
+        coor_mask=np.array([1, 1, 1]),
     ):
         if isinstance(point_or_mobject, OpenGLMobject):
             target = point_or_mobject.get_bounding_box_point(aligned_edge)
@@ -1211,7 +1228,9 @@ class OpenGLMobject:
                 self.rescale_to_fit(mobject.length_over_dim(i), i, stretch=True)
         else:
             self.rescale_to_fit(
-                mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
+                mobject.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False,
             )
         self.shift(mobject.get_center() - self.get_center())
         return self
@@ -1408,8 +1427,8 @@ class OpenGLMobject:
                     corner_vect,
                     out=np.zeros(len(direction)),
                     where=((corner_vect) != 0),
-                )
-            )
+                ),
+            ),
         )
 
     def get_top(self):
@@ -1645,7 +1664,9 @@ class OpenGLMobject:
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
             self.uniforms[key] = interpolate(
-                mobject1.uniforms[key], mobject2.uniforms[key], alpha
+                mobject1.uniforms[key],
+                mobject2.uniforms[key],
+                alpha,
             )
         return self
 
@@ -1688,7 +1709,9 @@ class OpenGLMobject:
 
     def lock_matching_data(self, mobject1, mobject2):
         for sm, sm1, sm2 in zip(
-            self.get_family(), mobject1.get_family(), mobject2.get_family()
+            self.get_family(),
+            mobject1.get_family(),
+            mobject2.get_family(),
         ):
             keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
             sm.lock_data(
@@ -1696,8 +1719,8 @@ class OpenGLMobject:
                     filter(
                         lambda key: np.all(sm1.data[key] == sm2.data[key]),
                         keys,
-                    )
-                )
+                    ),
+                ),
             )
         return self
 
@@ -1758,7 +1781,11 @@ class OpenGLMobject:
         return self
 
     def set_color_by_xyz_func(
-        self, glsl_snippet, min_value=-5.0, max_value=5.0, colormap="viridis"
+        self,
+        glsl_snippet,
+        min_value=-5.0,
+        max_value=5.0,
+        colormap="viridis",
     ):
         """
         Pass in a glsl expression in terms of x, y and z which returns
@@ -1775,7 +1802,7 @@ class OpenGLMobject:
                 float(min_value),
                 float(max_value),
                 get_colormap_code(rgb_list),
-            )
+            ),
         )
         return self
 
@@ -1823,7 +1850,8 @@ class OpenGLMobject:
         d_len = len(self.data[data_key])
         if d_len != 1 and d_len != len(array):
             self.data[data_key] = resize_with_interpolation(
-                self.data[data_key], len(array)
+                self.data[data_key],
+                len(array),
             )
         return self
 
@@ -1997,7 +2025,7 @@ class _AnimationBuilder:
     def __call__(self, **kwargs):
         if self.cannot_pass_args:
             raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once"
+                "Animation arguments must be passed before accessing methods and can only be passed once",
             )
 
         self.anim_args = kwargs
@@ -2013,7 +2041,7 @@ class _AnimationBuilder:
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
                 "Method chaining is currently not supported for "
-                "overridden animations"
+                "overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):

@@ -77,7 +77,7 @@ Breaking changes
 ----------------
 
 * `#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`
-   - ``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed. 
+   - ``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed.
    - ``ParametricSurface`` has been renamed to :class:`~.Surface`
 
 Deprecated classes and functions
@@ -280,5 +280,3 @@ New releases
 ------------
 
 * `#1989 <https://github.com/ManimCommunity/manim/pull/1989>`__: Prepare new release v0.10.0
-
-

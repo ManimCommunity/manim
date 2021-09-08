@@ -85,21 +85,23 @@ class SceneFileWriter:
 
         if config["media_dir"]:
             image_dir = guarantee_existence(
-                config.get_dir("images_dir", module_name=module_name)
+                config.get_dir("images_dir", module_name=module_name),
             )
             self.image_file_path = os.path.join(
-                image_dir, add_extension_if_not_present(default_name, ".png")
+                image_dir,
+                add_extension_if_not_present(default_name, ".png"),
             )
 
         if write_to_movie():
             movie_dir = guarantee_existence(
-                config.get_dir("video_dir", module_name=module_name)
+                config.get_dir("video_dir", module_name=module_name),
             )
 
             self.movie_file_path = os.path.join(
                 movie_dir,
                 add_extension_if_not_present(
-                    default_name, config["movie_file_extension"]
+                    default_name,
+                    config["movie_file_extension"],
                 ),
             )
             if is_gif_format():
@@ -113,7 +115,7 @@ class SceneFileWriter:
                     "partial_movie_dir",
                     scene_name=scene_name,
                     module_name=module_name,
-                )
+                ),
             )
 
     def add_partial_movie_file(self, hash_animation):
@@ -286,7 +288,7 @@ class SceneFileWriter:
         if config.renderer == "opengl":
             renderer = frame_or_renderer
             self.writing_process.stdin.write(
-                renderer.get_raw_frame_buffer_object_data()
+                renderer.get_raw_frame_buffer_object_data(),
             )
         else:
             frame = frame_or_renderer
@@ -296,11 +298,11 @@ class SceneFileWriter:
                 target_dir, extension = os.path.splitext(self.image_file_path)
                 if config["zero_pad"]:
                     Image.fromarray(frame).save(
-                        f"{target_dir}{str(self.frame_count).zfill(config['zero_pad'])}{extension}"
+                        f"{target_dir}{str(self.frame_count).zfill(config['zero_pad'])}{extension}",
                     )
                 else:
                     Image.fromarray(frame).save(
-                        f"{target_dir}{self.frame_count}{extension}"
+                        f"{target_dir}{self.frame_count}{extension}",
                     )
                 self.frame_count += 1
 
@@ -466,7 +468,8 @@ class SceneFileWriter:
         # Write a file partial_file_list.txt containing all partial movie
         # files. This is used by FFMPEG.
         file_list = os.path.join(
-            self.partial_movie_directory, "partial_movie_file_list.txt"
+            self.partial_movie_directory,
+            "partial_movie_file_list.txt",
         )
         logger.debug(
             f"Partial movie files to combine ({len(partial_movie_files)} files): %(p)s",
@@ -501,7 +504,7 @@ class SceneFileWriter:
         if is_gif_format():
             if not config["output_file"]:
                 self.gif_file_path = str(
-                    add_version_before_extension(self.gif_file_path)
+                    add_version_before_extension(self.gif_file_path),
                 )
             commands += [
                 "-vf",
@@ -556,7 +559,7 @@ class SceneFileWriter:
             os.remove(sound_file_path)
 
         self.print_file_ready_message(
-            self.gif_file_path if is_gif_format() else movie_file_path
+            self.gif_file_path if is_gif_format() else movie_file_path,
         )
         if write_to_movie():
             for file_path in partial_movie_files:
@@ -583,7 +586,7 @@ class SceneFileWriter:
                 os.remove(file_to_delete)
             logger.info(
                 f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed {number_files_to_delete} file(s) used by it the longest ago."
-                + "You can change this behaviour by changing max_files_cached in config."
+                + "You can change this behaviour by changing max_files_cached in config.",
             )
 
     def flush_cache_directory(self):
