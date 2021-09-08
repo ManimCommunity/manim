@@ -1146,15 +1146,9 @@ class CoordinateSystem:
             The angle of the tangent to the curve.
         """
 
-        p0 = self.input_to_graph_point(x, graph)
-        p1 = self.input_to_graph_point(x + dx, graph)
-        p2 = p1 - p0
-        p2 = (
-            p2[0] / self.get_x_unit_size(),
-            p2[1] / self.get_y_unit_size(),
-            p2[2],
-        )
-        return angle_of_vector(p2)
+        p0 = np.array([*self.input_to_graph_coords(x, graph)])
+        p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
+        return angle_of_vector(p1 - p0)
 
     def slope_of_tangent(
         self, x: float, graph: "ParametricFunction", **kwargs
