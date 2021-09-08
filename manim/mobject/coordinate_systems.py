@@ -1128,7 +1128,7 @@ class CoordinateSystem:
             ax = Axes()
             curve = ax.get_graph(lambda x: x ** 2)
             ax.angle_of_tangent(x=3, graph=curve)
-            # 1.3825747960950903
+            # 1.4056476493802699
 
 
         Parameters
