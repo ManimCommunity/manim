@@ -33,7 +33,13 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
+from ..mobject.types.vectorized_mobject import (
+    Mobject,
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -699,7 +705,11 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
+    def input_to_graph_point(
+        self,
+        x: float,
+        graph: Union["ParametricFunction", VMobject],
+    ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Examples
@@ -730,6 +740,11 @@ class CoordinateSystem:
         -------
         :class:`np.ndarray`
             The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            When the target x is not in the range of the line graph.
         """
 
         if hasattr(graph, "underlying_function"):
@@ -740,13 +755,15 @@ class CoordinateSystem:
                     0
                 ],
                 target=x,
-                lower_bound=self.x_range[0],
-                upper_bound=self.x_range[1],
+                lower_bound=0,
+                upper_bound=1,
             )
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
             else:
-                return None
+                raise ValueError(
+                    f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
+                )
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
