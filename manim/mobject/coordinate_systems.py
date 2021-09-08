@@ -765,6 +765,19 @@ class CoordinateSystem:
                     f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
+    def input_to_graph_coords(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Returns a tuple of the axis relative coordinates of the point
+        on the graph based on the x-value given.
+        """
+        return x, graph.underlying_function(x)
+
+    def i2gc(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Alias for :meth:`input_to_graph_coords`.
+        """
+        return self.input_to_graph_coords(x, graph)
+
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
         Alias for :meth:`input_to_graph_point`.
