@@ -28,6 +28,7 @@ def test_force_window_opengl_render_with_movies(
     scene.render()
     assert renderer.window is not None
     assert_file_exists(config["output_file"])
+    renderer.window.close()
 
 
 def test_force_window_opengl_render_with_format(
@@ -41,3 +42,4 @@ def test_force_window_opengl_render_with_format(
     renderer.update_frame = Mock(wraps=renderer.update_frame)
     scene.render()
     assert renderer.window is not None
+    renderer.window.close()
