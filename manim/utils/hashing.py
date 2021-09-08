@@ -14,8 +14,8 @@ import numpy as np
 
 from .. import config, logger
 
-# Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
-# This is used to filter them out.
+# Sometimes there are elements that are not suitable for hashing (too long or
+# run-dependent).  This is used to filter them out.
 KEYS_TO_FILTER_OUT = {
     "original_id",
     "background",
@@ -25,12 +25,16 @@ KEYS_TO_FILTER_OUT = {
 
 
 class _Memoizer:
-    """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
+    """Implements the memoization logic to optimize the hashing procedure and prevent
+    the circular references within iterable processed.
 
-    Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed
+    Keeps a record of all the processed objects, and handle the logic to return a place
+    holder instead of the original object if the object has already been processed
     by the hashing logic (i.e, recursively checked, converted to JSON, etc..).
 
-    This class uses two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
+    This class uses two signatures functions to keep a track of processed objects :
+    hash or id. Whenever possible, hash is used to ensure a broader object
+    content-equality detection.
     """
 
     _already_processed = set()
@@ -45,7 +49,9 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
-        """Decorator to handle the arguments that goes through the decorated function. Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets the decorated function call go ahead.
+        """Decorator to handle the arguments that goes through the decorated function.
+        Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
+        the decorated function call go ahead.
 
         Parameters
         ----------
@@ -54,10 +60,12 @@ class _Memoizer:
         """
 
         def layer(func):
-            # NOTE : There is probably a better way to separate both case when func is a method or a function.
+            # NOTE : There is probably a better way to separate both case when func is
+            # a method or a function.
             if is_method:
                 return lambda self, obj: cls._handle_already_processed(
-                    obj, default_function=lambda obj: func(self, obj)
+                    obj,
+                    default_function=lambda obj: func(self, obj),
                 )
             return lambda obj: cls._handle_already_processed(obj, default_function=func)
 
@@ -65,7 +73,8 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
-        """Checks if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has.
+        """Checks if obj has been already processed. Returns itself if it has not been,
+        or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has.
         Marks the object as processed in the second case.
 
         Parameters
@@ -95,7 +104,9 @@ class _Memoizer:
 
     @classmethod
     def _handle_already_processed(
-        cls, obj, default_function: typing.Callable[[Any], Any]
+        cls,
+        obj,
+        default_function: typing.Callable[[Any], Any],
     ):
         if (
             isinstance(
@@ -109,14 +120,15 @@ class _Memoizer:
             )
             and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]
         ):
-            # It makes no sense (and it'd slower) to memoize objects of these primitive types.
-            # Hence, we simply return the object.
+            # It makes no sense (and it'd slower) to memoize objects of these primitive
+            # types.  Hence, we simply return the object.
             return obj
         if isinstance(obj, collections.abc.Hashable):
             try:
                 return cls._return(obj, hash, default_function)
             except TypeError:
-                # In case of an error with the hash (eg an object is marked as hashable but contains a non hashable within it)
+                # In case of an error with the hash (eg an object is marked as hashable
+                # but contains a non hashable within it)
                 # Fallback to use the built-in function id instead.
                 pass
         return cls._return(obj, id, default_function)
@@ -138,11 +150,14 @@ class _Memoizer:
                 and len(cls._already_processed) == cls.THRESHOLD_WARNING
             ):
                 logger.warning(
-                    "It looks like the scene contains a lot of sub-mobjects. Caching is sometimes not suited to handle such large scenes, you might consider disabling caching with\
-                            --disable_caching to potentially speed up the rendering process."
+                    "It looks like the scene contains a lot of sub-mobjects. Caching "
+                    "is sometimes not suited to handle such large scenes, you might "
+                    "consider disabling caching with --disable_caching to potentially "
+                    "speed up the rendering process.",
                 )
                 logger.warning(
-                    "You can disable this warning by setting disable_caching_warning to True in your config file."
+                    "You can disable this warning by setting disable_caching_warning "
+                    "to True in your config file.",
                 )
 
             cls._already_processed.add(obj_membership_sign)
@@ -154,10 +169,13 @@ class _CustomEncoder(json.JSONEncoder):
         """
         This method is used to serialize objects to JSON format.
 
-        If obj is a function, then it will return a dict with two keys : 'code', for the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals functions, that will be serialized as this is recursive.)
+        If obj is a function, then it will return a dict with two keys : 'code', for
+        the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals
+        functions, that will be serialized as this is recursive.)
         if obj is a np.darray, it converts it into a list.
         if obj is an object with __dict__ attribute, it returns its __dict__.
-        Else, will let the JSONEncoder do the stuff, and throw an error if the type is not suitable for JSONEncoder.
+        Else, will let the JSONEncoder do the stuff, and throw an error if the type is
+        not suitable for JSONEncoder.
 
         Parameters
         ----------
@@ -171,12 +189,14 @@ class _CustomEncoder(json.JSONEncoder):
 
         """
         if not (isinstance(obj, ModuleType)) and isinstance(
-            obj, (MethodType, FunctionType)
+            obj,
+            (MethodType, FunctionType),
         ):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
             for i in list(cvardict):
-                # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
+                # NOTE : All module types objects are removed, because otherwise it
+                # throws ValueError: Circular reference detected if not. TODO
                 if isinstance(cvardict[i], ModuleType):
                     del cvardict[i]
             try:
@@ -295,7 +315,10 @@ def get_json(obj):
 
 
 def get_hash_from_play_call(
-    scene_object, camera_object, animations_list, current_mobjects_list
+    scene_object,
+    camera_object,
+    animations_list,
+    current_mobjects_list,
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# flake8: noqa
 
 import pkg_resources
 
@@ -74,7 +73,9 @@ from .mobject.svg.text_mobject import *
 from .mobject.table import *
 from .mobject.three_d_utils import *
 from .mobject.three_dimensions import *
+from .mobject.types.dot_cloud import *
 from .mobject.types.image_mobject import *
+from .mobject.types.opengl_point_cloud_mobject import *
 from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *

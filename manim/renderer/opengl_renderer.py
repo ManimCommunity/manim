@@ -57,12 +57,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False
+                format=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False
+                format=False,
             )
 
         if frame_shape is None:
@@ -189,14 +189,14 @@ class OpenGLCamera(OpenGLMobject):
 
     def get_center(self):
         # Assumes first point is at the center
-        return self.get_points()[0]
+        return self.points[0]
 
     def get_width(self):
-        points = self.get_points()
+        points = self.points
         return points[2, 0] - points[1, 0]
 
     def get_height(self):
-        points = self.get_points()
+        points = self.points
         return points[4, 1] - points[3, 1]
 
     def get_focal_distance(self):
@@ -224,6 +224,7 @@ class OpenGLRenderer:
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
+        self.animation_start_time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -253,7 +254,8 @@ class OpenGLRenderer:
                     self.context = moderngl.create_context(standalone=True)
                 except Exception:
                     self.context = moderngl.create_context(
-                        standalone=True, backend="egl"
+                        standalone=True,
+                        backend="egl",
                     )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
@@ -312,7 +314,8 @@ class OpenGLRenderer:
 
             # Set uniforms.
             for name, value in it.chain(
-                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+                shader_wrapper.uniforms.items(),
+                self.perspective_uniforms.items(),
             ):
                 try:
                     shader.set_uniform(name, value)
@@ -321,7 +324,8 @@ class OpenGLRenderer:
             try:
                 shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
-                    "u_projection_matrix", self.scene.camera.projection_matrix
+                    "u_projection_matrix",
+                    self.scene.camera.projection_matrix,
                 )
             except KeyError:
                 pass
@@ -338,6 +342,7 @@ class OpenGLRenderer:
                 shader_wrapper.vert_data,
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
+                primitive=mobject.render_primitive,
             )
             mesh.set_uniforms(self)
             mesh.render()
@@ -364,13 +369,17 @@ class OpenGLRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
-                self.skip_animations = True
-        if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
-                self.skip_animations = True
-                raise EndSceneEarlyException()
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
 
     @handle_caching_play
     @handle_play_like_call
@@ -416,7 +425,34 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
+        if config["save_last_frame"]:
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
+
+    def get_image(self) -> Image.Image:
+        """Returns an image from the current frame. The first argument passed to image represents
+        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
+        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
+        used for the decoder tand represent the stride and orientation. 0 means there is no
+        padding expected between bytes and -1 represents the orientation and means the first
+        line of the image is the bottom line on the screen.
+
+        Returns
+        -------
+        PIL.Image
+            The PIL image of the array.
+        """
+        image = Image.frombytes(
+            "RGBA",
+            self.get_pixel_shape(),
+            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            "raw",
+            "RGBA",
+            0,
+            -1,
+        )
+        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
@@ -432,7 +468,8 @@ class OpenGLRenderer:
                 samples=samples,
             ),
             depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height), samples=samples
+                (pixel_width, pixel_height),
+                samples=samples,
             ),
         )
 

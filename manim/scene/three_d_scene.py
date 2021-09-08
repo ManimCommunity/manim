@@ -58,6 +58,7 @@ class ThreeDScene(Scene):
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
         focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         **kwargs,
@@ -79,6 +80,9 @@ class ThreeDScene(Scene):
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
+        zoom : float, optional
+            The zoom factor of the scene.
+
         frame_center : list, tuple or np.array, optional
             The new center of the camera frame in cartesian coordinates.
 
@@ -92,6 +96,8 @@ class ThreeDScene(Scene):
             self.renderer.camera.set_focal_distance(focal_distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
+        if zoom is not None:
+            self.renderer.camera.set_zoom(zoom)
         if frame_center is not None:
             self.renderer.camera._frame_center.move_to(frame_center)
 
@@ -139,7 +145,10 @@ class ThreeDScene(Scene):
         self.remove(x)
 
     def begin_3dillusion_camera_rotation(
-        self, rate=1, origin_theta=-60 * DEGREES, origin_phi=75 * DEGREES
+        self,
+        rate=1,
+        origin_theta=-60 * DEGREES,
+        origin_phi=75 * DEGREES,
     ):
         val_tracker_theta = ValueTracker(0)
 
@@ -181,6 +190,7 @@ class ThreeDScene(Scene):
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
         focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         added_anims: Iterable["Animation"] = [],
@@ -204,6 +214,9 @@ class ThreeDScene(Scene):
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
+        zoom : int or float, optional
+            The zoom factor of the camera.
+
         frame_center : list, tuple or np.array, optional
             The new center of the camera frame in cartesian coordinates.
 
@@ -218,6 +231,7 @@ class ThreeDScene(Scene):
             (theta, self.renderer.camera.theta_tracker),
             (focal_distance, self.renderer.camera.focal_distance_tracker),
             (gamma, self.renderer.camera.gamma_tracker),
+            (zoom, self.renderer.camera.zoom_tracker),
         ]
         for value, tracker in value_tracker_pairs:
             if value is not None:
@@ -226,7 +240,7 @@ class ThreeDScene(Scene):
             anims.append(
                 ApplyMethod(
                     self.renderer.camera._frame_center.move_to, frame_center, **kwargs
-                )
+                ),
             )
 
         self.play(*anims + added_anims)
@@ -250,7 +264,7 @@ class ThreeDScene(Scene):
         """
         moving_mobjects = Scene.get_moving_mobjects(self, *animations)
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
-            self.renderer.camera._frame_center
+            self.renderer.camera._frame_center,
         ]
         if any([cm in moving_mobjects for cm in camera_mobjects]):
             return self.mobjects
@@ -332,7 +346,7 @@ class ThreeDScene(Scene):
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
-            self.default_camera_orientation_kwargs
+            self.default_camera_orientation_kwargs,
         )  # Where doe this come from?
         config.update(kwargs)
         self.set_camera_orientation(**config)
@@ -422,11 +436,11 @@ class SpecialThreeDScene(ThreeDScene):
         Parameters
         ----------
         **kwargs
-            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
+            Any valid parameter of :class:`~.Sphere` or :class:`~.Surface`.
 
         Returns
         -------
-        :class:`.Sphere`
+        :class:`~.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)

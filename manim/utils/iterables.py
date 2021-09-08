@@ -46,7 +46,7 @@ def resize_with_interpolation(nparray, length):
             (1 - a) * nparray[lh] + a * nparray[rh]
             for ci in cont_indices
             for lh, rh, a in [(int(ci), int(np.ceil(ci)), ci % 1)]
-        ]
+        ],
     )
 
 
