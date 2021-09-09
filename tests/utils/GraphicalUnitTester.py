@@ -123,7 +123,7 @@ class GraphicalUnitTester:
     @deprecated(
         until="0.12",
         replacement="frames_comparison",
-        message="The way scene are tested has changed. Refer to the latest doc.",
+        message="The way scenes are tested has changed. Refer to the latest doc.",
     )
     def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
