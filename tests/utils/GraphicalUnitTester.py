@@ -121,7 +121,8 @@ class GraphicalUnitTester:
         plt.savefig(f"{self.scene}.png")
 
     @deprecated(
-        until="0.12",
+        since="v0.11.0",
+        until="v0.12.0",
         replacement="frames_comparison",
         message="The way scenes are tested has changed. Refer to the latest doc.",
     )
