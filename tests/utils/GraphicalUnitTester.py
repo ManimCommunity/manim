@@ -5,6 +5,7 @@ import numpy as np
 
 from manim import config, tempconfig
 from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.utils.deprecation import deprecated
 
 
 class GraphicalUnitTester:
@@ -119,6 +120,11 @@ class GraphicalUnitTester:
         plt.show()
         plt.savefig(f"{self.scene}.png")
 
+    @deprecated(
+        until="0.12",
+        replacement="frames_comparison",
+        message="The way scene are tested has changed. Refer to the latest doc.",
+    )
     def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
         frame_data = self.scene.renderer.get_frame()
