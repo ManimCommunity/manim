@@ -1,21 +1,20 @@
 __all__ = ["OBJMobject"]
+from pathlib import Path
 from typing import *
 
 import numpy as np
 from colour import Color
 
-# from manim.mobject.opengl_compatibility import ConvertToOpenGL
-
 from .. import config, logger
 from ..constants import *
-from ..utils.color import *
 from ..mobject.mobject import *
 
 # from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils.color import *
 from .three_dimensions import ThreeDVMobject
 
-from pathlib import Path
+# from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 
 class OBJMobject(VGroup):
@@ -23,11 +22,11 @@ class OBJMobject(VGroup):
 
     def get_faces_by_group(self, *groups):
         return VGroup(
-            *[
+            *(
                 self.submobjects[i]
                 for i, faceinfo in enumerate(self.faces_info)
                 if all(group in faceinfo["groups"] for group in groups)
-            ]
+            )
         )
 
     def _parse_obj_file(self):
@@ -35,7 +34,7 @@ class OBJMobject(VGroup):
 
         groups = None  # Not all obj files specify groups. Set default group to None
         material = None  # Default material is white in colour. Gets handled in self._build_faces
-        with open(self.fp, "r") as f:
+        with open(self.fp) as f:
             for line in f.readlines():
                 if line.startswith("#") or len(line.strip()) == 0:
                     continue
@@ -82,7 +81,7 @@ class OBJMobject(VGroup):
                     self.faces_info.append(face_info)
 
     def _parse_mtl_file(self, mtlfilepath):
-        with open(mtlfilepath, "r") as f:
+        with open(mtlfilepath) as f:
             for line in f.readlines():
                 if line.startswith("#") or len(line.strip()) == 0:
                     continue
@@ -94,31 +93,31 @@ class OBJMobject(VGroup):
                     if linedata[1] == "spectral" or len(linedata[1:]) > 4:
                         logger.warning(
                             "Spectral and CIEXYZ colour is not supported yet. "
-                            "Your model may be coloured strangely."
+                            "Your model may be coloured strangely.",
                         )
                         continue
                     self.materials_dict[material_name]["ambient_reflectivity"] = list(
-                        map(float, linedata[1:])
+                        map(float, linedata[1:]),
                     )
                 elif linedata[0] == "Kd":
                     if linedata[1] == "spectral" or len(linedata[1:]) > 4:
                         logger.warning(
                             "Spectral and CIEXYZ colour is not supported yet. "
-                            "Your model may be coloured strangely."
+                            "Your model may be coloured strangely.",
                         )
                         continue
                     self.materials_dict[material_name]["diffuse_reflectivity"] = list(
-                        map(float, linedata[1:])
+                        map(float, linedata[1:]),
                     )
                 elif linedata[0] == "Ks":
                     if linedata[1] == "spectral" or len(linedata[1:]) > 4:
                         logger.warning(
                             "Spectral and CIEXYZ colour is not supported yet. "
-                            "Your model may be coloured strangely."
+                            "Your model may be coloured strangely.",
                         )
                         continue
                     self.materials_dict[material_name]["specular_reflectivity"] = list(
-                        map(float, linedata[1:])
+                        map(float, linedata[1:]),
                     )
 
     def _build_faces(self):
@@ -138,8 +137,8 @@ class OBJMobject(VGroup):
                         # Use diffuse reflectivity as it is closest to actual color.
                         self.materials_dict[face_info["material"]][
                             "diffuse_reflectivity"
-                        ]
-                    )
+                        ],
+                    ),
                 )
             )
             self.add(face)
