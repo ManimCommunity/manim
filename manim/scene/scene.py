@@ -860,25 +860,22 @@ class Scene:
                     speeds.append(speeds[-1])
                 times = np.array([])
                 on_node = 0
+
                 for dur, s in zip(np.diff(nodes), speeds):
                     rel_speed_change = s / self.speed
+                    adj_time = run_time * dur
                     adj_func = np.vectorize(
                         lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x
                     )
-                    func_unity_at = 2 / (rel_speed_change + 1)
+                    func_unity_at = 2 * adj_time / (rel_speed_change + 1)
                     dt = self.speed / config["frame_rate"]
-                    print(rel_speed_change, func_unity_at, dt)
                     times = np.append(
                         times,
-                        adj_func(np.arange(0, func_unity_at, dt) + nodes[on_node])
-                        * dur,
+                        adj_func(np.arange(0, func_unity_at, dt) / adj_time) * adj_time
+                        + nodes[on_node] * run_time,
                     )
-                    print(times)
-                    print(np.diff(times))
                     self.speed = s
                     on_node += 1
-                    print()
-                times *= run_time
             else:
                 dt = self.speed / config["frame_rate"]
                 times = np.arange(0, run_time, dt)
@@ -1023,12 +1020,6 @@ class Scene:
         self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration, self.nodes, self.speeds
         )
-        # a = [0]
-        # b = list(self.time_progression)
-        # for i in range(len(b) - 1):
-        #     a.append(round((b[i + 1] - b[i]) * 100000) / 100000)
-        # for i, j in zip(b, a):
-        #     print(i, j)
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
