@@ -1400,7 +1400,11 @@ class Mobject:
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="stretch",
+    )
     def stretch_in_place(self, factor, dim):
         # Now redundant with stretch
         return self.stretch(factor, dim)
