@@ -733,7 +733,9 @@ class Scene:
 
     @contextmanager
     def changing_scene_speed_to(
-        self, speedinfo: Dict[float, float], retain_final_speed=True
+        self,
+        speedinfo: Dict[float, float],
+        retain_final_speed=True,
     ):
         """
         Changes speed of the scene while playing the following animation.
@@ -825,7 +827,9 @@ class Scene:
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration, f"Waiting {self.renderer.num_plays}", speedinfo=speedinfo
+                    duration,
+                    f"Waiting {self.renderer.num_plays}",
+                    speedinfo=speedinfo,
                 )
         else:
             time_progression = self.get_time_progression(
@@ -892,7 +896,7 @@ class Scene:
                 for dur, s in zip(np.diff(nodes), speeds):
                     rel_speed_change = s / self.speed
                     adj_func = np.vectorize(
-                        lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x
+                        lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x,
                     )
                     func_unity_at = 2 / (rel_speed_change + 1)
                     adj_time = run_time * dur
@@ -1043,7 +1047,9 @@ class Scene:
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration, self.speedinfo
+            self.animations,
+            self.duration,
+            self.speedinfo,
         )
         for t in self.time_progression:
             self.update_to_time(t)
