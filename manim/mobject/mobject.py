@@ -1271,7 +1271,7 @@ class Mobject:
     @deprecated(
         since="v0.11.0",
         until="v0.12.0",
-        replacement="rotate"
+        replacement="rotate",
     )
     def rotate_in_place(self, angle, axis=OUT):
         # redundant with default behavior of rotate now.
@@ -1280,7 +1280,7 @@ class Mobject:
     @deprecated(
         since="v0.11.0",
         until="v0.12.0",
-        replacement="scale"
+        replacement="scale",
     )
     def scale_in_place(self, scale_factor, **kwargs):
         # Redundant with default behavior of scale now.
@@ -1289,7 +1289,7 @@ class Mobject:
     @deprecated(
         since="v0.11.0",
         until="v0.12.0",
-        replacement="scale"
+        replacement="scale",
     )
     def scale_about_point(self, scale_factor, point):
         # Redundant with default behavior of scale now.
