@@ -11,8 +11,9 @@ import random
 import threading
 import time
 import types
+from contextlib import contextmanager
 from queue import Queue
-from typing import final
+from typing import Dict
 
 try:
     import dearpygui.dearpygui as dpg
@@ -105,8 +106,8 @@ class Scene:
         self.time_progression = None
         self.duration = None
         self.last_t = None
-        self.to_speed = None
         self.speed = 1
+        self.speedinfo = None
         self.queue = Queue()
         self.skip_animation_preview = False
         self.meshes = []
@@ -722,6 +723,29 @@ class Scene:
         )
         return all_moving_mobject_families, static_mobjects
 
+    @contextmanager
+    def changing_scene_speed_to(
+        self, speedinfo: Dict[float, float], retain_final_speed=True
+    ):
+        """
+        Changes speed of the scene while playing the following animation.
+        Speed change is applied repeatedly to all play/wait calls under this.
+        :class:`AnimationGroup` with ``lag_ratio`` and ``run_time`` can be used
+        to combine animations under single play call to achieve the desired effect
+        Parameters
+        ----------
+        speedinfo : Dict[float, float]
+            Contains nodes (percentage of run_time) and its corresponding speed factor.
+        retain_final_speed : bool, optional
+            Speed of scene will remain changed to final speed on exit if true.
+        """
+        init_speed = self.speed
+        self.speedinfo = speedinfo
+        yield
+        self.speedinfo = None
+        if not retain_final_speed:
+            self.speed = init_speed
+
     def compile_animations(self, *args, **kwargs):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
@@ -758,7 +782,7 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations, duration, nodes, speeds):
+    def _get_animation_time_progression(self, animations, duration, speedinfo):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -789,15 +813,11 @@ class Scene:
                     f"Waiting for {stop_condition.__name__}",
                     n_iterations=-1,  # So it doesn't show % progress
                     override_skip_animations=True,
-                    nodes=nodes,
-                    speeds=speeds,
+                    speedinfo=speedinfo,
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration,
-                    f"Waiting {self.renderer.num_plays}",
-                    nodes=nodes,
-                    speeds=speeds,
+                    duration, f"Waiting {self.renderer.num_plays}", speedinfo=speedinfo
                 )
         else:
             time_progression = self.get_time_progression(
@@ -809,8 +829,7 @@ class Scene:
                         (", etc." if len(animations) > 1 else ""),
                     ]
                 ),
-                nodes=nodes,
-                speeds=speeds,
+                speedinfo=speedinfo,
             )
         return time_progression
 
@@ -820,8 +839,7 @@ class Scene:
         description,
         n_iterations=None,
         override_skip_animations=False,
-        nodes=None,
-        speeds=None,
+        speedinfo=None,
     ):
         """
         You will hardly use this when making your own animations.
@@ -852,7 +870,9 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            if nodes is not None:
+            if speedinfo is not None:
+                nodes = list(speedinfo.keys())
+                speeds = list(speedinfo.values())
                 if nodes[0] != 0:
                     nodes.insert(0, 0)
                 if nodes[-1] != 1:
@@ -918,10 +938,8 @@ class Scene:
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
 
-    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None, to_speed=None):
-        self.play(
-            Wait(run_time=duration, stop_condition=stop_condition), to_speed=to_speed
-        )
+    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
+        self.play(Wait(run_time=duration, stop_condition=stop_condition))
 
     def wait_until(self, stop_condition, max_time=60):
         """
@@ -960,8 +978,6 @@ class Scene:
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
-        self.nodes = play_kwargs.pop("nodes", None)
-        self.speeds = play_kwargs.pop("speeds", None)
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
@@ -1019,7 +1035,7 @@ class Scene:
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration, self.nodes, self.speeds
+            self.animations, self.duration, self.speedinfo
         )
         for t in self.time_progression:
             self.update_to_time(t)
