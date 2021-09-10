@@ -414,7 +414,8 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
 
     def break_up_tex_strings(self, tex_strings):
         substrings_to_isolate = op.add(
-            self.substrings_to_isolate, list(self.tex_to_color_map.keys())
+            self.substrings_to_isolate,
+            list(self.tex_to_color_map.keys()),
         )
         split_list = split_string_list_to_isolate_substrings(
             tex_strings, *substrings_to_isolate

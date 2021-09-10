@@ -3,6 +3,8 @@ import os
 import subprocess
 from functools import wraps
 
+import pytest
+
 from ..utils.commands import capture
 
 
@@ -25,7 +27,8 @@ def _get_config_from_video(path_to_video):
 
 
 def _load_video_data(path_to_data):
-    return json.load(open(path_to_data))
+    with open(path_to_data) as f:
+        return json.load(f)
 
 
 def _check_video_data(path_control_data, path_to_video_generated):
@@ -64,18 +67,21 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
             tests_directory = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))
+                os.path.dirname(os.path.abspath(__file__)),
             )
             path_control_data = os.path.join(
-                tests_directory, "control_data", "videos_data", control_data_file
+                tests_directory,
+                "control_data",
+                "videos_data",
+                control_data_file,
             )
             path_video_generated = tmp_path / scene_path_from_media_dir
             if not os.path.exists(path_video_generated):
                 for parent in reversed(path_video_generated.parents):
                     if not parent.exists():
-                        assert (
-                            False
-                        ), f"'{parent.name}' does not exist in '{parent.parent}' (which exists). "
+                        pytest.fail(
+                            f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
+                        )
                         break
             _check_video_data(path_control_data, str(path_video_generated))
             return result

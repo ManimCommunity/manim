@@ -64,7 +64,8 @@ class _Memoizer:
             # a method or a function.
             if is_method:
                 return lambda self, obj: cls._handle_already_processed(
-                    obj, default_function=lambda obj: func(self, obj)
+                    obj,
+                    default_function=lambda obj: func(self, obj),
                 )
             return lambda obj: cls._handle_already_processed(obj, default_function=func)
 
@@ -103,7 +104,9 @@ class _Memoizer:
 
     @classmethod
     def _handle_already_processed(
-        cls, obj, default_function: typing.Callable[[Any], Any]
+        cls,
+        obj,
+        default_function: typing.Callable[[Any], Any],
     ):
         if (
             isinstance(
@@ -150,11 +153,11 @@ class _Memoizer:
                     "It looks like the scene contains a lot of sub-mobjects. Caching "
                     "is sometimes not suited to handle such large scenes, you might "
                     "consider disabling caching with --disable_caching to potentially "
-                    "speed up the rendering process."
+                    "speed up the rendering process.",
                 )
                 logger.warning(
                     "You can disable this warning by setting disable_caching_warning "
-                    "to True in your config file."
+                    "to True in your config file.",
                 )
 
             cls._already_processed.add(obj_membership_sign)
@@ -186,7 +189,8 @@ class _CustomEncoder(json.JSONEncoder):
 
         """
         if not (isinstance(obj, ModuleType)) and isinstance(
-            obj, (MethodType, FunctionType)
+            obj,
+            (MethodType, FunctionType),
         ):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
@@ -311,7 +315,10 @@ def get_json(obj):
 
 
 def get_hash_from_play_call(
-    scene_object, camera_object, animations_list, current_mobjects_list
+    scene_object,
+    camera_object,
+    animations_list,
+    current_mobjects_list,
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
