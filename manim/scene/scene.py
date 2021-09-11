@@ -739,9 +739,10 @@ class Scene:
     ):
         """
         Changes speed of the scene while playing the following animation.
-        Speed change is applied repeatedly to all play/wait calls under this.
-        :class:`AnimationGroup` with ``lag_ratio`` and ``run_time`` can be used
-        to combine animations under single play call to achieve the desired effect
+        If play/wait are called multiple times, speed change is applied to
+        each of them again. To spread the effect over multiple animations
+        instead use :class:`AnimationGroup` with ``lag_ratio=1`` to combine
+        animations into one.
         Parameters
         ----------
         speedinfo : Dict[float, float]
@@ -1058,6 +1059,7 @@ class Scene:
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
+
         for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
