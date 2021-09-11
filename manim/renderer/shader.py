@@ -28,12 +28,14 @@ def get_shader_code_from_file(file_path):
     with open(file_path) as f:
         source = f.read()
         include_lines = re.finditer(
-            r"^#include (?P<include_path>.*\.glsl)$", source, flags=re.MULTILINE
+            r"^#include (?P<include_path>.*\.glsl)$",
+            source,
+            flags=re.MULTILINE,
         )
         for match in include_lines:
             include_path = match.group("include_path")
             included_code = get_shader_code_from_file(
-                os.path.join(file_path.parent / include_path)
+                os.path.join(file_path.parent / include_path),
             )
             source = source.replace(match.group(0), included_code)
         file_path_to_code_map[file_path] = source
@@ -50,7 +52,7 @@ def filter_attributes(unfiltered_attributes, attributes):
                     dtype_name,
                     unfiltered_attributes.dtype[i].subdtype[0].str,
                     unfiltered_attributes.dtype[i].shape,
-                )
+                ),
             )
 
     filtered_attributes = np.zeros(
@@ -107,7 +109,7 @@ class Object3D:
         for child in children:
             if child.parent is not None:
                 raise Exception(
-                    "Attempt to add child that's already added to another Object3D"
+                    "Attempt to add child that's already added to another Object3D",
                 )
         self.remove(*children, current_children_only=False)
         self.children.extend(children)
@@ -119,7 +121,7 @@ class Object3D:
             for child in children:
                 if child.parent != self:
                     raise Exception(
-                        "Attempt to remove child that isn't added to this Object3D"
+                        "Attempt to remove child that isn't added to this Object3D",
                     )
         self.children = list(filter(lambda child: child not in children, self.children))
         for child in children:
@@ -269,7 +271,7 @@ class Mesh(Object3D):
         else:
             raise Exception(
                 "Mesh requires either attributes and a Shader or a Geometry and a "
-                "Material"
+                "Material",
             )
         self.use_depth_test = use_depth_test
         self.primitive = primitive
@@ -292,7 +294,8 @@ class Mesh(Object3D):
 
     def set_uniforms(self, renderer):
         self.shader.set_uniform(
-            "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
+            "u_model_matrix",
+            opengl.matrix_to_shader_input(self.model_matrix),
         )
         self.shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
         self.shader.set_uniform(
@@ -429,7 +432,8 @@ class FullScreenQuad(Mesh):
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
+            "u_projection_matrix",
+            opengl.orthographic_projection_matrix(),
         )
         super().__init__(shader, attributes)
 

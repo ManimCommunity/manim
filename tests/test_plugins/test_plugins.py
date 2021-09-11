@@ -25,7 +25,7 @@ plugin_pyproject_template = textwrap.dedent(
     [build-system]
     requires = ["poetry-core>=1.0.0"]
     build-backend = "poetry.core.masonry.api"
-    """
+    """,
 )
 
 plugin_init_template = textwrap.dedent(
@@ -45,14 +45,14 @@ plugin_init_template = textwrap.dedent(
             self.dotgrid.become(self.dotgrid.shift(UP))
     def {function_name}():
         return [{class_name}]
-    """
+    """,
 )
 
 cfg_file_contents = textwrap.dedent(
     """\
         [CLI]
         plugins = {plugin_name}
-    """
+    """,
 )
 
 
@@ -78,7 +78,8 @@ def random_string():
 
 def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
     cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name="DNEplugin"), tmp_path
+        cfg_file_contents.format(plugin_name="DNEplugin"),
+        tmp_path,
     )
     scene_name = "SquareToCircle"
     command = [
@@ -110,15 +111,17 @@ def create_plugin(tmp_path, python_version, random_string):
         with open(module_dir / "__init__.py", "w") as f:
             f.write(
                 plugin_init_template.format(
-                    class_name=class_name, function_name=function_name, all_dec=all_dec
-                )
+                    class_name=class_name,
+                    function_name=function_name,
+                    all_dec=all_dec,
+                ),
             )
         with open(plugin_dir / "pyproject.toml", "w") as f:
             f.write(
                 plugin_pyproject_template.format(
                     plugin_name=plugin_name,
                     plugin_entrypoint=entry_point,
-                )
+                ),
             )
         command = [
             python_version,
@@ -144,10 +147,15 @@ def create_plugin(tmp_path, python_version, random_string):
 
 @pytest.mark.slow
 def test_plugin_function_like(
-    tmp_path, create_plugin, python_version, simple_scenes_path
+    tmp_path,
+    create_plugin,
+    python_version,
+    simple_scenes_path,
 ):
     function_like_plugin = create_plugin(
-        "{plugin_name}.__init__:import_all", "FunctionLike", "import_all"
+        "{plugin_name}.__init__:import_all",
+        "FunctionLike",
+        "import_all",
     )
     cfg_file = cfg_file_create(
         cfg_file_contents.format(plugin_name=function_like_plugin["plugin_name"]),
@@ -177,7 +185,8 @@ def test_plugin_no_all(tmp_path, create_plugin, python_version):
     create_plugin = create_plugin("{plugin_name}", "NoAll", "import_all")
     plugin_name = create_plugin["plugin_name"]
     cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name=plugin_name), tmp_path
+        cfg_file_contents.format(plugin_name=plugin_name),
+        tmp_path,
     )
     test_class = textwrap.dedent(
         f"""\
@@ -187,11 +196,14 @@ def test_plugin_no_all(tmp_path, create_plugin, python_version):
                 assert "{plugin_name}" in globals()
                 a = {plugin_name}.NoAll()
                 self.play(FadeIn(a))
-        """
+        """,
     )
 
     with tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", suffix=".py", delete=False
+        mode="w",
+        encoding="utf-8",
+        suffix=".py",
+        delete=False,
     ) as tmpfile:
         tmpfile.write(test_class)
     scene_name = "NoAllTest"
@@ -224,7 +236,8 @@ def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_
     )
     plugin_name = create_plugin["plugin_name"]
     cfg_file = cfg_file_create(
-        cfg_file_contents.format(plugin_name=plugin_name), tmp_path
+        cfg_file_contents.format(plugin_name=plugin_name),
+        tmp_path,
     )
     scene_name = "WithAllTest"
     command = [

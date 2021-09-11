@@ -1,4 +1,9 @@
 name: CI
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -13,6 +18,7 @@ jobs:
     env:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
+      GLCONTEXT_WIN_LIBGL: C:\msys64\mingw64\bin\opengl32.dll
     strategy:
       fail-fast: false
       matrix:
