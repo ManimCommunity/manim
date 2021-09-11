@@ -443,7 +443,6 @@ class OpenGLRenderer:
             self.update_frame(scene)
             self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
-        self.frame_buffer_object.clear()
 
     def get_image(self) -> Image.Image:
         """Returns an image from the current frame. The first argument passed to image represents
