@@ -27,17 +27,35 @@ class UpdateFromFunc(Animation):
         **kwargs
     ) -> None:
         self.update_function = update_function
+        self.current = mobject.copy()
         super().__init__(
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject)
+    def get_all_families_zipped(self):
+        mobs = [
+            self.mobject,
+            self.starting_mobject,
+            self.current,
+        ]
+        return zip(*(mob.family_members_with_points() for mob in mobs))
+
+    def interpolate_mobject(self, alpha: float = None) -> None:
+        if alpha is not None:
+            self.update_function(self.current, alpha)
+        else:
+            self.update_function(self.current)
+        super().interpolate_mobject(alpha)
+
+    def interpolate_submobject(
+        self, submobject, starting_submobject, current_submobject, alpha: float
+    ):
+        submobject.interpolate(submobject, current_submobject, alpha)
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
     def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject, self.rate_func(alpha))
+        super().interpolate_mobject(alpha)
 
 
 class MaintainPositionRelativeTo(Animation):
