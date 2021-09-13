@@ -189,14 +189,14 @@ class OpenGLCamera(OpenGLMobject):
 
     def get_center(self):
         # Assumes first point is at the center
-        return self.get_points()[0]
+        return self.points[0]
 
     def get_width(self):
-        points = self.get_points()
+        points = self.points
         return points[2, 0] - points[1, 0]
 
     def get_height(self):
-        points = self.get_points()
+        points = self.points
         return points[4, 1] - points[3, 1]
 
     def get_focal_distance(self):
