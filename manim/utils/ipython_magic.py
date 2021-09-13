@@ -119,7 +119,7 @@ else:
                     else:
                         logger.warning(
                             "Renderer must be set to OpenGL in the configuration file "
-                            "before importing Manim! Using cairo renderer instead."
+                            "before importing Manim! Using cairo renderer instead.",
                         )
                         config.renderer = "cairo"
 
@@ -166,7 +166,7 @@ else:
                         tmpfile,
                         html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
                         embed=video_embed,
-                    )
+                    ),
                 )
 
         def add_additional_args(self, args):

@@ -156,7 +156,12 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def set_stroke(
-        self, color=None, width=None, opacity=None, background=None, recurse=True
+        self,
+        color=None,
+        width=None,
+        opacity=None,
+        background=None,
+        recurse=True,
     ):
         self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
 
@@ -335,7 +340,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def add_cubic_bezier_curve(self, anchor1, handle1, handle2, anchor2):
         new_points = get_quadratic_approximation_of_cubic(
-            anchor1, handle1, handle2, anchor2
+            anchor1,
+            handle1,
+            handle2,
+            anchor2,
         )
         self.append_points(new_points)
 
@@ -345,7 +353,10 @@ class OpenGLVMobject(OpenGLMobject):
         """
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
-            self.get_last_point(), handle1, handle2, anchor
+            self.get_last_point(),
+            handle1,
+            handle2,
+            anchor,
         )
         if self.has_new_path_started():
             self.append_points(quadratic_approx[1:])
@@ -418,7 +429,7 @@ class OpenGLVMobject(OpenGLMobject):
                         [
                             partial_quadratic_bezier_points(tup, a1, a2)
                             for a1, a2 in zip(alphas, alphas[1:])
-                        ]
+                        ],
                     )
                 else:
                     new_points.append(tup)
@@ -454,12 +465,15 @@ class OpenGLVMobject(OpenGLMobject):
                 new_subpath = np.array(subpath)
                 if mode == "approx_smooth":
                     new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
-                        anchors
+                        anchors,
                     )
                 elif mode == "true_smooth":
                     h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
                     new_subpath = get_quadratic_approximation_of_cubic(
-                        anchors[:-1], h1, h2, anchors[1:]
+                        anchors[:-1],
+                        h1,
+                        h2,
+                        anchors[1:],
                     )
                 elif mode == "jagged":
                     new_subpath[1::nppc] = 0.5 * (anchors[:-1] + anchors[1:])
@@ -563,7 +577,9 @@ class OpenGLVMobject(OpenGLMobject):
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_function_with_length(
-        self, n: int, sample_points: Optional[int] = None
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
     ) -> Tuple[Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
@@ -708,8 +724,8 @@ class OpenGLVMobject(OpenGLMobject):
                         self.get_start_anchors(),
                         self.get_end_anchors(),
                     )
-                )
-            )
+                ),
+            ),
         )
 
     def get_points_without_null_curves(self, atol=1e-9):
@@ -741,7 +757,7 @@ class OpenGLVMobject(OpenGLMobject):
         return np.sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve
+                sample_points=sample_points_per_curve,
             )
         )
 
@@ -762,15 +778,15 @@ class OpenGLVMobject(OpenGLMobject):
         return 0.5 * np.array(
             [
                 sum(
-                    (p0[:, 1] + p1[:, 1]) * (p1[:, 2] - p0[:, 2])
+                    (p0[:, 1] + p1[:, 1]) * (p1[:, 2] - p0[:, 2]),
                 ),  # Add up (y1 + y2)*(z2 - z1)
                 sum(
-                    (p0[:, 2] + p1[:, 2]) * (p1[:, 0] - p0[:, 0])
+                    (p0[:, 2] + p1[:, 2]) * (p1[:, 0] - p0[:, 0]),
                 ),  # Add up (z1 + z2)*(x2 - x1)
                 sum(
-                    (p0[:, 0] + p1[:, 0]) * (p1[:, 1] - p0[:, 1])
+                    (p0[:, 0] + p1[:, 0]) * (p1[:, 1] - p0[:, 1]),
                 ),  # Add up (x1 + x2)*(y2 - y1)
-            ]
+            ],
         )
 
     def get_direction(self):
@@ -922,7 +938,9 @@ class OpenGLVMobject(OpenGLMobject):
             return self
         if lower_index == upper_index:
             tup = partial_quadratic_bezier_points(
-                vm_points[i1:i2], lower_residue, upper_residue
+                vm_points[i1:i2],
+                lower_residue,
+                upper_residue,
             )
             new_points[:i1] = tup[0]
             new_points[i1:i4] = tup
@@ -930,10 +948,14 @@ class OpenGLVMobject(OpenGLMobject):
             new_points[nppc:] = new_points[nppc - 1]
         else:
             low_tup = partial_quadratic_bezier_points(
-                vm_points[i1:i2], lower_residue, 1
+                vm_points[i1:i2],
+                lower_residue,
+                1,
             )
             high_tup = partial_quadratic_bezier_points(
-                vm_points[i3:i4], 0, upper_residue
+                vm_points[i3:i4],
+                0,
+                upper_residue,
             )
             new_points[0:i1] = low_tup[0]
             new_points[i1:i2] = low_tup
@@ -999,7 +1021,7 @@ class OpenGLVMobject(OpenGLMobject):
                 indices[0::3],
                 indices[1::3][concave_parts],
                 indices[2::3][end_of_loop],
-            ]
+            ],
         )
         inner_vert_indices.sort()
         rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
@@ -1025,7 +1047,7 @@ class OpenGLVMobject(OpenGLMobject):
             new_points = np.empty((0, 3))
             for mob in self.family_members_with_points():
                 new_points = np.concatenate((new_points, mob.points), axis=0)
-            if not np.all(new_points == old_points):
+            if not np.array_equal(new_points, old_points):
                 self.refresh_triangulation()
                 self.refresh_unit_normal()
 
@@ -1250,7 +1272,8 @@ class OpenGLDashedVMobject(OpenGLVMobject):
             self.add(
                 *(
                     vmobject.get_subcurve(
-                        i * (dash_len + void_len), i * (dash_len + void_len) + dash_len
+                        i * (dash_len + void_len),
+                        i * (dash_len + void_len) + dash_len,
                     )
                     for i in range(n)
                 )

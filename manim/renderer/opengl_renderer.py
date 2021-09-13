@@ -57,12 +57,12 @@ class OpenGLCamera(OpenGLMobject):
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
             self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
-                format=False
+                format=False,
             )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
             self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
-                format=False
+                format=False,
             )
 
         if frame_shape is None:
@@ -254,7 +254,8 @@ class OpenGLRenderer:
                     self.context = moderngl.create_context(standalone=True)
                 except Exception:
                     self.context = moderngl.create_context(
-                        standalone=True, backend="egl"
+                        standalone=True,
+                        backend="egl",
                     )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
@@ -313,7 +314,8 @@ class OpenGLRenderer:
 
             # Set uniforms.
             for name, value in it.chain(
-                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+                shader_wrapper.uniforms.items(),
+                self.perspective_uniforms.items(),
             ):
                 try:
                     shader.set_uniform(name, value)
@@ -322,7 +324,8 @@ class OpenGLRenderer:
             try:
                 shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
-                    "u_projection_matrix", self.scene.camera.projection_matrix
+                    "u_projection_matrix",
+                    self.scene.camera.projection_matrix,
                 )
             except KeyError:
                 pass
@@ -366,13 +369,17 @@ class OpenGLRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
-                self.skip_animations = True
-        if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
-                self.skip_animations = True
-                raise EndSceneEarlyException()
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
 
     @handle_caching_play
     @handle_play_like_call
@@ -461,7 +468,8 @@ class OpenGLRenderer:
                 samples=samples,
             ),
             depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height), samples=samples
+                (pixel_width, pixel_height),
+                samples=samples,
             ),
         )
 

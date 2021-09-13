@@ -341,14 +341,20 @@ class VectorScene(Scene):
         return label
 
     def position_x_coordinate(
-        self, x_coord, x_line, vector
+        self,
+        x_coord,
+        x_line,
+        vector,
     ):  # TODO Write DocStrings for this.
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
         return x_coord
 
     def position_y_coordinate(
-        self, y_coord, y_line, vector
+        self,
+        y_coord,
+        y_line,
+        vector,
     ):  # TODO Write DocStrings for this.
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
@@ -391,13 +397,15 @@ class VectorScene(Scene):
         self.wait()
         self.play(
             ApplyFunction(
-                lambda x: self.position_x_coordinate(x, x_line, vector), x_coord
-            )
+                lambda x: self.position_x_coordinate(x, x_line, vector),
+                x_coord,
+            ),
         )
         self.play(Create(x_line))
         animations = [
             ApplyFunction(
-                lambda y: self.position_y_coordinate(y, y_line, vector), y_coord
+                lambda y: self.position_y_coordinate(y, y_line, vector),
+                y_coord,
             ),
             FadeOut(array.get_brackets()),
         ]
@@ -761,7 +769,8 @@ class LinearTransformationScene(VectorScene):
         square = self.get_unit_square(**kwargs)
         if animate:
             self.play(
-                DrawBorderThenFill(square), Animation(Group(*self.moving_vectors))
+                DrawBorderThenFill(square),
+                Animation(Group(*self.moving_vectors)),
             )
         self.add_transformable_mobject(square)
         self.bring_to_front(*self.moving_vectors)
@@ -1062,7 +1071,7 @@ class LinearTransformationScene(VectorScene):
         func = self.get_transposed_matrix_transformation(transposed_matrix)
         if "path_arc" not in kwargs:
             net_rotation = np.mean(
-                [angle_of_vector(func(RIGHT)), angle_of_vector(func(UP)) - np.pi / 2]
+                [angle_of_vector(func(RIGHT)), angle_of_vector(func(UP)) - np.pi / 2],
             )
             kwargs["path_arc"] = net_rotation
         self.apply_function(func, **kwargs)

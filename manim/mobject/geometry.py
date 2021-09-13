@@ -179,7 +179,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             anchor = self.get_end()
         angles = cartesian_to_spherical(handle - anchor)
         tip.rotate(
-            angles[2] - PI - tip.tip_angle
+            angles[2] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
         axis = [
             np.sin(angles[2]),
@@ -187,7 +187,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             0,
         ]  # Obtains the perpendicular of the tip
         tip.rotate(
-            -angles[1] + PI / 2, axis=axis
+            -angles[1] + PI / 2,
+            axis=axis,
         )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
@@ -327,7 +328,7 @@ class Arc(TipableVMobject):
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.num_components,
-            )
+            ),
         )
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
@@ -342,7 +343,7 @@ class Arc(TipableVMobject):
                     start_angle + angle,
                     2 * n_components + 1,
                 )
-            ]
+            ],
         )
         theta = angle / n_components
         samples[1::2] /= np.cos(theta / 2)
@@ -358,9 +359,11 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                    self.start_angle, self.start_angle + self.angle, self.num_components
+                    self.start_angle,
+                    self.start_angle + self.angle,
+                    self.num_components,
                 )
-            ]
+            ],
         )
         # Figure out which control points will give the
         # Appropriate tangent lines to the circle
@@ -441,7 +444,7 @@ class ArcBetweenPoints(Arc):
             if radius < halfdist:
                 raise ValueError(
                     """ArcBetweenPoints called with a radius that is
-                            smaller than half the distance between the points."""
+                            smaller than half the distance between the points.""",
                 )
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
@@ -957,7 +960,10 @@ class Line(TipableVMobject):
 
     def generate_points(self):
         self.set_points_by_ends(
-            start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc
+            start=self.start,
+            end=self.end,
+            buff=self.buff,
+            path_arc=self.path_arc,
         )
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
@@ -1140,7 +1146,8 @@ class DashedLine(Line):
         **kwargs,
     ):
         self.dash_spacing = kwargs.pop(
-            "dash_spacing", None
+            "dash_spacing",
+            None,
         )  # Unused param, remove with deprecation warning
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
@@ -1166,7 +1173,8 @@ class DashedLine(Line):
 
         # Minimum number of dashes has to be 2
         return max(
-            2, int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio))
+            2,
+            int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio)),
         )
 
     def get_start(self) -> np.ndarray:
@@ -1557,7 +1565,10 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(
-        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+        self,
+        integer_labels: bool = True,
+        n_dim: int = 2,
+        color: str = WHITE,
     ):
         """Creates a label based on the coordinates of the vector.
 
@@ -1737,7 +1748,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             self.start_new_path(first_vertex)
             self.add_points_as_corners(
-                [*(np.array(vertex) for vertex in vertices), first_vertex]
+                [*(np.array(vertex) for vertex in vertices), first_vertex],
             )
 
     def get_vertices(self) -> np.ndarray:
@@ -1973,7 +1984,9 @@ class RegularPolygram(Polygram):
         # polygon vertices.
         def gen_polygon_vertices(start_angle):
             reg_vertices, start_angle = regular_vertices(
-                num_vertices, radius=radius, start_angle=start_angle
+                num_vertices,
+                radius=radius,
+                start_angle=start_angle,
             )
 
             vertices = []
@@ -2108,7 +2121,7 @@ class Star(Polygon):
 
             if density <= 0 or density >= n / 2:
                 raise ValueError(
-                    f"Incompatible density {density} for number of points {n}"
+                    f"Incompatible density {density} for number of points {n}",
                 )
 
             outer_angle = TAU * density / n
@@ -2119,10 +2132,14 @@ class Star(Polygon):
             inner_radius = outer_radius / (np.cos(inner_angle) * inverse_x)
 
         outer_vertices, self.start_angle = regular_vertices(
-            n, radius=outer_radius, start_angle=start_angle
+            n,
+            radius=outer_radius,
+            start_angle=start_angle,
         )
         inner_vertices, _ = regular_vertices(
-            n, radius=inner_radius, start_angle=self.start_angle + inner_angle
+            n,
+            radius=inner_radius,
+            start_angle=self.start_angle + inner_angle,
         )
 
         vertices = []
@@ -2350,7 +2367,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, *arcs, **kwargs):
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
-                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
+                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints",
             )
         super().__init__(**kwargs)
         # Adding the arcs like this makes ArcPolygonFromArcs double as a VGroup.
@@ -2952,7 +2969,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.dot_distance = dot_distance
         self.elbow = elbow
         inter = line_intersection(
-            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+            [line1.get_start(), line1.get_end()],
+            [line2.get_start(), line2.get_end()],
         )
 
         if radius is None:
@@ -2982,7 +3000,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             )
             angle_mobject = Elbow(**kwargs)
             angle_mobject.set_points_as_corners(
-                [anchor_angle_1, anchor_middle, anchor_angle_2]
+                [anchor_angle_1, anchor_middle, anchor_angle_2],
             )
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)

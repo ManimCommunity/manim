@@ -6,7 +6,7 @@ Before filling in the details, ensure:
 -->
 ## Summary of Changes
 
-## Changelog 
+## Changelog
 <!-- Optional: more descriptive changelog entry than just the title for the upcoming
 release. Write RST between the following start and end comments.-->
 <!--changelog-start-->

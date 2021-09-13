@@ -33,7 +33,13 @@ from ..mobject.geometry import (
 )
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import Mobject, VDict, VectorizedPoint, VGroup
+from ..mobject.types.vectorized_mobject import (
+    Mobject,
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
 from ..utils.color import (
     BLACK,
     BLUE,
@@ -302,11 +308,7 @@ class CoordinateSystem:
             The label.
         """
 
-        if (
-            isinstance(label_tex, float)
-            or isinstance(label_tex, int)
-            or isinstance(label_tex, str)
-        ):
+        if isinstance(label_tex, (float, int, str)):
             label_tex = MathTex(label_tex)
         return label_tex
 
@@ -393,7 +395,8 @@ class CoordinateSystem:
     def add_coordinates(
         self,
         *axes_numbers: Union[
-            Optional[Iterable[float]], Union[Dict[float, Union[str, float, "Mobject"]]]
+            Optional[Iterable[float]],
+            Union[Dict[float, Union[str, float, "Mobject"]]],
         ],
         **kwargs,
     ):
@@ -702,7 +705,11 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
+    def input_to_graph_point(
+        self,
+        x: float,
+        graph: Union["ParametricFunction", VMobject],
+    ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
         Examples
@@ -733,6 +740,11 @@ class CoordinateSystem:
         -------
         :class:`np.ndarray`
             The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            When the target x is not in the range of the line graph.
         """
 
         if hasattr(graph, "underlying_function"):
@@ -743,13 +755,15 @@ class CoordinateSystem:
                     0
                 ],
                 target=x,
-                lower_bound=self.x_range[0],
-                upper_bound=self.x_range[1],
+                lower_bound=0,
+                upper_bound=1,
             )
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
             else:
-                return None
+                raise ValueError(
+                    f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
+                )
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
@@ -992,7 +1006,7 @@ class CoordinateSystem:
                             self.coords_to_point(x + width_scale_factor * dx, y_point),
                             graph_point,
                         ],
-                    )
+                    ),
                 )
             )
 
@@ -1085,7 +1099,10 @@ class CoordinateSystem:
         ).set_opacity(opacity=opacity)
 
     def angle_of_tangent(
-        self, x: float, graph: "ParametricFunction", dx: float = 1e-8
+        self,
+        x: float,
+        graph: "ParametricFunction",
+        dx: float = 1e-8,
     ) -> float:
         """Returns the angle to the x-axis of the tangent
         to the plotted curve at a particular x-value.
@@ -1311,20 +1328,24 @@ class CoordinateSystem:
 
         if dx_label is not None:
             group.dx_label.next_to(
-                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.height / 2
+                group.dx_line,
+                np.sign(dx) * DOWN,
+                buff=group.dx_label.height / 2,
             )
             group.dx_label.set_color(group.dx_line.get_color())
 
         if dy_label is not None:
             group.df_label.next_to(
-                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
+                group.df_line,
+                np.sign(dx) * RIGHT,
+                buff=group.df_label.height / 2,
             )
             group.df_label.set_color(group.df_line.get_color())
 
         if include_secant_line:
             group.secant_line = Line(p1, p2, color=secant_line_color)
             group.secant_line.scale_in_place(
-                secant_line_length / group.secant_line.get_length()
+                secant_line_length / group.secant_line.get_length(),
             )
             group.add(group.secant_line)
         return group
@@ -1443,7 +1464,8 @@ class CoordinateSystem:
 
         T_label_group = VGroup()
         triangle = RegularPolygon(n=3, start_angle=np.pi / 2, stroke_width=0).set_fill(
-            color=triangle_color, opacity=1
+            color=triangle_color,
+            opacity=1,
         )
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
@@ -1453,7 +1475,9 @@ class CoordinateSystem:
             T_label_group.add(t_label)
 
         v_line = self.get_vertical_line(
-            self.i2gp(x_val, graph), color=line_color, line_func=line_func
+            self.i2gp(x_val, graph),
+            color=line_color,
+            line_func=line_func,
         )
 
         T_label_group.add(triangle, v_line)
@@ -1515,10 +1539,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         )
 
         self.x_axis_config = merge_dicts_recursively(
-            self.axis_config, self.x_axis_config
+            self.axis_config,
+            self.x_axis_config,
         )
         self.y_axis_config = merge_dicts_recursively(
-            self.axis_config, self.y_axis_config
+            self.axis_config,
+            self.y_axis_config,
         )
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
@@ -1832,7 +1858,8 @@ class ThreeDAxes(Axes):
         self.z_axis_config = {}
         self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
-            self.axis_config, self.z_axis_config
+            self.axis_config,
+            self.z_axis_config,
         )
 
         self.z_normal = z_normal
@@ -1852,7 +1879,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if not config.renderer == "opengl":
+        if config.renderer != "opengl":
             self._add_3d_pieces()
             self._set_axis_shading()
 
@@ -2299,7 +2326,7 @@ class PolarPlane(Axes):
             self.azimuth_units = azimuth_units
         else:
             raise ValueError(
-                "Invalid azimuth units. Expected one of: PI radians, TAU radians, degrees, gradians or None."
+                "Invalid azimuth units. Expected one of: PI radians, TAU radians, degrees, gradians or None.",
             )
 
         if azimuth_direction in ["CW", "CCW"]:
@@ -2552,7 +2579,7 @@ class PolarPlane(Axes):
                         self.get_right()[0]
                         * np.sin(d * (i * TAU) + self.azimuth_offset),
                         0,
-                    ]
+                    ],
                 ),
             }
             for i in a_values
@@ -2560,7 +2587,8 @@ class PolarPlane(Axes):
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
                 self.get_radian_label(
-                    i["label"], font_size=self.azimuth_label_font_size
+                    i["label"],
+                    font_size=self.azimuth_label_font_size,
                 ).next_to(
                     i["point"],
                     direction=i["point"],
@@ -2598,7 +2626,8 @@ class PolarPlane(Axes):
         elif self.azimuth_units is None:
             a_tex = [
                 MathTex(
-                    f'{i["label"]:g}', font_size=self.azimuth_label_font_size
+                    f'{i["label"]:g}',
+                    font_size=self.azimuth_label_font_size,
                 ).next_to(
                     i["point"],
                     direction=i["point"],
