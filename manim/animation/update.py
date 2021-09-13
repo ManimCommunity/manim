@@ -48,7 +48,11 @@ class UpdateFromFunc(Animation):
         super().interpolate_mobject(alpha)
 
     def interpolate_submobject(
-        self, submobject, starting_submobject, current_submobject, alpha: float
+        self,
+        submobject,
+        starting_submobject,
+        current_submobject,
+        alpha: float,
     ):
         submobject.interpolate(submobject, current_submobject, alpha)
 
