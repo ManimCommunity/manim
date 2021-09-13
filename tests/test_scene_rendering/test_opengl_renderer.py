@@ -1,12 +1,9 @@
 from unittest.mock import Mock
 
-import pytest
-
 from ..assert_utils import assert_file_exists
 from .simple_scenes import *
 
 
-@pytest.mark.skip("Fails on Windows CI")
 def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_caching):
     """write_to_movie should disable window by default"""
     scene = SquareToCircle()
@@ -17,7 +14,6 @@ def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_cach
     assert_file_exists(config["output_file"])
 
 
-@pytest.mark.skip("Fails on Windows CI")
 def test_force_window_opengl_render_with_movies(
     using_temp_opengl_config,
     force_window_config_write_to_movie,
@@ -33,7 +29,6 @@ def test_force_window_opengl_render_with_movies(
     renderer.window.close()
 
 
-@pytest.mark.skip("Fails on Windows CI")
 def test_force_window_opengl_render_with_format(
     using_temp_opengl_config,
     force_window_config_pngs,
