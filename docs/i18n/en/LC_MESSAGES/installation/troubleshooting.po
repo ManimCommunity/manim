@@ -289,5 +289,3 @@ msgid ""
 "If you are unable to solve your problem, check out the `dvisvgm FAQ "
 "<https://dvisvgm.de/FAQ/>`_."
 msgstr ""
-
-

@@ -74,5 +74,3 @@ msgstr ""
 #: ../../source/contributing.rst:28
 msgid "Contributing can be confusing, so here are a few guides:"
 msgstr ""
-
-

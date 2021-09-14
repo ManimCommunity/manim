@@ -2,10 +2,10 @@
 # Copyright (C) 2020, The Manim Community Dev Team
 # This file is distributed under the same license as the Manim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# 
+#
 # Translators:
 # Mysaa <samyavrillon@netcourrier.com>, 2020
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""

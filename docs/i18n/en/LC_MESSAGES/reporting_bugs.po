@@ -80,5 +80,3 @@ msgid ""
 "volunteer.  If you wait for a reasonable amount of time and you receive "
 "no response, feel free to ask again."
 msgstr ""
-
-

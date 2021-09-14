@@ -163,5 +163,3 @@ msgid ""
 "This was a quick review of some of the most frequent command-line flags."
 "  For a thorough review of all flags available, see :doc:`configuration`."
 msgstr ""
-
-

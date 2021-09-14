@@ -419,5 +419,3 @@ msgid ""
 ":class:`.Scene` subclasses if multiple scenes are to be rendered at the "
 "same time."
 msgstr ""
-
-

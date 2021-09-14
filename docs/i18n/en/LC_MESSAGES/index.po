@@ -85,5 +85,3 @@ msgstr ""
 #: ../../source/index.rst:52
 msgid "Methods: :meth:`~.Mobject.add_updater`,"
 msgstr ""
-
-

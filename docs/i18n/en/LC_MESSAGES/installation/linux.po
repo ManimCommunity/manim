@@ -173,5 +173,3 @@ msgid ""
 "packages which Manim interacts with in some way (a subset might be "
 "sufficient for your particular application) is::"
 msgstr ""
-
-

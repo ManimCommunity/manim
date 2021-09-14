@@ -22,7 +22,7 @@ BEGIN {
 	# 0  -> should not keep, overridable
 	# 1  -> should keep, not overridable
 	acceptable=1
-	# The file location of where to put everything 
+	# The file location of where to put everything
 	# that has been stripped out
 	untranslatablefile="./untranslatable.po"
 }
@@ -97,7 +97,7 @@ $0~/^\"/ {
 
 state==1 {
 	if($0~/^(msgid ""|"")$/){
-		
+
 	}else if($0~/^(msgid "|")((:ref:`[a-zA-Z]*`)|(:obj:)|(manim.([a-z._\\]+)"$)|(((:(mod|class|func):`\~?\.[a-zA-Z0-9._]+)`| )+))/ ) {
 		acceptable=(acceptable==-1)?0:acceptable
 	}else{
@@ -119,7 +119,7 @@ state==1 {
 #$0~/^"((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
 #	acceptable=0
 #}
-#$0~/^"/ 
+#$0~/^"/
 
 # When the parsing is ended, print the last missing endline
 END {
