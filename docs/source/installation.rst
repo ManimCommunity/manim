@@ -1,69 +1,110 @@
 Installation
 ============
 
-Manim has a few dependencies that need to be installed before it.  The
-following pages have instructions that are specific to your system.  Once you
-are done installing the dependencies, come back to this page to install manim
-itself.
+Depending on your use case, different installation options are recommended:
+if you just want to play around with Manim for a bit, interactive in-browser
+notebooks are a really simple way of exploring the library as they
+require no local installation. Head over to
+https://try.manim.community to give our interactive tutorial a try.
 
-Installing dependencies
-***********************
-
-.. toctree::
-
-   installation/win
-   installation/mac
-   installation/linux
-   installation/troubleshooting
-   installation/for_dev
-   installation/plugins
-
-
-.. _installing-manim:
-
-Installing Manim
-****************
-
-Manim-Community runs on Python 3.6+. If you'd like to just use the library, you
-can install it from PyPI via pip:
-
-.. code-block:: bash
-
-   pip install manim
-
-You can replace ``pip`` with ``pip3`` if you need to in your system.
-
-Alternatively, you can work with Manim using our Docker image that can be
-found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_.
-
-If you'd like to contribute to and/or help develop ``manim-community``, you can
-clone this repository to your local device.  To do this, first make sure you
-have ``git`` installed. Then, clone this repo by executing either
-
-.. code-block:: bash
-
-   git clone git@github.com:ManimCommunity/manim.git
-
-or
-
-.. code-block:: bash
-
-   git clone https://github.com/ManimCommunity/manim.git
-
-depending on whether you want to use HTTPS or SSH.  Finally, after having
-cloned this repo, run the following:
-
-.. code-block:: bash
-
-   python3 -m pip install .
-
-Please see :doc:`contributing` for more details about contributing to Manim.
+Otherwise, if you intend to use Manim to work on an animation project,
+we recommend installing the library locally (either to your system's
+Python, or via Docker).
 
 .. warning::
 
-   If you want to contribute to ``manim-community`` and have cloned the
-   repository to your local device, please uninstall the pip-installed version
-   of ``manim-community``, if you had installed it previously.
-   This is to avoid any accidental usage of the pip-installed version when developing
-   and testing on your local copy of the repository. This warning doesn't apply for
-   users who use `poetry <https://python-poetry.org>`_.
+   Note that there are several different versions of Manim. The
+   instructions on this website are **only** for the *community edition*.
+   Find out more about the :doc:`differences between Manim
+   versions <installation/versions>` if you are unsure which
+   version you should install.
+
+#. :ref:`Installing Manim to your system's Python <local-installation>`
+#. :ref:`Using Manim via Docker <docker-installation>`
+#. :ref:`Interactive Jupyter notebooks via Binder / Google Colab
+   <interactive-online>`
+
+
+.. _local-installation:
+
+Installing Manim locally
+************************
+
+Manim is a Python library, and it can be
+`installed via pip <https://pypi.org/project/manim/>`__. However,
+in order for Manim to work properly, some additional system
+dependencies need to be installed first. The following pages have
+operating system specific instructions for you to follow.
+
+.. hint::
+
+   Depending on your particular setup, the installation process
+   might be slightly different. Make sure that you have tried to
+   follow the steps on the following pages carefully, but in case
+   you hit a wall we are happy to help: either `join our Discord
+   <https://www.manim.community/discord/>`__, or start a new
+   Discussion `directly on GitHub
+   <https://github.com/ManimCommunity/manim/discussions>`__.
+
+.. toctree::
+   :maxdepth: 2
+
+   installation/windows
+   installation/macos
+   installation/linux
+   installation/troubleshooting
+
+Once Manim is installed locally, you can proceed to our
+:doc:`quickstart guide <tutorials/quickstart>` which walks you
+through rendering a first simple scene.
+
+As mentioned above, do not worry if there are errors or other
+problems: consult our :doc:`troubleshooting
+guide <installation/troubleshooting>` for help, or get in touch
+with the community via `GitHub discussions
+<https://github.com/ManimCommunity/manim/discussions>`__ or
+`Discord <https://www.manim.community/discord/>`__.
+
+
+
+.. _docker-installation:
+
+Using Manim via Docker
+**********************
+
+`Docker <https://www.docker.com>`__ is a virtualization tool that
+allows the distribution of encapsulated software environments (containers).
+
+The following pages contain more information about the docker image
+maintained by the community, ``manimcommunity/manim``:
+
+.. toctree::
+
+   installation/docker
+
+
+.. _interactive-online:
+
+Interactive Jupyter notebooks for your browser
+**********************************************
+
+Manim ships with a built-in ``%%manim`` IPython magic command
+designed for the use within `Jupyter notebooks <https://jupyter.org>`__.
+Our interactive tutorial over at https://try.manim.community illustrates
+how Manim can be used from within a Jupyter notebook.
+
+The following pages explain how you can setup interactive environments
+like that yourself:
+
+.. toctree::
+
+   installation/jupyter
+
+
+Installation for developers
+***************************
+
+In order to change code in the library, it is recommended to
+install Manim in a different way. Please follow the instructions
+in our :doc:`contribution guide <contributing>` if you are
+interested in that.

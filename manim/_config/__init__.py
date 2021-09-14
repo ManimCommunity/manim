@@ -10,6 +10,7 @@ from .utils import ManimConfig, ManimFrame, make_config_parser
 __all__ = [
     "logger",
     "console",
+    "error_console",
     "config",
     "frame",
     "tempconfig",
@@ -20,7 +21,11 @@ parser = make_config_parser()
 # The logger can be accessed from anywhere as manim.logger, or as
 # logging.getLogger("manim").  The console must be accessed as manim.console.
 # Throughout the codebase, use manim.console.print() instead of print().
-logger, console = make_logger(parser["logger"], parser["CLI"]["verbosity"])
+# Use error_console to print errors so that it outputs to stderr.
+logger, console, error_console = make_logger(
+    parser["logger"],
+    parser["CLI"]["verbosity"],
+)
 # TODO: temporary to have a clean terminal output when working with PIL or matplotlib
 logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
@@ -49,14 +54,15 @@ def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
     Use ``with tempconfig({...})`` to temporarily change the default values of
     certain config options.
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-       >>> config['frame_height']
+       >>> config["frame_height"]
        8.0
-       >>> with tempconfig({'frame_height': 100.0}):
-       ...     print(config['frame_height'])
+       >>> with tempconfig({"frame_height": 100.0}):
+       ...     print(config["frame_height"])
+       ...
        100.0
-       >>> config['frame_height']
+       >>> config["frame_height"]
        8.0
 
     """
@@ -65,7 +71,7 @@ def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
 
     temp = {k: v for k, v in temp.items() if k in original}
 
-    # In order to change the config that every module has acces to, use
+    # In order to change the config that every module has access to, use
     # update(), DO NOT use assignment.  Assigning config = some_dict will just
     # make the local variable named config point to a new dictionary, it will
     # NOT change the dictionary that every module has a reference to.

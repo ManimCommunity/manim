@@ -2,26 +2,25 @@
 
 __all__ = [
     "Code",
-    "hilite_me",
-    "insert_line_numbers_in_html",
 ]
 
 import html
 import os
+import re
+
+import numpy as np
+from pygments import highlight
+from pygments.formatters.html import HtmlFormatter
+from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
+from pygments.styles import get_all_styles
+
 from ...constants import *
 from ...mobject.geometry import Dot, RoundedRectangle
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
-from pygments.lexers import guess_lexer_for_filename
-
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
-from pygments.styles import get_all_styles
-
 from ...utils.color import WHITE
+from ...utils.deprecation import deprecated_params
 
 
 class Code(VGroup):
@@ -48,16 +47,56 @@ class Code(VGroup):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
+    Examples
+    --------
+
+    Normal usage::
+
+        listing = Code(
+            "helloworldcpp.cpp",
+            tab_width=4,
+            background_stroke_width=1,
+            background_stroke_color=WHITE,
+            insert_line_no=True,
+            style=Code.styles_list[15],
+            background="window",
+            language="cpp",
+        )
+
+    We can also render code passed as a string (but note that
+    the language has to be specified in this case):
+
+    .. manim:: CodeFromString
+        :save_last_frame:
+
+        class CodeFromString(Scene):
+            def construct(self):
+                code = '''from manim import Scene, Square
+
+        class FadeInSquare(Scene):
+            def construct(self):
+                s = Square()
+                self.play(FadeIn(s))
+                self.play(s.animate.scale(2))
+                self.wait()
+        '''
+                rendered_code = Code(code=code, tab_width=4, background="window",
+                                    language="Python", font="Monospace")
+                self.add(rendered_code)
+
     Parameters
     ----------
     file_name : :class:`str`
         Name of the code file to display.
+    code : :class:`str`
+        If ``file_name`` is not specified, a code string can be
+        passed directly.
     tab_width : :class:`int`, optional
         Number of space characters corresponding to a tab character. Defaults to 3.
     line_spacing : :class:`float`, optional
         Amount of space between lines in relation to font size. Defaults to 0.3, which means 30% of font size.
-    scale_factor : class:`float`, optional
-        A number which scales displayed code. Defaults to 0.5.
+    font_size : class:`float`, optional
+        A number which scales displayed code. Defaults to 24.
     font : :class:`str`, optional
          The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
     stroke_width : class:`float`, optional
@@ -100,29 +139,6 @@ class Code(VGroup):
     code : :class:`~.Paragraph`
         The highlighted code.
 
-    Examples
-    --------
-    Normal usage::
-
-        listing = Code(
-            "helloworldcpp.cpp",
-            tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=True,
-            style=Code.styles_list[15],
-            background="window",
-            language="cpp",
-        )
-
-    Remove unwanted invisible characters::
-
-        self.play(Transform(remove_invisible_chars(listing.code.chars[0:2]),
-                            remove_invisible_chars(listing.code.chars[3][0:3])))
-
-        remove_invisible_chars(listing.code)
-        remove_invisible_chars(listing)
-
     """
 
     # tuples in the form (name, aliases, filetypes, mimetypes)
@@ -133,12 +149,19 @@ class Code(VGroup):
     styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
+    @deprecated_params(
+        params="scale_factor",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         file_name=None,
+        code=None,
         tab_width=3,
         line_spacing=0.3,
-        scale_factor=0.5,
+        font_size=24,
         font="Monospac821 BT",
         stroke_width=0,
         margin=0.3,
@@ -153,18 +176,23 @@ class Code(VGroup):
         style="vim",
         language=None,
         generate_html_file=False,
-        **kwargs
+        **kwargs,
     ):
-        VGroup.__init__(
-            self,
+        super().__init__(
             stroke_width=stroke_width,
-            background_stroke_color=background_stroke_color,
-            background_stroke_width=background_stroke_width,
-            **kwargs
+            **kwargs,
         )
+        # deprecation handling
+        scale_factor = kwargs.pop("scale_factor", None)
+        if scale_factor:
+            self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
+        else:
+            self.font_size = font_size
+
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        self.scale_factor = scale_factor
         self.font = font
         self.margin = margin
         self.indentation_chars = indentation_chars
@@ -177,9 +205,20 @@ class Code(VGroup):
         self.language = language
         self.generate_html_file = generate_html_file
 
-        self.file_name = file_name or self.file_name
-        self.ensure_valid_file()
-        self.style = self.style.lower()
+        self.file_path = None
+        self.file_name = file_name
+        if self.file_name:
+            self.ensure_valid_file()
+            with open(self.file_path) as f:
+                self.code_string = f.read()
+        elif code:
+            self.code_string = code
+        else:
+            raise ValueError(
+                "Neither a code file nor a code string have been specified.",
+            )
+        if isinstance(self.style, str):
+            self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
         self.background_color = self.html_string[strati + 12 : strati + 19]
@@ -191,11 +230,11 @@ class Code(VGroup):
             self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
         if self.background == "rectangle":
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                foreground = VGroup(self.code, self.line_numbers)
             else:
-                forground = self.code
+                foreground = self.code
             rect = SurroundingRectangle(
-                forground,
+                foreground,
                 buff=self.margin,
                 color=self.background_color,
                 fill_color=self.background_color,
@@ -204,14 +243,14 @@ class Code(VGroup):
                 fill_opacity=1,
             )
             rect.round_corners(self.corner_radius)
-            self.background_mobject = VGroup(rect)
+            self.background_mobject = rect
         else:
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                foreground = VGroup(self.code, self.line_numbers)
             else:
-                forground = self.code
-            height = forground.get_height() + 0.1 * 3 + 2 * self.margin
-            width = forground.get_width() + 0.1 * 3 + 2 * self.margin
+                foreground = self.code
+            height = foreground.height + 0.1 * 3 + 2 * self.margin
+            width = foreground.width + 0.1 * 3 + 2 * self.margin
 
             rect = RoundedRectangle(
                 corner_radius=self.corner_radius,
@@ -230,24 +269,23 @@ class Code(VGroup):
             buttons = VGroup(red_button, yellow_button, green_button)
             buttons.shift(
                 UP * (height / 2 - 0.1 * 2 - 0.05)
-                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
+                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05),
             )
 
             self.background_mobject = VGroup(rect, buttons)
-            x = (height - forground.get_height()) / 2 - 0.1 * 3
-            self.background_mobject.shift(forground.get_center())
+            x = (height - foreground.height) / 2 - 0.1 * 3
+            self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, self.code, **kwargs
+            super().__init__(
+                self.background_mobject, self.line_numbers, self.code, **kwargs
             )
         else:
-            VGroup.__init__(
-                self,
+            super().__init__(
                 self.background_mobject,
                 Dot(fill_opacity=0, stroke_opacity=0),
                 self.code,
-                **kwargs
+                **kwargs,
             )
         self.move_to(np.array([0, 0, 0]))
 
@@ -263,10 +301,11 @@ class Code(VGroup):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        error = "From: {}, could not find {} at either of these locations: {}".format(
-            os.getcwd(), self.file_name, possible_paths
+        error = (
+            f"From: {os.getcwd()}, could not find {self.file_name} at either "
+            + f"of these locations: {possible_paths}"
         )
-        raise IOError(error)
+        raise OSError(error)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
@@ -281,13 +320,14 @@ class Code(VGroup):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
         line_numbers = Paragraph(
-            *[i for i in line_numbers_array],
+            *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
-            stroke_width=self.stroke_width
-        ).scale(self.scale_factor)
+            stroke_width=self.stroke_width,
+        )
         for i in line_numbers:
             i.set_color(self.default_color)
         return line_numbers
@@ -307,13 +347,14 @@ class Code(VGroup):
                 line_str = line_str + self.code_json[line_no][word_index][0]
             lines_text.append(self.tab_spaces[line_no] * "\t" + line_str)
         code = Paragraph(
-            *[i for i in lines_text],
+            *list(lines_text),
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
-            stroke_width=self.stroke_width
-        ).scale(self.scale_factor)
+            stroke_width=self.stroke_width,
+        )
         for line_no in range(code.__len__()):
             line = code.chars[line_no]
             line_char_index = self.tab_spaces[line_no]
@@ -327,11 +368,8 @@ class Code(VGroup):
 
     def gen_html_string(self):
         """Function to generate html string with code highlighted and stores in variable html_string."""
-        file = open(self.file_path, "r")
-        code_str = file.read()
-        file.close()
         self.html_string = hilite_me(
-            code_str,
+            self.code_string,
             self.language,
             self.style,
             self.insert_line_no,
@@ -342,16 +380,19 @@ class Code(VGroup):
 
         if self.generate_html_file:
             os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
+                os.path.join("assets", "codes", "generated_html_files"),
+                exist_ok=True,
             )
-            file = open(
+            with open(
                 os.path.join(
-                    "assets", "codes", "generated_html_files", self.file_name + ".html"
+                    "assets",
+                    "codes",
+                    "generated_html_files",
+                    self.file_name + ".html",
                 ),
                 "w",
-            )
-            file.write(self.html_string)
-            file.close()
+            ) as file:
+                file.write(self.html_string)
 
     def gen_code_json(self):
         """Function to background_color, generate code_json and tab_spaces from html_string.
@@ -375,7 +416,8 @@ class Code(VGroup):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
-                "</span>" + " " * i, " " * i + "</span>"
+                "</span>" + " " * i,
+                " " * i + "</span>",
             )
         self.html_string = self.html_string.replace("background-color:", "background:")
 
@@ -402,7 +444,7 @@ class Code(VGroup):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
                 indentation_chars_count = lines[line_index][:start_point].count(
-                    self.indentation_chars
+                    self.indentation_chars,
                 )
                 if (
                     starting_string.__len__()
@@ -500,7 +542,13 @@ class Code(VGroup):
 
 
 def hilite_me(
-    code, language, style, insert_line_no, divstyles, file_path, line_no_from
+    code,
+    language,
+    style,
+    insert_line_no,
+    divstyles,
+    file_path,
+    line_no_from,
 ):
     """Function to highlight code from string to html.
 
@@ -532,9 +580,13 @@ def hilite_me(
         cssstyles=defstyles + divstyles,
         prestyles="margin: 0",
     )
-    if language is None:
+    if language is None and file_path:
         lexer = guess_lexer_for_filename(file_path, code)
         html = highlight(code, lexer, formatter)
+    elif language is None:
+        raise ValueError(
+            "The code language has to be specified when rendering a code string",
+        )
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
@@ -567,9 +619,10 @@ def insert_line_numbers_in_html(html, line_no_from):
 
     html = html.replace(pre_close, "</pre></td></tr></table>")
     numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
-    format = "%" + str(len(str(numbers[-1]))) + "i"
-    lines = "\n".join(format % i for i in numbers)
+    format_lines = "%" + str(len(str(numbers[-1]))) + "i"
+    lines = "\n".join(format_lines % i for i in numbers)
     html = html.replace(
-        pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
+        pre_open,
+        "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open,
     )
     return html

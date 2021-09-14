@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920px"
+   height="1080px"
+   viewBox="0 0 1920 1080"
+   version="1.1"
+   id="SVGRoot"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="video_icon.svg">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="1216.0434"
+     inkscape:cy="480.932"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1227"
+     inkscape:window-height="762"
+     inkscape:window-x="1"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <defs
+     id="defs5935" />
+  <metadata
+     id="metadata5938">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <path
+       style="fill:#ff00ff;fill-opacity:1"
+       d="M 94.955078 0 C 42.350388 0 -9.4739031e-15 42.350388 0 94.955078 L 0 985.04492 C 0 1037.6496 42.350388 1080 94.955078 1080 L 1825.0449 1080 C 1877.6496 1080 1920 1037.6496 1920 985.04492 L 1920 94.955078 C 1920 42.350388 1877.6496 -9.4739031e-15 1825.0449 0 L 94.955078 0 z M 181.45898 54 L 1738.541 54 C 1785.8852 54 1824 92.114766 1824 139.45898 L 1824 940.54102 C 1824 987.88524 1785.8852 1026 1738.541 1026 L 181.45898 1026 C 134.11476 1026 96 987.88524 96 940.54102 L 96 139.45898 C 96 92.114766 134.11476 54 181.45898 54 z M 810 280.19141 L 810.16797 547.07617 L 810 799.80859 L 1041.0449 666.2207 L 1260 540 L 1028.7871 406.70312 L 810 280.19141 z "
+       id="rect7988" />
+  </g>
+</svg>

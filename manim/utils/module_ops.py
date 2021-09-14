@@ -1,23 +1,26 @@
-from .. import constants, logger, console, config
 import importlib.util
 import inspect
 import os
-from pathlib import Path
+import re
 import sys
 import types
-import re
+import warnings
+from pathlib import Path
+
+from .. import config, console, constants, logger
+from ..scene.scene_file_writer import SceneFileWriter
 
 
-def get_module(file_name):
+def get_module(file_name: Path):
     if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
-            "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):"
+            "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):",
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warn(
-                "Didn't find an import statement for Manim. Importing automatically..."
+            logger.warning(
+                "Didn't find an import statement for Manim. Importing automatically...",
             )
             code = "from manim import *\n" + code
         logger.info("Rendering animation from typed code...")
@@ -33,6 +36,13 @@ def get_module(file_name):
             if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
             module_name = ext.replace(os.sep, ".").split(".")[-1]
+
+            warnings.filterwarnings(
+                "default",
+                category=DeprecationWarning,
+                module=module_name,
+            )
+
             spec = importlib.util.spec_from_file_location(module_name, file_name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
@@ -78,30 +88,46 @@ def get_scenes_to_render(scene_classes):
             logger.error(constants.SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
-    return (
-        [scene_classes[0]]
-        if len(scene_classes) == 1
-        else prompt_user_for_choice(scene_classes)
-    )
+    if len(scene_classes) == 1:
+        config["scene_names"] = [scene_classes[0].__name__]
+        return [scene_classes[0]]
+    return prompt_user_for_choice(scene_classes)
 
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
-    for count, scene_class in enumerate(scene_classes):
-        count += 1  # start with 1 instead of 0
+    SceneFileWriter.force_output_as_scene_name = True
+    for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
         num_to_class[count] = scene_class
     try:
         user_input = console.input(
-            f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
+            f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]",
         )
-        return [
+        scene_classes = [
             num_to_class[int(num_str)]
             for num_str in re.split(r"\s*,\s*", user_input.strip())
         ]
+        config["scene_names"] = [scene_class.__name__ for scene_class in scene_classes]
+        return scene_classes
     except KeyError:
         logger.error(constants.INVALID_NUMBER_MESSAGE)
         sys.exit(2)
     except EOFError:
         sys.exit(1)
+    except ValueError:
+        logger.error("No scenes were selected. Exiting.")
+        sys.exit(1)
+
+
+def scene_classes_from_file(file_path, require_single_scene=False, full_list=False):
+    module = get_module(file_path)
+    all_scene_classes = get_scene_classes_from_module(module)
+    if full_list:
+        return all_scene_classes
+    scene_classes_to_render = get_scenes_to_render(all_scene_classes)
+    if require_single_scene:
+        assert len(scene_classes_to_render) == 1
+        return scene_classes_to_render[0]
+    return scene_classes_to_render

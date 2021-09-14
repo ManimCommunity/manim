@@ -1,8 +1,8 @@
 """Helpers for dev to set up new tests that use videos."""
 
+import json
 import os
 import subprocess
-import json
 
 from manim import logger
 
@@ -38,7 +38,7 @@ def get_config_from_video(path_to_video):
 
 def save_control_data_from_video(path_to_video, name):
     """Helper used to set up a new test that will compare videos. This will create a new .json file in control_data/videos_data that contains
-    informations tested of the video, including its hash. Refer to the wiki for more informations.
+    information tested of the video, including its hash. Refer to the wiki for more information.
 
     Parameters
     ----------
@@ -55,5 +55,6 @@ def save_control_data_from_video(path_to_video, name):
         "config": json.loads(config_video)["streams"][0],
     }
     path_saved = os.path.join(path_control_data, f"{name}.json")
-    json.dump(data, open(path_saved, "w"), indent=4)
+    with open(path_saved, "w") as f:
+        json.dump(data, f, indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")

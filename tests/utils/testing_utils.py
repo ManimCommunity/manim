@@ -1,5 +1,5 @@
-import sys
 import inspect
+import sys
 
 
 def get_scenes_to_test(module_name):

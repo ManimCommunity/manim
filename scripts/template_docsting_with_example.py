@@ -6,8 +6,6 @@ class SomeClass:
 
     A short paragraph providing more details.
 
-    Deprecation warning
-
     Extended Summary
 
     Parameters
@@ -60,7 +58,7 @@ class SomeClass:
 
     See Also
     --------
-    :class:`ShowCreation`, :class:`~.ShowPassingFlash`
+    :class:`Create`, :class:`~.ShowPassingFlash`
 
     References
     ----------

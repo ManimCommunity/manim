@@ -12,8 +12,10 @@ See :doc:`/tutorials/configuration` for an introduction to Manim's configuration
 import argparse
 import configparser
 import copy
+import errno
 import logging
 import os
+import re
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -24,6 +26,7 @@ import numpy as np
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
@@ -114,13 +117,6 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
 
 def _determine_quality(args: argparse.Namespace) -> str:
-    old_qualities = {
-        "k": "fourk_quality",
-        "e": "high_quality",
-        "m": "medium_quality",
-        "l": "low_quality",
-    }
-
     for quality in constants.QUALITIES:
         if quality == constants.DEFAULT_QUALITY:
             # Skip so we prioritize anything that overwrites the default quality.
@@ -131,13 +127,6 @@ def _determine_quality(args: argparse.Namespace) -> str:
             and args.quality == constants.QUALITIES[quality]["flag"]
         ):
             return quality
-
-    for quality in old_qualities:
-        if getattr(args, quality, None):
-            logging.getLogger("manim").warning(
-                f"Option -{quality} is deprecated please use the --quality/-q flag."
-            )
-            return old_qualities[quality]
 
     return constants.DEFAULT_QUALITY
 
@@ -170,11 +159,11 @@ class ManimConfig(MutableMapping):
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-       >>> from manim import config, WHITE
-       >>> config.background_color = WHITE
-       >>> config['background_color'] = WHITE
+        >>> from manim import config, WHITE
+        >>> config.background_color = WHITE
+        >>> config["background_color"] = WHITE
 
     The former is preferred; the latter is provided mostly for backwards
     compatibility.
@@ -182,7 +171,7 @@ class ManimConfig(MutableMapping):
     The config options are designed to keep internal consistency.  For example,
     setting ``frame_y_radius`` will affect ``frame_height``:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> config.frame_height
         8.0
@@ -227,7 +216,7 @@ class ManimConfig(MutableMapping):
 
         manim scene.py -c BLUE
 
-    will set the background color to BLUE, regardless of the conents of
+    will set the background color to BLUE, regardless of the contents of
     ``manim.cfg``.
 
     Finally, any programmatic changes made within the scene script itself will
@@ -237,9 +226,12 @@ class ManimConfig(MutableMapping):
     .. code-block:: python
 
         from manim import *
+
         config.background_color = RED
+
+
         class MyScene(Scene):
-            # ...
+            ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -252,7 +244,9 @@ class ManimConfig(MutableMapping):
         "background_opacity",
         "custom_folders",
         "disable_caching",
+        "disable_caching_warning",
         "ffmpeg_loglevel",
+        "format",
         "flush_cache",
         "frame_height",
         "frame_rate",
@@ -262,17 +256,19 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
-        "js_renderer_path",
-        "leave_progress_bars",
+        "media_width",
+        "webgl_renderer_path",
         "log_dir",
         "log_to_file",
         "max_files_cached",
         "media_dir",
         "movie_file_extension",
+        "notify_outdated_version",
+        "output_file",
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
-        "png_mode",
+        "plugins",
         "preview",
         "progress_bar",
         "save_as_gif",
@@ -280,16 +276,26 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
-        "sound",
         "tex_dir",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
-        "use_js_renderer",
+        "renderer",
+        "use_opengl_renderer",
+        "use_webgl_renderer",
+        "enable_gui",
+        "gui_location",
+        "use_projection_fill_shaders",
+        "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
+        "fullscreen",
+        "window_position",
+        "window_size",
+        "window_monitor",
         "write_all",
         "write_to_movie",
+        "zero_pad",
     }
 
     def __init__(self) -> None:
@@ -392,7 +398,7 @@ class ManimConfig(MutableMapping):
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
-        # vaulues read directly from it.
+        # values read directly from it.
         c._d = copy.deepcopy(self._d, memo)
         return c
 
@@ -411,6 +417,12 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be boolean")
 
+    def _set_tuple(self, key: str, val: tuple) -> None:
+        if isinstance(val, tuple):
+            self._d[key] = val
+        else:
+            raise ValueError(f"{key} must be tuple")
+
     def _set_str(self, key: str, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is a string."""
         if isinstance(val, str):
@@ -427,16 +439,31 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be {lo} <= {key} <= {hi}")
 
+    def _set_int_between(self, key: str, val: int, lo: int, hi: int) -> None:
+        """Set ``key`` to ``val`` if lo <= val <= hi."""
+        if lo <= val <= hi:
+            self._d[key] = val
+        else:
+            raise ValueError(
+                f"{key} must be an integer such that {lo} <= {key} <= {hi}",
+            )
+
     def _set_pos_number(self, key: str, val: int, allow_inf: bool) -> None:
         """Set ``key`` to ``val`` if ``val`` is a positive integer."""
         if isinstance(val, int) and val > -1:
             self._d[key] = val
-        elif allow_inf and (val == -1 or val == float("inf")):
+        elif allow_inf and val in [-1, float("inf")]:
             self._d[key] = float("inf")
         else:
             raise ValueError(
-                f"{key} must be a non-negative integer (use -1 for infinity)"
+                f"{key} must be a non-negative integer (use -1 for infinity)",
             )
+
+    def __repr__(self) -> str:
+        rep = ""
+        for k, v in sorted(self._d.items(), key=lambda x: x[0]):
+            rep += f"{k}: {v}, "
+        return rep
 
     # builders
     def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
@@ -450,7 +477,7 @@ class ManimConfig(MutableMapping):
         ----------
         parser : :class:`ConfigParser`
             An object reflecting the contents of one or many ``.cfg`` files.  In
-            particular, it may reflect the contents of mulitple files that have
+            particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
 
         Returns
@@ -493,6 +520,7 @@ class ManimConfig(MutableMapping):
 
         # boolean keys
         for key in [
+            "notify_outdated_version",
             "write_to_movie",
             "save_last_frame",
             "write_all",
@@ -500,14 +528,17 @@ class ManimConfig(MutableMapping):
             "save_as_gif",
             "preview",
             "show_in_file_browser",
-            "progress_bar",
-            "sound",
-            "leave_progress_bars",
             "log_to_file",
             "disable_caching",
+            "disable_caching_warning",
             "flush_cache",
             "custom_folders",
-            "use_js_renderer",
+            "use_opengl_renderer",
+            "use_webgl_renderer",
+            "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -515,10 +546,12 @@ class ManimConfig(MutableMapping):
         for key in [
             "from_animation_number",
             "upto_animation_number",
-            "frame_rate",
             "max_files_cached",
+            # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "window_monitor",
+            "zero_pad",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -535,30 +568,61 @@ class ManimConfig(MutableMapping):
             "partial_movie_dir",
             "input_file",
             "output_file",
-            "png_mode",
             "movie_file_extension",
             "background_color",
-            "js_renderer_path",
+            "renderer",
+            "webgl_renderer_path",
+            "window_position",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
         # float keys
-        for key in ["background_opacity"]:
+        for key in [
+            "background_opacity",
+            "frame_rate",
+            # the next two are floats but have their own logic, applied later
+            # "frame_width",
+            # "frame_height",
+        ]:
             setattr(self, key, parser["CLI"].getfloat(key))
 
-        # other logic
-        self["frame_height"] = 8.0
-        self["frame_width"] = (
-            self["frame_height"] * self["pixel_width"] / self["pixel_height"]
-        )
+        # tuple keys
+        gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
+        setattr(self, "gui_location", gui_location)
 
+        window_size = parser["CLI"][
+            "window_size"
+        ]  # if not "default", get a tuple of the position
+        if window_size != "default":
+            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+        setattr(self, "window_size", window_size)
+
+        # plugins
+        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
+        # the next two must be set AFTER digesting pixel_width and pixel_height
+        self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
+        width = parser["CLI"].getfloat("frame_width", None)
+        if width is None:
+            self["frame_width"] = self["frame_height"] * self["aspect_ratio"]
+        else:
+            self["frame_width"] = width
+
+        # other logic
         val = parser["CLI"].get("tex_template_file")
         if val:
-            setattr(self, "tex_template_file", val)
+            self.tex_template_file = val
+
+        val = parser["CLI"].get("progress_bar")
+        if val:
+            setattr(self, "progress_bar", val)
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
-            setattr(self, "ffmpeg_loglevel", val)
+            self.ffmpeg_loglevel = val
+
+        val = parser["jupyter"].get("media_width")
+        if val:
+            setattr(self, "media_width", val)
 
         return self
 
@@ -592,26 +656,37 @@ class ManimConfig(MutableMapping):
         if args.config_file:
             self.digest_file(args.config_file)
 
-        self.input_file = args.file
+        # If args.file is `-`, the animation code has to be taken from STDIN, so the
+        # input file path shouldn't be absolute, since that file won't be read.
+        self.input_file = Path(args.file).absolute() if args.file != "-" else args.file
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
         for key in [
+            "notify_outdated_version",
             "preview",
             "show_in_file_browser",
-            "sound",
-            "leave_progress_bars",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
             "save_as_gif",
             "write_all",
             "disable_caching",
+            "format",
             "flush_cache",
+            "progress_bar",
             "transparent",
             "scene_names",
             "verbosity",
+            "renderer",
             "background_color",
+            "use_opengl_renderer",
+            "use_webgl_renderer",
+            "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
+            "zero_pad",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -621,9 +696,8 @@ class ManimConfig(MutableMapping):
                     self[key] = attr
 
         # dry_run is special because it can only be set to True
-        if hasattr(args, "dry_run"):
-            if getattr(args, "dry_run"):
-                self["dry_run"] = True
+        if getattr(args, "dry_run", False):
+            self["dry_run"] = True
 
         for key in [
             "media_dir",  # always set this one first
@@ -637,34 +711,32 @@ class ManimConfig(MutableMapping):
                 if attr is not None:
                     self[key] = attr
 
-        # The -s (--save_last_frame) flag invalidates -w (--write_to_movie).
         if self["save_last_frame"]:
             self["write_to_movie"] = False
 
         # Handle the -n flag.
         nflag = args.from_animation_number
-        if nflag is not None:
-            if "," in nflag:
-                start, end = nflag.split(",")
-                self.from_animation_number = int(start)
-                self.upto_animation_number = int(end)
-            else:
-                self.from_animation_number = int(nflag)
+        if nflag:
+            self.from_animation_number = nflag[0]
+            try:
+                self.upto_animation_number = nflag[1]
+            except Exception:
+                logging.getLogger("manim").info(
+                    f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards...",
+                )
 
         # Handle the quality flags
         self.quality = _determine_quality(args)
 
         # Handle the -r flag.
         rflag = args.resolution
-        if rflag is not None:
-            try:
-                h, w = rflag.split(",")
-                self.pixel_height = int(h)
-                self.pixel_width = int(w)
-            except ValueError:
-                raise ValueError(
-                    f'invalid argument {rflag} for -r flag (must have a comma ",")'
-                )
+        if rflag:
+            self.pixel_width = int(rflag[0])
+            self.pixel_height = int(rflag[1])
+
+        fps = args.frame_rate
+        if fps:
+            self.frame_rate = float(fps)
 
         # Handle --custom_folders
         if args.custom_folders:
@@ -678,9 +750,21 @@ class ManimConfig(MutableMapping):
                 "partial_movie_dir",
             ]:
                 self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the deaful.cfg file
+            # --media_dir overrides the default.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
+
+        # Handle --tex_template
+        if args.tex_template:
+            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+
+        if self.renderer == "opengl" and getattr(args, "write_to_movie") is None:
+            # --write_to_movie was not passed on the command line, so don't generate video.
+            self["write_to_movie"] = False
+
+        # Handle --gui_location flag.
+        if getattr(args, "gui_location") is not None:
+            self.gui_location = args.gui_location
 
         return self
 
@@ -715,12 +799,19 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(
+                errno.ENOENT,
+                "Error: --config_file could not find a valid config file.",
+                filename,
+            )
+
         if filename:
             return self.digest_parser(make_config_parser(filename))
 
     # config options are properties
     preview = property(
-        lambda self: self._d["preview"],
+        lambda self: self._d["preview"] or self._d["enable_gui"],
         lambda self, val: self._set_boolean("preview", val),
         doc="Whether to play the rendered movie (-p).",
     )
@@ -733,14 +824,12 @@ class ManimConfig(MutableMapping):
 
     progress_bar = property(
         lambda self: self._d["progress_bar"],
-        lambda self, val: self._set_boolean("progress_bar", val),
+        lambda self, val: self._set_from_list(
+            "progress_bar",
+            val,
+            ["none", "display", "leave"],
+        ),
         doc="Whether to show progress bars while rendering animations.",
-    )
-
-    leave_progress_bars = property(
-        lambda self: self._d["leave_progress_bars"],
-        lambda self, val: self._set_boolean("leave_progress_bars", val),
-        doc="Whether to leave the progress bar for each animation.",
     )
 
     @property
@@ -752,14 +841,15 @@ class ManimConfig(MutableMapping):
     def log_to_file(self, val: str) -> None:
         self._set_boolean("log_to_file", val)
         if val:
-            if not os.path.exists(self["log_dir"]):
-                os.makedirs(self["log_dir"])
+            log_dir = self.get_dir("log_dir")
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
 
-    sound = property(
-        lambda self: self._d["sound"],
-        lambda self, val: self._set_boolean("sound", val),
-        doc="Whether to play a sound to notify when a scene is rendered (no flag).",
+    notify_outdated_version = property(
+        lambda self: self._d["notify_outdated_version"],
+        lambda self, val: self._set_boolean("notify_outdated_version", val),
+        doc="Whether to notify if there is a version update available.",
     )
 
     write_to_movie = property(
@@ -807,12 +897,38 @@ class ManimConfig(MutableMapping):
         )
         logging.getLogger("manim").setLevel(val)
 
+    @property
+    def format(self):
+        """File format; "png", "gif", "mp4", "webm" or "mov"."""
+        return self._d["format"]
+
+    @format.setter
+    def format(self, val: str) -> None:
+        """File format the renderer will output."""
+        self._set_from_list(
+            "format",
+            val,
+            [None, "png", "gif", "mp4", "mov", "webm"],
+        )
+        if self.format == "webm":
+            logging.getLogger("manim").warning(
+                "Output format set as webm, this can be slower than other formats",
+            )
+
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
         lambda self, val: self._set_from_list(
-            "ffmpeg_loglevel", val, ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            "ffmpeg_loglevel",
+            val,
+            ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    media_width = property(
+        lambda self: self._d["media_width"],
+        lambda self, val: self._d.__setitem__("media_width", val),
+        doc="Media width in Jupyter notebook",
     )
 
     pixel_width = property(
@@ -885,7 +1001,7 @@ class ManimConfig(MutableMapping):
     frame_rate = property(
         lambda self: self._d["frame_rate"],
         lambda self, val: self._d.__setitem__("frame_rate", val),
-        doc="Frame rate in frames per second (-q).",
+        doc="Frame rate in frames per second.",
     )
 
     background_color = property(
@@ -912,6 +1028,11 @@ class ManimConfig(MutableMapping):
         doc="Maximum number of files cached.  Use -1 for infinity (no flag).",
     )
 
+    window_monitor = property(
+        lambda self: self._d["window_monitor"],
+        lambda self, val: self._set_pos_number("window_monitor", val, True),
+        doc="The monitor on which the scene will be rendered",
+    )
     flush_cache = property(
         lambda self: self._d["flush_cache"],
         lambda self, val: self._set_boolean("flush_cache", val),
@@ -924,18 +1045,20 @@ class ManimConfig(MutableMapping):
         doc="Whether to use scene caching.",
     )
 
-    png_mode = property(
-        lambda self: self._d["png_mode"],
-        lambda self, val: self._set_from_list("png_mode", val, ["RGB", "RGBA"]),
-        doc="Either RGA (no transparency) or RGBA (with transparency) (no flag).",
+    disable_caching_warning = property(
+        lambda self: self._d["disable_caching_warning"],
+        lambda self, val: self._set_boolean("disable_caching_warning", val),
+        doc="Whether a warning is raised if there are too much submobjects to hash.",
     )
 
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
-            "movie_file_extension", val, [".mp4", ".mov"]
+            "movie_file_extension",
+            val,
+            [".mp4", ".mov", ".webm"],
         ),
-        doc="Either .mp4 or .mov (no flag).",
+        doc="Either .mp4, .webm or .mov.",
     )
 
     background_opacity = property(
@@ -979,14 +1102,8 @@ class ManimConfig(MutableMapping):
 
     @transparent.setter
     def transparent(self, val: bool) -> None:
-        if val:
-            self.png_mode = "RGBA"
-            self.movie_file_extension = ".mov"
-            self.background_opacity = 0.0
-        else:
-            self.png_mode = "RGB"
-            self.movie_file_extension = ".mp4"
-            self.background_opacity = 1.0
+        self._d["background_opacity"] = float(not val)
+        self.resolve_movie_file_extension(val)
 
     @property
     def dry_run(self):
@@ -1011,31 +1128,153 @@ class ManimConfig(MutableMapping):
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
                 "False.  Instead, try setting each option "
-                "individually. (write_to_movie, write_alll, "
-                "save_last_frame, save_pngs, or save_as_gif)"
+                "individually. (write_to_movie, write_all, "
+                "save_last_frame, save_pngs, or save_as_gif)",
             )
 
     @property
-    def use_js_renderer(self):
-        """Whether to use JS renderer or not (default)."""
-        self._d["use_js_renderer"]
+    def renderer(self):
+        """Renderer: "cairo", "opengl", "webgl"""
+        return self._d["renderer"]
 
-    @use_js_renderer.setter
-    def use_js_renderer(self, val: bool) -> None:
-        self._d["use_js_renderer"] = val
+    @renderer.setter
+    def renderer(self, val: str) -> None:
+        """Renderer for animations."""
+        try:
+            from ..mobject.mobject import Mobject
+            from ..mobject.opengl_compatibility import ConvertToOpenGL
+            from ..mobject.opengl_mobject import OpenGLMobject
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+            from ..mobject.types.vectorized_mobject import VMobject
+
+            for cls in ConvertToOpenGL._converted_classes:
+                if val == "opengl":
+                    conversion_dict = {
+                        Mobject: OpenGLMobject,
+                        VMobject: OpenGLVMobject,
+                    }
+                else:
+                    conversion_dict = {
+                        OpenGLMobject: Mobject,
+                        OpenGLVMobject: VMobject,
+                    }
+
+                cls.__bases__ = tuple(
+                    conversion_dict.get(base, base) for base in cls.__bases__
+                )
+        except ImportError:
+            # The renderer is set during the initial import of the
+            # library for the first time. The imports above cause an
+            # ImportError due to circular imports. However, the
+            # metaclass sets stuff up correctly in this case, so we
+            # can just do nothing.
+            pass
+
+        self._set_from_list(
+            "renderer",
+            val,
+            ["cairo", "opengl", "webgl"],
+        )
+
+    @property
+    def use_opengl_renderer(self):
+        """Whether or not to use the OpenGL renderer."""
+        return self._d["use_opengl_renderer"]
+
+    @use_opengl_renderer.setter
+    def use_opengl_renderer(self, val: bool) -> None:
+        self._d["use_opengl_renderer"] = val
         if val:
+            self._set_from_list(
+                "renderer",
+                "opengl",
+                ["cairo", "opengl", "webgl"],
+            )
+
+    @property
+    def use_webgl_renderer(self):
+        """Whether or not to use WebGL renderer."""
+        return self._d["use_webgl_renderer"]
+
+    @use_webgl_renderer.setter
+    def use_webgl_renderer(self, val: bool) -> None:
+        self._d["use_webgl_renderer"] = val
+        if val:
+            self._set_from_list(
+                "webgl",
+                "renderer",
+                ["cairo", "opengl", "webgl"],
+            )
             self["disable_caching"] = True
 
-    js_renderer_path = property(
-        lambda self: self._d["js_renderer_path"],
-        lambda self, val: self._d.__setitem__("js_renderer_path", val),
-        doc="Path to JS renderer.",
+    webgl_renderer_path = property(
+        lambda self: self._d["webgl_renderer_path"],
+        lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
+        doc="Path to WebGL renderer.",
     )
 
     media_dir = property(
         lambda self: self._d["media_dir"],
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    window_position = property(
+        lambda self: self._d["window_position"],
+        lambda self, val: self._d.__setitem__("window_position", val),
+        doc="Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'",
+    )
+
+    window_size = property(
+        lambda self: self._d["window_size"],
+        lambda self, val: self._d.__setitem__("window_size", val),
+        doc="The size of the opengl window. 'default' to automatically scale the window based on the display monitor.",
+    )
+
+    def resolve_movie_file_extension(self, is_transparent):
+        if is_transparent:
+            self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
+        elif self.format == "webm":
+            self.movie_file_extension = ".webm"
+        elif self.format == "mov":
+            self.movie_file_extension = ".mov"
+        else:
+            self.movie_file_extension = ".mp4"
+
+    enable_gui = property(
+        lambda self: self._d["enable_gui"],
+        lambda self, val: self._set_boolean("enable_gui", val),
+        doc="Enable GUI interaction.",
+    )
+
+    gui_location = property(
+        lambda self: self._d["gui_location"],
+        lambda self, val: self._set_tuple("gui_location", val),
+        doc="Enable GUI interaction.",
+    )
+
+    fullscreen = property(
+        lambda self: self._d["fullscreen"],
+        lambda self, val: self._set_boolean("fullscreen", val),
+        doc="Expand the window to its maximum possible size.",
+    )
+
+    use_projection_fill_shaders = property(
+        lambda self: self._d["use_projection_fill_shaders"],
+        lambda self, val: self._set_boolean("use_projection_fill_shaders", val),
+        doc="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
+    )
+
+    use_projection_stroke_shaders = property(
+        lambda self: self._d["use_projection_stroke_shaders"],
+        lambda self, val: self._set_boolean("use_projection_stroke_shaders", val),
+        doc="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+    )
+
+    zero_pad = property(
+        lambda self: self._d["zero_pad"],
+        lambda self, val: self._set_int_between("zero_pad", val, 0, 9),
+        doc="PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum).",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
@@ -1080,7 +1319,7 @@ class ManimConfig(MutableMapping):
         i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In
         order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import config
             >>> config.tex_dir
@@ -1093,9 +1332,9 @@ class ManimConfig(MutableMapping):
         Resolving directories is done in a lazy way, at the last possible
         moment, to reflect any changes in other config options:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
-            >>> config.media_dir = 'my_media_dir'
+            >>> config.media_dir = "my_media_dir"
             >>> config.get_dir("tex_dir").as_posix()
             'my_media_dir/Tex'
 
@@ -1104,7 +1343,7 @@ class ManimConfig(MutableMapping):
         includes the name of the input file and the video quality
         (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.video_dir
             '{media_dir}/videos/{module_name}/{quality}'
@@ -1112,7 +1351,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
             >>> config.get_dir("video_dir", module_name="myfile").as_posix()
-            'my_media_dir/videos/myfile/1080p60'
+            'my_media_dir/videos/myfile/1080p60.0'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1121,27 +1360,29 @@ class ManimConfig(MutableMapping):
         ``partial_movie_dir`` depends on ``video_dir``, which in turn depends
         on ``media_dir``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.partial_movie_dir
             '{video_dir}/partial_movie_files/{scene_name}'
             >>> config.get_dir("partial_movie_dir")
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
-            >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
-            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
+            >>> config.get_dir(
+            ...     "partial_movie_dir", module_name="myfile", scene_name="myscene"
+            ... ).as_posix()
+            'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
         :meth:`ManimConfig.get_dir` via ``kwargs``.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.media_dir = "{dir1}/{dir2}"
             >>> config.get_dir("media_dir")
             Traceback (most recent call last):
             KeyError: 'media_dir {dir1}/{dir2} requires the following keyword arguments: dir1'
-            >>> config.get_dir("media_dir", dir1='foo', dir2='bar').as_posix()
+            >>> config.get_dir("media_dir", dir1="foo", dir2="bar").as_posix()
             'foo/bar'
             >>> config.media_dir = "./media"
             >>> config.get_dir("media_dir").as_posix()
@@ -1164,7 +1405,7 @@ class ManimConfig(MutableMapping):
             raise KeyError(
                 "must pass one of "
                 "{media,video,images,text,tex,log}_dir "
-                "or {input,output}_file"
+                "or {input,output}_file",
             )
 
         dirs.remove(key)  # a path cannot contain itself
@@ -1181,9 +1422,8 @@ class ManimConfig(MutableMapping):
                 raise KeyError(
                     f"{key} {self._d[key]} requires the following "
                     + "keyword arguments: "
-                    + " ".join(exc.args)
+                    + " ".join(exc.args),
                 ) from exc
-
         return Path(path) if path else None
 
     def _set_dir(self, key: str, val: typing.Union[str, Path]):
@@ -1266,7 +1506,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplate()
+                self._tex_template = TexTemplateLibrary.default.copy()
         return self._tex_template
 
     @tex_template.setter
@@ -1284,7 +1524,7 @@ class ManimConfig(MutableMapping):
         if val:
             if not os.access(val, os.R_OK):
                 logging.getLogger("manim").warning(
-                    f"Custom TeX template {val} not found or not readable."
+                    f"Custom TeX template {val} not found or not readable.",
                 )
             else:
                 self._d["tex_template_file"] = Path(val)
@@ -1292,6 +1532,15 @@ class ManimConfig(MutableMapping):
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
             self._tex_template = TexTemplate()  # but don't use it
+
+    @property
+    def plugins(self):
+        """List of plugins to enable."""
+        return self._d["plugins"]
+
+    @plugins.setter
+    def plugins(self, value):
+        self._d["plugins"] = value
 
 
 class ManimFrame(Mapping):

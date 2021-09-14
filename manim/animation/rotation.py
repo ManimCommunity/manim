@@ -3,6 +3,7 @@
 __all__ = ["Rotating", "Rotate"]
 
 import typing
+from typing import Callable, Optional, Sequence
 
 import numpy as np
 
@@ -21,12 +22,10 @@ class Rotating(Animation):
         mobject: "Mobject",
         axis: np.ndarray = OUT,
         radians: np.ndarray = TAU,
-        about_point: typing.Optional[np.ndarray] = None,
-        about_edge: typing.Optional[np.ndarray] = None,
+        about_point: Optional[np.ndarray] = None,
+        about_edge: Optional[np.ndarray] = None,
         run_time: float = 5,
-        rate_func: typing.Callable[
-            [typing.Union[np.ndarray, float]], typing.Union[np.ndarray, float]
-        ] = linear,
+        rate_func: Callable[[float], float] = linear,
         **kwargs
     ) -> None:
         self.axis = axis
@@ -51,8 +50,8 @@ class Rotate(Transform):
         mobject: "Mobject",
         angle: np.ndarray = PI,
         axis: np.ndarray = OUT,
-        about_point: typing.Optional[np.ndarray] = None,
-        about_edge: typing.Optional[np.ndarray] = None,
+        about_point: Optional[Sequence[float]] = None,
+        about_edge: Optional[Sequence[float]] = None,
         **kwargs
     ) -> None:
         if "path_arc" not in kwargs:
@@ -63,7 +62,9 @@ class Rotate(Transform):
         self.axis = axis
         self.about_edge = about_edge
         self.about_point = about_point
-        super().__init__(mobject, **kwargs)
+        if self.about_point is None:
+            self.about_point = mobject.get_center()
+        super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
 
     def create_target(self) -> "Mobject":
         target = self.mobject.copy()

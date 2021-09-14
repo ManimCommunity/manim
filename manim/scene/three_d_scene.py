@@ -3,19 +3,23 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+from typing import Iterable, Optional, Sequence, Union
+
+import numpy as np
+
 from .. import config
+from ..animation.animation import Animation
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
+from ..mobject.mobject import Mobject
 from ..mobject.three_dimensions import Sphere
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
-import numpy as np
 
 
 class ThreeDScene(Scene):
@@ -42,7 +46,15 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def set_camera_orientation(self, phi=None, theta=None, distance=None, gamma=None):
+    def set_camera_orientation(
+        self,
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+    ):
         """
         This method sets the orientation of the camera in the scene.
 
@@ -59,6 +71,13 @@ class ThreeDScene(Scene):
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
+
+        zoom : float, optional
+            The zoom factor of the scene.
+
+        frame_center : list, tuple or np.array, optional
+            The new center of the camera frame in cartesian coordinates.
+
         """
         if phi is not None:
             self.renderer.camera.set_phi(phi)
@@ -68,8 +87,12 @@ class ThreeDScene(Scene):
             self.renderer.camera.set_distance(distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
+        if zoom is not None:
+            self.renderer.camera.set_zoom(zoom)
+        if frame_center is not None:
+            self.renderer.camera._frame_center.move_to(frame_center)
 
-    def begin_ambient_camera_rotation(self, rate=0.02):
+    def begin_ambient_camera_rotation(self, rate=0.02, about="theta"):
         """
         This method begins an ambient rotation of the camera about the Z_AXIS,
         in the anticlockwise direction
@@ -79,32 +102,53 @@ class ThreeDScene(Scene):
         rate : int or float, optional
             The rate at which the camera should rotate about the Z_AXIS.
             Negative rate means clockwise rotation.
+        about: (str)
+            one of 3 options: ["theta", "phi", "gamma"]. defaults to theta.
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        self.renderer.camera.theta_tracker.add_updater(
-            lambda m, dt: m.increment_value(rate * dt)
-        )
-        self.add(self.renderer.camera.theta_tracker)
+        if about.lower() == "phi":
+            x = self.renderer.camera.phi_tracker
+        elif about.lower() == "gamma":
+            x = self.renderer.camera.gamma_tracker
+        elif about.lower() == "theta":
+            x = self.renderer.camera.theta_tracker
+        else:
+            raise ValueError("Invalid ambient rotation angle.")
 
-    def stop_ambient_camera_rotation(self):
+        x.add_updater(lambda m, dt: m.increment_value(rate * dt))
+        self.add(x)
+
+    def stop_ambient_camera_rotation(self, about="theta"):
         """
         This method stops all ambient camera rotation.
         """
-        self.renderer.camera.theta_tracker.clear_updaters()
-        self.remove(self.renderer.camera.theta_tracker)
+        if about.lower() == "phi":
+            x = self.renderer.camera.phi_tracker
+        elif about.lower() == "gamma":
+            x = self.renderer.camera.gamma_tracker
+        elif about.lower() == "theta":
+            x = self.renderer.camera.theta_tracker
+        else:
+            raise ValueError("Invalid ambient rotation angle.")
+
+        x.clear_updaters()
+        self.remove(x)
 
     def begin_3dillusion_camera_rotation(
-        self, rate=1, origin_theta=-60 * DEGREES, origin_phi=75 * DEGREES
+        self,
+        rate=1,
+        origin_theta=-60 * DEGREES,
+        origin_phi=75 * DEGREES,
     ):
         val_tracker_theta = ValueTracker(0)
 
-        def uptate_theta(m, dt):
+        def update_theta(m, dt):
             val_tracker_theta.increment_value(dt * rate)
             val_for_left_right = 0.2 * np.sin(val_tracker_theta.get_value())
             return m.set_value(origin_theta + val_for_left_right)
 
-        self.renderer.camera.theta_tracker.add_updater(uptate_theta)
+        self.renderer.camera.theta_tracker.add_updater(update_theta)
         self.add(self.renderer.camera.theta_tracker)
 
         val_tracker_phi = ValueTracker(0)
@@ -128,12 +172,13 @@ class ThreeDScene(Scene):
 
     def move_camera(
         self,
-        phi=None,
-        theta=None,
-        distance=None,
-        gamma=None,
-        frame_center=None,
-        added_anims=[],
+        phi: Optional[float] = None,
+        theta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        zoom: Optional[float] = None,
+        distance: Optional[float] = None,
+        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        added_anims: Iterable["Animation"] = [],
         **kwargs,
     ):
         """
@@ -154,8 +199,11 @@ class ThreeDScene(Scene):
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
 
+        zoom : int or float, optional
+            The zoom factor of the camera.
+
         frame_center : list, tuple or np.array, optional
-            The new center of the camera frame in cartesian coordinates
+            The new center of the camera frame in cartesian coordinates.
 
         added_anims : list, optional
             Any other animations to be played at the same time.
@@ -167,16 +215,26 @@ class ThreeDScene(Scene):
             (theta, self.renderer.camera.theta_tracker),
             (distance, self.renderer.camera.distance_tracker),
             (gamma, self.renderer.camera.gamma_tracker),
+            (zoom, self.renderer.camera.zoom_tracker),
         ]
         for value, tracker in value_tracker_pairs:
             if value is not None:
                 anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
         if frame_center is not None:
             anims.append(
-                ApplyMethod(self.renderer.camera._frame_center.move_to, frame_center)
+                ApplyMethod(
+                    self.renderer.camera._frame_center.move_to, frame_center, **kwargs
+                ),
             )
 
         self.play(*anims + added_anims)
+
+        # These lines are added to improve performance. If manim thinks that frame_center is moving,
+        # it is required to redraw every object. These lines remove frame_center from the Scene once
+        # its animation is done, ensuring that manim does not think that it is moving. Since the
+        # frame_center is never actually drawn, this shouldn't break anything.
+        if frame_center is not None:
+            self.remove(self.renderer.camera._frame_center)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -189,7 +247,9 @@ class ThreeDScene(Scene):
             The animations whose mobjects will be checked.
         """
         moving_mobjects = Scene.get_moving_mobjects(self, *animations)
-        camera_mobjects = self.renderer.camera.get_value_trackers()
+        camera_mobjects = self.renderer.camera.get_value_trackers() + [
+            self.renderer.camera._frame_center,
+        ]
         if any([cm in moving_mobjects for cm in camera_mobjects]):
             return self.mobjects
         return moving_mobjects
@@ -219,7 +279,7 @@ class ThreeDScene(Scene):
         """
         This method is used to prevent the rotation and movement
         of mobjects as the camera moves around. The mobject is
-        essentially overlayed, and is not impacted by the camera's
+        essentially overlaid, and is not impacted by the camera's
         movement in any way.
 
         Parameters
@@ -270,7 +330,7 @@ class ThreeDScene(Scene):
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
-            self.default_camera_orientation_kwargs
+            self.default_camera_orientation_kwargs,
         )  # Where doe this come from?
         config.update(kwargs)
         self.set_camera_orientation(**config)
@@ -360,11 +420,11 @@ class SpecialThreeDScene(ThreeDScene):
         Parameters
         ----------
         **kwargs
-            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
+            Any valid parameter of :class:`~.Sphere` or :class:`~.Surface`.
 
         Returns
         -------
-        :class:`.Sphere`
+        :class:`~.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)

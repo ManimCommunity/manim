@@ -13,7 +13,7 @@ TemplateForFrenchCursive = TexTemplate(
 \usepackage[default]{frcursive}
 \usepackage[eulergreek,noplusnominus,noequal,nohbar,%
 nolessnomore,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -27,17 +27,15 @@ class TexFontTemplateManual(Scene):
 
     def construct(self):
         self.add(Tex("Tex Font Example").to_edge(UL))
-        self.play(ShowCreation(FrenchCursive("$f: A \\longrightarrow B$").shift(UP)))
-        self.play(
-            ShowCreation(FrenchCursive("Behold! We can write math in French Cursive"))
-        )
+        self.play(Create(FrenchCursive("$f: A \\longrightarrow B$").shift(UP)))
+        self.play(Create(FrenchCursive("Behold! We can write math in French Cursive")))
         self.wait(1)
         self.play(
-            ShowCreation(
+            Create(
                 Tex(
-                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html"
-                ).shift(2 * DOWN)
-            )
+                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html",
+                ).shift(2 * DOWN),
+            ),
         )
         self.wait(2)
 
@@ -64,7 +62,7 @@ class TexFontTemplateLibrary(Scene):
     def construct(self):
         def write_one_line(template):
             x = Tex(template.description, tex_template=template).shift(UP)
-            self.play(ShowCreation(x))
+            self.play(Create(x))
             self.wait(1)
             self.play(FadeOut(x))
 
@@ -128,14 +126,14 @@ class TexFontTemplateLibrary(Scene):
         for font in examples:
             try:
                 write_one_line(font)
-            except:
+            except Exception:
                 print("FAILURE on ", font.description, " - skipping.")
 
         self.play(
-            ShowCreation(
+            Create(
                 Tex(
-                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html"
-                ).shift(2 * DOWN)
-            )
+                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html",
+                ).shift(2 * DOWN),
+            ),
         )
         self.wait(2)

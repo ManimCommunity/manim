@@ -28,7 +28,7 @@ Paste your code here.
 
 
 ## Additional media files
-<!-- Paste in the files manim produced on rendering the code above. Note that GitHub doesn't allow posting videos, so you may need to convert it to a GIF or use the `-i` rendering option. -->
+<!-- Paste in the files manim produced on rendering the code above. -->
 
 <details><summary>Images/GIFs</summary>
 

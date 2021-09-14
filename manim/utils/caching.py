@@ -17,10 +17,16 @@ def handle_caching_play(func):
         Take the same parameters as `scene.play`.
     """
 
+    # NOTE : This is only kept for OpenGL renderer.
+    # The play logic of the cairo renderer as been refactored and does not need this function anymore.
+    # When OpenGL renderer will have a proper testing system,
+    # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this
+    # method has to be deleted.
+
     def wrapper(self, scene, *args, **kwargs):
-        self.skip_animations = self.original_skipping_status
+        self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
-        animations = scene.compile_play_args_to_animation_list(*args, **kwargs)
+        animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
@@ -33,7 +39,10 @@ def handle_caching_play(func):
         if not config["disable_caching"]:
             mobjects_on_scene = scene.mobjects
             hash_play = get_hash_from_play_call(
-                self, self.camera, animations, mobjects_on_scene
+                self,
+                self.camera,
+                animations,
+                mobjects_on_scene,
             )
             if self.file_writer.is_already_cached(hash_play):
                 logger.info(
@@ -42,7 +51,7 @@ def handle_caching_play(func):
                 )
                 self.skip_animations = True
         else:
-            hash_play = "uncached_{:05}".format(self.num_plays)
+            hash_play = f"uncached_{self.num_plays:05}"
         self.animations_hashes.append(hash_play)
         self.file_writer.add_partial_movie_file(hash_play)
         logger.debug(

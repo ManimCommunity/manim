@@ -1,5 +1,31 @@
+import numpy as np
 import pytest
-from manim import Mobject, VMobject, VGroup, VDict
+
+from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
+
+
+def test_vmobject_point_from_propotion():
+    obj = VMobject()
+
+    # One long line, one short line
+    obj.set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ],
+    )
+
+    # Total length of 6, so halfway along the object
+    # would be at length 3, which lands in the first, long line.
+    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+
+    obj.clear_points()
+    with pytest.raises(Exception, match="with no points"):
+        obj.point_from_proportion(0)
 
 
 def test_vgroup_init():
@@ -75,7 +101,7 @@ def test_vgroup_remove_dunder():
     obj = VGroup(a, b)
     assert len(obj.submobjects) == 2
     assert len(b.submobjects) == 1
-    assert len((obj - a)) == 1
+    assert len(obj - a) == 1
     assert len(obj.submobjects) == 2
     obj -= a
     b -= c
@@ -83,6 +109,36 @@ def test_vgroup_remove_dunder():
     assert len(b.submobjects) == 0
     obj -= b
     assert len(obj.submobjects) == 0
+
+
+def test_vmob_add_to_back():
+    """Test the Mobject add_to_back method."""
+    a = VMobject()
+    b = Line()
+    c = "text"
+    with pytest.raises(ValueError):
+        # Mobject cannot contain self
+        a.add_to_back(a)
+    with pytest.raises(TypeError):
+        # All submobjects must be of type Mobject
+        a.add_to_back(c)
+
+    # No submobject gets added twice
+    a.add_to_back(b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
+    a.submobjects.clear()
+    a.add_to_back(b, b, b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
+    a.submobjects.clear()
+
+    # Make sure the ordering has not changed
+    o1, o2, o3 = Square(), Line(), Circle()
+    a.add_to_back(o1, o2, o3)
+    assert a.submobjects.pop() == o3
+    assert a.submobjects.pop() == o2
+    assert a.submobjects.pop() == o1
 
 
 def test_vdict_init():
@@ -118,3 +174,33 @@ def test_vdict_remove():
     assert len(obj.submob_dict) == 0
     with pytest.raises(KeyError):
         obj.remove("a")
+
+
+def test_vgroup_supports_item_assigment():
+    """Test VGroup supports array-like assignment for VMObjects"""
+    a = VMobject()
+    b = VMobject()
+    vgroup = VGroup(a)
+    assert vgroup[0] == a
+    vgroup[0] = b
+    assert vgroup[0] == b
+    assert len(vgroup) == 1
+
+
+def test_vgroup_item_assignment_at_correct_position():
+    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    n_items = 10
+    vgroup = VGroup()
+    for _i in range(n_items):
+        vgroup.add(VMobject())
+    new_obj = VMobject()
+    vgroup[6] = new_obj
+    assert vgroup[6] == new_obj
+    assert len(vgroup) == n_items
+
+
+def test_vgroup_item_assignment_only_allows_vmobjects():
+    """Test VGroup item-assignment raises TypeError when invalid type is passed"""
+    vgroup = VGroup(VMobject())
+    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+        vgroup[0] = "invalid object"

@@ -11,6 +11,8 @@ __all__ = [
     "ApplyPointwiseFunction",
     "ApplyPointwiseFunctionToCenter",
     "FadeToColor",
+    "FadeTransform",
+    "FadeTransformPieces",
     "ScaleInPlace",
     "ShrinkToCenter",
     "Restore",
@@ -24,71 +26,97 @@ __all__ = [
 
 import inspect
 import types
-import typing
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
 
 import numpy as np
 
+from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
-from ..utils.paths import path_along_arc, straight_path
+from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
+from ..utils.paths import path_along_arc
 from ..utils.rate_functions import smooth, squish_rate_func
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..scene.scene import Scene
 
 
 class Transform(Animation):
     def __init__(
         self,
-        mobject: Mobject,
-        target_mobject: typing.Optional[Mobject] = None,
-        path_func: typing.Optional[typing.Callable] = None,
+        mobject: Optional[Mobject],
+        target_mobject: Optional[Mobject] = None,
+        path_func: Optional[Callable] = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
+        path_arc_centers: np.ndarray = None,
         replace_mobject_with_target_in_scene: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
-        self.path_arc = path_arc
-        self.path_func = path_func
-        self.path_arc_axis = path_arc_axis
-        self.replace_mobject_with_target_in_scene = replace_mobject_with_target_in_scene
-        self.target_mobject = target_mobject
+        self.path_arc_axis: np.ndarray = path_arc_axis
+        self.path_arc_centers: np.ndarray = path_arc_centers
+        self.path_arc: float = path_arc
+        self.path_func: Optional[Callable] = path_func
+        self.replace_mobject_with_target_in_scene: bool = (
+            replace_mobject_with_target_in_scene
+        )
+        self.target_mobject: Mobject = (
+            target_mobject if target_mobject is not None else Mobject()
+        )
         super().__init__(mobject, **kwargs)
-        self._init_path_func()
 
-    def _init_path_func(self) -> None:
-        if self.path_func is not None:
-            return
-        elif self.path_arc == 0:
-            self.path_func = straight_path
-        else:
-            self.path_func = path_along_arc(
-                self.path_arc,
-                self.path_arc_axis,
-            )
+    @property
+    def path_arc(self) -> float:
+        return self._path_arc
+
+    @path_arc.setter
+    def path_arc(self, path_arc: float) -> None:
+        self._path_arc = path_arc
+        self._path_func = path_along_arc(
+            arc_angle=self._path_arc,
+            axis=self.path_arc_axis,
+            arc_centers=self.path_arc_centers,
+        )
+
+    @property
+    def path_func(
+        self,
+    ) -> Callable[
+        [Iterable[np.ndarray], Iterable[np.ndarray], float],
+        Iterable[np.ndarray],
+    ]:
+        return self._path_func
+
+    @path_func.setter
+    def path_func(
+        self,
+        path_func: Callable[
+            [Iterable[np.ndarray], Iterable[np.ndarray], float],
+            Iterable[np.ndarray],
+        ],
+    ) -> None:
+        if path_func is not None:
+            self._path_func = path_func
 
     def begin(self) -> None:
         # Use a copy of target_mobject for the align_data
         # call so that the actual target_mobject stays
         # preserved.
         self.target_mobject = self.create_target()
-        self.check_target_mobject_validity()
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        self.mobject.align_data(self.target_copy)
+        if config["renderer"] == "opengl":
+            self.mobject.align_data_and_family(self.target_copy)
+        else:
+            self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> typing.Union[Mobject, None]:
+    def create_target(self) -> Mobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
-
-    def check_target_mobject_validity(self) -> None:
-        if self.target_mobject is None:
-            message = "{}.create_target not properly implemented"
-            raise NotImplementedError(message.format(self.__class__.__name__))
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         super().clean_up_from_scene(scene)
@@ -96,14 +124,7 @@ class Transform(Animation):
             scene.remove(self.mobject)
             scene.add(self.target_mobject)
 
-    def update_config(self, **kwargs: typing.Dict[str, typing.Any]) -> None:
-        Animation.update_config(self, **kwargs)
-        if "path_arc" in kwargs:
-            self.path_func = path_along_arc(
-                kwargs["path_arc"], kwargs.get("path_arc_axis", OUT)
-            )
-
-    def get_all_mobjects(self) -> typing.List[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -111,30 +132,73 @@ class Transform(Animation):
             self.target_copy,
         ]
 
-    def get_all_families_zipped(self) -> typing.Iterable[tuple]:  # more precise typing?
-        return zip(
-            *[
-                mob.family_members_with_points()
-                for mob in [
-                    self.mobject,
-                    self.starting_mobject,
-                    self.target_copy,
-                ]
-            ]
-        )
+    def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
+        mobs = [
+            self.mobject,
+            self.starting_mobject,
+            self.target_copy,
+        ]
+        return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
         self,
         submobject: Mobject,
-        starting_sumobject: Mobject,
+        starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> "Transform":  # doesn't match the parent class?
-        submobject.interpolate(starting_sumobject, target_copy, alpha, self.path_func)
+    ) -> "Transform":
+        submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
 
 class ReplacementTransform(Transform):
+    """Replaces and morphs a mobject into a target mobject.
+
+    Parameters
+    ----------
+    mobject
+        The starting :class:`~.Mobject`.
+    target_mobject
+        The target :class:`~.Mobject`.
+    kwargs
+        Further keyword arguments that are passed to :class:`Transform`.
+
+    Examples
+    --------
+
+    .. manim:: ReplacementTransformOrTransform
+        :quality: low
+
+        class ReplacementTransformOrTransform(Scene):
+            def construct(self):
+                # set up the numbers
+                r_transform = VGroup(*[Integer(i) for i in range(1,4)])
+                text_1 = Text("ReplacementTransform", color=RED)
+                r_transform.add(text_1)
+
+                transform = VGroup(*[Integer(i) for i in range(4,7)])
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(r_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                r_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs replace each other and none are left behind
+                self.play(ReplacementTransform(r_transform[0], r_transform[1]))
+                self.play(ReplacementTransform(r_transform[1], r_transform[2]))
+
+                # The mobs linger after the Transform()
+                self.play(Transform(transform[0], transform[1]))
+                self.play(Transform(transform[1], transform[2]))
+                self.wait()
+
+    """
+
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
@@ -159,7 +223,7 @@ class ClockwiseTransform(Transform):
         mobject: Mobject,
         target_mobject: Mobject,
         path_arc: float = -np.pi,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -170,7 +234,7 @@ class CounterclockwiseTransform(Transform):
         mobject: Mobject,
         target_mobject: Mobject,
         path_arc: float = np.pi,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -183,16 +247,22 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'"
+                "MoveToTarget called on mobject" "without attribute 'target'",
             )
+
+
+class _MethodAnimation(MoveToTarget):
+    def __init__(self, mobject, methods):
+        self.methods = methods
+        super().__init__(mobject)
 
 
 class ApplyMethod(Transform):
     def __init__(
-        self, method: types.MethodType, *args, **kwargs
-    ) -> None:  # method typing? for args?
+        self, method: Callable, *args, **kwargs
+    ) -> None:  # method typing (we want to specify Mobject method)? for args?
         """
-        method is a method of Mobject, ``args`` are arguments for
+        Method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
         as the last arg, as a dict, since ``kwargs`` is for
         configuration of the transform itself
@@ -204,13 +274,13 @@ class ApplyMethod(Transform):
         self.method_args = args
         super().__init__(method.__self__, **kwargs)
 
-    def check_validity_of_input(self, method: types.MethodType) -> None:
+    def check_validity_of_input(self, method: Callable) -> None:
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
-                "the method you want to animate"
+                "the method you want to animate",
             )
-        assert isinstance(method.__self__, Mobject)
+        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
     def create_target(self) -> Mobject:
         method = self.method
@@ -252,7 +322,7 @@ class ApplyPointwiseFunction(ApplyMethod):
         function: types.MethodType,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject.apply_function, function, run_time=run_time, **kwargs)
 
@@ -292,11 +362,11 @@ class ApplyFunction(Transform):
         self.function = function
         super().__init__(mobject, **kwargs)
 
-    def create_target(self) -> typing.Any:
+    def create_target(self) -> Any:
         target = self.function(self.mobject.copy())
-        if not isinstance(target, Mobject):
+        if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
-                "Functions passed to ApplyFunction must return object of type Mobject"
+                "Functions passed to ApplyFunction must return object of type Mobject",
             )
         return target
 
@@ -355,14 +425,14 @@ class Swap(CyclicReplace):
     pass  # Renaming, more understandable for two entries
 
 
-# TODO, this may be depricated...worth reimplementing?
+# TODO, this may be deprecated...worth reimplementing?
 class TransformAnimations(Transform):
     def __init__(
         self,
         start_anim: Animation,
         end_anim: Animation,
-        rate_func: typing.Callable = squish_rate_func(smooth),
-        **kwargs
+        rate_func: Callable = squish_rate_func(smooth),
+        **kwargs,
     ) -> None:
         self.start_anim = start_anim
         self.end_anim = end_anim
@@ -372,14 +442,15 @@ class TransformAnimations(Transform):
             self.run_time = max(start_anim.run_time, end_anim.run_time)
         for anim in start_anim, end_anim:
             anim.set_run_time(self.run_time)
-
         if (
-            start_anim.starting_mobject.get_num_points()
+            start_anim.starting_mobject is not None
+            and end_anim.starting_mobject is not None
+            and start_anim.starting_mobject.get_num_points()
             != end_anim.starting_mobject.get_num_points()
         ):
             start_anim.starting_mobject.align_data(end_anim.starting_mobject)
             for anim in start_anim, end_anim:
-                if hasattr(anim, "target_mobject"):
+                if isinstance(anim, Transform) and anim.starting_mobject is not None:
                     anim.starting_mobject.align_data(anim.target_mobject)
 
         super().__init__(
@@ -393,3 +464,139 @@ class TransformAnimations(Transform):
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
         Transform.interpolate(self, alpha)
+
+
+class FadeTransform(Transform):
+    """Fades one mobject into another.
+
+    Parameters
+    ----------
+    mobject
+        The starting :class:`~.Mobject`.
+    target_mobject
+        The target :class:`~.Mobject`.
+    stretch
+        Controls whether the target :class:`~.Mobject` is stretched during
+        the animation. Default: ``True``.
+    dim_to_match
+        If the target mobject is not stretched automatically, this allows
+        to adjust the initial scale of the target :class:`~.Mobject` while
+        it is shifted in. Setting this to 0, 1, and 2, respectively,
+        matches the length of the target with the length of the starting
+        :class:`~.Mobject` in x, y, and z direction, respectively.
+    kwargs
+        Further keyword arguments are passed to the parent class.
+
+    Examples
+    --------
+
+    .. manim:: DifferentFadeTransforms
+
+        class DifferentFadeTransforms(Scene):
+            def construct(self):
+                starts = [Rectangle(width=4, height=1) for _ in range(3)]
+                VGroup(*starts).arrange(DOWN, buff=1).shift(3*LEFT)
+                targets = [Circle(fill_opacity=1).scale(0.25) for _ in range(3)]
+                VGroup(*targets).arrange(DOWN, buff=1).shift(3*RIGHT)
+
+                self.play(*[FadeIn(s) for s in starts])
+                self.play(
+                    FadeTransform(starts[0], targets[0], stretch=True),
+                    FadeTransform(starts[1], targets[1], stretch=False, dim_to_match=0),
+                    FadeTransform(starts[2], targets[2], stretch=False, dim_to_match=1)
+                )
+
+                self.play(*[FadeOut(mobj) for mobj in self.mobjects])
+
+    """
+
+    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+        self.to_add_on_completion = target_mobject
+        self.stretch = stretch
+        self.dim_to_match = dim_to_match
+        mobject.save_state()
+        if config["renderer"] == "opengl":
+            group = OpenGLGroup(mobject, target_mobject.copy())
+        else:
+            group = Group(mobject, target_mobject.copy())
+        super().__init__(group, **kwargs)
+
+    def begin(self):
+        """Initial setup for the animation.
+
+        The mobject to which this animation is bound is a group consisting of
+        both the starting and the ending mobject. At the start, the ending
+        mobject replaces the starting mobject (and is completely faded). In the
+        end, it is set to be the other way around.
+        """
+        self.ending_mobject = self.mobject.copy()
+        Animation.begin(self)
+        # Both 'start' and 'end' consists of the source and target mobjects.
+        # At the start, the target should be faded replacing the source,
+        # and at the end it should be the other way around.
+        start, end = self.starting_mobject, self.ending_mobject
+        for m0, m1 in ((start[1], start[0]), (end[0], end[1])):
+            self.ghost_to(m0, m1)
+
+    def ghost_to(self, source, target):
+        """Replaces the source by the target and sets the opacity to 0."""
+        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        source.set_opacity(0)
+
+    def get_all_mobjects(self) -> Sequence[Mobject]:
+        return [
+            self.mobject,
+            self.starting_mobject,
+            self.ending_mobject,
+        ]
+
+    def get_all_families_zipped(self):
+        return Animation.get_all_families_zipped(self)
+
+    def clean_up_from_scene(self, scene):
+        Animation.clean_up_from_scene(self, scene)
+        scene.remove(self.mobject)
+        self.mobject[0].restore()
+        scene.add(self.to_add_on_completion)
+
+
+class FadeTransformPieces(FadeTransform):
+    """Fades submobjects of one mobject into submobjects of another one.
+
+    See also
+    --------
+    :class:`~.FadeTransform`
+
+    Examples
+    --------
+    .. manim:: FadeTransformSubmobjects
+
+        class FadeTransformSubmobjects(Scene):
+            def construct(self):
+                src = VGroup(Square(), Circle().shift(LEFT + UP))
+                src.shift(3*LEFT + 2*UP)
+                src_copy = src.copy().shift(4*DOWN)
+
+                target = VGroup(Circle(), Triangle().shift(RIGHT + DOWN))
+                target.shift(3*RIGHT + 2*UP)
+                target_copy = target.copy().shift(4*DOWN)
+
+                self.play(FadeIn(src), FadeIn(src_copy))
+                self.play(
+                    FadeTransform(src, target),
+                    FadeTransformPieces(src_copy, target_copy)
+                )
+                self.play(*[FadeOut(mobj) for mobj in self.mobjects])
+
+    """
+
+    def begin(self):
+        self.mobject[0].align_submobjects(self.mobject[1])
+        super().begin()
+
+    def ghost_to(self, source, target):
+        """Replaces the source submobjects by the target submobjects and sets
+        the opacity to 0.
+        """
+        for sm0, sm1 in zip(source.get_family(), target.get_family()):
+            super().ghost_to(sm0, sm1)

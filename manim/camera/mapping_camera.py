@@ -32,7 +32,8 @@ class MappingCamera(Camera):
 
     def points_to_pixel_coords(self, points):
         return Camera.points_to_pixel_coords(
-            self, np.apply_along_axis(self.mapping_func, 1, points)
+            self,
+            np.apply_along_axis(self.mapping_func, 1, points),
         )
 
     def capture_mobjects(self, mobjects, **kwargs):
@@ -74,7 +75,7 @@ class OldMultiCamera(Camera):
                     + camera_with_start_positions[0].pixel_width,
                     "end_y": camera_with_start_positions[1][0]
                     + camera_with_start_positions[0].pixel_height,
-                }
+                },
             )
             for camera_with_start_positions in cameras_with_start_positions
         ]
@@ -117,7 +118,7 @@ class OldMultiCamera(Camera):
 
 
 # A OldMultiCamera which, when called with two full-size cameras, initializes itself
-# as a splitscreen, also taking care to resize each individual camera within it
+# as a split screen, also taking care to resize each individual camera within it
 
 
 class SplitScreenCamera(OldMultiCamera):

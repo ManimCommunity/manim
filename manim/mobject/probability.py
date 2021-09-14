@@ -3,23 +3,26 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
+from typing import Iterable, List
+
+import numpy as np
+
 from ..constants import *
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
+from ..mobject.geometry import Line, Rectangle
 from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
+from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
-    color_gradient,
-    DARK_GREY,
-    LIGHT_GREY,
-    GREEN_E,
+    BLUE,
     BLUE_E,
+    DARK_GREY,
+    GREEN_E,
+    LIGHT_GREY,
     MAROON_B,
     YELLOW,
-    BLUE,
+    color_gradient,
 )
 from ..utils.iterables import tuplify
 
@@ -27,6 +30,24 @@ EPSILON = 0.0001
 
 
 class SampleSpace(Rectangle):
+    """
+
+    Examples
+    --------
+
+    .. manim:: ExampleSampleSpace
+        :save_last_frame:
+
+        class ExampleSampleSpace(Scene):
+            def construct(self):
+                poly1 = SampleSpace(stroke_width=15, fill_opacity=1)
+                poly2 = SampleSpace(width=5, height=3, stroke_width=5, fill_opacity=0.5)
+                poly3 = SampleSpace(width=2, height=2, stroke_width=5, fill_opacity=0.1)
+                poly3.divide_vertically(p_list=np.array([0.37, 0.13, 0.5]), colors=[BLACK, WHITE, GRAY], vect=RIGHT)
+                poly_group = VGroup(poly1, poly2, poly3).arrange()
+                self.add(poly_group)
+    """
+
     def __init__(
         self,
         height=3,
@@ -51,8 +72,8 @@ class SampleSpace(Rectangle):
     def add_title(self, title="Sample space", buff=MED_SMALL_BUFF):
         # TODO, should this really exist in SampleSpaceScene
         title_mob = Tex(title)
-        if title_mob.get_width() > self.get_width():
-            title_mob.set_width(self.get_width())
+        if title_mob.width > self.width:
+            title_mob.width = self.width
         title_mob.next_to(self, UP, buff=buff)
         self.title = title_mob
         self.add(title_mob)
@@ -98,13 +119,18 @@ class SampleSpace(Rectangle):
         self.add(self.vertical_parts)
 
     def get_subdivision_braces_and_labels(
-        self, parts, labels, direction, buff=SMALL_BUFF, min_num_quads=1
+        self,
+        parts,
+        labels,
+        direction,
+        buff=SMALL_BUFF,
+        min_num_quads=1,
     ):
         label_mobs = VGroup()
         braces = VGroup()
         for label, part in zip(labels, parts):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
-            if isinstance(label, Mobject):
+            if isinstance(label, (Mobject, OpenGLMobject)):
                 label_mob = label
             else:
                 label_mob = MathTex(label)
@@ -157,26 +183,84 @@ class SampleSpace(Rectangle):
 
 
 class BarChart(VGroup):
+    """This is a class for Bar Charts.
+
+    Parameters
+    ----------
+    values
+        The values for the bar chart.
+    height
+        The height of the axes.
+    width
+        The width of the axes.
+    n_ticks
+        Number of ticks.
+    tick_width
+        Width of the ticks.
+    label_y_axis
+        Y axis label
+    y_axis_label_height
+        Height of the label.
+    max_value
+        Maximum value of the data.
+    bar_colors
+        The colors of the bars.
+    bar_fill_opacity
+        The opacity of the bars.
+    bar_stroke_width
+        The stroke width of the bars.
+    bar_names
+        The names of each bar.
+    bar_label_scale_val
+        The label size.
+
+    Examples
+    --------
+    .. manim:: BarChartExample
+        :save_last_frame:
+
+        class BarChartExample(Scene):
+            def construct(self):
+                pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
+                versions = [
+                    "v0.1.0",
+                    "v0.1.1",
+                    "v0.2.0",
+                    "v0.3.0",
+                    "v0.4.0",
+                    "v0.5.0",
+                    "v0.6.0",
+                    "v0.7.0",
+                ]
+                colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
+                bar = BarChart(
+                    pull_req,
+                    max_value=max(pull_req),
+                    bar_colors=colors,
+                    bar_names=versions,
+                    bar_label_scale_val=0.3,
+                )
+                self.add(bar)
+    """
+
     def __init__(
         self,
-        values,
-        height=4,
-        width=6,
-        n_ticks=4,
-        tick_width=0.2,
-        label_y_axis=True,
-        y_axis_label_height=0.25,
-        max_value=1,
+        values: Iterable[float],
+        height: float = 4,
+        width: float = 6,
+        n_ticks: int = 4,
+        tick_width: float = 0.2,
+        label_y_axis: bool = True,
+        y_axis_label_height: float = 0.25,
+        max_value: float = 1,
         bar_colors=[BLUE, YELLOW],
-        bar_fill_opacity=0.8,
-        bar_stroke_width=3,
-        bar_names=[],
-        bar_label_scale_val=0.75,
+        bar_fill_opacity: float = 0.8,
+        bar_stroke_width: float = 3,
+        bar_names: List[str] = [],
+        bar_label_scale_val: float = 0.75,
         **kwargs
-    ):
+    ):  # What's the return type?
         VGroup.__init__(self, **kwargs)
-        self.height = height
-        self.width = width
         self.n_ticks = n_ticks
         self.tick_width = tick_width
         self.label_y_axis = label_y_axis
@@ -187,6 +271,8 @@ class BarChart(VGroup):
         self.bar_stroke_width = bar_stroke_width
         self.bar_names = bar_names
         self.bar_label_scale_val = bar_label_scale_val
+        self.total_bar_width = width
+        self.total_bar_height = height
 
         if self.max_value is None:
             self.max_value = max(values)
@@ -196,14 +282,14 @@ class BarChart(VGroup):
         self.center()
 
     def add_axes(self):
-        x_axis = Line(self.tick_width * LEFT / 2, self.width * RIGHT)
-        y_axis = Line(MED_LARGE_BUFF * DOWN, self.height * UP)
+        x_axis = Line(self.tick_width * LEFT / 2, self.total_bar_width * RIGHT)
+        y_axis = Line(MED_LARGE_BUFF * DOWN, self.total_bar_height * UP)
         ticks = VGroup()
-        heights = np.linspace(0, self.height, self.n_ticks + 1)
+        heights = np.linspace(0, self.total_bar_height, self.n_ticks + 1)
         values = np.linspace(0, self.max_value, self.n_ticks + 1)
-        for y, value in zip(heights, values):
+        for y, _value in zip(heights, values):
             tick = Line(LEFT, RIGHT)
-            tick.set_width(self.tick_width)
+            tick.width = self.tick_width
             tick.move_to(y * UP)
             ticks.add(tick)
         y_axis.add(ticks)
@@ -215,18 +301,18 @@ class BarChart(VGroup):
             labels = VGroup()
             for tick, value in zip(ticks, values):
                 label = MathTex(str(np.round(value, 2)))
-                label.set_height(self.y_axis_label_height)
+                label.height = self.y_axis_label_height
                 label.next_to(tick, LEFT, SMALL_BUFF)
                 labels.add(label)
             self.y_axis_labels = labels
             self.add(labels)
 
     def add_bars(self, values):
-        buff = float(self.width) / (2 * len(values) + 1)
+        buff = float(self.total_bar_width) / (2 * len(values) + 1)
         bars = VGroup()
         for i, value in enumerate(values):
             bar = Rectangle(
-                height=(value / self.max_value) * self.height,
+                height=(value / self.max_value) * self.total_bar_height,
                 width=buff,
                 stroke_width=self.bar_stroke_width,
                 fill_opacity=self.bar_fill_opacity,
@@ -249,5 +335,5 @@ class BarChart(VGroup):
     def change_bar_values(self, values):
         for bar, value in zip(self.bars, values):
             bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.max_value) * self.height)
+            bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
             bar.move_to(bar_bottom, DOWN)

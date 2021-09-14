@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+Allow: /en/stable/
+
+Sitemap: https://docs.manim.community/sitemap.xml

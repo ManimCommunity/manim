@@ -14,6 +14,7 @@ import copy
 import json
 import logging
 import os
+import sys
 import typing
 from typing import TYPE_CHECKING
 
@@ -48,7 +49,8 @@ Loading the default color configuration.[/logging.level.error]
 
 
 def make_logger(
-    parser: configparser.ConfigParser, verbosity: str
+    parser: configparser.ConfigParser,
+    verbosity: str,
 ) -> typing.Tuple[logging.Logger, Console]:
     """Make the manim logger and console.
 
@@ -62,9 +64,10 @@ def make_logger(
 
     Returns
     -------
-    :class:`logging.Logger`, :class:`rich.Console`
-        The manim logger and console.  Both use the theme returned by
-        :func:`parse_theme`
+    :class:`logging.Logger`, :class:`rich.Console`, :class:`rich.Console`
+        The manim logger and consoles. The first console outputs
+        to stdout, the second to stderr. All use the theme returned by
+        :func:`parse_theme`.
 
     See Also
     --------
@@ -80,10 +83,14 @@ def make_logger(
     theme = parse_theme(parser)
     console = Console(theme=theme)
 
+    # With rich 9.5.0+ we could pass stderr=True instead
+    error_console = Console(theme=theme, file=sys.stderr)
+
     # set the rich handler
     RichHandler.KEYWORDS = HIGHLIGHTED_KEYWORDS
     rich_handler = RichHandler(
-        console=console, show_time=parser.getboolean("log_timestamps")
+        console=console,
+        show_time=parser.getboolean("log_timestamps"),
     )
 
     # finally, the logger
@@ -91,7 +98,7 @@ def make_logger(
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
 
-    return logger, console
+    return logger, console, error_console
 
 
 def parse_theme(parser: configparser.ConfigParser) -> Theme:
@@ -125,7 +132,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
                 k: v
                 for k, v in theme.items()
                 if k not in ["log.width", "log.height", "log.timestamps"]
-            }
+            },
         )
     except (color.ColorParseError, errors.StyleSyntaxError):
         printf(WRONG_COLOR_CONFIG_MSG)
@@ -196,5 +203,5 @@ class JSONFormatter(logging.Formatter):
                 "levelname": record_c.levelname,
                 "module": record_c.module,
                 "message": super().format(record_c),
-            }
+            },
         )

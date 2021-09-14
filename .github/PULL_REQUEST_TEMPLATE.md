@@ -1,47 +1,25 @@
-<!--
-Thank you for contributing to manim!
+<!-- Thank you for contributing to Manim! Learn more about the process in our contributing guidelines: https://docs.manim.community/en/latest/contributing.html -->
 
-Please ensure that your pull request works with the latest
-version of manim from this repository.
--->
+## Overview: What does this pull request change?
+<!-- If there is more information than the PR title that should be added to our release changelog, add it in the following changelog section. This is optional, but recommended for larger pull requests. -->
+<!--changelog-start-->
 
-## Motivation
-<!-- Outline your motivation: In what way do your changes improve the library? -->
+<!--changelog-end-->
 
-## Overview / Explanation for Changes
-<!-- Give an overview of your changes and explain how they
-resolve the situation described in the previous section.
+## Motivation and Explanation: Why and how do your changes improve the library?
+<!-- Optional for bugfixes, small enhancements, and documentation-related PRs. Otherwise, please give a short reasoning for your changes. -->
 
-For PRs introducing new features, please provide code snippets
-using the newly introduced functionality and ideally even the
-expected rendered output. -->
-
-## Oneline Summary of Changes
-<!-- Please update the lines below with a oneline summary
-for your changes. It will be included in the list of upcoming changes at
-https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release -->
-```
-- Added new feature ... / Fixed bug ... / ... (:pr:`PR NUMBER HERE`)
-```
-
-## Testing Status
-<!-- Optional (but recommended): your computer specs and
-what tests you ran with their results, if any. This section
-is also intended for other testing-related comments. -->
-
-## Further Comments
-<!-- Optional, any further comments regarding your PR
-that might be useful for reviewers.. -->
-
-## Acknowledgements
-- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-
-<!-- Once again, thanks for helping out by contributing to manim! -->
+## Links to added or changed documentation pages
+<!-- Please add links to the affected documentation pages (edit the description after opening the PR). The link to the documentation for your PR is https://manimce--####.org.readthedocs.build/en/####/, where #### represents the PR number. -->
 
 
-<!-- Do not modify the lines below. -->
+## Further Information and Comments
+<!-- If applicable, put further comments for the reviewers here. -->
+
+
+
+<!-- Thank you again for contributing! Do not modify the lines below, they are for reviewers. -->
 ## Reviewer Checklist
-- [ ] Newly added functions/classes are either private or have a docstring
-- [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
-- [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
-- [ ] The oneline summary has been included [in the wiki](https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release)
+- [ ] The PR title is descriptive enough for the changelog, and the PR is labeled correctly
+- [ ] If applicable: newly added non-private functions and classes have a docstring including a short summary and a PARAMETERS section
+- [ ] If applicable: newly added functions and classes are tested

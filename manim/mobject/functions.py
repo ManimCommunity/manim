@@ -3,15 +3,16 @@
 __all__ = ["ParametricFunction", "FunctionGraph"]
 
 
+import numpy as np
+
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from .opengl_compatibility import ConvertToOpenGL
 
-import math
 
-
-class ParametricFunction(VMobject):
+class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
 
     Examples
@@ -25,7 +26,7 @@ class ParametricFunction(VMobject):
                 return np.array((np.sin(2 * t), np.sin(3 * t), 0))
 
             def construct(self):
-                func = ParametricFunction(self.func, t_max = TAU, fill_opacity=0).set_color(RED)
+                func = ParametricFunction(self.func, t_range = np.array([0, TAU]), fill_opacity=0).set_color(RED)
                 self.add(func.scale(3))
 
     .. manim:: ThreeDParametricSpring
@@ -38,7 +39,7 @@ class ParametricFunction(VMobject):
                         1.2 * np.cos(u),
                         1.2 * np.sin(u),
                         u * 0.05
-                    ]), color=RED, t_min=-3 * TAU, t_max=5 * TAU,
+                    ]), color=RED, t_range = np.array([-3*TAU, 5*TAU, 0.01])
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
@@ -49,20 +50,23 @@ class ParametricFunction(VMobject):
     def __init__(
         self,
         function=None,
-        t_min=0,
-        t_max=1,
-        step_size=0.01,
+        t_range=None,
         dt=1e-8,
         discontinuities=None,
+        use_smoothing=True,
         **kwargs
     ):
         self.function = function
-        self.t_min = t_min
-        self.t_max = t_max
-        self.step_size = step_size
+        t_range = [0, 1, 0.01] if t_range is None else t_range
+        if len(t_range) == 2:
+            t_range = np.array([*t_range, 0.01])
+
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
-        VMobject.__init__(self, **kwargs)
+        self.use_smoothing = use_smoothing
+        self.t_min, self.t_max, self.t_step = t_range
+
+        super().__init__(**kwargs)
 
     def get_function(self):
         return self.function
@@ -70,63 +74,73 @@ class ParametricFunction(VMobject):
     def get_point_from_function(self, t):
         return self.function(t)
 
-    def get_step_size(self, t=None):
-        if self.step_size == "auto":
-            """
-            for x between -1 to 1, return 0.01
-            else, return log10(x) (rounded)
-            e.g.: 10.5 -> 0.1 ; 1040 -> 10
-            """
-            if t == 0:
-                scale = 0
-            else:
-                scale = math.log10(abs(t))
-                if scale < 0:
-                    scale = 0
-
-                scale = math.floor(scale)
-
-            scale -= 2
-            return math.pow(10, scale)
-        else:
-            return self.step_size
-
     def generate_points(self):
-        t_min, t_max = self.t_min, self.t_max
-        dt = self.dt
 
-        discontinuities = filter(lambda t: t_min <= t <= t_max, self.discontinuities)
+        discontinuities = filter(
+            lambda t: self.t_min <= t <= self.t_max,
+            self.discontinuities,
+        )
         discontinuities = np.array(list(discontinuities))
-        boundary_times = [
-            self.t_min,
-            self.t_max,
-            *(discontinuities - dt),
-            *(discontinuities + dt),
-        ]
+        boundary_times = np.array(
+            [
+                self.t_min,
+                self.t_max,
+                *(discontinuities - self.dt),
+                *(discontinuities + self.dt),
+            ],
+        )
         boundary_times.sort()
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = list(np.arange(t1, t2, self.get_step_size(t1)))
-            if t_range[-1] != t2:
-                t_range.append(t2)
+            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
             points = np.array([self.function(t) for t in t_range])
-            valid_indices = np.apply_along_axis(np.all, 1, np.isfinite(points))
-            points = points[valid_indices]
-            if len(points) > 0:
-                self.start_new_path(points[0])
-                self.add_points_as_corners(points[1:])
-        self.make_smooth()
+            self.start_new_path(points[0])
+            self.add_points_as_corners(points[1:])
+        if self.use_smoothing:
+            # TODO: not in line with upstream, approx_smooth does not exist
+            self.make_smooth()
         return self
+
+    init_points = generate_points
 
 
 class FunctionGraph(ParametricFunction):
-    def __init__(self, function, color=YELLOW, **kwargs):
-        self.x_min = -config["frame_x_radius"]
-        self.x_max = config["frame_x_radius"]
+    """A :class:`ParametricFunction` that spans the length of the scene by default.
+
+    Examples
+    --------
+    .. manim:: ExampleFunctionGraph
+        :save_last_frame:
+
+        class ExampleFunctionGraph(Scene):
+            def construct(self):
+                cos_func = FunctionGraph(
+                    lambda t: np.cos(t) + 0.5 * np.cos(7 * t) + (1 / 7) * np.cos(14 * t),
+                    color=RED,
+                )
+
+                sin_func_1 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    color=BLUE,
+                )
+
+                sin_func_2 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    x_range=[-4, 4],
+                    color=GREEN,
+                ).move_to([0, 1, 0])
+
+                self.add(cos_func, sin_func_1, sin_func_2)
+    """
+
+    def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
+
+        if x_range is None:
+            x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
+
+        self.x_range = x_range
         self.parametric_function = lambda t: np.array([t, function(t), 0])
-        ParametricFunction.__init__(
-            self, self.parametric_function, t_min=self.x_min, t_max=self.x_max, **kwargs
-        )
         self.function = function
+        super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
     def get_function(self):
         return self.function

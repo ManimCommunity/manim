@@ -1,0 +1,306 @@
+******
+v0.5.0
+******
+
+:Date: April 02, 2021
+
+Contributors
+============
+
+A total of 35 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Abel Aebker +
+* Abhijith Muthyala
+* AntonBallmaier +
+* Aron
+* Benjamin Hackl
+* Bogdan Stăncescu +
+* Darylgolden
+* Devin Neal
+* GameDungeon +
+* Hugues Devimeux
+* Jason Villanueva
+* Kapil Sachdeva
+* KingWampy
+* Lionel Ray +
+* Mark Miller
+* Mohammad Al-Fetyani +
+* Naveen M K
+* Niklas Dewally +
+* Oliver +
+* Roopesh +
+* Seb Pearce +
+* aebkea +
+* friedkeenan
+* hydrobeam +
+* kolibril13
+* sparshg
+* tfglynn +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Abel Aebker
+* Abhijith Muthyala
+* Benjamin Hackl
+* Bogdan Stăncescu
+* Devin Neal
+* Hugues Devimeux
+* Jason Villanueva
+* Kapil Sachdeva
+* KingWampy
+* Leo Torres
+* Lionel Ray
+* Mark Miller
+* Mohammad Al-Fetyani
+* Naveen M K
+* Oliver
+* Ricky Chon
+* vector67
+
+Pull requests merged
+====================
+
+A total of 64 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#1075 <https://github.com/ManimCommunity/manim/pull/1075>`__: Add OpenGL Renderer
+   Adds an OpenGLRenderer, OpenGLCamera, OpenGL-enabled Mobjects, and a ``--use_opengl_renderer`` flag. When this flag is passed, you can pass the ``-p`` flag to preview animations, the ``-w`` flag to generate video, and the ``-q`` flag to specify render quality. If you don't pass either the ``-p`` or the ``-w`` flag, nothing will happen. Scenes rendered with the OpenGL renderer must *only* use OpenGL-enabled Mobjects.
+
+Deprecated classes and functions
+--------------------------------
+
+* `#1124 <https://github.com/ManimCommunity/manim/pull/1124>`__: Deprecated :class:`ShowCreation` in favor of :class:`Create`
+   1. Deprecated :class:`ShowCreation` in favor of :class:`Create` across the library with the exception of the `show_creation` boolean variable `vector_space_scene.py`
+   2. Added a deprecation warning in the original :class:`ShowCreation` class.
+
+* `#1110 <https://github.com/ManimCommunity/manim/pull/1110>`__: Deprecated SmallDot + OpenGLSmallDot
+   `SmallDot` isn't necessary and a deprecation warning will be raised. This will be removed in a future release.
+
+New features
+------------
+
+* `#1037 <https://github.com/ManimCommunity/manim/pull/1037>`__: Added new fade and transform animations (:class:`~.TransformMatchingShapes`, :class:`~.TransformMatchingTex`, :class:`~.FadeTransform`) from 3b1b/manim
+   Added new Fade animation: :class:`~FadeOutToPoint`
+   Added :class:`~FadeTransform` and :class:`~FadeTransformPieces` for transforming mobjects and submobjects with a fade
+   Added :class:`~TransformMatchingShapes` and :class:`~TransformMatchingTex` for transforming mobjects and tex that have matching parts
+
+* `#1097 <https://github.com/ManimCommunity/manim/pull/1097>`__: Added 3D Mobject :class:`~.Dot3D`
+
+
+* `#1074 <https://github.com/ManimCommunity/manim/pull/1074>`__: Added jupyter media_width option to the config
+
+
+* `#1107 <https://github.com/ManimCommunity/manim/pull/1107>`__: Added :class:`~.Unwrite` animation class to complement :class:`~.Write`
+   Added :class:`Unwrite` which inherits from :class:`~.Write`. It automatically reverses the animation of :class:`~.Write` by passing the reversed rate function, but it also takes an additional boolean parameter `reverse` which, if `False`, renders the animation from left to right (assuming text oriented in the usual way), but if `True`, it renders right to left.
+
+* `#1085 <https://github.com/ManimCommunity/manim/pull/1085>`__: Added :class:`~.Angle` and :class:`~.RightAngle` for intersecting lines
+   :class:`~.Angle` and :class:`~.RightAngle` both take two lines as input. If they intersect, or share a common vertex, an angle is drawn between them. Users can customize the look of the angle and also use a dotted right angle.
+
+Enhancements
+------------
+
+* `#1144 <https://github.com/ManimCommunity/manim/pull/1144>`__: Improved quality of GIFs
+
+
+* `#1157 <https://github.com/ManimCommunity/manim/pull/1157>`__: Refresh triangulation on call to :meth:`~.OpenGLVMobject.apply_points_function`
+   Rotate called apply_points_function, which was previous not subclassed by OpenGLMobject - now it is. Then, the vertex normals can be updated too.
+
+   Additionally, the old_points matrix would change after rotating, making the old points / new points test irrelevant. This is addressed with a .copy call.
+
+* `#1151 <https://github.com/ManimCommunity/manim/pull/1151>`__: Added parametric function support to :class:`OpenGLSurface`
+
+
+* `#1139 <https://github.com/ManimCommunity/manim/pull/1139>`__: In-Code `config["preview"]` Support
+
+
+* `#1123 <https://github.com/ManimCommunity/manim/pull/1123>`__: Added caching, skipping, and user-specified background colors to the OpenGL renderer
+   OpenGL play logic has been improved to support caching and skipping with `-n` argument ( it is now similar to Cairo play logic). A random bug was fixed in OpenGLSurface and OpenGL background color can now be changed via `background_color` argument.
+
+* `#1118 <https://github.com/ManimCommunity/manim/pull/1118>`__: Allow passing animation arguments with .animate syntax
+   Users will now be able to do things like `obj.animate(run_time=2).method(arg)` if they want to specify animation arguments for an individual `.animate` call, and can still not specify any arguments like `obj.animate.method(arg)`.
+
+   Passing animation arguments is only allowed directly after `.animate` is accessed, if passed elsewhere then a `ValueError` is raised.
+
+* `#718 <https://github.com/ManimCommunity/manim/pull/718>`__: Rotating the numbers in y axis
+   In Axes, the y axis will be rotated 90deg but the numbers are
+   also rotated and shouldn't be. Fixes this issue.
+
+* `#1070 <https://github.com/ManimCommunity/manim/pull/1070>`__: Raise FileNotFoundError when unable to locate the .cfg file specified via ``--config_file``
+   Raising the error will stop script execution and let the user know that there are problems with the `--config_file` location instead of reverting back to the default configuration.
+
+Fixed bugs
+----------
+
+* `#1224 <https://github.com/ManimCommunity/manim/pull/1224>`__: Fixed :class:`~.ShowIncreasingSubsets`, :class:`~.ShowSubmobjectsOneByOne`, and :class:`~.AddTextLetterByLetter`
+
+
+* `#1201 <https://github.com/ManimCommunity/manim/pull/1201>`__: Prevent crash on :meth:`~.Scene.embed` for empty scenes
+
+
+* `#1192 <https://github.com/ManimCommunity/manim/pull/1192>`__: Fixed issue when an animation is cached, manim can't merge the partial movie files.
+
+
+* `#1193 <https://github.com/ManimCommunity/manim/pull/1193>`__: Fixed using :class:`~.Animation` without a child :class:`~.Mobject` in :class:`~.AnimationGroup`
+   `AnimationGroup` may now take `Animation` objects which do not have a child `Mobject`, such as `Wait`.
+
+* `#1170 <https://github.com/ManimCommunity/manim/pull/1170>`__: Fixed minor SVG parsing bugs
+
+
+* `#1159 <https://github.com/ManimCommunity/manim/pull/1159>`__: Added support for multiple transforms in the same SVG element
+
+
+* `#1156 <https://github.com/ManimCommunity/manim/pull/1156>`__: Fixed :class:`~.DrawBorderThenFill` to support OpenGL and improved type hints for some functions
+   Fixed a bug in :class:`~.DrawBorderThenFill` that prevented :class:`~.Write` animations from working with :class:`~.OpenGLVMobjects` and slightly improved type hints for some animation functions to include :class:`~.OpenGLVMobject`.
+
+* `#1134 <https://github.com/ManimCommunity/manim/pull/1134>`__: Fixed the `-a` flag.
+   The ``-a`` / ``--write-all`` flag was broken. When used, it would cause Manim to crash just after beginning to render the second scene.
+
+* `#1115 <https://github.com/ManimCommunity/manim/pull/1115>`__: Fixed bugs in :class:`~.OpenGLMobject` and added :class:`ApplyMethod` support
+   Fixed undefined variables and converted :class:`Mobject` to :class:`OpenGLMobject`. Also, fixed assert statement in :class:`ApplyMethod`.
+
+* `#1092 <https://github.com/ManimCommunity/manim/pull/1092>`__: Refactored coordinate_systems.py, fixed bugs, added :class:`~.NumberPlane` test
+   The default behavior of :meth:`~.Mobject.rotate` is to rotate about the center of :class:`~.Mobject`. :class:`~.NumberLine` is symmetric about the point at the number 0 only when ``|x_min|`` == ``|x_max|``. Ideally, the rotation should coincide with
+   the point at number 0 on the line.
+
+   Added a regression test and additionally fixed some bugs introduced in :pr:`718`.
+
+* `#1078 <https://github.com/ManimCommunity/manim/pull/1078>`__: Removed stray print statements from `__main__.py`
+   Uses rich's print traceback instead and fixes an issue in printing the version twice when `manim --version` is called.
+
+* `#1086 <https://github.com/ManimCommunity/manim/pull/1086>`__: Fixed broken line spacing in :class:`~.Text`
+   The `line_spacing` kwarg was missing when creating :class:`Text` Mobjects; this adds it.
+
+* `#1083 <https://github.com/ManimCommunity/manim/pull/1083>`__: Corrected the shape of :class:`~.Torus`
+   :class:`Torus` draws a surface with an elliptical cross-section when `minor_radius` is different from 1. This PR ensures the cross-section is always a circle.
+
+Documentation-related changes
+-----------------------------
+
+* `#1217 <https://github.com/ManimCommunity/manim/pull/1217>`__: Copyedited the document on testing in our documentation
+
+
+* `#1206 <https://github.com/ManimCommunity/manim/pull/1206>`__: Added Docstrings to :class:`~.Mobject`
+
+
+* `#1218 <https://github.com/ManimCommunity/manim/pull/1218>`__: Removed BezierSpline from the example gallery
+
+
+* `#1219 <https://github.com/ManimCommunity/manim/pull/1219>`__: Updated Dockerfile (include dependencies for building documentation), moved documentation to main README
+
+
+* `#1209 <https://github.com/ManimCommunity/manim/pull/1209>`__: Added :ref_methods: to the manim directive
+   This allows class methods to be linked in the documentation. Checkout the `example references <https://docs.manim.community/en/latest/examples.html#movingaround>`_ below the code to see how this is used!
+
+* `#1204 <https://github.com/ManimCommunity/manim/pull/1204>`__: Added rotation example to example gallery
+
+
+* `#1137 <https://github.com/ManimCommunity/manim/pull/1137>`__: Added GitHub Wiki pages on adding testing/documentation to Sphinx Docs
+
+
+* `#1114 <https://github.com/ManimCommunity/manim/pull/1114>`__: Added examples for :class:`~.Ellipse`, :class:`~.Polygon`, :class:`~.RegularPolygon`, :class:`~.Triangle` and :class:`~.RoundedRectangle`
+
+
+* `#1195 <https://github.com/ManimCommunity/manim/pull/1195>`__: Removed SmallDot from example
+
+
+* `#1130 <https://github.com/ManimCommunity/manim/pull/1130>`__: Added pre-commit to run black and flake8, updated contributing documentation accordingly
+
+
+* `#1138 <https://github.com/ManimCommunity/manim/pull/1138>`__: Moved previous version changelogs to separate files; Added a Script to generate future changelogs
+   This script quickly generates a changelog for whoever is making the release.
+
+* `#1190 <https://github.com/ManimCommunity/manim/pull/1190>`__: Added note in contributing guide to read the latest version of the documentation
+
+
+* `#1188 <https://github.com/ManimCommunity/manim/pull/1188>`__: Added sounds example to docs
+
+
+* `#1165 <https://github.com/ManimCommunity/manim/pull/1165>`__: Added documentation for installing Manim on Colab
+
+
+* `#1128 <https://github.com/ManimCommunity/manim/pull/1128>`__: Added examples for :class:`~.DashedLine`, :class:`~.TangentLine`, :class:`~.Elbow`, :class:`~.Arrow`, :class:`~.Vector`, :class:`~.DoubleArrow`
+
+
+* `#1177 <https://github.com/ManimCommunity/manim/pull/1177>`__: Replace links to the latest version of the documentation to the stable version
+
+
+* `#1077 <https://github.com/ManimCommunity/manim/pull/1077>`__: Added details to :func:`~.Mobject.get_critical_point`
+
+
+* `#1154 <https://github.com/ManimCommunity/manim/pull/1154>`__: Fixed some typing hints. (ints to floats)
+
+
+* `#1036 <https://github.com/ManimCommunity/manim/pull/1036>`__: Added :class:`~.SurroundingRectangle` to the example gallery
+
+
+* `#1103 <https://github.com/ManimCommunity/manim/pull/1103>`__: Added documentation and examples for Square, Dot, Circle and Rectangle
+
+
+* `#1101 <https://github.com/ManimCommunity/manim/pull/1101>`__: Added documentation to :class:`~.Mobject`
+
+
+* `#1088 <https://github.com/ManimCommunity/manim/pull/1088>`__: Added new svg files to documentation and imports
+   In particular, SVGPathMobject, VMobjectFromPathstring, and the style_utils functions to manim's namespace.
+
+* `#1076 <https://github.com/ManimCommunity/manim/pull/1076>`__: Improve documentation for GraphScene
+   Updated `coords_to_point` and `point_to_coords` under `manim/scene/graph_scene.py` as the dosctring of each function confusingly described the opposite of what it is supposed to do.
+
+Changes concerning the testing system
+-------------------------------------
+
+* `#1160 <https://github.com/ManimCommunity/manim/pull/1160>`__: Enable CI testing for OpenGL
+
+
+* `#1100 <https://github.com/ManimCommunity/manim/pull/1100>`__: Rewrote test cases to use sys.executable in the command instead of "python"
+   Tests would fail due to `capture()` not spawning a subshell in the correct environment, so when python was called, the test would be unable to find necessary packages.
+
+* `#1079 <https://github.com/ManimCommunity/manim/pull/1079>`__: Removed the hardcoded value, `manim`, in `test_version.py`
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* `#1213 <https://github.com/ManimCommunity/manim/pull/1213>`__: Updated TinyTex dependencies
+
+
+* `#1187 <https://github.com/ManimCommunity/manim/pull/1187>`__: Add CodeCov to Github Workflow
+
+
+* `#1166 <https://github.com/ManimCommunity/manim/pull/1166>`__: CI: Use poetry's cache dir rather than pip
+
+
+* `#1071 <https://github.com/ManimCommunity/manim/pull/1071>`__: Enable pytest-cov based code coverage
+   - Include pytest-cov as a python module as part of developer dependencies
+   - In updating poetry to include pytest-cov, manimpango moved from version 0.2.3 to 0.2.4, and libpango1.0-dev needed to be installed in Ubuntu.
+   - Add to the CI workflow (`ci.yml`) to create and upload test coverage.
+
+* `#1073 <https://github.com/ManimCommunity/manim/pull/1073>`__: Removed "one line summary" from PULL_REQUEST_TEMPLATE.md
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#1167 <https://github.com/ManimCommunity/manim/pull/1167>`__: Merge :class:`~.OpenGLMobject` and :class:`~.Mobject`
+
+
+* `#1164 <https://github.com/ManimCommunity/manim/pull/1164>`__: Fixed single PEP8 style in `cairo_renderer.py`
+
+
+* `#1140 <https://github.com/ManimCommunity/manim/pull/1140>`__: Flake8 Compat & Code Cleanup
+
+
+* `#1019 <https://github.com/ManimCommunity/manim/pull/1019>`__: Refactored :meth:`~.Scene.play`
+   - Removed the _**three**_ decorators of :meth:`~.Scene.play`, in particular: caching logic and file writer logic are now included within :meth:`~.Scene.play` (it wasn't possible before, because `scene.wait` and `scene.play` were two different things).
+   - Added `is_static_wait` attributes to Wait. (<=> if wait is a frozen frame).
+   - Renamed and moved `scene.add_static_frame` to `renderer.freeze_current_frame`.
+   - Now when calling play without animation, it raises `ValueError` instead of just a warning.
+   - Fixed :pr:`874` by modifying `renderer.update_skipping_status`
+   - `renderer` starts the animation with `scene.begin_animations` (`scene.compile_animation_data` used to do this)
+   - The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later.
+   - Added a bunch of cool tests thanks to mocks, and thanks to the new syntax `scene.render`

@@ -1,0 +1,9 @@
+<svg viewBox="-12 -2 34 14" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="10" height="10" />
+
+    <!-- rotation is done around the point 0,0 -->
+    <rect x="0" y="0" width="10" height="10" fill="red" transform="rotate(100)" />
+
+    <!-- rotation is done around the point 10,10 -->
+    <rect x="0" y="0" width="10" height="10" fill="green" transform="rotate(100,10,10)" />
+</svg>

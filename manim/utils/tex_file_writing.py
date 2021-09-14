@@ -6,8 +6,10 @@
 
 """
 
-import os
 import hashlib
+import os
+import re
+import unicodedata
 from pathlib import Path
 
 from .. import config, logger
@@ -42,7 +44,9 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
         tex_template = config["tex_template"]
     tex_file = generate_tex_file(expression, environment, tex_template)
     dvi_file = compile_tex(
-        tex_file, tex_template.tex_compiler, tex_template.output_format
+        tex_file,
+        tex_template.tex_compiler,
+        tex_template.output_format,
     )
     return convert_to_svg(dvi_file, tex_template.output_format)
 
@@ -78,7 +82,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
 
     result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
     if not os.path.exists(result):
-        logger.info('Writing "%s" to %s' % ("".join(expression), result))
+        logger.info('Writing "{}" to {}'.format("".join(expression), result))
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
     return result
@@ -126,14 +130,30 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
             outflag,
             "-interaction=batchmode",
             "-halt-on-error",
-            '-output-directory="{}"'.format(tex_dir),
-            '"{}"'.format(tex_file),
+            f'-output-directory="{tex_dir}"',
+            f'"{tex_file}"',
             ">",
             os.devnull,
         ]
     else:
         raise ValueError(f"Tex compiler {tex_compiler} unknown.")
     return " ".join(commands)
+
+
+def insight_inputenc_error(match):
+    code_point = chr(int(match[1], 16))
+    name = unicodedata.name(code_point)
+    yield f"TexTemplate does not support character '{name}' (U+{match[1]})"
+    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
+
+
+# used by compile_tex; maps regexp to function offering additional insights
+LATEX_ERROR_INSIGHTS = [
+    (
+        r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
+        insight_inputenc_error,
+    ),
+]
 
 
 def compile_tex(tex_file, tex_compiler, output_format):
@@ -159,15 +179,67 @@ def compile_tex(tex_file, tex_compiler, output_format):
     tex_dir = Path(config.get_dir("tex_dir")).as_posix()
     if not os.path.exists(result):
         command = tex_compilation_command(
-            tex_compiler, output_format, tex_file, tex_dir
+            tex_compiler,
+            output_format,
+            tex_file,
+            tex_dir,
         )
         exit_code = os.system(command)
         if exit_code != 0:
             log_file = tex_file.replace(".tex", ".log")
+            if not Path(log_file).exists():
+                raise RuntimeError(
+                    f"{tex_compiler} failed but did not produce a log file. "
+                    "Check your LaTeX installation.",
+                )
+            with open(log_file) as f:
+                log = f.readlines()
+                error_pos = [
+                    index for index, line in enumerate(log) if line.startswith("!")
+                ]
+                if error_pos:
+                    with open(tex_file) as g:
+                        tex = g.readlines()
+                        for log_index in error_pos:
+                            logger.error(
+                                f"LaTeX compilation error: {log[log_index][2:]}",
+                            )
+                            index_line = log_index
+                            context = "Context for error:\n\n"
+
+                            # Find where the line of the error is indicated in the log file
+                            while not log[index_line].startswith("l."):
+                                index_line += 1
+
+                            # Find the index of the errored line in the tex file
+                            tex_index = (
+                                int(log[index_line].split(" ")[0].split(".")[1]) - 1
+                            )
+
+                            # Seek the environment scope that contains the error
+                            environment = tex_index
+                            while not tex[environment].startswith("\\begin"):
+                                environment -= 1
+
+                            # Print the entire environment including its end
+                            while not tex[environment - 1].startswith("\\end"):
+                                context += tex[environment]
+                                if environment == tex_index:
+                                    context += "^ this line\n"
+                                environment += 1
+                            logger.error(context)
+
+                        # add insight for errors
+                        for prog, get_insight in LATEX_ERROR_INSIGHTS:
+                            match = re.search(prog, "".join(log[log_index:index_line]))
+                            if match is not None:
+                                for insight in get_insight(match):
+                                    logger.info(insight)
+
             raise ValueError(
                 f"{tex_compiler} error converting to"
                 f" {output_format[1:]}. See log output above or"
-                f" the log file: {log_file}"
+                f" the log file: {log_file}",
             )
     return result
 
@@ -197,7 +269,7 @@ def convert_to_svg(dvi_file, extension, page=1):
             "dvisvgm",
             "--pdf" if extension == ".pdf" else "",
             "-p " + str(page),
-            '"{}"'.format(dvi_file),
+            f'"{dvi_file}"',
             "-n",
             "-v 0",
             "-o " + f'"{result}"',
@@ -212,7 +284,7 @@ def convert_to_svg(dvi_file, extension, page=1):
             f"Your installation does not support converting {extension} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."
             f" If this does not solve the problem, please refer to our troubleshooting guide at:"
-            f" https://docs.manim.community/en/latest/installation/troubleshooting.html"
+            f" https://docs.manim.community/en/stable/installation/troubleshooting.html",
         )
 
     return result

@@ -28,7 +28,7 @@ render scenes that are defined within doctests, for example::
         <Color #fc6255>
         >>> class DirectiveDoctestExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(dot))
+        ...         self.play(Create(dot))
 
 
 Options
@@ -64,21 +64,28 @@ directive:
         rendered in a reference block after the source code.
 
     ref_functions
-        A list of functions and methods, separated by spaces,
+        A list of functions, separated by spaces,
+        that is rendered in a reference block after the source code.
+
+    ref_methods
+        A list of methods, separated by spaces,
         that is rendered in a reference block after the source code.
 
 """
-from docutils import nodes
-from docutils.parsers.rst import directives, Directive
-from docutils.statemachine import StringList
+import csv
+import itertools as it
+import os
+import re
+import shutil
+import sys
+from pathlib import Path
+from timeit import timeit
+from typing import Callable, List
 
 import jinja2
-import os
-from os.path import relpath
-from pathlib import Path
-from typing import List
-
-import shutil
+from docutils import nodes
+from docutils.parsers.rst import Directive, directives
+from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
@@ -126,13 +133,15 @@ class ManimDirective(Directive):
     option_spec = {
         "hide_source": bool,
         "quality": lambda arg: directives.choice(
-            arg, ("low", "medium", "high", "fourk")
+            arg,
+            ("low", "medium", "high", "fourk"),
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
         "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
+        "ref_methods": lambda arg: process_name_list(arg, "meth"),
     }
     final_argument_whitespace = True
 
@@ -140,7 +149,9 @@ class ManimDirective(Directive):
         if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
             node = skip_manim_node()
             self.state.nested_parse(
-                StringList(self.content[0]), self.content_offset, node
+                StringList(self.content[0]),
+                self.content_offset,
+                node,
             )
             return [node]
 
@@ -163,13 +174,11 @@ class ManimDirective(Directive):
             self.options.get("ref_modules", [])
             + self.options.get("ref_classes", [])
             + self.options.get("ref_functions", [])
+            + self.options.get("ref_methods", [])
         )
         if ref_content:
-            ref_block = f"""
-.. admonition:: Example References
-    :class: example-reference
+            ref_block = "References: " + " ".join(ref_content)
 
-    {' '.join(ref_content)}"""
         else:
             ref_block = ""
 
@@ -185,39 +194,41 @@ class ManimDirective(Directive):
         state_machine = self.state_machine
         document = state_machine.document
 
-        source_file_name = document.attributes["source"]
-        source_rel_name = relpath(source_file_name, setup.confdir)
-        source_rel_dir = os.path.dirname(source_rel_name)
-        while source_rel_dir.startswith(os.path.sep):
-            source_rel_dir = source_rel_dir[1:]
-
-        dest_dir = os.path.abspath(
-            os.path.join(setup.app.builder.outdir, source_rel_dir)
-        )
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        source_file_name = Path(document.attributes["source"])
+        source_rel_name = source_file_name.relative_to(setup.confdir)
+        source_rel_dir = source_rel_name.parents[0]
+        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()
+        if not dest_dir.exists():
+            dest_dir.mkdir(parents=True, exist_ok=True)
 
         source_block = [
             ".. code-block:: python",
             "",
-            *["    " + line for line in self.content],
+            "    from manim import *\n",
+            *("    " + line for line in self.content),
         ]
         source_block = "\n".join(source_block)
 
-        config.media_dir = Path(setup.confdir) / "media"
+        config.media_dir = (Path(setup.confdir) / "media").absolute()
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
+        config.progress_bar = "none"
+        config.verbosity = "WARNING"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
-            f'config["save_as_gif"] = {save_as_gif}',
+            f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
+        if save_last_frame:
+            config_code.append('config["format"] = None')
+        if save_as_gif:
+            config_code.append('config["format"] = "gif"')
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
@@ -231,13 +242,19 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        exec("\n".join(code), globals())
+        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+
+        _write_rendering_stats(
+            clsname,
+            run_time,
+            self.state.document.settings.env.docname,
+        )
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
             filesrc = config.get_dir("video_dir") / filename
-            destfile = os.path.join(dest_dir, filename)
+            destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
@@ -247,12 +264,11 @@ class ManimDirective(Directive):
             filesrc = config.get_dir("images_dir") / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
-
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=os.path.relpath(filesrc, setup.confdir),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
@@ -260,10 +276,56 @@ class ManimDirective(Directive):
             ref_block=ref_block,
         )
         state_machine.insert_input(
-            rendered_template.split("\n"), source=document.attributes["source"]
+            rendered_template.split("\n"),
+            source=document.attributes["source"],
         )
 
         return []
+
+
+rendering_times_file_path = Path("../rendering_times.csv")
+
+
+def _write_rendering_stats(scene_name, run_time, file_name):
+    with open(rendering_times_file_path, "a") as file:
+        csv.writer(file).writerow(
+            [
+                re.sub(r"^(reference\/)|(manim\.)", "", file_name),
+                scene_name,
+                "%.3f" % run_time,
+            ],
+        )
+
+
+def _log_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        with open(rendering_times_file_path) as file:
+            data = list(csv.reader(file))
+            if len(data) == 0:
+                sys.exit()
+
+            print("\nRendering Summary\n-----------------\n")
+
+            max_file_length = max(len(row[0]) for row in data)
+            for key, group in it.groupby(data, key=lambda row: row[0]):
+                key = key.ljust(max_file_length + 1, ".")
+                group = list(group)
+                if len(group) == 1:
+                    row = group[0]
+                    print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                    continue
+                time_sum = sum(float(row[2]) for row in group)
+                print(
+                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
+                )
+                for row in group:
+                    print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        print("")
+
+
+def _delete_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        os.remove(rendering_times_file_path)
 
 
 def setup(app):
@@ -277,6 +339,9 @@ def setup(app):
 
     app.add_directive("manim", ManimDirective)
 
+    app.connect("builder-inited", _delete_rendering_times)
+    app.connect("build-finished", _log_rendering_times)
+
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata
 
@@ -285,30 +350,30 @@ TEMPLATE = r"""
 {% if not hide_source %}
 .. raw:: html
 
-    <div class="manim-example">
+    <div id="{{ clsname_lowercase }}" class="admonition admonition-manim-example">
+    <p class="admonition-title">Example: {{ clsname }} <a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></p>
 
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% endif %}
 {% if not hide_source %}
-.. raw:: html
-
-    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
-
 {{ source_block }}
+
 {{ ref_block }}
+
 {% endif %}
 
 .. raw:: html

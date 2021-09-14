@@ -5,7 +5,78 @@ Constant definitions.
 import typing
 
 import numpy as np
+from PIL import Image
 
+__all__ = [
+    "NOT_SETTING_FONT_MSG",
+    "SCENE_NOT_FOUND_MESSAGE",
+    "CHOOSE_NUMBER_MESSAGE",
+    "INVALID_NUMBER_MESSAGE",
+    "NO_SCENE_MESSAGE",
+    "NORMAL",
+    "ITALIC",
+    "OBLIQUE",
+    "BOLD",
+    "THIN",
+    "ULTRALIGHT",
+    "LIGHT",
+    "SEMILIGHT",
+    "BOOK",
+    "MEDIUM",
+    "SEMIBOLD",
+    "ULTRABOLD",
+    "HEAVY",
+    "ULTRAHEAVY",
+    "RESAMPLING_ALGORITHMS",
+    "ORIGIN",
+    "UP",
+    "DOWN",
+    "RIGHT",
+    "LEFT",
+    "IN",
+    "OUT",
+    "X_AXIS",
+    "Y_AXIS",
+    "Z_AXIS",
+    "UL",
+    "UR",
+    "DL",
+    "DR",
+    "START_X",
+    "START_Y",
+    "DEFAULT_DOT_RADIUS",
+    "DEFAULT_SMALL_DOT_RADIUS",
+    "DEFAULT_DASH_LENGTH",
+    "DEFAULT_ARROW_TIP_LENGTH",
+    "SMALL_BUFF",
+    "MED_SMALL_BUFF",
+    "MED_LARGE_BUFF",
+    "LARGE_BUFF",
+    "DEFAULT_MOBJECT_TO_EDGE_BUFFER",
+    "DEFAULT_MOBJECT_TO_MOBJECT_BUFFER",
+    "DEFAULT_POINTWISE_FUNCTION_RUN_TIME",
+    "DEFAULT_WAIT_TIME",
+    "DEFAULT_POINT_DENSITY_2D",
+    "DEFAULT_POINT_DENSITY_1D",
+    "DEFAULT_STROKE_WIDTH",
+    "DEFAULT_FONT_SIZE",
+    "PI",
+    "TAU",
+    "DEGREES",
+    "FFMPEG_BIN",
+    "GIF_FILE_EXTENSION",
+    "FFMPEG_VERBOSITY_MAP",
+    "VERBOSITY_CHOICES",
+    "WEBGL_RENDERER_INFO",
+    "QUALITIES",
+    "DEFAULT_QUALITY",
+    "DEFAULT_QUALITY_SHORT",
+    "EPILOG",
+    "HELP_OPTIONS",
+    "CONTEXT_SETTINGS",
+    "SHIFT_VALUE",
+    "CTRL_VALUE",
+]
 # Messages
 NOT_SETTING_FONT_MSG: str = """
 You haven't set font.
@@ -25,7 +96,7 @@ NO_SCENE_MESSAGE: str = """
    There are no scenes inside that module
 """
 
-# Cairo and Pango stuff
+# Pango stuff
 NORMAL: str = "NORMAL"
 ITALIC: str = "ITALIC"
 OBLIQUE: str = "OBLIQUE"
@@ -42,6 +113,18 @@ ULTRABOLD: str = "ULTRABOLD"
 HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
+RESAMPLING_ALGORITHMS = {
+    "nearest": Image.NEAREST,
+    "none": Image.NEAREST,
+    "lanczos": Image.LANCZOS,
+    "antialias": Image.LANCZOS,
+    "bilinear": Image.BILINEAR,
+    "linear": Image.BILINEAR,
+    "bicubic": Image.BICUBIC,
+    "cubic": Image.BICUBIC,
+    "box": Image.BOX,
+    "hamming": Image.HAMMING,
+}
 
 # Geometry: directions
 ORIGIN: np.ndarray = np.array((0.0, 0.0, 0.0))
@@ -86,6 +169,10 @@ DR: np.ndarray = DOWN + RIGHT
 # Geometry
 START_X: int = 30
 START_Y: int = 20
+DEFAULT_DOT_RADIUS: float = 0.08
+DEFAULT_SMALL_DOT_RADIUS: float = 0.04
+DEFAULT_DASH_LENGTH: float = 0.05
+DEFAULT_ARROW_TIP_LENGTH: float = 0.35
 
 # Default buffers (padding)
 SMALL_BUFF: float = 0.1
@@ -101,8 +188,9 @@ DEFAULT_WAIT_TIME: float = 1.0
 
 # Misc
 DEFAULT_POINT_DENSITY_2D: int = 25
-DEFAULT_POINT_DENSITY_1D: int = 250
+DEFAULT_POINT_DENSITY_1D: int = 10
 DEFAULT_STROKE_WIDTH: int = 4
+DEFAULT_FONT_SIZE: float = 48
 
 # Mathematical constants
 PI: float = np.pi
@@ -128,11 +216,11 @@ FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-JS_RENDERER_INFO: str = (
+WEBGL_RENDERER_INFO: str = (
     "The Electron frontend to Manim is hosted at "
     "https://github.com/ManimCommunity/manim-renderer. After cloning and building it, "
     "you can either start it prior to running Manim or specify the path to the "
-    "executable with the --js_renderer_path flag."
+    "executable with the --webgl_renderer_path flag."
 )
 
 # Video qualities
@@ -177,3 +265,9 @@ QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
 
 DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
+
+EPILOG = "Made with <3 by Manim Community developers."
+HELP_OPTIONS = ["-h", "--help"]
+CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
+SHIFT_VALUE = 65505
+CTRL_VALUE = 65507
