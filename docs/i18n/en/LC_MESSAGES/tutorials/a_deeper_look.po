@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2020, The Manim Community Dev Team
+# Copyright (C) 2020-2021, The Manim Community Dev Team
 # This file is distributed under the same license as the Manim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-16 22:10+0100\n"
+"POT-Creation-Date: 2021-09-14 23:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/tutorials/a_deeper_look.rst:2
 msgid "A deeper look"
@@ -24,12 +24,12 @@ msgstr ""
 #: ../../source/tutorials/a_deeper_look.rst:4
 msgid ""
 "This document will focus on understanding manim's output files and some "
-"of the main command line flags available."
+"of the main command-line flags available."
 msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:7
 msgid ""
-"This tutorial picks up where :doc:`quickstart` left of, so please read "
+"This tutorial picks up where :doc:`quickstart` left off, so please read "
 "that document before starting this one."
 msgstr ""
 
@@ -45,11 +45,11 @@ msgstr ""
 msgid ""
 "Let's dissect what just happened step by step.  First, this command "
 "executes manim on the file ``scene.py``, which contains our animation "
-"code.  Further, this command tells manim exactly which ``Scene`` to be "
-"rendered, in this case it is ``SquareToCircle``.  This is necessary "
+"code.  Further, this command tells manim exactly which ``Scene`` is to be"
+" rendered, in this case, it is ``SquareToCircle``.  This is necessary "
 "because a single scene file may contain more than one scene.  Next, the "
-"flag `-p` tells manim to play the scene once it's rendered, and the `-l` "
-"flag tells manim to render the scene in low quality."
+"flag `-p` tells manim to play the scene once it's rendered, and the `-ql`"
+" flag tells manim to render the scene in low quality."
 msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:27
@@ -81,8 +81,8 @@ msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:62
 msgid ""
-"The ``-l`` flag (for low quality) has been replaced by the ``-e`` flag, "
-"for high quality.  Manim will take considerably longer to render this "
+"The ``-ql`` flag (for low quality) has been replaced by the ``-qh`` flag,"
+" for high quality.  Manim will take considerably longer to render this "
 "file, and it will play it once it's done since we are using the ``-p`` "
 "flag.  The output should look like this:"
 msgstr ""
@@ -116,7 +116,7 @@ msgstr ""
 #: ../../source/tutorials/a_deeper_look.rst:134
 msgid ""
 "Saving the last frame with ``-s`` can be combined with the flags for "
-"different resolutions, e.g. ``-s -l``, ``-s -e``"
+"different resolutions, e.g. ``-s -ql``, ``-s -qh``"
 msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:141
@@ -137,10 +137,10 @@ msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:154
 msgid ""
-"As discussed previously, the ``-l`` specifies low render quality.  This "
+"As discussed previously, the ``-ql`` specifies low render quality.  This "
 "does not look very good, but is very useful for rapid prototyping and "
-"testing.  The other options that specify render quality are ``-m``, "
-"``-e``, and ``-k`` for medium, high, and 4k quality, respectively."
+"testing.  The other options that specify render quality are ``-qm``, "
+"``-qh``, and ``-qk`` for medium, high, and 4k quality, respectively."
 msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:159
@@ -155,12 +155,12 @@ msgid ""
 "Finally, by default manim will output .mp4 files.  If you want your "
 "animations in .gif format instead, use the ``-i`` flag.  The output files"
 " will be in the same folder as the .mp4 files, and with the same name, "
-"but different file extension."
+"but a different file extension."
 msgstr ""
 
 #: ../../source/tutorials/a_deeper_look.rst:168
 msgid ""
-"This was a quick review of some of the most frequent command line flags."
+"This was a quick review of some of the most frequent command-line flags."
 "  For a thorough review of all flags available, see :doc:`configuration`."
 msgstr ""
 
