@@ -85,5 +85,3 @@ msgid ""
 "After making sure you have a clean install, you can go back to :ref"
 ":`installing-manim`."
 msgstr ""
-
-

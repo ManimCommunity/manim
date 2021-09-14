@@ -176,5 +176,3 @@ msgid ""
 " and other settings, see the other :doc:`../tutorials`.  For a list of "
 "all available features, see the :doc:`../reference` page."
 msgstr ""
-
-

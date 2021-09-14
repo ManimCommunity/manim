@@ -86,5 +86,3 @@ msgid ""
 "developing and testing on your local copy of the repository. This warning"
 " doesn't apply for users who use `poetry <https://python-poetry.org>`_."
 msgstr ""
-
-

@@ -157,5 +157,3 @@ msgid ""
 "After making sure you have a clean install following the instructions for"
 " each dependency above, you can go back to :ref:`installing-manim`."
 msgstr ""
-
-

@@ -448,5 +448,3 @@ msgstr ""
 #: ../../source/tutorials/configuration.rst:365
 msgid "A list of all CLI flags"
 msgstr ""
-
-

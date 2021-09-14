@@ -209,5 +209,3 @@ msgid ""
 "For example, if you have written some new example and want to format it "
 "and see lint information use the commands below."
 msgstr ""
-
-

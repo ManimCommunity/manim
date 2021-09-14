@@ -79,5 +79,3 @@ msgstr ""
 #: ../../source/examples.rst:598
 msgid "Advanced Projects"
 msgstr ""
-
-

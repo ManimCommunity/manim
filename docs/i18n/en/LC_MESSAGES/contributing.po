@@ -422,5 +422,3 @@ msgstr ""
 #: ../../source/contributing.rst:284
 msgid "**Thank you for contributing!**"
 msgstr ""
-
-

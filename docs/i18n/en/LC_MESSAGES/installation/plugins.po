@@ -109,5 +109,3 @@ msgid ""
 "plugin's `entry point <https://packaging.python.org/specifications/entry-"
 "points/>`_ can be specified in poetry as:"
 msgstr ""
-
-

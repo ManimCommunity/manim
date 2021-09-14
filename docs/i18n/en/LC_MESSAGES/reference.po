@@ -342,5 +342,3 @@ msgstr ""
 #: ../../source/reference.rst:144:<autosummary>:1
 msgid "Abstract base class for several objects used by manim."
 msgstr ""
-
-

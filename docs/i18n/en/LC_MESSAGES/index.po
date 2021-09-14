@@ -47,5 +47,3 @@ msgstr ""
 #: ../../source/index.rst:37
 msgid "Navigation"
 msgstr ""
-
-

@@ -581,5 +581,3 @@ msgid ""
 ":code:`initialize_directories`, if needed, overrides the values from the "
 "cfg files at runtime."
 msgstr ""
-
-

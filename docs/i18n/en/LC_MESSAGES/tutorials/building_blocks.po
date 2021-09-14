@@ -288,5 +288,3 @@ msgid ""
 ":class:`.Scene` subclasses in the event that multiple scenes are to be "
 "rendered at the same time."
 msgstr ""
-
-
