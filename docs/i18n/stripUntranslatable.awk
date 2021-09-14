@@ -17,7 +17,7 @@ BEGIN {
 	msgstrstr=""
 	# The same string, but with a sharp before every newline (commented out)
 	sharpedmsgstrstr=""
-	# Wether the block being read should be kept
+	# Whether the block being read should be kept
 	# -1 -> should keep, overridable
 	# 0  -> should not keep, overridable
 	# 1  -> should keep, not overridable
