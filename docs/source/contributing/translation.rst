@@ -23,13 +23,13 @@ Then you can go the
 `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
 and select the language you want to help with. Then you have a blue button reading
 `Translate`, click it to get started with translating ! You will get to a list of
-all ressources of the project. You can click on any untranslated ressource, then
+all resources of the project. You can click on any untranslated resource, then
 click on `Translate` and you will get the following page:
 
 .. image:: /_static/transifex_explanation.png
     :align: center
 
-The `A` panel is the list of all the strings in the ressource. Click on any of 
+The `A` panel is the list of all the strings in the resource. Click on any of 
 them to translate it. It will appear in the `B` panel, and you will be able to
 set your translation in the `C` panel. Once you're done, click `Save changes`.
 Your translation will have to be reviewed before getting in the docs.
