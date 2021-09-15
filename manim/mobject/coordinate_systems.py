@@ -18,6 +18,7 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.svg.svg_mobject import SVGMobject
 
 from .. import config
 from ..constants import *
@@ -696,6 +697,28 @@ class CoordinateSystem:
         )
         graph.underlying_function = function
         return graph
+
+    def get_implicit_graph(
+        self,
+        func: Callable,
+        color: Color = WHITE,
+        samples: int = 100,
+    ) -> SVGMobject:
+        import matplotlib.pyplot as plt
+
+        xlist = np.linspace(*self.x_range[:2], samples)
+        ylist = np.linspace(*self.y_range[:2], samples)
+        X, Y = np.meshgrid(xlist, ylist)
+        fig, ax = plt.subplots(1, 1, figsize=[self.x_length, self.y_length])
+        ax.contour(X, Y, func(X, Y), [0])
+        plt.axis("off")
+        plt.gca().set_position([0, 0, 1, 1])
+        plt.savefig(f"{config.media_dir}/graph/graph.svg")
+        plt.close()
+        result = SVGMobject(f"{config.media_dir}/graph/graph.svg")
+        result.scale_to_fit_height(self.y_length).remove(result[0])
+        result.set_color(color)
+        return result
 
     def get_parametric_curve(self, function, **kwargs):
         dim = self.dimension
