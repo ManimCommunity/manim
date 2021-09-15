@@ -719,10 +719,10 @@ class CoordinateSystem:
 
         Examples
         --------
-        .. manim:: ImplicitTest
+        .. manim:: ImplicitExample
             :save_last_frame:
 
-            class ImplicitTest(Scene):
+            class ImplicitExample(Scene):
                 def construct(self):
                     nplane = Axes()
                     a = nplane.get_implicit_graph(
