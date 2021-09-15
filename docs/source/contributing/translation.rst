@@ -19,7 +19,7 @@ on the top bar.
    :align: center
    :width: 200
 
- Now go to the
+Now go to the
 `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
 and select the language(s) you want to help with. You should see a blue button reading
 `Translate`; click it to get started! You will see a list of
@@ -37,8 +37,8 @@ You can also get back to the resources list by clicking `d` or change the
 destination language in `e`. Your
 
 
-If you want to become a reviewer, please join the discord server of Manim and
-you can ping the role @i18nService.
+If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_
+and you can ping the role @i18nService.
 
 If you want to add a new language, you can go to
 `the project page <https://www.transifex.com/manim-community/manim-community-documentation>`_
