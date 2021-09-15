@@ -53,6 +53,7 @@ cloup = "^0.7.0"
 requests = "*"
 dearpygui = { version = "^0.8", optional = true }
 screeninfo = "^0.6.7"
+matplotlib = "*"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
