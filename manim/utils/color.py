@@ -278,7 +278,7 @@ def print_constant_definitions():
             constants_names.append(name_upper)
             print(f"{name_upper} = Colors.{name}")
 
-    constants_names_repr = "[\n    \"" + "\",\n    \"".join(constants_names) + "\",\n]"
+    constants_names_repr = '[\n    "' + '",\n    "'.join(constants_names) + '",\n]'
 
     print(f"\n__all__ += {constants_names_repr}")
 
