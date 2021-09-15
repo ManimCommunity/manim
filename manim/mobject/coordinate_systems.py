@@ -704,6 +704,30 @@ class CoordinateSystem:
         color: Color = WHITE,
         samples: int = 100,
     ) -> SVGMobject:
+        """Creates the graph of an implicit function.
+
+        Parameters
+        ----------
+        func
+            The function to graph, in the form of f(x, y) = 0.
+        color
+            The color of the graph
+        samples
+            The number of points to take for the graph.
+
+        Examples
+        --------
+        .. manim:: ImplicitTest
+            :save_last_frame:
+
+            class ImplicitTest(Scene):
+                def construct(self):
+                    nplane = Axes()
+                    a = nplane.get_implicit_graph(
+                        lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
+                    )
+                    self.add(nplane, a)
+        """
         import matplotlib.pyplot as plt
 
         xlist = np.linspace(*self.x_range[:2], samples)
