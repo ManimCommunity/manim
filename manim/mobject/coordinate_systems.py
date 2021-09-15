@@ -12,6 +12,8 @@ __all__ = [
 
 import fractions as fr
 import numbers
+from os import makedirs
+from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -737,7 +739,10 @@ class CoordinateSystem:
         ax.contour(X, Y, func(X, Y), [0])
         plt.axis("off")
         plt.gca().set_position([0, 0, 1, 1])
-        plt.savefig(f"{config.media_dir}/graph/graph.svg")
+        graph_dir = f"{config.media_dir}/graph"
+        if not Path(graph_dir).exists():
+            makedirs(graph_dir)
+        plt.savefig(f"{graph_dir}/graph.svg")
         plt.close()
         result = SVGMobject(f"{config.media_dir}/graph/graph.svg")
         result.scale_to_fit_height(self.y_length).remove(result[0])
