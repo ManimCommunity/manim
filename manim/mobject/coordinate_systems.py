@@ -769,6 +769,16 @@ class CoordinateSystem:
         """
         Returns a tuple of the axis relative coordinates of the point
         on the graph based on the x-value given.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            ax = Axes()
+            curve = ax.get_graph(lambda x: x ** 2)
+            ax.input_to_graph_coords(x=3, graph=curve)
+            # (3, 9)
         """
         return x, graph.underlying_function(x)
 
