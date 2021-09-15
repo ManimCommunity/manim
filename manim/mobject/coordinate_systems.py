@@ -704,8 +704,9 @@ class CoordinateSystem:
         self,
         func: Callable,
         color: Color = WHITE,
-        samples: int = 100,
-    ) -> SVGMobject:
+        res: int = 100,
+        **kwargs,
+    ) -> VMobject:
         """Creates the graph of an implicit function.
 
         Parameters
@@ -714,8 +715,10 @@ class CoordinateSystem:
             The function to graph, in the form of f(x, y) = 0.
         color
             The color of the graph
-        samples
+        res
             The number of points to take for the graph.
+        kwargs
+            Additional parameters to pass into :class:`VMobject`
 
         Examples
         --------
@@ -724,30 +727,15 @@ class CoordinateSystem:
 
             class ImplicitExample(Scene):
                 def construct(self):
-                    nplane = Axes()
-                    a = nplane.get_implicit_graph(
+                    ax = Axes()
+                    a = ax.get_implicit_graph(
                         lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
                     )
-                    self.add(nplane, a)
+                    self.add(ax, a)
         """
-        import matplotlib.pyplot as plt
+        from .functions import ImplicitFunction
 
-        xlist = np.linspace(*self.x_range[:2], samples)
-        ylist = np.linspace(*self.y_range[:2], samples)
-        X, Y = np.meshgrid(xlist, ylist)
-        fig, ax = plt.subplots(1, 1, figsize=[self.x_length, self.y_length])
-        ax.contour(X, Y, func(X, Y), [0])
-        plt.axis("off")
-        plt.gca().set_position([0, 0, 1, 1])
-        graph_dir = f"{config.media_dir}/graph"
-        if not Path(graph_dir).exists():
-            makedirs(graph_dir)
-        plt.savefig(f"{graph_dir}/graph.svg")
-        plt.close()
-        result = SVGMobject(f"{config.media_dir}/graph/graph.svg")
-        result.scale_to_fit_height(self.y_length).remove(result[0])
-        result.set_color(color)
-        return result
+        return ImplicitFunction(func, self, res=res, color=color, **kwargs)
 
     def get_parametric_curve(self, function, **kwargs):
         dim = self.dimension
