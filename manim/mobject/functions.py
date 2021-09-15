@@ -3,6 +3,8 @@
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
+from typing import Callable, Optional
+
 import numpy as np
 
 from .. import config
@@ -162,9 +164,25 @@ from .opengl_compatibility import ConvertToOpenGL
 
 
 class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, function=None, ax=None, res=None, **kwargs):
-        """
-        :param function: Function of k and y to graph isocontour f(x,y)=0
+    def __init__(
+        self,
+        function: Callable = None,
+        ax: Optional["CoordinateSystem"] = None,
+        res: int = None,
+        **kwargs
+    ):
+        """An implicit function, relative to the scene or a :class:`CoordinateSystem`.
+
+        Parameters
+        ----------
+        function
+            The implicit function in the form of f(x, y) = 0
+        ax
+            Optional, the coordinate system to place the implicit graph
+        res
+            The resolution of the implicit graph
+        kwargs
+            Additional parameters to be passed to :class:`VMobject`
         """
         self.res = res
         self.x_min, self.x_max = -config.frame_width / 2, config.frame_width / 2
@@ -189,10 +207,9 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
     def get_function_val_at_point(self, x, y):
         return self.function(x, y)
 
-    def sample_function_mask(self):
-        """
-        :return: A mask over the plane at the specified resolution capturing function
-                 values at each point.
+    def sample_function_mask(self) -> list:
+        """A mask over the plane at the specified resolution capturing function
+        values at each point.
         """
         delta_x = self.x_max - self.x_min
         delta_y = self.y_max - self.y_min
@@ -213,10 +230,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             mask.append(vals)
         return mask
 
-    def get_contours(self):
-        """
-        :return: A dictionary consisting of start -> list(end) points to generate contours.
-        """
+    def get_contours(self) -> dict:
+        """A dictionary consisting of start -> list(end) points to generate contours."""
         mask = self.sample_function_mask()
         contours = {}
         for yi in range(0, len(mask) - 1):
@@ -251,20 +266,39 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
                 def calc_lin_interp(fc, fe, cv, ev):
                     """
-                    :param fc: Function value at 'center' vertex
-                    :param fe: Function value at 'edge' vertex
-                    :param cv: The 'location' of the 'center' vertex (x or y depending)
-                    :param ev: Similar to above for 'edge' vertex
-                    :return: The x or y coordinate of the linear interpolation
+                    Parameters
+                    ----------
+                    fc
+                        Function value at 'center' vertex
+                    fe
+                        Function value at 'edge' vertex
+                    cv
+                        The 'location' of the 'center' vertex (x or y depending)
+                    ev
+                        Similar to above for 'edge' vertex
+
+                    Returns
+                    -------
+                    float
+                        The x or y coordinate of the linear interpolation
                     """
                     return -(fc / (fe - fc)) * (ev - cv) + cv
 
                 def calc_lin_interp_diag(cent, side, vert):
                     """
-                    :param cent: 'Center' point
-                    :param side: 'Side' point w.r.t. cent
-                    :param vert: 'Vertical' point w.r.t. cent
-                    :return: Dict detailing path to follow of linear interpolation.
+                    Parameters
+                    ----------
+                    cent
+                        'Center' point
+                    side
+                        'Side' point w.r.t. cent
+                    vert
+                        'Vertical' point w.r.t. cent
+
+                    Returns
+                    -------
+                    dict
+                        Dict detailing path to follow of linear interpolation.
                     """
                     centx, centy = cent[:2]
 
@@ -288,7 +322,10 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
                 def calc_lin_interp_sides():
                     """
-                    :return: Horizontal linear interpolation
+                    Returns
+                    -------
+                    dict
+                        Horizontal linear interpolation
                     """
                     tlx, tly = tlp[:2]
                     trx, tr_y = trp[:2]
@@ -313,7 +350,10 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
                 def calc_lin_interp_vert():
                     """
-                    :return: Vertical linear interpolation
+                    Returns
+                    -------
+                    dict
+                        Vertical linear interpolation
                     """
                     tlx, tly = tlp[:2]
                     trx, tr_y = trp[:2]
@@ -374,6 +414,15 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         return self.generate_points()
 
     def generate_points(self):
+        """This generates path basically in a follow-the-points sort of manner.
+
+        It starts at the 'first points' in the dictionary, starts a path at the
+        'start' point and iteratively follows the path from the current point
+        to the first point in the current point's list of adjacent points.
+        It does this until there is nowhere else to go for that curve and then
+        proceeds to the next curve. At every point, current points are removed from
+        the contours just to ensure no vertices are visited more than once.
+        """
         contours = self.get_contours()
 
         def try_rem(arr, val):
@@ -384,15 +433,6 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         def len_filter(dic):
             return {k: arr for k, arr in dic.items() if len(arr) > 0}
 
-        """
-        This generates path basically in a follow-the-points sort of manner.
-        It starts at the 'first points' in the dictionary, starts a path at the
-        'start' point and iteratively follows the path from the current point
-        to the first point in the current point's list of adjacent points.
-        It does this until there is nowhere else to go for that curve and then
-        proceeds to the next curve. At every point, current points are removed from
-        the contours just to ensure no vertices are visited more than once.
-        """
         while len(len_filter(contours).keys()) > 0:
             sptt, eptts = next(iter(len_filter(contours).items()))
             eptt = eptts[0]
