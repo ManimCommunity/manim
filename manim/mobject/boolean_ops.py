@@ -12,8 +12,8 @@ __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 class _BooleanOps(VMobject):
     """This class contains some helper functions which
-    helps to convert to and from skia objects to manim
-    object(VMobjects).
+    helps to convert to and from skia objects and manim
+    objects (:class:`~.VMobject`).
     """
 
     def __init__(self, *args, **kwargs):
@@ -131,8 +131,8 @@ class _BooleanOps(VMobject):
 
 
 class Union(_BooleanOps):
-    """Union of 2 or more :class:`~.VMobject`. This finds the common outline of
-    the two :class:`VMobject`.
+    """Union of two or more :class:`~.VMobject`s. This returns the common region of
+    the :class:`~VMobject`s.
 
     Parameters
     ==========
@@ -212,8 +212,8 @@ class Difference(_BooleanOps):
 
 
 class Intersection(_BooleanOps):
-    """Find intersection between two :class:`~.VMobject`.
-    This keeps the parts covered by both :class:`VMobject`.
+    """Find the intersection of two :class:`~.VMobject`s.
+    This keeps the parts covered by both :class:`VMobject`s.
 
     Parameters
     ==========
@@ -252,8 +252,8 @@ class Intersection(_BooleanOps):
 
 class Exclusion(_BooleanOps):
     """Find the XOR between two :class:`VMobject`.
-    This creates a new :class:`~.VMobject` which keeps the region
-    which is covered by both of them.
+    This creates a new :class:`~.VMobject` consisting of the region
+    covered by exactly one of them.
 
     Parameters
     ==========
