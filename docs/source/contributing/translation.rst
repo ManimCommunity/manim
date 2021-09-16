@@ -38,7 +38,7 @@ destination language in `e`. Your
 
 
 If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_
-and you can ping the role @i18nService.
+and you can ping the role @Translation Admin.
 
 If you want to add a new language, you can go to
 `the project page <https://www.transifex.com/manim-community/manim-community-documentation>`_
