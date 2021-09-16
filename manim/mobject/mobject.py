@@ -1268,14 +1268,29 @@ class Mobject:
             mob.points += about_point
         return self
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="rotate",
+    )
     def rotate_in_place(self, angle, axis=OUT):
         # redundant with default behavior of rotate now.
         return self.rotate(angle, axis=axis)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_in_place(self, scale_factor, **kwargs):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, **kwargs)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_about_point(self, scale_factor, point):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, about_point=point)
@@ -1385,6 +1400,11 @@ class Mobject:
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="stretch",
+    )
     def stretch_in_place(self, factor, dim):
         # Now redundant with stretch
         return self.stretch(factor, dim)
@@ -1577,7 +1597,7 @@ class Mobject:
     ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
-        self.scale_in_place((length + buff) / length)
+        self.scale((length + buff) / length)
         return self
 
     def put_start_and_end_on(self, start, end):
