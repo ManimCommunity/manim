@@ -8,12 +8,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../source/tutorials.rst:4
-msgid "Table of Contents"
-msgstr ""
-
-#: ../../source/tutorials.rst:2
-msgid "Tutorials"
+#: ../../source/changelog.rst:3
+msgid "Changelog"
 msgstr ""
 
 

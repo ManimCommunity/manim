@@ -21,7 +21,7 @@ on the top bar.
 
 Now go to the
 `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
-and select the language(s) you want to help with. You should see a blue button reading
+and select a language you want to help with. You should see a blue button reading
 `Translate`; click it to get started! You will see a list of
 resources in the project. You can click on any untranslated resource, then
 click on `Translate`. You will then see something like the following:

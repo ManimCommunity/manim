@@ -78,6 +78,10 @@ locale_dirs = ["../i18n/"]
 # Splits the text in more pot files.
 gettext_compact = False
 
+# Remove useless metadata from po files.
+gettext_last_translator = ""
+gettext_language_team = ""
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

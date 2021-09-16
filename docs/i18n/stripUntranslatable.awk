@@ -25,7 +25,22 @@ BEGIN {
 	# The file location of where to put everything
 	# that has been stripped out
 	untranslatablefile="./untranslatable.po"
+	# Wether we are still reading the licence text
+	licencetext=1
 }
+
+# Detecting the end of licence
+$0~/^#, fuzzy$/ {licencetext=0; next; next}
+
+# If we are reading the licence, skip text and dont print it.
+$0~// {if (licencetext==1) {next}}
+
+# We pass on the wrong metadata
+$0~/"Report-Msgid-Bugs-To:/ {next}
+$0~/"PO-Revision-Date:/ {next}
+$0~/"Last-Translator:/ {next}
+$0~/"Language-Team:/ {next}
+
 # This pattern matches empty lines
 # The code flushes the data stored, and save
 # it only if acceptable!=1
