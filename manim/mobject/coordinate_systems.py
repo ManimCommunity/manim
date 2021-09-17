@@ -733,9 +733,16 @@ class CoordinateSystem:
                     )
                     self.add(ax, a)
         """
-        from .functions import ImplicitFunction
+        from .implicit import ImplicitFunction
 
-        return ImplicitFunction(func, self, res=res, color=color, **kwargs)
+        graph = ImplicitFunction(
+            func, self.x_range[:2], self.y_range[:2], res=res, color=color, **kwargs
+        )
+        x_length = self.x_length or config.frame_width
+        y_length = self.y_length or config.frame_height
+        graph.stretch(x_length / (self.x_range[1] - self.x_range[0]), 0)
+        graph.stretch(y_length / (self.y_range[1] - self.y_range[0]), 1)
+        return graph
 
     def get_parametric_curve(self, function, **kwargs):
         dim = self.dimension
