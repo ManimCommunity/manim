@@ -1,7 +1,7 @@
 """Animate mobjects."""
 
 
-from .. import logger
+from .. import config, logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
@@ -221,6 +221,8 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
             *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
