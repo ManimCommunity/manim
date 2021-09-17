@@ -2,8 +2,8 @@ from typing import Callable, Sequence
 
 import numpy as np
 
-from .. import _config
-from . import _contour
+from .. import config
+from .contour import _contour
 from .opengl_compatibility import ConvertToOpenGL
 from .types.vectorized_mobject import VMobject
 
@@ -61,12 +61,12 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         """
         super().__init__(**kwargs)
         x_range = x_range or [
-            -_config.frame_width / 2,
-            _config.frame_width / 2,
+            -config.frame_width / 2,
+            config.frame_width / 2,
         ]
         y_range = y_range or [
-            -_config.frame_height / 2,
-            _config.frame_height / 2,
+            -config.frame_height / 2,
+            config.frame_height / 2,
         ]
         x, y = (
             np.arange(x_range[0], x_range[1] + 1 / res, 1 / res),
