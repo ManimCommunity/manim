@@ -161,7 +161,8 @@ Server](https://www.manim.community/discord/) or [Reddit Community](https://www.
 
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
 
-Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more about `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
+Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
+Learn more about `poetry` at its [documentation](https://python-poetry.org/docs/) and find out how to install manim with poetry at the [manim dev-installation guide](https://docs.manim.community/en/stable/contributing/development.html) in the manim documentation.
 
 ## How to Cite Manim
 
@@ -169,7 +170,7 @@ We acknowledge the importance of good software to support research, and we note
 that research becomes more valuable when it is communicated effectively. To
 demonstrate the value of Manim, we ask that you cite Manim in your work.
 Currently, the best way to cite Manim is to go to our
-[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and 
+[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and
 click the "cite this repository" button on the right sidebar. This will generate
 a citation in your preferred format, and will also integrate well with citation managers.
 

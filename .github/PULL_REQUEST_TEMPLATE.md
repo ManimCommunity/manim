@@ -10,7 +10,7 @@
 <!-- Optional for bugfixes, small enhancements, and documentation-related PRs. Otherwise, please give a short reasoning for your changes. -->
 
 ## Links to added or changed documentation pages
-<!-- Please add links to the affected documentation pages (edit the description after opening the PR). The link to the documentation for your PR is https://manimce--####.org.readthedocs.build/en/####/, where #### represents the PR number. --> 
+<!-- Please add links to the affected documentation pages (edit the description after opening the PR). The link to the documentation for your PR is https://manimce--####.org.readthedocs.build/en/####/, where #### represents the PR number. -->
 
 
 ## Further Information and Comments

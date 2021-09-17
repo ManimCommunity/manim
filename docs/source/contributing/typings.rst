@@ -75,13 +75,13 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 .. note::
    As a helper for tool for typesets, you can use `typestring-parser
-   <https://github.com/Dominik1123/typestring-parser>`_ 
+   <https://github.com/Dominik1123/typestring-parser>`_
    which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and
    then using ``from typestring_parser import parse``.
 
 .. doctest::
     :options: +SKIP
-    
+
     >>> from typestring_parser import parse
     >>> parse("int")
     <class 'int'>

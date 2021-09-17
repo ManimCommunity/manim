@@ -122,7 +122,10 @@ class ShowPartial(Animation):
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        alpha: float,
     ) -> None:
         submobject.pointwise_become_partial(
             starting_submobject, *self._get_bounds(alpha)
@@ -255,7 +258,11 @@ class DrawBorderThenFill(Animation):
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, outline, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        outline,
+        alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
         subalpha: int
@@ -295,7 +302,9 @@ class Write(DrawBorderThenFill):
         run_time: Optional[float] = kwargs.pop("run_time", None)
         lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
         self.reverse = reverse
         super().__init__(
@@ -375,7 +384,9 @@ class Unwrite(Write):
         run_time: Optional[float] = kwargs.pop("run_time", None)
         lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
         super().__init__(
             vmobject,
