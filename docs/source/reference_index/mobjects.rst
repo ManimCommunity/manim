@@ -4,6 +4,7 @@ Mobjects
 .. currentmodule:: manim
 
 
+
 Inheritance Graph
 -----------------
 
