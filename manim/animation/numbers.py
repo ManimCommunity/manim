@@ -4,17 +4,21 @@ __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
 import typing
+from typing import TYPE_CHECKING
 
 from ..animation.animation import Animation
 from ..mobject.numbers import DecimalNumber
 from ..utils.bezier import interpolate
+
+if TYPE_CHECKING:
+    from ..utils.internal_types import rate_function
 
 
 class ChangingDecimal(Animation):
     def __init__(
         self,
         decimal_mob: DecimalNumber,
-        number_update_func: typing.Callable[[float], float],
+        number_update_func: "rate_function",
         suspend_mobject_updating: typing.Optional[bool] = False,
         **kwargs,
     ) -> None:

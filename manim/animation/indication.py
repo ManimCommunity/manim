@@ -398,7 +398,7 @@ class ApplyWave(Homotopy):
         mobject: "Mobject",
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
-        wave_func: Callable[[float], float] = smooth,
+        wave_func: "rate_function" = smooth,
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,

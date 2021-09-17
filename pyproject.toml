@@ -76,6 +76,7 @@ flake8 = "^3.9.0"
 isort = "^5.8.0"
 pytest-xdist = "^2.2"
 psutil = ">=3.0"
+autopep8 = "^1.5.7"
 
 
 [tool.poetry.urls]

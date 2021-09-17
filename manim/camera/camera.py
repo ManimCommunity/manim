@@ -23,6 +23,7 @@ from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import color_to_int_rgba
+from ..utils.deprecation import deprecated
 from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
@@ -453,9 +454,8 @@ class Camera:
             ],
         )
 
-    def capture_mobject(
-        self, mobject, **kwargs
-    ):  # TODO Write better docstrings for this method.
+    @deprecated(since="v11", until="v13", replacement="capture_mobjects")
+    def capture_mobject(self, mobject, **kwargs):
         return self.capture_mobjects([mobject], **kwargs)
 
     def capture_mobjects(self, mobjects, **kwargs):
@@ -484,6 +484,9 @@ class Camera:
         # VMobject], [PMobject, PMobject], and [VMobject].  This must be done
         # without altering their order.  it.groupby computes exactly this
         # partition while at the same time preserving order.
+        if isinstance(mobjects, Mobject):
+            mobjects = [mobjects]
+
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         for group_type, group in it.groupby(mobjects, self.type_or_raise):
             self.display_funcs[group_type](list(group), self.pixel_array)

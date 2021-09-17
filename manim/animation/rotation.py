@@ -14,6 +14,7 @@ from ..utils.rate_functions import linear
 
 if typing.TYPE_CHECKING:
     from ..mobject.mobject import Mobject
+    from ..utils.internal_types import rate_function
 
 
 class Rotating(Animation):
@@ -25,7 +26,7 @@ class Rotating(Animation):
         about_point: Optional[np.ndarray] = None,
         about_edge: Optional[np.ndarray] = None,
         run_time: float = 5,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         **kwargs
     ) -> None:
         self.axis = axis

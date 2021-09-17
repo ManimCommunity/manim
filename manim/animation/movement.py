@@ -17,6 +17,7 @@ from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
+    from ..utils.internal_types import rate_function
 
 
 class Homotopy(Animation):
@@ -82,7 +83,7 @@ class PhaseFlow(Animation):
         mobject: "Mobject",
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         **kwargs
     ) -> None:
         self.virtual_time = virtual_time

@@ -25,6 +25,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
+    from manim.utils.internal_types import rate_function
 
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -118,7 +119,7 @@ class Animation:
         mobject: Optional[Mobject],
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
-        rate_func: Callable[[float], float] = smooth,
+        rate_func: "rate_function" = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -126,7 +127,7 @@ class Animation:
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
-        self.rate_func: Callable[[float], float] = rate_func
+        self.rate_func: "rate_function" = rate_func
         self.name: Optional[str] = name
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
@@ -360,7 +361,7 @@ class Animation:
 
     def set_rate_func(
         self,
-        rate_func: Callable[[float], float],
+        rate_func: "rate_function",
     ) -> "Animation":
         """Set the rate function of the animation.
 
@@ -380,12 +381,12 @@ class Animation:
 
     def get_rate_func(
         self,
-    ) -> Callable[[float], float]:
+    ) -> "rate_function":
         """Get the rate function of the animation.
 
         Returns
         -------
-        Callable[[float], float]
+        rate_function
             The rate function of the animation.
         """
         return self.rate_func

@@ -12,7 +12,17 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 from colour import Color
@@ -49,6 +59,9 @@ from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
+
+if TYPE_CHECKING:
+    from ..utils.internal_types import rate_function
 
 
 class CoordinateSystem:
@@ -603,7 +616,7 @@ class CoordinateSystem:
 
     def get_graph(
         self,
-        function: Callable[[float], float],
+        function: "rate_function",
         x_range: Optional[Sequence[float]] = None,
         **kwargs,
     ):

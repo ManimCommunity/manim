@@ -14,8 +14,7 @@ from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-    from ..mobject.types.vectorized_mobject import VGroup
+    from ..utils.internal_types import manim_group, rate_function
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
@@ -27,9 +26,9 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: Union[Group, "VGroup", OpenGLGroup, "OpenGLVGroup"] = None,
+        group: "manim_group" = None,
         run_time: Optional[float] = None,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         lag_ratio: float = 0,
         **kwargs
     ) -> None:

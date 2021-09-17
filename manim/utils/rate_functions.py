@@ -110,6 +110,9 @@ import numpy as np
 from ..utils.bezier import bezier
 from ..utils.simple_functions import sigmoid
 
+if typing.TYPE_CHECKING:
+    from internal_types import rate_function
+
 
 # This is a decorator that makes sure any function it's used on will
 # return 0 if t<0 and 1 if t>1.
@@ -201,9 +204,9 @@ def running_start(
 
 
 def not_quite_there(
-    func: typing.Callable[[float], float] = smooth,
+    func: "rate_function" = smooth,
     proportion: float = 0.7,
-) -> typing.Callable[[float], float]:
+) -> "rate_function":
     def result(t):
         return proportion * func(t)
 
@@ -216,10 +219,10 @@ def wiggle(t: float, wiggles: float = 2) -> float:
 
 
 def squish_rate_func(
-    func: typing.Callable[[float], float],
+    func: "rate_function",
     a: float = 0.4,
     b: float = 0.6,
-) -> typing.Callable[[float], float]:
+) -> "rate_function":
     def result(t):
         if a == b:
             return a

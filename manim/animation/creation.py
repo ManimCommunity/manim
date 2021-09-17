@@ -87,6 +87,7 @@ from colour import Color
 
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
+    from manim.utils.internal_types import rate_function
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession
@@ -190,7 +191,7 @@ class Uncreate(Create):
     def __init__(
         self,
         mobject: Union[VMobject, OpenGLVMobject],
-        rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
+        rate_func: "rate_function" = lambda t: smooth(1 - t),
         remover: bool = True,
         **kwargs,
     ) -> None:
@@ -213,7 +214,7 @@ class DrawBorderThenFill(Animation):
         self,
         vmobject: Union[VMobject, OpenGLVMobject],
         run_time: float = 2,
-        rate_func: Callable[[float], float] = double_smooth,
+        rate_func: "rate_function" = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
         draw_border_animation_config: Dict = {},  # what does this dict accept?
@@ -287,7 +288,7 @@ class Write(DrawBorderThenFill):
     def __init__(
         self,
         vmobject: Union[VMobject, OpenGLVMobject],
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         reverse: bool = False,
         **kwargs,
     ) -> None:
@@ -366,7 +367,7 @@ class Unwrite(Write):
     def __init__(
         self,
         vmobject: VMobject,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         reverse: bool = True,
         **kwargs,
     ) -> None:
@@ -446,7 +447,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         text: "Text",
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         time_per_char: float = 0.1,
         run_time: Optional[float] = None,
         **kwargs,

@@ -9,7 +9,7 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Optional, Sequence, Tuple, Type
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, Type
 
 import numpy as np
 from colour import Color
@@ -28,6 +28,9 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
+
+if TYPE_CHECKING:
+    from ..utils.internal_types import rate_function
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
@@ -470,7 +473,7 @@ class ArrowVectorField(VectorField):
         delta_x: float = 0.5,
         delta_y: float = 0.5,
         # Takes in actual norm, spits out displayed norm
-        length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
+        length_func: "rate_function" = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
         vector_config: Optional[dict] = None,
         **kwargs
@@ -720,7 +723,7 @@ class StreamLines(VectorField):
     def create(
         self,
         lag_ratio: Optional[float] = None,
-        run_time: Optional[Callable[[float], float]] = None,
+        run_time: Optional["rate_function"] = None,
         **kwargs
     ) -> AnimationGroup:
         """The creation animation of the stream lines.
@@ -776,7 +779,7 @@ class StreamLines(VectorField):
         warm_up=True,
         flow_speed: float = 1,
         time_width: float = 0.3,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: "rate_function" = linear,
         line_animation_class: Type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs
     ) -> None:

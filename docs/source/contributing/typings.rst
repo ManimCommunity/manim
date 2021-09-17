@@ -68,7 +68,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 .. code:: py
 
-    rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
+    int_func: Callable[[np.ndarray], np.ndarray] = np.floor
 
 
 * Assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
