@@ -213,7 +213,7 @@ class Difference(_BooleanOps):
 
 class Intersection(_BooleanOps):
     """Find the intersection of two :class:`~.VMobject`s.
-    This keeps the parts covered by both :class:`VMobject`s.
+    This keeps the parts covered by both :class:`~.VMobject`s.
 
     Parameters
     ==========
@@ -251,7 +251,7 @@ class Intersection(_BooleanOps):
 
 
 class Exclusion(_BooleanOps):
-    """Find the XOR between two :class:`VMobject`.
+    """Find the XOR between two :class:`~.VMobject`.
     This creates a new :class:`~.VMobject` consisting of the region
     covered by exactly one of them.
 
