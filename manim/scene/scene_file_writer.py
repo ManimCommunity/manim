@@ -295,7 +295,7 @@ class SceneFileWriter:
                 self.output_image_from_array(frame)
 
     def write_opengl_frame(self, renderer):
-        if write_to_movie() and not self.writing_process.stdin.closed:
+        if write_to_movie():
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data(),
             )
