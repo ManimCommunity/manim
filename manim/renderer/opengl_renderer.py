@@ -260,6 +260,7 @@ class OpenGLRenderer:
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)
+            self.context.wireframe = config["enable_wireframe"]
             self.context.blend_func = (
                 moderngl.SRC_ALPHA,
                 moderngl.ONE_MINUS_SRC_ALPHA,
