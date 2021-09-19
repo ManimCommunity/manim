@@ -65,7 +65,9 @@ def image_viewer(image_path, small_width, large_width):
     b1.on_click(on_button_expand_clicked)
     b2.on_click(on_button_download_clicked)
     return AppLayout(
-        left_sidebar=button_list, center=dis_img, pane_widths=["50px", 1, 0]
+        left_sidebar=button_list,
+        center=dis_img,
+        pane_widths=["50px", 1, 0],
     )
 
 
@@ -110,7 +112,9 @@ def video_viewer(video_path, small_width, large_width):
     b1.on_click(on_button_expand_clicked)
     b2.on_click(on_button_download_clicked)
     return AppLayout(
-        left_sidebar=button_list, center=dis_video, pane_widths=["50px", 1, 0]
+        left_sidebar=button_list,
+        center=dis_video,
+        pane_widths=["50px", 1, 0],
     )
 
 
@@ -265,7 +269,6 @@ else:
                     display(image_viewer(tmpfile, "350px", "900px"))
                 else:
                     display(video_viewer(tmpfile, "350px", "900px"))
-
 
         def add_additional_args(self, args):
             additional_args = ["--jupyter"]
