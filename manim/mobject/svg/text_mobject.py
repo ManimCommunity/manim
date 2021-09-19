@@ -1,7 +1,8 @@
 """Mobjects used for displaying (non-LaTeX) text.
 
 .. note::
-   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`)
+   to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
 
 .. important::
 
@@ -28,7 +29,7 @@ Examples
     class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
+            title.scale(0.75)
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
@@ -39,7 +40,7 @@ Examples
 
             t4 = Text("4. Prediction").set_color(WHITE)
 
-            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -53,13 +54,13 @@ import copy
 import hashlib
 import os
 import re
-import typing
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Union
 
 import manimpango
 import numpy as np
+from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
@@ -68,12 +69,15 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
+from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
+DEFAULT_LINE_SPACING_SCALE = 0.3
+TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
 
 def remove_invisible_chars(mobject):
-    """Function to remove unwanted invisible characters from some mobject
+    """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
     ----------
@@ -97,9 +101,9 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
     else:
-        mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
+        mobject_without_dots.add(*(k for k in mobject if k.__class__ != Dot))
     if iscode:
         code.code = mobject_without_dots
         return code
@@ -140,7 +144,7 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        VGroup.__init__(self)
+        super().__init__()
 
         lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
@@ -155,7 +159,7 @@ class Paragraph(VGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
         self.lines = []
@@ -167,7 +171,7 @@ class Paragraph(VGroup):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
+            [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
@@ -231,7 +235,7 @@ class Paragraph(VGroup):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
-                self.get_center() + self.lines_initial_positions[line_no]
+                self.get_center() + self.lines_initial_positions[line_no],
             )
         return self
 
@@ -260,7 +264,7 @@ class Paragraph(VGroup):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
-                np.array([self.get_center()[0], self[line_no].get_center()[1], 0])
+                np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
@@ -269,8 +273,8 @@ class Paragraph(VGroup):
                         self.get_right()[0] - self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
         elif self.lines[1][line_no] == "left":
             self[line_no].move_to(
@@ -279,8 +283,8 @@ class Paragraph(VGroup):
                         self.get_left()[0] + self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
 
 
@@ -360,8 +364,8 @@ class Text(SVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
-                    "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
+                japanese = Text(
+                    "日本へようこそ", t2c={"日本": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", weight=BOLD)
                 russ = Text("Здравствуйте मस नम म ", font="sans-serif")
@@ -369,8 +373,8 @@ class Text(SVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
@@ -394,13 +398,19 @@ class Text(SVGMobject):
 
     """
 
+    @deprecated_params(
+        params="size",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         text: str,
         fill_opacity: float = 1.0,
-        stroke_width: int = 0,
-        color: str = WHITE,
-        size: int = 1,
+        stroke_width: float = 0,
+        color: Color = WHITE,
+        font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -420,7 +430,14 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        self.size = size
+        # deprecation
+        size = kwargs.pop("size", None)
+        if size is not None:
+            self._font_size = size * DEFAULT_FONT_SIZE
+        else:
+            # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
+            self._font_size = float(font_size)
+
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -456,13 +473,14 @@ class Text(SVGMobject):
             text_without_tabs = text.replace("\t", " " * self.tab_width)
         self.text = text_without_tabs
         if self.line_spacing == -1:
-            self.line_spacing = self.size + self.size * 0.3
+            self.line_spacing = (
+                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+            )
         else:
-            self.line_spacing = self.size + self.size * self.line_spacing
+            self.line_spacing = self._font_size + self._font_size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             color=color,
             fill_opacity=fill_opacity,
@@ -486,9 +504,9 @@ class Text(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -510,9 +528,29 @@ class Text(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+        self.initial_height = self.height
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
+
+    @property
+    def font_size(self):
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
+
+    @font_size.setter
+    def font_size(self, font_val):
+        # TODO: use pango's font size scaling.
+        if font_val <= 0:
+            raise ValueError("font_size must be greater than 0.")
+        else:
+            self.scale(font_val / self.font_size)
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -524,7 +562,7 @@ class Text(SVGMobject):
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
+                        self.submobjects[submobjects_char_index - 1].get_center(),
                     )
                 chars.add(space)
             else:
@@ -590,7 +628,7 @@ class Text(SVGMobject):
             "PANGO" + self.font + self.slant + self.weight
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
-        settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
@@ -643,35 +681,39 @@ class Text(SVGMobject):
         return settings
 
     def text2svg(self):
-        """Internally used function.
-        Convert the text to SVG using Pango
-        """
-        size = self.size * 10
-        line_spacing = self.line_spacing * 10
+        """Convert the text to SVG using Pango."""
+        size = self._font_size
+        line_spacing = self.line_spacing
+        size /= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
+
         dir_name = config.get_dir("text_dir")
-        disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
         file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
-            return file_name
-        settings = self.text2settings()
-        width = 600
-        height = 400
 
-        return manimpango.text2svg(
-            settings,
-            size,
-            line_spacing,
-            disable_liga,
-            file_name,
-            START_X,
-            START_Y,
-            width,
-            height,
-            self.text,
-        )
+        if os.path.exists(file_name):
+            svg_file = file_name
+        else:
+            settings = self.text2settings()
+            width = config["pixel_width"]
+            height = config["pixel_height"]
+
+            svg_file = manimpango.text2svg(
+                settings,
+                size,
+                line_spacing,
+                self.disable_ligatures,
+                file_name,
+                START_X,
+                START_Y,
+                width,
+                height,
+                self.text,
+            )
+
+        return svg_file
 
     def init_colors(self, propagate_colors=True):
         super().init_colors(propagate_colors=propagate_colors)
@@ -710,7 +752,13 @@ class MarkupText(SVGMobject):
 
         class MarkupElaborateExample(Scene):
             def construct(self):
-                text = MarkupText('<span foreground="purple">ا</span><span foreground="red">َ</span>ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي<span foreground="green">ّ</span><span foreground="red">َ</span>ة<span foreground="blue">ُ</span>')
+                text = MarkupText(
+                    '<span foreground="purple">ا</span><span foreground="red">َ</span>'
+                    'ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر'
+                    '<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي'
+                    '<span foreground="green">ّ</span><span foreground="red">َ</span>ة'
+                    '<span foreground="blue">ُ</span>'
+                )
                 self.add(text)
 
     PangoMarkup can also contain XML features such as numeric character
@@ -791,7 +839,7 @@ class MarkupText(SVGMobject):
         Stroke width.
     color : :class:`str`
         Global color setting for the entire text. Local overrides are possible.
-    size : :class:`int`
+    font_size : :class:`float`
         Font size.
     line_spacing : :class:`int`
         Line spacing.
@@ -923,14 +971,14 @@ class MarkupText(SVGMobject):
         class MultiLanguage(Scene):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
-                chin = MarkupText(
-                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
+                japanese = MarkupText(
+                    '<span fgcolor="blue">日本</span>へようこそ'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", weight=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
-                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
-                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                chinese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, japanese, mess, russ, hin, chinese).arrange(DOWN)
                 self.add(group)
 
     You can justify the text by passing :attr:`justify` parameter.
@@ -977,13 +1025,19 @@ class MarkupText(SVGMobject):
 
     """
 
+    @deprecated_params(
+        params="size",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
+    )
     def __init__(
         self,
         text: str,
-        fill_opacity: int = 1,
-        stroke_width: int = 0,
-        color: str = WHITE,
-        size: int = 1,
+        fill_opacity: float = 1,
+        stroke_width: float = 0,
+        color: Color = WHITE,
+        font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -1000,7 +1054,13 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        self.size = size
+        # deprecation
+        size = kwargs.pop("size", None)
+        if size is not None:
+            self._font_size = size * DEFAULT_FONT_SIZE
+        else:
+            self._font_size = float(font_size)
+
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -1018,7 +1078,7 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
             logger.warning(
-                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
             )
         gradientmap = self.extract_gradient_tags()
         validate_error = MarkupUtils.validate(self.text)
@@ -1026,9 +1086,11 @@ class MarkupText(SVGMobject):
             raise ValueError(validate_error)
 
         if self.line_spacing == -1:
-            self.line_spacing = self.size + self.size * 0.3
+            self.line_spacing = (
+                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+            )
         else:
-            self.line_spacing = self.size + self.size * self.line_spacing
+            self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
@@ -1050,9 +1112,9 @@ class MarkupText(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -1088,12 +1150,33 @@ class MarkupText(SVGMobject):
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
+        self.initial_height = self.height
+
+    @property
+    def font_size(self):
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
+
+    @font_size.setter
+    def font_size(self, font_val):
+        # TODO: use pango's font size scaling.
+        if font_val <= 0:
+            raise ValueError("font_size must be greater than 0.")
+        else:
+            self.scale(font_val / self.font_size)
+
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate from classical Pango Text
-        settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.justify)
         id_str = self.text + settings
@@ -1103,34 +1186,37 @@ class MarkupText(SVGMobject):
 
     def text2svg(self):
         """Convert the text to SVG using Pango."""
-        size = self.size * 10
-        line_spacing = self.line_spacing * 10
+        size = self._font_size
+        line_spacing = self.line_spacing
+        size /= TEXT2SVG_ADJUSTMENT_FACTOR
+        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
+
         dir_name = config.get_dir("text_dir")
-        disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
-            return file_name
-
-        logger.debug(f"Setting Text {self.text}")
-        return MarkupUtils.text2svg(
-            f'<span foreground="{self.color}">{self.text}</span>',
-            self.font,
-            self.slant,
-            self.weight,
-            size,
-            line_spacing,
-            disable_liga,
-            file_name,
-            START_X,
-            START_Y,
-            600,  # width
-            400,  # height
-            justify=self.justify,
-            pango_width=500,
-        )
+            svg_file = file_name
+        else:
+            logger.debug(f"Setting Text {self.text}")
+            svg_file = MarkupUtils.text2svg(
+                f'<span foreground="{self.color}">{self.text}</span>',
+                self.font,
+                self.slant,
+                self.weight,
+                size,
+                line_spacing,
+                self.disable_ligatures,
+                file_name,
+                START_X,
+                START_Y,
+                600,  # width
+                400,  # height
+                justify=self.justify,
+                pango_width=500,
+            )
+        return svg_file
 
     def _count_real_chars(self, s):
         """Counts characters that will be displayed.
@@ -1177,7 +1263,7 @@ class MarkupText(SVGMobject):
                     "to": tag.group(2),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
@@ -1219,7 +1305,7 @@ class MarkupText(SVGMobject):
                     "color": tag.group(1),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap
@@ -1229,7 +1315,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: typing.Union[str, Path]):
+def register_font(font_file: Union[str, Path]):
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.

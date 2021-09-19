@@ -7,11 +7,11 @@ There are two different ways by which you can render **Text** in videos:
 1. Using Pango (:mod:`~.text_mobject`)
 2. Using LaTeX (:mod:`~.tex_mobject`)
 
-If you want to render simple text, you should use either :class:`~.Text` or 
+If you want to render simple text, you should use either :class:`~.Text` or
 :class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`.
 See :ref:`using-text-objects` for more information.
 
-LaTeX should be used when you need mathematical typesetting. See 
+LaTeX should be used when you need mathematical typesetting. See
 :ref:`rendering-with-latex` for more information.
 
 .. _using-text-objects:
@@ -26,20 +26,20 @@ render non-English alphabets like 你好 or  こんにちは or 안녕하세요 
 
 Here is a simple *Hello World* animation.
 
-.. manim:: HelloWorld 
+.. manim:: HelloWorld
     :save_last_frame:
     :ref_classes: Text
 
     class HelloWorld(Scene):
         def construct(self):
-            text = Text("Hello world").scale(3)
+            text = Text("Hello world", font_size=144)
             self.add(text)
 
 You can also use :class:`~.MarkupText` which allows the use of PangoMarkup
 (see the documentation of :class:`~.MarkupText` for details) to render text.
 For example:
 
-.. manim:: SingleLineColor 
+.. manim:: SingleLineColor
     :save_last_frame:
     :ref_classes: MarkupText
 
@@ -61,7 +61,7 @@ Using Fonts
 
 You can set a different font using :attr:`~.Text.font`.
 
-.. note:: 
+.. note::
 
     The font used must be installed in your system, and Pango should know
     about it. You can get a list of fonts using :func:`manimpango.list_fonts`.
@@ -71,9 +71,9 @@ You can set a different font using :attr:`~.Text.font`.
     [...]
 
 
-.. manim:: FontsExample 
+.. manim:: FontsExample
     :save_last_frame:
-    
+
     class FontsExample(Scene):
         def construct(self):
             ft = Text("Noto Sans", font="Noto Sans")
@@ -81,7 +81,7 @@ You can set a different font using :attr:`~.Text.font`.
 
 Setting Slant and Weight
 ------------------------
-Slant is the style of the Text, and it can be ``NORMAL`` (the default), 
+Slant is the style of the Text, and it can be ``NORMAL`` (the default),
 ``ITALIC`` or ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and
 ``OBLIQUE`` look similar, but ``ITALIC`` uses **Roman Style**, whereas
 ``OBLIQUE`` uses **Italic Style**.
@@ -97,7 +97,7 @@ Weight specifies the boldness of a font. You can see a list of weights in
             a = Text("Italic", slant=ITALIC)
             self.add(a)
 
-.. manim:: DifferentWeight 
+.. manim:: DifferentWeight
     :save_last_frame:
 
     class DifferentWeight(Scene):
@@ -109,6 +109,8 @@ Weight specifies the boldness of a font. You can see a list of weights in
             for weight in weight_list:
                 g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
+
+.. _using-colors:
 
 Using Colors
 ------------
@@ -129,10 +131,10 @@ as explained in :ref:`iterating-text`.
 
 :attr:`~Text.t2c` accepts two types of dictionaries,
 
-* The keys can contain indices like ``[2:-1]`` or ``[4:8]``, 
+* The keys can contain indices like ``[2:-1]`` or ``[4:8]``,
   this works similar to how `slicing <https://realpython.com/python-strings/#string-slicing>`_
   works in Python. The values should be the color of the Text from :class:`~.Color`.
-  
+
 
 * The keys contain words or characters which should be colored separately
   and the values should be the color from :class:`~.Color`:
@@ -161,11 +163,12 @@ be an iterable of any length:
 
     class GradientExample(Scene):
         def construct(self):
-            t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
+            t = Text("Hello", gradient=(RED, BLUE, GREEN), font_size=96)
             self.add(t)
 
-You can also use :attr:`~.Text.t2g` for gradients with specific 
-characters of the text. It shares a similar syntax to :ref:`Using Colors`:
+You can also use :attr:`~.Text.t2g` for gradients with specific
+characters of the text. It shares a similar syntax to :ref:`the
+interface for colors <using-colors>`:
 
 .. manim:: t2gExample
     :save_last_frame:
@@ -207,7 +210,7 @@ Disabling Ligatures
 -------------------
 
 By disabling ligatures you would get a one-to-one mapping between characters and
-submobjects. This fixes the issues with coloring text. 
+submobjects. This fixes the issues with coloring text.
 
 
 .. warning::
@@ -215,7 +218,7 @@ submobjects. This fixes the issues with coloring text.
     Be aware that using this method with text that heavily depends on
     ligatures (Arabic text) may yield unexpected results.
 
-You can disable ligatures by passing ``disable_ligatures`` to 
+You can disable ligatures by passing ``disable_ligatures`` to
 :class:`Text`. For example:
 
 .. manim:: DisableLigature
@@ -223,8 +226,8 @@ You can disable ligatures by passing ``disable_ligatures`` to
 
     class DisableLigature(Scene):
         def construct(self):
-            li = Text("fl ligature").scale(2)
-            nli = Text("fl ligature", disable_ligatures=True).scale(2)
+            li = Text("fl ligature",font_size=96)
+            nli = Text("fl ligature", disable_ligatures=True, font_size=96)
             self.add(Group(li, nli).arrange(DOWN, buff=.8))
 
 .. _iterating-text:
@@ -242,7 +245,7 @@ For example, you can set each letter to different color by iterating it.
 
     class IterateColor(Scene):
         def construct(self):
-            text = Text("Colors").scale(2)
+            text = Text("Colors", font_size=96)
             for letter in text:
                 letter.set_color(random_bright_color())
             self.add(text)
@@ -259,14 +262,14 @@ For example, you can set each letter to different color by iterating it.
 Working with :class:`~.MarkupText`
 ==================================
 
-MarkupText is similar to :class:`~.Text`, the only difference between them is 
+MarkupText is similar to :class:`~.Text`, the only difference between them is
 that this accepts and processes PangoMarkup (which is similar to
 html), instead of just rendering plain text.
 
 Consult the documentation of :class:`~.MarkupText` for more details
 and further references about PangoMarkup.
 
-.. manim:: MarkupTest 
+.. manim:: MarkupTest
     :save_last_frame:
 
     class MarkupTest(Scene):
@@ -274,7 +277,8 @@ and further references about PangoMarkup.
             text = MarkupText(
                 f'<span underline="double" underline_color="green">double green underline</span> in red text<span fgcolor="{YELLOW}"> except this</span>',
                 color=RED,
-            ).scale(0.7)
+                font_size=34
+            )
             self.add(text)
 
 .. _rendering-with-latex:
@@ -287,12 +291,12 @@ use :class:`~.Tex` to insert LaTeX.
 
 For example,
 
-.. manim:: HelloLaTeX 
+.. manim:: HelloLaTeX
     :save_last_frame:
 
     class HelloLaTeX(Scene):
         def construct(self):
-            tex = Tex(r"\LaTeX").scale(3)
+            tex = Tex(r"\LaTeX", font_size=144)
             self.add(tex)
 
 .. note::
@@ -310,14 +314,14 @@ Everything passed to :class:`~.MathTex` is in math mode by default. To be more p
 similar effect with :class:`~.Tex` by enclosing your formula with ``$`` symbols:
 ``$\xrightarrow{x^6y^8}$``:
 
-.. manim:: MathTeXDemo 
+.. manim:: MathTeXDemo
     :save_last_frame:
 
     class MathTeXDemo(Scene):
         def construct(self):
-            rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
-            rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
-            
+            rtarrow0 = MathTex(r"\xrightarrow{x^6y^8}", font_size=96)
+            rtarrow1 = Tex(r"$\xrightarrow{x^6y^8}$", font_size=96)
+
             self.add(VGroup(rtarrow0, rtarrow1).arrange(DOWN))
 
 
@@ -332,11 +336,11 @@ as the ``mathtt`` math-text type or the ``looparrowright`` arrow.
 
     class AMSLaTeX(Scene):
         def construct(self):
-            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
+            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX', font_size=144)
             self.add(tex)
 
-On the Manim side, the :class:`~.Tex` class also accepts attributes to 
-change the appearance of the output. This is very similar to the 
+On the Manim side, the :class:`~.Tex` class also accepts attributes to
+change the appearance of the output. This is very similar to the
 :class:`~.Text` class. For example, the ``color`` keyword changes the
 color of the TeX mobject.
 
@@ -345,13 +349,13 @@ color of the TeX mobject.
 
     class LaTeXAttributes(Scene):
         def construct(self):
-            tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
+            tex = Tex(r'Hello \LaTeX', color=BLUE, font_size=144)
             self.add(tex)
 
 Extra LaTeX Packages
 ====================
 
-Some commands require special packages to be loaded into the TeX template. 
+Some commands require special packages to be loaded into the TeX template.
 For example, to use the ``mathscr`` script, we need to add the ``mathrsfs``
 package. Since this package isn't loaded into Manim's tex template by default,
 we have to add it manually.
@@ -363,7 +367,7 @@ we have to add it manually.
         def construct(self):
             myTemplate = TexTemplate()
             myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
+            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate, font_size=144)
             self.add(tex)
 
 Substrings and parts
@@ -379,7 +383,7 @@ of the ``\bigstar`` using :func:`~.set_color_by_tex`:
 
     class LaTeXSubstrings(Scene):
         def construct(self):
-            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX').scale(3)
+            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX', font_size=144)
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
@@ -397,7 +401,7 @@ the Tex, not just the specific symbol or Tex expression. Consider the following 
             equation.set_color_by_tex("x", YELLOW)
             self.add(equation)
 
-As you can see, this colors the entire equation yellow, contrary to what 
+As you can see, this colors the entire equation yellow, contrary to what
 may be expected. To color only ``x`` yellow, we have to do the following:
 
 .. manim:: CorrectLaTeXSubstringColoring
@@ -412,9 +416,9 @@ may be expected. To color only ``x`` yellow, we have to do the following:
             equation.set_color_by_tex("x", YELLOW)
             self.add(equation)
 
-By setting ``substring_to_isolate`` to ``x``, we split up the
-:class:`~.MathTex` into substrings automatically and isolate the ``x`` components 
-into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
+By setting ``substrings_to_isolate`` to ``x``, we split up the
+:class:`~.MathTex` into substrings automatically and isolate the ``x`` components
+into individual substrings. Only then can :meth:`~.set_color_by_tex` be used
 to achieve the desired result.
 
 Note that Manim also supports a custom syntax that allows splitting
@@ -428,9 +432,9 @@ to write using :class:`~.TransformMatchingTex`.
 LaTeX Maths Fonts - The Template Library
 ========================================
 
-Changing fonts in LaTeX when typesetting mathematical formulae is 
+Changing fonts in LaTeX when typesetting mathematical formulae is
 trickier than regular text. It requires changing the template that is used
-to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates` 
+to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates`
 ready for you to use. These templates will all work in math mode:
 
 .. manim:: LaTeXMathFonts
@@ -438,14 +442,14 @@ ready for you to use. These templates will all work in math mode:
 
     class LaTeXMathFonts(Scene):
         def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive).scale(3)
+            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive, font_size=144)
             self.add(tex)
 
-Manim also has a :class:`~.TexTemplateLibrary` containing the TeX 
+Manim also has a :class:`~.TexTemplateLibrary` containing the TeX
 templates used by 3Blue1Brown. One example is the ctex template,
 used for typesetting Chinese script. For this to work, the ctex LaTeX package
-must be installed on your system. Furthermore, if you are only 
-typesetting Text, you probably do not need :class:`~.Tex` at all, and 
+must be installed on your system. Furthermore, if you are only
+typesetting Text, you probably do not need :class:`~.Tex` at all, and
 should use :class:`~.Text` instead.
 
 .. manim:: LaTeXTemplateLibrary
@@ -453,7 +457,7 @@ should use :class:`~.Text` instead.
 
     class LaTeXTemplateLibrary(Scene):
         def construct(self):
-            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
+            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex, font_size=144)
             self.add(tex)
 
 
@@ -461,7 +465,7 @@ Aligning formulae
 =================
 
 :class:`~.MathTex` mobject is typeset in the LaTeX  ``align*``
-environment. This means you can use the ``&`` alignment character 
+environment. This means you can use the ``&`` alignment character
 when typesetting multiline formulae:
 
 .. manim:: LaTeXAlignEnvironment
@@ -469,5 +473,5 @@ when typesetting multiline formulae:
 
     class LaTeXAlignEnvironment(Scene):
         def construct(self):
-            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6').scale(2)
+            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6', font_size=96)
             self.add(tex)

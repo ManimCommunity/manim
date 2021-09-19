@@ -5,6 +5,7 @@ from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate, interpolate
 from ...utils.color import *
+from ...utils.config_ops import _Data, _Uniforms
 from ...utils.images import get_full_raster_image_path
 from ...utils.iterables import listify
 from ...utils.space_ops import normalize_along_axis
@@ -114,7 +115,7 @@ class OpenGLSurface(OpenGLMobject):
         return self.triangle_indices
 
     def get_surface_points_and_nudged_points(self):
-        points = self.get_points()
+        points = self.points
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
 
@@ -139,11 +140,15 @@ class OpenGLSurface(OpenGLMobject):
             np.vstack(
                 [
                     self.get_partial_points_array(
-                        arr.copy(), a, b, (nu, nv, 3), axis=axis
+                        arr.copy(),
+                        a,
+                        b,
+                        (nu, nv, 3),
+                        axis=axis,
                     )
                     for arr in smobject.get_surface_points_and_nudged_points()
-                ]
-            )
+                ],
+            ),
         )
         return self
 
@@ -157,25 +162,33 @@ class OpenGLSurface(OpenGLMobject):
         upper_index, upper_residue = integer_interpolate(0, max_index, b)
         if axis == 0:
             points[:lower_index] = interpolate(
-                points[lower_index], points[lower_index + 1], lower_residue
+                points[lower_index],
+                points[lower_index + 1],
+                lower_residue,
             )
             points[upper_index + 1 :] = interpolate(
-                points[upper_index], points[upper_index + 1], upper_residue
+                points[upper_index],
+                points[upper_index + 1],
+                upper_residue,
             )
         else:
             shape = (nu, 1, resolution[2])
             points[:, :lower_index] = interpolate(
-                points[:, lower_index], points[:, lower_index + 1], lower_residue
+                points[:, lower_index],
+                points[:, lower_index + 1],
+                lower_residue,
             ).reshape(shape)
             points[:, upper_index + 1 :] = interpolate(
-                points[:, upper_index], points[:, upper_index + 1], upper_residue
+                points[:, upper_index],
+                points[:, upper_index + 1],
+                upper_residue,
             ).reshape(shape)
         return points.reshape((nu * nv, *resolution[2:]))
 
     def sort_faces_back_to_front(self, vect=OUT):
         tri_is = self.triangle_indices
         indices = list(range(len(tri_is) // 3))
-        points = self.get_points()
+        points = self.points
 
         def index_dot(index):
             return np.dot(points[tri_is[3 * index]], vect)
@@ -203,6 +216,87 @@ class OpenGLSurface(OpenGLMobject):
     def get_shader_vert_indices(self):
         return self.get_triangle_indices()
 
+    def set_fill_by_value(self, axes, colors):
+        # directly copied from three_dimensions.py with some compatibility changes.
+        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+
+        Parameters
+        ----------
+        axes :
+            The axes for the parametric surface, which will be used to map z-values to colors.
+        colors :
+            A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
+            containing colors paired with numbers, then those numbers will be used as the pivots.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The parametric surface with a gradient applied by value. For chaining.
+
+        Examples
+        --------
+        .. manim:: FillByValueExample
+            :save_last_frame:
+
+            class FillByValueExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 42
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+                    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+                    def param_surface(u, v):
+                        x = u
+                        y = v
+                        z = np.sin(x) * np.cos(y)
+                        return z
+                    surface_plane = Surface(
+                        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+                        resolution=(resolution_fa, resolution_fa),
+                        v_range=[0, 5],
+                        u_range=[0, 5],
+                        )
+                    # surface_plane.set_style(fill_opacity=1)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    self.add(axes, surface_plane)
+        """
+        if type(colors[0]) is tuple:
+            new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
+        else:
+            new_colors = colors
+
+            pivot_min = axes.z_range[0]
+            pivot_max = axes.z_range[1]
+            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+            pivots = np.arange(
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
+            )
+
+        for mob in self.family_members_with_points():
+            # import ipdb; ipdb.set_trace(context=7)
+            z_value = axes.point_to_coords(mob.get_midpoint())[2]
+            if z_value <= pivots[0]:
+                mob.set_color(new_colors[0])
+            elif z_value >= pivots[-1]:
+                mob.set_color(new_colors[-1])
+            else:
+                for i, pivot in enumerate(pivots):
+                    if pivot > z_value:
+                        color_index = (z_value - pivots[i - 1]) / (
+                            pivots[i] - pivots[i - 1]
+                        )
+                        color_index = min(color_index, 1)
+                        mob_color = interpolate_color(
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
+                        )
+                        mob.set_color(mob_color, recurse=False)
+
+                        break
+
+        return self
+
 
 class OpenGLSurfaceGroup(OpenGLSurface):
     def __init__(self, *parametric_surfaces, resolution=None, **kwargs):
@@ -223,10 +317,15 @@ class OpenGLTexturedSurface(OpenGLSurface):
         ("opacity", np.float32, (1,)),
     ]
     shader_folder = "textured_surface"
+    im_coords = _Data()
+    opacity = _Data()
+    num_textures = _Uniforms()
 
     def __init__(
         self, uv_surface, image_file, dark_image_file=None, shader_folder=None, **kwargs
     ):
+        self.uniforms = {}
+
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
         # Set texture information
@@ -250,36 +349,32 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
     def init_data(self):
         super().init_data()
-        self.data["im_coords"] = np.zeros((0, 2))
-        self.data["opacity"] = np.zeros((0, 1))
+        self.im_coords = np.zeros((0, 2))
+        self.opacity = np.zeros((0, 1))
 
     def init_points(self):
         nu, nv = self.uv_surface.resolution
-        self.set_points(self.uv_surface.get_points())
-        self.data["im_coords"] = np.array(
+        self.set_points(self.uv_surface.points)
+        self.im_coords = np.array(
             [
                 [u, v]
                 for u in np.linspace(0, 1, nu)
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
-            ]
+            ],
         )
 
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["num_textures"] = self.num_textures
-
     def init_colors(self):
-        self.data["opacity"] = np.array([self.uv_surface.data["rgbas"][:, 3]])
+        self.opacity = np.array([self.uv_surface.rgbas[:, 3]])
 
     def set_opacity(self, opacity, recurse=True):
         for mob in self.get_family(recurse):
-            mob.data["opacity"] = np.array([[o] for o in listify(opacity)])
+            mob.opacity = np.array([[o] for o in listify(opacity)])
         return self
 
     def pointwise_become_partial(self, tsmobject, a, b, axis=1):
         super().pointwise_become_partial(tsmobject, a, b, axis)
-        im_coords = self.data["im_coords"]
-        im_coords[:] = tsmobject.data["im_coords"]
+        im_coords = self.im_coords
+        im_coords[:] = tsmobject.im_coords
         if a <= 0 and b >= 1:
             return self
         nu, nv = tsmobject.resolution

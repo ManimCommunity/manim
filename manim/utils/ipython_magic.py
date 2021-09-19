@@ -132,7 +132,7 @@ else:
     @magics_class
     class ManimMagic(Magics):
         def __init__(self, shell):
-            super(ManimMagic, self).__init__(shell)
+            super().__init__(shell)
             self.rendered_files = {}
 
         @needs_local_scope
@@ -225,21 +225,22 @@ else:
                     else:
                         logger.warning(
                             "Renderer must be set to OpenGL in the configuration file "
-                            "before importing Manim! Using cairo renderer instead."
+                            "before importing Manim! Using cairo renderer instead.",
                         )
                         config.renderer = "cairo"
 
-                SceneClass = local_ns[config["scene_names"][0]]
-                scene = SceneClass(renderer)
-                scene.render()
+                try:
+                    SceneClass = local_ns[config["scene_names"][0]]
+                    scene = SceneClass(renderer=renderer)
+                    scene.render()
+                finally:
+                    # Shader cache becomes invalid as the context is destroyed
+                    shader_program_cache.clear()
 
-                # Shader cache becomes invalid as the context is destroyed
-                shader_program_cache.clear()
-
-                # Close OpenGL window here instead of waiting for the main thread to
-                # finish causing the window to stay open and freeze
-                if renderer is not None and renderer.window is not None:
-                    renderer.window.close()
+                    # Close OpenGL window here instead of waiting for the main thread to
+                    # finish causing the window to stay open and freeze
+                    if renderer is not None and renderer.window is not None:
+                        renderer.window.close()
 
                 if config["output_file"] is None:
                     logger.info("No output file produced")
@@ -264,6 +265,7 @@ else:
                     display(image_viewer(tmpfile, "350px", "900px"))
                 else:
                     display(video_viewer(tmpfile, "350px", "900px"))
+
 
         def add_additional_args(self, args):
             additional_args = ["--jupyter"]

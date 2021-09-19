@@ -2,7 +2,6 @@ from pathlib import Path
 
 try:
     import dearpygui.dearpygui as dpg
-    from dearpygui.demo import show_demo
 
     dearpygui_imported = True
 except ImportError:
@@ -59,7 +58,8 @@ def configure_pygui(renderer, widgets, update=True):
         dpg.add_separator()
         if len(widgets) != 0:
             with dpg.collapsing_header(
-                label=f"{config['scene_names'][0]} widgets", default_open=True
+                label=f"{config['scene_names'][0]} widgets",
+                default_open=True,
             ):
                 for widget_config in widgets:
                     widget_config_copy = widget_config.copy()
@@ -71,7 +71,6 @@ def configure_pygui(renderer, widgets, update=True):
                         getattr(dpg, f"add_{widget}")(name, **widget_config_copy)
                     else:
                         dpg.add_separator()
-    # show_demo()
 
     if not update:
         dpg.start_dearpygui()

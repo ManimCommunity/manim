@@ -93,7 +93,7 @@ class SampleSpaceScene(Scene):
 
     def get_prior_rectangles(self):
         return VGroup(
-            *[self.sample_space.horizontal_parts[i].vertical_parts[0] for i in range(2)]
+            *(self.sample_space.horizontal_parts[i].vertical_parts[0] for i in range(2))
         )
 
     def get_posterior_rectangles(self, buff=MED_LARGE_BUFF):
