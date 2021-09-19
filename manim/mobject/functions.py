@@ -191,7 +191,6 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
                         color=YELLOW
                     )
                     self.add(NumberPlane(), graph)
-                    self.interactive_embed()
         """
         x_range = x_range or [
             -config.frame_width / 2,

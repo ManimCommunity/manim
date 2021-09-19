@@ -700,8 +700,9 @@ class CoordinateSystem:
     def get_implicit_graph(
         self,
         func: Callable,
+        min_depth: int = 5,
+        max_quads: int = 2500,
         color: Color = WHITE,
-        res: int = 100,
         **kwargs,
     ) -> VMobject:
         """Creates the graph of an implicit function.
@@ -710,10 +711,12 @@ class CoordinateSystem:
         ----------
         func
             The function to graph, in the form of f(x, y) = 0.
+        min_depth
+            The minimum depth of the function to calculate.
+        max_quads
+            The maximum number of quadtrees to use.
         color
             The color of the graph
-        res
-            The number of points to take for the graph.
         kwargs
             Additional parameters to pass into :class:`VMobject`
 
