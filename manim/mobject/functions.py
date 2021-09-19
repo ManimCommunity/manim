@@ -1,16 +1,19 @@
 """Mobjects representing function graphs."""
 
-__all__ = ["ParametricFunction", "FunctionGraph"]
+__all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Sequence
 
 import numpy as np
+
+from manim.mobject.geometry import Line
 
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from ._isoline import plot_implicit
 from .opengl_compatibility import ConvertToOpenGL
 
 
@@ -149,3 +152,68 @@ class FunctionGraph(ParametricFunction):
 
     def get_point_from_function(self, x):
         return self.parametric_function(x)
+
+
+class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        func: Callable[[float, float], float],
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
+        min_depth: int = 5,
+        max_quads: int = 2500,
+        **kwargs
+    ):
+        """An implicit function.
+
+        Parameters
+        ----------
+        func
+            The implicit function in the form ``f(x, y) = 0``.
+        x_range
+            The x min and max of the function.
+        y_range
+            The y min and max of the function.
+        min_depth
+            The minimum depth of the function to calculate.
+        max_quads
+            The maximum number of quadtrees to use.
+
+        Examples
+        --------
+        .. manim:: ImplicitFunctionExample
+            :save_last_frame:
+
+            class ImplicitFunctionExample(Scene):
+                def construct(self):
+                    graph = ImplicitFunction(
+                        lambda x, y: x * y ** 2 - x ** 2 * y - 2,
+                        color=YELLOW
+                    )
+                    self.add(NumberPlane(), graph)
+                    self.interactive_embed()
+        """
+        x_range = x_range or [
+            -config.frame_width / 2,
+            config.frame_width / 2,
+        ]
+        y_range = y_range or [
+            -config.frame_height / 2,
+            config.frame_height / 2,
+        ]
+        p_min, p_max = (
+            np.array([x_range[0], y_range[0]]),
+            np.array([x_range[1], y_range[1]]),
+        )
+
+        points = plot_implicit(
+            lambda u: func(u[0], u[1]),
+            p_min,
+            p_max,
+            min_depth,
+            max_quads,
+        )
+        points = [np.pad(i, [(0, 0), (0, 1)]) for i in points]
+        super().__init__()
+        for p in points:
+            self.add(Line(**kwargs).set_points_as_corners(p))
