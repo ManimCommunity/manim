@@ -12,19 +12,16 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from os import makedirs
-from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.svg.svg_mobject import SVGMobject
 
 from .. import config
 from ..constants import *
-from ..mobject.functions import ParametricFunction
+from ..mobject.functions import ImplicitFunction, ParametricFunction
 from ..mobject.geometry import (
     Arrow,
     Circle,
@@ -733,8 +730,6 @@ class CoordinateSystem:
                     )
                     self.add(ax, a)
         """
-        from .functions import ImplicitFunction
-
         graph = ImplicitFunction(
             func, self.x_range[:2], self.y_range[:2], color=color, **kwargs
         )
