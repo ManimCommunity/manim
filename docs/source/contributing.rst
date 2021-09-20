@@ -37,4 +37,4 @@ Contributing can be confusing, so here are a few guides:
    contributing/typings
    contributing/admonitions
    contributing/testing
-   contributing/translation
+   contributing/internationalization

@@ -4,9 +4,9 @@ rm -f untranslatable.po
 rm -rf build-en
 mkdir build-en
 pot_dir_prefix="en/LC_MESSAGES/"
-for i in `cat ./readyForTranslation`
+for i in `find $pot_dir_prefix -name "*.po"`
 do
-	srcFile=$pot_dir_prefix$i
+	srcFile=$i
 	destFile="build-$srcFile"
 	mkdir -p `dirname $destFile`
 	awk -f stripUntranslatable.awk $srcFile > $destFile

@@ -1,0 +1,99 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:2
+msgid "skip\\_manim\\_node"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:4
+msgid "Qualified name: ``manim\\_directive.skip\\_manim\\_node``"
+msgstr ""
+
+#: manim_directive.skip_manim_node:1 of
+msgid "Bases: :class:`docutils.nodes.Admonition`, :class:`docutils.nodes.Element`"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+":obj:`basic_attributes "
+"<manim_directive.skip_manim_node.basic_attributes>`\\"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+"List attributes which are defined for every Element-derived class "
+"instance and can be safely transferred to a different node."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+":obj:`child_text_separator "
+"<manim_directive.skip_manim_node.child_text_separator>`\\"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "Separator for child nodes, used by `astext()` method."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "The `document` node at the root of the tree containing this Node."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+":obj:`known_attributes "
+"<manim_directive.skip_manim_node.known_attributes>`\\"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "List attributes that are known to the Element base class."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "The line number (1-based) of the beginning of this Node in `source`."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "List attributes, automatically initialized to empty lists for all nodes."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+":obj:`local_attributes "
+"<manim_directive.skip_manim_node.local_attributes>`\\"
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid ""
+"A list of class-specific attributes that should not be copied with the "
+"standard attributes when replacing a node."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "Back-reference to the Node immediately containing this Node."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "Path or description of the input source which generated this Node."
+msgstr ""
+
+#: ../../source/reference/manim_directive.skip_manim_node.rst:36:<autosummary>:1
+msgid "The element generic identifier."
+msgstr ""
+
+

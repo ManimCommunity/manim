@@ -119,22 +119,21 @@ state==1 {
 		acceptable=1
 	}
 }
-#$0~/^msgid ":ref:`[a-zA-Z]*`"/ {
-#	acceptable=0
-#}
-#$0~/^msgid ":obj:/ {
-#	acceptable=0
-#}
-#$0~/^msgid "manim.([a-z._\\]+)"$/ {
-#	acceptable=0
-#}
-#$0~/^msgid "((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
-#	acceptable=0
-#}
-#$0~/^"((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
-#	acceptable=0
-#}
-#$0~/^"/
+$0~/^msgid ":ref:`[a-zA-Z]*`"/ {
+	acceptable=0
+}
+$0~/^msgid ":obj:/ {
+	acceptable=0
+}
+$0~/^msgid "manim.([a-z._\\]+)"$/ {
+	acceptable=0
+}
+$0~/^msgid "((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
+	acceptable=0
+}
+$0~/^"((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
+	acceptable=0
+}
 
 # When the parsing is ended, print the last missing endline
 END {

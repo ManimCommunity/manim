@@ -48,22 +48,10 @@ msgstr ""
 msgid "Basic Concepts"
 msgstr ""
 
-#: ../../source/examples.rst:36
-msgid ""
-"References: :class:`~.MathTex` :class:`~.Circle` :class:`~.Square` "
-":class:`~.Triangle`"
-msgstr ""
-
 #: ../../source/examples.rst:31
 msgid ""
 "References: :class:`~.Brace` :meth:`~.Brace.get_text` "
 ":meth:`~.Brace.get_tex`"
-msgstr ""
-
-#: ../../source/examples.rst:29
-msgid ""
-"References: :class:`~.Dot` :class:`~.Arrow` :class:`~.NumberPlane` "
-":class:`~.Text`"
 msgstr ""
 
 #: ../../source/examples.rst:30
@@ -72,13 +60,6 @@ msgstr ""
 
 #: ../../source/examples.rst:98
 msgid "Animations"
-msgstr ""
-
-#: ../../source/examples.rst:37
-msgid ""
-"References: :class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
-":class:`~.GrowFromCenter` :class:`~.Transform` :class:`~.MoveAlongPath` "
-":class:`~.Rotating`"
 msgstr ""
 
 #: ../../source/examples.rst:30
@@ -93,12 +74,6 @@ msgstr ""
 
 #: ../../source/examples.rst:180
 msgid "You can use multiple ValueTrackers simultaneously."
-msgstr ""
-
-#: ../../source/examples.rst:39
-msgid ""
-"References: :mod:`~.manim.mobject.svg.tex_mobject` :class:`~.MathTex` "
-":class:`~.SurroundingRectangle`"
 msgstr ""
 
 #: ../../source/examples.rst:38
@@ -187,13 +162,6 @@ msgstr ""
 
 #: ../../source/examples.rst:604
 msgid "Advanced Projects"
-msgstr ""
-
-#: ../../source/examples.rst:74
-msgid ""
-"References: :class:`~.Tex` :class:`~.MathTex` :class:`~.Write` "
-":class:`~.FadeIn` :class:`~.LaggedStart` :class:`~.NumberPlane` "
-":class:`~.Create` :meth:`~.NumberPlane.prepare_for_nonlinear_transform`"
 msgstr ""
 
 #: ../../source/examples.rst:107
