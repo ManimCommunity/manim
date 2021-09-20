@@ -734,11 +734,17 @@ class CoordinateSystem:
                     self.add(ax, a)
         """
         graph = ImplicitFunction(
-            func, self.x_range[:2], self.y_range[:2], color=color, **kwargs
+            func,
+            self.x_range[:2],
+            self.y_range[:2],
+            min_depth,
+            max_quads,
+            color=color,
+            **kwargs,
         )
         (
-            graph.stretch_to_fit_width(self.x_length)
-            .stretch_to_fit_height(self.y_length)
+            graph.stretch(self.width / config.frame_width, 0, about_point=ORIGIN)
+            .stretch(self.height / config.frame_height, 1, about_point=ORIGIN)
             .shift(self.get_center())
         )
         return graph

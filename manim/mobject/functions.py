@@ -13,7 +13,7 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
-from ._isoline import plot_implicit
+from ._isoline.isoline import plot_implicit
 from .opengl_compatibility import ConvertToOpenGL
 
 
