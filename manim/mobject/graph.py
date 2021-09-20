@@ -559,7 +559,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A comma separated list of hashable vertex identifiers.
+            Hashable vertex identifiers.
         positions
             A dictionary specifying the coordinates where the new vertices should be added.
             If ``None``, all vertices are created at the center of the graph.
@@ -769,7 +769,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         edges
-            A comma separated list of edges (as a tuple of vertex identifiers) to be added. If a non-existing
+            Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
             new vertices yourself beforehand to customize them.
         edge_type
