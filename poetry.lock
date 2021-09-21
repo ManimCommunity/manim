@@ -2651,6 +2651,10 @@ isort = [
     {file = "isort-5.9.2-py3-none-any.whl", hash = "sha256:eed17b53c3e7912425579853d078a0832820f023191561fcee9d7cae424e0813"},
     {file = "isort-5.9.2.tar.gz", hash = "sha256:f65ce5bd4cbc6abdfbe29afc2f0245538ab358c14590912df638033f157d555e"},
 ]
+isosurfaces = [
+    {file = "isosurfaces-0.1.0-py3-none-any.whl", hash = "sha256:a3421f7e7115f72f8f1af538ac4723e5570b1aaa0ddfc6a86520d2d781f3e91f"},
+    {file = "isosurfaces-0.1.0.tar.gz", hash = "sha256:fa1b44e5e59d2f429add49289ab89e36f8dcda49b7badd99e0beea273be331f4"},
+]
 jedi = [
     {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
     {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
