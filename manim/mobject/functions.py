@@ -6,6 +6,7 @@ __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 from typing import Callable, Optional, Sequence
 
 import numpy as np
+from isosurfaces import plot_isoline
 
 from manim.mobject.geometry import Line
 
@@ -13,7 +14,6 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
-from ._isoline.isoline import plot_implicit
 from .opengl_compatibility import ConvertToOpenGL
 
 
@@ -205,7 +205,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             np.array([x_range[1], y_range[1]]),
         )
 
-        points = plot_implicit(
+        points = plot_isoline(
             lambda u: func(u[0], u[1]),
             p_min,
             p_max,
