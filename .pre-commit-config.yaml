@@ -39,7 +39,7 @@ repos:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/psf/black
-    rev: 21.8b0
+    rev: 21.9b0
     hooks:
       - id: black
         exclude: ^manim/grpc/gen/
