@@ -32,3 +32,9 @@ def disabling_caching():
 @pytest.fixture
 def infallible_scenes_path():
     return str(Path(__file__).parent / "infallible_scenes.py")
+
+
+@pytest.fixture
+def use_opengl_renderer(enable_preview):
+    with tempconfig({"renderer": "opengl", "preview": enable_preview}):
+        yield
