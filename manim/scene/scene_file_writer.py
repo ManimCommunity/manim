@@ -585,7 +585,7 @@ class SceneFileWriter:
             for file_to_delete in oldest_files_to_delete:
                 os.remove(file_to_delete)
             logger.info(
-                f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s).",
+                f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
                 "You can change this behaviour by changing max_files_cached in config.",
             )
 
