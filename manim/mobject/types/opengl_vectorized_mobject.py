@@ -1057,6 +1057,7 @@ class OpenGLVMobject(OpenGLMobject):
             if not np.array_equal(new_points, old_points):
                 self.refresh_triangulation()
                 self.refresh_unit_normal()
+            return self
 
         return wrapper
 
