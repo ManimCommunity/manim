@@ -276,7 +276,10 @@ class OpenGLRenderer:
             )
             return True
         return (
-            config["preview"] and not config["format"] and not config["write_to_movie"]
+            config["preview"]
+            and not config["save_last_frame"]
+            and not config["format"]
+            and not config["write_to_movie"]
         )
 
     def get_pixel_shape(self):

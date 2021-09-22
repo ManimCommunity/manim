@@ -1022,7 +1022,7 @@ class Scene:
             )
             return False
         elif not self.renderer.window:
-            logger.warning("Disabling interactive embed as '--format png' is set")
+            logger.warning("Disabling interactive embed as no window was created")
             return False
         return True
 
