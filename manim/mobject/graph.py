@@ -678,7 +678,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of vertices to be removed from the graph.
+            Vertices to be removed from the graph.
 
         Examples
         --------
@@ -848,13 +848,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+    def remove_edges(self, *edges: Tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
         ----------
         edges
-            A list of edges to be removed from the graph.
+            Edges to be removed from the graph.
 
         Returns
         -------
