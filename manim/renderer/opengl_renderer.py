@@ -494,7 +494,7 @@ class OpenGLRenderer:
         # get current pixel values as numpy data in order to test output
         raw = self.get_raw_frame_buffer_object_data(dtype="f1")
         pixel_shape = self.get_pixel_shape()
-        result_dimensions = (pixel_shape[0], pixel_shape[1], 4)
+        result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
         np_buf = np.flipud(np_buf)
         return np_buf
