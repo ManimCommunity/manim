@@ -131,8 +131,8 @@ class _BooleanOps(VMobject):
 
 
 class Union(_BooleanOps):
-    """Union of two or more :class:`~.VMobject`s. This returns the common region of
-    the :class:`~VMobject`s.
+    """Union of two or more :class:`~.VMobject` s. This returns the common region of
+    the :class:`~VMobject` s.
 
     Parameters
     ==========
@@ -176,6 +176,7 @@ class Union(_BooleanOps):
 
 class Difference(_BooleanOps):
     """Subracts one :class:`~.VMobject` from another one.
+    
     Parameters
     ==========
     subject
@@ -212,8 +213,8 @@ class Difference(_BooleanOps):
 
 
 class Intersection(_BooleanOps):
-    """Find the intersection of two :class:`~.VMobject`s.
-    This keeps the parts covered by both :class:`~.VMobject`s.
+    """Find the intersection of two :class:`~.VMobject` s.
+    This keeps the parts covered by both :class:`~.VMobject` s.
 
     Parameters
     ==========
