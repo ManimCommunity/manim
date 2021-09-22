@@ -618,18 +618,20 @@ class Cylinder(Surface):
 
     def add_bases(self):
         """Adds the end caps of the cylinder."""
+        color = self.color if config["renderer"] == "opengl" else self.fill_color
+        opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
         self.base_top = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
         self.base_top.shift(self.u_range[1] * IN)
         self.base_bottom = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
