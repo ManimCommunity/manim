@@ -78,4 +78,10 @@ global_options = option_group(
         help="Expand the window to its maximum possible size.",
         default=None,
     ),
+    option(
+        "--enable_wireframe",
+        is_flag=True,
+        help="Enable wireframe debugging mode in opengl.",
+        default=None,
+    ),
 )
