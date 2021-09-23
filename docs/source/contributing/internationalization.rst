@@ -12,7 +12,7 @@ If you want to help with translating the docs:
 Congratulations! You are now a Translator for the Manim project!
 
 
-You have access to the projects you joined just on the left of your profile picture
+You'll see the projects you've joined just on the left of your profile picture
 on the top bar.
 
 .. image:: /_static/select_transifex_repo.png
@@ -22,7 +22,7 @@ on the top bar.
 Now go to the
 `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
 and select a language you want to help with. You should see a blue button reading
-`Translate`; click it to get started! You will see a list of
+`Translate`; click on it to get started! You will see a list of
 resources in the project. You can click on any untranslated resource, then
 click on `Translate`. You will then see something like the following:
 
