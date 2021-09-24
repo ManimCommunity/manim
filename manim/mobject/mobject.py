@@ -200,7 +200,7 @@ class Mobject:
             >>> from manim import Square, GREEN
             >>> Square.change_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83C167>, 0.25)
+            (<Color #83c167>, 0.25)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
