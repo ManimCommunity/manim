@@ -11,7 +11,7 @@ import random
 import sys
 import types
 import warnings
-from functools import reduce
+from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
 from typing import (
@@ -179,6 +179,40 @@ class Mobject:
                 f"{cls.animation_overrides[animation_class].__qualname__} and "
                 f"{override_func.__qualname__}.",
             )
+    
+    @classmethod
+    def change_default(cls, **kwargs):
+        """Changes the default values of keyword arguments.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+        
+        Examples
+        --------
+
+        ::
+
+            >>> Square.change_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color #83C167>, 0.25)
+
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
+
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.change_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
+
+        """
+        cls.__init__ = partialmethod(cls.__init__, **kwargs)
 
     @property
     def animate(self):
