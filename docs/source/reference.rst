@@ -8,16 +8,6 @@ the :doc:`changelog`.
 
 .. warning:: The pages linked to here are currently a work in progress.
 
-.. toctree::
-   :maxdepth: 3
-
-   reference_index/animations
-   reference_index/cameras
-   reference_index/configuration
-   reference_index/mobjects
-   reference_index/scenes
-   reference_index/utilities_misc
-
 .. currentmodule:: manim
 
 ********
@@ -144,6 +134,7 @@ Animations
    ~animation.movement
    ~animation.numbers
    ~animation.rotation
+   ~animation.specialized
    ~animation.transform
    ~animation.transform_matching_parts
    ~animation.update
@@ -161,6 +152,7 @@ Animations
    manim.animation.movement
    manim.animation.numbers
    manim.animation.rotation
+   manim.animation.specialized
    manim.animation.transform
    manim.animation.transform_matching_parts
    manim.animation.update
@@ -239,4 +231,3 @@ Other modules
    :toctree: reference
 
    constants
-   container
