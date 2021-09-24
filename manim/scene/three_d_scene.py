@@ -107,33 +107,34 @@ class ThreeDScene(Scene):
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        try:
+            if config.renderer != "opengl":
+                x: ValueTracker = eval(f"self.renderer.camera.{about.lower()}_tracker")
+                x.add_updater(lambda m, dt: m.increment_value(rate * dt))
+                self.add(x)
+            else:
+                exec(
+                    "self.renderer.camera.add_updater("
+                    f"lambda mob, dt: mob.increment_{about.lower()}({rate} * dt)"
+                    ")",
+                )
+                self.add(self.camera)
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.add_updater(lambda m, dt: m.increment_value(rate * dt))
-        self.add(x)
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """
         This method stops all ambient camera rotation.
         """
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        try:
+            if config.renderer != "opengl":
+                x: ValueTracker = eval(f"self.renderer.camera.{about.lower()}_tracker")
+                x.clear_updaters()
+                self.remove(x)
+            else:
+                self.camera.clear_updaters()
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.clear_updaters()
-        self.remove(x)
 
     def begin_3dillusion_camera_rotation(
         self,
