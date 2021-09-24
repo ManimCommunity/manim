@@ -197,7 +197,7 @@ class Mobject:
 
         ::
 
-            >>> from manim import Square
+            >>> from manim import Square, GREEN
             >>> Square.change_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
             (<Color #83C167>, 0.25)
