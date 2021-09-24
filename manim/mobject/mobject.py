@@ -179,7 +179,7 @@ class Mobject:
                 f"{cls.animation_overrides[animation_class].__qualname__} and "
                 f"{override_func.__qualname__}.",
             )
-    
+
     @classmethod
     def change_default(cls, **kwargs):
         """Changes the default values of keyword arguments.
@@ -191,7 +191,7 @@ class Mobject:
             Passing any keyword argument will update the default
             values of the keyword arguments of the initialization
             function of this class.
-        
+
         Examples
         --------
 
