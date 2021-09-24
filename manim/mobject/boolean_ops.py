@@ -218,10 +218,13 @@ class Intersection(_BooleanOps):
 
     Parameters
     ==========
-    subject
-        The 1st :class:`~.VMobject`.
-    clip
-        The 2nd :class:`~.VMobject`.
+    vmobjects
+        The :class:`~.VMobject` to find the intersection.
+
+    Raises
+    ======
+    ValueError
+        If less the 2 :class:`~.VMobject` are passed.
 
     Example
     =======
@@ -240,15 +243,26 @@ class Intersection(_BooleanOps):
 
     """
 
-    def __init__(self, subject, clip, **kwargs) -> None:
+    def __init__(self, *vmobjects, **kwargs) -> None:
+        if len(vmobjects) < 2:
+            raise ValueError("At least 2 mobjects needed for Intersection.")
+
         super().__init__(**kwargs)
         outpen = SkiaPath()
         intersection(
-            [self._convert_vmobject_to_skia_path(subject)],
-            [self._convert_vmobject_to_skia_path(clip)],
+            [self._convert_vmobject_to_skia_path(vmobjects[0])],
+            [self._convert_vmobject_to_skia_path(vmobjects[1])],
             outpen.getPen(),
         )
         self._convert_skia_path_to_vmobject(outpen)
+
+        for _i in range(2, len(vmobjects)):
+            intersection(
+                [self._convert_vmobject_to_skia_path(self)],
+                [self._convert_vmobject_to_skia_path(vmobjects[_i])],
+                outpen.getPen(),
+            )
+            self._convert_skia_path_to_vmobject(outpen)
 
 
 class Exclusion(_BooleanOps):
