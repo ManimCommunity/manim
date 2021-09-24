@@ -1,0 +1,103 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:2
+msgid "ArcBrace"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:4
+msgid "Qualified name: ``manim.mobject.svg.brace.ArcBrace``"
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:1 of
+msgid "Bases: :class:`manim.mobject.svg.brace.Brace`"
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:1 of
+msgid "Creates a :class:`~Brace` that wraps around an :class:`~.Arc`."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:3 of
+msgid ""
+"The direction parameter allows the brace to be applied from outside or "
+"inside the arc."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:7 of
+msgid "The :class:`ArcBrace` is smaller for arcs with smaller radii."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:10 of
+msgid ""
+"The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by "
+"the length of the :class:`~.Arc`, but is scaled down to match the start "
+"and end angles. An exponential function is then applied after it is "
+"shifted based on the radius of the arc."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:15 of
+msgid ""
+"The scaling effect is not applied for arcs with radii smaller than 1 to "
+"prevent over-scaling."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:18 of
+msgid "The :class:`~.Arc` that wraps around the :class:`Brace` mobject."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:19 of
+msgid ""
+"The direction from which the brace faces the arc. ``LEFT`` for inside the"
+" arc, and ``RIGHT`` for the outside."
+msgstr ""
+
+#: manim.mobject.svg.brace.ArcBrace:23 of
+msgid "Example"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:41
+msgid "References: :class:`~.Arc`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:28:<autosummary>:1
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.svg.brace.ArcBrace.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:28:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+
