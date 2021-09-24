@@ -211,31 +211,58 @@ class ThreeDScene(Scene):
 
         """
         anims = []
-        value_tracker_pairs = [
-            (phi, self.renderer.camera.phi_tracker),
-            (theta, self.renderer.camera.theta_tracker),
-            (distance, self.renderer.camera.distance_tracker),
-            (gamma, self.renderer.camera.gamma_tracker),
-            (zoom, self.renderer.camera.zoom_tracker),
-        ]
-        for value, tracker in value_tracker_pairs:
-            if value is not None:
-                anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
-        if frame_center is not None:
-            anims.append(
-                ApplyMethod(
-                    self.renderer.camera._frame_center.move_to, frame_center, **kwargs
-                ),
-            )
 
-        self.play(*anims + added_anims)
+        if config.renderer != "opengl":
+            from ..camera.three_d_camera import ThreeDCamera
+
+            self.camera: ThreeDCamera
+            value_tracker_pairs = [
+                (phi, self.camera.phi_tracker),
+                (theta, self.camera.theta_tracker),
+                (distance, self.camera.distance_tracker),
+                (gamma, self.camera.gamma_tracker),
+                (zoom, self.camera.zoom_tracker),
+            ]
+            for value, tracker in value_tracker_pairs:
+                if value is not None:
+                    anims.append(tracker.animate.set_value(value))
+            if frame_center is not None:
+                anims.append(self.camera._frame_center.animate.move_to(frame_center))
+        else:
+            from ..mobject.opengl_mobject import OpenGLMobject
+
+            if frame_center is not None:
+                if isinstance(frame_center, OpenGLMobject):
+                    frame_center = frame_center.get_center()
+                frame_center = list(frame_center)
+
+            cam_anim = ""
+            for value, method in [
+                [phi, "set_phi"],
+                [theta, "set_theta"],
+                [gamma, "set_gamma"],
+                [
+                    f"{config.frame_width / zoom}, 0" if zoom is not None else None,
+                    "rescale_to_fit",
+                ],
+                [frame_center, "move_to"],
+            ]:
+                if value is not None:
+                    cam_anim += f".{method}({value})"
+            exec(f"anims.append(self.camera.animate{cam_anim})")
+            if distance is not None:
+                raise NotImplementedError(
+                    "focal distance of OpenGLCamera is not adjustable.",
+                )
+
+        self.play(*anims + added_anims, **kwargs)
 
         # These lines are added to improve performance. If manim thinks that frame_center is moving,
         # it is required to redraw every object. These lines remove frame_center from the Scene once
         # its animation is done, ensuring that manim does not think that it is moving. Since the
         # frame_center is never actually drawn, this shouldn't break anything.
-        if frame_center is not None:
-            self.remove(self.renderer.camera._frame_center)
+        if frame_center is not None and config.renderer != "opengl":
+            self.remove(self.camera._frame_center)
 
     def get_moving_mobjects(self, *animations):
         """
