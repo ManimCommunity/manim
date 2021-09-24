@@ -9,7 +9,7 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-from typing import Callable, Optional, Sequence, Tuple, Type
+from typing import Callable, Iterable, Optional, Sequence, Tuple, Type
 
 import numpy as np
 from colour import Color
@@ -29,11 +29,9 @@ from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.deprecation import deprecated_params
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
+from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
-
-# def get_norm(p):
-#     return np.linalg.norm(p)
 
 
 class VectorField(VGroup):
@@ -387,6 +385,47 @@ class VectorField(VGroup):
         points_array[:, :, 1] = y_array
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
         return Image.fromarray((rgbs * 255).astype("uint8"))
+
+    def get_vectorized_rgba_gradient_function(
+        self,
+        start: float,
+        end: float,
+        colors: Iterable,
+    ):
+        """
+        Generates a gradient of rgbas as a numpy array
+
+        Parameters
+        ----------
+        start
+            start value used for inverse interpolation at :func:`~.inverse_interpolate`
+        end
+            end value used for inverse interpolation at :func:`~.inverse_interpolate`
+        colors
+            list of colors to generate the gradient
+
+        Returns
+        -------
+            function to generate the gradients as numpy arrays representing rgba values
+        """
+        rgbs = np.array([color_to_rgb(c) for c in colors])
+
+        def func(values, opacity=1):
+            alphas = inverse_interpolate(start, end, np.array(values))
+            alphas = np.clip(alphas, 0, 1)
+            scaled_alphas = alphas * (len(rgbs) - 1)
+            indices = scaled_alphas.astype(int)
+            next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
+            inter_alphas = scaled_alphas % 1
+            inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
+            result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
+            result = np.concatenate(
+                (result, np.full([len(result), 1], opacity)),
+                axis=1,
+            )
+            return result
+
+        return func
 
 
 class ArrowVectorField(VectorField):
@@ -765,6 +804,12 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
+            if config["renderer"] == "opengl":
+                self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
+                    min_color_scheme_value,
+                    max_color_scheme_value,
+                    colors,
+                )
         for point in start_points:
             points = [point]
             for _ in range(max_steps):
@@ -776,18 +821,34 @@ class StreamLines(VectorField):
             step = max_steps
             if not step:
                 continue
-            line = VMobject()
+            if config["renderer"] == "opengl":
+                line = OpenGLVMobject()
+            else:
+                line = VMobject()
             line.duration = step * dt
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.single_color:
                 line.set_stroke(self.color)
             else:
-                if np.any(self.z_range != np.array([0, 0.5, 0.5])):
-                    line.set_stroke([self.pos_to_color(p) for p in line.get_anchors()])
+                if config["renderer"] == "opengl":
+                    # scaled for compatibility with cairo
+                    line.set_stroke(width=self.stroke_width / 4.0)
+                    norms = np.array(
+                        [np.linalg.norm(self.func(point)) for point in line.points],
+                    )
+                    line.set_rgba_array_direct(
+                        self.values_to_rgbas(norms, opacity),
+                        name="stroke_rgba",
+                    )
                 else:
-                    line.color_using_background_image(self.background_img)
-            line.set_stroke(width=self.stroke_width, opacity=opacity)
+                    if np.any(self.z_range != np.array([0, 0.5, 0.5])):
+                        line.set_stroke(
+                            [self.pos_to_color(p) for p in line.get_anchors()],
+                        )
+                    else:
+                        line.color_using_background_image(self.background_img)
+                    line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
 

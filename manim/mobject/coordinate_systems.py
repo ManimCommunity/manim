@@ -1344,7 +1344,7 @@ class CoordinateSystem:
 
         if include_secant_line:
             group.secant_line = Line(p1, p2, color=secant_line_color)
-            group.secant_line.scale_in_place(
+            group.secant_line.scale(
                 secant_line_length / group.secant_line.get_length(),
             )
             group.add(group.secant_line)
