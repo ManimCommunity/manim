@@ -7,4 +7,4 @@ def test_polar_coords():
     a = np.array([1, 1, 0])
     b = (2, np.pi / 2, np.pi / 2)
     assert cartesian_to_spherical(a) == (2 ** 0.5, np.pi / 2, np.pi / 4)
-    assert all(np.round(spherical_to_cartesian(*b)) == np.array([0, 2, 0]))
+    assert all(np.round(spherical_to_cartesian(b), 6) == np.array([0, 2, 0]))
