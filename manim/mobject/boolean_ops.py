@@ -254,15 +254,16 @@ class Intersection(_BooleanOps):
             [self._convert_vmobject_to_skia_path(vmobjects[1])],
             outpen.getPen(),
         )
-        self._convert_skia_path_to_vmobject(outpen)
-
         for _i in range(2, len(vmobjects)):
+            new_outpen = SkiaPath()
             intersection(
-                [self._convert_vmobject_to_skia_path(self)],
+                [outpen],
                 [self._convert_vmobject_to_skia_path(vmobjects[_i])],
-                outpen.getPen(),
+                new_outpen.getPen(),
             )
-            self._convert_skia_path_to_vmobject(outpen)
+        else:
+            outpen = new_outpen
+        self._convert_skia_path_to_vmobject(outpen)
 
 
 class Exclusion(_BooleanOps):
