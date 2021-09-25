@@ -3,6 +3,7 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+import warnings
 from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
@@ -273,8 +274,9 @@ class ThreeDScene(Scene):
                     methods[method](value)
 
             if distance is not None:
-                raise NotImplementedError(
-                    "focal distance of OpenGLCamera is not adjustable.",
+                warnings.warn(
+                    "focal distance of OpenGLCamera can not be adjusted.",
+                    stacklevel=2,
                 )
 
             anims += [Transform(cam, cam2)]
