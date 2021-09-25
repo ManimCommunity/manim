@@ -254,6 +254,7 @@ class Intersection(_BooleanOps):
             [self._convert_vmobject_to_skia_path(vmobjects[1])],
             outpen.getPen(),
         )
+        new_outpen = outpen
         for _i in range(2, len(vmobjects)):
             new_outpen = SkiaPath()
             intersection(
@@ -261,8 +262,8 @@ class Intersection(_BooleanOps):
                 [self._convert_vmobject_to_skia_path(vmobjects[_i])],
                 new_outpen.getPen(),
             )
-        else:
             outpen = new_outpen
+
         self._convert_skia_path_to_vmobject(outpen)
 
 
