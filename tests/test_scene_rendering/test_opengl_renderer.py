@@ -16,13 +16,14 @@ def testGetFrameWithPreviewDisabled(use_opengl_renderer):
     renderer.update_frame(scene)
     frame = renderer.get_frame()
 
-    assert renderer.get_pixel_shape()[0] == frame.shape[0]
-    assert renderer.get_pixel_shape()[1] == frame.shape[1]
+    # height and width are flipped
+    assert renderer.get_pixel_shape()[0] == frame.shape[1]
+    assert renderer.get_pixel_shape()[1] == frame.shape[0]
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize("enable_preview", [True])
-def testGetFrameWithPreviewDisabled(use_opengl_renderer):
+def testGetFrameWithPreviewEnabled(use_opengl_renderer):
     """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
@@ -32,5 +33,6 @@ def testGetFrameWithPreviewDisabled(use_opengl_renderer):
     renderer.update_frame(scene)
     frame = renderer.get_frame()
 
-    assert renderer.get_pixel_shape()[0] == frame.shape[0]
-    assert renderer.get_pixel_shape()[1] == frame.shape[1]
+    # height and width are flipped
+    assert renderer.get_pixel_shape()[0] == frame.shape[1]
+    assert renderer.get_pixel_shape()[1] == frame.shape[0]
