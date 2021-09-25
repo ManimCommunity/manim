@@ -94,6 +94,7 @@ class Mobject:
             Callable[["Mobject"], "Animation"],
         ] = {}
         cls._add_intrinsic_animation_overrides()
+        cls._original__init__ = cls.__init__
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
         self.color = Color(color) if color else None
@@ -184,6 +185,10 @@ class Mobject:
     def change_default(cls, **kwargs):
         """Changes the default values of keyword arguments.
 
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
         Parameters
         ----------
 
@@ -201,6 +206,9 @@ class Mobject:
             >>> Square.change_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
             (<Color #83C167>, 0.25)
+            >>> Square.change_default()
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color white>, 0.0)
 
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
@@ -213,7 +221,10 @@ class Mobject:
                     self.add(Text("Changing default values is easy!"))
 
         """
-        cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     @property
     def animate(self):
