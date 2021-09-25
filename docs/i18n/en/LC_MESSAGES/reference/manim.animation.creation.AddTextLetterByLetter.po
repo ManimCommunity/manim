@@ -1,0 +1,45 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:2
+msgid "AddTextLetterByLetter"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:4
+msgid "Qualified name: ``manim.animation.creation.AddTextLetterByLetter``"
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter:1 of
+msgid "Bases: :class:`manim.animation.creation.ShowIncreasingSubsets`"
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter:1 of
+msgid "Show a :class:`~.Text` letter by letter on the scene."
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter of
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter:3 of
+msgid "Frequency of appearance of the letters."
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter:5 of
+msgid ""
+"This is currently only possible for class:`~.Text` and not for "
+"class:`~.MathTex`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:14
+msgid "Methods"
+msgstr ""
+
+

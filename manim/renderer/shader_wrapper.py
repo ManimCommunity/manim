@@ -183,7 +183,7 @@ def get_shader_code_from_file(filename):
     )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            os.path.join("inserts", line.replace("#include ../include/", "")),
+            os.path.join("include", line.replace("#include ../include/", "")),
         )
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result

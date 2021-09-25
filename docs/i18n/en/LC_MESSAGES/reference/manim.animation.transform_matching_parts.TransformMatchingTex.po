@@ -1,0 +1,55 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingTex.rst:2
+msgid "TransformMatchingTex"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingTex.rst:4
+msgid ""
+"Qualified name: "
+"``manim.animation.transform\\_matching\\_parts.TransformMatchingTex``"
+msgstr ""
+
+#: manim.animation.transform_matching_parts.TransformMatchingTex:1 of
+msgid ""
+"Bases: "
+":class:`manim.animation.transform_matching_parts.TransformMatchingAbstractBase`"
+msgstr ""
+
+#: manim.animation.transform_matching_parts.TransformMatchingTex:1 of
+msgid "A transformation trying to transform rendered LaTeX strings."
+msgstr ""
+
+#: manim.animation.transform_matching_parts.TransformMatchingTex:3 of
+msgid "Two submobjects match if their ``tex_string`` matches."
+msgstr ""
+
+#: manim.animation.transform_matching_parts.TransformMatchingTex:8 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingTex.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingTex.rst:19:<autosummary>:1
+msgid ""
+":obj:`get_mobject_key "
+"<manim.animation.transform_matching_parts.TransformMatchingTex.get_mobject_key>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingTex.rst:19:<autosummary>:1
+msgid ""
+":obj:`get_mobject_parts "
+"<manim.animation.transform_matching_parts.TransformMatchingTex.get_mobject_parts>`"
+msgstr ""
+
+
