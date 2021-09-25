@@ -15,6 +15,7 @@ from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
@@ -228,8 +229,6 @@ class ThreeDScene(Scene):
         anims = []
 
         if config.renderer != "opengl":
-            from ..camera.three_d_camera import ThreeDCamera
-
             self.camera: ThreeDCamera
             value_tracker_pairs = [
                 (phi, self.camera.phi_tracker),
@@ -244,8 +243,6 @@ class ThreeDScene(Scene):
             if frame_center is not None:
                 anims.append(self.camera._frame_center.animate.move_to(frame_center))
         else:
-            from ..mobject.opengl_mobject import OpenGLMobject
-
             cam: OpenGLCamera = self.camera
             cam2 = cam.copy()
             methods = {
