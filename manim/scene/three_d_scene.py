@@ -9,7 +9,7 @@ import numpy as np
 
 from .. import config
 from ..animation.animation import Animation
-from ..animation.transform import ApplyMethod
+from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
@@ -18,6 +18,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
+from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 
@@ -107,17 +108,25 @@ class ThreeDScene(Scene):
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
+        about: str = about.lower()
         try:
             if config.renderer != "opengl":
-                x: ValueTracker = eval(f"self.renderer.camera.{about.lower()}_tracker")
-                x.add_updater(lambda m, dt: m.increment_value(rate * dt))
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
+                x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
             else:
-                exec(
-                    "self.renderer.camera.add_updater("
-                    f"lambda mob, dt: mob.increment_{about.lower()}({rate} * dt)"
-                    ")",
-                )
+                cam: OpenGLCamera = self.camera
+                methods = {
+                    "theta": cam.increment_theta,
+                    "phi": cam.increment_phi,
+                    "gamma": cam.increment_gamma,
+                }
+                cam.add_updater(lambda m, dt: methods[about](rate * dt))
                 self.add(self.camera)
         except:
             raise ValueError("Invalid ambient rotation angle.")
@@ -126,9 +135,15 @@ class ThreeDScene(Scene):
         """
         This method stops all ambient camera rotation.
         """
+        about: str = about.lower()
         try:
             if config.renderer != "opengl":
-                x: ValueTracker = eval(f"self.renderer.camera.{about.lower()}_tracker")
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
                 x.clear_updaters()
                 self.remove(x)
             else:
@@ -231,29 +246,41 @@ class ThreeDScene(Scene):
         else:
             from ..mobject.opengl_mobject import OpenGLMobject
 
+            cam: OpenGLCamera = self.camera
+            cam2 = cam.copy()
+            methods = {
+                "theta": cam2.set_theta,
+                "phi": cam2.set_phi,
+                "gamma": cam2.set_gamma,
+                "zoom": cam2.scale,
+                "frame_center": cam2.move_to,
+            }
             if frame_center is not None:
                 if isinstance(frame_center, OpenGLMobject):
                     frame_center = frame_center.get_center()
                 frame_center = list(frame_center)
 
-            cam_anim = ""
             for value, method in [
-                [phi, "set_phi"],
-                [theta, "set_theta"],
-                [gamma, "set_gamma"],
+                [theta, "theta"],
+                [phi, "phi"],
+                [gamma, "gamma"],
                 [
-                    f"{config.frame_width / zoom}, 0" if zoom is not None else None,
-                    "rescale_to_fit",
+                    config.frame_height / (zoom * cam.height)
+                    if zoom is not None
+                    else None,
+                    "zoom",
                 ],
-                [frame_center, "move_to"],
+                [frame_center, "frame_center"],
             ]:
                 if value is not None:
-                    cam_anim += f".{method}({value})"
-            exec(f"anims.append(self.camera.animate{cam_anim})")
+                    methods[method](value)
+
             if distance is not None:
                 raise NotImplementedError(
                     "focal distance of OpenGLCamera is not adjustable.",
                 )
+
+            anims += [Transform(cam, cam2)]
 
         self.play(*anims + added_anims, **kwargs)
 
