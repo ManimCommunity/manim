@@ -94,6 +94,7 @@ def test_exclusion(scene):
     ex = Exclusion(a, b).next_to(a)
     scene.add(a, b, ex)
 
+
 @frames_comparison()
 def test_intersection_3_mobjects(scene):
     a = Square()
