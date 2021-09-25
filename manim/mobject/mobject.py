@@ -182,8 +182,8 @@ class Mobject:
             )
 
     @classmethod
-    def change_default(cls, **kwargs):
-        """Changes the default values of keyword arguments.
+    def set_default(cls, **kwargs):
+        """Sets the default values of keyword arguments.
 
         If this method is called without any additional keyword
         arguments, the original default values of the initialization
@@ -203,10 +203,10 @@ class Mobject:
         ::
 
             >>> from manim import Square, GREEN
-            >>> Square.change_default(color=GREEN, fill_opacity=0.25)
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
             >>> s = Square(); s.color, s.fill_opacity
             (<Color #83c167>, 0.25)
-            >>> Square.change_default()
+            >>> Square.set_default()
             >>> s = Square(); s.color, s.fill_opacity
             (<Color white>, 0.0)
 
@@ -217,7 +217,7 @@ class Mobject:
 
             class ChangedDefaultTextcolor(Scene):
                 def construct(self):
-                    Text.change_default(color=BLACK)
+                    Text.set_default(color=BLACK)
                     self.add(Text("Changing default values is easy!"))
 
         """

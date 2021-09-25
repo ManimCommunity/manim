@@ -127,7 +127,7 @@ class OpenGLMobject:
         cls._original__init__ = cls.__init__
 
     @classmethod
-    def change_default(cls, **kwargs):
+    def set_default(cls, **kwargs):
         if kwargs:
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
