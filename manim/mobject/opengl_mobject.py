@@ -81,7 +81,7 @@ class OpenGLMobject:
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.color = Color(color)
+        self.color = Color(color) if color else None
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
