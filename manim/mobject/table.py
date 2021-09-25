@@ -67,7 +67,7 @@ from typing import Callable, Iterable, List, Optional, Sequence, Union
 
 from colour import Color
 
-from .. import config
+from .. import BackgroundRectangle, config
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
 from ..constants import *
@@ -849,9 +849,11 @@ class Table(VGroup):
         """
         cell = self.get_cell(pos)
         entry = self.get_entries(pos)
-        entry.add_background_rectangle(color=color, **kwargs)
-        entry.background_rectangle.stretch_to_fit_height(cell.get_height())
-        entry.background_rectangle.stretch_to_fit_width(cell.get_width())
+        bg = BackgroundRectangle(entry, color=color, **kwargs)
+        bg.stretch_to_fit_height(cell.get_height())
+        bg.stretch_to_fit_width(cell.get_width())
+        self.add_to_back(bg)
+
         return self
 
     def create(
