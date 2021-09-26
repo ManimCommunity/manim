@@ -389,6 +389,8 @@ class Cube(VGroup):
 
             self.add(face)
 
+    init_points = generate_points
+
 
 class Prism(Cube):
     """A cuboid.
