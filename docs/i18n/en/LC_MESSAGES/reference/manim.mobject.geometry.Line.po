@@ -1,0 +1,103 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:2
+msgid "Line"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.Line``"
+msgstr ""
+
+#: manim.mobject.geometry.Line:1 of
+msgid "Bases: :class:`manim.mobject.geometry.TipableVMobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
+#: manim.mobject.geometry.Line.generate_points:1 of
+msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
+#: manim.mobject.geometry.Line.get_projection:1 of
+msgid "Returns the projection of a point onto a line."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
+msgid ""
+":obj:`put_start_and_end_on "
+"<manim.mobject.geometry.Line.put_start_and_end_on>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
+msgid "Sets starts and end coordinates of a line."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
+msgid ""
+":obj:`set_start_and_end_attrs "
+"<manim.mobject.geometry.Line.set_start_and_end_attrs>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Line.rst:37
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:1:<autosummary>:1 of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:1:<autosummary>:1 of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.geometry.Line.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:1:<autosummary>:1 of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:1:<autosummary>:1 of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:1:<autosummary>:1 of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.geometry.Line.generate_points:3 of
+msgid ""
+"Gets called upon creation. This is an empty method that can be "
+"implemented by subclasses."
+msgstr ""
+
+#: ../../source/internal
+#: /home/mysaa/Documents/Projets/ggg/manim/docs/source/reference/manim.mobject.geometry.Line.rst
+#: after manim.mobject.geometry.Line.get_projection of padding
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.geometry.Line.get_projection:3 of
+msgid "The point to which the line is projected."
+msgstr ""
+
+#: manim.mobject.geometry.Line.get_projection of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.geometry.Line.put_start_and_end_on:1 of
+msgid "Sets starts and end coordinates of a line. .. rubric:: Examples"
+msgstr ""
+
+

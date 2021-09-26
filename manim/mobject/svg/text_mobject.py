@@ -29,7 +29,7 @@ Examples
     class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
+            title.scale(0.75)
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
@@ -40,7 +40,7 @@ Examples
 
             t4 = Text("4. Prediction").set_color(WHITE)
 
-            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)

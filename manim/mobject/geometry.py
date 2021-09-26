@@ -1088,15 +1088,6 @@ class Line(TipableVMobject):
     def set_length(self, length):
         return self.scale(length / self.get_length())
 
-    def set_opacity(self, opacity, family=True):
-        # Overwrite default, which would set
-        # the fill opacity
-        self.set_stroke(opacity=opacity)
-        if family:
-            for sm in self.submobjects:
-                sm.set_opacity(opacity, family)
-        return self
-
 
 class DashedLine(Line):
     """A dashed :class:`Line`.
