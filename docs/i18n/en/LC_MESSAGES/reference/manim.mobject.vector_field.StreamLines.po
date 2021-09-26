@@ -1,0 +1,288 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:2
+msgid "StreamLines"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:4
+msgid "Qualified name: ``manim.mobject.vector\\_field.StreamLines``"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:1 of
+msgid "Bases: :class:`manim.mobject.vector_field.VectorField`"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:1 of
+msgid ""
+"StreamLines represent the flow of a :class:`VectorField` using the trace "
+"of moving agents."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:3 of
+msgid ""
+"Vector fields are always based on a function defining the vector at every"
+" position. The values of this functions is displayed by moving many "
+"agents along the vector field and showing their trace."
+msgstr ""
+
+#: ../../source/internal
+#: /home/mysaa/Documents/Projets/ggg/manim/docs/source/reference/manim.mobject.vector_field.StreamLines.rst
+#: after manim.mobject.vector_field.StreamLines.end_animation
+#: manim.mobject.vector_field.StreamLines.start_animation of padding
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:7 of
+msgid ""
+"The function defining the rate of change at every position of the vector "
+"field."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:8 of
+msgid ""
+"The color of the vector field. If set, position-specific coloring is "
+"disabled."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:9 of
+msgid ""
+"A function mapping a vector to a single value. This value gives the "
+"position in the color gradient defined using `min_color_scheme_value`, "
+"`max_color_scheme_value` and `colors`."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:10 of
+msgid ""
+"The value of the color_scheme function to be mapped to the first color in"
+" `colors`. Lower values also result in the first color of the gradient."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:11 of
+msgid ""
+"The value of the color_scheme function to be mapped to the last color in "
+"`colors`. Higher values also result in the last color of the gradient."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:12 of
+msgid "The colors defining the color gradient of the vector field."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:13 of
+msgid "The minimum x value at which agends are spawned"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:14 of
+msgid "The maximum x value at which agends are spawned"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:15 of
+msgid "The minimum y value at which agends are spawned"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:16 of
+msgid "The maximum y value at which agends are spawned"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:17 of
+msgid "The distance in x direction between two agents."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:18 of
+msgid "The distance in y direction between two agents."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:19 of
+msgid ""
+"The amount by which the starting position of each agent is altered along "
+"each axis. Defaults to :code:`delta_y / 2` if not defined."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:20 of
+msgid "The number of agents generated at each starting point."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:21 of
+msgid ""
+"The factor by which the distance an agent moves per step is stretched. "
+"Lower values result in a better approximation of the trajectories in the "
+"vector field."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:22 of
+msgid ""
+"The time the agents get to move in the vector field. Higher values "
+"therefore result in longer stream lines. However, this whole time gets "
+"simulated upon creation."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:23 of
+msgid ""
+"The maximum number of anchors per line. Lines with more anchors get "
+"reduced in complexity, not in length."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:24 of
+msgid ""
+"The distance agents can move out of the generation area before being "
+"terminated."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:25 of
+msgid "The stroke with of the stream lines."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:26 of
+msgid "The opacity of the stream lines."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines:29
+#: manim.mobject.vector_field.StreamLines.create:14
+#: manim.mobject.vector_field.StreamLines.end_animation:11
+#: manim.mobject.vector_field.StreamLines.start_animation:13 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
+#: manim.mobject.vector_field.StreamLines.create:1
+#: manim.mobject.vector_field.StreamLines.create:10 of
+msgid "The creation animation of the stream lines."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
+msgid ""
+":obj:`end_animation "
+"<manim.mobject.vector_field.StreamLines.end_animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
+#: manim.mobject.vector_field.StreamLines.end_animation:1 of
+msgid "End the stream line animation smoothly."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
+msgid ""
+":obj:`start_animation "
+"<manim.mobject.vector_field.StreamLines.start_animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
+#: manim.mobject.vector_field.StreamLines.start_animation:1 of
+msgid "Animates the stream lines using an updater."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1 of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1 of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.vector_field.StreamLines.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1 of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1 of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1 of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:3 of
+msgid "The stream lines appear in random order."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:5 of
+msgid ""
+"The lag ratio of the animation. If undefined, it will be selected so that"
+" the total animation length is 1.5 times the run time of each stream line"
+" creation."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.create:7 of
+msgid ""
+"The run time of every single stream line creation. The runtime of the "
+"whole animation might be longer due to the `lag_ratio`. If undefined, the"
+" virtual time of the stream lines is used as run time."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.end_animation
+#: manim.mobject.vector_field.StreamLines.start_animation of
+msgid "Returns"
+msgstr ""
+
+#: ../../source/internal
+#: /home/mysaa/Documents/Projets/ggg/manim/docs/source/reference/manim.mobject.vector_field.StreamLines.rst
+#: after manim.mobject.vector_field.StreamLines.end_animation
+#: manim.mobject.vector_field.StreamLines.start_animation of padding
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.end_animation:3 of
+msgid ""
+"Returns an animation resulting in fully displayed stream lines without a "
+"noticeable cut."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.end_animation:5 of
+msgid "The animation fading out the running stream animation."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation of
+msgid "Raises"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.end_animation:8 of
+msgid "if no stream line animation is running"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:3 of
+msgid "The stream lines will continuously flow"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:5 of
+msgid ""
+"If `True` the animation is initialized line by line. Otherwise it starts "
+"with all lines shown."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:7 of
+msgid ""
+"At `flow_speed=1` the distance the flow moves per second is equal to the "
+"magnitude of the vector field along its path. The speed value scales the "
+"speed of this flow."
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:8 of
+msgid "The proportion of the stream line shown while being animated"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:9 of
+msgid "The rate function of each stream line flashing"
+msgstr ""
+
+#: manim.mobject.vector_field.StreamLines.start_animation:10 of
+msgid "The animation class being used"
+msgstr ""
+
+
