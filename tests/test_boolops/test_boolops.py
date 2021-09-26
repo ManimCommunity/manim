@@ -100,5 +100,5 @@ def test_intersection_3_mobjects(scene):
     a = Square()
     b = Circle().move_to([0.2, 0.2, 0])
     c = Triangle()
-    u = Intersection(a, b, c, fill_opacity=0.5, color=BLUE)
-    scene.add(a, b, c, u)
+    i = Intersection(a, b, c, fill_opacity=0.5, color=BLUE)
+    scene.add(a, b, c, i)

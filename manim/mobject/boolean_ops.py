@@ -175,7 +175,7 @@ class Union(_BooleanOps):
 
 
 class Difference(_BooleanOps):
-    """Subracts one :class:`~.VMobject` from another one.
+    """Subtracts one :class:`~.VMobject` from another one.
 
     Parameters
     ==========
