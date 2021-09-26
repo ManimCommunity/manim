@@ -1,0 +1,101 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:2
+msgid "ComplexValueTracker"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:4
+msgid "Qualified name: ``manim.mobject.value\\_tracker.ComplexValueTracker``"
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker:1 of
+msgid "Bases: :class:`manim.mobject.value_tracker.ValueTracker`"
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker:1 of
+msgid "Tracks a complex-valued parameter."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker:3 of
+msgid ""
+"When the value is set through :attr:`animate`, the value will take a "
+"straight path from the source point to the destination point."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker:7 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:21:<autosummary>:1
+msgid ""
+":obj:`get_value "
+"<manim.mobject.value_tracker.ComplexValueTracker.get_value>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1 of
+msgid "Get the current value of this value tracker as a complex number."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:21:<autosummary>:1
+msgid ""
+":obj:`set_value "
+"<manim.mobject.value_tracker.ComplexValueTracker.set_value>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ComplexValueTracker.set_value:1 of
+msgid "Sets a new complex value to the ComplexValueTracker"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ComplexValueTracker.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
+#: of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.value_tracker.ComplexValueTracker.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
+#: of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
+#: of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
+#: of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.value_tracker.ComplexValueTracker.get_value:3 of
+msgid ""
+"The value is internally stored as a points array [a, b, 0]. This can be "
+"accessed directly to represent the value geometrically, see the usage "
+"example."
+msgstr ""
+
+

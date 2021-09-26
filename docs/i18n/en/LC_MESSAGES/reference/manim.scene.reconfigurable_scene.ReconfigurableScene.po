@@ -1,0 +1,68 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:2
+msgid "ReconfigurableScene"
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:4
+msgid "Qualified name: ``manim.scene.reconfigurable\\_scene.ReconfigurableScene``"
+msgstr ""
+
+#: manim.scene.reconfigurable_scene.ReconfigurableScene:1 of
+msgid "Bases: :class:`manim.scene.scene.Scene`"
+msgstr ""
+
+#: manim.scene.reconfigurable_scene.ReconfigurableScene:1 of
+msgid "Note, this seems to no longer work as intended."
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:23:<autosummary>:1
+msgid ""
+":obj:`get_state "
+"<manim.scene.reconfigurable_scene.ReconfigurableScene.get_state>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:23:<autosummary>:1
+#: manim.scene.reconfigurable_scene.ReconfigurableScene.setup:1 of
+msgid ""
+"This is meant to be implemented by any scenes which are commonly "
+"subclassed, and have some common setup involved before the construct "
+"method is called."
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:23:<autosummary>:1
+msgid ""
+":obj:`transition_between_states "
+"<manim.scene.reconfigurable_scene.ReconfigurableScene.transition_between_states>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:23:<autosummary>:1
+msgid ""
+":obj:`transition_to_alt_config "
+"<manim.scene.reconfigurable_scene.ReconfigurableScene.transition_to_alt_config>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.reconfigurable_scene.ReconfigurableScene.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: manim.scene.reconfigurable_scene.ReconfigurableScene.setup:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`camera "
+"<manim.scene.reconfigurable_scene.ReconfigurableScene.camera>`\\"
+msgstr ""
+
+
