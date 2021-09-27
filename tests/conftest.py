@@ -3,6 +3,8 @@ import sys
 
 import pytest
 
+from manim import config, tempconfig
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -57,3 +59,13 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
+
+
+@pytest.fixture
+def using_opengl_renderer():
+    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
+    with tempconfig({"renderer": "opengl"}):
+        yield
+    # as a special case needed to manually revert back to cairo
+    # due to side effects of setting the renderer
+    config.renderer = "cairo"
