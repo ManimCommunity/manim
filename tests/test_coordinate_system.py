@@ -61,14 +61,12 @@ def test_NumberPlane():
         (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]),
         (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals),
         (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals]),
+        ((-5, 5, 0.5), (-8, 8, 2), x_vals, y_vals),  # <- test for different step values
     ]
 
     for test_data in testing_data:
 
         x_range, y_range, x_vals, y_vals = test_data
-
-        x_start, x_end = x_range
-        y_start, y_end = y_range
 
         plane = NumberPlane(
             x_range=x_range,
@@ -77,11 +75,14 @@ def test_NumberPlane():
             axis_config={"include_numbers": True},
         )
 
+        x_start, x_end, x_step = plane.x_range
+        y_start, y_end, y_step = plane.y_range
+
         # normally these values would be need to be added by one to pass since there's an
         # overlapping pair of lines at the origin, but since these planes do not cross 0,
         # this is not needed.
-        num_y_lines = math.ceil(x_end - x_start)
-        num_x_lines = math.floor(y_end - y_start)
+        num_y_lines = math.ceil(x_end - x_start) / x_step
+        num_x_lines = math.floor(y_end - y_start) / y_step
 
         assert len(plane.y_lines) == num_y_lines
         assert len(plane.x_lines) == num_x_lines
