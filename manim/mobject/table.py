@@ -888,9 +888,6 @@ class Table(VGroup):
         self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
         entry.background_rectangle = bg_cell
-        # entry.add_background_rectangle(color=color, **kwargs)
-        # entry.background_rectangle.stretch_to_fit_height(cell.get_height())
-        # entry.background_rectangle.stretch_to_fit_width(cell.get_width())
         return self
 
     def create(
