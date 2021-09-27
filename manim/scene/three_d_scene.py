@@ -246,7 +246,7 @@ class ThreeDScene(Scene):
         *animations : Animation
             The animations whose mobjects will be checked.
         """
-        moving_mobjects = Scene.get_moving_mobjects(self, *animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
             self.renderer.camera._frame_center,
         ]
@@ -387,7 +387,7 @@ class SpecialThreeDScene(ThreeDScene):
         else:
             _config = self.low_quality_config
         _config = merge_dicts_recursively(_config, kwargs)
-        ThreeDScene.__init__(self, **_config)
+        super().__init__(**_config)
 
     def get_axes(self):
         """Return a set of 3D axes.
