@@ -53,6 +53,7 @@ cloup = "^0.7.0"
 requests = "*"
 dearpygui = { version = "^0.8", optional = true }
 screeninfo = "^0.6.7"
+skia-pathops = "^0.6.0"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
@@ -63,7 +64,7 @@ gui = ["dearpygui"]
 pytest-cov = "*"
 pytest = "^6.0"
 pylint = "*"
-Sphinx = "^3"
+Sphinx = "^4"
 sphinx-copybutton = "*"
 sphinxext-opengraph = "*"
 furo = "*"
