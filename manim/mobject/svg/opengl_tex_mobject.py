@@ -233,8 +233,7 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
@@ -398,8 +397,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
         self.tex_environment = tex_environment
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
-        OpenGLSingleStringMathTex.__init__(
-            self,
+        super().__init__(
             self.arg_separator.join(tex_strings),
             tex_environment=self.tex_environment,
             tex_template=self.tex_template,
@@ -524,8 +522,7 @@ class OpenGLTex(OpenGLMathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        OpenGLMathTex.__init__(
-            self,
+        super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
             tex_environment=tex_environment,

@@ -286,25 +286,43 @@ class SceneFileWriter:
             Pixel array of the frame.
         """
         if config.renderer == "opengl":
-            renderer = frame_or_renderer
-            self.writing_process.stdin.write(
-                renderer.get_raw_frame_buffer_object_data(),
-            )
+            self.write_opengl_frame(frame_or_renderer)
         else:
             frame = frame_or_renderer
             if write_to_movie():
                 self.writing_process.stdin.write(frame.tobytes())
             if is_png_format() and not config["dry_run"]:
-                target_dir, extension = os.path.splitext(self.image_file_path)
-                if config["zero_pad"]:
-                    Image.fromarray(frame).save(
-                        f"{target_dir}{str(self.frame_count).zfill(config['zero_pad'])}{extension}",
-                    )
-                else:
-                    Image.fromarray(frame).save(
-                        f"{target_dir}{self.frame_count}{extension}",
-                    )
-                self.frame_count += 1
+                self.output_image_from_array(frame)
+
+    def write_opengl_frame(self, renderer):
+        if write_to_movie():
+            self.writing_process.stdin.write(
+                renderer.get_raw_frame_buffer_object_data(),
+            )
+        elif is_png_format() and not config["dry_run"]:
+            target_dir, extension = os.path.splitext(self.image_file_path)
+            self.output_image(
+                renderer.get_image(),
+                target_dir,
+                extension,
+                config["zero_pad"],
+            )
+
+    def output_image_from_array(self, frame_data):
+        target_dir, extension = os.path.splitext(self.image_file_path)
+        self.output_image(
+            Image.fromarray(frame_data),
+            target_dir,
+            extension,
+            config["zero_pad"],
+        )
+
+    def output_image(self, image: Image.Image, target_dir, ext, zero_pad: bool):
+        if zero_pad:
+            image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
+        else:
+            image.save(f"{target_dir}{self.frame_count}{ext}")
+        self.frame_count += 1
 
     def save_final_image(self, image):
         """

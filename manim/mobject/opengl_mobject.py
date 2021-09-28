@@ -1982,7 +1982,7 @@ class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
@@ -1992,7 +1992,7 @@ class OpenGLPoint(OpenGLMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_location(location)
 
     def get_width(self):
