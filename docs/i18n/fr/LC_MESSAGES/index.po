@@ -107,4 +107,4 @@ msgstr ""
 
 #: ../../source/index.rst:52
 msgid "Methods: :meth:`~.Mobject.add_updater`,"
-msgstr "Methods: :meth:`~.Mobject.add_updater`,"
+msgstr "Méthodes: :meth:`~.Mobject.add_updater`,"
