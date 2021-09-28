@@ -137,12 +137,12 @@ class Union(_BooleanOps):
     Parameters
     ==========
     vmobjects
-        The :class:`~.VMobject` to find the union.
+        The :class:`~.VMobject` s to find the union of.
 
     Raises
     ======
     ValueError
-        If less the 2 :class:`~.VMobject` are passed.
+        If less than 2 :class:`~.VMobject` s are passed.
 
     Example
     =======
