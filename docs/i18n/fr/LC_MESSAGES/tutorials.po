@@ -1,0 +1,24 @@
+# 
+# Translators:
+# Samy Avrillon <qqnavrillon@netcourrier.com>, 2021
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim\n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"Last-Translator: Samy Avrillon <qqnavrillon@netcourrier.com>, 2021\n"
+"Language-Team: French (https://www.transifex.com/manim-community/teams/114358/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../../source/tutorials.rst:4
+msgid "Table of Contents"
+msgstr "Table des matières"
+
+#: ../../source/tutorials.rst:2
+msgid "Tutorials"
+msgstr "Tutoriels"
