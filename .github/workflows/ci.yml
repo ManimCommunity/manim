@@ -14,6 +14,7 @@ on:
 
 jobs:
   test:
+    name: ${{ matrix.os }} / ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
@@ -27,8 +28,8 @@ jobs:
         python: [3.7, 3.8, 3.9]
         experimental: [false]
         include:
-          - os: Ubuntu
-            python-version: "3.10.0-alpha - 3.10.0"
+          - os: ubuntu-latest
+            python: "3.10.0-alpha - 3.10.0"
             experimental: true
 
     steps:
