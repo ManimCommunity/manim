@@ -1,9 +1,14 @@
 """Mobjects representing function graphs."""
 
-__all__ = ["ParametricFunction", "FunctionGraph"]
+__all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
+
+from typing import Callable, Optional, Sequence
 
 import numpy as np
+from isosurfaces import plot_isoline
+
+from manim.mobject.geometry import Line
 
 from .. import config
 from ..constants import *
@@ -147,3 +152,80 @@ class FunctionGraph(ParametricFunction):
 
     def get_point_from_function(self, x):
         return self.parametric_function(x)
+
+
+class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        func: Callable[[float, float], float],
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
+        min_depth: int = 5,
+        max_quads: int = 2500,
+        use_smoothing: bool = True,
+        **kwargs
+    ):
+        """An implicit function.
+
+        Parameters
+        ----------
+        func
+            The implicit function in the form ``f(x, y) = 0``.
+        x_range
+            The x min and max of the function.
+        y_range
+            The y min and max of the function.
+        min_depth
+            The minimum depth of the function to calculate.
+        max_quads
+            The maximum number of quads to use.
+
+        Examples
+        --------
+        .. manim:: ImplicitFunctionExample
+            :save_last_frame:
+
+            class ImplicitFunctionExample(Scene):
+                def construct(self):
+                    graph = ImplicitFunction(
+                        lambda x, y: x * y ** 2 - x ** 2 * y - 2,
+                        color=YELLOW
+                    )
+                    self.add(NumberPlane(), graph)
+        """
+        self.function = func
+        self.min_depth = min_depth
+        self.max_quads = max_quads
+        self.use_smoothing = use_smoothing
+        self.x_range = x_range or [
+            -config.frame_width / 2,
+            config.frame_width / 2,
+        ]
+        self.y_range = y_range or [
+            -config.frame_height / 2,
+            config.frame_height / 2,
+        ]
+
+        super().__init__(**kwargs)
+
+    def generate_points(self):
+        p_min, p_max = (
+            np.array([self.x_range[0], self.y_range[0]]),
+            np.array([self.x_range[1], self.y_range[1]]),
+        )
+        points = plot_isoline(
+            lambda u: self.function(u[0], u[1]),
+            p_min,
+            p_max,
+            self.min_depth,
+            self.max_quads,
+        )
+        points = [np.pad(i, [(0, 0), (0, 1)]) for i in points if i != []]
+        for p in points:
+            self.start_new_path(p[0])
+            self.add_points_as_corners(p[1:])
+        if self.use_smoothing:
+            self.make_smooth()
+        return self
+
+    init_points = generate_points
