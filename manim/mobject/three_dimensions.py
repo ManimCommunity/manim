@@ -426,7 +426,7 @@ class Prism(Cube):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        Cube.generate_points(self)
+        super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
 

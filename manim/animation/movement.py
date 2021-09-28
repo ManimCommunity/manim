@@ -60,7 +60,7 @@ class SmoothedVectorizedHomotopy(Homotopy):
         starting_submobject: "Mobject",
         alpha: float,
     ) -> None:
-        Homotopy.interpolate_submobject(self, submobject, starting_submobject, alpha)
+        super().interpolate_submobject(submobject, starting_submobject, alpha)
         submobject.make_smooth()
 
 
@@ -81,7 +81,7 @@ class ComplexHomotopy(Homotopy):
             c = complex_homotopy(complex(x, y), t)
             return (c.real, c.imag, z)
 
-        Homotopy.__init__(self, homotopy, mobject, **kwargs)
+        super().__init__(homotopy, mobject, **kwargs)
 
 
 class PhaseFlow(Animation):
