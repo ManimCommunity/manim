@@ -60,7 +60,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_array_attrs(self):
-        return Mobject.get_array_attrs(self) + ["rgbas"]
+        return super().get_array_attrs() + ["rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
@@ -214,7 +214,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -231,7 +231,7 @@ class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
 
 class PGroup(PMobject):
