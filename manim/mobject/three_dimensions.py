@@ -76,12 +76,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 self.add(axes, surface)
     """
 
-    @deprecated_params(
-        params="u_min,u_max,v_min,v_max",
-        since="v0.9.0",
-        until="v0.10.0",
-        message="Use u_range and v_range instead.",
-    )
     def __init__(
         self,
         func: Callable[[float, float], np.ndarray],
@@ -98,10 +92,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
     ) -> None:
-        self.u_min = kwargs.pop("u_min", None) or u_range[0]
-        self.u_max = kwargs.pop("u_max", None) or u_range[1]
-        self.v_min = kwargs.pop("v_min", None) or v_range[0]
-        self.v_max = kwargs.pop("v_max", None) or v_range[1]
+        self.u_range = u_range
+        self.v_range = v_range
         super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
@@ -126,13 +118,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             u_res = v_res = res[0]
         else:
             u_res, v_res = res
-        u_min = self.u_min
-        u_max = self.u_max
-        v_min = self.v_min
-        v_max = self.v_max
 
-        u_values = np.linspace(u_min, u_max, u_res + 1)
-        v_values = np.linspace(v_min, v_max, v_res + 1)
+        u_values = np.linspace(*self.u_range, u_res + 1)
+        v_values = np.linspace(*self.v_range, v_res + 1)
 
         return u_values, v_values
 
@@ -634,8 +622,6 @@ class Cylinder(Surface):
         """Adds the end caps of the cylinder."""
         color = self.color if config["renderer"] == "opengl" else self.fill_color
         opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
-        u_min = self.u_range[0] if config["renderer"] == "opengl" else self.u_min
-        u_max = self.u_range[1] if config["renderer"] == "opengl" else self.u_max
         self.base_top = Circle(
             radius=self.radius,
             color=color,
@@ -643,7 +629,7 @@ class Cylinder(Surface):
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_top.shift(u_max * IN)
+        self.base_top.shift(self.u_range[1] * IN)
         self.base_bottom = Circle(
             radius=self.radius,
             color=color,
@@ -651,7 +637,7 @@ class Cylinder(Surface):
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_bottom.shift(u_min * IN)
+        self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
 
     def _rotate_to_direction(self):
