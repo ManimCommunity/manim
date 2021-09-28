@@ -185,7 +185,7 @@ class ImageMobject(AbstractImageMobject):
         self.change_to_rgba_array()
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
-        AbstractImageMobject.__init__(self, scale_to_resolution, **kwargs)
+        super().__init__(scale_to_resolution, **kwargs)
 
     def change_to_rgba_array(self):
         """Converts an RGB array into RGBA with the alpha value opacity maxed."""
