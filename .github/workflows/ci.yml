@@ -19,11 +19,17 @@ jobs:
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
       GLCONTEXT_WIN_LIBGL: C:\msys64\mingw64\bin\opengl32.dll
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: [3.7, 3.8, 3.9, 3.10]
+        python: [3.7, 3.8, 3.9]
+        experimental: [false]
+        include:
+          - os: Ubuntu
+            python-version: "3.10.0-alpha - 3.10.0"
+            experimental: true
 
     steps:
       - name: Checkout the repository
