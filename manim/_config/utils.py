@@ -297,6 +297,7 @@ class ManimConfig(MutableMapping):
         "write_all",
         "write_to_movie",
         "zero_pad",
+        "force_window",
     }
 
     def __init__(self) -> None:
@@ -541,6 +542,7 @@ class ManimConfig(MutableMapping):
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
             "enable_wireframe",
+            "force_window",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -690,6 +692,7 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
+            "force_window",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -889,6 +892,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["enable_wireframe"],
         lambda self, val: self._set_boolean("enable_wireframe", val),
         doc="Enable wireframe debugging mode in opengl.",
+    )
+
+    force_window = property(
+        lambda self: self._d["force_window"],
+        lambda self, val: self._set_boolean("force_window", val),
+        doc="Set to force window when using the opengl renderer",
     )
 
     @property
@@ -1121,8 +1130,7 @@ class ManimConfig(MutableMapping):
             self.write_to_movie is False
             and self.write_all is False
             and self.save_last_frame is False
-            and self.save_pngs is False
-            and self.save_as_gif is False
+            and not self.format
         )
 
     @dry_run.setter
@@ -1131,8 +1139,7 @@ class ManimConfig(MutableMapping):
             self.write_to_movie = False
             self.write_all = False
             self.save_last_frame = False
-            self.save_pngs = False
-            self.save_as_gif = False
+            self.format = None
         else:
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
