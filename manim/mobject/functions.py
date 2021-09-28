@@ -8,8 +8,6 @@ from typing import Callable, Optional, Sequence
 import numpy as np
 from isosurfaces import plot_isoline
 
-from manim.mobject.geometry import Line
-
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
@@ -213,17 +211,19 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             np.array([self.x_range[0], self.y_range[0]]),
             np.array([self.x_range[1], self.y_range[1]]),
         )
-        points = plot_isoline(
+        curves = plot_isoline(
             lambda u: self.function(u[0], u[1]),
             p_min,
             p_max,
             self.min_depth,
             self.max_quads,
-        )
-        points = [np.pad(i, [(0, 0), (0, 1)]) for i in points if i != []]
-        for p in points:
-            self.start_new_path(p[0])
-            self.add_points_as_corners(p[1:])
+        )  # returns a list of lists of 2D points
+        curves = [
+            np.pad(curve, [(0, 0), (0, 1)]) for curve in curves if curve != []
+        ]  # add z coord as 0
+        for curve in curves:
+            self.start_new_path(curve[0])
+            self.add_points_as_corners(curve[1:])
         if self.use_smoothing:
             self.make_smooth()
         return self

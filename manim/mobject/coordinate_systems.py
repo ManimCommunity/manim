@@ -716,7 +716,7 @@ class CoordinateSystem:
         max_quads
             The maximum number of quads to use.
         color
-            The color of the graph
+            The color of the graph.
         kwargs
             Additional parameters to pass into :class:`VMobject`
 
