@@ -701,7 +701,7 @@ class CoordinateSystem:
         self,
         func: Callable,
         min_depth: int = 5,
-        max_quads: int = 2500,
+        max_quads: int = 1500,
         color: Color = WHITE,
         **kwargs,
     ) -> VMobject:

@@ -161,7 +161,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         x_range: Optional[Sequence[float]] = None,
         y_range: Optional[Sequence[float]] = None,
         min_depth: int = 5,
-        max_quads: int = 2500,
+        max_quads: int = 1500,
         use_smoothing: bool = True,
         **kwargs
     ):
