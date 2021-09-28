@@ -419,8 +419,10 @@ class OpenGLMobject:
             mobjects[0].parent = self
 
         if self in mobjects:
-            raise Exception("Mobject cannot contain self")
+            raise ValueError("OpenGLMobject cannot contain self")
         for mobject in mobjects:
+            if not isinstance(mobject, OpenGLMobject):
+                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
