@@ -33,7 +33,8 @@ class MappingCamera(Camera):
     def points_to_pixel_coords(self, points):
         return super().points_to_pixel_coords(
             np.apply_along_axis(self.mapping_func, 1, points),
-        )
+        )  # TODO: There is an error here, but I don't know how to fix it:
+        # FIXME: Call to method Camera.points_to_pixel_coords with too few arguments; should be no fewer than 3.
 
     def capture_mobjects(self, mobjects, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
