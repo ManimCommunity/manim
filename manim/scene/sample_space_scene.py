@@ -3,6 +3,8 @@
 __all__ = ["SampleSpaceScene"]
 
 
+from manim.utils.deprecation import deprecated
+
 from ..animation.animation import Animation
 from ..animation.transform import MoveToTarget, Transform
 from ..animation.update import UpdateFromFunc
@@ -12,6 +14,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..scene.scene import Scene
 
 
+@deprecated(since="0.11.0", until="0.12.0", message="Out of scope of the library.")
 class SampleSpaceScene(Scene):
     def get_sample_space(self, **config):
         self.sample_space = SampleSpace(**config)

@@ -123,6 +123,32 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_s_flag_opengl_renderer(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "-s",
+        "--renderer",
+        "opengl",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = (tmp_path / "videos").exists()
+    assert not exists, "running manim with -s flag rendered a video"
+
+    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
+    assert not is_empty, "running manim with -s flag did not render an image"
+
+
+@pytest.mark.slow
 def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
@@ -371,6 +397,35 @@ def test_images_are_created_when_png_format_set(
 
 
 @pytest.mark.slow
+def test_images_are_created_when_png_format_set_for_opengl(
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
+):
+    """Test images are created in media directory when --format png is set for opengl"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--renderer",
+        "opengl",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
+
+
+@pytest.mark.slow
 def test_images_are_zero_padded_when_zero_pad_set(
     tmp_path,
     manim_cfg_file,
@@ -383,6 +438,42 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "-m",
         "manim",
         "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        "--zero_pad",
+        "3",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
+        unexpected_png_path,
+    )
+
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
+
+
+@pytest.mark.slow
+def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
+):
+    """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--renderer",
+        "opengl",
         "--media_dir",
         str(tmp_path),
         "--format",

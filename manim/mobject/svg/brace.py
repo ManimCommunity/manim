@@ -102,8 +102,7 @@ class Brace(SVGPathMobject):
             -linear_section_length,
         )
 
-        SVGPathMobject.__init__(
-            self,
+        super().__init__(
             path_string=path,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
@@ -258,7 +257,7 @@ class BraceBetweenPoints(Brace):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
-        Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+        super().__init__(Line(point_1, point_2), direction=direction, **kwargs)
 
 
 class ArcBrace(Brace):
@@ -328,10 +327,10 @@ class ArcBrace(Brace):
 
         if arc.radius >= 1:
             line.scale(arc.radius, about_point=ORIGIN)
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
             self.scale(1 / (arc.radius), about_point=ORIGIN)
         else:
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
 
         if arc.radius >= 0.3:
             self.shift(scale_shift)
