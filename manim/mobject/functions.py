@@ -182,14 +182,13 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
 
         .. note::
-            The ``min_depth`` takes precedence over ``max_quads``.
-            Depth here refers to (4 ^ depth) quads. A depth of 5
-            means a total of 1024 quads. Between this and the
-            ``max_quads``, the maximum is used to obtain the curve.
+            A small min depth means that some small details might
+            be ignored if they don't cross an edge of one of the 
+            (4 ^ min depth) uniform quads.
 
-            These factors roughly correspond to the quality of the
-            curve, but a higher number of quads may take longer to
-            render.
+            The value of max quads strongly correspond to the
+            quality of the curve, but a higher number of quads
+            may take longer to render.
 
         Examples
         --------
