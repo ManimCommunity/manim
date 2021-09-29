@@ -86,6 +86,10 @@ def test_NumberPlane():
         assert len(plane.y_lines) == num_y_lines
         assert len(plane.x_lines) == num_x_lines
 
+    plane = NumberPlane((-5, 5, 0.5), (-8, 8, 2))  # <- test for different step values
+    assert len(plane.x_lines) == 8
+    assert len(plane.y_lines) == 20
+
 
 def test_point_to_coords():
     ax = Axes(x_range=[0, 10, 2])
