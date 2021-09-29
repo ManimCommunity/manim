@@ -187,6 +187,10 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             means a total of 1024 quads. Between this and the
             ``max_quads``, the maximum is used to obtain the curve.
 
+            These factors roughly correspond to the quality of the
+            curve, but a higher number of quads may take longer to
+            render.
+
         Examples
         --------
         .. manim:: ImplicitFunctionExample
