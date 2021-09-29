@@ -702,6 +702,7 @@ class CoordinateSystem:
         func: Callable,
         min_depth: int = 5,
         max_quads: int = 1500,
+        use_smoothing: bool = True,
         color: Color = WHITE,
         **kwargs,
     ) -> VMobject:
@@ -715,6 +716,8 @@ class CoordinateSystem:
             The minimum depth of the function to calculate.
         max_quads
             The maximum number of quads to use.
+        use_smoothing
+            Whether or not to smoothen the curves.
         color
             The color of the graph.
         kwargs
@@ -739,6 +742,7 @@ class CoordinateSystem:
             self.y_range[:2],
             min_depth,
             max_quads,
+            use_smoothing,
             color=color,
             **kwargs,
         )

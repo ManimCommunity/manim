@@ -177,6 +177,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             The minimum depth of the function to calculate.
         max_quads
             The maximum number of quads to use.
+        use_smoothing
+            Whether or not to smoothen the curves.
 
         Examples
         --------
