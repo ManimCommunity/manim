@@ -183,7 +183,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
         .. note::
             A small min depth means that some small details might
-            be ignored if they don't cross an edge of one of the 
+            be ignored if they don't cross an edge of one of the
             (4 ^ min depth) uniform quads.
 
             The value of max quads strongly correspond to the
