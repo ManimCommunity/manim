@@ -1895,8 +1895,7 @@ class ThreeDAxes(Axes):
         **kwargs,
     ):
 
-        Axes.__init__(
-            self,
+        super().__init__(
             x_range=x_range,
             x_length=x_length,
             y_range=y_range,
