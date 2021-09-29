@@ -705,7 +705,7 @@ class CoordinateSystem:
         use_smoothing: bool = True,
         color: Color = WHITE,
         **kwargs,
-    ) -> VMobject:
+    ) -> ImplicitFunction:
         """Creates the curves of an implicit function.
 
         Parameters
