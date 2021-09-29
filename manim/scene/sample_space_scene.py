@@ -10,8 +10,10 @@ from ..constants import *
 from ..mobject.probability import SampleSpace
 from ..mobject.types.vectorized_mobject import VGroup
 from ..scene.scene import Scene
+from manim.utils.deprecation import deprecated
 
 
+@deprecated(since="0.11.0", until="0.12.0", message="Out of scope of the library.")
 class SampleSpaceScene(Scene):
     def get_sample_space(self, **config):
         self.sample_space = SampleSpace(**config)
