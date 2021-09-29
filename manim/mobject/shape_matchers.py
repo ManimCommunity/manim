@@ -41,8 +41,7 @@ class SurroundingRectangle(RoundedRectangle):
     ):
         self.color = color
         self.buff = buff
-        RoundedRectangle.__init__(
-            self,
+        super().__init__(
             color=color,
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
@@ -87,8 +86,7 @@ class BackgroundRectangle(SurroundingRectangle):
         buff=0,
         **kwargs
     ):
-        SurroundingRectangle.__init__(
-            self,
+        super().__init__(
             mobject,
             color=color,
             stroke_width=stroke_width,

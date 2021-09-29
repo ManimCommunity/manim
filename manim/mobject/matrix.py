@@ -467,8 +467,7 @@ class DecimalMatrix(Matrix):
         element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
             Config for the desired mobject, by default {"num_decimal_places": 1}
         """
-        Matrix.__init__(
-            self,
+        super().__init__(
             matrix,
             element_to_mobject=element_to_mobject,
             element_to_mobject_config=element_to_mobject_config,
@@ -505,7 +504,7 @@ class IntegerMatrix(Matrix):
         element_to_mobject : :class:`~.Mobject`, optional
             Mobject to use, by default Integer
         """
-        Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class MobjectMatrix(Matrix):
@@ -528,7 +527,7 @@ class MobjectMatrix(Matrix):
     """
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
-        Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
 
 
 def get_det_text(

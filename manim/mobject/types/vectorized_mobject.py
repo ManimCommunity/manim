@@ -105,7 +105,7 @@ class VMobject(Mobject):
         self.shade_in_3d = shade_in_3d
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_group_class(self):
         return VGroup
@@ -852,7 +852,7 @@ class VMobject(Mobject):
     def apply_function(self, function):
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
-        Mobject.apply_function(self, function)
+        super().apply_function(function)
         self.scale_handle_to_anchor_distances(1.0 / factor)
         if self.make_smooth_after_applying_functions:
             self.make_smooth()
@@ -2176,7 +2176,7 @@ class CurvesAsSubmobjects(VGroup):
     """
 
     def __init__(self, vmobject, **kwargs):
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         tuples = vmobject.get_cubic_bezier_tuples()
         for tup in tuples:
             part = VMobject()

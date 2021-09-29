@@ -5,7 +5,7 @@ import moderngl
 import numpy as np
 from PIL import Image
 
-from manim import config
+from manim import config, logger
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
@@ -242,7 +242,7 @@ class OpenGLRenderer:
         )
         self.scene = scene
         if not hasattr(self, "window"):
-            if config["preview"]:
+            if self.should_create_window():
                 from .opengl_renderer_window import Window
 
                 self.window = Window(self)
@@ -267,6 +267,20 @@ class OpenGLRenderer:
                 moderngl.ONE,
                 moderngl.ONE,
             )
+
+    def should_create_window(self):
+        if config["force_window"]:
+            logger.warning(
+                "'--force_window' is enabled, this is intended for debugging purposes "
+                "and may impact performance if used when outputting files",
+            )
+            return True
+        return (
+            config["preview"]
+            and not config["save_last_frame"]
+            and not config["format"]
+            and not config["write_to_movie"]
+        )
 
     def get_pixel_shape(self):
         if hasattr(self, "frame_buffer_object"):
@@ -401,8 +415,7 @@ class OpenGLRenderer:
         if self.skip_animations:
             return
 
-        if config["write_to_movie"]:
-            self.file_writer.write_frame(self)
+        self.file_writer.write_frame(self)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -426,7 +439,11 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
-        if config["save_last_frame"]:
+        # When num_plays is 0, no images have been output, so output a single
+        # image in this case
+        if config["save_last_frame"] or (
+            config["format"] == "png" and self.num_plays == 0
+        ):
             self.update_frame(scene)
             self.file_writer.save_final_image(self.get_image())
         self.file_writer.finish()
@@ -444,10 +461,11 @@ class OpenGLRenderer:
         PIL.Image
             The PIL image of the array.
         """
+        raw_buffer_data = self.get_raw_frame_buffer_object_data()
         image = Image.frombytes(
             "RGBA",
             self.get_pixel_shape(),
-            self.context.fbo.read(self.get_pixel_shape(), components=4),
+            raw_buffer_data,
             "raw",
             "RGBA",
             0,
