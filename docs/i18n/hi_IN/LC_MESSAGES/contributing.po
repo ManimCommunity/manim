@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:52\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: hi_IN\n"
+
+msgid "Contributing can be confusing, so here are a few guides:"
+msgstr "योगदान करना जटिल हो सकता है, इसलिए हम कुछ मार्गदर्शक प्रस्तुत करते हैं:"
+
+msgid "Code maintenance and development"
+msgstr "कोड का रखरखाव एवं विकास"
+
+msgid "Developing educational content & narrative documentation"
+msgstr "शैक्षणिक सामग्री तथा वर्णनीय प्रलेखन का निर्माण"
+
+msgid "Translating documentation and docstrings"
+msgstr "प्रलेखन और डाॅकस्ट्रिंग का अनुवाद"
+
+msgid "Thank you for your interest in contributing to Manim! However you have decided to contribute or interact with the community, please always be civil and respect other members of the community. If you haven't read our :doc:`code of conduct<conduct>`, do so here. Manim is Free and Open Source Software (FOSS) for mathematical animations. As such, **we welcome everyone** who is interested in mathematics, pedagogy, computer animations, open-source, software development, and beyond. Manim accepts many kinds of contributions, some are detailed below:"
+msgstr "Manim में योगदान करने के लिए रुचि दिखाने के लिए धन्यवाद! जैसे भी आपने योगदान करने अथवा हमारे समुदाय के साथ निर्णय किया है, कृप्या हमेशा सभ्य रहें और दूसरे सदस्यों का सम्मान करें। यदि आपने हमारी :doc:`आचार संहिता<conduct>` नहीं पढ़ी है, तो यहाँ पढ़ लीजिए। Manim गणितिय अनुप्राणों के लिए स्वतंत्र और खुला स्त्रोत अनुप्रयोग (फ़्री ऐन्ड ओपन सोर्स साॅफ्टवेयर, FOSS) है। इसलिए **हम उन सभी का स्वागत करते हैं** जो गणित, शिक्षणशास्त्र, संगणक-रचित अनुप्राणन, खुले-स्त्रोत, अनुप्रयोग निर्माण आदि में रुचि रखते हैं। Manim अनेकों प्रकार के योगदान स्वीकार करता है, जिनमें से कुछ की व्याख्या नीचे की गई है:"
+
+msgid "Website design and development"
+msgstr "वेबसाइट रचना और विकास"
+
+msgid "Please ensure that you are reading the latest version of this guide by ensuring that \"latest\" is selected in the version switcher."
+msgstr "कृप्या सुनिश्चित कर लें की संस्करण स्विचर में \"latest\" (नवीनतम) चुना हुआ है ताकि आप सुनिश्चित कर पाएँ की आप इस मार्गदर्शक लेख के नवीनतम संस्करण को पढ़ रहे हैं।"
+
+msgid "Contributing"
+msgstr "योगदान"
+
+msgid "Plugins to extend Manim functionality"
+msgstr "Manim की कार्यक्षमता का विस्तार करने के लिए प्लग-इन"
+
+msgid "Testing (graphical, unit & video)"
+msgstr "परीक्षण (चित्रात्मक, एकक एवं चलचित्र)"
+
+msgid "DevOps"
+msgstr "विकास और संचालन (डेवऑप्स)"
+
+msgid "Documentation"
+msgstr "प्रलेखन"
