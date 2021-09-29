@@ -3,6 +3,8 @@
 __all__ = ["SampleSpaceScene"]
 
 
+from manim.utils.deprecation import deprecated
+
 from ..animation.animation import Animation
 from ..animation.transform import MoveToTarget, Transform
 from ..animation.update import UpdateFromFunc
@@ -10,7 +12,6 @@ from ..constants import *
 from ..mobject.probability import SampleSpace
 from ..mobject.types.vectorized_mobject import VGroup
 from ..scene.scene import Scene
-from manim.utils.deprecation import deprecated
 
 
 @deprecated(since="0.11.0", until="0.12.0", message="Out of scope of the library.")
