@@ -2109,14 +2109,14 @@ class NumberPlane(Axes):
         x_lines1, x_lines2 = self._get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            self.x_axis.x_step,
+            self.y_axis.x_step,
             self.faded_line_ratio,
         )
 
         y_lines1, y_lines2 = self._get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            self.y_axis.x_step,
+            self.x_axis.x_step,
             self.faded_line_ratio,
         )
 
