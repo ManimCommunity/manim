@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "DrawBorderThenFill"
+msgstr "DrawBorderThenFill"
+
+msgid "Draw the border first and then show the fill."
+msgstr "Draw the border first and then show the fill."
+
+msgid ":obj:`get_stroke_color <manim.animation.creation.DrawBorderThenFill.get_stroke_color>`"
+msgstr ":obj:`get_stroke_color <manim.animation.creation.DrawBorderThenFill.get_stroke_color>`"
+
+msgid ":obj:`get_outline <manim.animation.creation.DrawBorderThenFill.get_outline>`"
+msgstr ":obj:`get_outline <manim.animation.creation.DrawBorderThenFill.get_outline>`"
+
+msgid ":obj:`interpolate_submobject <manim.animation.creation.DrawBorderThenFill.interpolate_submobject>`"
+msgstr ":obj:`interpolate_submobject <manim.animation.creation.DrawBorderThenFill.interpolate_submobject>`"
+
+msgid "Qualified name: ``manim.animation.creation.DrawBorderThenFill``"
+msgstr "Qualified name: ``manim.animation.creation.DrawBorderThenFill``"
+
+msgid ":obj:`get_all_mobjects <manim.animation.creation.DrawBorderThenFill.get_all_mobjects>`"
+msgstr ":obj:`get_all_mobjects <manim.animation.creation.DrawBorderThenFill.get_all_mobjects>`"

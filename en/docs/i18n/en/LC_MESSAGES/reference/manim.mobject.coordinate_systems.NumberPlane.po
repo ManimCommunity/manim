@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The width of the plane."
+msgstr "The width of the plane."
+
+msgid "Arguments that influence the construction of the background lines of the plane."
+msgstr "Arguments that influence the construction of the background lines of the plane."
+
+msgid "Similar to :attr:`background_line_style`, affects the construction of the scene's background lines."
+msgstr "Similar to :attr:`background_line_style`, affects the construction of the scene's background lines."
+
+msgid "NumberPlane"
+msgstr "NumberPlane"
+
+msgid ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
+msgstr ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
+
+msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgstr "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+
+msgid "If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1."
+msgstr "If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1."
+
+msgid "The height of the plane."
+msgstr "The height of the plane."
+
+msgid "Creates a cartesian plane with background lines."
+msgstr "Creates a cartesian plane with background lines."
+
+msgid "The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction."
+msgstr "The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction."
+
+msgid "Currently non-functional."
+msgstr "Currently non-functional."
+
+msgid "Additional arguments to be passed to :class:`Axes`."
+msgstr "Additional arguments to be passed to :class:`Axes`."
+
+msgid "Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes."
+msgstr "Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes."
+
+msgid "The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction."
+msgstr "The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction."
+
+msgid ":obj:`get_vector <manim.mobject.coordinate_systems.NumberPlane.get_vector>`"
+msgstr ":obj:`get_vector <manim.mobject.coordinate_systems.NumberPlane.get_vector>`"

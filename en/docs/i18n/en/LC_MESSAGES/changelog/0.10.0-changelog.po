@@ -1,0 +1,371 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "`#1744 <https://github.com/ManimCommunity/manim/pull/1744>`__: Fixed bug in :class:`~.NumberPlane` with strictly positive or strictly negative values for ``x_range`` and ``y_range``"
+msgstr "`#1744 <https://github.com/ManimCommunity/manim/pull/1744>`__: Fixed bug in :class:`~.NumberPlane` with strictly positive or strictly negative values for ``x_range`` and ``y_range``"
+
+msgid "`#1868 <https://github.com/ManimCommunity/manim/pull/1868>`__: Added OpenGL support to IPython magic"
+msgstr "`#1868 <https://github.com/ManimCommunity/manim/pull/1868>`__: Added OpenGL support to IPython magic"
+
+msgid "`#1864 <https://github.com/ManimCommunity/manim/pull/1864>`__: Shortened and simplified PR template"
+msgstr "`#1864 <https://github.com/ManimCommunity/manim/pull/1864>`__: Shortened and simplified PR template"
+
+msgid "`#1923 <https://github.com/ManimCommunity/manim/pull/1923>`__: Fixed CLI help text for ``manim init`` subcommand so that it is not truncated"
+msgstr "`#1923 <https://github.com/ManimCommunity/manim/pull/1923>`__: Fixed CLI help text for ``manim init`` subcommand so that it is not truncated"
+
+msgid "Eric Biedert +"
+msgstr "Eric Biedert +"
+
+msgid "`#1950 <https://github.com/ManimCommunity/manim/pull/1950>`__: Fixed passing custom arrow shapes to :class:`~.CurvedArrow`"
+msgstr "`#1950 <https://github.com/ManimCommunity/manim/pull/1950>`__: Fixed passing custom arrow shapes to :class:`~.CurvedArrow`"
+
+msgid "``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed."
+msgstr "``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed."
+
+msgid "`#1955 <https://github.com/ManimCommunity/manim/pull/1955>`__: Partially support OpenGL rendering with Docker"
+msgstr "`#1955 <https://github.com/ManimCommunity/manim/pull/1955>`__: Partially support OpenGL rendering with Docker"
+
+msgid "`#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced ``self.data[\"attr\"]`` and ``self.uniforms[\"attr\"]`` with ``self.attr``"
+msgstr "`#1898 <https://github.com/ManimCommunity/manim/pull/1898>`__: Replaced ``self.data[\"attr\"]`` and ``self.uniforms[\"attr\"]`` with ``self.attr``"
+
+msgid "GameDungeon"
+msgstr "GameDungeon"
+
+msgid "`#1985 <https://github.com/ManimCommunity/manim/pull/1985>`__: Use ``height`` to determine ``font_size`` instead of the ``_font_size`` attribute"
+msgstr "`#1985 <https://github.com/ManimCommunity/manim/pull/1985>`__: Use ``height`` to determine ``font_size`` instead of the ``_font_size`` attribute"
+
+msgid "`#1877 <https://github.com/ManimCommunity/manim/pull/1877>`__: Remove duplicated imports in some documentation examples"
+msgstr "`#1877 <https://github.com/ManimCommunity/manim/pull/1877>`__: Remove duplicated imports in some documentation examples"
+
+msgid "The OpenGL renderer can now be used in jupyter notebooks when using the ``%%manim`` magic command."
+msgstr "The OpenGL renderer can now be used in jupyter notebooks when using the ``%%manim`` magic command."
+
+msgid "Ryan McCauley"
+msgstr "Ryan McCauley"
+
+msgid "`#1896 <https://github.com/ManimCommunity/manim/pull/1896>`__: Made RTD apt install FFMPEG instead of installing a Python binding"
+msgstr "`#1896 <https://github.com/ManimCommunity/manim/pull/1896>`__: Made RTD apt install FFMPEG instead of installing a Python binding"
+
+msgid "`#1847 <https://github.com/ManimCommunity/manim/pull/1847>`__: Allow :class:`~.Cross` to be created without requiring a mobject"
+msgstr "`#1847 <https://github.com/ManimCommunity/manim/pull/1847>`__: Allow :class:`~.Cross` to be created without requiring a mobject"
+
+msgid "vinnniii15 +"
+msgstr "vinnniii15 +"
+
+msgid "September 01, 2021"
+msgstr "September 01, 2021"
+
+msgid "Pull requests merged"
+msgstr "Pull requests merged"
+
+msgid "Christian Clauss"
+msgstr "Christian Clauss"
+
+msgid "`#1871 <https://github.com/ManimCommunity/manim/pull/1871>`__: Fixed broken :meth:`.VectorScene.vector_to_coords`"
+msgstr "`#1871 <https://github.com/ManimCommunity/manim/pull/1871>`__: Fixed broken :meth:`.VectorScene.vector_to_coords`"
+
+msgid "Daniel Adelodun +"
+msgstr "Daniel Adelodun +"
+
+msgid "`#1931 <https://github.com/ManimCommunity/manim/pull/1931>`__: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`"
+msgstr "`#1931 <https://github.com/ManimCommunity/manim/pull/1931>`__: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`"
+
+msgid "Eric Biedert"
+msgstr "Eric Biedert"
+
+msgid "`#1948 <https://github.com/ManimCommunity/manim/pull/1948>`__: flake8: Set max-line-length instead of ignoring long lines"
+msgstr "`#1948 <https://github.com/ManimCommunity/manim/pull/1948>`__: flake8: Set max-line-length instead of ignoring long lines"
+
+msgid "`#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Added OpenGL support for :class:`~.PMobject` and its subclasses"
+msgstr "`#1882 <https://github.com/ManimCommunity/manim/pull/1882>`__: Added OpenGL support for :class:`~.PMobject` and its subclasses"
+
+msgid "vladislav doster +"
+msgstr "vladislav doster +"
+
+msgid "`#1947 <https://github.com/ManimCommunity/manim/pull/1947>`__: Set flake8 not to ignore undefined names in Python code"
+msgstr "`#1947 <https://github.com/ManimCommunity/manim/pull/1947>`__: Set flake8 not to ignore undefined names in Python code"
+
+msgid "`#1906 <https://github.com/ManimCommunity/manim/pull/1906>`__: Improved language and overall consistency in ``README``"
+msgstr "`#1906 <https://github.com/ManimCommunity/manim/pull/1906>`__: Improved language and overall consistency in ``README``"
+
+msgid "`#1941 <https://github.com/ManimCommunity/manim/pull/1941>`__: Added examples, tests and improved documentation for :mod:`~.coordinate_systems`"
+msgstr "`#1941 <https://github.com/ManimCommunity/manim/pull/1941>`__: Added examples, tests and improved documentation for :mod:`~.coordinate_systems`"
+
+msgid "`#1956 <https://github.com/ManimCommunity/manim/pull/1956>`__:  Upgrade to modern Python syntax"
+msgstr "`#1956 <https://github.com/ManimCommunity/manim/pull/1956>`__:  Upgrade to modern Python syntax"
+
+msgid "Joy Bhalla"
+msgstr "Joy Bhalla"
+
+msgid "`#1987 <https://github.com/ManimCommunity/manim/pull/1987>`__: Added support for using OpenGL in subprocess in Windows pipeline"
+msgstr "`#1987 <https://github.com/ManimCommunity/manim/pull/1987>`__: Added support for using OpenGL in subprocess in Windows pipeline"
+
+msgid "`#1964 <https://github.com/ManimCommunity/manim/pull/1964>`__: Added ``CITATION.cff`` and a method to automatically update this citation with new releases"
+msgstr "`#1964 <https://github.com/ManimCommunity/manim/pull/1964>`__: Added ``CITATION.cff`` and a method to automatically update this citation with new releases"
+
+msgid "xia0long +"
+msgstr "xia0long +"
+
+msgid "Jephian Lin +"
+msgstr "Jephian Lin +"
+
+msgid "`#1869 <https://github.com/ManimCommunity/manim/pull/1869>`__: Fixed duplicated Parameters section in  :meth:`.Mobject.arrange_in_grid`"
+msgstr "`#1869 <https://github.com/ManimCommunity/manim/pull/1869>`__: Fixed duplicated Parameters section in  :meth:`.Mobject.arrange_in_grid`"
+
+msgid "`#1922 <https://github.com/ManimCommunity/manim/pull/1922>`__: Fixed IPython interface to exit cleanly when OpenGL renderer raises an error"
+msgstr "`#1922 <https://github.com/ManimCommunity/manim/pull/1922>`__: Fixed IPython interface to exit cleanly when OpenGL renderer raises an error"
+
+msgid "`#1918 <https://github.com/ManimCommunity/manim/pull/1918>`__: Fixed a typo in the text tutorial"
+msgstr "`#1918 <https://github.com/ManimCommunity/manim/pull/1918>`__: Fixed a typo in the text tutorial"
+
+msgid "Hugues Devimeux"
+msgstr "Hugues Devimeux"
+
+msgid "Aathish Sivasubrahmanian"
+msgstr "Aathish Sivasubrahmanian"
+
+msgid "`#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fixed CLI error when rendering a file containing a single scene without specifying the scene name"
+msgstr "`#1893 <https://github.com/ManimCommunity/manim/pull/1893>`__: Fixed CLI error when rendering a file containing a single scene without specifying the scene name"
+
+msgid "Jephian Lin"
+msgstr "Jephian Lin"
+
+msgid "`#1887 <https://github.com/ManimCommunity/manim/pull/1887>`__: Fixed ``custom_config`` not working in ``frames_comparison``"
+msgstr "`#1887 <https://github.com/ManimCommunity/manim/pull/1887>`__: Fixed ``custom_config`` not working in ``frames_comparison``"
+
+msgid "`#1915 <https://github.com/ManimCommunity/manim/pull/1915>`__: Improved the wording of the installation instructions for Google Colab"
+msgstr "`#1915 <https://github.com/ManimCommunity/manim/pull/1915>`__: Improved the wording of the installation instructions for Google Colab"
+
+msgid "Partha Das +"
+msgstr "Partha Das +"
+
+msgid "`#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated ``dearpygui`` version to 0.8.x"
+msgstr "`#1861 <https://github.com/ManimCommunity/manim/pull/1861>`__: Updated ``dearpygui`` version to 0.8.x"
+
+msgid "Python f-strings simplify the code and `should speed up execution <https://www.scivision.dev/python-f-string-speed>`__."
+msgstr "Python f-strings simplify the code and `should speed up execution <https://www.scivision.dev/python-f-string-speed>`__."
+
+msgid "`#1929 <https://github.com/ManimCommunity/manim/pull/1929>`__: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`"
+msgstr "`#1929 <https://github.com/ManimCommunity/manim/pull/1929>`__: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`"
+
+msgid "icedcoffeeee"
+msgstr "icedcoffeeee"
+
+msgid "Enhancements"
+msgstr "Enhancements"
+
+msgid "`#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Added ``buff`` keyword argument to :class:`~.BraceLabel`"
+msgstr "`#1943 <https://github.com/ManimCommunity/manim/pull/1943>`__: Added ``buff`` keyword argument to :class:`~.BraceLabel`"
+
+msgid "`#1924 <https://github.com/ManimCommunity/manim/pull/1924>`__: Made arrow tips rotate ``IN`` and ``OUT`` properly"
+msgstr "`#1924 <https://github.com/ManimCommunity/manim/pull/1924>`__: Made arrow tips rotate ``IN`` and ``OUT`` properly"
+
+msgid "`#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`"
+msgstr "`#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`"
+
+msgid "``ParametricSurface`` has been renamed to :class:`~.Surface`"
+msgstr "``ParametricSurface`` has been renamed to :class:`~.Surface`"
+
+msgid "This pull request was created `with the command <https://github.com/asottile/pyupgrade#readme>`__ ``pyupgrade --py36-plus **/*.py``"
+msgstr "This pull request was created `with the command <https://github.com/asottile/pyupgrade#readme>`__ ``pyupgrade --py36-plus **/*.py``"
+
+msgid "Documentation-related changes"
+msgstr "Documentation-related changes"
+
+msgid "Rohan Sharma +"
+msgstr "Rohan Sharma +"
+
+msgid "ralphieraccoon"
+msgstr "ralphieraccoon"
+
+msgid "Max Stoumen"
+msgstr "Max Stoumen"
+
+msgid "`#1841 <https://github.com/ManimCommunity/manim/pull/1841>`__: Reduced default resolution of :class:`~.Dot3D`"
+msgstr "`#1841 <https://github.com/ManimCommunity/manim/pull/1841>`__: Reduced default resolution of :class:`~.Dot3D`"
+
+msgid "Animfysyk +"
+msgstr "Animfysyk +"
+
+msgid "New features"
+msgstr "New features"
+
+msgid "`#1976 <https://github.com/ManimCommunity/manim/pull/1976>`__: Fixed labelling of languages in documentation example"
+msgstr "`#1976 <https://github.com/ManimCommunity/manim/pull/1976>`__: Fixed labelling of languages in documentation example"
+
+msgid "Oliver"
+msgstr "Oliver"
+
+msgid "asjadaugust +"
+msgstr "asjadaugust +"
+
+msgid "`#1828 <https://github.com/ManimCommunity/manim/pull/1828>`__: Added configuration option ``zero_pad`` for zero padding PNG file names"
+msgstr "`#1828 <https://github.com/ManimCommunity/manim/pull/1828>`__: Added configuration option ``zero_pad`` for zero padding PNG file names"
+
+msgid "`#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Added the option to save last frame for OpenGL"
+msgstr "`#1952 <https://github.com/ManimCommunity/manim/pull/1952>`__: Added the option to save last frame for OpenGL"
+
+msgid "Lalourche +"
+msgstr "Lalourche +"
+
+msgid "KingWampy"
+msgstr "KingWampy"
+
+msgid "`#1879 <https://github.com/ManimCommunity/manim/pull/1879>`__: Fixed how the installed version is determined by Poetry"
+msgstr "`#1879 <https://github.com/ManimCommunity/manim/pull/1879>`__: Fixed how the installed version is determined by Poetry"
+
+msgid "`#1939 <https://github.com/ManimCommunity/manim/pull/1939>`__: Fixed formatting of parameter description of :class:`~.NumberPlane`"
+msgstr "`#1939 <https://github.com/ManimCommunity/manim/pull/1939>`__: Fixed formatting of parameter description of :class:`~.NumberPlane`"
+
+msgid "`#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Updated Sphinx to 4.1.2"
+msgstr "`#1853 <https://github.com/ManimCommunity/manim/pull/1853>`__: Updated Sphinx to 4.1.2"
+
+msgid "Raj Dandekar +"
+msgstr "Raj Dandekar +"
+
+msgid "`#1967 <https://github.com/ManimCommunity/manim/pull/1967>`__: Fixed :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels"
+msgstr "`#1967 <https://github.com/ManimCommunity/manim/pull/1967>`__: Fixed :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels"
+
+msgid "Raj Dandekar"
+msgstr "Raj Dandekar"
+
+msgid "`#1973 <https://github.com/ManimCommunity/manim/pull/1973>`__: Fixed indexing of :meth:`.Table.get_entries` to respect row length"
+msgstr "`#1973 <https://github.com/ManimCommunity/manim/pull/1973>`__: Fixed indexing of :meth:`.Table.get_entries` to respect row length"
+
+msgid "ccn"
+msgstr "ccn"
+
+msgid "Harivinay"
+msgstr "Harivinay"
+
+msgid "Darigov Research"
+msgstr "Darigov Research"
+
+msgid "Benjamin Hackl"
+msgstr "Benjamin Hackl"
+
+msgid "`#1980 <https://github.com/ManimCommunity/manim/pull/1980>`__: Added a ``dissipating_time`` keyword argument to :class:`~.TracedPath` to allow animating a dissipating path"
+msgstr "`#1980 <https://github.com/ManimCommunity/manim/pull/1980>`__: Added a ``dissipating_time`` keyword argument to :class:`~.TracedPath` to allow animating a dissipating path"
+
+msgid "`#1951 <https://github.com/ManimCommunity/manim/pull/1951>`__: Fixed :meth:`.Axes.get_line_graph` returning a graph rendered below the axes"
+msgstr "`#1951 <https://github.com/ManimCommunity/manim/pull/1951>`__: Fixed :meth:`.Axes.get_line_graph` returning a graph rendered below the axes"
+
+msgid "Fixed bugs"
+msgstr "Fixed bugs"
+
+msgid "Naveen M K"
+msgstr "Naveen M K"
+
+msgid "In particular, ``OpenGLVMobject.points`` can now be accessed directly."
+msgstr "In particular, ``OpenGLVMobject.points`` can now be accessed directly."
+
+msgid "Raghav Goel"
+msgstr "Raghav Goel"
+
+msgid "`#1934 <https://github.com/ManimCommunity/manim/pull/1934>`__: Improved code quality by implementing suggestions from LGTM"
+msgstr "`#1934 <https://github.com/ManimCommunity/manim/pull/1934>`__: Improved code quality by implementing suggestions from LGTM"
+
+msgid "A total of 59 pull requests were merged for this release."
+msgstr "A total of 59 pull requests were merged for this release."
+
+msgid "`#1963 <https://github.com/ManimCommunity/manim/pull/1963>`__: Added sitemap to ``robots.txt``"
+msgstr "`#1963 <https://github.com/ManimCommunity/manim/pull/1963>`__: Added sitemap to ``robots.txt``"
+
+msgid "`#1894 <https://github.com/ManimCommunity/manim/pull/1894>`__: Fixed an OpenGL test"
+msgstr "`#1894 <https://github.com/ManimCommunity/manim/pull/1894>`__: Fixed an OpenGL test"
+
+msgid "`#1949 <https://github.com/ManimCommunity/manim/pull/1949>`__: Rewrite installation instructions from scratch"
+msgstr "`#1949 <https://github.com/ManimCommunity/manim/pull/1949>`__: Rewrite installation instructions from scratch"
+
+msgid "Darylgolden"
+msgstr "Darylgolden"
+
+msgid "`#1880 <https://github.com/ManimCommunity/manim/pull/1880>`__: Updated tutorials to use ``.animate`` instead of :class:`~.ApplyMethod`"
+msgstr "`#1880 <https://github.com/ManimCommunity/manim/pull/1880>`__: Updated tutorials to use ``.animate`` instead of :class:`~.ApplyMethod`"
+
+msgid "Changes to our development infrastructure"
+msgstr "Changes to our development infrastructure"
+
+msgid "Jan-Hendrik Müller"
+msgstr "Jan-Hendrik Müller"
+
+msgid "Devin Neal"
+msgstr "Devin Neal"
+
+msgid "Code quality improvements and similar refactors"
+msgstr "Code quality improvements and similar refactors"
+
+msgid "`#1694 <https://github.com/ManimCommunity/manim/pull/1694>`__: Added ``font_size`` parameter for :class:`~.Tex` and :class:`~.Text`, replaced ``scale`` parameters with ``font_size``"
+msgstr "`#1694 <https://github.com/ManimCommunity/manim/pull/1694>`__: Added ``font_size`` parameter for :class:`~.Tex` and :class:`~.Text`, replaced ``scale`` parameters with ``font_size``"
+
+msgid "Breaking changes"
+msgstr "Breaking changes"
+
+msgid "`#1856 <https://github.com/ManimCommunity/manim/pull/1856>`__: Modified Dockerfile to support multi-platform builds via ``docker buildx``"
+msgstr "`#1856 <https://github.com/ManimCommunity/manim/pull/1856>`__: Modified Dockerfile to support multi-platform builds via ``docker buildx``"
+
+msgid "`#1960 <https://github.com/ManimCommunity/manim/pull/1960>`__: Ignore fewer flake8 errors"
+msgstr "`#1960 <https://github.com/ManimCommunity/manim/pull/1960>`__: Ignore fewer flake8 errors"
+
+msgid "v0.10.0"
+msgstr "v0.10.0"
+
+msgid "Laith Bahodi"
+msgstr "Laith Bahodi"
+
+msgid "`#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fixed scene selection being ignored when using the OpenGL renderer"
+msgstr "`#1758 <https://github.com/ManimCommunity/manim/pull/1758>`__: Fixed scene selection being ignored when using the OpenGL renderer"
+
+msgid "`#1989 <https://github.com/ManimCommunity/manim/pull/1989>`__: Prepare new release v0.10.0"
+msgstr "`#1989 <https://github.com/ManimCommunity/manim/pull/1989>`__: Prepare new release v0.10.0"
+
+msgid "Changes concerning the testing system"
+msgstr "Changes concerning the testing system"
+
+msgid "Jason Villanueva"
+msgstr "Jason Villanueva"
+
+msgid "Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method."
+msgstr "Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method."
+
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr "The patches included in this release have been reviewed by the following contributors."
+
+msgid "Previously, the metaclass approach only changed the inheritance chain to switch between OpenGL and cairo mobjects when the class objects are initialized, i.e., at import time. This PR also triggers the changes to the inheritance chain when the value of ``config.renderer`` is changed."
+msgstr "Previously, the metaclass approach only changed the inheritance chain to switch between OpenGL and cairo mobjects when the class objects are initialized, i.e., at import time. This PR also triggers the changes to the inheritance chain when the value of ``config.renderer`` is changed."
+
+msgid "A total of 40 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr "A total of 40 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+
+msgid "`#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow switching the renderer to OpenGL at runtime"
+msgstr "`#1899 <https://github.com/ManimCommunity/manim/pull/1899>`__: Allow switching the renderer to OpenGL at runtime"
+
+msgid "Joy Bhalla +"
+msgstr "Joy Bhalla +"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Deprecated classes and functions"
+msgstr "Deprecated classes and functions"
+
+msgid "New releases"
+msgstr "New releases"
+
+msgid "`#1979 <https://github.com/ManimCommunity/manim/pull/1979>`__: Corrected Japanese phrases in documentation"
+msgstr "`#1979 <https://github.com/ManimCommunity/manim/pull/1979>`__: Corrected Japanese phrases in documentation"
+
+msgid "sparshg"
+msgstr "sparshg"
+
+msgid "Václav Hlaváč +"
+msgstr "Václav Hlaváč +"

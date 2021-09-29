@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "An instance of the default TeX template used by 3b1b"
+msgstr "An instance of the default TeX template used by 3b1b"
+
+msgid "An instance of a simple TeX template with only basic AMS packages loaded"
+msgstr "An instance of a simple TeX template with only basic AMS packages loaded"
+
+msgid "TexTemplateLibrary"
+msgstr "TexTemplateLibrary"
+
+msgid "An instance of the TeX template used by 3b1b when using the use_ctex flag"
+msgstr "An instance of the TeX template used by 3b1b when using the use_ctex flag"
+
+msgid "Normal usage as a value for the keyword argument tex_template of Tex() and MathTex() mobjects::"
+msgstr "Normal usage as a value for the keyword argument tex_template of Tex() and MathTex() mobjects::"
+
+msgid "A collection of basic TeX template objects"
+msgstr "A collection of basic TeX template objects"
+
+msgid "An instance of the default TeX template in manim"
+msgstr "An instance of the default TeX template in manim"

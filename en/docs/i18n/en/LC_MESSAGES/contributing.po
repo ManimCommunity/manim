@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Contributing can be confusing, so here are a few guides:"
+msgstr "Contributing can be confusing, so here are a few guides:"
+
+msgid "Code maintenance and development"
+msgstr "Code maintenance and development"
+
+msgid "Developing educational content & narrative documentation"
+msgstr "Developing educational content & narrative documentation"
+
+msgid "Translating documentation and docstrings"
+msgstr "Translating documentation and docstrings"
+
+msgid "Thank you for your interest in contributing to Manim! However you have decided to contribute or interact with the community, please always be civil and respect other members of the community. If you haven't read our :doc:`code of conduct<conduct>`, do so here. Manim is Free and Open Source Software (FOSS) for mathematical animations. As such, **we welcome everyone** who is interested in mathematics, pedagogy, computer animations, open-source, software development, and beyond. Manim accepts many kinds of contributions, some are detailed below:"
+msgstr "Thank you for your interest in contributing to Manim! However you have decided to contribute or interact with the community, please always be civil and respect other members of the community. If you haven't read our :doc:`code of conduct<conduct>`, do so here. Manim is Free and Open Source Software (FOSS) for mathematical animations. As such, **we welcome everyone** who is interested in mathematics, pedagogy, computer animations, open-source, software development, and beyond. Manim accepts many kinds of contributions, some are detailed below:"
+
+msgid "Website design and development"
+msgstr "Website design and development"
+
+msgid "Please ensure that you are reading the latest version of this guide by ensuring that \"latest\" is selected in the version switcher."
+msgstr "Please ensure that you are reading the latest version of this guide by ensuring that \"latest\" is selected in the version switcher."
+
+msgid "Contributing"
+msgstr "Contributing"
+
+msgid "Plugins to extend Manim functionality"
+msgstr "Plugins to extend Manim functionality"
+
+msgid "Testing (graphical, unit & video)"
+msgstr "Testing (graphical, unit & video)"
+
+msgid "DevOps"
+msgstr "DevOps"
+
+msgid "Documentation"
+msgstr "Documentation"

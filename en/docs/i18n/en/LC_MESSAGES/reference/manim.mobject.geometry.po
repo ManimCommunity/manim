@@ -1,0 +1,80 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "A circle."
+msgstr "A circle."
+
+msgid "geometry"
+msgstr "geometry"
+
+msgid "A circular arc or elbow-type mobject representing an angle of two lines."
+msgstr "A circular arc or elbow-type mobject representing an angle of two lines."
+
+msgid "Base class for arrow tips."
+msgstr "Base class for arrow tips."
+
+msgid "Meant for shared functionality between Arc and Line."
+msgstr "Meant for shared functionality between Arc and Line."
+
+msgid "A circular shape; oval, circle."
+msgstr "A circular shape; oval, circle."
+
+msgid "Region between two concentric :class:`Circles <.Circle>`."
+msgstr "Region between two concentric :class:`Circles <.Circle>`."
+
+msgid "A rectangle with equal side lengths."
+msgstr "A rectangle with equal side lengths."
+
+msgid "A quadrilateral with two sets of parallel sides."
+msgstr "A quadrilateral with two sets of parallel sides."
+
+msgid "A circle with a very small radius."
+msgstr "A circle with a very small radius."
+
+msgid "A regular polygram without the intersecting lines."
+msgstr "A regular polygram without the intersecting lines."
+
+msgid "A shape with smaller cutouts."
+msgstr "A shape with smaller cutouts."
+
+msgid "A vector specialized for use in graphs."
+msgstr "A vector specialized for use in graphs."
+
+msgid "A circular arc."
+msgstr "A circular arc."
+
+msgid "An arrow."
+msgstr "An arrow."
+
+msgid "A generalized :class:`Polygon`, allowing for disconnected sets of edges."
+msgstr "A generalized :class:`Polygon`, allowing for disconnected sets of edges."
+
+msgid "A dashed :class:`Line`."
+msgstr "A dashed :class:`Line`."
+
+msgid ":obj:`ArrowTriangleFilledTip <manim.mobject.geometry.ArrowTriangleFilledTip>`"
+msgstr ":obj:`ArrowTriangleFilledTip <manim.mobject.geometry.ArrowTriangleFilledTip>`"
+
+msgid "Mobjects that are simple geometric shapes."
+msgstr "Mobjects that are simple geometric shapes."
+
+msgid "An equilateral triangle."
+msgstr "An equilateral triangle."
+
+msgid "param inner_radius"
+msgstr "param inner_radius"
+
+msgid "Two lines that create a right angle about each other: L-shape."
+msgstr "Two lines that create a right angle about each other: L-shape."
+
+msgid "A shape consisting of one closed loop of vertices."
+msgstr "A shape consisting of one closed loop of vertices."

@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Abbreviation for :meth:`point_to_polar`"
+msgstr "Abbreviation for :meth:`point_to_polar`"
+
+msgid "The direction of the azimuth."
+msgstr "The direction of the azimuth."
+
+msgid "Labels for the radius and azimuth values."
+msgstr "Labels for the radius and azimuth values."
+
+msgid "The buffer for the azimuth labels."
+msgstr "The buffer for the azimuth labels."
+
+msgid "Gets polar coordinates from a point."
+msgstr "Gets polar coordinates from a point."
+
+msgid "``\"degrees\"``: 36"
+msgstr "``\"degrees\"``: 36"
+
+msgid ":obj:`get_radian_label <manim.mobject.coordinate_systems.PolarPlane.get_radian_label>`"
+msgstr ":obj:`get_radian_label <manim.mobject.coordinate_systems.PolarPlane.get_radian_label>`"
+
+msgid "Adds the coordinates."
+msgstr "Adds the coordinates."
+
+msgid ":obj:`point_to_polar <manim.mobject.coordinate_systems.PolarPlane.point_to_polar>`"
+msgstr ":obj:`point_to_polar <manim.mobject.coordinate_systems.PolarPlane.point_to_polar>`"
+
+msgid "Abbreviation for :meth:`polar_to_point`"
+msgstr "Abbreviation for :meth:`polar_to_point`"
+
+msgid "``\"CW\"``: Clockwise."
+msgstr "``\"CW\"``: Clockwise."
+
+msgid "Tuple[:class:`float`, :class:`float`]"
+msgstr "Tuple[:class:`float`, :class:`float`]"
+
+msgid "Gets the axes. :returns: A pair of axes. :rtype: :class:`~.VGroup`"
+msgstr "Gets the axes. :returns: A pair of axes. :rtype: :class:`~.VGroup`"
+
+msgid ":obj:`add_coordinates <manim.mobject.coordinate_systems.PolarPlane.add_coordinates>`"
+msgstr ":obj:`add_coordinates <manim.mobject.coordinate_systems.PolarPlane.add_coordinates>`"
+
+msgid "``\"CCW\"``: Anti-clockwise."
+msgstr "``\"CCW\"``: Anti-clockwise."
+
+msgid "A non-integer value will result in a partial division at the end of the circle."
+msgstr "A non-integer value will result in a partial division at the end of the circle."
+
+msgid "Specifies a default labelling system for the azimuth. Choices are:"
+msgstr "Specifies a default labelling system for the azimuth. Choices are:"
+
+msgid "The axis config for the radius."
+msgstr "The axis config for the radius."
+
+msgid "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
+msgstr "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
+
+msgid "The point."
+msgstr "The point."
+
+msgid "References: :class:`~.PolarPlane` :class:`~.Vector`"
+msgstr "References: :class:`~.PolarPlane` :class:`~.Vector`"
+
+msgid "PolarPlane"
+msgstr "PolarPlane"
+
+msgid "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:"
+msgstr "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:"
+
+msgid ":obj:`polar_to_point <manim.mobject.coordinate_systems.PolarPlane.polar_to_point>`"
+msgstr ":obj:`polar_to_point <manim.mobject.coordinate_systems.PolarPlane.polar_to_point>`"
+
+msgid "Gets the axes."
+msgstr "Gets the axes."
+
+msgid "The direction of the azimuth.  - ``\"CW\"``: Clockwise. - ``\"CCW\"``: Anti-clockwise."
+msgstr "The direction of the azimuth.  - ``\"CW\"``: Clockwise. - ``\"CCW\"``: Anti-clockwise."
+
+msgid "The angle offset of the azimuth, expressed in radians."
+msgstr "The angle offset of the azimuth, expressed in radians."
+
+msgid "The diameter of the plane."
+msgstr "The diameter of the plane."
+
+msgid "``\"gradians\"``: 40"
+msgstr "``\"gradians\"``: 40"
+
+msgid "``None``: 1"
+msgstr "``None``: 1"
+
+msgid "References: :class:`~.PolarPlane`"
+msgstr "References: :class:`~.PolarPlane`"
+
+msgid "The maximum value of the radius."
+msgstr "The maximum value of the radius."
+
+msgid "Creates a polar plane with background lines."
+msgstr "Creates a polar plane with background lines."
+
+msgid "The distance between faded radius lines."
+msgstr "The distance between faded radius lines."
+
+msgid ":obj:`get_coordinate_labels <manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels>`"
+msgstr ":obj:`get_coordinate_labels <manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels>`"
+
+msgid "Adds the coordinates. :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
+msgstr "Adds the coordinates. :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
+
+msgid "Gets a point from polar coordinates."
+msgstr "Gets a point from polar coordinates."
+
+msgid "The font size of the azimuth labels."
+msgstr "The font size of the azimuth labels."
+
+msgid "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:  - ``\"PI radians\"`` or ``\"TAU radians\"``: 20 - ``\"degrees\"``: 36 - ``\"gradians\"``: 40 - ``None``: 1  A non-integer value will result in a partial division at the end of the circle."
+msgstr "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:  - ``\"PI radians\"`` or ``\"TAU radians\"``: 20 - ``\"degrees\"``: 36 - ``\"gradians\"``: 40 - ``None``: 1  A non-integer value will result in a partial division at the end of the circle."
+
+msgid "The coordinate radius (:math:`r`)."
+msgstr "The coordinate radius (:math:`r`)."
+
+msgid "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None."
+msgstr "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None."
+
+msgid ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.PolarPlane.prepare_for_nonlinear_transform>`"
+msgstr ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.PolarPlane.prepare_for_nonlinear_transform>`"
+
+msgid "``\"PI radians\"`` or ``\"TAU radians\"``: 20"
+msgstr "``\"PI radians\"`` or ``\"TAU radians\"``: 20"

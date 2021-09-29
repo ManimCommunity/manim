@@ -1,0 +1,215 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The file-type extension of the outputted video."
+msgstr "The file-type extension of the outputted video."
+
+msgid "\"partial_movie_files\""
+msgstr "\"partial_movie_files\""
+
+msgid "Pixel array of the frame."
+msgstr "Pixel array of the frame."
+
+msgid "\"movie_file_extension\" (str=\".mp4\")"
+msgstr "\"movie_file_extension\" (str=\".mp4\")"
+
+msgid "Used internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."
+msgstr "Used internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."
+
+msgid "Adds a new partial movie file path to scene.partial_movie_files from an hash."
+msgstr "Adds a new partial movie file path to scene.partial_movie_files from an hash."
+
+msgid "The hash corresponding to an invocation to either `scene.play` or `scene.wait`."
+msgstr "The hash corresponding to an invocation to either `scene.play` or `scene.wait`."
+
+msgid "Whether the file exists."
+msgstr "Whether the file exists."
+
+msgid "Creates an empty, silent, Audio Segment."
+msgstr "Creates an empty, silent, Audio Segment."
+
+msgid ":obj:`flush_cache_directory <manim.scene.scene_file_writer.SceneFileWriter.flush_cache_directory>`"
+msgstr ":obj:`flush_cache_directory <manim.scene.scene_file_writer.SceneFileWriter.flush_cache_directory>`"
+
+msgid "The name of the directory."
+msgstr "The name of the directory."
+
+msgid "Used internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."
+msgstr "Used internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."
+
+msgid ":obj:`is_already_cached <manim.scene.scene_file_writer.SceneFileWriter.is_already_cached>`"
+msgstr ":obj:`is_already_cached <manim.scene.scene_file_writer.SceneFileWriter.is_already_cached>`"
+
+msgid "Delete all the cached partial movie files"
+msgstr "Delete all the cached partial movie files"
+
+msgid "Adds a new partial movie file path to scene.partial_movie_files from an hash. This method will compute the path from the hash."
+msgstr "Adds a new partial movie file path to scene.partial_movie_files from an hash. This method will compute the path from the hash."
+
+msgid ":obj:`combine_movie_files <manim.scene.scene_file_writer.SceneFileWriter.combine_movie_files>`"
+msgstr ":obj:`combine_movie_files <manim.scene.scene_file_writer.SceneFileWriter.combine_movie_files>`"
+
+msgid "The gain of the given audio segment."
+msgstr "The gain of the given audio segment."
+
+msgid "This method adds an audio segment from a sound file."
+msgstr "This method adds an audio segment from a sound file."
+
+msgid ":obj:`init_output_directories <manim.scene.scene_file_writer.SceneFileWriter.init_output_directories>`"
+msgstr ":obj:`init_output_directories <manim.scene.scene_file_writer.SceneFileWriter.init_output_directories>`"
+
+msgid "Doesn't write anything to the FFMPEG frame buffer."
+msgstr "Doesn't write anything to the FFMPEG frame buffer."
+
+msgid "Finishes writing to the FFMPEG buffer or writing images to output directory."
+msgstr "Finishes writing to the FFMPEG buffer or writing images to output directory."
+
+msgid "The pixel array of the image to save."
+msgstr "The pixel array of the image to save."
+
+msgid "The timestamp at which the audio should be added."
+msgstr "The timestamp at which the audio should be added."
+
+msgid ":class:`bool`"
+msgstr ":class:`bool`"
+
+msgid ":obj:`add_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment>`"
+msgstr ":obj:`add_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment>`"
+
+msgid "The gain of the segment from the background."
+msgstr "The gain of the segment from the background."
+
+msgid "Initialise output directories."
+msgstr "Initialise output directories."
+
+msgid "the timestamp at which the sound should be added."
+msgstr "the timestamp at which the sound should be added."
+
+msgid "Hash of the animation."
+msgstr "Hash of the animation."
+
+msgid ":obj:`write_frame <manim.scene.scene_file_writer.SceneFileWriter.write_frame>`"
+msgstr ":obj:`write_frame <manim.scene.scene_file_writer.SceneFileWriter.write_frame>`"
+
+msgid "Will clean the cache by removing the oldest partial_movie_files."
+msgstr "Will clean the cache by removing the oldest partial_movie_files."
+
+msgid "Get the name of the resolution directory directly containing the video file."
+msgstr "Get the name of the resolution directory directly containing the video file."
+
+msgid ":obj:`begin_animation <manim.scene.scene_file_writer.SceneFileWriter.begin_animation>`"
+msgstr ":obj:`begin_animation <manim.scene.scene_file_writer.SceneFileWriter.begin_animation>`"
+
+msgid "The name is a misnomer. This method saves the image passed to it as an in the default image directory."
+msgstr "The name is a misnomer. This method saves the image passed to it as an in the default image directory."
+
+msgid "This method gets the name of the directory that immediately contains the video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``. For example, if you are rendering an 854x480 px animation at 15fps, the name of the directory that immediately contains the video,  file will be ``480p15``."
+msgstr "This method gets the name of the directory that immediately contains the video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``. For example, if you are rendering an 854x480 px animation at 15fps, the name of the directory that immediately contains the video,  file will be ``480p15``."
+
+msgid "This method adds an audio segment from an AudioSegment type object and suitable parameters."
+msgstr "This method adds an audio segment from an AudioSegment type object and suitable parameters."
+
+msgid "Whether or not to write to a video file."
+msgstr "Whether or not to write to a video file."
+
+msgid "The directories are read from ``config``, for example ``config['media_dir']``.  If the target directories don't already exist, they will be created."
+msgstr "The directories are read from ``config``, for example ``config['media_dir']``.  If the target directories don't already exist, they will be created."
+
+msgid ":obj:`idle_stream <manim.scene.scene_file_writer.SceneFileWriter.idle_stream>`"
+msgstr ":obj:`idle_stream <manim.scene.scene_file_writer.SceneFileWriter.idle_stream>`"
+
+msgid "SceneFileWriter is the object that actually writes the animations played, into video files, using FFMPEG. This is mostly for Manim's internal use. You will rarely, if ever, have to use the methods for this class, unless tinkering with the very fabric of Manim's reality."
+msgstr "SceneFileWriter is the object that actually writes the animations played, into video files, using FFMPEG. This is mostly for Manim's internal use. You will rarely, if ever, have to use the methods for this class, unless tinkering with the very fabric of Manim's reality."
+
+msgid "The file structure should look something like::"
+msgstr "The file structure should look something like::"
+
+msgid ":obj:`init_audio <manim.scene.scene_file_writer.SceneFileWriter.init_audio>`"
+msgstr ":obj:`init_audio <manim.scene.scene_file_writer.SceneFileWriter.init_audio>`"
+
+msgid "Prints the \"File Ready\" message to STDOUT."
+msgstr "Prints the \"File Ready\" message to STDOUT."
+
+msgid "Preps the writer for adding audio to the movie."
+msgstr "Preps the writer for adding audio to the movie."
+
+msgid "This method uses add_audio_segment, so any keyword arguments used there can be referenced here."
+msgstr "This method uses add_audio_segment, so any keyword arguments used there can be referenced here."
+
+msgid "Whether or not to write the animations into a video file."
+msgstr "Whether or not to write the animations into a video file."
+
+msgid "SceneFileWriter"
+msgstr "SceneFileWriter"
+
+msgid ":obj:`end_animation <manim.scene.scene_file_writer.SceneFileWriter.end_animation>`"
+msgstr ":obj:`end_animation <manim.scene.scene_file_writer.SceneFileWriter.end_animation>`"
+
+msgid "The path to the sound file."
+msgstr "The path to the sound file."
+
+msgid "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer"
+msgstr "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer"
+
+msgid ":obj:`add_partial_movie_file <manim.scene.scene_file_writer.SceneFileWriter.add_partial_movie_file>`"
+msgstr ":obj:`add_partial_movie_file <manim.scene.scene_file_writer.SceneFileWriter.add_partial_movie_file>`"
+
+msgid "Used internally by manim to stream the animation to FFMPEG for displaying or writing to a file."
+msgstr "Used internally by manim to stream the animation to FFMPEG for displaying or writing to a file."
+
+msgid ":obj:`print_file_ready_message <manim.scene.scene_file_writer.SceneFileWriter.print_file_ready_message>`"
+msgstr ":obj:`print_file_ready_message <manim.scene.scene_file_writer.SceneFileWriter.print_file_ready_message>`"
+
+msgid "The audio segment to add"
+msgstr "The audio segment to add"
+
+msgid ":obj:`save_final_image <manim.scene.scene_file_writer.SceneFileWriter.save_final_image>`"
+msgstr ":obj:`save_final_image <manim.scene.scene_file_writer.SceneFileWriter.save_final_image>`"
+
+msgid ":obj:`open_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.open_movie_pipe>`"
+msgstr ":obj:`open_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.open_movie_pipe>`"
+
+msgid "The name is a misnomer."
+msgstr "The name is a misnomer."
+
+msgid "Some useful attributes are:"
+msgstr "Some useful attributes are:"
+
+msgid ":obj:`close_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe>`"
+msgstr ":obj:`close_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe>`"
+
+msgid ":obj:`create_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.create_audio_segment>`"
+msgstr ":obj:`create_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.create_audio_segment>`"
+
+msgid "Finishes writing to the FFMPEG buffer or writing images to output directory. Combines the partial movie files into the whole scene. If save_last_frame is True, saves the last frame in the default image directory."
+msgstr "Finishes writing to the FFMPEG buffer or writing images to output directory. Combines the partial movie files into the whole scene. If save_last_frame is True, saves the last frame in the default image directory."
+
+msgid "List of all the partial-movie files."
+msgstr "List of all the partial-movie files."
+
+msgid ":obj:`clean_cache <manim.scene.scene_file_writer.SceneFileWriter.clean_cache>`"
+msgstr ":obj:`clean_cache <manim.scene.scene_file_writer.SceneFileWriter.clean_cache>`"
+
+msgid "Internally used by Manim to stop streaming to FFMPEG gracefully."
+msgstr "Internally used by Manim to stop streaming to FFMPEG gracefully."
+
+msgid "\"write_to_movie\" (bool=False)"
+msgstr "\"write_to_movie\" (bool=False)"
+
+msgid ":obj:`get_resolution_directory <manim.scene.scene_file_writer.SceneFileWriter.get_resolution_directory>`"
+msgstr ":obj:`get_resolution_directory <manim.scene.scene_file_writer.SceneFileWriter.get_resolution_directory>`"
+
+msgid "Will check if a file named with `hash_invocation` exists."
+msgstr "Will check if a file named with `hash_invocation` exists."
+
+msgid "Used internally by Manim to write a frame to the FFMPEG input buffer."
+msgstr "Used internally by Manim to write a frame to the FFMPEG input buffer."

@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`calculate_num_dashes <manim.mobject.geometry.DashedLine.calculate_num_dashes>`"
+msgstr ":obj:`calculate_num_dashes <manim.mobject.geometry.DashedLine.calculate_num_dashes>`"
+
+msgid "The ratio of dash space to empty space. Range of 0-1."
+msgstr "The ratio of dash space to empty space. Range of 0-1."
+
+msgid "Returns the number of dashes in the dashed line."
+msgstr "Returns the number of dashes in the dashed line."
+
+msgid "Returns the start point of the line."
+msgstr "Returns the start point of the line."
+
+msgid "DashedLine"
+msgstr "DashedLine"
+
+msgid "Returns the end point of the line."
+msgstr "Returns the end point of the line."
+
+msgid ":obj:`get_first_handle <manim.mobject.geometry.DashedLine.get_first_handle>`"
+msgstr ":obj:`get_first_handle <manim.mobject.geometry.DashedLine.get_first_handle>`"
+
+msgid "Returns the point of the first handle."
+msgstr "Returns the point of the first handle."
+
+msgid "Arguments to be passed to :class:`Line`"
+msgstr "Arguments to be passed to :class:`Line`"
+
+msgid "Qualified name: ``manim.mobject.geometry.DashedLine``"
+msgstr "Qualified name: ``manim.mobject.geometry.DashedLine``"
+
+msgid "Returns the point of the last handle."
+msgstr "Returns the point of the last handle."
+
+msgid "The length of each individual dash of the line."
+msgstr "The length of each individual dash of the line."

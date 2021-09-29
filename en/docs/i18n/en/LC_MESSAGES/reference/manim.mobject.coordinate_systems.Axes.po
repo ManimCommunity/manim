@@ -1,0 +1,95 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Accepts coordinates from the axes and returns a point with respect to the scene."
+msgstr "Accepts coordinates from the axes and returns a point with respect to the scene."
+
+msgid ":obj:`get_line_graph <manim.mobject.coordinate_systems.Axes.get_line_graph>`"
+msgstr ":obj:`get_line_graph <manim.mobject.coordinate_systems.Axes.get_line_graph>`"
+
+msgid "The graph connects the vertices formed from zipping ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`Dots <.Dot>` at the vertices if ``add_vertex_dots`` is set to ``True``."
+msgstr "The graph connects the vertices formed from zipping ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`Dots <.Dot>` at the vertices if ``add_vertex_dots`` is set to ``True``."
+
+msgid "A pair of axes."
+msgstr "A pair of axes."
+
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`, :class:`manim.mobject.coordinate_systems.CoordinateSystem`"
+msgstr "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`, :class:`manim.mobject.coordinate_systems.CoordinateSystem`"
+
+msgid "Additional arguments to be passed into :class:`~.VMobject`."
+msgstr "Additional arguments to be passed into :class:`~.VMobject`."
+
+msgid "Whether or not to include the tips on both axes."
+msgstr "Whether or not to include the tips on both axes."
+
+msgid "Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`."
+msgstr "Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`."
+
+msgid "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``."
+msgstr "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``."
+
+msgid "Iterable of values along the y-axis."
+msgstr "Iterable of values along the y-axis."
+
+msgid "Arguments to be passed to :class:`~.NumberLine` that influences both axes."
+msgstr "Arguments to be passed to :class:`~.NumberLine` that influences both axes."
+
+msgid "Accepts a point from the scene and returns its coordinates with respect to the axes."
+msgstr "Accepts a point from the scene and returns its coordinates with respect to the axes."
+
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the x-axis."
+msgstr "Arguments to be passed to :class:`~.NumberLine` that influence the x-axis."
+
+msgid "Axes"
+msgstr "Axes"
+
+msgid "The point, i.e. ``RIGHT`` or ``[0, 1, 0]``."
+msgstr "The point, i.e. ``RIGHT`` or ``[0, 1, 0]``."
+
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the y-axis."
+msgstr "Arguments to be passed to :class:`~.NumberLine` that influence the y-axis."
+
+msgid "Color for the line graph."
+msgstr "Color for the line graph."
+
+msgid "Draws a line graph."
+msgstr "Draws a line graph."
+
+msgid "A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph[\"line_graph\"]``. The dots can be accessed with: ``line_graph[\"vertex_dots\"]``."
+msgstr "A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph[\"line_graph\"]``. The dots can be accessed with: ``line_graph[\"vertex_dots\"]``."
+
+msgid ":obj:`coords_to_point <manim.mobject.coordinate_systems.Axes.coords_to_point>`"
+msgstr ":obj:`coords_to_point <manim.mobject.coordinate_systems.Axes.coords_to_point>`"
+
+msgid ":obj:`point_to_coords <manim.mobject.coordinate_systems.Axes.point_to_coords>`"
+msgstr ":obj:`point_to_coords <manim.mobject.coordinate_systems.Axes.point_to_coords>`"
+
+msgid "Iterable of values along the x-axis."
+msgstr "Iterable of values along the x-axis."
+
+msgid "Iterable of values (zeros if z_values is None) along the z-axis."
+msgstr "Iterable of values (zeros if z_values is None) along the z-axis."
+
+msgid "Style arguments to be passed into :class:`~.Dot` at each vertex."
+msgstr "Style arguments to be passed into :class:`~.Dot` at each vertex."
+
+msgid "A point with respect to the scene's coordinate system."
+msgstr "A point with respect to the scene's coordinate system."
+
+msgid "The coordinates on the axes, i.e. ``(4.0, 7.0)``."
+msgstr "The coordinates on the axes, i.e. ``(4.0, 7.0)``."
+
+msgid "Whether or not to add :class:`~.Dot` at each vertex."
+msgstr "Whether or not to add :class:`~.Dot` at each vertex."
+
+msgid "Radius for the :class:`~.Dot` at each vertex."
+msgstr "Radius for the :class:`~.Dot` at each vertex."

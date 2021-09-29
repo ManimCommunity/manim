@@ -1,0 +1,101 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Redirect one parameter to multiple::"
+msgstr "Redirect one parameter to multiple::"
+
+msgid "The identifier of the callable replacing the deprecated one."
+msgstr "The identifier of the callable replacing the deprecated one."
+
+msgid "The function to be decorated. Should not be set by the user."
+msgstr "The function to be decorated. Should not be set by the user."
+
+msgid "A function performing the mapping operation. The parameter names of the function determine which parameters are used as input. The function must return a dictionary which contains the redirected arguments."
+msgstr "A function performing the mapping operation. The parameter names of the function determine which parameters are used as input. The function must return a dictionary which contains the redirected arguments."
+
+msgid "Redirecting multiple parameter values to one::"
+msgstr "Redirecting multiple parameter values to one::"
+
+msgid "A list of parameter redirections. Each redirection can be one of the following:"
+msgstr "A list of parameter redirections. Each redirection can be one of the following:"
+
+msgid "Redirecting using a calculated value::"
+msgstr "Redirecting using a calculated value::"
+
+msgid "The decorated callable."
+msgstr "The decorated callable."
+
+msgid "The reason for why the callable has been deprecated."
+msgstr "The reason for why the callable has been deprecated."
+
+msgid "Decorator to mark parameters of a callable as deprecated."
+msgstr "Decorator to mark parameters of a callable as deprecated."
+
+msgid "A single string, with parameter names separated by commas or spaces."
+msgstr "A single string, with parameter names separated by commas or spaces."
+
+msgid "You may also use dates instead of versions::"
+msgstr "You may also use dates instead of versions::"
+
+msgid "An iterable of strings, with each element representing a parameter to deprecate"
+msgstr "An iterable of strings, with each element representing a parameter to deprecate"
+
+msgid "You can specify additional information for a more precise warning::"
+msgstr "You can specify additional information for a more precise warning::"
+
+msgid "Basic parameter redirection::"
+msgstr "Basic parameter redirection::"
+
+msgid "If no parameters are defined (neither explicitly nor implicitly)."
+msgstr "If no parameters are defined (neither explicitly nor implicitly)."
+
+msgid "Decorator to mark a callable as deprecated."
+msgstr "Decorator to mark a callable as deprecated."
+
+msgid "The parameters to be deprecated. Can consist of:"
+msgstr "The parameters to be deprecated. Can consist of:"
+
+msgid "The parameters to be deprecated. Can consist of:  * An iterable of strings, with each element representing a parameter to deprecate * A single string, with parameter names separated by commas or spaces."
+msgstr "The parameters to be deprecated. Can consist of:  * An iterable of strings, with each element representing a parameter to deprecate * A single string, with parameter names separated by commas or spaces."
+
+msgid "The version or date until removal of the deprecated callable."
+msgstr "The version or date until removal of the deprecated callable."
+
+msgid "If defined parameters are invalid python identifiers."
+msgstr "If defined parameters are invalid python identifiers."
+
+msgid "You can also specify additional information for a more precise warning::"
+msgstr "You can also specify additional information for a more precise warning::"
+
+msgid "Redirected parameters are also implicitly deprecated."
+msgstr "Redirected parameters are also implicitly deprecated."
+
+msgid "A tuple of two strings. The first string defines the name of the deprecated parameter; the second string defines the name of the parameter to redirect to, when attempting to use the first string."
+msgstr "A tuple of two strings. The first string defines the name of the deprecated parameter; the second string defines the name of the parameter to redirect to, when attempting to use the first string."
+
+msgid "Basic usage::"
+msgstr "Basic usage::"
+
+msgid "The decorated callable will cause a warning when used. The docstring of the deprecated callable is adjusted to indicate that this callable is deprecated."
+msgstr "The decorated callable will cause a warning when used. The docstring of the deprecated callable is adjusted to indicate that this callable is deprecated."
+
+msgid "deprecation"
+msgstr "deprecation"
+
+msgid "The version or date since deprecation."
+msgstr "The version or date since deprecation."
+
+msgid "It can also be used to automatically redirect deprecated parameter values to their replacements."
+msgstr "It can also be used to automatically redirect deprecated parameter values to their replacements."
+
+msgid "A list of parameter redirections. Each redirection can be one of the following:  * A tuple of two strings. The first string defines the name of the deprecated   parameter; the second string defines the name of the parameter to redirect to,   when attempting to use the first string.  * A function performing the mapping operation. The parameter names of the   function determine which parameters are used as input. The function must   return a dictionary which contains the redirected arguments.  Redirected parameters are also implicitly deprecated."
+msgstr "A list of parameter redirections. Each redirection can be one of the following:  * A tuple of two strings. The first string defines the name of the deprecated   parameter; the second string defines the name of the parameter to redirect to,   when attempting to use the first string.  * A function performing the mapping operation. The parameter names of the   function determine which parameters are used as input. The function must   return a dictionary which contains the redirected arguments.  Redirected parameters are also implicitly deprecated."

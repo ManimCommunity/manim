@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Dot3D"
+msgstr "Dot3D"
+
+msgid "A spherical dot."
+msgstr "A spherical dot."
+
+msgid "The radius of the dot."
+msgstr "The radius of the dot."
+
+msgid "The location of the dot."
+msgstr "The location of the dot."
+
+msgid "Bases: :class:`manim.mobject.three_dimensions.Sphere`"
+msgstr "Bases: :class:`manim.mobject.three_dimensions.Sphere`"
+
+msgid "The color of the :class:`Dot3D`"
+msgstr "The color of the :class:`Dot3D`"

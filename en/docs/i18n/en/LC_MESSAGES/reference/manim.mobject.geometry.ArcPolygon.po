@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":class:`ArcPolygonFromArcs`"
+msgstr ":class:`ArcPolygonFromArcs`"
+
+msgid "There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated with pre-defined arcs."
+msgstr "There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated with pre-defined arcs."
+
+msgid "This version tries to stick close to the way :class:`Polygon` is used. Points can be passed to it directly which are used to generate the according arcs (using :class:`ArcBetweenPoints`). An angle or radius can be passed to it to use across all arcs, but to configure arcs individually an ``arc_config`` list has to be passed with the syntax explained below."
+msgstr "This version tries to stick close to the way :class:`Polygon` is used. Points can be passed to it directly which are used to generate the according arcs (using :class:`ArcBetweenPoints`). An angle or radius can be passed to it to use across all arcs, but to configure arcs individually an ``arc_config`` list has to be passed with the syntax explained below."
+
+msgid "Qualified name: ``manim.mobject.geometry.ArcPolygon``"
+msgstr "Qualified name: ``manim.mobject.geometry.ArcPolygon``"
+
+msgid "A list of vertices, start and end points for the arc segments."
+msgstr "A list of vertices, start and end points for the arc segments."
+
+msgid "The angle used for constructing the arcs. If no other parameters are set, this angle is used to construct all arcs."
+msgstr "The angle used for constructing the arcs. If no other parameters are set, this angle is used to construct all arcs."
+
+msgid "The circle radius used to construct the arcs. If specified, overrides the specified ``angle``."
+msgstr "The circle radius used to construct the arcs. If specified, overrides the specified ``angle``."
+
+msgid "For further examples see :class:`ArcPolygonFromArcs`."
+msgstr "For further examples see :class:`ArcPolygonFromArcs`."
+
+msgid "When passing a ``dict``, its content will be passed as keyword arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list of dictionaries containing values that are passed as keyword arguments for every individual arc can be passed."
+msgstr "When passing a ``dict``, its content will be passed as keyword arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list of dictionaries containing values that are passed as keyword arguments for every individual arc can be passed."
+
+msgid "ArcPolygon"
+msgstr "ArcPolygon"
+
+msgid "Further keyword arguments that are passed to the constructor of :class:`~.VMobject`."
+msgstr "Further keyword arguments that are passed to the constructor of :class:`~.VMobject`."
+
+msgid "The arcs created from the input parameters::"
+msgstr "The arcs created from the input parameters::"

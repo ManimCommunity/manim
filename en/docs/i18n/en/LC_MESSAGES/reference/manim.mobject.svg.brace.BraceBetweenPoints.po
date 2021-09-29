@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Qualified name: ``manim.mobject.svg.brace.BraceBetweenPoints``"
+msgstr "Qualified name: ``manim.mobject.svg.brace.BraceBetweenPoints``"
+
+msgid "The second point."
+msgstr "The second point."
+
+msgid "A fitting direction for the brace is computed, but it still can be manually overridden. If the points go from left to right, the brace is drawn from below. Swapping the points places the brace on the opposite side."
+msgstr "A fitting direction for the brace is computed, but it still can be manually overridden. If the points go from left to right, the brace is drawn from below. Swapping the points places the brace on the opposite side."
+
+msgid "The first point."
+msgstr "The first point."
+
+msgid "Similar to Brace, but instead of taking a mobject it uses 2 points to place the brace."
+msgstr "Similar to Brace, but instead of taking a mobject it uses 2 points to place the brace."
+
+msgid "BraceBetweenPoints"
+msgstr "BraceBetweenPoints"
+
+msgid "The direction from which the brace faces towards the points."
+msgstr "The direction from which the brace faces towards the points."
+
+msgid "Bases: :class:`manim.mobject.svg.brace.Brace`"
+msgstr "Bases: :class:`manim.mobject.svg.brace.Brace`"

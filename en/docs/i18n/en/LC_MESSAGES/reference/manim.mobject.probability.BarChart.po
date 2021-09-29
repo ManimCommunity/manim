@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The opacity of the bars."
+msgstr "The opacity of the bars."
+
+msgid "The width of the axes."
+msgstr "The width of the axes."
+
+msgid "The values for the bar chart."
+msgstr "The values for the bar chart."
+
+msgid "Number of ticks."
+msgstr "Number of ticks."
+
+msgid "Height of the label."
+msgstr "Height of the label."
+
+msgid "The names of each bar."
+msgstr "The names of each bar."
+
+msgid "Maximum value of the data."
+msgstr "Maximum value of the data."
+
+msgid ":obj:`change_bar_values <manim.mobject.probability.BarChart.change_bar_values>`"
+msgstr ":obj:`change_bar_values <manim.mobject.probability.BarChart.change_bar_values>`"
+
+msgid "Width of the ticks."
+msgstr "Width of the ticks."
+
+msgid "Qualified name: ``manim.mobject.probability.BarChart``"
+msgstr "Qualified name: ``manim.mobject.probability.BarChart``"
+
+msgid "Y axis label"
+msgstr "Y axis label"
+
+msgid "The height of the axes."
+msgstr "The height of the axes."
+
+msgid "The stroke width of the bars."
+msgstr "The stroke width of the bars."
+
+msgid "This is a class for Bar Charts."
+msgstr "This is a class for Bar Charts."
+
+msgid "The label size."
+msgstr "The label size."
+
+msgid "BarChart"
+msgstr "BarChart"
+
+msgid "The colors of the bars."
+msgstr "The colors of the bars."

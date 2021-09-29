@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The direction of the central axis of the cylinder."
+msgstr "The direction of the central axis of the cylinder."
+
+msgid "Converts from cylindrical coordinates to cartesian. :param u: The height. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
+msgstr "Converts from cylindrical coordinates to cartesian. :param u: The height. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
+
+msgid "A cylinder, defined by its height, radius and direction,"
+msgstr "A cylinder, defined by its height, radius and direction,"
+
+msgid ":obj:`get_direction <manim.mobject.three_dimensions.Cylinder.get_direction>`"
+msgstr ":obj:`get_direction <manim.mobject.three_dimensions.Cylinder.get_direction>`"
+
+msgid "Whether to show the end caps or not."
+msgstr "Whether to show the end caps or not."
+
+msgid "The height along the height axis (given by direction) to start and end on."
+msgstr "The height along the height axis (given by direction) to start and end on."
+
+msgid "Converts from cylindrical coordinates to cartesian."
+msgstr "Converts from cylindrical coordinates to cartesian."
+
+msgid "Adds the end caps of the cylinder."
+msgstr "Adds the end caps of the cylinder."
+
+msgid "The height of the cylinder."
+msgstr "The height of the cylinder."
+
+msgid "The radius of the cylinder."
+msgstr "The radius of the cylinder."
+
+msgid ":obj:`set_direction <manim.mobject.three_dimensions.Cylinder.set_direction>`"
+msgstr ":obj:`set_direction <manim.mobject.three_dimensions.Cylinder.set_direction>`"
+
+msgid "Cylinder"
+msgstr "Cylinder"

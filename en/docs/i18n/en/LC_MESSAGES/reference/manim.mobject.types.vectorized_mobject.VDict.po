@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The mobject associated with the key"
+msgstr "The mobject associated with the key"
+
+msgid "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. Defaults to False."
+msgstr "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. Defaults to False."
+
+msgid "Removes the mobject from the :class:`VDict` object having the key `key`"
+msgstr "Removes the mobject from the :class:`VDict` object having the key `key`"
+
+msgid "All the submobjects associated with the :class:`VDict` object"
+msgstr "All the submobjects associated with the :class:`VDict` object"
+
+msgid "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. When displayed, the key is towards the left of the mobject. Defaults to False."
+msgstr "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. When displayed, the key is towards the left of the mobject. Defaults to False."
+
+msgid "The key of the submoject to be removed."
+msgstr "The key of the submoject to be removed."
+
+msgid "The key of the submobject to be added."
+msgstr "The key of the submobject to be added."
+
+msgid ":obj:`add_key_value_pair <manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair>`"
+msgstr ":obj:`add_key_value_pair <manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair>`"
+
+msgid "The parameter specifying the key-value mapping of keys and mobjects."
+msgstr "The parameter specifying the key-value mapping of keys and mobjects."
+
+msgid "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`. Not really meant to be used externally."
+msgstr "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`. Not really meant to be used externally."
+
+msgid "Also, it internally removes the mobject from the `submobjects` :class:`list` of :class:`~.Mobject`, (which is responsible for removing it from the screen)"
+msgstr "Also, it internally removes the mobject from the `submobjects` :class:`list` of :class:`~.Mobject`, (which is responsible for removing it from the screen)"
+
+msgid "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`."
+msgstr "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`."
+
+msgid ":class:`dict_values`"
+msgstr ":class:`dict_values`"
+
+msgid "Adds the key-value pairs to the :class:`VDict` object."
+msgstr "Adds the key-value pairs to the :class:`VDict` object."
+
+msgid "If the value is not an instance of VMobject"
+msgstr "If the value is not an instance of VMobject"
+
+msgid ":class:`dict`"
+msgstr ":class:`dict`"
+
+msgid "VDict"
+msgstr "VDict"
+
+msgid ":class:`VDict`"
+msgstr ":class:`VDict`"
+
+msgid "Other arguments to be passed to `Mobject`."
+msgstr "Other arguments to be passed to `Mobject`."
+
+msgid "Returns the :class:`VDict` object on which this method was called."
+msgstr "Returns the :class:`VDict` object on which this method was called."
+
+msgid ":obj:`get_all_submobjects <manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects>`"
+msgstr ":obj:`get_all_submobjects <manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects>`"
+
+msgid "Is the actual python dictionary that is used to bind the keys to the mobjects."
+msgstr "Is the actual python dictionary that is used to bind the keys to the mobjects."
+
+msgid "To get all the submobjects associated with a particular :class:`VDict` object"
+msgstr "To get all the submobjects associated with a particular :class:`VDict` object"
+
+msgid "Also, it internally adds the value to the `submobjects` :class:`list` of :class:`~.Mobject`, which is responsible for actual on-screen display."
+msgstr "Also, it internally adds the value to the `submobjects` :class:`list` of :class:`~.Mobject`, which is responsible for actual on-screen display."

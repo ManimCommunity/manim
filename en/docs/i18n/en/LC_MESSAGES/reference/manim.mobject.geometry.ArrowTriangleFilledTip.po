@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "ArrowTriangleFilledTip"
+msgstr "ArrowTriangleFilledTip"
+
+msgid "Bases: :class:`manim.mobject.geometry.ArrowTriangleTip`"
+msgstr "Bases: :class:`manim.mobject.geometry.ArrowTriangleTip`"
+
+msgid "This is the default arrow tip shape."
+msgstr "This is the default arrow tip shape."
+
+msgid "Qualified name: ``manim.mobject.geometry.ArrowTriangleFilledTip``"
+msgstr "Qualified name: ``manim.mobject.geometry.ArrowTriangleFilledTip``"
+
+msgid "Triangular arrow tip with filled tip."
+msgstr "Triangular arrow tip with filled tip."

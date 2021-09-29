@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "If you don't have python3-pip installed, install it via:"
+msgstr "If you don't have python3-pip installed, install it via:"
+
+msgid "If you don't want to use the packaged version from AUR, here is what you need to do manually: Update your package sources, then install Cairo, Pango, and FFmpeg:"
+msgstr "If you don't want to use the packaged version from AUR, here is what you need to do manually: Update your package sources, then install Cairo, Pango, and FFmpeg:"
+
+msgid "and `Pango <https://pango.gnome.org>`__ headers."
+msgstr "and `Pango <https://pango.gnome.org>`__ headers."
+
+msgid "dnf – Fedora / CentOS / RHEL"
+msgstr "dnf – Fedora / CentOS / RHEL"
+
+msgid "Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>` section."
+msgstr "Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>` section."
+
+msgid "To install Cairo and Pango:"
+msgstr "To install Cairo and Pango:"
+
+msgid "Linux"
+msgstr "Linux"
+
+msgid "In any case, we have also compiled instructions for several common combinations of operating systems and package managers below."
+msgstr "In any case, we have also compiled instructions for several common combinations of operating systems and package managers below."
+
+msgid "pacman – Arch / Manjaro"
+msgstr "pacman – Arch / Manjaro"
+
+msgid "FFmpeg is only available via the RPMfusion repository which you have to configure first – please consult https://rpmfusion.org/Configuration/ for instructions. Then, install FFmpeg:"
+msgstr "FFmpeg is only available via the RPMfusion repository which you have to configure first – please consult https://rpmfusion.org/Configuration/ for instructions. Then, install FFmpeg:"
+
+msgid "then simply install Manim via:"
+msgstr "then simply install Manim via:"
+
+msgid "with working Cairo bindings in the form of `pycairo <https://cairographics.org/pycairo/>`__,"
+msgstr "with working Cairo bindings in the form of `pycairo <https://cairographics.org/pycairo/>`__,"
+
+msgid "a reasonably recent version of Python 3 (3.7 or above),"
+msgstr "a reasonably recent version of Python 3 (3.7 or above),"
+
+msgid "Then, installing Manim is just a matter of running:"
+msgstr "Then, installing Manim is just a matter of running:"
+
+msgid "Thanks to *groctel*, there is a `dedicated Manim package on the AUR! <https://aur.archlinux.org/packages/manim/>`"
+msgstr "Thanks to *groctel*, there is a `dedicated Manim package on the AUR! <https://aur.archlinux.org/packages/manim/>`"
+
+msgid "To first update your sources, and then install Cairo, Pango, and FFmpeg simply run:"
+msgstr "To first update your sources, and then install Cairo, Pango, and FFmpeg simply run:"
+
+msgid "apt – Ubuntu / Mint / Debian"
+msgstr "apt – Ubuntu / Mint / Debian"
+
+msgid "FFmpeg accessible from the command line as ``ffmpeg``,"
+msgstr "FFmpeg accessible from the command line as ``ffmpeg``,"
+
+msgid "In order to successfully build the ``pycairo`` wheel, you will also need the Python development headers:"
+msgstr "In order to successfully build the ``pycairo`` wheel, you will also need the Python development headers:"
+
+msgid "The installation instructions depend on your particular operating system and package manager. If you happen to know exactly what you are doing, you can also simply ensure that your system has:"
+msgstr "The installation instructions depend on your particular operating system and package manager. If you happen to know exactly what you are doing, you can also simply ensure that your system has:"
+
+msgid "Should you choose to work with some smaller TeX distribution like `TinyTeX <https://yihui.org/tinytex/>`__ , the full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) is::"
+msgstr "Should you choose to work with some smaller TeX distribution like `TinyTeX <https://yihui.org/tinytex/>`__ , the full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) is::"
+
+msgid "Then, to install Manim, run:"
+msgstr "Then, to install Manim, run:"
+
+msgid "At this point you have all required dependencies and can install Manim by running:"
+msgstr "At this point you have all required dependencies and can install Manim by running:"
+
+msgid "In light of the current efforts of migrating to rendering via OpenGL, this list might be incomplete. Please `let us know <https://github.com/ManimCommunity/manim/issues/new/choose>` if you ran into missing dependencies while installing."
+msgstr "In light of the current efforts of migrating to rendering via OpenGL, this list might be incomplete. Please `let us know <https://github.com/ManimCommunity/manim/issues/new/choose>` if you ran into missing dependencies while installing."
+
+msgid "You can use whichever LaTeX distribution you like or whichever is easiest to install with your package manager. Usually, `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't care too much about disk space."
+msgstr "You can use whichever LaTeX distribution you like or whichever is easiest to install with your package manager. Usually, `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't care too much about disk space."
+
+msgid "If you don't have ``python-pip`` installed, get it by running:"
+msgstr "If you don't have ``python-pip`` installed, get it by running:"

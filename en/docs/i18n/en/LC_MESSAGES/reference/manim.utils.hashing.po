@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The list of mobjects."
+msgstr "The list of mobjects."
+
+msgid "A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`."
+msgstr "A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`."
+
+msgid "The flattened object"
+msgstr "The flattened object"
+
+msgid "hashing"
+msgstr "hashing"
+
+msgid "The list of animations."
+msgstr "The list of animations."
+
+msgid "The scene object."
+msgstr "The scene object."
+
+msgid "Recursively serialize `object` to JSON using the :class:`CustomEncoder` class."
+msgstr "Recursively serialize `object` to JSON using the :class:`CustomEncoder` class."
+
+msgid "The dict to flatten"
+msgstr "The dict to flatten"
+
+msgid "The camera object used in the scene."
+msgstr "The camera object used in the scene."
+
+msgid "Utilities for scene caching."
+msgstr "Utilities for scene caching."
+
+msgid "Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function."
+msgstr "Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function."

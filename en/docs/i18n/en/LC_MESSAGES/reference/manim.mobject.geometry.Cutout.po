@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Technically, this class behaves similar to a symmetric difference: if parts of the ``mobjects`` are not located within the ``main_shape``, these parts will be added to the resulting :class:`~.VMobject`."
+msgstr "Technically, this class behaves similar to a symmetric difference: if parts of the ``mobjects`` are not located within the ``main_shape``, these parts will be added to the resulting :class:`~.VMobject`."
+
+msgid "Qualified name: ``manim.mobject.geometry.Cutout``"
+msgstr "Qualified name: ``manim.mobject.geometry.Cutout``"
+
+msgid "The smaller shapes which are to be cut out of the ``main_shape``."
+msgstr "The smaller shapes which are to be cut out of the ``main_shape``."
+
+msgid "Cutout"
+msgstr "Cutout"
+
+msgid "The primary shape from which cutouts are made."
+msgstr "The primary shape from which cutouts are made."

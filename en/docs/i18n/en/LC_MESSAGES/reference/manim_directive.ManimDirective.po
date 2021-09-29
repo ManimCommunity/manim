@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "ManimDirective"
+msgstr "ManimDirective"
+
+msgid "See the module docstring for documentation."
+msgstr "See the module docstring for documentation."
+
+msgid "Mapping of option names to validator functions."
+msgstr "Mapping of option names to validator functions."
+
+msgid "May the final argument contain whitespace?"
+msgstr "May the final argument contain whitespace?"
+
+msgid "Number of optional arguments after the required arguments."
+msgstr "Number of optional arguments after the required arguments."
+
+msgid "Bases: :class:`docutils.parsers.rst.Directive`"
+msgstr "Bases: :class:`docutils.parsers.rst.Directive`"
+
+msgid "Number of required directive arguments."
+msgstr "Number of required directive arguments."
+
+msgid "May the directive have content?"
+msgstr "May the directive have content?"

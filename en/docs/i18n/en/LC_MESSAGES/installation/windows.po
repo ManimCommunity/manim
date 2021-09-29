@@ -1,0 +1,80 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "For Chocolatey there is a dedicated ``manim-latex`` package providing a small LaTeX distribution based on TinyTeX which contains these packages; if you use Chocolatey you can get it with ``choco install manim-latex``."
+msgstr "For Chocolatey there is a dedicated ``manim-latex`` package providing a small LaTeX distribution based on TinyTeX which contains these packages; if you use Chocolatey you can get it with ``choco install manim-latex``."
+
+msgid "Manim requires a recent version of Python (3.7 or above) and ``ffmpeg`` in order to work."
+msgstr "Manim requires a recent version of Python (3.7 or above) and ``ffmpeg`` in order to work."
+
+msgid "**Python:** Head over to https://www.python.org, download an installer for Python 3.7 (or newer), and follow its instructions to get Python installed on your system."
+msgstr "**Python:** Head over to https://www.python.org, download an installer for Python 3.7 (or newer), and follow its instructions to get Python installed on your system."
+
+msgid "Manim can be installed via Chocolatey simply by running:"
+msgstr "Manim can be installed via Chocolatey simply by running:"
+
+msgid "If you choose to use one of the package managers, please follow their installation instructions (`for Chocolatey <https://chocolatey.org/install#install-step2>`__, `for Scoop <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__) to make one of them available on your system."
+msgstr "If you choose to use one of the package managers, please follow their installation instructions (`for Chocolatey <https://chocolatey.org/install#install-step2>`__, `for Scoop <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`__) to make one of them available on your system."
+
+msgid "Manim should now be installed on your system. Continue reading the :ref:`optional dependencies <win-optional-dependencies>` section below."
+msgstr "Manim should now be installed on your system. Continue reading the :ref:`optional dependencies <win-optional-dependencies>` section below."
+
+msgid "If you now open a new command line prompt (or PowerShell) and run ``ffmpeg``, the command should be recognized."
+msgstr "If you now open a new command line prompt (or PowerShell) and run ``ffmpeg``, the command should be recognized."
+
+msgid "We have received reports of problems caused by using the version of Python that can be installed from the Windows Store. At this point, we recommend staying away from the Windows Store version. Instead, install Python directly from the `official website <https://www.python.org>`__."
+msgstr "We have received reports of problems caused by using the version of Python that can be installed from the Windows Store. At this point, we recommend staying away from the Windows Store version. Instead, install Python directly from the `official website <https://www.python.org>`__."
+
+msgid "At this point, you have all the required dependencies and can now install Manim via"
+msgstr "At this point, you have all the required dependencies and can now install Manim via"
+
+msgid "At this point, you should have a working installation of Manim, head over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn how to make your own *Manimations*!"
+msgstr "At this point, you should have a working installation of Manim, head over to our :doc:`Quickstart Tutorial <../tutorials/quickstart>` to learn how to make your own *Manimations*!"
+
+msgid "In order to make use of Manim's interface to LaTeX to, for example, render equations, LaTeX has to be installed as well. Note that this is an optional dependency: if you don't intend to use LaTeX, you don't have to install it."
+msgstr "In order to make use of Manim's interface to LaTeX to, for example, render equations, LaTeX has to be installed as well. Note that this is an optional dependency: if you don't intend to use LaTeX, you don't have to install it."
+
+msgid "Chocolatey"
+msgstr "Chocolatey"
+
+msgid "For Windows, the recommended LaTeX distribution is `MiKTeX <https://miktex.org/download>`__. You can install it by using the installer from the linked MiKTeX site, or by using the package manager of your choice (Chocolatey: ``choco install miktex.install``, Scoop: ``scoop install latex``)."
+msgstr "For Windows, the recommended LaTeX distribution is `MiKTeX <https://miktex.org/download>`__. You can install it by using the installer from the linked MiKTeX site, or by using the package manager of your choice (Chocolatey: ``choco install miktex.install``, Scoop: ``scoop install latex``)."
+
+msgid "While there is no recipe for installing Manim with Scoop directly, you can install all requirements by running:"
+msgstr "While there is no recipe for installing Manim with Scoop directly, you can install all requirements by running:"
+
+msgid "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX like `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``). In this case, you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing. The full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) is::"
+msgstr "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX like `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``). In this case, you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing. The full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) is::"
+
+msgid "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7 or newer), it might be the easiest way to get everything up and running."
+msgstr "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7 or newer), it might be the easiest way to get everything up and running."
+
+msgid "and then Manim can be installed by running:"
+msgstr "and then Manim can be installed by running:"
+
+msgid "Manual Installation"
+msgstr "Manual Installation"
+
+msgid "Scoop"
+msgstr "Scoop"
+
+msgid "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7 or above) and FFmpeg."
+msgstr "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7 or above) and FFmpeg."
+
+msgid "Windows"
+msgstr "Windows"
+
+msgid "That's it, no further steps required. You can continue with installing the :ref:`optional dependencies <win-optional-dependencies>` below."
+msgstr "That's it, no further steps required. You can continue with installing the :ref:`optional dependencies <win-optional-dependencies>` below."
+
+msgid "**FFmpeg:** In order to install FFmpeg, you can get a pre-compiled and ready-to-use version from one of the resources linked at https://ffmpeg.org/download.html#build-windows, such as `the version available here <https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__ (recommended), or if you know exactly what you are doing you can alternatively get the source code from https://ffmpeg.org/download.html and compile it yourself."
+msgstr "**FFmpeg:** In order to install FFmpeg, you can get a pre-compiled and ready-to-use version from one of the resources linked at https://ffmpeg.org/download.html#build-windows, such as `the version available here <https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__ (recommended), or if you know exactly what you are doing you can alternatively get the source code from https://ffmpeg.org/download.html and compile it yourself."

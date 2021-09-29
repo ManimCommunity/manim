@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "This is the point connecting to the arrow line."
+msgstr "This is the point connecting to the arrow line."
+
+msgid "Qualified name: ``manim.mobject.geometry.ArrowTip``"
+msgstr "Qualified name: ``manim.mobject.geometry.ArrowTip``"
+
+msgid "Instead, use one of the pre-defined ones, or make a custom one like this:"
+msgstr "Instead, use one of the pre-defined ones, or make a custom one like this:"
+
+msgid ":class:`ArrowTriangleTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareTip`, :class:`ArrowSquareFilledTip`"
+msgstr ":class:`ArrowTriangleTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareTip`, :class:`ArrowSquareFilledTip`"
+
+msgid "Using a class inherited from :class:`ArrowTip` to get a non-filled tip is a shorthand to manually specifying the arrow tip style as follows::"
+msgstr "Using a class inherited from :class:`ArrowTip` to get a non-filled tip is a shorthand to manually specifying the arrow tip style as follows::"
+
+msgid "The following example illustrates the usage of all of the predefined arrow tips."
+msgstr "The following example illustrates the usage of all of the predefined arrow tips."
+
+msgid "ArrowTip"
+msgstr "ArrowTip"
+
+msgid "Cannot be used directly, only intended for inheritance::"
+msgstr "Cannot be used directly, only intended for inheritance::"

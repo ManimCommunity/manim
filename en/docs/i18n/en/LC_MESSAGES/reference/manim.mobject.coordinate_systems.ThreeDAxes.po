@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The direction of the light source."
+msgstr "The direction of the light source."
+
+msgid "The direction of the normal."
+msgstr "The direction of the normal."
+
+msgid "The number of pieces used to construct the axes."
+msgstr "The number of pieces used to construct the axes."
+
+msgid "The :code:`[y_min, y_max, y_step]` values of the y-axis."
+msgstr "The :code:`[y_min, y_max, y_step]` values of the y-axis."
+
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the z-axis."
+msgstr "Arguments to be passed to :class:`~.NumberLine` that influence the z-axis."
+
+msgid "The axis about which to rotate the label, by default ``RIGHT``."
+msgstr "The axis about which to rotate the label, by default ``RIGHT``."
+
+msgid "The length of the z-axis."
+msgstr "The length of the z-axis."
+
+msgid "ThreeDAxes"
+msgstr "ThreeDAxes"
+
+msgid "The :code:`[z_min, z_max, z_step]` values of the z-axis."
+msgstr "The :code:`[z_min, z_max, z_step]` values of the z-axis."
+
+msgid "The length of the x-axis."
+msgstr "The length of the x-axis."
+
+msgid "The angle at which to rotate the label, by default ``PI/2``."
+msgstr "The angle at which to rotate the label, by default ``PI/2``."
+
+msgid ":obj:`get_z_axis_label <manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label>`"
+msgstr ":obj:`get_z_axis_label <manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label>`"
+
+msgid "The length of the y-axis."
+msgstr "The length of the y-axis."
+
+msgid "The :code:`[x_min, x_max, x_step]` values of the x-axis."
+msgstr "The :code:`[x_min, x_max, x_step]` values of the x-axis."
+
+msgid "A 3-dimensional set of axes."
+msgstr "A 3-dimensional set of axes."

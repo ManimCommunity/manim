@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: fr\n"
+
+msgid "Eric Biedert +"
+msgstr "Eric Biedert +"
+
+msgid "GameDungeon"
+msgstr "GameDungeon"
+
+msgid "Ryan McCauley"
+msgstr "Ryan McCauley"
+
+msgid "vinnniii15 +"
+msgstr "vinnniii15 +"
+
+msgid "September 01, 2021"
+msgstr "1er septembre 2021"
+
+msgid "Christian Clauss"
+msgstr "Christian Clauss"
+
+msgid "Daniel Adelodun +"
+msgstr "Daniel Adelodun +"
+
+msgid "Eric Biedert"
+msgstr "Eric Biedert"
+
+msgid "vladislav doster +"
+msgstr "vladislav doster +"
+
+msgid "Joy Bhalla"
+msgstr "Joy Bhalla"
+
+msgid "xia0long +"
+msgstr "xia0long +"
+
+msgid "Jephian Lin +"
+msgstr "Jephian Lin +"
+
+msgid "Hugues Devimeux"
+msgstr "Hugues Devimeux"
+
+msgid "Aathish Sivasubrahmanian"
+msgstr "Aathish Sivasubrahmanian"
+
+msgid "Jephian Lin"
+msgstr "Jephian Lin"
+
+msgid "Partha Das +"
+msgstr "Partha Das +"
+
+msgid "icedcoffeeee"
+msgstr "icedcoffeeee"
+
+msgid "`#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`"
+msgstr "`#1843 <https://github.com/ManimCommunity/manim/pull/1843>`__: Suppression des fichiers OpenGL redondants et ajouts du support de métaclasses pour :class:`~.Surface`"
+
+msgid "Rohan Sharma +"
+msgstr "Rohan Sharma +"
+
+msgid "ralphieraccoon"
+msgstr "ralphieraccoon"
+
+msgid "Max Stoumen"
+msgstr "Max Stoumen"
+
+msgid "Animfysyk +"
+msgstr "Animfysyk +"
+
+msgid "Oliver"
+msgstr "Oliver"
+
+msgid "asjadaugust +"
+msgstr "asjadaugust +"
+
+msgid "Lalourche +"
+msgstr "Lalourche +"
+
+msgid "KingWampy"
+msgstr "KingWampy"
+
+msgid "Raj Dandekar +"
+msgstr "Raj Dandekar +"
+
+msgid "Raj Dandekar"
+msgstr "Raj Dandekar"
+
+msgid "ccn"
+msgstr "ccn"
+
+msgid "Harivinay"
+msgstr "Harivinay"
+
+msgid "Darigov Research"
+msgstr "Darigov Research"
+
+msgid "Benjamin Hackl"
+msgstr "Benjamin Hackl"
+
+msgid "Naveen M K"
+msgstr "Naveen M K"
+
+msgid "Raghav Goel"
+msgstr "Raghav Goel"
+
+msgid "Darylgolden"
+msgstr "Darylgolden"
+
+msgid "Jan-Hendrik Müller"
+msgstr "Jan-Hendrik Müller"
+
+msgid "Devin Neal"
+msgstr "Devin Neal"
+
+msgid "Breaking changes"
+msgstr "Changements non rétrocompatibles."
+
+msgid "v0.10.0"
+msgstr "v0.10.0"
+
+msgid "Laith Bahodi"
+msgstr "Laith Bahodi"
+
+msgid "Jason Villanueva"
+msgstr "Jason Villanueva"
+
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr "Les correctifs inclus dans cette version ont été vérifiés par les contributeurs suivants."
+
+msgid "A total of 40 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr "Au total, 40 personnes ont contribué à cette version. Les personnes avec un '+' à coté de leur pseudo ont écrit un correctif pour la première fois."
+
+msgid "Joy Bhalla +"
+msgstr "Joy Bhalla +"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "sparshg"
+msgstr "sparshg"
+
+msgid "Václav Hlaváč +"
+msgstr "Václav Hlaváč +"

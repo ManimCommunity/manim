@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Qualified name: ``manim.animation.indication.Circumscribe``"
+msgstr "Qualified name: ``manim.animation.indication.Circumscribe``"
+
+msgid "The time_width of the drawing and undrawing. Gets ignored if either `fade_in` or `fade_out` is `True`."
+msgstr "The time_width of the drawing and undrawing. Gets ignored if either `fade_in` or `fade_out` is `True`."
+
+msgid "Circumscribe"
+msgstr "Circumscribe"
+
+msgid "Whether to make the surrounding shape to fade in. It will be drawn otherwise."
+msgstr "Whether to make the surrounding shape to fade in. It will be drawn otherwise."
+
+msgid "The duration of the entire animation."
+msgstr "The duration of the entire animation."
+
+msgid "Bases: :class:`manim.animation.composition.Succession`"
+msgstr "Bases: :class:`manim.animation.composition.Succession`"
+
+msgid "Whether to make the surrounding shape to fade out. It will be undrawn otherwise."
+msgstr "Whether to make the surrounding shape to fade out. It will be undrawn otherwise."
+
+msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
+msgstr "Additional arguments to be passed to the :class:`~.Succession` constructor"
+
+msgid "The shape with which to surrond the given mobject. Should be either :class:`~.Rectangle` or :class:`~.Circle`"
+msgstr "The shape with which to surrond the given mobject. Should be either :class:`~.Rectangle` or :class:`~.Circle`"
+
+msgid "The mobject to be circumscribed."
+msgstr "The mobject to be circumscribed."
+
+msgid "The distance between the surrounding shape and the given mobject."
+msgstr "The distance between the surrounding shape and the given mobject."
+
+msgid "Draw a temporary line surrounding the mobject."
+msgstr "Draw a temporary line surrounding the mobject."
+
+msgid "The color of the surrounding shape."
+msgstr "The color of the surrounding shape."

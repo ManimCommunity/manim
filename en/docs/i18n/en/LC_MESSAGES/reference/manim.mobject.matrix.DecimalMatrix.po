@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "DecimalMatrix"
+msgstr "DecimalMatrix"
+
+msgid "Will round/truncate the decimal places as per the provided config."
+msgstr "Will round/truncate the decimal places as per the provided config."
+
+msgid "Mobject to use, by default DecimalNumber"
+msgstr "Mobject to use, by default DecimalNumber"
+
+msgid "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
+msgstr "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
+
+msgid "Config for the desired mobject, by default {\"num_decimal_places\": 1}"
+msgstr "Config for the desired mobject, by default {\"num_decimal_places\": 1}"
+
+msgid "A mobject that displays a matrix with decimal entries on the screen."
+msgstr "A mobject that displays a matrix with decimal entries on the screen."

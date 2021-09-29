@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Converts from spherical coordinates to cartesian. :param u: The radius. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
+msgstr "Converts from spherical coordinates to cartesian. :param u: The radius. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
+
+msgid "The azimuthal angle to start and end at."
+msgstr "The azimuthal angle to start and end at."
+
+msgid "Whether to show the base plane or not."
+msgstr "Whether to show the base plane or not."
+
+msgid "Show checkerboard grid texture on the cone."
+msgstr "Show checkerboard grid texture on the cone."
+
+msgid "The radius at the apex."
+msgstr "The radius at the apex."
+
+msgid "A circular cone. Can be defined using 2 parameters: its height, and its base radius. The polar angle, theta, can be calculated using arctan(base_radius / height) The spherical radius, r, is calculated using the pythagorean theorem."
+msgstr "A circular cone. Can be defined using 2 parameters: its height, and its base radius. The polar angle, theta, can be calculated using arctan(base_radius / height) The spherical radius, r, is calculated using the pythagorean theorem."
+
+msgid "Converts from spherical coordinates to cartesian."
+msgstr "Converts from spherical coordinates to cartesian."
+
+msgid "The base radius from which the cone tapers."
+msgstr "The base radius from which the cone tapers."
+
+msgid "The direction of the apex."
+msgstr "The direction of the apex."
+
+msgid "The height measured from the plane formed by the base_radius to the apex of the cone."
+msgstr "The height measured from the plane formed by the base_radius to the apex of the cone."
+
+msgid "Cone"
+msgstr "Cone"
+
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+
+msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
+msgstr "The default direction of a :class:`~.Circle` is counterclockwise::"
+
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
+msgstr "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
+
+msgid "Either ``\"CW\"`` or ``\"CCW\"``."
+msgstr "Either ``\"CW\"`` or ``\"CCW\"``."

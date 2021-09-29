@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`SurroundingRectangle <manim.mobject.shape_matchers.SurroundingRectangle>`"
+msgstr ":obj:`SurroundingRectangle <manim.mobject.shape_matchers.SurroundingRectangle>`"
+
+msgid ":obj:`BackgroundRectangle <manim.mobject.shape_matchers.BackgroundRectangle>`"
+msgstr ":obj:`BackgroundRectangle <manim.mobject.shape_matchers.BackgroundRectangle>`"

@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Sets a new complex value to the ComplexValueTracker"
+msgstr "Sets a new complex value to the ComplexValueTracker"
+
+msgid "The value is internally stored as a points array [a, b, 0]. This can be accessed directly to represent the value geometrically, see the usage example."
+msgstr "The value is internally stored as a points array [a, b, 0]. This can be accessed directly to represent the value geometrically, see the usage example."
+
+msgid "When the value is set through :attr:`animate`, the value will take a straight path from the source point to the destination point."
+msgstr "When the value is set through :attr:`animate`, the value will take a straight path from the source point to the destination point."
+
+msgid "Bases: :class:`manim.mobject.value_tracker.ValueTracker`"
+msgstr "Bases: :class:`manim.mobject.value_tracker.ValueTracker`"
+
+msgid "Get the current value of this value tracker as a complex number."
+msgstr "Get the current value of this value tracker as a complex number."
+
+msgid ":obj:`get_value <manim.mobject.value_tracker.ComplexValueTracker.get_value>`"
+msgstr ":obj:`get_value <manim.mobject.value_tracker.ComplexValueTracker.get_value>`"
+
+msgid "Tracks a complex-valued parameter."
+msgstr "Tracks a complex-valued parameter."
+
+msgid "ComplexValueTracker"
+msgstr "ComplexValueTracker"
+
+msgid ":obj:`set_value <manim.mobject.value_tracker.ComplexValueTracker.set_value>`"
+msgstr ":obj:`set_value <manim.mobject.value_tracker.ComplexValueTracker.set_value>`"

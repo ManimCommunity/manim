@@ -1,0 +1,506 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`slope_of_tangent <manim.mobject.coordinate_systems.CoordinateSystem.slope_of_tangent>`"
+msgstr ":obj:`slope_of_tangent <manim.mobject.coordinate_systems.CoordinateSystem.slope_of_tangent>`"
+
+msgid "The curve of the derivative."
+msgstr "The curve of the derivative."
+
+msgid ":meth:`~.CoordinateSystem.get_vertical_line`, :meth:`~.CoordinateSystem.get_horizontal_line`"
+msgstr ":meth:`~.CoordinateSystem.get_vertical_line`, :meth:`~.CoordinateSystem.get_horizontal_line`"
+
+msgid "The :class:`~.ParametricFunction` for which to calculate the tangent."
+msgstr "The :class:`~.ParametricFunction` for which to calculate the tangent."
+
+msgid "The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label for the y_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid "The color of the secant line."
+msgstr "The color of the secant line."
+
+msgid ":obj:`get_x_axis_label <manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis_label>`"
+msgstr ":obj:`get_x_axis_label <manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis_label>`"
+
+msgid "Additional arguments to be provided :meth:`CoordinateSystem.get_line_from_axis_to_point`."
+msgstr "Additional arguments to be provided :meth:`CoordinateSystem.get_line_from_axis_to_point`."
+
+msgid "The slope of the tangent with the x axis."
+msgstr "The slope of the tangent with the x axis."
+
+msgid "A :class:`~.VGroup` containing the Riemann Rectangles."
+msgstr "A :class:`~.VGroup` containing the Riemann Rectangles."
+
+msgid "Specifies the axis from which to draw the line. `0 = x_axis`, `1 = y_axis`"
+msgstr "Specifies the axis from which to draw the line. `0 = x_axis`, `1 = y_axis`"
+
+msgid "Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation."
+msgstr "Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation."
+
+msgid "Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value."
+msgstr "Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value."
+
+msgid ":obj:`input_to_graph_point <manim.mobject.coordinate_systems.CoordinateSystem.input_to_graph_point>`"
+msgstr ":obj:`input_to_graph_point <manim.mobject.coordinate_systems.CoordinateSystem.input_to_graph_point>`"
+
+msgid "Returns the angle to the x-axis of the tangent to the plotted curve at a particular x-value."
+msgstr "Returns the angle to the x-axis of the tangent to the plotted curve at a particular x-value."
+
+msgid ":obj:`get_vertical_line <manim.mobject.coordinate_systems.CoordinateSystem.get_vertical_line>`"
+msgstr ":obj:`get_vertical_line <manim.mobject.coordinate_systems.CoordinateSystem.get_vertical_line>`"
+
+msgid "The graph along which the lines are placed."
+msgstr "The graph along which the lines are placed."
+
+msgid "The factor by which the :attr:`dx` value is scaled."
+msgstr "The factor by which the :attr:`dx` value is scaled."
+
+msgid "The color of the line that indicates the change in `x`."
+msgstr "The color of the line that indicates the change in `x`."
+
+msgid "A :class:`~.Vgroup` of the labels for the x_axis and y_axis."
+msgstr "A :class:`~.Vgroup` of the labels for the x_axis and y_axis."
+
+msgid "The color of the derivative curve."
+msgstr "The color of the derivative curve."
+
+msgid "The function of the :class:`~.Line` mobject used to construct the line."
+msgstr "The function of the :class:`~.Line` mobject used to construct the line."
+
+msgid "The change in x-value that separates each rectangle."
+msgstr "The change in x-value that separates each rectangle."
+
+msgid "Additional parameters to be passed to :class:`~.ParametricFunction`."
+msgstr "Additional parameters to be passed to :class:`~.ParametricFunction`."
+
+msgid "The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`."
+msgstr "The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`."
+
+msgid "The :class:`~.ParametricFunction` on which the point lies."
+msgstr "The :class:`~.ParametricFunction` on which the point lies."
+
+msgid "The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``."
+msgstr "The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``."
+
+msgid "The graph/curve for which the area needs to be determined."
+msgstr "The graph/curve for which the area needs to be determined."
+
+msgid "The positioned label and :class:`~.Dot`, if applicable."
+msgstr "The positioned label and :class:`~.Dot`, if applicable."
+
+msgid "The graph for which the derivative will be found."
+msgstr "The graph for which the derivative will be found."
+
+msgid "Any valid keyword argument of :class:`~.ParametricFunction`"
+msgstr "Any valid keyword argument of :class:`~.ParametricFunction`"
+
+msgid "CoordinateSystem"
+msgstr "CoordinateSystem"
+
+msgid "The plotted curve."
+msgstr "The plotted curve."
+
+msgid "A horizontal line from the y-axis to a given point in the scene."
+msgstr "A horizontal line from the y-axis to a given point in the scene."
+
+msgid "A point on the scene."
+msgstr "A point on the scene."
+
+msgid ":class:`get_x_axis_label`, :class:`get_y_axis_label`"
+msgstr ":class:`get_x_axis_label`, :class:`get_y_axis_label`"
+
+msgid "The :class:`~.ParametricFunction` for which to construct the label."
+msgstr "The :class:`~.ParametricFunction` for which to construct the label."
+
+msgid "Generate an x-axis label."
+msgstr "Generate an x-axis label."
+
+msgid "np.ndarray"
+msgstr "np.ndarray"
+
+msgid "Generate a y-axis label."
+msgstr "Generate a y-axis label."
+
+msgid "The color of the area. Creates a gradient if an iterable of colors is provided."
+msgstr "The color of the area. Creates a gradient if an iterable of colors is provided."
+
+msgid "A :class:`~.VGroup` of the label, triangle and vertical line mobjects."
+msgstr "A :class:`~.VGroup` of the label, triangle and vertical line mobjects."
+
+msgid ":obj:`get_line_from_axis_to_point <manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point>`"
+msgstr ":obj:`get_line_from_axis_to_point <manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point>`"
+
+msgid "The color of the vertical line."
+msgstr "The color of the vertical line."
+
+msgid "Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and"
+msgstr "Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and"
+
+msgid "The opacity of the rectangles."
+msgstr "The opacity of the rectangles."
+
+msgid "The x_value along the curve that positions the label."
+msgstr "The x_value along the curve that positions the label."
+
+msgid ":class:`Line`"
+msgstr ":class:`Line`"
+
+msgid ":obj:`get_y_unit_size <manim.mobject.coordinate_systems.CoordinateSystem.get_y_unit_size>`"
+msgstr ":obj:`get_y_unit_size <manim.mobject.coordinate_systems.CoordinateSystem.get_y_unit_size>`"
+
+msgid "Returns the curve of the derivative of the passed graph."
+msgstr "Returns the curve of the derivative of the passed graph."
+
+msgid ":obj:`get_x_unit_size <manim.mobject.coordinate_systems.CoordinateSystem.get_x_unit_size>`"
+msgstr ":obj:`get_x_unit_size <manim.mobject.coordinate_systems.CoordinateSystem.get_x_unit_size>`"
+
+msgid "A vertical line from the x-axis to the point."
+msgstr "A vertical line from the x-axis to the point."
+
+msgid "The distance between the curve and the label."
+msgstr "The distance between the curve and the label."
+
+msgid "The center point."
+msgstr "The center point."
+
+msgid "A horizontal line from the y-axis to the point."
+msgstr "A horizontal line from the y-axis to the point."
+
+msgid "The point to which the line will be drawn."
+msgstr "The point to which the line will be drawn."
+
+msgid "Adds labels to the axes."
+msgstr "Adds labels to the axes."
+
+msgid "Abstract class for Axes and NumberPlane"
+msgstr "Abstract class for Axes and NumberPlane"
+
+msgid "The method CoordinateSystem.get_center_point has been deprecated since v0.10.0 and is expected to be removed after v0.11.0. Use get_origin instead."
+msgstr "The method CoordinateSystem.get_center_point has been deprecated since v0.10.0 and is expected to be removed after v0.11.0. Use get_origin instead."
+
+msgid "Returns the slope of the tangent to the plotted curve at a particular x-value."
+msgstr "Returns the slope of the tangent to the plotted curve at a particular x-value."
+
+msgid "The position along the curve at which the label, line and triangle will be constructed."
+msgstr "The position along the curve at which the label, line and triangle will be constructed."
+
+msgid ":obj:`get_y_axis_label <manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis_label>`"
+msgstr ":obj:`get_y_axis_label <manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis_label>`"
+
+msgid "The numbers to be added to the axes. Use ``None`` to represent an axis with default labels."
+msgstr "The numbers to be added to the axes. Use ``None`` to represent an axis with default labels."
+
+msgid "Can be any of ``\"left\"``, ``\"right\"`` or ``\"center\"``. Refers to where the sample point for the height of each Riemann Rectangle will be inside the segments of the partition."
+msgstr "Can be any of ``\"left\"``, ``\"right\"`` or ``\"center\"``. Refers to where the sample point for the height of each Riemann Rectangle will be inside the segments of the partition."
+
+msgid "The :class:`~.VGroup` containing the Riemann Rectangles."
+msgstr "The :class:`~.VGroup` containing the Riemann Rectangles."
+
+msgid ":obj:`get_horizontal_line <manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line>`"
+msgstr ":obj:`get_horizontal_line <manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line>`"
+
+msgid "Generate both horizontal and vertical lines from the axis to a point."
+msgstr "Generate both horizontal and vertical lines from the axis to a point."
+
+msgid "The color of the border of the rectangle."
+msgstr "The color of the border of the rectangle."
+
+msgid ":obj:`get_origin <manim.mobject.coordinate_systems.CoordinateSystem.get_origin>`"
+msgstr ":obj:`get_origin <manim.mobject.coordinate_systems.CoordinateSystem.get_origin>`"
+
+msgid "The curve."
+msgstr "The curve."
+
+msgid "The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``"
+msgstr "The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``"
+
+msgid "Obtains multiple lines from the x-axis to the curve."
+msgstr "Obtains multiple lines from the x-axis to the curve."
+
+msgid "The function used to construct the vertical line."
+msgstr "The function used to construct the vertical line."
+
+msgid "Optional arguments to passed to :attr:`line_func`."
+msgstr "Optional arguments to passed to :attr:`line_func`."
+
+msgid "This method may not produce accurate graphs since Manim currently relies on interpolation between evenly-spaced samples of the curve, instead of intelligent plotting. See the example below for some solutions to this problem."
+msgstr "This method may not produce accurate graphs since Manim currently relies on interpolation between evenly-spaced samples of the curve, instead of intelligent plotting. See the example below for some solutions to this problem."
+
+msgid "The label for the `dx` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label for the `dx` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid "The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value."
+msgstr "The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value."
+
+msgid "Gets the origin of :class:`~.Axes`."
+msgstr "Gets the origin of :class:`~.Axes`."
+
+msgid "The colors of the rectangles. Creates a balanced gradient if multiple colors are passed."
+msgstr "The colors of the rectangles. Creates a balanced gradient if multiple colors are passed."
+
+msgid "The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid ":obj:`point_to_coords <manim.mobject.coordinate_systems.CoordinateSystem.point_to_coords>`"
+msgstr ":obj:`point_to_coords <manim.mobject.coordinate_systems.CoordinateSystem.point_to_coords>`"
+
+msgid "The stroke_width of the border of the rectangles."
+msgstr "The stroke_width of the border of the rectangles."
+
+msgid "The color of the triangle."
+msgstr "The color of the triangle."
+
+msgid ":obj:`get_z_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_z_axis>`"
+msgstr ":obj:`get_z_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_z_axis>`"
+
+msgid "Defines labels for the x_axis and y_axis of the graph."
+msgstr "Defines labels for the x_axis and y_axis of the graph."
+
+msgid "The graph whose area will be approximated by Riemann rectangles."
+msgstr "The graph whose area will be approximated by Riemann rectangles."
+
+msgid "Additional arguments to be passed to :meth:`~.CoordinateSystem.get_area`."
+msgstr "Additional arguments to be passed to :meth:`~.CoordinateSystem.get_area`."
+
+msgid "The stroke width of the line."
+msgstr "The stroke width of the line."
+
+msgid "Indicates negative area when the curve dips below the x-axis by inverting its color."
+msgstr "Indicates negative area when the curve dips below the x-axis by inverting its color."
+
+msgid "Whether to add a dot at the point on the graph."
+msgstr "Whether to add a dot at the point on the graph."
+
+msgid "A group containing the elements: `dx_line`, `df_line`, and if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`."
+msgstr "A group containing the elements: `dx_line`, `df_line`, and if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`."
+
+msgid "The opacity of the area."
+msgstr "The opacity of the area."
+
+msgid "Creates a properly positioned label for the passed graph, with an optional dot."
+msgstr "Creates a properly positioned label for the passed graph, with an optional dot."
+
+msgid ":obj:`get_center_point <manim.mobject.coordinate_systems.CoordinateSystem.get_center_point>`"
+msgstr ":obj:`get_center_point <manim.mobject.coordinate_systems.CoordinateSystem.get_center_point>`"
+
+msgid ":obj:`angle_of_tangent <manim.mobject.coordinate_systems.CoordinateSystem.angle_of_tangent>`"
+msgstr ":obj:`angle_of_tangent <manim.mobject.coordinate_systems.CoordinateSystem.angle_of_tangent>`"
+
+msgid "Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels, use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`."
+msgstr "Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels, use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`."
+
+msgid "The change in `x` after which the secant exits."
+msgstr "The change in `x` after which the secant exits."
+
+msgid ":obj:`get_x_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis>`"
+msgstr ":obj:`get_x_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis>`"
+
+msgid "the secant to the curve at a particular x-value."
+msgstr "the secant to the curve at a particular x-value."
+
+msgid ":obj:`get_secant_slope_group <manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group>`"
+msgstr ":obj:`get_secant_slope_group <manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group>`"
+
+msgid "The size of the triangle."
+msgstr "The size of the triangle."
+
+msgid "The distance of the label from the line."
+msgstr "The distance of the label from the line."
+
+msgid "When the target x is not in the range of the line graph."
+msgstr "When the target x is not in the range of the line graph."
+
+msgid "A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``."
+msgstr "A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``."
+
+msgid "The number of evenly spaced lines."
+msgstr "The number of evenly spaced lines."
+
+msgid ":obj:`get_riemann_rectangles <manim.mobject.coordinate_systems.CoordinateSystem.get_riemann_rectangles>`"
+msgstr ":obj:`get_riemann_rectangles <manim.mobject.coordinate_systems.CoordinateSystem.get_riemann_rectangles>`"
+
+msgid "Additional parameters to be passed to :class:`get_line_from_axis_to_point`"
+msgstr "Additional parameters to be passed to :class:`get_line_from_axis_to_point`"
+
+msgid "The color of the label. Defaults to the color of the curve."
+msgstr "The color of the label. Defaults to the color of the curve."
+
+msgid ":obj:`get_T_label <manim.mobject.coordinate_systems.CoordinateSystem.get_T_label>`"
+msgstr ":obj:`get_T_label <manim.mobject.coordinate_systems.CoordinateSystem.get_T_label>`"
+
+msgid "The angle of the tangent to the curve."
+msgstr "The angle of the tangent to the curve."
+
+msgid "The color of the label."
+msgstr "The color of the label."
+
+msgid ":obj:`add_coordinates <manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates>`"
+msgstr ":obj:`add_coordinates <manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates>`"
+
+msgid "The change in `x` used to determine the angle of the tangent to the curve."
+msgstr "The change in `x` used to determine the angle of the tangent to the curve."
+
+msgid ":obj:`get_derivative_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_derivative_graph>`"
+msgstr ":obj:`get_derivative_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_derivative_graph>`"
+
+msgid "A :class:`~.VGroup` of the horizontal and vertical lines."
+msgstr "A :class:`~.VGroup` of the horizontal and vertical lines."
+
+msgid "The length of the secant line."
+msgstr "The length of the secant line."
+
+msgid ":obj:`get_axis_labels <manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels>`"
+msgstr ":obj:`get_axis_labels <manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels>`"
+
+msgid "The label for the `dy` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label for the `dy` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid "Additional parameters to be passed to :class:`~.Dot`."
+msgstr "Additional parameters to be passed to :class:`~.Dot`."
+
+msgid "The curve for which the secant will be found."
+msgstr "The curve for which the secant will be found."
+
+msgid ":obj:`get_parametric_curve <manim.mobject.coordinate_systems.CoordinateSystem.get_parametric_curve>`"
+msgstr ":obj:`get_parametric_curve <manim.mobject.coordinate_systems.CoordinateSystem.get_parametric_curve>`"
+
+msgid "The :class:`~.VGroup` of the evenly spaced lines."
+msgstr "The :class:`~.VGroup` of the evenly spaced lines."
+
+msgid "The label of the vertical line and triangle."
+msgstr "The label of the vertical line and triangle."
+
+msgid ":obj:`get_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_graph>`"
+msgstr ":obj:`get_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_graph>`"
+
+msgid "The x-value at which the secant intersects the graph for the first time."
+msgstr "The x-value at which the secant intersects the graph for the first time."
+
+msgid ":class:`Mobject`"
+msgstr ":class:`Mobject`"
+
+msgid "The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label for the x_axis. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid ":obj:`get_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_axis>`"
+msgstr ":obj:`get_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_axis>`"
+
+msgid "Abbreviation for coords_to_point"
+msgstr "Abbreviation for coords_to_point"
+
+msgid "The factor by which the width of the rectangles is scaled."
+msgstr "The factor by which the width of the rectangles is scaled."
+
+msgid "Abbreviation for point_to_coords"
+msgstr "Abbreviation for point_to_coords"
+
+msgid "Adds labels to the axes. Use ``Axes.coordinate_labels`` to access the coordinates after creation."
+msgstr "Adds labels to the axes. Use ``Axes.coordinate_labels`` to access the coordinates after creation."
+
+msgid ":obj:`get_axes <manim.mobject.coordinate_systems.CoordinateSystem.get_axes>`"
+msgstr ":obj:`get_axes <manim.mobject.coordinate_systems.CoordinateSystem.get_axes>`"
+
+msgid "The point to which the vertical line will be drawn."
+msgstr "The point to which the vertical line will be drawn."
+
+msgid ":obj:`get_y_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis>`"
+msgstr ":obj:`get_y_axis <manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis>`"
+
+msgid "Additional arguments to be passed to :meth:`~.CoordinateSystem.get_vertical_line`"
+msgstr "Additional arguments to be passed to :meth:`~.CoordinateSystem.get_vertical_line`"
+
+msgid ":obj:`get_vertical_lines_to_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_vertical_lines_to_graph>`"
+msgstr ":obj:`get_vertical_lines_to_graph <manim.mobject.coordinate_systems.CoordinateSystem.get_vertical_lines_to_graph>`"
+
+msgid "The function used to construct the :class:`~.ParametricFunction`."
+msgstr "The function used to construct the :class:`~.ParametricFunction`."
+
+msgid "The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``."
+msgstr "The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``."
+
+msgid "The edge of the x-axis to which the label will be added, by default ``UR``."
+msgstr "The edge of the x-axis to which the label will be added, by default ``UR``."
+
+msgid "The x-value at which the tangent must touch the curve."
+msgstr "The x-value at which the tangent must touch the curve."
+
+msgid "The positioned label."
+msgstr "The positioned label."
+
+msgid "Creates a labelled triangle marker with a vertical line from the x-axis to a curve at a given x-value."
+msgstr "Creates a labelled triangle marker with a vertical line from the x-axis to a curve at a given x-value."
+
+msgid ":obj:`coords_to_point <manim.mobject.coordinate_systems.CoordinateSystem.coords_to_point>`"
+msgstr ":obj:`coords_to_point <manim.mobject.coordinate_systems.CoordinateSystem.coords_to_point>`"
+
+msgid "The point to which the horizontal line will be drawn."
+msgstr "The point to which the horizontal line will be drawn."
+
+msgid "Generates a :class:`~.VGroup` of the Riemann Rectangles for a given curve."
+msgstr "Generates a :class:`~.VGroup` of the Riemann Rectangles for a given curve."
+
+msgid "The line from an axis to a point."
+msgstr "The line from an axis to a point."
+
+msgid "If a secondary graph is specified, encloses the area between the two curves."
+msgstr "If a secondary graph is specified, encloses the area between the two curves."
+
+msgid "Generates a curve based on a function."
+msgstr "Generates a curve based on a function."
+
+msgid "The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+msgstr "The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs."
+
+msgid "You can also specifically control the position and value of the labels using a dict."
+msgstr "You can also specifically control the position and value of the labels using a dict."
+
+msgid "A vertical line from the x-axis to a given point in the scene."
+msgstr "A vertical line from the x-axis to a given point in the scene."
+
+msgid "The x-value of a point on the ``graph``."
+msgstr "The x-value of a point on the ``graph``."
+
+msgid "Whether to include the secant line in the graph, or just the df/dx lines and labels."
+msgstr "Whether to include the secant line in the graph, or just the df/dx lines and labels."
+
+msgid "The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``."
+msgstr "The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``."
+
+msgid "Alias for :meth:`input_to_graph_point`."
+msgstr "Alias for :meth:`input_to_graph_point`."
+
+msgid "Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually approximate the area under the graph passed."
+msgstr "Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually approximate the area under the graph passed."
+
+msgid "Returns a straight line from a given axis to a point in the scene."
+msgstr "Returns a straight line from a given axis to a point in the scene."
+
+msgid ":obj:`get_lines_to_point <manim.mobject.coordinate_systems.CoordinateSystem.get_lines_to_point>`"
+msgstr ":obj:`get_lines_to_point <manim.mobject.coordinate_systems.CoordinateSystem.get_lines_to_point>`"
+
+msgid "Allows for further positioning of the label from an edge, by default ``UR``"
+msgstr "Allows for further positioning of the label from an edge, by default ``UR``"
+
+msgid "If a secondary :attr:`graph` is specified, encloses the area between the two curves."
+msgstr "If a secondary :attr:`graph` is specified, encloses the area between the two curves."
+
+msgid ":obj:`get_graph_label <manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label>`"
+msgstr ":obj:`get_graph_label <manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label>`"
+
+msgid "Allows for further positioning of the label from an edge, by default ``UR``."
+msgstr "Allows for further positioning of the label from an edge, by default ``UR``."
+
+msgid ":class:`np.ndarray`"
+msgstr ":class:`np.ndarray`"
+
+msgid ":obj:`get_area <manim.mobject.coordinate_systems.CoordinateSystem.get_area>`"
+msgstr ":obj:`get_area <manim.mobject.coordinate_systems.CoordinateSystem.get_area>`"

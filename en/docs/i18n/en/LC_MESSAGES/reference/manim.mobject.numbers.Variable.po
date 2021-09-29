@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The tex for the value of your variable."
+msgstr "The tex for the value of your variable."
+
+msgid "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
+msgstr "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
+
+msgid "Union[:class:`DecimalNumber`, :class:`Integer`]"
+msgstr "Union[:class:`DecimalNumber`, :class:`Integer`]"
+
+msgid "Other arguments to be passed to `~.Mobject`."
+msgstr "Other arguments to be passed to `~.Mobject`."
+
+msgid "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
+msgstr "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
+
+msgid "The label for your variable, for example ``x = ...``."
+msgstr "The label for your variable, for example ``x = ...``."
+
+msgid "The label for your variable, for example ``x = ...``. To use math mode, for e.g. subscripts, superscripts, etc. simply pass in a raw string."
+msgstr "The label for your variable, for example ``x = ...``. To use math mode, for e.g. subscripts, superscripts, etc. simply pass in a raw string."
+
+msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
+msgstr "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
+
+msgid "Qualified name: ``manim.mobject.numbers.Variable``"
+msgstr "Qualified name: ``manim.mobject.numbers.Variable``"
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Automatically adds the text for the label and the value when instantiated and added to the screen."
+msgstr "Automatically adds the text for the label and the value when instantiated and added to the screen."
+
+msgid "The python variable you need to keep track of and display."
+msgstr "The python variable you need to keep track of and display."
+
+msgid "Useful in updating the value of your variable on-screen."
+msgstr "Useful in updating the value of your variable on-screen."

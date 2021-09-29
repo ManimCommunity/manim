@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`VectorizedPoint <manim.mobject.types.vectorized_mobject.VectorizedPoint>`"
+msgstr ":obj:`VectorizedPoint <manim.mobject.types.vectorized_mobject.VectorizedPoint>`"
+
+msgid ":obj:`CurvesAsSubmobjects <manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects>`"
+msgstr ":obj:`CurvesAsSubmobjects <manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects>`"
+
+msgid "A group of vectorized mobjects."
+msgstr "A group of vectorized mobjects."
+
+msgid "Mobjects that use vector graphics."
+msgstr "Mobjects that use vector graphics."
+
+msgid "A :class:`VMobject` composed of dashes instead of lines."
+msgstr "A :class:`VMobject` composed of dashes instead of lines."
+
+msgid "Convert a curve's elements to submobjects."
+msgstr "Convert a curve's elements to submobjects."
+
+msgid "A VGroup-like class, also offering submobject access by key, like a python dict"
+msgstr "A VGroup-like class, also offering submobject access by key, like a python dict"
+
+msgid "A vectorized mobject."
+msgstr "A vectorized mobject."
+
+msgid ":obj:`DashedVMobject <manim.mobject.types.vectorized_mobject.DashedVMobject>`"
+msgstr ":obj:`DashedVMobject <manim.mobject.types.vectorized_mobject.DashedVMobject>`"
+
+msgid "Classes"
+msgstr "Classes"

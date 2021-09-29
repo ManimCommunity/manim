@@ -1,0 +1,437 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Whether to save the last frame of the scene as an image file (-s)."
+msgstr "Whether to save the last frame of the scene as an image file (-s)."
+
+msgid "Standard f-string syntax is used.  Arbitrary names can be used when defining directories, as long as the corresponding values are passed to :meth:`ManimConfig.get_dir` via ``kwargs``."
+msgstr "Standard f-string syntax is used.  Arbitrary names can be used when defining directories, as long as the corresponding values are passed to :meth:`ManimConfig.get_dir` via ``kwargs``."
+
+msgid "Whether the background opacity is 0.0 (-t)."
+msgstr "Whether the background opacity is 0.0 (-t)."
+
+msgid "Background color of the scene (-c)."
+msgstr "Background color of the scene (-c)."
+
+msgid "Main output directory.  See :meth:`ManimConfig.get_dir`."
+msgstr "Main output directory.  See :meth:`ManimConfig.get_dir`."
+
+msgid "Finally, any programmatic changes made within the scene script itself will override the command line arguments.  For example, if ``scene.py`` contains the following"
+msgstr "Finally, any programmatic changes made within the scene script itself will override the command line arguments.  For example, if ``scene.py`` contains the following"
+
+msgid "Frame width in logical units (no flag)."
+msgstr "Frame width in logical units (no flag)."
+
+msgid "PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum)."
+msgstr "PNG zero padding. A number between 0 (no zero padding) and 9 (9 columns minimum)."
+
+msgid "List of plugins to enable."
+msgstr "List of plugins to enable."
+
+msgid "A copy of this object containing no shared references."
+msgstr "A copy of this object containing no shared references."
+
+msgid "Whether to render all scenes in the input file (-a)."
+msgstr "Whether to render all scenes in the input file (-a)."
+
+msgid "Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`."
+
+msgid "Maximum number of files cached.  Use -1 for infinity (no flag)."
+msgstr "Maximum number of files cached.  Use -1 for infinity (no flag)."
+
+msgid "File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."
+msgstr "File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."
+
+msgid "Any strings to be used when resolving the directory."
+msgstr "Any strings to be used when resolving the directory."
+
+msgid "Process the config options present in a ``.cfg`` file."
+msgstr "Process the config options present in a ``.cfg`` file."
+
+msgid "**self** -- This object, after processing the contents of ``filename``."
+msgstr "**self** -- This object, after processing the contents of ``filename``."
+
+msgid "Directory to place text (no flag)."
+msgstr "Directory to place text (no flag)."
+
+msgid "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."
+msgstr "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."
+
+msgid ":func:`.main_utils.parse_args()`, :meth:`~.ManimConfig.digest_parser`, :meth:`~.ManimConfig.digest_file`"
+msgstr ":func:`.main_utils.parse_args()`, :meth:`~.ManimConfig.digest_parser`, :meth:`~.ManimConfig.digest_file`"
+
+msgid "Whether to save all frames in the scene as images files (-g)."
+msgstr "Whether to save all frames in the scene as images files (-g)."
+
+msgid "Whether to notify if there is a version update available."
+msgstr "Whether to notify if there is a version update available."
+
+msgid "the background color will be set to RED, regardless of the contents of ``manim.cfg`` or the CLI arguments used when invoking manim."
+msgstr "the background color will be set to RED, regardless of the contents of ``manim.cfg`` or the CLI arguments used when invoking manim."
+
+msgid "Stop rendering animations at this nmber.  Use -1 to avoid skipping (-n)."
+msgstr "Stop rendering animations at this nmber.  Use -1 to avoid skipping (-n)."
+
+msgid "**self** -- This object, after processing the contents of ``parser``."
+msgstr "**self** -- This object, after processing the contents of ``parser``."
+
+msgid "The monitor on which the scene will be rendered"
+msgstr "The monitor on which the scene will be rendered"
+
+msgid "Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`."
+
+msgid "Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."
+msgstr "Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."
+
+msgid "In fact, the global ``config`` object is initialized like so:"
+msgstr "In fact, the global ``config`` object is initialized like so:"
+
+msgid "Directory to place tex (no flag)."
+msgstr "Directory to place tex (no flag)."
+
+msgid "Enable GUI interaction."
+msgstr "Enable GUI interaction."
+
+msgid "Main output directory."
+msgstr "Main output directory."
+
+msgid "Frame width in pixels (--resolution, -r)."
+msgstr "Frame width in pixels (--resolution, -r)."
+
+msgid "Frame height in pixels (--resolution, -r)."
+msgstr "Frame height in pixels (--resolution, -r)."
+
+msgid ":obj:`resolve_movie_file_extension <manim._config.utils.ManimConfig.resolve_movie_file_extension>`"
+msgstr ":obj:`resolve_movie_file_extension <manim._config.utils.ManimConfig.resolve_movie_file_extension>`"
+
+msgid "The value of ``config.tex_dir`` is ``'{media_dir}/Tex'`` by default, i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`."
+msgstr "The value of ``config.tex_dir`` is ``'{media_dir}/Tex'`` by default, i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`."
+
+msgid "Directory to place images (no flag)."
+msgstr "Directory to place images (no flag)."
+
+msgid "An object returned by :func:`.main_utils.parse_args()`."
+msgstr "An object returned by :func:`.main_utils.parse_args()`."
+
+msgid "Whether to play the rendered movie (-p)."
+msgstr "Whether to play the rendered movie (-p)."
+
+msgid "Whether a warning is raised if there are too much submobjects to hash."
+msgstr "Whether a warning is raised if there are too much submobjects to hash."
+
+msgid "will set the background color to BLUE, regardless of the contents of ``manim.cfg``."
+msgstr "will set the background color to BLUE, regardless of the contents of ``manim.cfg``."
+
+msgid "Coordinate at the middle left of the frame."
+msgstr "Coordinate at the middle left of the frame."
+
+msgid "Either .mp4, .webm or .mov."
+msgstr "Either .mp4, .webm or .mov."
+
+msgid "Deepcopy the contents of this ManimConfig."
+msgstr "Deepcopy the contents of this ManimConfig."
+
+msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :meth:`~ManimConfig.digest_parser`"
+msgstr ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :meth:`~ManimConfig.digest_parser`"
+
+msgid "Expand the window to its maximum possible size."
+msgstr "Expand the window to its maximum possible size."
+
+msgid ":class:`ManimConfig`"
+msgstr ":class:`ManimConfig`"
+
+msgid ":class:`pathlib.Path`"
+msgstr ":class:`pathlib.Path`"
+
+msgid "Command line arguments override ``.cfg`` files.  In the previous example, executing"
+msgstr "Command line arguments override ``.cfg`` files.  In the previous example, executing"
+
+msgid "Note the quality does not need to be passed as keyword argument since :class:`ManimConfig` does store information about quality."
+msgstr "Note the quality does not need to be passed as keyword argument since :class:`ManimConfig` does store information about quality."
+
+msgid "The size of the opengl window. 'default' to automatically scale the window based on the display monitor."
+msgstr "The size of the opengl window. 'default' to automatically scale the window based on the display monitor."
+
+msgid "Scenes to play from file."
+msgstr "Scenes to play from file."
+
+msgid "Digest the options found in another :class:`ManimConfig` or in a dict."
+msgstr "Digest the options found in another :class:`ManimConfig` or in a dict."
+
+msgid "Process the config options present in a :class:`ConfigParser` object."
+msgstr "Process the config options present in a :class:`ConfigParser` object."
+
+msgid "Whether to save the rendered scene in .gif format (-i)."
+msgstr "Whether to save the rendered scene in .gif format (-i)."
+
+msgid "Whether to render the scene to a movie file (-w)."
+msgstr "Whether to render the scene to a movie file (-w)."
+
+msgid "Whether dry run is enabled."
+msgstr "Whether dry run is enabled."
+
+msgid "Set the position of preview window."
+msgstr "Set the position of preview window."
+
+msgid "Verbosity level of ffmpeg (no flag)."
+msgstr "Verbosity level of ffmpeg (no flag)."
+
+msgid "Config options that store directories may depend on one another.  This method is used to provide the actual directory to the end user."
+msgstr "Config options that store directories may depend on one another.  This method is used to provide the actual directory to the end user."
+
+msgid "Path to WebGL renderer."
+msgstr "Path to WebGL renderer."
+
+msgid "Frame height in logical units (no flag)."
+msgstr "Frame height in logical units (no flag)."
+
+msgid "Template used when rendering Tex.  See :class:`.TexTemplate`."
+msgstr "Template used when rendering Tex.  See :class:`.TexTemplate`."
+
+msgid "To digest the config options set in two files, first create a ConfigParser and parse both files and then digest the parser:"
+msgstr "To digest the config options set in two files, first create a ConfigParser and parse both files and then digest the parser:"
+
+msgid "In order to have this ``.cfg`` file apply to a manim scene, it needs to be placed in the same directory as the script,"
+msgstr "In order to have this ``.cfg`` file apply to a manim scene, it needs to be placed in the same directory as the script,"
+
+msgid "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first, and then call this function once (instead of calling :meth:`~.ManimConfig.digest_file` multiple times)."
+msgstr "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first, and then call this function once (instead of calling :meth:`~.ManimConfig.digest_file` multiple times)."
+
+msgid "Whether or not to use WebGL renderer."
+msgstr "Whether or not to use WebGL renderer."
+
+msgid "This method processes a single ``.cfg`` file, whereas :meth:`~ManimConfig.digest_parser` can process arbitrary parsers, built perhaps from multiple ``.cfg`` files."
+msgstr "This method processes a single ``.cfg`` file, whereas :meth:`~ManimConfig.digest_parser` can process arbitrary parsers, built perhaps from multiple ``.cfg`` files."
+
+msgid "Standard :meth:`str.format` syntax is used to resolve the paths so the paths may contain arbitrary placeholders using f-string notation. However, these will require ``kwargs`` to contain the required values."
+msgstr "Standard :meth:`str.format` syntax is used to resolve the paths so the paths may contain arbitrary placeholders using f-string notation. However, these will require ``kwargs`` to contain the required values."
+
+msgid "When ``key`` is not a config option that stores a directory and     thus :meth:`~ManimConfig.get_dir` is not appropriate; or when     ``key`` is appropriate but there is not enough information to     resolve the directory."
+msgstr "When ``key`` is not a config option that stores a directory and     thus :meth:`~ManimConfig.get_dir` is not appropriate; or when     ``key`` is appropriate but there is not enough information to     resolve the directory."
+
+msgid "Directory to place tex (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place tex (no flag).  See :meth:`ManimConfig.get_dir`."
+
+msgid "Aspect ratio (width / height) in pixels (--resolution, -r)."
+msgstr "Aspect ratio (width / height) in pixels (--resolution, -r)."
+
+msgid "An object reflecting the contents of one or many ``.cfg`` files.  In particular, it may reflect the contents of multiple files that have been parsed in a cascading fashion."
+msgstr "An object reflecting the contents of one or many ``.cfg`` files.  In particular, it may reflect the contents of multiple files that have been parsed in a cascading fashion."
+
+msgid "Bases: :class:`collections.abc.MutableMapping`"
+msgstr "Bases: :class:`collections.abc.MutableMapping`"
+
+msgid "Whether to delete all the cached partial movie files."
+msgstr "Whether to delete all the cached partial movie files."
+
+msgid "Video quality (-q)."
+msgstr "Video quality (-q)."
+
+msgid "Input file name."
+msgstr "Input file name."
+
+msgid "The size of the opengl window."
+msgstr "The size of the opengl window."
+
+msgid "There are many ways of interacting with config options.  Take for example the config option ``background_color``.  There are three ways to change it: via a config file, via CLI flags, or programmatically."
+msgstr "There are many ways of interacting with config options.  Take for example the config option ``background_color``.  There are three ways to change it: via a config file, via CLI flags, or programmatically."
+
+msgid "Now, when the user executes"
+msgstr "Now, when the user executes"
+
+msgid "Tuple with (pixel width, pixel height) (no flag)."
+msgstr "Tuple with (pixel width, pixel height) (no flag)."
+
+msgid "Directory to place partial movie files (no flag)."
+msgstr "Directory to place partial movie files (no flag)."
+
+msgid "Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'"
+msgstr "Set the position of preview window. You can use directions, e.g. UL/DR/ORIGIN/LEFT...or the position(pixel) of the upper left corner of the window, e.g. '960,540'"
+
+msgid "Half the frame height (no flag)."
+msgstr "Half the frame height (no flag)."
+
+msgid "Enable wireframe debugging mode in opengl."
+msgstr "Enable wireframe debugging mode in opengl."
+
+msgid "This method processes arbitrary parsers, not only those read from a single file, whereas :meth:`~ManimConfig.digest_file` can only process one file at a time."
+msgstr "This method processes arbitrary parsers, not only those read from a single file, whereas :meth:`~ManimConfig.digest_file` can only process one file at a time."
+
+msgid "Coordinate at the center top of the frame."
+msgstr "Coordinate at the center top of the frame."
+
+msgid "The global ``config`` object is an instance of this class, and acts as a single source of truth for all of the library's customizable behavior."
+msgstr "The global ``config`` object is an instance of this class, and acts as a single source of truth for all of the library's customizable behavior."
+
+msgid "The config option to be resolved.  Must be an option ending in ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``."
+msgstr "The config option to be resolved.  Must be an option ending in ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``."
+
+msgid "Each config option can be set via a config file, using the full name of the property.  If a config option has an associated CLI flag, then the flag is equal to the full name of the property.  Those that admit an alternative flag or no flag at all are documented in the individual property's docstring."
+msgstr "Each config option can be set via a config file, using the full name of the property.  If a config option has an associated CLI flag, then the flag is equal to the full name of the property.  Those that admit an alternative flag or no flag at all are documented in the individual property's docstring."
+
+msgid "To set the background color via a config file, save the following ``manim.cfg`` file with the following contents."
+msgstr "To set the background color via a config file, save the following ``manim.cfg`` file with the following contents."
+
+msgid "Start rendering animations at this number (-n)."
+msgstr "Start rendering animations at this number (-n)."
+
+msgid "Directory to place text (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place text (no flag).  See :meth:`ManimConfig.get_dir`."
+
+msgid "Directory to place videos (no flag)."
+msgstr "Directory to place videos (no flag)."
+
+msgid "Directory to place images (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place images (no flag).  See :meth:`ManimConfig.get_dir`."
+
+msgid "Whether to use scene caching."
+msgstr "Whether to use scene caching."
+
+msgid "If ``obj`` is a dict but contains keys that do not belong to any     config options."
+msgstr "If ``obj`` is a dict but contains keys that do not belong to any     config options."
+
+msgid "Whether to save logs to a file."
+msgstr "Whether to save logs to a file."
+
+msgid "Path to the ``.cfg`` file."
+msgstr "Path to the ``.cfg`` file."
+
+msgid "The config options are designed to keep internal consistency.  For example, setting ``frame_y_radius`` will affect ``frame_height``:"
+msgstr "The config options are designed to keep internal consistency.  For example, setting ``frame_y_radius`` will affect ``frame_height``:"
+
+msgid "Logger verbosity; \"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", or \"CRITICAL\" (-v)."
+msgstr "Logger verbosity; \"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", or \"CRITICAL\" (-v)."
+
+msgid "Directories may be recursively defined.  For example, the config option ``partial_movie_dir`` depends on ``video_dir``, which in turn depends on ``media_dir``:"
+msgstr "Directories may be recursively defined.  For example, the config option ``partial_movie_dir`` depends on ``video_dir``, which in turn depends on ``media_dir``:"
+
+msgid "Each config option allows for dict syntax and attribute syntax.  For example, the following two lines are equivalent,"
+msgstr "Each config option allows for dict syntax and attribute syntax.  For example, the following two lines are equivalent,"
+
+msgid "Output file name (-o)."
+msgstr "Output file name (-o)."
+
+msgid "Whether to show progress bars while rendering animations."
+msgstr "Whether to show progress bars while rendering animations."
+
+msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :func:`make_config_parser`"
+msgstr ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :func:`make_config_parser`"
+
+msgid ":func:`make_config_parser`, :meth:`~.ManimConfig.digest_file`, :meth:`~.ManimConfig.digest_args`"
+msgstr ":func:`make_config_parser`, :meth:`~.ManimConfig.digest_file`, :meth:`~.ManimConfig.digest_args`"
+
+msgid "Half the frame width (no flag)."
+msgstr "Half the frame width (no flag)."
+
+msgid "Directory to place logs.  See :meth:`ManimConfig.get_dir`."
+msgstr "Directory to place logs.  See :meth:`ManimConfig.get_dir`."
+
+msgid "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first and digesting them with one call to :meth:`~ManimConfig.digest_parser`, instead of calling this method multiple times."
+msgstr "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first and digesting them with one call to :meth:`~ManimConfig.digest_parser`, instead of calling this method multiple times."
+
+msgid "Resolve a config option that stores a directory."
+msgstr "Resolve a config option that stores a directory."
+
+msgid "Path to the requested directory.  If the path resolves to the empty string, return ``None`` instead."
+msgstr "Path to the requested directory.  If the path resolves to the empty string, return ``None`` instead."
+
+msgid "Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."
+msgstr "Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."
+
+msgid "Directory to place logs."
+msgstr "Directory to place logs."
+
+msgid "Coordinate at the middle right of the frame."
+msgstr "Coordinate at the middle right of the frame."
+
+msgid "Maximum number of files cached."
+msgstr "Maximum number of files cached."
+
+msgid "Frame rate in frames per second."
+msgstr "Frame rate in frames per second."
+
+msgid "File to read Tex template from (no flag)."
+msgstr "File to read Tex template from (no flag)."
+
+msgid "Coordinate at the center bottom of the frame."
+msgstr "Coordinate at the center bottom of the frame."
+
+msgid "Some directories depend on information that is not available to :class:`ManimConfig`. For example, the default value of `video_dir` includes the name of the input file and the video quality (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:"
+msgstr "Some directories depend on information that is not available to :class:`ManimConfig`. For example, the default value of `video_dir` includes the name of the input file and the video quality (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:"
+
+msgid "If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the contents of said file with :meth:`~ManimConfig.digest_file` before digesting any other CLI arguments."
+msgstr "If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the contents of said file with :meth:`~ManimConfig.digest_file` before digesting any other CLI arguments."
+
+msgid "\"cairo\", \"opengl\", \"webgl"
+msgstr "\"cairo\", \"opengl\", \"webgl"
+
+msgid "Directory to locate video assets (no flag)."
+msgstr "Directory to locate video assets (no flag)."
+
+msgid "ManimConfig"
+msgstr "ManimConfig"
+
+msgid "Similar to :meth:`dict.update`, replaces the values of this object with those of ``obj``."
+msgstr "Similar to :meth:`dict.update`, replaces the values of this object with those of ``obj``."
+
+msgid ":func:`tempconfig`"
+msgstr ":func:`tempconfig`"
+
+msgid "Media width in Jupyter notebook"
+msgstr "Media width in Jupyter notebook"
+
+msgid "Whether to use custom folder output."
+msgstr "Whether to use custom folder output."
+
+msgid "Each config option is implemented as a property of this class."
+msgstr "Each config option is implemented as a property of this class."
+
+msgid "Renderer"
+msgstr "Renderer"
+
+msgid "Whether to show the output file in the file browser (-f)."
+msgstr "Whether to show the output file in the file browser (-f)."
+
+msgid "Resolving directories is done in a lazy way, at the last possible moment, to reflect any changes in other config options:"
+msgstr "Resolving directories is done in a lazy way, at the last possible moment, to reflect any changes in other config options:"
+
+msgid "The object to copy values from."
+msgstr "The object to copy values from."
+
+msgid "the background of the scene will be set to ``WHITE``.  This applies regardless of where the manim command is invoked from."
+msgstr "the background of the scene will be set to ``WHITE``.  This applies regardless of where the manim command is invoked from."
+
+msgid "Template used when rendering Tex."
+msgstr "Template used when rendering Tex."
+
+msgid "File format; \"png\", \"gif\", \"mp4\", \"webm\" or \"mov\"."
+msgstr "File format; \"png\", \"gif\", \"mp4\", \"webm\" or \"mov\"."
+
+msgid "This is the main mechanism behind :func:`tempconfig`."
+msgstr "This is the main mechanism behind :func:`tempconfig`."
+
+msgid "Whether or not to use the OpenGL renderer."
+msgstr "Whether or not to use the OpenGL renderer."
+
+msgid "Process the config options present in CLI arguments."
+msgstr "Process the config options present in CLI arguments."
+
+msgid "The global ``config`` object is capable of digesting different types of sources and converting them into a uniform interface.  These sources are (in ascending order of precedence): configuration files, command line arguments, and programmatic changes.  Regardless of how the user chooses to set a config option, she can access its current value using :class:`ManimConfig`'s attributes and properties."
+msgstr "The global ``config`` object is capable of digesting different types of sources and converting them into a uniform interface.  These sources are (in ascending order of precedence): configuration files, command line arguments, and programmatic changes.  Regardless of how the user chooses to set a config option, she can access its current value using :class:`ManimConfig`'s attributes and properties."
+
+msgid "Stop rendering animations at this nmber."
+msgstr "Stop rendering animations at this nmber."
+
+msgid "PNG zero padding."
+msgstr "PNG zero padding."

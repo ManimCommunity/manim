@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`get_all_families_zipped <manim.animation.transform.Transform.get_all_families_zipped>`"
+msgstr ":obj:`get_all_families_zipped <manim.animation.transform.Transform.get_all_families_zipped>`"
+
+msgid ":obj:`get_all_mobjects <manim.animation.transform.Transform.get_all_mobjects>`"
+msgstr ":obj:`get_all_mobjects <manim.animation.transform.Transform.get_all_mobjects>`"
+
+msgid ":obj:`clean_up_from_scene <manim.animation.transform.Transform.clean_up_from_scene>`"
+msgstr ":obj:`clean_up_from_scene <manim.animation.transform.Transform.clean_up_from_scene>`"
+
+msgid "Qualified name: ``manim.animation.transform.Transform``"
+msgstr "Qualified name: ``manim.animation.transform.Transform``"
+
+msgid ":obj:`interpolate_submobject <manim.animation.transform.Transform.interpolate_submobject>`"
+msgstr ":obj:`interpolate_submobject <manim.animation.transform.Transform.interpolate_submobject>`"
+
+msgid "Transform"
+msgstr "Transform"

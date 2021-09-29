@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The mobject like :class:`.VGroup`."
+msgstr "The mobject like :class:`.VGroup`."
+
+msgid ":obj:`set_color_by_t2g <manim.mobject.svg.text_mobject.Text.set_color_by_t2g>`"
+msgstr ":obj:`set_color_by_t2g <manim.mobject.svg.text_mobject.Text.set_color_by_t2g>`"
+
+msgid "Internally used. Sets gradient colors for specified strings. Behaves similarly to ``set_color_by_t2c``."
+msgstr "Internally used. Sets gradient colors for specified strings. Behaves similarly to ``set_color_by_t2c``."
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Internally used function. Converts the texts and styles to a setting for parsing."
+msgstr "Internally used function. Converts the texts and styles to a setting for parsing."
+
+msgid "Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_."
+msgstr "Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_."
+
+msgid "Check that the creation of :class:`~.Text` works::"
+msgstr "Check that the creation of :class:`~.Text` works::"
+
+msgid ":class:`Text`"
+msgstr ":class:`Text`"
+
+msgid "As :class:`Text` uses Pango to render text, rendering non-English characters is easily possible:"
+msgstr "As :class:`Text` uses Pango to render text, rendering non-English characters is easily possible:"
+
+msgid ":obj:`set_color_by_t2c <manim.mobject.svg.text_mobject.Text.set_color_by_t2c>`"
+msgstr ":obj:`set_color_by_t2c <manim.mobject.svg.text_mobject.Text.set_color_by_t2c>`"
+
+msgid "Initializes the colors."
+msgstr "Initializes the colors."
+
+msgid "Internally used function. Generates ``sha256`` hash for file name."
+msgstr "Internally used function. Generates ``sha256`` hash for file name."
+
+msgid "Internally used function. Sets color for specified strings."
+msgstr "Internally used function. Sets color for specified strings."
+
+msgid "Text objects behave like a :class:`.VGroup`-like iterable of all characters in the given text. In particular, slicing is possible."
+msgstr "Text objects behave like a :class:`.VGroup`-like iterable of all characters in the given text. In particular, slicing is possible."
+
+msgid "Internally used function."
+msgstr "Internally used function."
+
+msgid "Internally used function. Finds the indexes of ``text`` in ``word``."
+msgstr "Internally used function. Finds the indexes of ``text`` in ``word``."
+
+msgid "The text that need to created as mobject."
+msgstr "The text that need to created as mobject."
+
+msgid "Convert the text to SVG using Pango."
+msgstr "Convert the text to SVG using Pango."
+
+msgid "Internally used."
+msgstr "Internally used."
+
+msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"

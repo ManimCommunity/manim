@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "strings"
+msgstr "strings"
+
+msgid "Given a string, and an arbitrary number of possible substrings, returns a list of strings which would concatenate to make the full string, and in which these special substrings appear as their own elements."
+msgstr "Given a string, and an arbitrary number of possible substrings, returns a list of strings which would concatenate to make the full string, and in which these special substrings appear as their own elements."
+
+msgid "String manipulation utilities."
+msgstr "String manipulation utilities."
+
+msgid "For example, split_string_to_isolate_substrings(\"to be or not to be\", \"to\", \"be\") would return [\"to\", \" \", \"be\", \" or not \", \"to\", \" \", \"be\"]"
+msgstr "For example, split_string_to_isolate_substrings(\"to be or not to be\", \"to\", \"be\") would return [\"to\", \" \", \"be\", \" or not \", \"to\", \" \", \"be\"]"
+
+msgid "Similar to split_string_to_isolate_substrings, but the first argument is a list of strings, thought of as something already broken up a bit."
+msgstr "Similar to split_string_to_isolate_substrings, but the first argument is a list of strings, thought of as something already broken up a bit."

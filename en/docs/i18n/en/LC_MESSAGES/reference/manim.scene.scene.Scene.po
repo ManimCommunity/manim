@@ -1,0 +1,341 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Animation or mobject with mobject method and params"
+msgstr "Animation or mobject with mobject method and params"
+
+msgid "Name(s) of the argument(s) to return the attribute of."
+msgstr "Name(s) of the argument(s) to return the attribute of."
+
+msgid "Start the animations of the scene."
+msgstr "Start the animations of the scene."
+
+msgid "Adds the passed mobjects to the scene again, pushing them to he front of the scene."
+msgstr "Adds the passed mobjects to the scene again, pushing them to he front of the scene."
+
+msgid "Removes the mobject from the scene and adds them to the back of the scene."
+msgstr "Removes the mobject from the scene and adds them to the back of the scene."
+
+msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common method to be invoked before the scene ends."
+msgstr "This is meant to be implemented by any scenes which are commonly subclassed, and have some common method to be invoked before the scene ends."
+
+msgid "The list of mobjects to remove."
+msgstr "The list of mobjects to remove."
+
+msgid ":obj:`get_restructured_mobject_list <manim.scene.scene.Scene.get_restructured_mobject_list>`"
+msgstr ":obj:`get_restructured_mobject_list <manim.scene.scene.Scene.get_restructured_mobject_list>`"
+
+msgid "The Scene mobject with restructured Mobjects."
+msgstr "The Scene mobject with restructured Mobjects."
+
+msgid ":obj:`get_mobject_family_members <manim.scene.scene.Scene.get_mobject_family_members>`"
+msgstr ":obj:`get_mobject_family_members <manim.scene.scene.Scene.get_mobject_family_members>`"
+
+msgid "List of top level mobjects."
+msgstr "List of top level mobjects."
+
+msgid "The list of mobjects that could be moving in the Animation(s)"
+msgstr "The list of mobjects that could be moving in the Animation(s)"
+
+msgid "The mobject(s) to remove from the foreground."
+msgstr "The mobject(s) to remove from the foreground."
+
+msgid "The Mobjects to check."
+msgstr "The Mobjects to check."
+
+msgid ":obj:`should_update_mobjects <manim.scene.scene.Scene.should_update_mobjects>`"
+msgstr ":obj:`should_update_mobjects <manim.scene.scene.Scene.should_update_mobjects>`"
+
+msgid "The list of mobjects (\"mobjects\", \"foreground_mobjects\" etc) to remove from."
+msgstr "The list of mobjects (\"mobjects\", \"foreground_mobjects\" etc) to remove from."
+
+msgid "If true, opens scene in a file viewer."
+msgstr "If true, opens scene in a file viewer."
+
+msgid "The Mobject to remove."
+msgstr "The Mobject to remove."
+
+msgid "The list of mobjects with the mobjects to remove removed."
+msgstr "The list of mobjects with the mobjects to remove removed."
+
+msgid "Returns list of family-members of all mobjects in scene. If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only the Circle(), Rectangle() and Triangle(), but also the VGroup() object."
+msgstr "Returns list of family-members of all mobjects in scene. If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only the Circle(), Rectangle() and Triangle(), but also the VGroup() object."
+
+msgid "Creates _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play()."
+msgstr "Creates _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play()."
+
+msgid "Gets all moving mobjects in the passed animation(s)."
+msgstr "Gets all moving mobjects in the passed animation(s)."
+
+msgid "None if there is nothing to play, or self otherwise."
+msgstr "None if there is nothing to play, or self otherwise."
+
+msgid ":obj:`add_foreground_mobject <manim.scene.scene.Scene.add_foreground_mobject>`"
+msgstr ":obj:`add_foreground_mobject <manim.scene.scene.Scene.add_foreground_mobject>`"
+
+msgid "Returns all mobjects which are not submobjects."
+msgstr "Returns all mobjects which are not submobjects."
+
+msgid "Given a list of animations, compile the corresponding static and moving mobjects, and gather the animation durations."
+msgstr "Given a list of animations, compile the corresponding static and moving mobjects, and gather the animation durations."
+
+msgid "Renders this Scene."
+msgstr "Renders this Scene."
+
+msgid "The function whose boolean return value determines whether to continue waiting"
+msgstr "The function whose boolean return value determines whether to continue waiting"
+
+msgid "The Scene, with the foreground mobject added."
+msgstr "The Scene, with the foreground mobject added."
+
+msgid "This method is used to add a sound to the animation."
+msgstr "This method is used to add a sound to the animation."
+
+msgid "The offset in the sound file after which the sound can be played."
+msgstr "The offset in the sound file after which the sound can be played."
+
+msgid "This also begins the animations."
+msgstr "This also begins the animations."
+
+msgid "Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`."
+msgstr "Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`."
+
+msgid "Removes all mobjects present in self.mobjects and self.foreground_mobjects from the scene."
+msgstr "Removes all mobjects present in self.mobjects and self.foreground_mobjects from the scene."
+
+msgid ":obj:`add_mobjects_from_animations <manim.scene.scene.Scene.add_mobjects_from_animations>`"
+msgstr ":obj:`add_mobjects_from_animations <manim.scene.scene.Scene.add_mobjects_from_animations>`"
+
+msgid "Whether the rendering should be skipped, by default False"
+msgstr "Whether the rendering should be skipped, by default False"
+
+msgid ":obj:`compile_animation_data <manim.scene.scene.Scene.compile_animation_data>`"
+msgstr ":obj:`compile_animation_data <manim.scene.scene.Scene.compile_animation_data>`"
+
+msgid "Like a wrapper for wait()."
+msgstr "Like a wrapper for wait()."
+
+msgid "Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ ."
+msgstr "Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ ."
+
+msgid "A list of the animations whose total ``run_time`` is to be calculated."
+msgstr "A list of the animations whose total ``run_time`` is to be calculated."
+
+msgid "The CommandLine Progress Bar."
+msgstr "The CommandLine Progress Bar."
+
+msgid "The mobjects to remove."
+msgstr "The mobjects to remove."
+
+msgid "Returns list of family-members of all mobjects in scene."
+msgstr "Returns list of family-members of all mobjects in scene."
+
+msgid "The ``run_time`` of the animation."
+msgstr "The ``run_time`` of the animation."
+
+msgid "In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one of its submobjects is removed, e.g. scene.remove(m1), the list of mobjects will be edited to contain other submobjects, but not m1, e.g. it will now insert m2 and m3 to where the group once was."
+msgstr "In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one of its submobjects is removed, e.g. scene.remove(m1), the list of mobjects will be edited to contain other submobjects, but not m1, e.g. it will now insert m2 and m3 to where the group once was."
+
+msgid "The number of iterations in the animation."
+msgstr "The number of iterations in the animation."
+
+msgid "Whether the mobject's families should be recursively extracted."
+msgstr "Whether the mobject's families should be recursively extracted."
+
+msgid "This method is used to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file."
+msgstr "This method is used to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file."
+
+msgid ":obj:`add_foreground_mobjects <manim.scene.scene.Scene.add_foreground_mobjects>`"
+msgstr ":obj:`add_foreground_mobjects <manim.scene.scene.Scene.add_foreground_mobjects>`"
+
+msgid ":obj:`get_moving_and_static_mobjects <manim.scene.scene.Scene.get_moving_and_static_mobjects>`"
+msgstr ":obj:`get_moving_and_static_mobjects <manim.scene.scene.Scene.get_moving_and_static_mobjects>`"
+
+msgid ":obj:`is_current_animation_frozen_frame <manim.scene.scene.Scene.is_current_animation_frozen_frame>`"
+msgstr ":obj:`is_current_animation_frozen_frame <manim.scene.scene.Scene.is_current_animation_frozen_frame>`"
+
+msgid "Returns whether the current animation produces a static frame (generally a Wait)."
+msgstr "Returns whether the current animation produces a static frame (generally a Wait)."
+
+msgid ":meth:`Scene.setup`, :meth:`Scene.render`, :meth:`Scene.tear_down`"
+msgstr ":meth:`Scene.setup`, :meth:`Scene.render`, :meth:`Scene.tear_down`"
+
+msgid "Initialization code should go in :meth:`Scene.setup`.  Termination code should go in :meth:`Scene.tear_down`."
+msgstr "Initialization code should go in :meth:`Scene.setup`.  Termination code should go in :meth:`Scene.tear_down`."
+
+msgid ":obj:`remove_foreground_mobject <manim.scene.scene.Scene.remove_foreground_mobject>`"
+msgstr ":obj:`remove_foreground_mobject <manim.scene.scene.Scene.remove_foreground_mobject>`"
+
+msgid "The Scene, with the mobjects pushed to the back of the scene."
+msgstr "The Scene, with the mobjects pushed to the back of the scene."
+
+msgid "Mobjects to add."
+msgstr "Mobjects to add."
+
+msgid "Tuple[:class:`Animation`]"
+msgstr "Tuple[:class:`Animation`]"
+
+msgid "A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and :meth:`Scene.tear_down`, in that order."
+msgstr "A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and :meth:`Scene.tear_down`, in that order."
+
+msgid "Add content to the Scene."
+msgstr "Add content to the Scene."
+
+msgid "Override the :meth:`Scene.construct` method with your code."
+msgstr "Override the :meth:`Scene.construct` method with your code."
+
+msgid "List of mobject family members."
+msgstr "List of mobject family members."
+
+msgid "Removes mobjects in the passed list of mobjects from the scene and the foreground, by removing them from \"mobjects\" and \"foreground_mobjects\""
+msgstr "Removes mobjects in the passed list of mobjects from the scene and the foreground, by removing them from \"mobjects\" and \"foreground_mobjects\""
+
+msgid "The Mobjects to add to the foreground."
+msgstr "The Mobjects to add to the foreground."
+
+msgid "From within :meth:`Scene.construct`, display mobjects on screen by calling :meth:`Scene.add` and remove them from screen by calling :meth:`Scene.remove`. All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Play animations by calling :meth:`Scene.play`."
+msgstr "From within :meth:`Scene.construct`, display mobjects on screen by calling :meth:`Scene.add` and remove them from screen by calling :meth:`Scene.remove`. All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Play animations by calling :meth:`Scene.play`."
+
+msgid "Gets the total run time for a list of animations."
+msgstr "Gets the total run time for a list of animations."
+
+msgid "named parameters affecting what was passed in ``args``, e.g. ``run_time``, ``lag_ratio`` and so on."
+msgstr "named parameters affecting what was passed in ``args``, e.g. ``run_time``, ``lag_ratio`` and so on."
+
+msgid "The animations to check for moving mobjects."
+msgstr "The animations to check for moving mobjects."
+
+msgid "The same scene after adding the Mobjects in."
+msgstr "The same scene after adding the Mobjects in."
+
+msgid "List of attributes of the passed identifiers."
+msgstr "List of attributes of the passed identifiers."
+
+msgid "The mobject(s) to push to the back of the scene."
+msgstr "The mobject(s) to push to the back of the scene."
+
+msgid "You will hardly use this when making your own animations. This method is for Manim's internal use."
+msgstr "You will hardly use this when making your own animations. This method is for Manim's internal use."
+
+msgid "Amplification of the sound."
+msgstr "Amplification of the sound."
+
+msgid "Mobjects will be displayed, from background to foreground in the order with which they are added."
+msgstr "Mobjects will be displayed, from background to foreground in the order with which they are added."
+
+msgid "Removes a single mobject from the foreground, and internally from the list foreground_mobjects."
+msgstr "Removes a single mobject from the foreground, and internally from the list foreground_mobjects."
+
+msgid ":obj:`mouse_drag_orbit_controls <manim.scene.scene.Scene.mouse_drag_orbit_controls>`"
+msgstr ":obj:`mouse_drag_orbit_controls <manim.scene.scene.Scene.mouse_drag_orbit_controls>`"
+
+msgid "Animations to be played."
+msgstr "Animations to be played."
+
+msgid "Begins updating all mobjects in the Scene."
+msgstr "Begins updating all mobjects in the Scene."
+
+msgid "The Scene, with the foreground mobject removed."
+msgstr "The Scene, with the foreground mobject removed."
+
+msgid ":obj:`get_top_level_mobjects <manim.scene.scene.Scene.get_top_level_mobjects>`"
+msgstr ":obj:`get_top_level_mobjects <manim.scene.scene.Scene.get_top_level_mobjects>`"
+
+msgid "The primary role of :class:`Scene` is to provide the user with tools to manage mobjects and animations.  Generally speaking, a manim script consists of a class that derives from :class:`Scene` whose :meth:`Scene.construct` method is overridden by the user's code."
+msgstr "The primary role of :class:`Scene` is to provide the user with tools to manage mobjects and animations.  Generally speaking, a manim script consists of a class that derives from :class:`Scene` whose :meth:`Scene.construct` method is overridden by the user's code."
+
+msgid "Returns True if any mobject in Scene is being updated or if the scene has always_update_mobjects set to true."
+msgstr "Returns True if any mobject in Scene is being updated or if the scene has always_update_mobjects set to true."
+
+msgid "The mobject(s) to bring to the front of the scene."
+msgstr "The mobject(s) to bring to the front of the scene."
+
+msgid "Qualified name: ``manim.scene.scene.Scene``"
+msgstr "Qualified name: ``manim.scene.scene.Scene``"
+
+msgid "The total ``run_time`` of all of the animations in the list."
+msgstr "The total ``run_time`` of all of the animations in the list."
+
+msgid ":obj:`mouse_scroll_orbit_controls <manim.scene.scene.Scene.mouse_scroll_orbit_controls>`"
+msgstr ":obj:`mouse_scroll_orbit_controls <manim.scene.scene.Scene.mouse_scroll_orbit_controls>`"
+
+msgid "Like a wrapper for wait(). You pass a function that determines whether to continue waiting, and a max wait time if that is never fulfilled."
+msgstr "Like a wrapper for wait(). You pass a function that determines whether to continue waiting, and a max wait time if that is never fulfilled."
+
+msgid "The Mobject to add to the foreground."
+msgstr "The Mobject to add to the foreground."
+
+msgid "The maximum wait time in seconds, if the stop_condition is never fulfilled."
+msgstr "The maximum wait time in seconds, if the stop_condition is never fulfilled."
+
+msgid "The Scene, with the mobjects brought to the front of the scene."
+msgstr "The Scene, with the mobjects brought to the front of the scene."
+
+msgid "Like embed(), but allows for screen interaction."
+msgstr "Like embed(), but allows for screen interaction."
+
+msgid "tl:wr"
+msgstr "tl:wr"
+
+msgid "A typical manim script includes a class derived from :class:`Scene` with an overridden :meth:`Scene.contruct` method:"
+msgstr "A typical manim script includes a class derived from :class:`Scene` with an overridden :meth:`Scene.contruct` method:"
+
+msgid "Whether or not to show skipped animations in the progress bar."
+msgstr "Whether or not to show skipped animations in the progress bar."
+
+msgid "It is not recommended to override the ``__init__`` method in user Scenes.  For code that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead."
+msgstr "It is not recommended to override the ``__init__`` method in user Scenes.  For code that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead."
+
+msgid "Given a list of mobjects and a list of mobjects to be removed, this filters out the removable mobjects from the list of mobjects."
+msgstr "Given a list of mobjects and a list of mobjects to be removed, this filters out the removable mobjects from the list of mobjects."
+
+msgid "The Scene, with the foreground mobjects added."
+msgstr "The Scene, with the foreground mobjects added."
+
+msgid "Adds mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects."
+msgstr "Adds mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects."
+
+msgid "Removes mobjects from the foreground, and internally from the list foreground_mobjects."
+msgstr "Removes mobjects from the foreground, and internally from the list foreground_mobjects."
+
+msgid "Returns a CommandLine ProgressBar whose ``fill_time`` is dependent on the ``run_time`` of an animation, the iterations to perform in that animation and a bool saying whether or not to consider the skipped animations."
+msgstr "Returns a CommandLine ProgressBar whose ``fill_time`` is dependent on the ``run_time`` of an animation, the iterations to perform in that animation and a bool saying whether or not to consider the skipped animations."
+
+msgid "The Scene, with all of its mobjects in self.mobjects and self.foreground_mobjects removed."
+msgstr "The Scene, with all of its mobjects in self.mobjects and self.foreground_mobjects removed."
+
+msgid "The mobject to remove from the foreground."
+msgstr "The mobject to remove from the foreground."
+
+msgid "You will hardly use this when making your own animations."
+msgstr "You will hardly use this when making your own animations."
+
+msgid "Change in time between updates. Defaults (mostly) to 1/frames_per_second"
+msgstr "Change in time between updates. Defaults (mostly) to 1/frames_per_second"
+
+msgid ":obj:`remove_foreground_mobjects <manim.scene.scene.Scene.remove_foreground_mobjects>`"
+msgstr ":obj:`remove_foreground_mobjects <manim.scene.scene.Scene.remove_foreground_mobjects>`"
+
+msgid "Scene"
+msgstr "Scene"
+
+msgid "Adds a single mobject to the foreground, and internally to the list foreground_mobjects, and mobjects."
+msgstr "Adds a single mobject to the foreground, and internally to the list foreground_mobjects, and mobjects."
+
+msgid "If your scene has a Group(), and you removed a mobject from the Group, this dissolves the group and puts the rest of the mobjects directly in self.mobjects or self.foreground_mobjects."
+msgstr "If your scene has a Group(), and you removed a mobject from the Group, this dissolves the group and puts the rest of the mobjects directly in self.mobjects or self.foreground_mobjects."
+
+msgid "Gets attributes of a scene given the attribute's identifier/name."
+msgstr "Gets attributes of a scene given the attribute's identifier/name."
+
+msgid "The Scene, with the foreground mobjects removed."
+msgstr "The Scene, with the foreground mobjects removed."

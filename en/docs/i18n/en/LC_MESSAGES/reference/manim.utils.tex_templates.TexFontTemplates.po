@@ -1,0 +1,185 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "ECF Tall Paul (with Symbol font)"
+msgstr "ECF Tall Paul (with Symbol font)"
+
+msgid "Baskervald ADF with Fourier"
+msgstr "Baskervald ADF with Fourier"
+
+msgid "GFS Bodoni"
+msgstr "GFS Bodoni"
+
+msgid "Chalkboard SE"
+msgstr "Chalkboard SE"
+
+msgid "ECF Skeetch (CM Greek)"
+msgstr "ECF Skeetch (CM Greek)"
+
+msgid "GFS Didot (Italic)"
+msgstr "GFS Didot (Italic)"
+
+msgid "Droid Serif (PX math symbols) (Italic)"
+msgstr "Droid Serif (PX math symbols) (Italic)"
+
+msgid "Vollkorn (TX fonts for Greek and math symbols)"
+msgstr "Vollkorn (TX fonts for Greek and math symbols)"
+
+msgid "GNU FreeSerif and FreeSans"
+msgstr "GNU FreeSerif and FreeSans"
+
+msgid "Comfortaa"
+msgstr "Comfortaa"
+
+msgid "SliTeX (Euler Greek)"
+msgstr "SliTeX (Euler Greek)"
+
+msgid "ECF Webster (with TX fonts)"
+msgstr "ECF Webster (with TX fonts)"
+
+msgid "Latin Modern Typewriter Proportional"
+msgstr "Latin Modern Typewriter Proportional"
+
+msgid "Libris ADF with Fourier"
+msgstr "Libris ADF with Fourier"
+
+msgid "New Century Schoolbook (Symbol Greek)"
+msgstr "New Century Schoolbook (Symbol Greek)"
+
+msgid "Latin Modern Typewriter Proportional (CM Greek) (Italic)"
+msgstr "Latin Modern Typewriter Proportional (CM Greek) (Italic)"
+
+msgid "American Typewriter"
+msgstr "American Typewriter"
+
+msgid "Fourier Utopia (Fourier upright Greek)"
+msgstr "Fourier Utopia (Fourier upright Greek)"
+
+msgid "Apple Chancery"
+msgstr "Apple Chancery"
+
+msgid "Droid Serif"
+msgstr "Droid Serif"
+
+msgid "URW Avant Garde (Symbol Greek)"
+msgstr "URW Avant Garde (Symbol Greek)"
+
+msgid "Venturis ADF with Fourier (Italic)"
+msgstr "Venturis ADF with Fourier (Italic)"
+
+msgid "Droid Sans (Italic)"
+msgstr "Droid Sans (Italic)"
+
+msgid "Baskerville (Italic)"
+msgstr "Baskerville (Italic)"
+
+msgid "URW Zapf Chancery (CM Greek)"
+msgstr "URW Zapf Chancery (CM Greek)"
+
+msgid "Helvetica with Fourier (Italic)"
+msgstr "Helvetica with Fourier (Italic)"
+
+msgid "Auriocus Kalligraphicus (Symbol Greek)"
+msgstr "Auriocus Kalligraphicus (Symbol Greek)"
+
+msgid "These templates are specifically designed to allow you to typeset formulae and mathematics using different fonts. They are based on the mathastext LaTeX package."
+msgstr "These templates are specifically designed to allow you to typeset formulae and mathematics using different fonts. They are based on the mathastext LaTeX package."
+
+msgid "GFS NeoHellenic"
+msgstr "GFS NeoHellenic"
+
+msgid "A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html"
+msgstr "A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html"
+
+msgid "Comic Sans MS"
+msgstr "Comic Sans MS"
+
+msgid "BrushScriptX-Italic (PX math and Greek)"
+msgstr "BrushScriptX-Italic (PX math and Greek)"
+
+msgid "To experiment, try to render the TexFontTemplateLibrary example scene:"
+msgstr "To experiment, try to render the TexFontTemplateLibrary example scene:"
+
+msgid "Libertine"
+msgstr "Libertine"
+
+msgid "GNU FreeSerif (and TX fonts symbols)"
+msgstr "GNU FreeSerif (and TX fonts symbols)"
+
+msgid "ECF JD (with TX fonts)"
+msgstr "ECF JD (with TX fonts)"
+
+msgid "French Cursive (Euler Greek)"
+msgstr "French Cursive (Euler Greek)"
+
+msgid "TexFontTemplates"
+msgstr "TexFontTemplates"
+
+msgid "Times with Fourier (Italic)"
+msgstr "Times with Fourier (Italic)"
+
+msgid "Romande ADF with Fourier (Italic)"
+msgstr "Romande ADF with Fourier (Italic)"
+
+msgid "Antykwa Półtawskiego (TX Fonts for Greek and math symbols)"
+msgstr "Antykwa Półtawskiego (TX Fonts for Greek and math symbols)"
+
+msgid "ECF Augie (Euler Greek)"
+msgstr "ECF Augie (Euler Greek)"
+
+msgid "Papyrus"
+msgstr "Papyrus"
+
+msgid "Minion Pro (and TX fonts symbols)"
+msgstr "Minion Pro (and TX fonts symbols)"
+
+msgid "Noteworthy Light"
+msgstr "Noteworthy Light"
+
+msgid "Verdana (Italic)"
+msgstr "Verdana (Italic)"
+
+msgid "New Century Schoolbook (Symbol Greek, PX math symbols)"
+msgstr "New Century Schoolbook (Symbol Greek, PX math symbols)"
+
+msgid "Zapf Chancery"
+msgstr "Zapf Chancery"
+
+msgid "Droid Sans"
+msgstr "Droid Sans"
+
+msgid "Biolinum"
+msgstr "Biolinum"
+
+msgid "Chalkduster"
+msgstr "Chalkduster"
+
+msgid "``manim path/to/manim/example_scenes/advanced_tex_fonts.py TexFontTemplateLibrary -p -ql``"
+msgstr "``manim path/to/manim/example_scenes/advanced_tex_fonts.py TexFontTemplateLibrary -p -ql``"
+
+msgid "Palatino (Symbol Greek)"
+msgstr "Palatino (Symbol Greek)"
+
+msgid "Minion Pro and Myriad Pro (and TX fonts symbols)"
+msgstr "Minion Pro and Myriad Pro (and TX fonts symbols)"
+
+msgid "Vollkorn with Fourier (Italic)"
+msgstr "Vollkorn with Fourier (Italic)"
+
+msgid "Many of these templates require that specific fonts are installed on your local machine. For example, choosing the template TexFontTemplates.comic_sans will not compile if the Comic Sans Microsoft font is not installed."
+msgstr "Many of these templates require that specific fonts are installed on your local machine. For example, choosing the template TexFontTemplates.comic_sans will not compile if the Comic Sans Microsoft font is not installed."
+
+msgid "Epigrafica"
+msgstr "Epigrafica"
+
+msgid "Electrum ADF (CM Greek)"
+msgstr "Electrum ADF (CM Greek)"

@@ -1,0 +1,95 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Return the bracket mobjects."
+msgstr "Return the bracket mobjects."
+
+msgid "Return columns of the matrix as VGroups."
+msgstr "Return columns of the matrix as VGroups."
+
+msgid "Return the underlying mob matrix mobjects."
+msgstr "Return the underlying mob matrix mobjects."
+
+msgid "Set individual colors for each columns of the matrix."
+msgstr "Set individual colors for each columns of the matrix."
+
+msgid "The current matrix object (self)."
+msgstr "The current matrix object (self)."
+
+msgid "List[:class:`~.VGroup`]"
+msgstr "List[:class:`~.VGroup`]"
+
+msgid ":class:`Matrix`"
+msgstr ":class:`Matrix`"
+
+msgid "the left bracket, by default \"[\""
+msgstr "the left bracket, by default \"[\""
+
+msgid "The first example shows a variety of uses of this module while the second example exlpains the use of the options `add_background_rectangles_to_entries` and `include_background_rectangle`."
+msgstr "The first example shows a variety of uses of this module while the second example exlpains the use of the options `add_background_rectangles_to_entries` and `include_background_rectangle`."
+
+msgid "VGroup containing entries of the matrix."
+msgstr "VGroup containing entries of the matrix."
+
+msgid "Used internally. Adds the brackets to the Matrix mobject."
+msgstr "Used internally. Adds the brackets to the Matrix mobject."
+
+msgid "The list of colors; each color specified corresponds to a row."
+msgstr "The list of colors; each color specified corresponds to a row."
+
+msgid "Used internally."
+msgstr "Used internally."
+
+msgid ":obj:`organize_mob_matrix <manim.mobject.matrix.Matrix.organize_mob_matrix>`"
+msgstr ":obj:`organize_mob_matrix <manim.mobject.matrix.Matrix.organize_mob_matrix>`"
+
+msgid "Matrix"
+msgstr "Matrix"
+
+msgid "Each VGroup contains a column of the matrix."
+msgstr "Each VGroup contains a column of the matrix."
+
+msgid "Qualified name: ``manim.mobject.matrix.Matrix``"
+msgstr "Qualified name: ``manim.mobject.matrix.Matrix``"
+
+msgid "The list of colors; each color specified corresponds to a column."
+msgstr "The list of colors; each color specified corresponds to a column."
+
+msgid "Return the individual entries of the matrix."
+msgstr "Return the individual entries of the matrix."
+
+msgid ":obj:`matrix_to_mob_matrix <manim.mobject.matrix.Matrix.matrix_to_mob_matrix>`"
+msgstr ":obj:`matrix_to_mob_matrix <manim.mobject.matrix.Matrix.matrix_to_mob_matrix>`"
+
+msgid ":obj:`add_background_to_entries <manim.mobject.matrix.Matrix.add_background_to_entries>`"
+msgstr ":obj:`add_background_to_entries <manim.mobject.matrix.Matrix.add_background_to_entries>`"
+
+msgid "See Latex document for various bracket types."
+msgstr "See Latex document for various bracket types."
+
+msgid "Add a black background rectangle to the matrix, see above for an example."
+msgstr "Add a black background rectangle to the matrix, see above for an example."
+
+msgid "Each VGroup contains a row of the matrix."
+msgstr "Each VGroup contains a row of the matrix."
+
+msgid "Return rows of the matrix as VGroups."
+msgstr "Return rows of the matrix as VGroups."
+
+msgid "the right bracket, by default \"]\""
+msgstr "the right bracket, by default \"]\""
+
+msgid "Set individual colors for each row of the matrix."
+msgstr "Set individual colors for each row of the matrix."
+
+msgid "Each VGroup contains a bracket"
+msgstr "Each VGroup contains a bracket"

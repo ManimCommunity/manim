@@ -1,0 +1,176 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "As Manim is a video library, we have to test videos as well. Unfortunately, we cannot directly test video content as rendered videos can differ slightly depending on the system (for reasons related to ffmpeg). Therefore, we only compare video configuration values, exported in .json."
+msgstr "As Manim is a video library, we have to test videos as well. Unfortunately, we cannot directly test video content as rendered videos can differ slightly depending on the system (for reasons related to ffmpeg). Therefore, we only compare video configuration values, exported in .json."
+
+msgid "Helper functions for developers to setup graphical/video tests."
+msgstr "Helper functions for developers to setup graphical/video tests."
+
+msgid "Videos format tests:"
+msgstr "Videos format tests:"
+
+msgid "Note the fixtures here:"
+msgstr "Note the fixtures here:"
+
+msgid "The Main Directories"
+msgstr "The Main Directories"
+
+msgid "Architecture"
+msgstr "Architecture"
+
+msgid "Running this will save ``control_data/videos_data/SquareToCircleWithlFlag.json``, which will look like this:"
+msgstr "Running this will save ``control_data/videos_data/SquareToCircleWithlFlag.json``, which will look like this:"
+
+msgid "``--show_diff`` will show a visual comparison in case a unit test is failing."
+msgstr "``--show_diff`` will show a visual comparison in case a unit test is failing."
+
+msgid "Graphical unit tests: Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature. When pytest runs, it compares the result of the test to the control data, either at 6 fps or just the last frame. If it matches, the tests pass. If the test and control data differ, the tests fail. You can use ``--show_diff`` flag with ``pytest`` to visually see the differences."
+msgstr "Graphical unit tests: Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature. When pytest runs, it compares the result of the test to the control data, either at 6 fps or just the last frame. If it matches, the tests pass. If the test and control data differ, the tests fail. You can use ``--show_diff`` flag with ``pytest`` to visually see the differences."
+
+msgid "Tests for most of the basic functionalities of manim. For example, there a test for ``Mobject``, that checks if it can be added to a Scene, etc."
+msgstr "Tests for most of the basic functionalities of manim. For example, there a test for ``Mobject``, that checks if it can be added to a Scene, etc."
+
+msgid "To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. For the example above, it would be"
+msgstr "To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. For the example above, it would be"
+
+msgid "fixtures are not contained here, they are in ``conftest.py``."
+msgstr "fixtures are not contained here, they are in ``conftest.py``."
+
+msgid "Feel free to check the documentation of ``@frames_comparison`` for more."
+msgstr "Feel free to check the documentation of ``@frames_comparison`` for more."
+
+msgid "If you run pytest now, you will get a ``FileNotFound`` error. This is because you have not created control data for your test."
+msgstr "If you run pytest now, you will get a ``FileNotFound`` error. This is because you have not created control data for your test."
+
+msgid "For example, to test the ``Circle`` VMobject which resides in ``manim/mobject/geometry.py``, add the CircleTest to ``test/test_geometry.py``."
+msgstr "For example, to test the ``Circle`` VMobject which resides in ``manim/mobject/geometry.py``, add the CircleTest to ``test/test_geometry.py``."
+
+msgid "Contains graphical tests."
+msgstr "Contains graphical tests."
+
+msgid "To test videos generated, we use the decorator ``tests.utils.videos_tester.video_comparison``:"
+msgstr "To test videos generated, we use the decorator ``tests.utils.videos_tester.video_comparison``:"
+
+msgid "If you have any questions, please don't hesitate to ask on `Discord <https://www.manim.community/discord/>`_, in your pull request, or in an issue."
+msgstr "If you have any questions, please don't hesitate to ask on `Discord <https://www.manim.community/discord/>`_, in your pull request, or in an issue."
+
+msgid "Graphical Unit Test"
+msgstr "Graphical Unit Test"
+
+msgid "The name of the module is indicated by the variable __module_test__, that **must** be declared in any graphical test file. The module name is used to store the graphical control data."
+msgstr "The name of the module is indicated by the variable __module_test__, that **must** be declared in any graphical test file. The module name is used to store the graphical control data."
+
+msgid "``-x`` will make pytest stop at the first failure it encounters"
+msgstr "``-x`` will make pytest stop at the first failure it encounters"
+
+msgid "Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``."
+msgstr "Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``."
+
+msgid "At the moment there are three types of tests:"
+msgstr "At the moment there are three types of tests:"
+
+msgid "Useful internal functions used by pytest."
+msgstr "Useful internal functions used by pytest."
+
+msgid "Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise pytest will not recognize it as a test."
+msgstr "Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise pytest will not recognize it as a test."
+
+msgid "If you are adding new features to manim, you should add appropriate tests for them. Tests prevent manim from breaking at each change by checking that no other feature has been broken and/or been unintentionally modified."
+msgstr "If you are adding new features to manim, you should add appropriate tests for them. Tests prevent manim from breaking at each change by checking that no other feature has been broken and/or been unintentionally modified."
+
+msgid "How Manim tests"
+msgstr "How Manim tests"
+
+msgid "Unit Tests"
+msgstr "Unit Tests"
+
+msgid "Unit Tests:"
+msgstr "Unit Tests:"
+
+msgid "Some useful pytest flags:"
+msgstr "Some useful pytest flags:"
+
+msgid "``test_scene_rendering/``:"
+msgstr "``test_scene_rendering/``:"
+
+msgid "The test must be written in the correct file (i.e. the file that corresponds to the appropriate category the feature belongs to) and follow the structure of unit tests."
+msgstr "The test must be written in the correct file (i.e. the file that corresponds to the appropriate category the feature belongs to) and follow the structure of unit tests."
+
+msgid "Manim uses pytest as its testing framework. To start the testing process, go to the root directory of the project and run pytest in your terminal. Any errors that occur during testing will be displayed in the terminal."
+msgstr "Manim uses pytest as its testing framework. To start the testing process, go to the root directory of the project and run pytest in your terminal. Any errors that occur during testing will be displayed in the terminal."
+
+msgid "You have to generate a ``.json`` file first to be able to test your video. To do that, use ``helpers.save_control_data_from_video``."
+msgstr "You have to generate a ``.json`` file first to be able to test your video. To do that, use ``helpers.save_control_data_from_video``."
+
+msgid "``control_data/``:"
+msgstr "``control_data/``:"
+
+msgid "tmp_path is a pytest fixture to get a tmp_path. Manim will output here, according to the flag ``--media_dir``."
+msgstr "tmp_path is a pytest fixture to get a tmp_path. Manim will output here, according to the flag ``--media_dir``."
+
+msgid "``helpers/``:"
+msgstr "``helpers/``:"
+
+msgid "``test_graphical_units/``:"
+msgstr "``test_graphical_units/``:"
+
+msgid "The directory containing control data. ``control_data/graphical_units_data/`` contains the expected and correct frame data for graphical tests, and ``control_data/videos_data/`` contains the .json files used to check videos."
+msgstr "The directory containing control data. ``control_data/graphical_units_data/`` contains the expected and correct frame data for graphical tests, and ``control_data/videos_data/`` contains the .json files used to check videos."
+
+msgid "How it Works"
+msgstr "How it Works"
+
+msgid "(``-s`` is here to see manim logs, so you can see what's going on)."
+msgstr "(``-s`` is here to see manim logs, so you can see what's going on)."
+
+msgid "``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in the case multiple tests need to use this cfg file."
+msgstr "``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in the case multiple tests need to use this cfg file."
+
+msgid "``--skip_slow`` will skip the (arbitrarily) slow tests"
+msgstr "``--skip_slow`` will skip the (arbitrarily) slow tests"
+
+msgid "Here's an example in ``test_geometry.py``:"
+msgstr "Here's an example in ``test_geometry.py``:"
+
+msgid "For tests that need to render a scene in some way, such as tests for CLI flags (end-to-end tests)."
+msgstr "For tests that need to render a scene in some way, such as tests for CLI flags (end-to-end tests)."
+
+msgid "``simple_scenes_path`` same as above, except for ``test_scene_rendering/simple_scene.py``"
+msgstr "``simple_scenes_path`` same as above, except for ``test_scene_rendering/simple_scene.py``"
+
+msgid "Adding Tests"
+msgstr "Adding Tests"
+
+msgid "``utils/``:"
+msgstr "``utils/``:"
+
+msgid "The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**"
+msgstr "The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**"
+
+msgid "The ``manim/tests`` directory looks like this:"
+msgstr "The ``manim/tests`` directory looks like this:"
+
+msgid "Adding a New Test"
+msgstr "Adding a New Test"
+
+msgid "You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method."
+msgstr "You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method."
+
+msgid "You can also specify, when needed, which base scene you need (ThreeDScene, for example) :"
+msgstr "You can also specify, when needed, which base scene you need (ThreeDScene, for example) :"
+
+msgid "``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)"
+msgstr "``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)"
+
+msgid "Videos tests"
+msgstr "Videos tests"

@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The density of the :class:`Star`. Only used if ``inner_radius`` is unspecified.  See :class:`RegularPolygram` for more information."
+msgstr "The density of the :class:`Star`. Only used if ``inner_radius`` is unspecified.  See :class:`RegularPolygram` for more information."
+
+msgid "If ``inner_radius`` is unspecified and ``density``     is not in the range ``[1, n/2)``."
+msgstr "If ``inner_radius`` is unspecified and ``density``     is not in the range ``[1, n/2)``."
+
+msgid "If unspecified, the inner radius will be calculated such that the edges of the :class:`Star` perfectly follow the edges of its :class:`RegularPolygram` counterpart."
+msgstr "If unspecified, the inner radius will be calculated such that the edges of the :class:`Star` perfectly follow the edges of its :class:`RegularPolygram` counterpart."
+
+msgid "Star"
+msgstr "Star"
+
+msgid "How many points on the :class:`Star`."
+msgstr "How many points on the :class:`Star`."
+
+msgid "The density of the :class:`Star`. Only used if ``inner_radius`` is unspecified."
+msgstr "The density of the :class:`Star`. Only used if ``inner_radius`` is unspecified."
+
+msgid "The radius of the circle that the outer vertices are placed on."
+msgstr "The radius of the circle that the outer vertices are placed on."
+
+msgid "The radius of the circle that the inner vertices are placed on."
+msgstr "The radius of the circle that the inner vertices are placed on."
+
+msgid "See :class:`RegularPolygram` for more information."
+msgstr "See :class:`RegularPolygram` for more information."
+
+msgid "Qualified name: ``manim.mobject.geometry.Star``"
+msgstr "Qualified name: ``manim.mobject.geometry.Star``"
+
+msgid "Forwardeds to the parent constructor."
+msgstr "Forwardeds to the parent constructor."
+
+msgid "The angle the vertices start at; the rotation of the :class:`Star`."
+msgstr "The angle the vertices start at; the rotation of the :class:`Star`."
+
+msgid "The radius of the circle that the inner vertices are placed on.  If unspecified, the inner radius will be calculated such that the edges of the :class:`Star` perfectly follow the edges of its :class:`RegularPolygram` counterpart."
+msgstr "The radius of the circle that the inner vertices are placed on.  If unspecified, the inner radius will be calculated such that the edges of the :class:`Star` perfectly follow the edges of its :class:`RegularPolygram` counterpart."

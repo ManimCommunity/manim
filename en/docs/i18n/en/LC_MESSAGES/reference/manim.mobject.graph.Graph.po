@@ -1,0 +1,143 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "A group containing all removed edges."
+msgstr "A group containing all removed edges."
+
+msgid "Either one of ``\"spring\"`` (the default), ``\"circular\"``, ``\"kamada_kawai\"``, ``\"planar\"``, ``\"random\"``, ``\"shell\"``, ``\"spectral\"``, ``\"spiral\"``, ``\"tree\"``, and ``\"partite\"`` for automatic vertex positioning using ``networkx`` (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_ for more details), or a dictionary specifying a coordinate (value) for each vertex (key) for manual positioning."
+msgstr "Either one of ``\"spring\"`` (the default), ``\"circular\"``, ``\"kamada_kawai\"``, ``\"planar\"``, ``\"random\"``, ``\"shell\"``, ``\"spectral\"``, ``\"spiral\"``, ``\"tree\"``, and ``\"partite\"`` for automatic vertex positioning using ``networkx`` (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_ for more details), or a dictionary specifying a coordinate (value) for each vertex (key) for manual positioning."
+
+msgid "Graph"
+msgstr "Graph"
+
+msgid "A dictionary whose keys are the vertices, and whose values are mobjects to be used as vertices. Passing vertices here overrides all other configuration options for a vertex."
+msgstr "A dictionary whose keys are the vertices, and whose values are mobjects to be used as vertices. Passing vertices here overrides all other configuration options for a vertex."
+
+msgid "A dictionary either containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edge tuples, and whose values are dictionaries containing keyword arguments to be passed for the construction of the corresponding edge."
+msgstr "A dictionary either containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edge tuples, and whose values are dictionaries containing keyword arguments to be passed for the construction of the corresponding edge."
+
+msgid "A list of hashable vertex identifiers."
+msgstr "A list of hashable vertex identifiers."
+
+msgid "Add new edges to the graph."
+msgstr "Add new edges to the graph."
+
+msgid "The custom tree layout can be used to show the graph by distance from the root vertex. You must pass the root vertex of the tree."
+msgstr "The custom tree layout can be used to show the graph by distance from the root vertex. You must pass the root vertex of the tree."
+
+msgid "Qualified name: ``manim.mobject.graph.Graph``"
+msgstr "Qualified name: ``manim.mobject.graph.Graph``"
+
+msgid "See the documentation of :class:`~.Graph` for details about the keyword arguments."
+msgstr "See the documentation of :class:`~.Graph` for details about the keyword arguments."
+
+msgid "This implementation uses updaters to make the edges move with the vertices."
+msgstr "This implementation uses updaters to make the edges move with the vertices."
+
+msgid "In ``edge_config``, edges can be passed in both directions: if ``(u, v)`` is an edge in the graph, both ``(u, v)`` as well as ``(v, u)`` can be used as keys in the dictionary."
+msgstr "In ``edge_config``, edges can be passed in both directions: if ``(u, v)`` is an edge in the graph, both ``(u, v)`` as well as ``(v, u)`` can be used as keys in the dictionary."
+
+msgid "Vertices can also be positioned manually:"
+msgstr "Vertices can also be positioned manually:"
+
+msgid "Controls whether or not the vertex is labeled. If ``False`` (the default), the vertex is not labeled; if ``True`` it is labeled using its names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively, any :class:`~.Mobject` can be passed to be used as the label."
+msgstr "Controls whether or not the vertex is labeled. If ``False`` (the default), the vertex is not labeled; if ``True`` it is labeled using its names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively, any :class:`~.Mobject` can be passed to be used as the label."
+
+msgid "Sets the fill color of the default labels generated when ``labels`` is set to ``True``. Has no effect for other values of ``labels``."
+msgstr "Sets the fill color of the default labels generated when ``labels`` is set to ``True``. Has no effect for other values of ``labels``."
+
+msgid "A ``networkx`` graph."
+msgstr "A ``networkx`` graph."
+
+msgid "First, we create a small graph and demonstrate that the edges move together with the vertices."
+msgstr "First, we create a small graph and demonstrate that the edges move together with the vertices."
+
+msgid "A list of vertices. Must be hashable elements."
+msgstr "A list of vertices. Must be hashable elements."
+
+msgid "Remove several edges from the graph."
+msgstr "Remove several edges from the graph."
+
+msgid "There are several automatic positioning algorithms to choose from:"
+msgstr "There are several automatic positioning algorithms to choose from:"
+
+msgid "Add a list of vertices to the graph."
+msgstr "Add a list of vertices to the graph."
+
+msgid "Either a dictionary containing keyword arguments to be passed to the class specified via ``vertex_type``, or a dictionary whose keys are the vertices, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding vertex."
+msgstr "Either a dictionary containing keyword arguments to be passed to the class specified via ``vertex_type``, or a dictionary whose keys are the vertices, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding vertex."
+
+msgid "Build a :class:`~.Graph` from a given ``networkx`` graph."
+msgstr "Build a :class:`~.Graph` from a given ``networkx`` graph."
+
+msgid "The vertices in graphs can be labeled, and configurations for vertices and edges can be modified both by default and for specific vertices and edges."
+msgstr "The vertices in graphs can be labeled, and configurations for vertices and edges can be modified both by default and for specific vertices and edges."
+
+msgid "The mobject class used for displaying edges in the scene."
+msgstr "The mobject class used for displaying edges in the scene."
+
+msgid "You can also lay out a partite graph on columns by specifying a list of the vertices on each side and choosing the partite layout."
+msgstr "You can also lay out a partite graph on columns by specifying a list of the vertices on each side and choosing the partite layout."
+
+msgid "The edge (as a tuple of vertex identifiers) to be added. If a non-existing vertex is passed, a new vertex with default settings will be created. Create new vertices yourself beforehand to customize them."
+msgstr "The edge (as a tuple of vertex identifiers) to be added. If a non-existing vertex is passed, a new vertex with default settings will be created. Create new vertices yourself beforehand to customize them."
+
+msgid "Either a dictionary containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edges, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding edge."
+msgstr "Either a dictionary containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edges, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding edge."
+
+msgid "Keywords to be passed to the constructor of :class:`~.Graph`."
+msgstr "Keywords to be passed to the constructor of :class:`~.Graph`."
+
+msgid "Graphs can be instantiated by passing both a list of (distinct, hashable) vertex names, together with list of edges (as tuples of vertex names). See the examples below for details."
+msgstr "Graphs can be instantiated by passing both a list of (distinct, hashable) vertex names, together with list of edges (as tuples of vertex names). See the examples below for details."
+
+msgid "A list of edges to be removed from the graph."
+msgstr "A list of edges to be removed from the graph."
+
+msgid "A dictionary containing keyword arguments to be passed to the class specified via ``vertex_type``."
+msgstr "A dictionary containing keyword arguments to be passed to the class specified via ``vertex_type``."
+
+msgid "The scale of automatically generated layouts: the vertices will be arranged such that the coordinates are located within the interval ``[-scale, scale]``. Default: 2."
+msgstr "The scale of automatically generated layouts: the vertices will be arranged such that the coordinates are located within the interval ``[-scale, scale]``. Default: 2."
+
+msgid "A dictionary whose keys are the vertex identifiers, and whose values are mobjects that should be used as vertices. Overrides all other vertex customization options."
+msgstr "A dictionary whose keys are the vertex identifiers, and whose values are mobjects that should be used as vertices. Overrides all other vertex customization options."
+
+msgid "A list of edges, specified as tuples ``(u, v)`` where both ``u`` and ``v`` are vertices."
+msgstr "A list of edges, specified as tuples ``(u, v)`` where both ``u`` and ``v`` are vertices."
+
+msgid "A list of vertices to be removed from the graph."
+msgstr "A list of vertices to be removed from the graph."
+
+msgid "All vertices in your graph which are not listed in any of the partitions are collected in their own partition and rendered in the rightmost column."
+msgstr "All vertices in your graph which are not listed in any of the partitions are collected in their own partition and rendered in the rightmost column."
+
+msgid "Change the layout of this graph."
+msgstr "Change the layout of this graph."
+
+msgid "Remove several vertices from the graph."
+msgstr "Remove several vertices from the graph."
+
+msgid "A dictionary specifying the coordinates where the new vertices should be added. If ``None``, all vertices are created at the center of the graph."
+msgstr "A dictionary specifying the coordinates where the new vertices should be added. If ``None``, all vertices are created at the center of the graph."
+
+msgid "The mobject class used for displaying vertices in the scene."
+msgstr "The mobject class used for displaying vertices in the scene."
+
+msgid "Controls whether or not vertices are labeled. If ``False`` (the default), the vertices are not labeled; if ``True`` they are labeled using their names (as specified in ``vertices``) via :class:`~.MathTex`. Alternatively, custom labels can be specified by passing a dictionary whose keys are the vertices, and whose values are the corresponding vertex labels (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`)."
+msgstr "Controls whether or not vertices are labeled. If ``False`` (the default), the vertices are not labeled; if ``True`` they are labeled using their names (as specified in ``vertices``) via :class:`~.MathTex`. Alternatively, custom labels can be specified by passing a dictionary whose keys are the vertices, and whose values are the corresponding vertex labels (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`)."
+
+msgid "Only for automatically generated layouts. A dictionary whose entries are passed as keyword arguments to the automatic layout algorithm specified via ``layout`` of``networkx``."
+msgstr "Only for automatically generated layouts. A dictionary whose entries are passed as keyword arguments to the automatic layout algorithm specified via ``layout`` of``networkx``."
+
+msgid "A group containing all newly added vertices and edges."
+msgstr "A group containing all newly added vertices and edges."

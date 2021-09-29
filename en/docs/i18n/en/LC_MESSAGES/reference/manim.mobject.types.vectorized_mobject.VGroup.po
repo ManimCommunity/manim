@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "List of VMobject to add"
+msgstr "List of VMobject to add"
+
+msgid ":class:`VGroup`"
+msgstr ":class:`VGroup`"
+
+msgid "Checks if all passed elements are an instance of VMobject and then add them to submobjects"
+msgstr "Checks if all passed elements are an instance of VMobject and then add them to submobjects"
+
+msgid "VGroup"
+msgstr "VGroup"
+
+msgid "This can be used to group multiple :class:`~.VMobject` instances together in order to scale, move, ... them together."
+msgstr "This can be used to group multiple :class:`~.VMobject` instances together in order to scale, move, ... them together."
+
+msgid "If one element of the list is not an instance of VMobject"
+msgstr "If one element of the list is not an instance of VMobject"
+
+msgid "To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or `-` and `-=` operators:"
+msgstr "To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or `-` and `-=` operators:"

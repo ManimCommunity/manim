@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The mobject to be distorted."
+msgstr "The mobject to be distorted."
+
+msgid "The function defining the shape of one wave flank."
+msgstr "The function defining the shape of one wave flank."
+
+msgid "The distance points of the shape get shifted"
+msgstr "The distance points of the shape get shifted"
+
+msgid "Send a wave through the Mobject distorting it temporarily."
+msgstr "Send a wave through the Mobject distorting it temporarily."
+
+msgid "The number of ripples of the wave"
+msgstr "The number of ripples of the wave"
+
+msgid "The direction in which the wave nudges points of the shape"
+msgstr "The direction in which the wave nudges points of the shape"
+
+msgid "Bases: :class:`manim.animation.movement.Homotopy`"
+msgstr "Bases: :class:`manim.animation.movement.Homotopy`"
+
+msgid "Qualified name: ``manim.animation.indication.ApplyWave``"
+msgstr "Qualified name: ``manim.animation.indication.ApplyWave``"
+
+msgid "ApplyWave"
+msgstr "ApplyWave"
+
+msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
+msgstr "Homotopy is a function from (x, y, z, t) to (x', y', z')"
+
+msgid "The length of the wave relative to the width of the mobject."
+msgstr "The length of the wave relative to the width of the mobject."

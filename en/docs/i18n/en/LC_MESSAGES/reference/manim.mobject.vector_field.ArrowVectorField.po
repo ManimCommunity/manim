@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The maximum x value for which to draw vectors."
+msgstr "The maximum x value for which to draw vectors."
+
+msgid "The distance in y direction between two vectors."
+msgstr "The distance in y direction between two vectors."
+
+msgid "The opacity of the arrows."
+msgstr "The opacity of the arrows."
+
+msgid "Creates a vector in the vector field."
+msgstr "Creates a vector in the vector field."
+
+msgid "The function determining the displayed size of the vectors. The actual size of the vector is passed, the returned value will be used as display size for the vector. By default this is used to cap the displayed size of vectors to reduce the clutter."
+msgstr "The function determining the displayed size of the vectors. The actual size of the vector is passed, the returned value will be used as display size for the vector. By default this is used to cap the displayed size of vectors to reduce the clutter."
+
+msgid "The maximum y value for which to draw vectors."
+msgstr "The maximum y value for which to draw vectors."
+
+msgid "The created vector is based on the function of the vector field and is rooted in the given point. Color and length fit the specifications of this vector field."
+msgstr "The created vector is based on the function of the vector field and is rooted in the given point. Color and length fit the specifications of this vector field."
+
+msgid "Vector fields are always based on a function defining the :class:`~.Vector` at every position. The values of this functions is displayed as a grid of vectors. By default the color of each vector is determined by it's magnitude. Other color schemes can be used however."
+msgstr "Vector fields are always based on a function defining the :class:`~.Vector` at every position. The values of this functions is displayed as a grid of vectors. By default the color of each vector is determined by it's magnitude. Other color schemes can be used however."
+
+msgid "A :class:`VectorField` represented by a set of change vectors."
+msgstr "A :class:`VectorField` represented by a set of change vectors."
+
+msgid "The minimum x value for which to draw vectors."
+msgstr "The minimum x value for which to draw vectors."
+
+msgid "ArrowVectorField"
+msgstr "ArrowVectorField"
+
+msgid "Additional arguments to be passed to the :class:`~.Vector` constructor"
+msgstr "Additional arguments to be passed to the :class:`~.Vector` constructor"
+
+msgid "The root point of the vector."
+msgstr "The root point of the vector."
+
+msgid "The distance in x direction between two vectors."
+msgstr "The distance in x direction between two vectors."
+
+msgid "The minimum y value for which to draw vectors."
+msgstr "The minimum y value for which to draw vectors."

@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The value that will overwrite the current number of the :class:`~.DecimalNumber`."
+msgstr "The value that will overwrite the current number of the :class:`~.DecimalNumber`."
+
+msgid "DecimalNumber"
+msgstr "DecimalNumber"
+
+msgid ":obj:`get_complex_formatter <manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
+msgstr ":obj:`get_complex_formatter <manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
+
+msgid "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
+msgstr "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
+
+msgid "Set the value of the :class:`~.DecimalNumber` to a new number."
+msgstr "Set the value of the :class:`~.DecimalNumber` to a new number."
+
+msgid ":obj:`set_submobjects_from_number <manim.mobject.numbers.DecimalNumber.set_submobjects_from_number>`"
+msgstr ":obj:`set_submobjects_from_number <manim.mobject.numbers.DecimalNumber.set_submobjects_from_number>`"
+
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words: - include_sign - group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
+msgstr "Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words: - include_sign - group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
+
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument."
+msgstr "Configuration is based first off instance attributes, but overwritten by any kew word argument."
+
+msgid "An mobject representing a decimal number."
+msgstr "An mobject representing a decimal number."
+
+msgid ":obj:`increment_value <manim.mobject.numbers.DecimalNumber.increment_value>`"
+msgstr ":obj:`increment_value <manim.mobject.numbers.DecimalNumber.increment_value>`"

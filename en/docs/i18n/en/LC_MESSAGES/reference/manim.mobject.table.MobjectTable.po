@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "MobjectTable"
+msgstr "MobjectTable"
+
+msgid "Qualified name: ``manim.mobject.table.MobjectTable``"
+msgstr "Qualified name: ``manim.mobject.table.MobjectTable``"
+
+msgid "A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`."
+msgstr "A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`."
+
+msgid "Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`."
+msgstr "Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`."
+
+msgid "The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself."
+msgstr "The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself."

@@ -1,0 +1,122 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`end_animation <manim.mobject.vector_field.StreamLines.end_animation>`"
+msgstr ":obj:`end_animation <manim.mobject.vector_field.StreamLines.end_animation>`"
+
+msgid "The stream lines appear in random order."
+msgstr "The stream lines appear in random order."
+
+msgid "The stroke with of the stream lines."
+msgstr "The stroke with of the stream lines."
+
+msgid "The creation animation of the stream lines."
+msgstr "The creation animation of the stream lines."
+
+msgid "The factor by which the distance an agent moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field."
+msgstr "The factor by which the distance an agent moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field."
+
+msgid "The distance in y direction between two agents."
+msgstr "The distance in y direction between two agents."
+
+msgid "At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of this flow."
+msgstr "At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of this flow."
+
+msgid "The minimum y value at which agends are spawned"
+msgstr "The minimum y value at which agends are spawned"
+
+msgid ":obj:`start_animation <manim.mobject.vector_field.StreamLines.start_animation>`"
+msgstr ":obj:`start_animation <manim.mobject.vector_field.StreamLines.start_animation>`"
+
+msgid "Bases: :class:`manim.mobject.vector_field.VectorField`"
+msgstr "Bases: :class:`manim.mobject.vector_field.VectorField`"
+
+msgid "The minimum x value at which agends are spawned"
+msgstr "The minimum x value at which agends are spawned"
+
+msgid "The maximum x value at which agends are spawned"
+msgstr "The maximum x value at which agends are spawned"
+
+msgid "The function defining the rate of change at every position of the vector field."
+msgstr "The function defining the rate of change at every position of the vector field."
+
+msgid "If `True` the animation is initialized line by line. Otherwise it starts with all lines shown."
+msgstr "If `True` the animation is initialized line by line. Otherwise it starts with all lines shown."
+
+msgid "The lag ratio of the animation. If undefined, it will be selected so that the total animation length is 1.5 times the run time of each stream line creation."
+msgstr "The lag ratio of the animation. If undefined, it will be selected so that the total animation length is 1.5 times the run time of each stream line creation."
+
+msgid "The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length."
+msgstr "The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length."
+
+msgid "The rate function of each stream line flashing"
+msgstr "The rate function of each stream line flashing"
+
+msgid "The distance agents can move out of the generation area before being terminated."
+msgstr "The distance agents can move out of the generation area before being terminated."
+
+msgid "The opacity of the stream lines."
+msgstr "The opacity of the stream lines."
+
+msgid "The animation fading out the running stream animation."
+msgstr "The animation fading out the running stream animation."
+
+msgid "The time the agents get to move in the vector field. Higher values therefore result in longer stream lines. However, this whole time gets simulated upon creation."
+msgstr "The time the agents get to move in the vector field. Higher values therefore result in longer stream lines. However, this whole time gets simulated upon creation."
+
+msgid "The maximum y value at which agends are spawned"
+msgstr "The maximum y value at which agends are spawned"
+
+msgid "The amount by which the starting position of each agent is altered along each axis. Defaults to :code:`delta_y / 2` if not defined."
+msgstr "The amount by which the starting position of each agent is altered along each axis. Defaults to :code:`delta_y / 2` if not defined."
+
+msgid "The proportion of the stream line shown while being animated"
+msgstr "The proportion of the stream line shown while being animated"
+
+msgid "if no stream line animation is running"
+msgstr "if no stream line animation is running"
+
+msgid "Vector fields are always based on a function defining the vector at every position. The values of this functions is displayed by moving many agents along the vector field and showing their trace."
+msgstr "Vector fields are always based on a function defining the vector at every position. The values of this functions is displayed by moving many agents along the vector field and showing their trace."
+
+msgid "The distance in x direction between two agents."
+msgstr "The distance in x direction between two agents."
+
+msgid "The stream lines will continuously flow"
+msgstr "The stream lines will continuously flow"
+
+msgid "End the stream line animation smoothly."
+msgstr "End the stream line animation smoothly."
+
+msgid "StreamLines"
+msgstr "StreamLines"
+
+msgid "Returns an animation resulting in fully displayed stream lines without a noticeable cut."
+msgstr "Returns an animation resulting in fully displayed stream lines without a noticeable cut."
+
+msgid "The animation class being used"
+msgstr "The animation class being used"
+
+msgid "Animates the stream lines using an updater."
+msgstr "Animates the stream lines using an updater."
+
+msgid "The number of agents generated at each starting point."
+msgstr "The number of agents generated at each starting point."
+
+msgid "StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents."
+msgstr "StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents."
+
+msgid "Raises"
+msgstr "Raises"
+
+msgid "The run time of every single stream line creation. The runtime of the whole animation might be longer due to the `lag_ratio`. If undefined, the virtual time of the stream lines is used as run time."
+msgstr "The run time of every single stream line creation. The runtime of the whole animation might be longer due to the `lag_ratio`. If undefined, the virtual time of the stream lines is used as run time."

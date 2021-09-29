@@ -1,0 +1,338 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Harivinay +"
+msgstr "Harivinay +"
+
+msgid "`#1852 <https://github.com/ManimCommunity/manim/pull/1852>`__: Fixed docs for :meth:`.Coordinate_system.add_coordinates` and moved :class: `~.Code` example"
+msgstr "`#1852 <https://github.com/ManimCommunity/manim/pull/1852>`__: Fixed docs for :meth:`.Coordinate_system.add_coordinates` and moved :class: `~.Code` example"
+
+msgid "Lino"
+msgstr "Lino"
+
+msgid "Noam Zaks"
+msgstr "Noam Zaks"
+
+msgid "`#1790 <https://github.com/ManimCommunity/manim/pull/1790>`__: Fixed an import from ``manimlib``"
+msgstr "`#1790 <https://github.com/ManimCommunity/manim/pull/1790>`__: Fixed an import from ``manimlib``"
+
+msgid "Fixed issue where file observer would error after the second run as the first observer was not closed"
+msgstr "Fixed issue where file observer would error after the second run as the first observer was not closed"
+
+msgid "`#1850 <https://github.com/ManimCommunity/manim/pull/1850>`__: Bump version number to ``v0.9.0`` and generate changelog"
+msgstr "`#1850 <https://github.com/ManimCommunity/manim/pull/1850>`__: Bump version number to ``v0.9.0`` and generate changelog"
+
+msgid "This brings easy-to-use and customizable tables to Manim. Several examples for this new mobject can be found at :mod:`the module documentation page <.mobject.table>` and its subpages."
+msgstr "This brings easy-to-use and customizable tables to Manim. Several examples for this new mobject can be found at :mod:`the module documentation page <.mobject.table>` and its subpages."
+
+msgid "`#1706 <https://github.com/ManimCommunity/manim/pull/1706>`__: Rework example for :class:`~.Variable`"
+msgstr "`#1706 <https://github.com/ManimCommunity/manim/pull/1706>`__: Rework example for :class:`~.Variable`"
+
+msgid "This method enables a color gradient to be applied to a :class:`~.ParametricSurface`, including the ability to define at which points the colors should be centered."
+msgstr "This method enables a color gradient to be applied to a :class:`~.ParametricSurface`, including the ability to define at which points the colors should be centered."
+
+msgid "`#1722 <https://github.com/ManimCommunity/manim/pull/1722>`__: Fixed ``remover=True`` for :class:`~.AnimationGroup`"
+msgstr "`#1722 <https://github.com/ManimCommunity/manim/pull/1722>`__: Fixed ``remover=True`` for :class:`~.AnimationGroup`"
+
+msgid "`#1826 <https://github.com/ManimCommunity/manim/pull/1826>`__: Fixed scaling issue with :meth:`.BarChart.change_bar_values`"
+msgstr "`#1826 <https://github.com/ManimCommunity/manim/pull/1826>`__: Fixed scaling issue with :meth:`.BarChart.change_bar_values`"
+
+msgid "`#1802 <https://github.com/ManimCommunity/manim/pull/1802>`__: Refactored graphical unit testing system, and implemented multi frames tests"
+msgstr "`#1802 <https://github.com/ManimCommunity/manim/pull/1802>`__: Refactored graphical unit testing system, and implemented multi frames tests"
+
+msgid "`#1677 <https://github.com/ManimCommunity/manim/pull/1677>`__: Added a new :class:`~.Table` mobject"
+msgstr "`#1677 <https://github.com/ManimCommunity/manim/pull/1677>`__: Added a new :class:`~.Table` mobject"
+
+msgid "Removed duplicated information from the README (``pip install manim`` is already covered in the docs)"
+msgstr "Removed duplicated information from the README (``pip install manim`` is already covered in the docs)"
+
+msgid "`#1851 <https://github.com/ManimCommunity/manim/pull/1851>`__: Renamed ``Tabular`` to :class:`~.Table`"
+msgstr "`#1851 <https://github.com/ManimCommunity/manim/pull/1851>`__: Renamed ``Tabular`` to :class:`~.Table`"
+
+msgid "Finally, the utility functions ``get_norm`` and ``cross`` have been removed (use the corresponding Numpy methods instead), and the function ``angle_between`` has been replaced with ``angle_between_vectors``."
+msgstr "Finally, the utility functions ``get_norm`` and ``cross`` have been removed (use the corresponding Numpy methods instead), and the function ``angle_between`` has been replaced with ``angle_between_vectors``."
+
+msgid "`#1774 <https://github.com/ManimCommunity/manim/pull/1774>`__: Add the ``reverse`` parameter to :class:`~.Write`"
+msgstr "`#1774 <https://github.com/ManimCommunity/manim/pull/1774>`__: Add the ``reverse`` parameter to :class:`~.Write`"
+
+msgid "UraniumCronorum +"
+msgstr "UraniumCronorum +"
+
+msgid "Vinh H. Pham (Vincent) +"
+msgstr "Vinh H. Pham (Vincent) +"
+
+msgid "Added a new :func:`~.perpendicular_bisector` function in ``space_ops.py``"
+msgstr "Added a new :func:`~.perpendicular_bisector` function in ``space_ops.py``"
+
+msgid "If no range specified, `get_riemann_rectangles` generates the rectangles only where the area is correctly bounded"
+msgstr "If no range specified, `get_riemann_rectangles` generates the rectangles only where the area is correctly bounded"
+
+msgid "The classes ``FadeInFrom``, ``FadeOutAndShift``, ``FadeOutToPoint``, ``FadeInFromPoint``, ``FadeInFromLarge``, ``VFadeIn``, ``VFadeOut``, ``VFadeInThenOut`` have been removed, use :class:`~.FadeIn` or :class:`~.FadeOut` with appropriate keyword arguments instead."
+msgstr "The classes ``FadeInFrom``, ``FadeOutAndShift``, ``FadeOutToPoint``, ``FadeInFromPoint``, ``FadeInFromLarge``, ``VFadeIn``, ``VFadeOut``, ``VFadeInThenOut`` have been removed, use :class:`~.FadeIn` or :class:`~.FadeOut` with appropriate keyword arguments instead."
+
+msgid "`#1765 <https://github.com/ManimCommunity/manim/pull/1765>`__: Added a static method :meth:`.Circle.from_three_points` for defining a circle from three points"
+msgstr "`#1765 <https://github.com/ManimCommunity/manim/pull/1765>`__: Added a static method :meth:`.Circle.from_three_points` for defining a circle from three points"
+
+msgid "Jared Hughes +"
+msgstr "Jared Hughes +"
+
+msgid "`#1782 <https://github.com/ManimCommunity/manim/pull/1782>`__: Fixed :class:`~.Tex` not working properly with the OpenGL renderer"
+msgstr "`#1782 <https://github.com/ManimCommunity/manim/pull/1782>`__: Fixed :class:`~.Tex` not working properly with the OpenGL renderer"
+
+msgid "`#1842 <https://github.com/ManimCommunity/manim/pull/1842>`__: Removed instructions on installing Poetry from Developer Installation documentation, reference Poetry's documentation instead"
+msgstr "`#1842 <https://github.com/ManimCommunity/manim/pull/1842>`__: Removed instructions on installing Poetry from Developer Installation documentation, reference Poetry's documentation instead"
+
+msgid "`#1780 <https://github.com/ManimCommunity/manim/pull/1780>`__: Allow non-numerical values to be added to :class:`~.NumberLine` and :class:`~.Axes`"
+msgstr "`#1780 <https://github.com/ManimCommunity/manim/pull/1780>`__: Allow non-numerical values to be added to :class:`~.NumberLine` and :class:`~.Axes`"
+
+msgid "Improved performance on vectorized mobject shaders"
+msgstr "Improved performance on vectorized mobject shaders"
+
+msgid "Accepts a tuple in the form: ``x,y``."
+msgstr "Accepts a tuple in the form: ``x,y``."
+
+msgid "Raghav Prabhakar +"
+msgstr "Raghav Prabhakar +"
+
+msgid "`#1807 <https://github.com/ManimCommunity/manim/pull/1807>`__: Updated installation instructions"
+msgstr "`#1807 <https://github.com/ManimCommunity/manim/pull/1807>`__: Updated installation instructions"
+
+msgid "Kadatatlu Kishore +"
+msgstr "Kadatatlu Kishore +"
+
+msgid "`#1749 <https://github.com/ManimCommunity/manim/pull/1749>`__: Added documentation and example for :meth:`.VMobject.set_fill`"
+msgstr "`#1749 <https://github.com/ManimCommunity/manim/pull/1749>`__: Added documentation and example for :meth:`.VMobject.set_fill`"
+
+msgid "`#1786 <https://github.com/ManimCommunity/manim/pull/1786>`__: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes"
+msgstr "`#1786 <https://github.com/ManimCommunity/manim/pull/1786>`__: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes"
+
+msgid "`#1757 <https://github.com/ManimCommunity/manim/pull/1757>`__: Added warning when there is a large number of items to hash."
+msgstr "`#1757 <https://github.com/ManimCommunity/manim/pull/1757>`__: Added warning when there is a large number of items to hash."
+
+msgid "``v_min`` and ``v_max`` have been replaced by ``v_range``."
+msgstr "``v_min`` and ``v_max`` have been replaced by ``v_range``."
+
+msgid "This PR introduces a new ``@frames_comparison`` decorator which allows writing simple ``construct``-like functions as tests. Control data for new tests can be easily generated by calling ``pytest --set_test``."
+msgstr "This PR introduces a new ``@frames_comparison`` decorator which allows writing simple ``construct``-like functions as tests. Control data for new tests can be easily generated by calling ``pytest --set_test``."
+
+msgid "``positive_space_ratio`` has been replaced with the shorter name ``dashed_ratio``"
+msgstr "``positive_space_ratio`` has been replaced with the shorter name ``dashed_ratio``"
+
+msgid "`#1791 <https://github.com/ManimCommunity/manim/pull/1791>`__: :meth:`~.Mobject.set_z_index` now sets all submobjects' ``z_index`` value"
+msgstr "`#1791 <https://github.com/ManimCommunity/manim/pull/1791>`__: :meth:`~.Mobject.set_z_index` now sets all submobjects' ``z_index`` value"
+
+msgid "Added a warning about the incompatibility of different versions of Manim in the README"
+msgstr "Added a warning about the incompatibility of different versions of Manim in the README"
+
+msgid "sahilmakhijani +"
+msgstr "sahilmakhijani +"
+
+msgid "`#1760 <https://github.com/ManimCommunity/manim/pull/1760>`__: Added ``window_size`` flag to manually adjust the size of the OpenGL window"
+msgstr "`#1760 <https://github.com/ManimCommunity/manim/pull/1760>`__: Added ``window_size`` flag to manually adjust the size of the OpenGL window"
+
+msgid "The classes ``OpenGLTexMobject`` and ``OpenGLTextMobject`` have been removed, use :class:`~.MathTex` and :class:`~.Tex` instead. Also, ``VMobjectFromSVGPathstring`` has been removed, use :class:`~.SVGPathMobject` instead."
+msgstr "The classes ``OpenGLTexMobject`` and ``OpenGLTextMobject`` have been removed, use :class:`~.MathTex` and :class:`~.Tex` instead. Also, ``VMobjectFromSVGPathstring`` has been removed, use :class:`~.SVGPathMobject` instead."
+
+msgid "An animation with only ``frame_center`` animated will now be rendered properly."
+msgstr "An animation with only ``frame_center`` animated will now be rendered properly."
+
+msgid "`#1848 <https://github.com/ManimCommunity/manim/pull/1848>`__: Deprecated parameters for :class:`~.DashedLine` and :class:`~.DashedVMobject`"
+msgstr "`#1848 <https://github.com/ManimCommunity/manim/pull/1848>`__: Deprecated parameters for :class:`~.DashedLine` and :class:`~.DashedVMobject`"
+
+msgid "`#1792 <https://github.com/ManimCommunity/manim/pull/1792>`__: Fixed bug that caused dry runs to fail when using the PNG format"
+msgstr "`#1792 <https://github.com/ManimCommunity/manim/pull/1792>`__: Fixed bug that caused dry runs to fail when using the PNG format"
+
+msgid "ccn +"
+msgstr "ccn +"
+
+msgid "`#1806 <https://github.com/ManimCommunity/manim/pull/1806>`__: Fixed spelling mistake"
+msgstr "`#1806 <https://github.com/ManimCommunity/manim/pull/1806>`__: Fixed spelling mistake"
+
+msgid "`#1787 <https://github.com/ManimCommunity/manim/pull/1787>`__: Made :class:`~.DecimalNumber` apply color to the ellipsis"
+msgstr "`#1787 <https://github.com/ManimCommunity/manim/pull/1787>`__: Made :class:`~.DecimalNumber` apply color to the ellipsis"
+
+msgid "`#1745 <https://github.com/ManimCommunity/manim/pull/1745>`__: Updated the BibTeX template in the README to Manim v0.9.0"
+msgstr "`#1745 <https://github.com/ManimCommunity/manim/pull/1745>`__: Updated the BibTeX template in the README to Manim v0.9.0"
+
+msgid "`#1776 <https://github.com/ManimCommunity/manim/pull/1776>`__: :meth:`.CoordinateSystem.get_riemann_rectangles` now uses the graph's range instead of the axes range"
+msgstr "`#1776 <https://github.com/ManimCommunity/manim/pull/1776>`__: :meth:`.CoordinateSystem.get_riemann_rectangles` now uses the graph's range instead of the axes range"
+
+msgid "`#1719 <https://github.com/ManimCommunity/manim/pull/1719>`__: Added a :class:`~.Broadcast` animation"
+msgstr "`#1719 <https://github.com/ManimCommunity/manim/pull/1719>`__: Added a :class:`~.Broadcast` animation"
+
+msgid "Fixed interactive embed issue where it would fail when running on non-tty terminals"
+msgstr "Fixed interactive embed issue where it would fail when running on non-tty terminals"
+
+msgid "sahilmakhijani"
+msgstr "sahilmakhijani"
+
+msgid "`#1773 <https://github.com/ManimCommunity/manim/pull/1773>`__: Remove all classes and functions that were deprecated until ``v0.7.0`` and ``v0.8.0``"
+msgstr "`#1773 <https://github.com/ManimCommunity/manim/pull/1773>`__: Remove all classes and functions that were deprecated until ``v0.7.0`` and ``v0.8.0``"
+
+msgid "`#1763 <https://github.com/ManimCommunity/manim/pull/1763>`__: Fixed not being able to set some CLI flags in the configuration file"
+msgstr "`#1763 <https://github.com/ManimCommunity/manim/pull/1763>`__: Fixed not being able to set some CLI flags in the configuration file"
+
+msgid "`#1783 <https://github.com/ManimCommunity/manim/pull/1783>`__: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.invert` to OpenGL"
+msgstr "`#1783 <https://github.com/ManimCommunity/manim/pull/1783>`__: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.invert` to OpenGL"
+
+msgid "`#1827 <https://github.com/ManimCommunity/manim/pull/1827>`__: Added ``robots.txt`` to prevent old versions of documentation from showing in search results"
+msgstr "`#1827 <https://github.com/ManimCommunity/manim/pull/1827>`__: Added ``robots.txt`` to prevent old versions of documentation from showing in search results"
+
+msgid "`#1731 <https://github.com/ManimCommunity/manim/pull/1731>`__: Deprecated :class:`~.ParametricSurface` parameters"
+msgstr "`#1731 <https://github.com/ManimCommunity/manim/pull/1731>`__: Deprecated :class:`~.ParametricSurface` parameters"
+
+msgid "LED Me Explain +"
+msgstr "LED Me Explain +"
+
+msgid "A total of 55 pull requests were merged for this release."
+msgstr "A total of 55 pull requests were merged for this release."
+
+msgid "`#1839 <https://github.com/ManimCommunity/manim/pull/1839>`__: Allow passing arguments to ``.animate`` with the OpenGL renderer"
+msgstr "`#1839 <https://github.com/ManimCommunity/manim/pull/1839>`__: Allow passing arguments to ``.animate`` with the OpenGL renderer"
+
+msgid "`#1739 <https://github.com/ManimCommunity/manim/pull/1739>`__: Added a section on creating a custom animation to the \"Manim's building blocks\" tutorial"
+msgstr "`#1739 <https://github.com/ManimCommunity/manim/pull/1739>`__: Added a section on creating a custom animation to the \"Manim's building blocks\" tutorial"
+
+msgid "The classes ``CircleIndicate``, ``ShowCreationThenDestruction``, ``AnimationOnSurroundingRectangle``, ``ShowPassingFlashAround``, ``ShowCreationThenDestructionAround``, ``ShowCreationThenFadeAround``, ``WiggleOutThenIn``, ``TurnInsideOut`` have been removed. Use :class:`~.Circumscribe`, :class:`~.ShowPassingFlash`, or :class:`~.Wiggle` instead."
+msgstr "The classes ``CircleIndicate``, ``ShowCreationThenDestruction``, ``AnimationOnSurroundingRectangle``, ``ShowPassingFlashAround``, ``ShowCreationThenDestructionAround``, ``ShowCreationThenFadeAround``, ``WiggleOutThenIn``, ``TurnInsideOut`` have been removed. Use :class:`~.Circumscribe`, :class:`~.ShowPassingFlash`, or :class:`~.Wiggle` instead."
+
+msgid "Rewritten the logic to generate dashes"
+msgstr "Rewritten the logic to generate dashes"
+
+msgid "`#1829 <https://github.com/ManimCommunity/manim/pull/1829>`__: Switch the order of Scoop and Chocolatey in the docs for the Windows Installation"
+msgstr "`#1829 <https://github.com/ManimCommunity/manim/pull/1829>`__: Switch the order of Scoop and Chocolatey in the docs for the Windows Installation"
+
+msgid "`#1817 <https://github.com/ManimCommunity/manim/pull/1817>`__: Remove pillow version requirement"
+msgstr "`#1817 <https://github.com/ManimCommunity/manim/pull/1817>`__: Remove pillow version requirement"
+
+msgid "August 02, 2021"
+msgstr "August 02, 2021"
+
+msgid "`#1830 <https://github.com/ManimCommunity/manim/pull/1830>`__: Be more concise about the documentation URL in the PR template"
+msgstr "`#1830 <https://github.com/ManimCommunity/manim/pull/1830>`__: Be more concise about the documentation URL in the PR template"
+
+msgid "Udeshya Dhungana +"
+msgstr "Udeshya Dhungana +"
+
+msgid "``u_min`` and ``u_max`` have been replaced by ``u_range``."
+msgstr "``u_min`` and ``u_max`` have been replaced by ``u_range``."
+
+msgid "`#1813 <https://github.com/ManimCommunity/manim/pull/1813>`__: Removed unused variables from tutorial"
+msgstr "`#1813 <https://github.com/ManimCommunity/manim/pull/1813>`__: Removed unused variables from tutorial"
+
+msgid "A black dot is not created at the origin once ``frame_center`` is animated."
+msgstr "A black dot is not created at the origin once ``frame_center`` is animated."
+
+msgid "Suhail Sherif"
+msgstr "Suhail Sherif"
+
+msgid "PaulCMurdoch"
+msgstr "PaulCMurdoch"
+
+msgid "`#1833 <https://github.com/ManimCommunity/manim/pull/1833>`__: Added OpenGL compatibility for :class:`~.VDict`, :meth:`~.Axes.get_line_graph` and :class:`~.FocusOn`"
+msgstr "`#1833 <https://github.com/ManimCommunity/manim/pull/1833>`__: Added OpenGL compatibility for :class:`~.VDict`, :meth:`~.Axes.get_line_graph` and :class:`~.FocusOn`"
+
+msgid "`#1743 <https://github.com/ManimCommunity/manim/pull/1743>`__: Edited the developer installation instructions to include information on cloning the repository"
+msgstr "`#1743 <https://github.com/ManimCommunity/manim/pull/1743>`__: Edited the developer installation instructions to include information on cloning the repository"
+
+msgid "`#1727 <https://github.com/ManimCommunity/manim/pull/1727>`__: Fixed some hot reload issues and compatibility with IDEs"
+msgstr "`#1727 <https://github.com/ManimCommunity/manim/pull/1727>`__: Fixed some hot reload issues and compatibility with IDEs"
+
+msgid "``dash_spacing`` is an unused parameter"
+msgstr "``dash_spacing`` is an unused parameter"
+
+msgid "`#1819 <https://github.com/ManimCommunity/manim/pull/1819>`__: Removed mention of ``-h`` CLI flag from documentation"
+msgstr "`#1819 <https://github.com/ManimCommunity/manim/pull/1819>`__: Removed mention of ``-h`` CLI flag from documentation"
+
+msgid "`#1835 <https://github.com/ManimCommunity/manim/pull/1835>`__: Updated documentation with information about reworked graphical unit test system"
+msgstr "`#1835 <https://github.com/ManimCommunity/manim/pull/1835>`__: Updated documentation with information about reworked graphical unit test system"
+
+msgid "`#1778 <https://github.com/ManimCommunity/manim/pull/1778>`__: Improve sidebar structure of the documentation's reference manual"
+msgstr "`#1778 <https://github.com/ManimCommunity/manim/pull/1778>`__: Improve sidebar structure of the documentation's reference manual"
+
+msgid "Added updaters that are part of the scene rather than a mobject"
+msgstr "Added updaters that are part of the scene rather than a mobject"
+
+msgid "icedcoffeeee +"
+msgstr "icedcoffeeee +"
+
+msgid "Made color apply to the dots when `show_ellipsis` is set to true in `DecimalNumber`"
+msgstr "Made color apply to the dots when `show_ellipsis` is set to true in `DecimalNumber`"
+
+msgid "Adds model matrices to all OpenGLVMobjects"
+msgstr "Adds model matrices to all OpenGLVMobjects"
+
+msgid "Added :meth:`.NumberLine.add_labels` method to :class:`~.NumberLine` which accepts a dictionary of positions/values."
+msgstr "Added :meth:`.NumberLine.add_labels` method to :class:`~.NumberLine` which accepts a dictionary of positions/values."
+
+msgid "`#1836 <https://github.com/ManimCommunity/manim/pull/1836>`__: Converted all the graphical tests to the new syntax"
+msgstr "`#1836 <https://github.com/ManimCommunity/manim/pull/1836>`__: Converted all the graphical tests to the new syntax"
+
+msgid "Highlights"
+msgstr "Highlights"
+
+msgid ":meth:`.CoordinateSystem.add_coordinates` now accepts a dictionary too."
+msgstr ":meth:`.CoordinateSystem.add_coordinates` now accepts a dictionary too."
+
+msgid "`#1736 <https://github.com/ManimCommunity/manim/pull/1736>`__: Fixed :class:`~.LinearTransformationScene` crashing on multiple animations"
+msgstr "`#1736 <https://github.com/ManimCommunity/manim/pull/1736>`__: Fixed :class:`~.LinearTransformationScene` crashing on multiple animations"
+
+msgid "`#1808 <https://github.com/ManimCommunity/manim/pull/1808>`__: OpenGL renderer updates"
+msgstr "`#1808 <https://github.com/ManimCommunity/manim/pull/1808>`__: OpenGL renderer updates"
+
+msgid "`#1821 <https://github.com/ManimCommunity/manim/pull/1821>`__: Fixed issues concerning ``frame_center`` in :class:`~.ThreeDScene`"
+msgstr "`#1821 <https://github.com/ManimCommunity/manim/pull/1821>`__: Fixed issues concerning ``frame_center`` in :class:`~.ThreeDScene`"
+
+msgid "v0.9.0"
+msgstr "v0.9.0"
+
+msgid "Taektiek +"
+msgstr "Taektiek +"
+
+msgid "Changing ``frame_center`` in a :class:`~.ThreeDScene` now actually changes the camera position."
+msgstr "Changing ``frame_center`` in a :class:`~.ThreeDScene` now actually changes the camera position."
+
+msgid "`#1845 <https://github.com/ManimCommunity/manim/pull/1845>`__: Improve ``ThreeDSurfacePlot`` example in example gallery"
+msgstr "`#1845 <https://github.com/ManimCommunity/manim/pull/1845>`__: Improve ``ThreeDSurfacePlot`` example in example gallery"
+
+msgid "`#1686 <https://github.com/ManimCommunity/manim/pull/1686>`__: Added :meth:`.ParametricSurface.set_fill_by_value`"
+msgstr "`#1686 <https://github.com/ManimCommunity/manim/pull/1686>`__: Added :meth:`.ParametricSurface.set_fill_by_value`"
+
+msgid "`#1775 <https://github.com/ManimCommunity/manim/pull/1775>`__: Let :class:`~.Create` work on :class:`~.OpenGLSurface`"
+msgstr "`#1775 <https://github.com/ManimCommunity/manim/pull/1775>`__: Let :class:`~.Create` work on :class:`~.OpenGLSurface`"
+
+msgid "`#1815 <https://github.com/ManimCommunity/manim/pull/1815>`__: Added codespell to the list of used linters in the contribution guidelines"
+msgstr "`#1815 <https://github.com/ManimCommunity/manim/pull/1815>`__: Added codespell to the list of used linters in the contribution guidelines"
+
+msgid "Modified the admonition warning in the documentation"
+msgstr "Modified the admonition warning in the documentation"
+
+msgid "Suhail Sherif +"
+msgstr "Suhail Sherif +"
+
+msgid "`#1844 <https://github.com/ManimCommunity/manim/pull/1844>`__: Fixed the oversized :class:`~.Code` window with the OpenGL renderer"
+msgstr "`#1844 <https://github.com/ManimCommunity/manim/pull/1844>`__: Fixed the oversized :class:`~.Code` window with the OpenGL renderer"
+
+msgid "`#1770 <https://github.com/ManimCommunity/manim/pull/1770>`__: Rewrote :meth:`.OpenGLMobject.put_start_and_end_on` to work correctly in 3D"
+msgstr "`#1770 <https://github.com/ManimCommunity/manim/pull/1770>`__: Rewrote :meth:`.OpenGLMobject.put_start_and_end_on` to work correctly in 3D"
+
+msgid "Mohammad Al-Fetyani"
+msgstr "Mohammad Al-Fetyani"
+
+msgid "Abhijith Muthyala"
+msgstr "Abhijith Muthyala"
+
+msgid "Alex Lembcke"
+msgstr "Alex Lembcke"
+
+msgid "A total of 35 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr "A total of 35 people contributed to this release. People with a '+' by their names authored a patch for the first time."

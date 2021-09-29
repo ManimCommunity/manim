@@ -1,0 +1,389 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color."
+msgstr "Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color."
+
+msgid "Returns thickened coordinates for a passed array of pixel coords and a thickness to thicken by."
+msgstr "Returns thickened coordinates for a passed array of pixel coords and a thickness to thicken by."
+
+msgid "Displays multiple vmobjects that have the same color as the background."
+msgstr "Displays multiple vmobjects that have the same color as the background."
+
+msgid "The original pixel array to modify."
+msgstr "The original pixel array to modify."
+
+msgid "The Image to overlay."
+msgstr "The Image to overlay."
+
+msgid "Resets the camera's pixel array to that of the background"
+msgstr "Resets the camera's pixel array to that of the background"
+
+msgid "This is the object which takes care of what exactly is displayed on screen at any given moment."
+msgstr "This is the object which takes care of what exactly is displayed on screen at any given moment."
+
+msgid "True if in frame, False otherwise."
+msgstr "True if in frame, False otherwise."
+
+msgid "Converts a pixel array from values that have floats in then to proper RGB values."
+msgstr "Converts a pixel array from values that have floats in then to proper RGB values."
+
+msgid "The camera object."
+msgstr "The camera object."
+
+msgid "The pixel coords to check."
+msgstr "The pixel coords to check."
+
+msgid "Whether or not to consider the background when applying this stroke width, by default False"
+msgstr "Whether or not to consider the background when applying this stroke width, by default False"
+
+msgid "The object to take the type of."
+msgstr "The object to take the type of."
+
+msgid "Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color."
+msgstr "Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color."
+
+msgid "list of VMobjects to display"
+msgstr "list of VMobjects to display"
+
+msgid ":obj:`display_multiple_image_mobjects <manim.camera.camera.Camera.display_multiple_image_mobjects>`"
+msgstr ":obj:`display_multiple_image_mobjects <manim.camera.camera.Camera.display_multiple_image_mobjects>`"
+
+msgid "If 0, height is scaled with respect to width else, width is scaled with respect to height."
+msgstr "If 0, height is scaled with respect to width else, width is scaled with respect to height."
+
+msgid "Displays an ImageMobject by changing the pixel_array suitably."
+msgstr "Displays an ImageMobject by changing the pixel_array suitably."
+
+msgid "Camera"
+msgstr "Camera"
+
+msgid "Pixel array to convert."
+msgstr "Pixel array to convert."
+
+msgid ":obj:`adjust_out_of_range_points <manim.camera.camera.Camera.adjust_out_of_range_points>`"
+msgstr ":obj:`adjust_out_of_range_points <manim.camera.camera.Camera.adjust_out_of_range_points>`"
+
+msgid "The RGBA array with which to color the context."
+msgstr "The RGBA array with which to color the context."
+
+msgid "Qualified name: ``manim.camera.camera.Camera``"
+msgstr "Qualified name: ``manim.camera.camera.Camera``"
+
+msgid ":obj:`get_mobjects_to_display <manim.camera.camera.Camera.get_mobjects_to_display>`"
+msgstr ":obj:`get_mobjects_to_display <manim.camera.camera.Camera.get_mobjects_to_display>`"
+
+msgid "Displays a PMobject by modifying the Pixel array suitably.. TODO: Write a description for the rgbas argument. :param pmobject: Point Cloud Mobject :type pmobject: PMobject :param points: The points to display in the point cloud mobject :type points: list :param rgbas: :type rgbas: np.array :param thickness: The thickness of each point of the PMobject :type thickness: int, float :param pixel_array: The pixel array to modify. :type pixel_array: np.array"
+msgstr "Displays a PMobject by modifying the Pixel array suitably.. TODO: Write a description for the rgbas argument. :param pmobject: Point Cloud Mobject :type pmobject: PMobject :param points: The points to display in the point cloud mobject :type points: list :param rgbas: :type rgbas: np.array :param thickness: The thickness of each point of the PMobject :type thickness: int, float :param pixel_array: The pixel array to modify. :type pixel_array: np.array"
+
+msgid "Changes frame_shape to match the aspect ratio of the pixels, where fixed_dimension determines whether frame_height or frame_width remains fixed while the other changes accordingly."
+msgstr "Changes frame_shape to match the aspect ratio of the pixels, where fixed_dimension determines whether frame_height or frame_width remains fixed while the other changes accordingly."
+
+msgid ":obj:`display_multiple_non_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_non_background_colored_vmobjects>`"
+msgstr ":obj:`display_multiple_non_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_non_background_colored_vmobjects>`"
+
+msgid "Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats."
+msgstr "Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats."
+
+msgid "str, optional"
+msgstr "str, optional"
+
+msgid "The cairo context of the pixel array."
+msgstr "The cairo context of the pixel array."
+
+msgid ":obj:`display_image_mobject <manim.camera.camera.Camera.display_image_mobject>`"
+msgstr ":obj:`display_image_mobject <manim.camera.camera.Camera.display_image_mobject>`"
+
+msgid "The mobject for which the checking needs to be done."
+msgstr "The mobject for which the checking needs to be done."
+
+msgid ":obj:`thickened_coordinates <manim.camera.camera.Camera.thickened_coordinates>`"
+msgstr ":obj:`thickened_coordinates <manim.camera.camera.Camera.thickened_coordinates>`"
+
+msgid ":obj:`get_cached_cairo_context <manim.camera.camera.Camera.get_cached_cairo_context>`"
+msgstr ":obj:`get_cached_cairo_context <manim.camera.camera.Camera.get_cached_cairo_context>`"
+
+msgid "If `mobject` is an instance of a class that inherits from a class that can be rendered, return the super class.  For example, an instance of a Square is also an instance of VMobject, and these can be rendered. Therefore, `type_or_raise(Square())` returns True."
+msgstr "If `mobject` is an instance of a class that inherits from a class that can be rendered, return the super class.  For example, an instance of a Square is also an instance of VMobject, and these can be rendered. Therefore, `type_or_raise(Square())` returns True."
+
+msgid "Camera object after setting cairo_context_path"
+msgstr "Camera object after setting cairo_context_path"
+
+msgid "The new, converted pixel array."
+msgstr "The new, converted pixel array."
+
+msgid "background_image : :class:`str`, optional"
+msgstr "background_image : :class:`str`, optional"
+
+msgid ":obj:`get_background_colored_vmobject_displayer <manim.camera.camera.Camera.get_background_colored_vmobject_displayer>`"
+msgstr ":obj:`get_background_colored_vmobject_displayer <manim.camera.camera.Camera.get_background_colored_vmobject_displayer>`"
+
+msgid "The Pixel array to add the VMobjects to."
+msgstr "The Pixel array to add the VMobjects to."
+
+msgid "The new pixel array to overlay."
+msgstr "The new pixel array to overlay."
+
+msgid ":obj:`display_multiple_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_background_colored_vmobjects>`"
+msgstr ":obj:`display_multiple_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_background_colored_vmobjects>`"
+
+msgid "The pixel coords on screen."
+msgstr "The pixel coords on screen."
+
+msgid "The array of cartesian coordinates."
+msgstr "The array of cartesian coordinates."
+
+msgid "Return the type of mobject, if it is a type that can be rendered."
+msgstr "Return the type of mobject, if it is a type that can be rendered."
+
+msgid "Object that displays VMobjects that have the same color as the background."
+msgstr "Object that displays VMobjects that have the same color as the background."
+
+msgid "Displays multiple PMobjects by modifying the passed pixel array."
+msgstr "Displays multiple PMobjects by modifying the passed pixel array."
+
+msgid "Thickness"
+msgstr "Thickness"
+
+msgid "The context to cache it into."
+msgstr "The context to cache it into."
+
+msgid "Pixel coordinates"
+msgstr "Pixel coordinates"
+
+msgid "List of Colored VMobjects"
+msgstr "List of Colored VMobjects"
+
+msgid "list of the VMobjects"
+msgstr "list of the VMobjects"
+
+msgid "The pixel array to modify."
+msgstr "The pixel array to modify."
+
+msgid "param thickness"
+msgstr "param thickness"
+
+msgid ":obj:`make_background_from_func <manim.camera.camera.Camera.make_background_from_func>`"
+msgstr ":obj:`make_background_from_func <manim.camera.camera.Camera.make_background_from_func>`"
+
+msgid "The Pixel array"
+msgstr "The Pixel array"
+
+msgid ":obj:`set_background_from_func <manim.camera.camera.Camera.set_background_from_func>`"
+msgstr ":obj:`set_background_from_func <manim.camera.camera.Camera.set_background_from_func>`"
+
+msgid "Sets the color of the cairo context"
+msgstr "Sets the color of the cairo context"
+
+msgid "List of PMobjects"
+msgstr "List of PMobjects"
+
+msgid "The adjusted points."
+msgstr "The adjusted points."
+
+msgid "Displays multiple image mobjects by modifying the passed pixel_array."
+msgstr "Displays multiple image mobjects by modifying the passed pixel_array."
+
+msgid "The Pixel array to get the cairo context of."
+msgstr "The Pixel array to get the cairo context of."
+
+msgid "The cached cairo context."
+msgstr "The cached cairo context."
+
+msgid "The pixel array to check."
+msgstr "The pixel array to check."
+
+msgid "The function whose input is an (x,y) pair of coordinates and whose return values must be the colors for that point"
+msgstr "The function whose input is an (x,y) pair of coordinates and whose return values must be the colors for that point"
+
+msgid "Returns the cached cairo context of the passed pixel array if it exists, and None if it doesn't."
+msgstr "Returns the cached cairo context of the passed pixel array if it exists, and None if it doesn't."
+
+msgid "The pixel array which can then be passed to set_background."
+msgstr "The pixel array which can then be passed to set_background."
+
+msgid ":obj:`convert_pixel_array <manim.camera.camera.Camera.convert_pixel_array>`"
+msgstr ":obj:`convert_pixel_array <manim.camera.camera.Camera.convert_pixel_array>`"
+
+msgid "When mobject is not an instance of a class that can be rendered."
+msgstr "When mobject is not an instance of a class that can be rendered."
+
+msgid "pixel_height : :class:`int`, optional"
+msgstr "pixel_height : :class:`int`, optional"
+
+msgid "The Vectorized Mobject to display"
+msgstr "The Vectorized Mobject to display"
+
+msgid "If any of the points in the passed array are out of the viable range, they are adjusted suitably."
+msgstr "If any of the points in the passed array are out of the viable range, they are adjusted suitably."
+
+msgid ":obj:`display_multiple_point_cloud_mobjects <manim.camera.camera.Camera.display_multiple_point_cloud_mobjects>`"
+msgstr ":obj:`display_multiple_point_cloud_mobjects <manim.camera.camera.Camera.display_multiple_point_cloud_mobjects>`"
+
+msgid "The camera object"
+msgstr "The camera object"
+
+msgid "Caches the passed Pixel array into a Cairo Context"
+msgstr "Caches the passed Pixel array into a Cairo Context"
+
+msgid "Returns array of pixels that are on the screen from a given array of pixel_coordinates"
+msgstr "Returns array of pixels that are on the screen from a given array of pixel_coordinates"
+
+msgid "The VMobject with which to set the color."
+msgstr "The VMobject with which to set the color."
+
+msgid ":obj:`display_point_cloud <manim.camera.camera.Camera.display_point_cloud>`"
+msgstr ":obj:`display_point_cloud <manim.camera.camera.Camera.display_point_cloud>`"
+
+msgid "The type of mobjects, if it can be rendered."
+msgstr "The type of mobjects, if it can be rendered."
+
+msgid "int, optional"
+msgstr "int, optional"
+
+msgid "Displays a VMobject in the cairo context"
+msgstr "Displays a VMobject in the cairo context"
+
+msgid "Displays multiple VMobjects in the pixel_array"
+msgstr "Displays multiple VMobjects in the pixel_array"
+
+msgid "Applies a stroke to the VMobject in the cairo context."
+msgstr "Applies a stroke to the VMobject in the cairo context."
+
+msgid "Whether or not to convert float values to ints, by default False"
+msgstr "Whether or not to convert float values to ints, by default False"
+
+msgid "The path to an image that should be the background image. If not set, the background is filled with `self.background_color`"
+msgstr "The path to an image that should be the background image. If not set, the background is filled with `self.background_color`"
+
+msgid "Overlays a PIL image on the passed pixel array."
+msgstr "Overlays a PIL image on the passed pixel array."
+
+msgid "Returns the cairo context for a pixel array after caching it to self.pixel_array_to_cairo_context If that array has already been cached, it returns the cached version instead."
+msgstr "Returns the cairo context for a pixel array after caching it to self.pixel_array_to_cairo_context If that array has already been cached, it returns the cached version instead."
+
+msgid "list of ImageMobjects"
+msgstr "list of ImageMobjects"
+
+msgid "The pixel array from which to get an image, by default None"
+msgstr "The pixel array from which to get an image, by default None"
+
+msgid "Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats."
+msgstr "Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats."
+
+msgid "The points to adjust"
+msgstr "The points to adjust"
+
+msgid "The Pixel array to put the imagemobject in."
+msgstr "The Pixel array to put the imagemobject in."
+
+msgid ":obj:`get_thickening_nudges <manim.camera.camera.Camera.get_thickening_nudges>`"
+msgstr ":obj:`get_thickening_nudges <manim.camera.camera.Camera.get_thickening_nudges>`"
+
+msgid "This method resets the height and width of a single pixel to the passed new_height and new_width."
+msgstr "This method resets the height and width of a single pixel to the passed new_height and new_width."
+
+msgid ":obj:`points_to_pixel_coords <manim.camera.camera.Camera.points_to_pixel_coords>`"
+msgstr ":obj:`points_to_pixel_coords <manim.camera.camera.Camera.points_to_pixel_coords>`"
+
+msgid "The camera object with the stroke applied."
+msgstr "The camera object with the stroke applied."
+
+msgid ":obj:`display_multiple_vectorized_mobjects <manim.camera.camera.Camera.display_multiple_vectorized_mobjects>`"
+msgstr ":obj:`display_multiple_vectorized_mobjects <manim.camera.camera.Camera.display_multiple_vectorized_mobjects>`"
+
+msgid "The new height of the entire scene in pixels"
+msgstr "The new height of the entire scene in pixels"
+
+msgid "The pixel array to cache"
+msgstr "The pixel array to cache"
+
+msgid "Fills the cairo context"
+msgstr "Fills the cairo context"
+
+msgid "Overlays an RGBA array on top of the given Pixel array."
+msgstr "Overlays an RGBA array on top of the given Pixel array."
+
+msgid "The height of the scene in pixels."
+msgstr "The height of the scene in pixels."
+
+msgid ":obj:`set_frame_to_background <manim.camera.camera.Camera.set_frame_to_background>`"
+msgstr ":obj:`set_frame_to_background <manim.camera.camera.Camera.set_frame_to_background>`"
+
+msgid ":obj:`transform_points_pre_display <manim.camera.camera.Camera.transform_points_pre_display>`"
+msgstr ":obj:`transform_points_pre_display <manim.camera.camera.Camera.transform_points_pre_display>`"
+
+msgid "Type[:class:`~.Mobject`]"
+msgstr "Type[:class:`~.Mobject`]"
+
+msgid "Array of thickened pixel coords."
+msgstr "Array of thickened pixel coords."
+
+msgid ":obj:`get_coords_of_all_pixels <manim.camera.camera.Camera.get_coords_of_all_pixels>`"
+msgstr ":obj:`get_coords_of_all_pixels <manim.camera.camera.Camera.get_coords_of_all_pixels>`"
+
+msgid "The pixel array"
+msgstr "The pixel array"
+
+msgid "The camera object after setting the pixel array."
+msgstr "The camera object after setting the pixel array."
+
+msgid "The cairo context"
+msgstr "The cairo context"
+
+msgid "Some important configuration values and local variables to note are:"
+msgstr "Some important configuration values and local variables to note are:"
+
+msgid ":obj:`set_cairo_context_path <manim.camera.camera.Camera.set_cairo_context_path>`"
+msgstr ":obj:`set_cairo_context_path <manim.camera.camera.Camera.set_cairo_context_path>`"
+
+msgid "Displays multiple VMobjects in the cairo context, as long as they don't have background colors."
+msgstr "Displays multiple VMobjects in the cairo context, as long as they don't have background colors."
+
+msgid "Returns the background_colored_vmobject_displayer if it exists or makes one and returns it if not."
+msgstr "Returns the background_colored_vmobject_displayer if it exists or makes one and returns it if not."
+
+msgid "The imageMobject to display"
+msgstr "The imageMobject to display"
+
+msgid "The cairo context to use."
+msgstr "The cairo context to use."
+
+msgid "The pixel array."
+msgstr "The pixel array."
+
+msgid ":obj:`set_cairo_context_color <manim.camera.camera.Camera.set_cairo_context_color>`"
+msgstr ":obj:`set_cairo_context_color <manim.camera.camera.Camera.set_cairo_context_color>`"
+
+msgid "The new width of the entire scene in pixels"
+msgstr "The new width of the entire scene in pixels"
+
+msgid "Returns an image from the passed pixel array, or from the current frame if the passed pixel array is none."
+msgstr "Returns an image from the passed pixel array, or from the current frame if the passed pixel array is none."
+
+msgid "Returns the cartesian coordinates of each pixel."
+msgstr "Returns the cartesian coordinates of each pixel."
+
+msgid "The PIL image of the array."
+msgstr "The PIL image of the array."
+
+msgid "Sets a path for the cairo context with the vmobject passed"
+msgstr "Sets a path for the cairo context with the vmobject passed"
+
+msgid ":obj:`cache_cairo_context <manim.camera.camera.Camera.cache_cairo_context>`"
+msgstr ":obj:`cache_cairo_context <manim.camera.camera.Camera.cache_cairo_context>`"
+
+msgid "Displays a PMobject by modifying the Pixel array suitably."
+msgstr "Displays a PMobject by modifying the Pixel array suitably."
+
+msgid "Checks whether the passed mobject is in frame or not."
+msgstr "Checks whether the passed mobject is in frame or not."

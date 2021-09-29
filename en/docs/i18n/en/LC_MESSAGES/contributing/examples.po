@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:"
+msgstr "When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:"
+
+msgid "What makes a great example"
+msgstr "What makes a great example"
+
+msgid "Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it."
+msgstr "Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it."
+
+msgid "As soon as a new version of manim is released, the documentation will be a snapshot of that version. Examples contributed after the release will only be shown in the latest documentation."
+msgstr "As soon as a new version of manim is released, the documentation will be a snapshot of that version. Examples contributed after the release will only be shown in the latest documentation."
+
+msgid "Examples should be ready to copy and paste for use."
+msgstr "Examples should be ready to copy and paste for use."
+
+msgid "Examples should be brief yet still easy to understand."
+msgstr "Examples should be brief yet still easy to understand."
+
+msgid "Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new incognito tab in your browser, then the latest docs should be shown. **Only for locally built documentation:** If this still doesn't work, you may need to delete the contents of ``docs/source/references`` before rebuilding the documentation."
+msgstr "Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new incognito tab in your browser, then the latest docs should be shown. **Only for locally built documentation:** If this still doesn't work, you may need to delete the contents of ``docs/source/references`` before rebuilding the documentation."
+
+msgid "As soon as simple functionalities are explained, the chapter may include more complex examples which build on the simpler ideas."
+msgstr "As soon as simple functionalities are explained, the chapter may include more complex examples which build on the simpler ideas."
+
+msgid "In the example above, the ``Formula1`` following ``.. manim::`` is the scene that the directive expects to render; thus, in the python code, the class has the same name: ``class Formula1(Scene)``."
+msgstr "In the example above, the ``Formula1`` following ``.. manim::`` is the scene that the directive expects to render; thus, in the python code, the class has the same name: ``class Formula1(Scene)``."
+
+msgid "There should be a balance of animated and non-animated examples."
+msgstr "There should be a balance of animated and non-animated examples."
+
+msgid "Please ensure the examples run on the current main branch when you contribute an example."
+msgstr "Please ensure the examples run on the current main branch when you contribute an example."
+
+msgid "The flags are followed in the next line (no blank line here!), with the indentation level of one tab."
+msgstr "The flags are followed in the next line (no blank line here!), with the indentation level of one tab."
+
+msgid "How examples are structured"
+msgstr "How examples are structured"
+
+msgid "Guidelines for examples"
+msgstr "Guidelines for examples"
+
+msgid "Everybody is welcome to contribute examples to the documentation. Since straightforward examples are a great resource for quickly learning manim, here are some guidelines."
+msgstr "Everybody is welcome to contribute examples to the documentation. Since straightforward examples are a great resource for quickly learning manim, here are some guidelines."
+
+msgid "``.. manim:: [SCENE_NAME]`` has no indentation and ``SCENE_NAME`` refers to the name of the class below."
+msgstr "``.. manim:: [SCENE_NAME]`` has no indentation and ``SCENE_NAME`` refers to the name of the class below."
+
+msgid "Examples can be organized into chapters and subchapters."
+msgstr "Examples can be organized into chapters and subchapters."
+
+msgid "When you create examples, the beginning example chapter should focus on only one functionality. When the functionality is simple, multiple ideas can be illustrated under a single example."
+msgstr "When you create examples, the beginning example chapter should focus on only one functionality. When the functionality is simple, multiple ideas can be illustrated under a single example."
+
+msgid "Writing examples"
+msgstr "Writing examples"
+
+msgid "Examples don't require the ``from manim import *`` statement, this will be added automatically when the docs are built."
+msgstr "Examples don't require the ``from manim import *`` statement, this will be added automatically when the docs are built."
+
+msgid "Adding Examples"
+msgstr "Adding Examples"
+
+msgid "As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 20 minutes to build. Animated examples should only be used when necessary, as last frame examples render faster."
+msgstr "As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 20 minutes to build. Animated examples should only be used when necessary, as last frame examples render faster."
+
+msgid "This is a page for adding examples to the documentation. Here are some guidelines you should follow before you publish your examples."
+msgstr "This is a page for adding examples to the documentation. Here are some guidelines you should follow before you publish your examples."
+
+msgid "If the functions used are confusing for people, make sure to add comments in the example to explain what they do."
+msgstr "If the functions used are confusing for people, make sure to add comments in the example to explain what they do."
+
+msgid "In the building process of the docs, all ``rst`` files are scanned, and the manim directive (``.. manim::``) blocks are identified as scenes that will be run by the current version of manim. Here is the syntax:"
+msgstr "In the building process of the docs, all ``rst`` files are scanned, and the manim directive (``.. manim::``) blocks are identified as scenes that will be run by the current version of manim. Here is the syntax:"
+
+msgid "All possible flags can be found at :mod:`~.manim_directive`."
+msgstr "All possible flags can be found at :mod:`~.manim_directive`."

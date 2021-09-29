@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "A list of faces. Each face is a sublist containing the indices of the vertices that form the corners of that face."
+msgstr "A list of faces. Each face is a sublist containing the indices of the vertices that form the corners of that face."
+
+msgid "Creates list of cyclic pairwise tuples."
+msgstr "Creates list of cyclic pairwise tuples."
+
+msgid "Polyhedron"
+msgstr "Polyhedron"
+
+msgid "Next, we define the faces of the polyhedron. The triangular surfaces of the pyramid are polygons with two adjacent vertices in the base and the vertex at the apex as corners. We thus define these surfaces in the first four elements of our face list. The last element defines the base of the pyramid."
+msgstr "Next, we define the faces of the polyhedron. The triangular surfaces of the pyramid are polygons with two adjacent vertices in the base and the vertex at the apex as corners. We thus define these surfaces in the first four elements of our face list. The last element defines the base of the pyramid."
+
+msgid "A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to a vertex. The vertices are indexed with the usual indexing of Python."
+msgstr "A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to a vertex. The vertices are indexed with the usual indexing of Python."
+
+msgid "Extracts the coordinates of the vertices in the graph. Used for updating faces."
+msgstr "Extracts the coordinates of the vertices in the graph. Used for updating faces."
+
+msgid "Configuration for the polygons representing the faces of the polyhedron."
+msgstr "Configuration for the polygons representing the faces of the polyhedron."
+
+msgid "An abstract polyhedra class."
+msgstr "An abstract polyhedra class."
+
+msgid "Qualified name: ``manim.mobject.polyhedra.Polyhedron``"
+msgstr "Qualified name: ``manim.mobject.polyhedra.Polyhedron``"
+
+msgid "Extracts the coordinates of the vertices in the graph."
+msgstr "Extracts the coordinates of the vertices in the graph."
+
+msgid "In defining the polyhedron above, we first defined the coordinates of the vertices. These are the corners of the square base, given as the first four coordinates in the vertex list, and the apex, the last coordinate in the list."
+msgstr "In defining the polyhedron above, we first defined the coordinates of the vertices. These are the corners of the square base, given as the first four coordinates in the vertex list, and the apex, the last coordinate in the list."
+
+msgid ":obj:`extract_face_coords <manim.mobject.polyhedra.Polyhedron.extract_face_coords>`"
+msgstr ":obj:`extract_face_coords <manim.mobject.polyhedra.Polyhedron.extract_face_coords>`"
+
+msgid "To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid."
+msgstr "To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid."
+
+msgid "The graph and faces of polyhedra can also be accessed and modified directly, after instantiation. They are stored in the `graph` and `faces` attributes respectively."
+msgstr "The graph and faces of polyhedra can also be accessed and modified directly, after instantiation. They are stored in the `graph` and `faces` attributes respectively."
+
+msgid "In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list of faces. This implementation mirrors that of a standard polyhedral data format (OFF, object file format)."
+msgstr "In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list of faces. This implementation mirrors that of a standard polyhedral data format (OFF, object file format)."
+
+msgid "Creates VGroup of faces from a list of face coordinates."
+msgstr "Creates VGroup of faces from a list of face coordinates."
+
+msgid "Configuration for the graph containing the vertices and edges of the polyhedron."
+msgstr "Configuration for the graph containing the vertices and edges of the polyhedron."

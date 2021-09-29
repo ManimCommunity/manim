@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Mobjects generated from an SVG pathstring."
+msgstr "Mobjects generated from an SVG pathstring."
+
+msgid "Mobject representing highlighted source code listings."
+msgstr "Mobject representing highlighted source code listings."
+
+msgid "Mobjects representing vector fields."
+msgstr "Mobjects representing vector fields."
+
+msgid "Mobject representing a number line."
+msgstr "Mobject representing a number line."
+
+msgid "Three-dimensional mobjects."
+msgstr "Three-dimensional mobjects."
+
+msgid "Mobjects used to mark and annotate other mobjects."
+msgstr "Mobjects used to mark and annotate other mobjects."
+
+msgid "Mobjects representing text rendered using LaTeX."
+msgstr "Mobjects representing text rendered using LaTeX."
+
+msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr "Mobjects used for displaying (non-LaTeX) text."
+
+msgid "Mobjects generated from an SVG file."
+msgstr "Mobjects generated from an SVG file."
+
+msgid "Utility functions for three-dimensional mobjects."
+msgstr "Utility functions for three-dimensional mobjects."
+
+msgid "Mobjects that represent coordinate systems."
+msgstr "Mobjects that represent coordinate systems."
+
+msgid "Mobjects representing objects from probability theory and statistics."
+msgstr "Mobjects representing objects from probability theory and statistics."
+
+msgid "Utility functions for parsing SVG styles."
+msgstr "Utility functions for parsing SVG styles."
+
+msgid "Mobjects that dynamically show the change of a variable."
+msgstr "Mobjects that dynamically show the change of a variable."

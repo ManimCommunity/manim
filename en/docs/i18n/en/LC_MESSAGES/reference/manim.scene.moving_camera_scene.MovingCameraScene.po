@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "MovingCameraScene"
+msgstr "MovingCameraScene"
+
+msgid "The Animations whose mobjects will be checked."
+msgstr "The Animations whose mobjects will be checked."
+
+msgid "This is a Scene, with special configurations and properties that make it suitable for cases where the camera must be moved around."
+msgstr "This is a Scene, with special configurations and properties that make it suitable for cases where the camera must be moved around."
+
+msgid ":obj:`get_moving_mobjects <manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects>`"
+msgstr ":obj:`get_moving_mobjects <manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects>`"

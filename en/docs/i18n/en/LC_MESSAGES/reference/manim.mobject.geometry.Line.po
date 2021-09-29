@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Returns the projection of a point onto a line."
+msgstr "Returns the projection of a point onto a line."
+
+msgid "Line"
+msgstr "Line"
+
+msgid ":obj:`put_start_and_end_on <manim.mobject.geometry.Line.put_start_and_end_on>`"
+msgstr ":obj:`put_start_and_end_on <manim.mobject.geometry.Line.put_start_and_end_on>`"
+
+msgid "Sets starts and end coordinates of a line."
+msgstr "Sets starts and end coordinates of a line."
+
+msgid ":obj:`set_start_and_end_attrs <manim.mobject.geometry.Line.set_start_and_end_attrs>`"
+msgstr ":obj:`set_start_and_end_attrs <manim.mobject.geometry.Line.set_start_and_end_attrs>`"
+
+msgid "Qualified name: ``manim.mobject.geometry.Line``"
+msgstr "Qualified name: ``manim.mobject.geometry.Line``"
+
+msgid "Sets starts and end coordinates of a line. .. rubric:: Examples"
+msgstr "Sets starts and end coordinates of a line. .. rubric:: Examples"
+
+msgid "The point to which the line is projected."
+msgstr "The point to which the line is projected."

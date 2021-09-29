@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Replaces the source by the target and sets the opacity to 0."
+msgstr "Replaces the source by the target and sets the opacity to 0."
+
+msgid ":obj:`clean_up_from_scene <manim.animation.transform.FadeTransform.clean_up_from_scene>`"
+msgstr ":obj:`clean_up_from_scene <manim.animation.transform.FadeTransform.clean_up_from_scene>`"
+
+msgid ":obj:`get_all_mobjects <manim.animation.transform.FadeTransform.get_all_mobjects>`"
+msgstr ":obj:`get_all_mobjects <manim.animation.transform.FadeTransform.get_all_mobjects>`"
+
+msgid "FadeTransform"
+msgstr "FadeTransform"
+
+msgid "Initial setup for the animation."
+msgstr "Initial setup for the animation."
+
+msgid "Controls whether the target :class:`~.Mobject` is stretched during the animation. Default: ``True``."
+msgstr "Controls whether the target :class:`~.Mobject` is stretched during the animation. Default: ``True``."
+
+msgid ":obj:`get_all_families_zipped <manim.animation.transform.FadeTransform.get_all_families_zipped>`"
+msgstr ":obj:`get_all_families_zipped <manim.animation.transform.FadeTransform.get_all_families_zipped>`"
+
+msgid "Get all mobjects involved in the animation."
+msgstr "Get all mobjects involved in the animation."
+
+msgid "Ordering must match the ordering of arguments to interpolate_submobject"
+msgstr "Ordering must match the ordering of arguments to interpolate_submobject"
+
+msgid "If the target mobject is not stretched automatically, this allows to adjust the initial scale of the target :class:`~.Mobject` while it is shifted in. Setting this to 0, 1, and 2, respectively, matches the length of the target with the length of the starting :class:`~.Mobject` in x, y, and z direction, respectively."
+msgstr "If the target mobject is not stretched automatically, this allows to adjust the initial scale of the target :class:`~.Mobject` while it is shifted in. Setting this to 0, 1, and 2, respectively, matches the length of the target with the length of the starting :class:`~.Mobject` in x, y, and z direction, respectively."
+
+msgid "The scene the animation should be cleaned up from."
+msgstr "The scene the animation should be cleaned up from."
+
+msgid "Qualified name: ``manim.animation.transform.FadeTransform``"
+msgstr "Qualified name: ``manim.animation.transform.FadeTransform``"
+
+msgid "The starting :class:`~.Mobject`."
+msgstr "The starting :class:`~.Mobject`."
+
+msgid "The target :class:`~.Mobject`."
+msgstr "The target :class:`~.Mobject`."
+
+msgid "Fades one mobject into another."
+msgstr "Fades one mobject into another."
+
+msgid "Further keyword arguments are passed to the parent class."
+msgstr "Further keyword arguments are passed to the parent class."
+
+msgid "The mobject to which this animation is bound is a group consisting of both the starting and the ending mobject. At the start, the ending mobject replaces the starting mobject (and is completely faded). In the end, it is set to be the other way around."
+msgstr "The mobject to which this animation is bound is a group consisting of both the starting and the ending mobject. At the start, the ending mobject replaces the starting mobject (and is completely faded). In the end, it is set to be the other way around."
+
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr "Clean up the :class:`~.Scene` after finishing the animation."
+
+msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+
+msgid "The sequence of mobjects."
+msgstr "The sequence of mobjects."

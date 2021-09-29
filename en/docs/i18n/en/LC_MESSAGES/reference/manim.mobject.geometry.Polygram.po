@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The curvature of the corners of the :class:`Polygram`."
+msgstr "The curvature of the corners of the :class:`Polygram`."
+
+msgid "Qualified name: ``manim.mobject.geometry.Polygram``"
+msgstr "Qualified name: ``manim.mobject.geometry.Polygram``"
+
+msgid ":class:`RoundedRectangle`"
+msgstr ":class:`RoundedRectangle`"
+
+msgid "Rounds off the corners of the :class:`Polygram`."
+msgstr "Rounds off the corners of the :class:`Polygram`."
+
+msgid "The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+msgstr "The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+
+msgid ":obj:`get_vertex_groups <manim.mobject.geometry.Polygram.get_vertex_groups>`"
+msgstr ":obj:`get_vertex_groups <manim.mobject.geometry.Polygram.get_vertex_groups>`"
+
+msgid "The color of the :class:`Polygram`."
+msgstr "The color of the :class:`Polygram`."
+
+msgid "Gets the vertices of the :class:`Polygram`."
+msgstr "Gets the vertices of the :class:`Polygram`."
+
+msgid "The vertices of the :class:`Polygram`."
+msgstr "The vertices of the :class:`Polygram`."
+
+msgid "The groups of vertices making up the :class:`Polygram`.  The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+msgstr "The groups of vertices making up the :class:`Polygram`.  The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+
+msgid "Gets the vertex groups of the :class:`Polygram`."
+msgstr "Gets the vertex groups of the :class:`Polygram`."
+
+msgid "The vertex groups of the :class:`Polygram`."
+msgstr "The vertex groups of the :class:`Polygram`."
+
+msgid "The groups of vertices making up the :class:`Polygram`."
+msgstr "The groups of vertices making up the :class:`Polygram`."
+
+msgid "Polygram"
+msgstr "Polygram"

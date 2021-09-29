@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The direction of the arrow."
+msgstr "The direction of the arrow."
+
+msgid "Whether or not to round the coordinates to integers."
+msgstr "Whether or not to round the coordinates to integers."
+
+msgid "Qualified name: ``manim.mobject.geometry.Vector``"
+msgstr "Qualified name: ``manim.mobject.geometry.Vector``"
+
+msgid "The distance of the vector from its endpoints."
+msgstr "The distance of the vector from its endpoints."
+
+msgid "Vector"
+msgstr "Vector"
+
+msgid "The number of dimensions of the vector."
+msgstr "The number of dimensions of the vector."
+
+msgid "Creates a label based on the coordinates of the vector."
+msgstr "Creates a label based on the coordinates of the vector."

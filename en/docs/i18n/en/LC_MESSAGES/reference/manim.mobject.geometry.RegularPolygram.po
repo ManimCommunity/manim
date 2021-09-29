@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The density of the :class:`RegularPolygram`.  Can be thought of as how many vertices to hop to draw a line between them. Every ``density``-th vertex is connected."
+msgstr "The density of the :class:`RegularPolygram`.  Can be thought of as how many vertices to hop to draw a line between them. Every ``density``-th vertex is connected."
+
+msgid "Can be thought of as how many vertices to hop to draw a line between them. Every ``density``-th vertex is connected."
+msgstr "Can be thought of as how many vertices to hop to draw a line between them. Every ``density``-th vertex is connected."
+
+msgid "The density of the :class:`RegularPolygram`."
+msgstr "The density of the :class:`RegularPolygram`."
+
+msgid "RegularPolygram"
+msgstr "RegularPolygram"
+
+msgid "Qualified name: ``manim.mobject.geometry.RegularPolygram``"
+msgstr "Qualified name: ``manim.mobject.geometry.RegularPolygram``"
+
+msgid "The angle the vertices start at; the rotation of the :class:`RegularPolygram`."
+msgstr "The angle the vertices start at; the rotation of the :class:`RegularPolygram`."
+
+msgid "Bases: :class:`manim.mobject.geometry.Polygram`"
+msgstr "Bases: :class:`manim.mobject.geometry.Polygram`"
+
+msgid "The number of vertices."
+msgstr "The number of vertices."
+
+msgid "A :class:`Polygram` with regularly spaced vertices."
+msgstr "A :class:`Polygram` with regularly spaced vertices."
+
+msgid "The radius of the circle that the vertices are placed on."
+msgstr "The radius of the circle that the vertices are placed on."

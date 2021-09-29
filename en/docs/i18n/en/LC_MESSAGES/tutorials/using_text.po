@@ -1,0 +1,197 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Substrings and parts"
+msgstr "Substrings and parts"
+
+msgid "If you want to avoid problems when using colors (due to ligatures), consider using :class:`MarkupText`."
+msgstr "If you want to avoid problems when using colors (due to ligatures), consider using :class:`MarkupText`."
+
+msgid "Using Text"
+msgstr "Using Text"
+
+msgid "Using Gradients"
+msgstr "Using Gradients"
+
+msgid "Using LaTeX (:mod:`~.tex_mobject`)"
+msgstr "Using LaTeX (:mod:`~.tex_mobject`)"
+
+msgid "On the Manim side, the :class:`~.Tex` class also accepts attributes to change the appearance of the output. This is very similar to the :class:`~.Text` class. For example, the ``color`` keyword changes the color of the TeX mobject."
+msgstr "On the Manim side, the :class:`~.Tex` class also accepts attributes to change the appearance of the output. This is very similar to the :class:`~.Text` class. For example, the ``color`` keyword changes the color of the TeX mobject."
+
+msgid "By setting ``substrings_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings automatically and isolate the ``x`` components into individual substrings. Only then can :meth:`~.set_color_by_tex` be used to achieve the desired result."
+msgstr "By setting ``substrings_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings automatically and isolate the ``x`` components into individual substrings. Only then can :meth:`~.set_color_by_tex` be used to achieve the desired result."
+
+msgid "References: :class:`~.Text`"
+msgstr "References: :class:`~.Text`"
+
+msgid "As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:"
+msgstr "As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:"
+
+msgid "You can set the line spacing using :attr:`~.Text.line_spacing`:"
+msgstr "You can set the line spacing using :attr:`~.Text.line_spacing`:"
+
+msgid "Slant is the style of the Text, and it can be ``NORMAL`` (the default), ``ITALIC`` or ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and ``OBLIQUE`` look similar, but ``ITALIC`` uses **Roman Style**, whereas ``OBLIQUE`` uses **Italic Style**."
+msgstr "Slant is the style of the Text, and it can be ``NORMAL`` (the default), ``ITALIC`` or ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and ``OBLIQUE`` look similar, but ``ITALIC`` uses **Roman Style**, whereas ``OBLIQUE`` uses **Italic Style**."
+
+msgid "Text objects behave like :class:`VGroups <.VGroup>`. Therefore, you can slice and index the text."
+msgstr "Text objects behave like :class:`VGroups <.VGroup>`. Therefore, you can slice and index the text."
+
+msgid "Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX."
+msgstr "Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX."
+
+msgid "You can disable ligatures by passing ``disable_ligatures`` to :class:`Text`. For example:"
+msgstr "You can disable ligatures by passing ``disable_ligatures`` to :class:`Text`. For example:"
+
+msgid "Changing fonts in LaTeX when typesetting mathematical formulae is trickier than regular text. It requires changing the template that is used to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates` ready for you to use. These templates will all work in math mode:"
+msgstr "Changing fonts in LaTeX when typesetting mathematical formulae is trickier than regular text. It requires changing the template that is used to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates` ready for you to use. These templates will all work in math mode:"
+
+msgid "Setting Line Spacing"
+msgstr "Setting Line Spacing"
+
+msgid "Some commands require special packages to be loaded into the TeX template. For example, to use the ``mathscr`` script, we need to add the ``mathrsfs`` package. Since this package isn't loaded into Manim's tex template by default, we have to add it manually."
+msgstr "Some commands require special packages to be loaded into the TeX template. For example, to use the ``mathscr`` script, we need to add the ``mathrsfs`` package. Since this package isn't loaded into Manim's tex template by default, we have to add it manually."
+
+msgid "Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex, not just the specific symbol or Tex expression. Consider the following example:"
+msgstr "Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex, not just the specific symbol or Tex expression. Consider the following example:"
+
+msgid "References: :class:`~.MarkupText`"
+msgstr "References: :class:`~.MarkupText`"
+
+msgid "Text Without LaTeX"
+msgstr "Text Without LaTeX"
+
+msgid "Disabling Ligatures"
+msgstr "Disabling Ligatures"
+
+msgid "We can use any standard LaTeX commands in the AMS maths packages. Such as the ``mathtt`` math-text type or the ``looparrowright`` arrow."
+msgstr "We can use any standard LaTeX commands in the AMS maths packages. Such as the ``mathtt`` math-text type or the ``looparrowright`` arrow."
+
+msgid "Note that Manim also supports a custom syntax that allows splitting a TeX string into substrings easily: simply enclose parts of your formula that you want to isolate with double braces. In the string ``MathTex(r\"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}\")``, the rendered mobject will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``. This makes transformations between similar text fragments easy to write using :class:`~.TransformMatchingTex`."
+msgstr "Note that Manim also supports a custom syntax that allows splitting a TeX string into substrings easily: simply enclose parts of your formula that you want to isolate with double braces. In the string ``MathTex(r\"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}\")``, the rendered mobject will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``. This makes transformations between similar text fragments easy to write using :class:`~.TransformMatchingTex`."
+
+msgid "Weight specifies the boldness of a font. You can see a list of weights in :class:`manimpango.Weight`."
+msgstr "Weight specifies the boldness of a font. You can see a list of weights in :class:`manimpango.Weight`."
+
+msgid "You can set a different font using :attr:`~.Text.font`."
+msgstr "You can set a different font using :attr:`~.Text.font`."
+
+msgid "You can set the color of the text using :attr:`~.Text.color`:"
+msgstr "You can set the color of the text using :attr:`~.Text.color`:"
+
+msgid "LaTeX Maths Fonts - The Template Library"
+msgstr "LaTeX Maths Fonts - The Template Library"
+
+msgid ":attr:`~Text.t2c` accepts two types of dictionaries,"
+msgstr ":attr:`~Text.t2c` accepts two types of dictionaries,"
+
+msgid "Extra LaTeX Packages"
+msgstr "Extra LaTeX Packages"
+
+msgid "Working with :class:`~.MathTex`"
+msgstr "Working with :class:`~.MathTex`"
+
+msgid "Consult the documentation of :class:`~.MarkupText` for more details and further references about PangoMarkup."
+msgstr "Consult the documentation of :class:`~.MarkupText` for more details and further references about PangoMarkup."
+
+msgid ":class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` environment. This means you can use the ``&`` alignment character when typesetting multiline formulae:"
+msgstr ":class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` environment. This means you can use the ``&`` alignment character when typesetting multiline formulae:"
+
+msgid "Here is a simple *Hello World* animation."
+msgstr "Here is a simple *Hello World* animation."
+
+msgid "The font used must be installed in your system, and Pango should know about it. You can get a list of fonts using :func:`manimpango.list_fonts`."
+msgstr "The font used must be installed in your system, and Pango should know about it. You can get a list of fonts using :func:`manimpango.list_fonts`."
+
+msgid "You can also use :attr:`~.Text.t2g` for gradients with specific characters of the text. It shares a similar syntax to :ref:`the interface for colors <using-colors>`:"
+msgstr "You can also use :attr:`~.Text.t2g` for gradients with specific characters of the text. It shares a similar syntax to :ref:`the interface for colors <using-colors>`:"
+
+msgid "Using Fonts"
+msgstr "Using Fonts"
+
+msgid "Using Colors"
+msgstr "Using Colors"
+
+msgid "Be aware that using this method with text that heavily depends on ligatures (Arabic text) may yield unexpected results."
+msgstr "Be aware that using this method with text that heavily depends on ligatures (Arabic text) may yield unexpected results."
+
+msgid "You can add a gradient using :attr:`~.Text.gradient`. The value must be an iterable of any length:"
+msgstr "You can add a gradient using :attr:`~.Text.gradient`. The value must be an iterable of any length:"
+
+msgid "Manim also has a :class:`~.TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example is the ctex template, used for typesetting Chinese script. For this to work, the ctex LaTeX package must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not need :class:`~.Tex` at all, and should use :class:`~.Text` instead."
+msgstr "Manim also has a :class:`~.TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example is the ctex template, used for typesetting Chinese script. For this to work, the ctex LaTeX package must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not need :class:`~.Tex` at all, and should use :class:`~.Text` instead."
+
+msgid "This section explains the properties of :class:`~.Text` and how can it be used in your animations."
+msgstr "This section explains the properties of :class:`~.Text` and how can it be used in your animations."
+
+msgid "Please note that `Ligature`_ can cause problems here. If you need a one-to-one mapping of characters to submobjects you should pass the ``disable_ligatures`` parameter to :class:`~.Text`. See :ref:`disable-ligatures`."
+msgstr "Please note that `Ligature`_ can cause problems here. If you need a one-to-one mapping of characters to submobjects you should pass the ``disable_ligatures`` parameter to :class:`~.Text`. See :ref:`disable-ligatures`."
+
+msgid "Using Pango (:mod:`~.text_mobject`)"
+msgstr "Using Pango (:mod:`~.text_mobject`)"
+
+msgid "Text With LaTeX"
+msgstr "Text With LaTeX"
+
+msgid "The keys contain words or characters which should be colored separately and the values should be the color from :class:`~.Color`:"
+msgstr "The keys contain words or characters which should be colored separately and the values should be the color from :class:`~.Color`:"
+
+msgid "LaTeX commands and keyword arguments"
+msgstr "LaTeX commands and keyword arguments"
+
+msgid "If you want to render simple text, you should use either :class:`~.Text` or :class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`. See :ref:`using-text-objects` for more information."
+msgstr "If you want to render simple text, you should use either :class:`~.Text` or :class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`. See :ref:`using-text-objects` for more information."
+
+msgid "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the `Pango library`_ to render text. With Pango, you can also render non-English alphabets like 你好 or  こんにちは or 안녕하세요 or مرحبا بالعالم."
+msgstr "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the `Pango library`_ to render text. With Pango, you can also render non-English alphabets like 你好 or  こんにちは or 안녕하세요 or مرحبا بالعالم."
+
+msgid "MarkupText is similar to :class:`~.Text`, the only difference between them is that this accepts and processes PangoMarkup (which is similar to html), instead of just rendering plain text."
+msgstr "MarkupText is similar to :class:`~.Text`, the only difference between them is that this accepts and processes PangoMarkup (which is similar to html), instead of just rendering plain text."
+
+msgid "You can also use :class:`~.MarkupText` which allows the use of PangoMarkup (see the documentation of :class:`~.MarkupText` for details) to render text. For example:"
+msgstr "You can also use :class:`~.MarkupText` which allows the use of PangoMarkup (see the documentation of :class:`~.MarkupText` for details) to render text. For example:"
+
+msgid "The keys can contain indices like ``[2:-1]`` or ``[4:8]``, this works similar to how `slicing <https://realpython.com/python-strings/#string-slicing>`_ works in Python. The values should be the color of the Text from :class:`~.Color`."
+msgstr "The keys can contain indices like ``[2:-1]`` or ``[4:8]``, this works similar to how `slicing <https://realpython.com/python-strings/#string-slicing>`_ works in Python. The values should be the color of the Text from :class:`~.Color`."
+
+msgid "Working with :class:`~.Text`"
+msgstr "Working with :class:`~.Text`"
+
+msgid "Iterating :class:`~.Text`"
+msgstr "Iterating :class:`~.Text`"
+
+msgid "For example,"
+msgstr "For example,"
+
+msgid "By disabling ligatures you would get a one-to-one mapping between characters and submobjects. This fixes the issues with coloring text."
+msgstr "By disabling ligatures you would get a one-to-one mapping between characters and submobjects. This fixes the issues with coloring text."
+
+msgid "You can use utilities like :attr:`~.Text.t2c` for coloring specific characters. This may be problematic if your text contains ligatures as explained in :ref:`iterating-text`."
+msgstr "You can use utilities like :attr:`~.Text.t2c` for coloring specific characters. This may be problematic if your text contains ligatures as explained in :ref:`iterating-text`."
+
+msgid "Working with :class:`~.MarkupText`"
+msgstr "Working with :class:`~.MarkupText`"
+
+msgid "Setting Slant and Weight"
+msgstr "Setting Slant and Weight"
+
+msgid "For example, you can set each letter to different color by iterating it."
+msgstr "For example, you can set each letter to different color by iterating it."
+
+msgid "There are two different ways by which you can render **Text** in videos:"
+msgstr "There are two different ways by which you can render **Text** in videos:"
+
+msgid "LaTeX should be used when you need mathematical typesetting. See :ref:`rendering-with-latex` for more information."
+msgstr "LaTeX should be used when you need mathematical typesetting. See :ref:`rendering-with-latex` for more information."
+
+msgid "Aligning formulae"
+msgstr "Aligning formulae"

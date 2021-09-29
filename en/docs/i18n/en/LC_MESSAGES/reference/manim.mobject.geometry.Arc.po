@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Looks at the normals to the first two anchors, and finds their intersection points"
+msgstr "Looks at the normals to the first two anchors, and finds their intersection points"
+
+msgid "A simple arc of angle Pi."
+msgstr "A simple arc of angle Pi."
+
+msgid "Arc"
+msgstr "Arc"
+
+msgid "Bases: :class:`manim.mobject.geometry.TipableVMobject`"
+msgstr "Bases: :class:`manim.mobject.geometry.TipableVMobject`"
+
+msgid ":obj:`set_pre_positioned_points <manim.mobject.geometry.Arc.set_pre_positioned_points>`"
+msgstr ":obj:`set_pre_positioned_points <manim.mobject.geometry.Arc.set_pre_positioned_points>`"
+
+msgid ":obj:`create_quadratic_bezier_points <manim.mobject.geometry.Arc.create_quadratic_bezier_points>`"
+msgstr ":obj:`create_quadratic_bezier_points <manim.mobject.geometry.Arc.create_quadratic_bezier_points>`"
+
+msgid "Qualified name: ``manim.mobject.geometry.Arc``"
+msgstr "Qualified name: ``manim.mobject.geometry.Arc``"

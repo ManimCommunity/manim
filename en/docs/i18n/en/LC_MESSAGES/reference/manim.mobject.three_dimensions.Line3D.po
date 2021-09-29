@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers."
+msgstr "If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers."
+
+msgid "Sets the start and end points of the line."
+msgstr "Sets the start and end points of the line."
+
+msgid "The start position of the line."
+msgstr "The start position of the line."
+
+msgid "Line3D"
+msgstr "Line3D"
+
+msgid "The thickness of the line."
+msgstr "The thickness of the line."
+
+msgid ":obj:`set_start_and_end_attrs <manim.mobject.three_dimensions.Line3D.set_start_and_end_attrs>`"
+msgstr ":obj:`set_start_and_end_attrs <manim.mobject.three_dimensions.Line3D.set_start_and_end_attrs>`"
+
+msgid "The end position of the line."
+msgstr "The end position of the line."
+
+msgid "Bases: :class:`manim.mobject.three_dimensions.Cylinder`"
+msgstr "Bases: :class:`manim.mobject.three_dimensions.Cylinder`"
+
+msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."
+msgstr "Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."
+
+msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."
+msgstr "Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."
+
+msgid "A cylindrical line, for use in ThreeDScene."
+msgstr "A cylindrical line, for use in ThreeDScene."

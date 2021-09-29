@@ -1,0 +1,173 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Used to determine which parts (if any) of the string should be formatted with a gradient."
+msgstr "Used to determine which parts (if any) of the string should be formatted with a gradient."
+
+msgid "``<gradient from=\"YELLOW\" to=\"RED\">temporary gradient</gradient>``"
+msgstr "``<gradient from=\"YELLOW\" to=\"RED\">temporary gradient</gradient>``"
+
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"1\">example</gradient>`` to *start* the gradient one letter earlier"
+msgstr "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"1\">example</gradient>`` to *start* the gradient one letter earlier"
+
+msgid "The most general markup tag is ``<span>``, then there are some convenience tags."
+msgstr "The most general markup tag is ``<span>``, then there are some convenience tags."
+
+msgid "and it can be used with :class:`~.MarkupText` as"
+msgstr "and it can be used with :class:`~.MarkupText` as"
+
+msgid ":class:`MarkupText`"
+msgstr ":class:`MarkupText`"
+
+msgid "Specifying a second offset may be necessary if the text to be colored does itself contain ligatures. The same can happen when using HTML entities for special chars."
+msgstr "Specifying a second offset may be necessary if the text to be colored does itself contain ligatures. The same can happen when using HTML entities for special chars."
+
+msgid "A more elaborate example would be:"
+msgstr "A more elaborate example would be:"
+
+msgid "``<span overline=\"single\" overline_color=\"green\">overline</span>``"
+msgstr "``<span overline=\"single\" overline_color=\"green\">overline</span>``"
+
+msgid "Note: Using the ``<color>`` tags is deprecated. As soon as the legacy syntax is gone, this function will be removed."
+msgstr "Note: Using the ``<color>`` tags is deprecated. As soon as the legacy syntax is gone, this function will be removed."
+
+msgid "For ``<span>`` markup, colors can be specified either as hex triples like ``#aabbcc`` or as named CSS colors like ``AliceBlue``. The ``<gradient>`` tag is handled by Manim rather than Pango, and supports hex triplets or Manim constants like ``RED`` or ``RED_A``. If you want to use Manim constants like ``RED_A`` together with ``<span>``, you will need to use Python's f-String syntax as follows::"
+msgstr "For ``<span>`` markup, colors can be specified either as hex triples like ``#aabbcc`` or as named CSS colors like ``AliceBlue``. The ``<gradient>`` tag is handled by Manim rather than Pango, and supports hex triplets or Manim constants like ``RED`` or ``RED_A``. If you want to use Manim constants like ``RED_A`` together with ``<span>``, you will need to use Python's f-String syntax as follows::"
+
+msgid "Line spacing."
+msgstr "Line spacing."
+
+msgid "If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine the first and last letter when creating the gradient. This is due to the fact that ``fl`` are two separate characters, but might be set as one single glyph - a ligature. If your language does not depend on ligatures, consider setting ``disable_ligatures`` to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional attribute ``offset`` which can be used to compensate for that error."
+msgstr "If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine the first and last letter when creating the gradient. This is due to the fact that ``fl`` are two separate characters, but might be set as one single glyph - a ligature. If your language does not depend on ligatures, consider setting ``disable_ligatures`` to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional attribute ``offset`` which can be used to compensate for that error."
+
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\",1\">example</gradient>`` to *end* the gradient one letter earlier"
+msgstr "``<gradient from=\"RED\" to=\"YELLOW\" offset=\",1\">example</gradient>`` to *end* the gradient one letter earlier"
+
+msgid "Global font setting for the entire text. Local overrides are possible."
+msgstr "Global font setting for the entire text. Local overrides are possible."
+
+msgid "Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error."
+msgstr "Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error."
+
+msgid "When using ``underline``, ``overline`` or ``strikethrough`` together with ``<gradient>`` tags, you will also need to use the offset, because underlines are additional paths in the final :class:`SVGMobject`. Check out the following example."
+msgstr "When using ``underline``, ``overline`` or ``strikethrough`` together with ``<gradient>`` tags, you will also need to use the offset, because underlines are additional paths in the final :class:`SVGMobject`. Check out the following example."
+
+msgid "``<span foreground=\"red\">temporary change of color</span>``"
+msgstr "``<span foreground=\"red\">temporary change of color</span>``"
+
+msgid "Stroke width."
+msgstr "Stroke width."
+
+msgid "Here is a list of supported tags:"
+msgstr "Here is a list of supported tags:"
+
+msgid "``<ul>underline</ul>`` and ``<s>strike through</s>``"
+msgstr "``<ul>underline</ul>`` and ``<s>strike through</s>``"
+
+msgid "PangoMarkup can also contain XML features such as numeric character entities such as ``&#169;`` for © can be used too."
+msgstr "PangoMarkup can also contain XML features such as numeric character entities such as ``&#169;`` for © can be used too."
+
+msgid "Global color setting for the entire text. Local overrides are possible."
+msgstr "Global color setting for the entire text. Local overrides are possible."
+
+msgid "``<span fgcolor=\"red\">temporary change of color</span>``"
+msgstr "``<span fgcolor=\"red\">temporary change of color</span>``"
+
+msgid "For example:"
+msgstr "For example:"
+
+msgid "A simple example of a marked-up string might be::"
+msgstr "A simple example of a marked-up string might be::"
+
+msgid "PangoMarkup is a small markup language like html and it helps you avoid using \"range of characters\" while coloring or styling a piece a Text. You can use this language with :class:`~.MarkupText`."
+msgstr "PangoMarkup is a small markup language like html and it helps you avoid using \"range of characters\" while coloring or styling a piece a Text. You can use this language with :class:`~.MarkupText`."
+
+msgid "Font size."
+msgstr "Font size."
+
+msgid "Escaping of special characters: ``>`` **should** be written as ``&gt;`` whereas ``<`` and ``&`` *must* be written as ``&lt;`` and ``&amp;``."
+msgstr "Escaping of special characters: ``>`` **should** be written as ``&gt;`` whereas ``<`` and ``&`` *must* be written as ``&lt;`` and ``&amp;``."
+
+msgid "As :class:`MarkupText` uses Pango to render text, rendering non-English characters is easily possible:"
+msgstr "As :class:`MarkupText` uses Pango to render text, rendering non-English characters is easily possible:"
+
+msgid "``<tt>typewriter font</tt>``"
+msgstr "``<tt>typewriter font</tt>``"
+
+msgid "Used to determine which parts (if any) of the string should be formatted with a custom color."
+msgstr "Used to determine which parts (if any) of the string should be formatted with a custom color."
+
+msgid "The fill opacity with 1 meaning opaque and 0 meaning transparent."
+msgstr "The fill opacity with 1 meaning opaque and 0 meaning transparent."
+
+msgid ":obj:`extract_gradient_tags <manim.mobject.svg.text_mobject.MarkupText.extract_gradient_tags>`"
+msgstr ":obj:`extract_gradient_tags <manim.mobject.svg.text_mobject.MarkupText.extract_gradient_tags>`"
+
+msgid "Check that the creation of :class:`~.MarkupText` works::"
+msgstr "Check that the creation of :class:`~.MarkupText` works::"
+
+msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
+msgstr "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
+
+msgid "You can justify the text by passing :attr:`justify` parameter."
+msgstr "You can justify the text by passing :attr:`justify` parameter."
+
+msgid "``<sup>superscript</sup>`` and ``<sub>subscript</sub>``"
+msgstr "``<sup>superscript</sup>`` and ``<sub>subscript</sub>``"
+
+msgid "Global gradient setting. Local overrides are possible."
+msgstr "Global gradient setting. Local overrides are possible."
+
+msgid "The text displayed in form of a :class:`.VGroup`-like mobject."
+msgstr "The text displayed in form of a :class:`.VGroup`-like mobject."
+
+msgid "``<big>bigger font</big>`` and ``<small>smaller font</small>``"
+msgstr "``<big>bigger font</big>`` and ``<small>smaller font</small>``"
+
+msgid "Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error."
+msgstr "Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error."
+
+msgid "MarkupText"
+msgstr "MarkupText"
+
+msgid "**What is PangoMarkup?**"
+msgstr "**What is PangoMarkup?**"
+
+msgid "``<span strikethrough=\"true\" strikethrough_color=\"red\">strikethrough</span>``"
+msgstr "``<span strikethrough=\"true\" strikethrough_color=\"red\">strikethrough</span>``"
+
+msgid "``<span underline=\"error\">error underline</span>``"
+msgstr "``<span underline=\"error\">error underline</span>``"
+
+msgid "``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``"
+msgstr "``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``"
+
+msgid "``<span font_family=\"sans\">temporary change of font</span>``"
+msgstr "``<span font_family=\"sans\">temporary change of font</span>``"
+
+msgid "Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible."
+msgstr "Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible."
+
+msgid "``<span underline=\"double\" underline_color=\"green\">double underline</span>``"
+msgstr "``<span underline=\"double\" underline_color=\"green\">double underline</span>``"
+
+msgid "Generates ``sha256`` hash for file name."
+msgstr "Generates ``sha256`` hash for file name."
+
+msgid "Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible."
+msgstr "Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible."
+
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"2,1\">example</gradient>`` to *start* the gradient two letters earlier and *end* it one letter earlier"
+msgstr "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"2,1\">example</gradient>`` to *start* the gradient two letters earlier and *end* it one letter earlier"
+
+msgid ":obj:`extract_color_tags <manim.mobject.svg.text_mobject.MarkupText.extract_color_tags>`"
+msgstr ":obj:`extract_color_tags <manim.mobject.svg.text_mobject.MarkupText.extract_color_tags>`"

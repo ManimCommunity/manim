@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Adds an ImageMobject that's been obtained from the camera into the list ``self.image_mobject_from_cameras``"
+msgstr "Adds an ImageMobject that's been obtained from the camera into the list ``self.image_mobject_from_cameras``"
+
+msgid ":obj:`add_image_mobject_from_camera <manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera>`"
+msgstr ":obj:`add_image_mobject_from_camera <manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera>`"
+
+msgid "Any valid keyword arguments of MovingCamera."
+msgstr "Any valid keyword arguments of MovingCamera."
+
+msgid "MultiCamera"
+msgstr "MultiCamera"
+
+msgid "Camera Object that allows for multiple perspectives."
+msgstr "Camera Object that allows for multiple perspectives."
+
+msgid "Returns the centerpoint of the frame in cartesian coordinates."
+msgstr "Returns the centerpoint of the frame in cartesian coordinates."
+
+msgid "The ImageMobject to add to self.image_mobject_from_cameras"
+msgstr "The ImageMobject to add to self.image_mobject_from_cameras"
+
+msgid "Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving"
+msgstr "Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving"
+
+msgid ":obj:`capture_mobjects <manim.camera.multi_camera.MultiCamera.capture_mobjects>`"
+msgstr ":obj:`capture_mobjects <manim.camera.multi_camera.MultiCamera.capture_mobjects>`"
+
+msgid ":obj:`update_sub_cameras <manim.camera.multi_camera.MultiCamera.update_sub_cameras>`"
+msgstr ":obj:`update_sub_cameras <manim.camera.multi_camera.MultiCamera.update_sub_cameras>`"
+
+msgid "Returns the width of the frame"
+msgstr "Returns the width of the frame"
+
+msgid "Reshape sub_camera pixel_arrays"
+msgstr "Reshape sub_camera pixel_arrays"
+
+msgid "Returns the height of the frame."
+msgstr "Returns the height of the frame."
+
+msgid "For a list of classes that can currently be rendered, see :meth:`display_funcs`."
+msgstr "For a list of classes that can currently be rendered, see :meth:`display_funcs`."
+
+msgid ":obj:`get_mobjects_indicating_movement <manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement>`"
+msgstr ":obj:`get_mobjects_indicating_movement <manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement>`"
+
+msgid "Keyword arguments to be passed to :meth:`get_mobjects_to_display`."
+msgstr "Keyword arguments to be passed to :meth:`get_mobjects_to_display`."
+
+msgid "Bases: :class:`manim.camera.moving_camera.MovingCamera`"
+msgstr "Bases: :class:`manim.camera.moving_camera.MovingCamera`"
+
+msgid "Mobjects to capture."
+msgstr "Mobjects to capture."
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Resets the MultiCamera."
+msgstr "Resets the MultiCamera."
+
+msgid "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
+msgstr "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
+
+msgid "Capture mobjects by printing them on :attr:`pixel_array`."
+msgstr "Capture mobjects by printing them on :attr:`pixel_array`."
+
+msgid "The reset MultiCamera"
+msgstr "The reset MultiCamera"
+
+msgid "Initialises the MultiCamera"
+msgstr "Initialises the MultiCamera"
+
+msgid "Returns"
+msgstr "Returns"

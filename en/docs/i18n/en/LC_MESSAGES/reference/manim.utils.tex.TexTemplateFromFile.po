@@ -1,0 +1,65 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Content of the TeX template file"
+msgstr "Content of the TeX template file"
+
+msgid "Qualified name: ``manim.utils.tex.TexTemplateFromFile``"
+msgstr "Qualified name: ``manim.utils.tex.TexTemplateFromFile``"
+
+msgid "A TexTemplate object created from a template file (default: tex_template.tex)"
+msgstr "A TexTemplate object created from a template file (default: tex_template.tex)"
+
+msgid ":obj:`file_not_mutable <manim.utils.tex.TexTemplateFromFile.file_not_mutable>`"
+msgstr ":obj:`file_not_mutable <manim.utils.tex.TexTemplateFromFile.file_not_mutable>`"
+
+msgid ":obj:`add_to_preamble <manim.utils.tex.TexTemplateFromFile.add_to_preamble>`"
+msgstr ":obj:`add_to_preamble <manim.utils.tex.TexTemplateFromFile.add_to_preamble>`"
+
+msgid "Path to a valid TeX template file"
+msgstr "Path to a valid TeX template file"
+
+msgid "Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble."
+msgstr "Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble."
+
+msgid "The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``"
+msgstr "The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``"
+
+msgid "The kwargs specified can only be strings."
+msgstr "The kwargs specified can only be strings."
+
+msgid "String containing the text to be added."
+msgstr "String containing the text to be added."
+
+msgid ":obj:`add_to_document <manim.utils.tex.TexTemplateFromFile.add_to_document>`"
+msgstr ":obj:`add_to_document <manim.utils.tex.TexTemplateFromFile.add_to_document>`"
+
+msgid "Bases: :class:`manim.utils.tex.TexTemplate`"
+msgstr "Bases: :class:`manim.utils.tex.TexTemplate`"
+
+msgid "The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``"
+msgstr "The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``"
+
+msgid "TexTemplateFromFile"
+msgstr "TexTemplateFromFile"
+
+msgid "Text in the document that will be replaced by the expression to be rendered"
+msgstr "Text in the document that will be replaced by the expression to be rendered"
+
+msgid "Adds stuff to the TeX template's preamble (e.g."
+msgstr "Adds stuff to the TeX template's preamble (e.g."
+
+msgid "type"
+msgstr "type"
+
+msgid ":class:`str`"
+msgstr ":class:`str`"

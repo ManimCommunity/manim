@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`set_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.set_location>`"
+msgstr ":obj:`set_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.set_location>`"
+
+msgid ":obj:`get_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_location>`"
+msgstr ":obj:`get_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_location>`"
+
+msgid ":meth:`length_over_dim`"
+msgstr ":meth:`length_over_dim`"
+
+msgid "VectorizedPoint"
+msgstr "VectorizedPoint"

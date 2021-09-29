@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Qualified name: ``manim.mobject.table.DecimalTable``"
+msgstr "Qualified name: ``manim.mobject.table.DecimalTable``"
+
+msgid "Element to mobject config, here set as {\"num_decimal_places\": 1}."
+msgstr "Element to mobject config, here set as {\"num_decimal_places\": 1}."
+
+msgid "Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`. By default, ``num_decimal_places`` is set to 1. Will round/truncate the decimal places based on the provided ``element_to_mobject_config``."
+msgstr "Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`. By default, ``num_decimal_places`` is set to 1. Will round/truncate the decimal places based on the provided ``element_to_mobject_config``."
+
+msgid "DecimalTable"
+msgstr "DecimalTable"
+
+msgid "The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`."
+msgstr "The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`."
+
+msgid "A 2D array, or a list of lists. Content of the table must be valid input for :class:`~.DecimalNumber`."
+msgstr "A 2D array, or a list of lists. Content of the table must be valid input for :class:`~.DecimalNumber`."

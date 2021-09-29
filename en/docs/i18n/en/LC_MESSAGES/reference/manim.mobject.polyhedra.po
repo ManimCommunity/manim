@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "polyhedra"
+msgstr "polyhedra"
+
+msgid "An octahedron, one of the five platonic solids."
+msgstr "An octahedron, one of the five platonic solids."
+
+msgid "An icosahedron, one of the five platonic solids."
+msgstr "An icosahedron, one of the five platonic solids."
+
+msgid "General polyhedral class and platonic solids."
+msgstr "General polyhedral class and platonic solids."
+
+msgid "A dodecahedron, one of the five platonic solids."
+msgstr "A dodecahedron, one of the five platonic solids."
+
+msgid "A tetrahedron, one of the five platonic solids."
+msgstr "A tetrahedron, one of the five platonic solids."

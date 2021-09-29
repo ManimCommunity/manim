@@ -1,0 +1,248 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Sets the azimuthal angle i.e the angle that spins the camera around Z_AXIS in radians."
+msgstr "Sets the azimuthal angle i.e the angle that spins the camera around Z_AXIS in radians."
+
+msgid ":obj:`transform_points_pre_display <manim.camera.three_d_camera.ThreeDCamera.transform_points_pre_display>`"
+msgstr ":obj:`transform_points_pre_display <manim.camera.three_d_camera.ThreeDCamera.transform_points_pre_display>`"
+
+msgid ":obj:`modified_rgbas <manim.camera.three_d_camera.ThreeDCamera.modified_rgbas>`"
+msgstr ":obj:`modified_rgbas <manim.camera.three_d_camera.ThreeDCamera.modified_rgbas>`"
+
+msgid ":obj:`add_fixed_orientation_mobjects <manim.camera.three_d_camera.ThreeDCamera.add_fixed_orientation_mobjects>`"
+msgstr ":obj:`add_fixed_orientation_mobjects <manim.camera.three_d_camera.ThreeDCamera.add_fixed_orientation_mobjects>`"
+
+msgid "If a mobject was fixed in frame by passing it through :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing."
+msgstr "If a mobject was fixed in frame by passing it through :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing."
+
+msgid ":obj:`get_distance <manim.camera.three_d_camera.ThreeDCamera.get_distance>`"
+msgstr ":obj:`get_distance <manim.camera.three_d_camera.ThreeDCamera.get_distance>`"
+
+msgid "If a mobject was fixed in frame by passing it through :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing. The Mobject will no longer be fixed in frame."
+msgstr "If a mobject was fixed in frame by passing it through :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing. The Mobject will no longer be fixed in frame."
+
+msgid "The mobjects whose orientation need not be fixed any longer."
+msgstr "The mobjects whose orientation need not be fixed any longer."
+
+msgid "The Azimuthal angle in radians."
+msgstr "The Azimuthal angle in radians."
+
+msgid "This method allows the mobject to have a fixed position, even when the camera moves around."
+msgstr "This method allows the mobject to have a fixed position, even when the camera moves around."
+
+msgid "Returns radial distance from ORIGIN."
+msgstr "Returns radial distance from ORIGIN."
+
+msgid ":obj:`project_point <manim.camera.three_d_camera.ThreeDCamera.project_point>`"
+msgstr ":obj:`project_point <manim.camera.three_d_camera.ThreeDCamera.project_point>`"
+
+msgid ":obj:`remove_fixed_orientation_mobjects <manim.camera.three_d_camera.ThreeDCamera.remove_fixed_orientation_mobjects>`"
+msgstr ":obj:`remove_fixed_orientation_mobjects <manim.camera.three_d_camera.ThreeDCamera.remove_fixed_orientation_mobjects>`"
+
+msgid "If a mobject was fixed in its orientation by passing it through :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing. The Mobject will no longer have a fixed orientation."
+msgstr "If a mobject was fixed in its orientation by passing it through :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing. The Mobject will no longer have a fixed orientation."
+
+msgid "Sets the zoom amount of the camera."
+msgstr "Sets the zoom amount of the camera."
+
+msgid "The point to project."
+msgstr "The point to project."
+
+msgid "Any argument of Camera"
+msgstr "Any argument of Camera"
+
+msgid "The mobject to fix in frame."
+msgstr "The mobject to fix in frame."
+
+msgid ":obj:`get_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.get_rotation_matrix>`"
+msgstr ":obj:`get_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.get_rotation_matrix>`"
+
+msgid ":obj:`project_points <manim.camera.three_d_camera.ThreeDCamera.project_points>`"
+msgstr ":obj:`project_points <manim.camera.three_d_camera.ThreeDCamera.project_points>`"
+
+msgid "The mobject whose orientation must be fixed."
+msgstr "The mobject whose orientation must be fixed."
+
+msgid "Whether or not to consider the background when getting the stroke RGBAs, by default False"
+msgstr "Whether or not to consider the background when getting the stroke RGBAs, by default False"
+
+msgid "Generates a rotation matrix based off the current position of the camera."
+msgstr "Generates a rotation matrix based off the current position of the camera."
+
+msgid "The mobjects which need not be fixed in frame any longer."
+msgstr "The mobjects which need not be fixed in frame any longer."
+
+msgid "The points after projecting."
+msgstr "The points after projecting."
+
+msgid "The matrix corresponding to the current position of the camera."
+msgstr "The matrix corresponding to the current position of the camera."
+
+msgid "Used to get the list of mobjects to display with the camera."
+msgstr "Used to get the list of mobjects to display with the camera."
+
+msgid ":obj:`set_distance <manim.camera.three_d_camera.ThreeDCamera.set_distance>`"
+msgstr ":obj:`set_distance <manim.camera.three_d_camera.ThreeDCamera.set_distance>`"
+
+msgid ":obj:`get_stroke_rgbas <manim.camera.three_d_camera.ThreeDCamera.get_stroke_rgbas>`"
+msgstr ":obj:`get_stroke_rgbas <manim.camera.three_d_camera.ThreeDCamera.get_stroke_rgbas>`"
+
+msgid "Sets the value of self.rotation_matrix to the matrix corresponding to the current position of the camera"
+msgstr "Sets the value of self.rotation_matrix to the matrix corresponding to the current position of the camera"
+
+msgid "The radial distance from ORIGIN in MUnits."
+msgstr "The radial distance from ORIGIN in MUnits."
+
+msgid "Returns the rotation of the camera about the vector from the ORIGIN to the Camera."
+msgstr "Returns the rotation of the camera about the vector from the ORIGIN to the Camera."
+
+msgid "Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians."
+msgstr "Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians."
+
+msgid "The function which returns the centerpoint with respect to which the mobject will be oriented, by default None"
+msgstr "The function which returns the centerpoint with respect to which the mobject will be oriented, by default None"
+
+msgid "The point after projection."
+msgstr "The point after projection."
+
+msgid "Returns list of ValueTrackers of phi, theta, distance and gamma"
+msgstr "Returns list of ValueTrackers of phi, theta, distance and gamma"
+
+msgid "This method allows the mobject to have a fixed orientation, even when the camera moves around."
+msgstr "This method allows the mobject to have a fixed orientation, even when the camera moves around."
+
+msgid "Whether or not to use the function that takes the mobject's center as centerpoint, by default False"
+msgstr "Whether or not to use the function that takes the mobject's center as centerpoint, by default False"
+
+msgid "Any keyword argument of Camera."
+msgstr "Any keyword argument of Camera."
+
+msgid "The zoom amount of the camera."
+msgstr "The zoom amount of the camera."
+
+msgid ":obj:`get_fill_rgbas <manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas>`"
+msgstr ":obj:`get_fill_rgbas <manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas>`"
+
+msgid ":obj:`get_value_trackers <manim.camera.three_d_camera.ThreeDCamera.get_value_trackers>`"
+msgstr ":obj:`get_value_trackers <manim.camera.three_d_camera.ThreeDCamera.get_value_trackers>`"
+
+msgid "list of mobjects"
+msgstr "list of mobjects"
+
+msgid "ThreeDCamera"
+msgstr "ThreeDCamera"
+
+msgid "The list of points to project."
+msgstr "The list of points to project."
+
+msgid "The RGBA array of the stroke."
+msgstr "The RGBA array of the stroke."
+
+msgid "Returns the zoom amount of the camera."
+msgstr "Returns the zoom amount of the camera."
+
+msgid "Whether or not to include the submobjects of mobjects, by default True"
+msgstr "Whether or not to include the submobjects of mobjects, by default True"
+
+msgid "The angle of rotation of the camera about the vector from the ORIGIN to the Camera in radians"
+msgstr "The angle of rotation of the camera about the vector from the ORIGIN to the Camera in radians"
+
+msgid ":obj:`reset_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.reset_rotation_matrix>`"
+msgstr ":obj:`reset_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.reset_rotation_matrix>`"
+
+msgid ":obj:`generate_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.generate_rotation_matrix>`"
+msgstr ":obj:`generate_rotation_matrix <manim.camera.three_d_camera.ThreeDCamera.generate_rotation_matrix>`"
+
+msgid "Initializes the ThreeDCamera"
+msgstr "Initializes the ThreeDCamera"
+
+msgid "Applies the current rotation_matrix as a projection matrix to the passed array of points."
+msgstr "Applies the current rotation_matrix as a projection matrix to the passed array of points."
+
+msgid ":obj:`capture_mobjects <manim.camera.three_d_camera.ThreeDCamera.capture_mobjects>`"
+msgstr ":obj:`capture_mobjects <manim.camera.three_d_camera.ThreeDCamera.capture_mobjects>`"
+
+msgid "Sets the radial distance between the camera and ORIGIN."
+msgstr "Sets the radial distance between the camera and ORIGIN."
+
+msgid "list of ValueTracker objects"
+msgstr "list of ValueTracker objects"
+
+msgid "The RGBA Array of the fill of the VMobject"
+msgstr "The RGBA Array of the fill of the VMobject"
+
+msgid "Returns the Polar angle (the angle off Z_AXIS) phi."
+msgstr "Returns the Polar angle (the angle off Z_AXIS) phi."
+
+msgid "This method allows the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame."
+msgstr "This method allows the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame."
+
+msgid "The new value of the azimuthal angle in radians."
+msgstr "The new value of the azimuthal angle in radians."
+
+msgid "If a mobject was fixed in its orientation by passing it through :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing."
+msgstr "If a mobject was fixed in its orientation by passing it through :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing."
+
+msgid "Sets the angle of rotation of the camera about the vector from the ORIGIN to the Camera."
+msgstr "Sets the angle of rotation of the camera about the vector from the ORIGIN to the Camera."
+
+msgid "The new radial distance."
+msgstr "The new radial distance."
+
+msgid "Highly useful when displaying Titles or formulae or the like."
+msgstr "Highly useful when displaying Titles or formulae or the like."
+
+msgid "Gets the RGBA array for the stroke of the passed VMobject."
+msgstr "Gets the RGBA array for the stroke of the passed VMobject."
+
+msgid "The new value of the polar angle in radians."
+msgstr "The new value of the polar angle in radians."
+
+msgid "The Mobjects"
+msgstr "The Mobjects"
+
+msgid "Returns the RGBA array of the fill of the passed VMobject"
+msgstr "Returns the RGBA array of the fill of the passed VMobject"
+
+msgid "This method allows the mobject to have a fixed orientation, even when the camera moves around. E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like."
+msgstr "This method allows the mobject to have a fixed orientation, even when the camera moves around. E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like."
+
+msgid "Any mobjects to exclude, by default None"
+msgstr "Any mobjects to exclude, by default None"
+
+msgid "Returns the Azimuthal i.e the angle that spins the camera around the Z_AXIS."
+msgstr "Returns the Azimuthal i.e the angle that spins the camera around the Z_AXIS."
+
+msgid "The Polar angle in radians."
+msgstr "The Polar angle in radians."
+
+msgid ":obj:`add_fixed_in_frame_mobjects <manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects>`"
+msgstr ":obj:`add_fixed_in_frame_mobjects <manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects>`"
+
+msgid "The VMobject"
+msgstr "The VMobject"
+
+msgid ":obj:`remove_fixed_in_frame_mobjects <manim.camera.three_d_camera.ThreeDCamera.remove_fixed_in_frame_mobjects>`"
+msgstr ":obj:`remove_fixed_in_frame_mobjects <manim.camera.three_d_camera.ThreeDCamera.remove_fixed_in_frame_mobjects>`"
+
+msgid ":obj:`get_mobjects_to_display <manim.camera.three_d_camera.ThreeDCamera.get_mobjects_to_display>`"
+msgstr ":obj:`get_mobjects_to_display <manim.camera.three_d_camera.ThreeDCamera.get_mobjects_to_display>`"
+
+msgid "Returns the matrix corresponding to the current position of the camera."
+msgstr "Returns the matrix corresponding to the current position of the camera."
+
+msgid "Applies the current rotation_matrix as a projection matrix to the passed point."
+msgstr "Applies the current rotation_matrix as a projection matrix to the passed point."
+
+msgid "The new angle of rotation of the camera."
+msgstr "The new angle of rotation of the camera."

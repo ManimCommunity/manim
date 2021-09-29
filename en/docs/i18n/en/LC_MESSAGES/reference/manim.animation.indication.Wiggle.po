@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`get_rotate_about_point <manim.animation.indication.Wiggle.get_rotate_about_point>`"
+msgstr ":obj:`get_rotate_about_point <manim.animation.indication.Wiggle.get_rotate_about_point>`"
+
+msgid "The point about which the mobject gets scaled."
+msgstr "The point about which the mobject gets scaled."
+
+msgid "The point around which the mobject gets rotated."
+msgstr "The point around which the mobject gets rotated."
+
+msgid "The mobject to wiggle."
+msgstr "The mobject to wiggle."
+
+msgid "Qualified name: ``manim.animation.indication.Wiggle``"
+msgstr "Qualified name: ``manim.animation.indication.Wiggle``"
+
+msgid ":obj:`get_scale_about_point <manim.animation.indication.Wiggle.get_scale_about_point>`"
+msgstr ":obj:`get_scale_about_point <manim.animation.indication.Wiggle.get_scale_about_point>`"
+
+msgid "Wiggle a Mobject."
+msgstr "Wiggle a Mobject."
+
+msgid "The number of wiggles."
+msgstr "The number of wiggles."
+
+msgid ":obj:`interpolate_submobject <manim.animation.indication.Wiggle.interpolate_submobject>`"
+msgstr ":obj:`interpolate_submobject <manim.animation.indication.Wiggle.interpolate_submobject>`"
+
+msgid "The duration of the animation"
+msgstr "The duration of the animation"
+
+msgid "Wiggle"
+msgstr "Wiggle"
+
+msgid "The factor by which the mobject will be temporarily scaled."
+msgstr "The factor by which the mobject will be temporarily scaled."
+
+msgid "The wiggle angle."
+msgstr "The wiggle angle."

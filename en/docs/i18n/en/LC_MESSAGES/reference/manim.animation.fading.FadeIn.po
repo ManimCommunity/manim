@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The factor by which the mobject is scaled initially before being rescaling to its original size while being faded in."
+msgstr "The factor by which the mobject is scaled initially before being rescaling to its original size while being faded in."
+
+msgid "The position from which the mobject starts while being faded in. In case another mobject is given as target position, its center is used."
+msgstr "The position from which the mobject starts while being faded in. In case another mobject is given as target position, its center is used."
+
+msgid "The mobjects to be faded in."
+msgstr "The mobjects to be faded in."
+
+msgid "The vector by which the mobject shifts while being faded in."
+msgstr "The vector by which the mobject shifts while being faded in."
+
+msgid "Qualified name: ``manim.animation.fading.FadeIn``"
+msgstr "Qualified name: ``manim.animation.fading.FadeIn``"
+
+msgid ":obj:`create_starting_mobject <manim.animation.fading.FadeIn.create_starting_mobject>`"
+msgstr ":obj:`create_starting_mobject <manim.animation.fading.FadeIn.create_starting_mobject>`"
+
+msgid "FadeIn"
+msgstr "FadeIn"

@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: hi_IN\n"
+
+msgid "This document will lead you step by step through the necessary procedure to get started with manim for the first time as soon as possible.  This tutorial assumes you have already installed manim following the steps in :doc:`../installation`."
+msgstr "यह आलेख आपको क्रमशः शीघ्र से शीघ्र पहली बार Manim के साथ आरंभ करने के लिए आवश्यक प्रक्रिया  पूरी करने में सहायक बनेगा। यह शिक्षण मान के चलता है कि आप पहले ही :doc:`../installation` में दिए गए निर्देशों का पालन करके Manim स्थापित कर चुके हैं।"
+
+msgid "Quickstart"
+msgstr "शीघ्रारंभ"
+
+msgid "Start a new project"
+msgstr "नई परियोजना का आरंभ करें"

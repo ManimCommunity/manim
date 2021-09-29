@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "SingleStringMathTex"
+msgstr "SingleStringMathTex"
+
+msgid ":obj:`remove_stray_braces <manim.mobject.svg.tex_mobject.SingleStringMathTex.remove_stray_braces>`"
+msgstr ":obj:`remove_stray_braces <manim.mobject.svg.tex_mobject.SingleStringMathTex.remove_stray_braces>`"
+
+msgid ":obj:`get_modified_expression <manim.mobject.svg.tex_mobject.SingleStringMathTex.get_modified_expression>`"
+msgstr ":obj:`get_modified_expression <manim.mobject.svg.tex_mobject.SingleStringMathTex.get_modified_expression>`"
+
+msgid ":obj:`modify_special_strings <manim.mobject.svg.tex_mobject.SingleStringMathTex.modify_special_strings>`"
+msgstr ":obj:`modify_special_strings <manim.mobject.svg.tex_mobject.SingleStringMathTex.modify_special_strings>`"
+
+msgid ":obj:`init_colors <manim.mobject.svg.tex_mobject.SingleStringMathTex.init_colors>`"
+msgstr ":obj:`init_colors <manim.mobject.svg.tex_mobject.SingleStringMathTex.init_colors>`"
+
+msgid "Style specification, using the SVG names for properties."
+msgstr "Style specification, using the SVG names for properties."
+
+msgid ":obj:`organize_submobjects_left_to_right <manim.mobject.svg.tex_mobject.SingleStringMathTex.organize_submobjects_left_to_right>`"
+msgstr ":obj:`organize_submobjects_left_to_right <manim.mobject.svg.tex_mobject.SingleStringMathTex.organize_submobjects_left_to_right>`"
+
+msgid ":obj:`path_string_to_mobject <manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject>`"
+msgstr ":obj:`path_string_to_mobject <manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject>`"
+
+msgid "Check that creating a :class:`~.SingleStringMathTex` object works::"
+msgstr "Check that creating a :class:`~.SingleStringMathTex` object works::"
+
+msgid "A VMobject from the given path string, or d attribute."
+msgstr "A VMobject from the given path string, or d attribute."
+
+msgid "Makes :class:`~.MathTex` resilient to unmatched braces."
+msgstr "Makes :class:`~.MathTex` resilient to unmatched braces."
+
+msgid "A path with potentially multiple path commands to create a shape."
+msgstr "A path with potentially multiple path commands to create a shape."
+
+msgid "Converts a SVG path element's ``d`` attribute to a mobject."
+msgstr "Converts a SVG path element's ``d`` attribute to a mobject."
+
+msgid "Elementary building block for rendering text with LaTeX."
+msgstr "Elementary building block for rendering text with LaTeX."
+
+msgid ":obj:`get_tex_string <manim.mobject.svg.tex_mobject.SingleStringMathTex.get_tex_string>`"
+msgstr ":obj:`get_tex_string <manim.mobject.svg.tex_mobject.SingleStringMathTex.get_tex_string>`"

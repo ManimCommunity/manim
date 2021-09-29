@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The factor by which the mobject will be temporally scaled"
+msgstr "The factor by which the mobject will be temporally scaled"
+
+msgid "The color the mobject temporally takes."
+msgstr "The color the mobject temporally takes."
+
+msgid "Qualified name: ``manim.animation.indication.Indicate``"
+msgstr "Qualified name: ``manim.animation.indication.Indicate``"
+
+msgid "The mobject to indicate."
+msgstr "The mobject to indicate."
+
+msgid "The function definig the animation progress at every point in time."
+msgstr "The function definig the animation progress at every point in time."
+
+msgid "Indicate a Mobject by temporarily resizing and recoloring it."
+msgstr "Indicate a Mobject by temporarily resizing and recoloring it."
+
+msgid "Indicate"
+msgstr "Indicate"

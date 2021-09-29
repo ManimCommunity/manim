@@ -1,0 +1,149 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Get the run time of the animation."
+msgstr "Get the run time of the animation."
+
+msgid "Animation"
+msgstr "Animation"
+
+msgid "Create a copy of the animation."
+msgstr "Create a copy of the animation."
+
+msgid "Defines the delay after which the animation is applied to submobjects. This lag is relative to the duration of the animation.  This does not influence the total runtime of the animation. Instead the runtime of individual animations is adjusted so that the complete animation has the defined run time."
+msgstr "Defines the delay after which the animation is applied to submobjects. This lag is relative to the duration of the animation.  This does not influence the total runtime of the animation. Instead the runtime of individual animations is adjusted so that the complete animation has the defined run time."
+
+msgid "The progress of the subanimation."
+msgstr "The progress of the subanimation."
+
+msgid "The time the animation takes in seconds."
+msgstr "The time the animation takes in seconds."
+
+msgid "The mobject to be animated. This is not required for all types of animations."
+msgstr "The mobject to be animated. This is not required for all types of animations."
+
+msgid ":obj:`interpolate_submobject <manim.animation.animation.Animation.interpolate_submobject>`"
+msgstr ":obj:`interpolate_submobject <manim.animation.animation.Animation.interpolate_submobject>`"
+
+msgid "The index of the subanimation."
+msgstr "The index of the subanimation."
+
+msgid "Whether updaters of the mobject should be suspended during the animation."
+msgstr "Whether updaters of the mobject should be suspended during the animation."
+
+msgid "The run_time of an animation should not be changed while it is already running."
+msgstr "The run_time of an animation should not be changed while it is already running."
+
+msgid "The name of the animation. This gets displayed while rendering the animation. Defaults to <class-name>(<Mobject-name>)."
+msgstr "The name of the animation. This gets displayed while rendering the animation. Defaults to <class-name>(<Mobject-name>)."
+
+msgid ":obj:`clean_up_from_scene <manim.animation.animation.Animation.clean_up_from_scene>`"
+msgstr ":obj:`clean_up_from_scene <manim.animation.animation.Animation.clean_up_from_scene>`"
+
+msgid ":obj:`get_all_mobjects <manim.animation.animation.Animation.get_all_mobjects>`"
+msgstr ":obj:`get_all_mobjects <manim.animation.animation.Animation.get_all_mobjects>`"
+
+msgid "Get the rate function of the animation."
+msgstr "Get the rate function of the animation."
+
+msgid "``self``"
+msgstr "``self``"
+
+msgid "Animations have a fixed time span."
+msgstr "Animations have a fixed time span."
+
+msgid "The total count of subanimations."
+msgstr "The total count of subanimations."
+
+msgid ":obj:`create_starting_mobject <manim.animation.animation.Animation.create_starting_mobject>`"
+msgstr ":obj:`create_starting_mobject <manim.animation.animation.Animation.create_starting_mobject>`"
+
+msgid "The duration of the animation in seconds."
+msgstr "The duration of the animation in seconds."
+
+msgid "``True`` if the animation is a remover, ``False`` otherwise."
+msgstr "``True`` if the animation is a remover, ``False`` otherwise."
+
+msgid "Defines the delay after which the animation is applied to submobjects. This lag is relative to the duration of the animation."
+msgstr "Defines the delay after which the animation is applied to submobjects. This lag is relative to the duration of the animation."
+
+msgid "A copy of ``self``"
+msgstr "A copy of ``self``"
+
+msgid "The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) .  For example ``rate_func(0.5)`` is the proportion of the animation that is done after half of the animations run time."
+msgstr "The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) .  For example ``rate_func(0.5)`` is the proportion of the animation that is done after half of the animations run time."
+
+msgid ":obj:`update_mobjects <manim.animation.animation.Animation.update_mobjects>`"
+msgstr ":obj:`update_mobjects <manim.animation.animation.Animation.update_mobjects>`"
+
+msgid "Test if a the animation is a remover."
+msgstr "Test if a the animation is a remover."
+
+msgid ":obj:`interpolate_mobject <manim.animation.animation.Animation.interpolate_mobject>`"
+msgstr ":obj:`interpolate_mobject <manim.animation.animation.Animation.interpolate_mobject>`"
+
+msgid "Set the rate function of the animation."
+msgstr "Set the rate function of the animation."
+
+msgid "For example ``rate_func(0.5)`` is the proportion of the animation that is done after half of the animations run time."
+msgstr "For example ``rate_func(0.5)`` is the proportion of the animation that is done after half of the animations run time."
+
+msgid "The overall animation progress"
+msgstr "The overall animation progress"
+
+msgid "Whether the given mobject should be removed from the scene after this animation."
+msgstr "Whether the given mobject should be removed from the scene after this animation."
+
+msgid "Set the run time of the animation."
+msgstr "Set the run time of the animation."
+
+msgid "The rate function of the animation."
+msgstr "The rate function of the animation."
+
+msgid "The new name of the animation."
+msgstr "The new name of the animation."
+
+msgid "Get the animation progress of any submobjects subanimation."
+msgstr "Get the animation progress of any submobjects subanimation."
+
+msgid "Get all mobjects to be updated during the animation."
+msgstr "Get all mobjects to be updated during the animation."
+
+msgid "Set the name of the animation."
+msgstr "Set the name of the animation."
+
+msgid "The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) ."
+msgstr "The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) ."
+
+msgid "The list of mobjects to be updated during the animation."
+msgstr "The list of mobjects to be updated during the animation."
+
+msgid "An animation."
+msgstr "An animation."
+
+msgid ":obj:`get_all_mobjects_to_update <manim.animation.animation.Animation.get_all_mobjects_to_update>`"
+msgstr ":obj:`get_all_mobjects_to_update <manim.animation.animation.Animation.get_all_mobjects_to_update>`"
+
+msgid "This does not influence the total runtime of the animation. Instead the runtime of individual animations is adjusted so that the complete animation has the defined run time."
+msgstr "This does not influence the total runtime of the animation. Instead the runtime of individual animations is adjusted so that the complete animation has the defined run time."
+
+msgid ":obj:`get_all_families_zipped <manim.animation.animation.Animation.get_all_families_zipped>`"
+msgstr ":obj:`get_all_families_zipped <manim.animation.animation.Animation.get_all_families_zipped>`"
+
+msgid "Qualified name: ``manim.animation.animation.Animation``"
+msgstr "Qualified name: ``manim.animation.animation.Animation``"
+
+msgid "Bases: :class:`object`"
+msgstr "Bases: :class:`object`"
+
+msgid "The new time the animation should take in seconds."
+msgstr "The new time the animation should take in seconds."

@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Dictionary mapping svg attributes to values with `element`'s values overriding inherited values."
+msgstr "Dictionary mapping svg attributes to values with `element`'s values overriding inherited values."
+
+msgid "Element of the SVG parse tree"
+msgstr "Element of the SVG parse tree"
+
+msgid "String in any web-compatible format"
+msgstr "String in any web-compatible format"
+
+msgid "Dictionary of SVG attributes inherited from the parent element."
+msgstr "Dictionary of SVG attributes inherited from the parent element."
+
+msgid "Collect the element's style attributes based upon both its inheritance and its own attributes."
+msgstr "Collect the element's style attributes based upon both its inheritance and its own attributes."
+
+msgid "Convert a dictionary of SVG attributes to Manim VMobject keyword arguments."
+msgstr "Convert a dictionary of SVG attributes to Manim VMobject keyword arguments."
+
+msgid "Style attributes; none are missing."
+msgstr "Style attributes; none are missing."
+
+msgid "Handle the SVG-specific color strings and convert them to HTML #rrggbb format."
+msgstr "Handle the SVG-specific color strings and convert them to HTML #rrggbb format."
+
+msgid "Hexadecimal color string in the format `#rrggbb`"
+msgstr "Hexadecimal color string in the format `#rrggbb`"
+
+msgid "SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree, updating where necessary."
+msgstr "SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree, updating where necessary."
+
+msgid "Style attributes as a string-to-string dictionary. Keys are valid SVG element attributes (fill, stroke, etc)"
+msgstr "Style attributes as a string-to-string dictionary. Keys are valid SVG element attributes (fill, stroke, etc)"
+
+msgid "Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color"
+msgstr "Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color"
+
+msgid "Fill in the default values for properties of SVG elements, if they are not currently set in the style dictionary."
+msgstr "Fill in the default values for properties of SVG elements, if they are not currently set in the style dictionary."
+
+msgid "Style dictionary with SVG property names. Some may be missing."
+msgstr "Style dictionary with SVG property names. Some may be missing."
+
+msgid "Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting from SVG attributes to manim keyword arguments."
+msgstr "Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting from SVG attributes to manim keyword arguments."

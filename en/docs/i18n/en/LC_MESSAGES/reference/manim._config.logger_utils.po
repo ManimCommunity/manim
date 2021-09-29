@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The global config, used to determine the log file path."
+msgstr "The global config, used to determine the log file path."
+
+msgid "A parser containing any .cfg files in use."
+msgstr "A parser containing any .cfg files in use."
+
+msgid "The rich theme to be used by the manim logger."
+msgstr "The rich theme to be used by the manim logger."
+
+msgid "The ``parser`` is assumed to contain only the options related to configuring the logger at the top level."
+msgstr "The ``parser`` is assumed to contain only the options related to configuring the logger at the top level."
+
+msgid "Both ``logger`` and ``console`` use the ``rich`` library to produce rich text format."
+msgstr "Both ``logger`` and ``console`` use the ``rich`` library to produce rich text format."
+
+msgid "The manim logger and consoles. The first console outputs to stdout, the second to stderr. All use the theme returned by :func:`parse_theme`."
+msgstr "The manim logger and consoles. The first console outputs to stdout, the second to stderr. All use the theme returned by :func:`parse_theme`."
+
+msgid "Calling this function changes the verbosity of all handlers assigned to manim logger."
+msgstr "Calling this function changes the verbosity of all handlers assigned to manim logger."
+
+msgid "Add a file handler to manim logger."
+msgstr "Add a file handler to manim logger."
+
+msgid "Configure the rich style of logger and console output."
+msgstr "Configure the rich style of logger and console output."
+
+msgid "Make the manim logger and console."
+msgstr "Make the manim logger and console."
+
+msgid ":func:`make_logger`"
+msgstr ":func:`make_logger`"
+
+msgid ":class:`logging.Logger`, :class:`rich.Console`, :class:`rich.Console`"
+msgstr ":class:`logging.Logger`, :class:`rich.Console`, :class:`rich.Console`"
+
+msgid "Manim's logger can be accessed as ``manim.logger``, or as ``logging.getLogger(\"manim\")``, once the library has been imported.  Manim also exports a second object, ``console``, which should be used to print on screen messages that need not be logged."
+msgstr "Manim's logger can be accessed as ``manim.logger``, or as ``logging.getLogger(\"manim\")``, once the library has been imported.  Manim also exports a second object, ``console``, which should be used to print on screen messages that need not be logged."
+
+msgid "The verbosity level of the logger."
+msgstr "The verbosity level of the logger."
+
+msgid "The path to the file is built using ``config.log_dir``."
+msgstr "The path to the file is built using ``config.log_dir``."
+
+msgid ":class:`rich.Theme`"
+msgstr ":class:`rich.Theme`"

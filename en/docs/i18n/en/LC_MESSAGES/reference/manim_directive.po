@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Controls render quality of the video, in analogy to the corresponding command line flags."
+msgstr "Controls render quality of the video, in analogy to the corresponding command line flags."
+
+msgid "The following configuration options are supported by the directive:"
+msgstr "The following configuration options are supported by the directive:"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "A list of classes, separated by spaces, that is rendered in a reference block after the source code."
+msgstr "A list of classes, separated by spaces, that is rendered in a reference block after the source code."
+
+msgid "A list of functions, separated by spaces, that is rendered in a reference block after the source code."
+msgstr "A list of functions, separated by spaces, that is rendered in a reference block after the source code."
+
+msgid "Options can be passed as follows::"
+msgstr "Options can be passed as follows::"
+
+msgid "ref_functions"
+msgstr "ref_functions"
+
+msgid "ref_classes"
+msgstr "ref_classes"
+
+msgid "save_as_gif"
+msgstr "save_as_gif"
+
+msgid "When rendering the HTML documentation, the ``.. manim::`` directive implemented here allows to include rendered videos."
+msgstr "When rendering the HTML documentation, the ``.. manim::`` directive implemented here allows to include rendered videos."
+
+msgid "It is required to pass the name of the class representing the scene to be rendered to the directive."
+msgstr "It is required to pass the name of the class representing the scene to be rendered to the directive."
+
+msgid "ref_methods"
+msgstr "ref_methods"
+
+msgid "If this flag is present without argument, an image representing the last frame of the scene will be rendered and displayed, instead of a video."
+msgstr "If this flag is present without argument, an image representing the last frame of the scene will be rendered and displayed, instead of a video."
+
+msgid "If this flag is present without argument, the source code is not displayed above the rendered video."
+msgstr "If this flag is present without argument, the source code is not displayed above the rendered video."
+
+msgid "As a second application, the directive can also be used to render scenes that are defined within doctests, for example::"
+msgstr "As a second application, the directive can also be used to render scenes that are defined within doctests, for example::"
+
+msgid "quality"
+msgstr "quality"
+
+msgid "hide_source"
+msgstr "hide_source"
+
+msgid "save_last_frame"
+msgstr "save_last_frame"
+
+msgid "{'low', 'medium', 'high', 'fourk'}"
+msgstr "{'low', 'medium', 'high', 'fourk'}"
+
+msgid "Its basic usage that allows processing **inline content** looks as follows::"
+msgstr "Its basic usage that allows processing **inline content** looks as follows::"
+
+msgid "A directive for including Manim videos in a Sphinx document"
+msgstr "A directive for including Manim videos in a Sphinx document"
+
+msgid "Reformats a string of space separated class names as a list of strings containing valid Sphinx references."
+msgstr "Reformats a string of space separated class names as a list of strings containing valid Sphinx references."
+
+msgid "A list of methods, separated by spaces, that is rendered in a reference block after the source code."
+msgstr "A list of methods, separated by spaces, that is rendered in a reference block after the source code."
+
+msgid "If this flag is present without argument, the scene is rendered as a gif."
+msgstr "If this flag is present without argument, the scene is rendered as a gif."
+
+msgid "The manim directive, rendering videos while building the documentation."
+msgstr "The manim directive, rendering videos while building the documentation."

@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Interpolates an array of pixel color values into another array of equal size."
+msgstr "Interpolates an array of pixel color values into another array of equal size."
+
+msgid "ImageMobject"
+msgstr "ImageMobject"
+
+msgid ":obj:`get_pixel_array <manim.mobject.types.image_mobject.ImageMobject.get_pixel_array>`"
+msgstr ":obj:`get_pixel_array <manim.mobject.types.image_mobject.ImageMobject.get_pixel_array>`"
+
+msgid ":obj:`change_to_rgba_array <manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array>`"
+msgstr ":obj:`change_to_rgba_array <manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array>`"
+
+msgid "Bases: :class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
+msgstr "Bases: :class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
+
+msgid "Sets the image's opacity using a 1 - alpha relationship."
+msgstr "Sets the image's opacity using a 1 - alpha relationship."
+
+msgid "Converts an RGB array into RGBA with the alpha value opacity maxed."
+msgstr "Converts an RGB array into RGBA with the alpha value opacity maxed."
+
+msgid "Whether the submobjects of the ImageMobject should be affected."
+msgstr "Whether the submobjects of the ImageMobject should be affected."
+
+msgid "Used to track the lerp relationship. Not opacity related."
+msgstr "Used to track the lerp relationship. Not opacity related."
+
+msgid ":obj:`interpolate_color <manim.mobject.types.image_mobject.ImageMobject.interpolate_color>`"
+msgstr ":obj:`interpolate_color <manim.mobject.types.image_mobject.ImageMobject.interpolate_color>`"
+
+msgid "Changing interpolation style:"
+msgstr "Changing interpolation style:"
+
+msgid "Sets the image's opacity."
+msgstr "Sets the image's opacity."
+
+msgid "A simple getter method."
+msgstr "A simple getter method."
+
+msgid "The ImageMobject to transform into."
+msgstr "The ImageMobject to transform into."
+
+msgid ":obj:`set_opacity <manim.mobject.types.image_mobject.ImageMobject.set_opacity>`"
+msgstr ":obj:`set_opacity <manim.mobject.types.image_mobject.ImageMobject.set_opacity>`"
+
+msgid "At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best. This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen."
+msgstr "At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best. This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen."
+
+msgid "The ImageMobject to transform from."
+msgstr "The ImageMobject to transform from."
+
+msgid ":obj:`get_style <manim.mobject.types.image_mobject.ImageMobject.get_style>`"
+msgstr ":obj:`get_style <manim.mobject.types.image_mobject.ImageMobject.get_style>`"
+
+msgid "The alpha value of the object, 1 being opaque and 0 being transparent."
+msgstr "The alpha value of the object, 1 being opaque and 0 being transparent."
+
+msgid "The alpha value of the object, 1 being transparent and 0 being opaque."
+msgstr "The alpha value of the object, 1 being transparent and 0 being opaque."
+
+msgid ":obj:`set_color <manim.mobject.types.image_mobject.ImageMobject.set_color>`"
+msgstr ":obj:`set_color <manim.mobject.types.image_mobject.ImageMobject.set_color>`"

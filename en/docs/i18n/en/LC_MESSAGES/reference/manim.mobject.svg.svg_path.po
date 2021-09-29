@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Generate cubic bezier points to approximate SVG elliptical arc."
+msgstr "Generate cubic bezier points to approximate SVG elliptical arc."
+
+msgid "See: https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii"
+msgstr "See: https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii"
+
+msgid "List of float values parsed out of the string."
+msgstr "List of float values parsed out of the string."
+
+msgid "See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes"
+msgstr "See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes"
+
+msgid "Calculate the dot product angle between two vectors."
+msgstr "Calculate the dot product angle between two vectors."
+
+msgid "Correction of out-of-range radii."
+msgstr "Correction of out-of-range radii."
+
+msgid "Parse the SVG string representing a sequence of numbers into an array of floats."
+msgstr "Parse the SVG string representing a sequence of numbers into an array of floats."
+
+msgid "This clamps the argument to the arc cosine due to roundoff errors from some SVG files."
+msgstr "This clamps the argument to the arc cosine due to roundoff errors from some SVG files."
+
+msgid "Conversion from endpoint to center parameterization."
+msgstr "Conversion from endpoint to center parameterization."
+
+msgid "See: https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter"
+msgstr "See: https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter"
+
+msgid "Group iterable into arrays of n items."
+msgstr "Group iterable into arrays of n items."
+
+msgid "String representing a sequence of numbers, separated by commas, spaces, etc."
+msgstr "String representing a sequence of numbers, separated by commas, spaces, etc."

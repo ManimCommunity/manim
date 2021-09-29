@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Additional arguments to be passed to :class:`Arc`"
+msgstr "Additional arguments to be passed to :class:`Arc`"
+
+msgid "Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject."
+msgstr "Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject."
+
+msgid "Qualified name: ``manim.mobject.geometry.Circle``"
+msgstr "Qualified name: ``manim.mobject.geometry.Circle``"
+
+msgid "Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`"
+msgstr "Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`"
+
+msgid "Returns the position of a point on the circle."
+msgstr "Returns the position of a point on the circle."
+
+msgid "The angle of the point along the circle in radians."
+msgstr "The angle of the point along the circle in radians."
+
+msgid "Modifies a circle so that it surrounds a given mobject."
+msgstr "Modifies a circle so that it surrounds a given mobject."
+
+msgid "The color of the shape."
+msgstr "The color of the shape."
+
+msgid "Returns a circle passing through the specified three points."
+msgstr "Returns a circle passing through the specified three points."
+
+msgid "The mobject that the circle will be surrounding."
+msgstr "The mobject that the circle will be surrounding."
+
+msgid "Circle"
+msgstr "Circle"
+
+msgid "The location of the point along the circle's circumference."
+msgstr "The location of the point along the circle's circumference."

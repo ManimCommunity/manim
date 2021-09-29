@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Rectangle"
+msgstr "Rectangle"
+
+msgid "The color of the rectangle."
+msgstr "The color of the rectangle."
+
+msgid "Space between vertical grid lines."
+msgstr "Space between vertical grid lines."
+
+msgid "The vertical height of the rectangle."
+msgstr "The vertical height of the rectangle."
+
+msgid "Qualified name: ``manim.mobject.geometry.Rectangle``"
+msgstr "Qualified name: ``manim.mobject.geometry.Rectangle``"
+
+msgid "Bases: :class:`manim.mobject.geometry.Polygon`"
+msgstr "Bases: :class:`manim.mobject.geometry.Polygon`"
+
+msgid "The horizontal width of the rectangle."
+msgstr "The horizontal width of the rectangle."
+
+msgid "Space between horizontal grid lines."
+msgstr "Space between horizontal grid lines."
+
+msgid "Additional arguments to be passed to :class:`Polygon`"
+msgstr "Additional arguments to be passed to :class:`Polygon`"
+
+msgid "No purpose."
+msgstr "No purpose."

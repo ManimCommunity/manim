@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Qualified name: ``manim.mobject.geometry.Elbow``"
+msgstr "Qualified name: ``manim.mobject.geometry.Elbow``"
+
+msgid "The rotation of the elbow."
+msgstr "The rotation of the elbow."
+
+msgid "Additional arguments to be passed to :class:`~.VMobject`"
+msgstr "Additional arguments to be passed to :class:`~.VMobject`"
+
+msgid ":class:`RightAngle`"
+msgstr ":class:`RightAngle`"
+
+msgid "The length of the elbow's sides."
+msgstr "The length of the elbow's sides."
+
+msgid "Elbow"
+msgstr "Elbow"

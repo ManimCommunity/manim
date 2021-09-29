@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "If vect is vector from start to end, [vect[:,1], -vect[:,0]] is perpendicular to vect in the left direction."
+msgstr "If vect is vector from start to end, [vect[:,1], -vect[:,0]] is perpendicular to vect in the left direction."
+
+msgid "paths"
+msgstr "paths"
+
+msgid "Same function as interpolate, but renamed to reflect intent of being used to determine how a set of points move to another set.  For instance, it should be a specific case of path_along_arc"
+msgstr "Same function as interpolate, but renamed to reflect intent of being used to determine how a set of points move to another set.  For instance, it should be a specific case of path_along_arc"
+
+msgid "Functions determining transformation paths between sets of points."
+msgstr "Functions determining transformation paths between sets of points."

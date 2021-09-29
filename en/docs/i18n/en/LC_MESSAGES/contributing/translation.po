@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_ and you can ping the role @Translation Admin."
+msgstr "If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_ and you can ping the role @Translation Admin."
+
+msgid "The `A` panel is the list of all the strings in the resource. Click on any of them to translate it. It will appear in the `B` panel, and you will be able to work on your translation in the `C` panel. Once you're done, click `Save changes`. Your translation will have to be reviewed before being added to the docs. You can also get back to the resources list by clicking `d` or change the destination language in `e`. Your"
+msgstr "The `A` panel is the list of all the strings in the resource. Click on any of them to translate it. It will appear in the `B` panel, and you will be able to work on your translation in the `C` panel. Once you're done, click `Save changes`. Your translation will have to be reviewed before being added to the docs. You can also get back to the resources list by clicking `d` or change the destination language in `e`. Your"

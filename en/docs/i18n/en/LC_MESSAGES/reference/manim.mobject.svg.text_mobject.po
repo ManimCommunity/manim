@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "This searches for the font_file at various places. The order it searches it described below."
+msgstr "This searches for the font_file at various places. The order it searches it described below."
+
+msgid "Absolute path."
+msgstr "Absolute path."
+
+msgid "In ``font/`` folder."
+msgstr "In ``font/`` folder."
+
+msgid "In ``assets/fonts`` folder."
+msgstr "In ``assets/fonts`` folder."
+
+msgid "If the font doesn't exists."
+msgstr "If the font doesn't exists."
+
+msgid "In the same directory."
+msgstr "In the same directory."
+
+msgid "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text. With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+msgstr "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text. With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+
+msgid "The SVGMobject without unwanted invisible characters."
+msgstr "The SVGMobject without unwanted invisible characters."
+
+msgid "The font file to add."
+msgstr "The font file to add."
+
+msgid "See the corresponding tutorial :ref:`rendering-with-latex`"
+msgstr "See the corresponding tutorial :ref:`rendering-with-latex`"
+
+msgid "This method is available for macOS for ``ManimPango>=v0.2.3``. Using this     method with previous releases will raise an :class:`AttributeError` on macOS."
+msgstr "This method is available for macOS for ``ManimPango>=v0.2.3``. Using this     method with previous releases will raise an :class:`AttributeError` on macOS."
+
+msgid "Temporarily add a font file to Pango's search path."
+msgstr "Temporarily add a font file to Pango's search path."
+
+msgid "Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text."
+msgstr "Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text."
+
+msgid "Function to remove unwanted invisible characters from some mobjects."
+msgstr "Function to remove unwanted invisible characters from some mobjects."
+
+msgid "Any SVGMobject from which we want to remove unwanted invisible characters."
+msgstr "Any SVGMobject from which we want to remove unwanted invisible characters."
+
+msgid "Use ``with register_font(...)`` to add a font file to search path."
+msgstr "Use ``with register_font(...)`` to add a font file to search path."
+
+msgid "If this method is used on macOS."
+msgstr "If this method is used on macOS."

@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid ":obj:`set_resampling_algorithm <manim.mobject.types.image_mobject.AbstractImageMobject.set_resampling_algorithm>`"
+msgstr ":obj:`set_resampling_algorithm <manim.mobject.types.image_mobject.AbstractImageMobject.set_resampling_algorithm>`"
+
+msgid "* 'bicubic' or 'cubic' * 'nearest' or 'none' * 'box' * 'bilinear' or 'linear' * 'hamming' * 'lanczos' or 'antialias'"
+msgstr "* 'bicubic' or 'cubic' * 'nearest' or 'none' * 'box' * 'bilinear' or 'linear' * 'hamming' * 'lanczos' or 'antialias'"
+
+msgid "'box'"
+msgstr "'box'"
+
+msgid ":obj:`set_color <manim.mobject.types.image_mobject.AbstractImageMobject.set_color>`"
+msgstr ":obj:`set_color <manim.mobject.types.image_mobject.AbstractImageMobject.set_color>`"
+
+msgid "AbstractImageMobject"
+msgstr "AbstractImageMobject"
+
+msgid ":obj:`reset_points <manim.mobject.types.image_mobject.AbstractImageMobject.reset_points>`"
+msgstr ":obj:`reset_points <manim.mobject.types.image_mobject.AbstractImageMobject.reset_points>`"
+
+msgid "'hamming'"
+msgstr "'hamming'"
+
+msgid "'nearest' or 'none'"
+msgstr "'nearest' or 'none'"
+
+msgid "'bicubic' or 'cubic'"
+msgstr "'bicubic' or 'cubic'"
+
+msgid "Sets the interpolation method for upscaling the image."
+msgstr "Sets the interpolation method for upscaling the image."
+
+msgid ":obj:`get_pixel_array <manim.mobject.types.image_mobject.AbstractImageMobject.get_pixel_array>`"
+msgstr ":obj:`get_pixel_array <manim.mobject.types.image_mobject.AbstractImageMobject.get_pixel_array>`"
+
+msgid "'bilinear' or 'linear'"
+msgstr "'bilinear' or 'linear'"
+
+msgid "Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants."
+msgstr "Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants."
+
+msgid "'lanczos' or 'antialias'"
+msgstr "'lanczos' or 'antialias'"

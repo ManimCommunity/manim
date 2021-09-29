@@ -1,0 +1,734 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Apply all updaters."
+msgstr "Apply all updaters."
+
+msgid "If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead."
+msgstr "If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead."
+
+msgid "Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``."
+msgstr "Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``."
+
+msgid "**class** -- ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise."
+msgstr "**class** -- ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise."
+
+msgid "Whether to recursively call ``clear_updaters`` on all submobjects."
+msgstr "Whether to recursively call ``clear_updaters`` on all submobjects."
+
+msgid "If the overridden animation was already overridden."
+msgstr "If the overridden animation was already overridden."
+
+msgid "This compatibility layer is for backwards compatibility and is not guaranteed to stay around. Where applicable, please prefer getting/setting attributes normally or with the :meth:`set` method."
+msgstr "This compatibility layer is for backwards compatibility and is not guaranteed to stay around. Where applicable, please prefer getting/setting attributes normally or with the :meth:`set` method."
+
+msgid "Get corner coordinates for certain direction."
+msgstr "Get corner coordinates for certain direction."
+
+msgid "If ``rows`` and ``cols`` are too small to fit all submobjects."
+msgstr "If ``rows`` and ``cols`` are too small to fit all submobjects."
+
+msgid "The copy."
+msgstr "The copy."
+
+msgid ":obj:`proportion_from_point <manim.mobject.mobject.Mobject.proportion_from_point>`"
+msgstr ":obj:`proportion_from_point <manim.mobject.mobject.Mobject.proportion_from_point>`"
+
+msgid "This compatibility layer does not interfere with any ``get_*`` or ``set_*`` methods that are explicitly defined."
+msgstr "This compatibility layer does not interfere with any ``get_*`` or ``set_*`` methods that are explicitly defined."
+
+msgid ":obj:`apply_function_to_position <manim.mobject.mobject.Mobject.apply_function_to_position>`"
+msgstr ":obj:`apply_function_to_position <manim.mobject.mobject.Mobject.apply_function_to_position>`"
+
+msgid "Duplicates are not added again::"
+msgstr "Duplicates are not added again::"
+
+msgid "Save the current state (position, color & size). Can be restored with :meth:`~.Mobject.restore`."
+msgstr "Save the current state (position, color & size). Can be restored with :meth:`~.Mobject.restore`."
+
+msgid "Default behavior is to scale about the center of the mobject."
+msgstr "Default behavior is to scale about the center of the mobject."
+
+msgid "Technically, this is done by adding (or moving) the mobjects to the head of :attr:`submobjects`. The head of this list is rendered first, which places the corresponding mobjects behind the subsequent list members."
+msgstr "Technically, this is done by adding (or moving) the mobjects to the head of :attr:`submobjects`. The head of this list is rendered first, which places the corresponding mobjects behind the subsequent list members."
+
+msgid "Match the color with the color of another :class:`~.Mobject`."
+msgstr "Match the color with the color of another :class:`~.Mobject`."
+
+msgid "Edit points, positions, and submobjects to be identical to another :class:`~.Mobject`, while keeping the style unchanged."
+msgstr "Edit points, positions, and submobjects to be identical to another :class:`~.Mobject`, while keeping the style unchanged."
+
+msgid ":obj:`scale_to_fit_depth <manim.mobject.mobject.Mobject.scale_to_fit_depth>`"
+msgstr ":obj:`scale_to_fit_depth <manim.mobject.mobject.Mobject.scale_to_fit_depth>`"
+
+msgid "Return all updaters."
+msgstr "Return all updaters."
+
+msgid "The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end."
+msgstr "The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end."
+
+msgid "Applies a complex function to a :class:`Mobject`. The x and y coordinates correspond to the real and imaginary parts respectively."
+msgstr "Applies a complex function to a :class:`Mobject`. The x and y coordinates correspond to the real and imaginary parts respectively."
+
+msgid ":obj:`get_z_index_reference_point <manim.mobject.mobject.Mobject.get_z_index_reference_point>`"
+msgstr ":obj:`get_z_index_reference_point <manim.mobject.mobject.Mobject.get_z_index_reference_point>`"
+
+msgid "The number of rows in the grid."
+msgstr "The number of rows in the grid."
+
+msgid "Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or coordinate."
+msgstr "Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or coordinate."
+
+msgid "There is a compatibility layer that allows for getting and setting generic attributes with ``get_*`` and ``set_*`` methods. See :meth:`set` for more details."
+msgstr "There is a compatibility layer that allows for getting and setting generic attributes with ``get_*`` and ``set_*`` methods. See :meth:`set` for more details."
+
+msgid "Match x coord. to the x coord. of another :class:`~.Mobject`."
+msgstr "Match x coord. to the x coord. of another :class:`~.Mobject`."
+
+msgid ":obj:`shuffle_submobjects <manim.mobject.mobject.Mobject.shuffle_submobjects>`"
+msgstr ":obj:`shuffle_submobjects <manim.mobject.mobject.Mobject.shuffle_submobjects>`"
+
+msgid "Match the coordinates with the coordinates of another :class:`~.Mobject`."
+msgstr "Match the coordinates with the coordinates of another :class:`~.Mobject`."
+
+msgid ":meth:`remove_updater`, :meth:`add_updater`, :meth:`get_updaters`"
+msgstr ":meth:`remove_updater`, :meth:`add_updater`, :meth:`get_updaters`"
+
+msgid ":meth:`move_to`"
+msgstr ":meth:`move_to`"
+
+msgid ":func:`override_animate`"
+msgstr ":func:`override_animate`"
+
+msgid ":meth:`remove`, :meth:`add`"
+msgstr ":meth:`remove`, :meth:`add`"
+
+msgid ":obj:`get_time_based_updaters <manim.mobject.mobject.Mobject.get_time_based_updaters>`"
+msgstr ":obj:`get_time_based_updaters <manim.mobject.mobject.Mobject.get_time_based_updaters>`"
+
+msgid "Match the height with the height of another :class:`~.Mobject`."
+msgstr "Match the height with the height of another :class:`~.Mobject`."
+
+msgid ":meth:`get_time_based_updaters`"
+msgstr ":meth:`get_time_based_updaters`"
+
+msgid "If ``True``, all submobject lists of this mobject's family are inverted."
+msgstr "If ``True``, all submobject lists of this mobject's family are inverted."
+
+msgid "The new value of :attr:`z_index` set."
+msgstr "The new value of :attr:`z_index` set."
+
+msgid "Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."
+msgstr "Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."
+
+msgid ":obj:`rotate_about_origin <manim.mobject.mobject.Mobject.rotate_about_origin>`"
+msgstr ":obj:`rotate_about_origin <manim.mobject.mobject.Mobject.rotate_about_origin>`"
+
+msgid "Direction just needs to be a vector pointing towards side or corner in the 2d plane."
+msgstr "Direction just needs to be a vector pointing towards side or corner in the 2d plane."
+
+msgid ":obj:`add_background_rectangle <manim.mobject.mobject.Mobject.add_background_rectangle>`"
+msgstr ":obj:`add_background_rectangle <manim.mobject.mobject.Mobject.add_background_rectangle>`"
+
+msgid "Get edge coordinates for certain direction."
+msgstr "Get edge coordinates for certain direction."
+
+msgid "Match the depth with the depth of another :class:`~.Mobject`."
+msgstr "Match the depth with the depth of another :class:`~.Mobject`."
+
+msgid "Meant to generalize ``get_x``, ``get_y`` and ``get_z``"
+msgstr "Meant to generalize ``get_x``, ``get_y`` and ``get_z``"
+
+msgid "Flips/Mirrors an mobject about its center."
+msgstr "Flips/Mirrors an mobject about its center."
+
+msgid "The animation class for which the override function should be returned."
+msgstr "The animation class for which the override function should be returned."
+
+msgid "A mobject cannot contain itself, and it cannot contain a submobject more than once.  If the parent mobject is displayed, the newly-added submobjects will also be displayed (i.e. they are automatically added to the parent Scene)."
+msgstr "A mobject cannot contain itself, and it cannot contain a submobject more than once.  If the parent mobject is displayed, the newly-added submobjects will also be displayed (i.e. they are automatically added to the parent Scene)."
+
+msgid "Vectors to shift by. If multiple vectors are given, they are added together."
+msgstr "Vectors to shift by. If multiple vectors are given, they are added together."
+
+msgid "The function returning the override animation or ``None`` if no such animation override is defined."
+msgstr "The function returning the override animation or ``None`` if no such animation override is defined."
+
+msgid "The Mobject itself, after :attr:`z_index` is set. (Returns `self`.)"
+msgstr "The Mobject itself, after :attr:`z_index` is set. (Returns `self`.)"
+
+msgid "Check if :class:`~.Mobject` contains points."
+msgstr "Check if :class:`~.Mobject` contains points."
+
+msgid "Add mobjects as submobjects."
+msgstr "Add mobjects as submobjects."
+
+msgid ":obj:`get_critical_point <manim.mobject.mobject.Mobject.get_critical_point>`"
+msgstr ":obj:`get_critical_point <manim.mobject.mobject.Mobject.get_critical_point>`"
+
+msgid ":obj:`put_start_and_end_on <manim.mobject.mobject.Mobject.put_start_and_end_on>`"
+msgstr ":obj:`put_start_and_end_on <manim.mobject.mobject.Mobject.put_start_and_end_on>`"
+
+msgid "The method Mobject.scale_about_point has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.scale` instead."
+msgstr "The method Mobject.scale_about_point has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.scale` instead."
+
+msgid "Mobject"
+msgstr "Mobject"
+
+msgid "Match y coord."
+msgstr "Match y coord."
+
+msgid "The vertical alignment for each row (top to bottom). Accepts the following characters: ``\"u\"`` - up, ``\"c\"`` - center, ``\"d\"`` - down."
+msgstr "The vertical alignment for each row (top to bottom). Accepts the following characters: ``\"u\"`` - up, ``\"c\"`` - center, ``\"d\"`` - down."
+
+msgid "Sort the :attr:`submobjects`"
+msgstr "Sort the :attr:`submobjects`"
+
+msgid ":meth:`resume_updating`, :meth:`add_updater`"
+msgstr ":meth:`resume_updating`, :meth:`add_updater`"
+
+msgid ":obj:`apply_over_attr_arrays <manim.mobject.mobject.Mobject.apply_over_attr_arrays>`"
+msgstr ":obj:`apply_over_attr_arrays <manim.mobject.mobject.Mobject.apply_over_attr_arrays>`"
+
+msgid "Qualified name: ``manim.mobject.mobject.Mobject``"
+msgstr "Qualified name: ``manim.mobject.mobject.Mobject``"
+
+msgid "Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional."
+msgstr "Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional."
+
+msgid ":obj:`point_from_proportion <manim.mobject.mobject.Mobject.point_from_proportion>`"
+msgstr ":obj:`point_from_proportion <manim.mobject.mobject.Mobject.point_from_proportion>`"
+
+msgid "The updaters use this parameter as the input for difference in time."
+msgstr "The updaters use this parameter as the input for difference in time."
+
+msgid ":obj:`align_points_with_larger <manim.mobject.mobject.Mobject.align_points_with_larger>`"
+msgstr ":obj:`align_points_with_larger <manim.mobject.mobject.Mobject.align_points_with_larger>`"
+
+msgid "Aligns mobject to another :class:`~.Mobject` in a certain direction."
+msgstr "Aligns mobject to another :class:`~.Mobject` in a certain direction."
+
+msgid "This can make transition animations nicer"
+msgstr "This can make transition animations nicer"
+
+msgid "The BackgroundRectangle is added behind other submobjects."
+msgstr "The BackgroundRectangle is added behind other submobjects."
+
+msgid "Returns starting and ending point of a stroke as a ``tuple``."
+msgstr "Returns starting and ending point of a stroke as a ``tuple``."
+
+msgid "Additional keyword arguments passed to the BackgroundRectangle constructor"
+msgstr "Additional keyword arguments passed to the BackgroundRectangle constructor"
+
+msgid "In addition to this method, there is a compatibility layer that allows ``get_*`` and ``set_*`` methods to get and set generic attributes. For instance::"
+msgstr "In addition to this method, there is a compatibility layer that allows ``get_*`` and ``set_*`` methods to get and set generic attributes. For instance::"
+
+msgid ":meth:`suspend_updating`, :meth:`add_updater`"
+msgstr ":meth:`suspend_updating`, :meth:`add_updater`"
+
+msgid ":obj:`push_self_into_submobjects <manim.mobject.mobject.Mobject.push_self_into_submobjects>`"
+msgstr ":obj:`push_self_into_submobjects <manim.mobject.mobject.Mobject.push_self_into_submobjects>`"
+
+msgid "If the same updater is applied multiple times, every instance gets removed."
+msgstr "If the same updater is applied multiple times, every instance gets removed."
+
+msgid "Turns this :class:`~.Mobject` into an interpolation between ``mobject1`` and ``mobject2``."
+msgstr "Turns this :class:`~.Mobject` into an interpolation between ``mobject1`` and ``mobject2``."
+
+msgid "Add a BackgroundRectangle as submobject."
+msgstr "Add a BackgroundRectangle as submobject."
+
+msgid "The update function to be added. Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter. The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`."
+msgstr "The update function to be added. Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter. The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`."
+
+msgid "Match z coord. to the x coord. of another :class:`~.Mobject`."
+msgstr "Match z coord. to the x coord. of another :class:`~.Mobject`."
+
+msgid "The method Mobject.scale_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.scale` instead."
+msgstr "The method Mobject.scale_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.scale` instead."
+
+msgid "Arrange the position of :attr:`submobjects` with a small buffer."
+msgstr "Arrange the position of :attr:`submobjects` with a small buffer."
+
+msgid "List[:class:`Callable`]"
+msgstr "List[:class:`Callable`]"
+
+msgid "Remove :attr:`submobjects`."
+msgstr "Remove :attr:`submobjects`."
+
+msgid ":obj:`space_out_submobjects <manim.mobject.mobject.Mobject.space_out_submobjects>`"
+msgstr ":obj:`space_out_submobjects <manim.mobject.mobject.Mobject.space_out_submobjects>`"
+
+msgid "The order in which submobjects fill the grid. Can be one of the following values: \"rd\", \"dr\", \"ld\", \"dl\", \"ru\", \"ur\", \"lu\", \"ul\". (\"rd\" -> fill rightwards then downwards)"
+msgstr "The order in which submobjects fill the grid. Can be one of the following values: \"rd\", \"dr\", \"ld\", \"dl\", \"ru\", \"ur\", \"lu\", \"ul\". (\"rd\" -> fill rightwards then downwards)"
+
+msgid "The animation type to be overridden"
+msgstr "The animation type to be overridden"
+
+msgid "The way each submobject is aligned in its grid cell."
+msgstr "The way each submobject is aligned in its grid cell."
+
+msgid ":obj:`get_extremum_along_dim <manim.mobject.mobject.Mobject.get_extremum_along_dim>`"
+msgstr ":obj:`get_extremum_along_dim <manim.mobject.mobject.Mobject.get_extremum_along_dim>`"
+
+msgid "Test if ``self`` has a time based updater."
+msgstr "Test if ``self`` has a time based updater."
+
+msgid "Match the width with the width of another :class:`~.Mobject`."
+msgstr "Match the width with the width of another :class:`~.Mobject`."
+
+msgid "Get top coordinates of a box bounding the :class:`~.Mobject`"
+msgstr "Get top coordinates of a box bounding the :class:`~.Mobject`"
+
+msgid "The contained objects."
+msgstr "The contained objects."
+
+msgid ":meth:`add_updater`, :meth:`get_time_based_updaters`"
+msgstr ":meth:`add_updater`, :meth:`get_time_based_updaters`"
+
+msgid "Update functions, or updaters in short, are functions that are applied to the Mobject in every frame."
+msgstr "Update functions, or updaters in short, are functions that are applied to the Mobject in every frame."
+
+msgid "Picture a box bounding the :class:`~.Mobject`."
+msgstr "Picture a box bounding the :class:`~.Mobject`."
+
+msgid "Get zenith coordinates of a box bounding a 3D :class:`~.Mobject`."
+msgstr "Get zenith coordinates of a box bounding a 3D :class:`~.Mobject`."
+
+msgid ":obj:`stretch_to_fit_width <manim.mobject.mobject.Mobject.stretch_to_fit_width>`"
+msgstr ":obj:`stretch_to_fit_width <manim.mobject.mobject.Mobject.stretch_to_fit_width>`"
+
+msgid ":obj:`apply_points_function_about_point <manim.mobject.mobject.Mobject.apply_points_function_about_point>`"
+msgstr ":obj:`apply_points_function_about_point <manim.mobject.mobject.Mobject.apply_points_function_about_point>`"
+
+msgid "Defines a list of widths for certain columns (left to right). If the list contains ``None``, the corresponding column will fit its width automatically based on the widest element in that column."
+msgstr "Defines a list of widths for certain columns (left to right). If the list contains ``None``, the corresponding column will fit its width automatically based on the widest element in that column."
+
+msgid "Applies a complex function to a :class:`Mobject`."
+msgstr "Applies a complex function to a :class:`Mobject`."
+
+msgid "If ``True``, the :attr:`z_index` value of all submobjects is also set."
+msgstr "If ``True``, the :attr:`z_index` value of all submobjects is also set."
+
+msgid "Defines a list of heights for certain rows (top to bottom). If the list contains ``None``, the corresponding row will fit its height automatically based on the highest element in that row."
+msgstr "Defines a list of heights for certain rows (top to bottom). If the list contains ``None``, the corresponding row will fit its height automatically based on the highest element in that row."
+
+msgid "Sorts :class:`~.Mobject` next to each other on screen."
+msgstr "Sorts :class:`~.Mobject` next to each other on screen."
+
+msgid "The method Mobject.stretch_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.stretch` instead."
+msgstr "The method Mobject.stretch_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.stretch` instead."
+
+msgid ":obj:`set_z_index_by_z_coordinate <manim.mobject.mobject.Mobject.set_z_index_by_z_coordinate>`"
+msgstr ":obj:`set_z_index_by_z_coordinate <manim.mobject.mobject.Mobject.set_z_index_by_z_coordinate>`"
+
+msgid "Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."
+msgstr "Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."
+
+msgid ":obj:`get_boundary_point <manim.mobject.mobject.Mobject.get_boundary_point>`"
+msgstr ":obj:`get_boundary_point <manim.mobject.mobject.Mobject.get_boundary_point>`"
+
+msgid "The mobjects are added to :attr:`submobjects`."
+msgstr "The mobjects are added to :attr:`submobjects`."
+
+msgid "The update function to be removed."
+msgstr "The update function to be removed."
+
+msgid ":obj:`stretch_to_fit_depth <manim.mobject.mobject.Mobject.stretch_to_fit_depth>`"
+msgstr ":obj:`stretch_to_fit_depth <manim.mobject.mobject.Mobject.stretch_to_fit_depth>`"
+
+msgid "Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+msgstr "Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+
+msgid "Subclasses of mobject may implement ``-`` and ``-=`` dunder methods."
+msgstr "Subclasses of mobject may implement ``-`` and ``-=`` dunder methods."
+
+msgid "Scale the size by a factor."
+msgstr "Scale the size by a factor."
+
+msgid "Mainly to be used along with :attr:`animate` to animate setting attributes."
+msgstr "Mainly to be used along with :attr:`animate` to animate setting attributes."
+
+msgid "Match the specified dimension with the dimension of another :class:`~.Mobject`."
+msgstr "Match the specified dimension with the dimension of another :class:`~.Mobject`."
+
+msgid ":obj:`animation_override_for <manim.mobject.mobject.Mobject.animation_override_for>`"
+msgstr ":obj:`animation_override_for <manim.mobject.mobject.Mobject.animation_override_for>`"
+
+msgid "Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."
+msgstr "Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."
+
+msgid "The mobjects are removed from :attr:`submobjects`, if they exist."
+msgstr "The mobjects are removed from :attr:`submobjects`, if they exist."
+
+msgid "`bool`"
+msgstr "`bool`"
+
+msgid "Keyword arguments that can be passed to :meth:`.Scene.play` can be passed directly after accessing ``.animate``, like so::"
+msgstr "Keyword arguments that can be passed to :meth:`.Scene.play` can be passed directly after accessing ``.animate``, like so::"
+
+msgid "The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``."
+msgstr "The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``."
+
+msgid "Get bottom coordinates of a box bounding the :class:`~.Mobject`"
+msgstr "Get bottom coordinates of a box bounding the :class:`~.Mobject`"
+
+msgid ":obj:`has_time_based_updater <manim.mobject.mobject.Mobject.has_time_based_updater>`"
+msgstr ":obj:`has_time_based_updater <manim.mobject.mobject.Mobject.has_time_based_updater>`"
+
+msgid "Additional keyword arguments passed to :meth:`apply_points_function_about_point`."
+msgstr "Additional keyword arguments passed to :meth:`apply_points_function_about_point`."
+
+msgid ":meth:`get_updaters`, :meth:`remove_updater`, :class:`~.UpdateFromFunc`"
+msgstr ":meth:`get_updaters`, :meth:`remove_updater`, :class:`~.UpdateFromFunc`"
+
+msgid ":obj:`get_family_updaters <manim.mobject.mobject.Mobject.get_family_updaters>`"
+msgstr ":obj:`get_family_updaters <manim.mobject.mobject.Mobject.get_family_updaters>`"
+
+msgid "The method Mobject.rotate_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.rotate` instead."
+msgstr "The method Mobject.rotate_in_place has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. Use :meth:`~.rotate` instead."
+
+msgid ":obj:`add_n_more_submobjects <manim.mobject.mobject.Mobject.add_n_more_submobjects>`"
+msgstr ":obj:`add_n_more_submobjects <manim.mobject.mobject.Mobject.add_n_more_submobjects>`"
+
+msgid "The clone is initially not visible in the Scene, even if the original was."
+msgstr "The clone is initially not visible in the Scene, even if the original was."
+
+msgid ":obj:`scale_to_fit_width <manim.mobject.mobject.Mobject.scale_to_fit_width>`"
+msgstr ":obj:`scale_to_fit_width <manim.mobject.mobject.Mobject.scale_to_fit_width>`"
+
+msgid "The gap between grid cells. To specify a different buffer in the horizontal and vertical directions, a tuple of two values can be given - ``(row, col)``."
+msgstr "The gap between grid cells. To specify a different buffer in the horizontal and vertical directions, a tuple of two values can be given - ``(row, col)``."
+
+msgid ":obj:`arrange_submobjects <manim.mobject.mobject.Mobject.arrange_submobjects>`"
+msgstr ":obj:`arrange_submobjects <manim.mobject.mobject.Mobject.arrange_submobjects>`"
+
+msgid "Match x coord."
+msgstr "Match x coord."
+
+msgid "Passing multiple animations for the same :class:`Mobject` in one call to :meth:`~.Scene.play` is discouraged and will most likely not work properly. Instead of writing an animation like"
+msgstr "Passing multiple animations for the same :class:`Mobject` in one call to :meth:`~.Scene.play` is discouraged and will most likely not work properly. Instead of writing an animation like"
+
+msgid "Adding an object to itself raises an error::"
+msgstr "Adding an object to itself raises an error::"
+
+msgid "The Mobject itself, after :attr:`z_index` is set. For chaining purposes. (Returns `self`.)"
+msgstr "The Mobject itself, after :attr:`z_index` is set. For chaining purposes. (Returns `self`.)"
+
+msgid "will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations. If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead."
+msgstr "will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations. If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead."
+
+msgid "Add an animation override."
+msgstr "Add an animation override."
+
+msgid "If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are defined, the latter has higher priority."
+msgstr "If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are defined, the latter has higher priority."
+
+msgid "Sets the :class:`~.Mobject`'s z coordinate to the value of :attr:`z_index`."
+msgstr "Sets the :class:`~.Mobject`'s z coordinate to the value of :attr:`z_index`."
+
+msgid "The opacity of the BackgroundRectangle"
+msgstr "The opacity of the BackgroundRectangle"
+
+msgid "``.animate``"
+msgstr "``.animate``"
+
+msgid ":meth:`add_updater`, :meth:`clear_updaters`"
+msgstr ":meth:`add_updater`, :meth:`clear_updaters`"
+
+msgid "Whether to recursively update all submobjects."
+msgstr "Whether to recursively update all submobjects."
+
+msgid "The number of columns in the grid."
+msgstr "The number of columns in the grid."
+
+msgid "make use of method chaining for ``animate``, meaning::"
+msgstr "make use of method chaining for ``animate``, meaning::"
+
+msgid ":obj:`apply_complex_function <manim.mobject.mobject.Mobject.apply_complex_function>`"
+msgstr ":obj:`apply_complex_function <manim.mobject.mobject.Mobject.apply_complex_function>`"
+
+msgid "When trying to add an object that is not an instance of :class:`Mobject`."
+msgstr "When trying to add an object that is not an instance of :class:`Mobject`."
+
+msgid "Enable updating from updaters and animations."
+msgstr "Enable updating from updaters and animations."
+
+msgid "The mobject whose updaters get matched."
+msgstr "The mobject whose updaters get matched."
+
+msgid "Shuffles the order of :attr:`submobjects`"
+msgstr "Shuffles the order of :attr:`submobjects`"
+
+msgid "Inverts the list of :attr:`submobjects`."
+msgstr "Inverts the list of :attr:`submobjects`."
+
+msgid "The color of the BackgroundRectangle"
+msgstr "The color of the BackgroundRectangle"
+
+msgid "Save the current state (position, color & size)."
+msgstr "Save the current state (position, color & size)."
+
+msgid ":obj:`set_colors_by_radial_gradient <manim.mobject.mobject.Mobject.set_colors_by_radial_gradient>`"
+msgstr ":obj:`set_colors_by_radial_gradient <manim.mobject.mobject.Mobject.set_colors_by_radial_gradient>`"
+
+msgid "The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter."
+msgstr "The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter."
+
+msgid ":obj:`nonempty_submobjects <manim.mobject.mobject.Mobject.nonempty_submobjects>`"
+msgstr ":obj:`nonempty_submobjects <manim.mobject.mobject.Mobject.nonempty_submobjects>`"
+
+msgid ":meth:`add`"
+msgstr ":meth:`add`"
+
+msgid "Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"
+msgstr "Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"
+
+msgid "Subclasses of mobject may implement ``+`` and ``+=`` dunder methods."
+msgstr "Subclasses of mobject may implement ``+`` and ``+=`` dunder methods."
+
+msgid "Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"
+msgstr "Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"
+
+msgid ":obj:`add_background_rectangle_to_family_members_with_points <manim.mobject.mobject.Mobject.add_background_rectangle_to_family_members_with_points>`"
+msgstr ":obj:`add_background_rectangle_to_family_members_with_points <manim.mobject.mobject.Mobject.add_background_rectangle_to_family_members_with_points>`"
+
+msgid "The points of the objects."
+msgstr "The points of the objects."
+
+msgid "Does nothing if updating is suspended."
+msgstr "Does nothing if updating is suspended."
+
+msgid "Examples: mob1.align_to(mob2, UP) moves mob1 vertically so that its top edge lines ups with mob2's top edge."
+msgstr "Examples: mob1.align_to(mob2, UP) moves mob1 vertically so that its top edge lines ups with mob2's top edge."
+
+msgid "Shift by the given vectors."
+msgstr "Shift by the given vectors."
+
+msgid ":obj:`get_points_defining_boundary <manim.mobject.mobject.Mobject.get_points_defining_boundary>`"
+msgstr ":obj:`get_points_defining_boundary <manim.mobject.mobject.Mobject.get_points_defining_boundary>`"
+
+msgid "Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"
+msgstr "Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"
+
+msgid "mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1 horizontally so that it's center is directly above/below the center of mob2"
+msgstr "mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1 horizontally so that it's center is directly above/below the center of mob2"
+
+msgid ":meth:`get_updaters`, :meth:`has_time_based_updater`"
+msgstr ":meth:`get_updaters`, :meth:`has_time_based_updater`"
+
+msgid "Remove every updater."
+msgstr "Remove every updater."
+
+msgid "Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."
+msgstr "Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."
+
+msgid "This does not apply to subclasses."
+msgstr "This does not apply to subclasses."
+
+msgid "The scaled mobject."
+msgstr "The scaled mobject."
+
+msgid "Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`."
+msgstr "Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`."
+
+msgid ":meth:`add_updater`, :meth:`get_updaters`"
+msgstr ":meth:`add_updater`, :meth:`get_updaters`"
+
+msgid ":meth:`remove`, :meth:`add_to_back`"
+msgstr ":meth:`remove`, :meth:`add_to_back`"
+
+msgid "Add an update function to this mobject."
+msgstr "Add an update function to this mobject."
+
+msgid ":obj:`throw_error_if_no_points <manim.mobject.mobject.Mobject.throw_error_if_no_points>`"
+msgstr ":obj:`throw_error_if_no_points <manim.mobject.mobject.Mobject.throw_error_if_no_points>`"
+
+msgid "Disable updating from updaters and animations."
+msgstr "Disable updating from updaters and animations."
+
+msgid "Return all updaters using the ``dt`` parameter."
+msgstr "Return all updaters using the ``dt`` parameter."
+
+msgid "Add all passed mobjects to the back of the submobjects."
+msgstr "Add all passed mobjects to the back of the submobjects."
+
+msgid "Arrange submobjects in a grid."
+msgstr "Arrange submobjects in a grid."
+
+msgid ":obj:`set_submobject_colors_by_radial_gradient <manim.mobject.mobject.Mobject.set_submobject_colors_by_radial_gradient>`"
+msgstr ":obj:`set_submobject_colors_by_radial_gradient <manim.mobject.mobject.Mobject.set_submobject_colors_by_radial_gradient>`"
+
+msgid ":obj:`set_color_by_gradient <manim.mobject.mobject.Mobject.set_color_by_gradient>`"
+msgstr ":obj:`set_color_by_gradient <manim.mobject.mobject.Mobject.set_color_by_gradient>`"
+
+msgid ":meth:`clear_updaters`, :meth:`add_updater`, :meth:`get_updaters`"
+msgstr ":meth:`clear_updaters`, :meth:`add_updater`, :meth:`get_updaters`"
+
+msgid "Check if :class:`~.Mobject` *does not* contains points."
+msgstr "Check if :class:`~.Mobject` *does not* contains points."
+
+msgid "Match the updaters of the given mobject."
+msgstr "Match the updaters of the given mobject."
+
+msgid "Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+msgstr "Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+
+msgid "Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+msgstr "Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"
+
+msgid ":obj:`add_animation_override <manim.mobject.mobject.Mobject.add_animation_override>`"
+msgstr ":obj:`add_animation_override <manim.mobject.mobject.Mobject.add_animation_override>`"
+
+msgid "When a mobject tries to add itself."
+msgstr "When a mobject tries to add itself."
+
+msgid "Move center of the :class:`~.Mobject` to certain coordinate."
+msgstr "Move center of the :class:`~.Mobject` to certain coordinate."
+
+msgid "Restores the state that was previously saved with :meth:`~.Mobject.save_state`."
+msgstr "Restores the state that was previously saved with :meth:`~.Mobject.save_state`."
+
+msgid "The list of updaters."
+msgstr "The list of updaters."
+
+msgid "Whether to recursively enable updating on all submobjects."
+msgstr "Whether to recursively enable updating on all submobjects."
+
+msgid ":obj:`reduce_across_dimension <manim.mobject.mobject.Mobject.reduce_across_dimension>`"
+msgstr ":obj:`reduce_across_dimension <manim.mobject.mobject.Mobject.reduce_across_dimension>`"
+
+msgid "Get left coordinates of a box bounding the :class:`~.Mobject`"
+msgstr "Get left coordinates of a box bounding the :class:`~.Mobject`"
+
+msgid ":obj:`stretch_about_point <manim.mobject.mobject.Mobject.stretch_about_point>`"
+msgstr ":obj:`stretch_about_point <manim.mobject.mobject.Mobject.stretch_about_point>`"
+
+msgid ":obj:`stretch_to_fit_height <manim.mobject.mobject.Mobject.stretch_to_fit_height>`"
+msgstr ":obj:`stretch_to_fit_height <manim.mobject.mobject.Mobject.stretch_to_fit_height>`"
+
+msgid "Whether to recursively suspend updating on all submobjects."
+msgstr "Whether to recursively suspend updating on all submobjects."
+
+msgid "This is especially useful when animating simultaneous ``.animate`` calls that you want to behave differently::"
+msgstr "This is especially useful when animating simultaneous ``.animate`` calls that you want to behave differently::"
+
+msgid ":obj:`set_submobject_colors_by_gradient <manim.mobject.mobject.Mobject.set_submobject_colors_by_gradient>`"
+msgstr ":obj:`set_submobject_colors_by_gradient <manim.mobject.mobject.Mobject.set_submobject_colors_by_gradient>`"
+
+msgid "Measure the length of an :class:`~.Mobject` in a certain direction."
+msgstr "Measure the length of an :class:`~.Mobject` in a certain direction."
+
+msgid "Returns the function defining a specific animation override for this class."
+msgstr "Returns the function defining a specific animation override for this class."
+
+msgid "The mobject."
+msgstr "The mobject."
+
+msgid "If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,     :code:`row_alignments` and :code:`row_heights` have mismatching sizes."
+msgstr "If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,     :code:`row_alignments` and :code:`row_heights` have mismatching sizes."
+
+msgid "This can be used to increase the mobjects visibility in front of a noisy background."
+msgstr "This can be used to increase the mobjects visibility in front of a noisy background."
+
+msgid "The function returning an aniamtion replacing the default animation. It gets passed the parameters given to the animnation constructor."
+msgstr "The function returning an aniamtion replacing the default animation. It gets passed the parameters given to the animnation constructor."
+
+msgid "Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`."
+msgstr "Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`."
+
+msgid "Scales the :class:`~.Mobject` to fit a width while keeping height/depth proportional."
+msgstr "Scales the :class:`~.Mobject` to fit a width while keeping height/depth proportional."
+
+msgid "Get center coordinates"
+msgstr "Get center coordinates"
+
+msgid "Match y coord. to the x coord. of another :class:`~.Mobject`."
+msgstr "Match y coord. to the x coord. of another :class:`~.Mobject`."
+
+msgid "Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional."
+msgstr "Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional."
+
+msgid "The attributes and corresponding values to set."
+msgstr "The attributes and corresponding values to set."
+
+msgid "Sets attributes."
+msgstr "Sets attributes."
+
+msgid ":meth:`family_members_with_points`"
+msgstr ":meth:`family_members_with_points`"
+
+msgid "Remove an updater."
+msgstr "Remove an updater."
+
+msgid "Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."
+msgstr "Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."
+
+msgid ":obj:`apply_function_to_submobject_positions <manim.mobject.mobject.Mobject.apply_function_to_submobject_positions>`"
+msgstr ":obj:`apply_function_to_submobject_positions <manim.mobject.mobject.Mobject.apply_function_to_submobject_positions>`"
+
+msgid "List[:class:`Mobject`]"
+msgstr "List[:class:`Mobject`]"
+
+msgid "Shuffles the list of :attr:`submobjects`."
+msgstr "Shuffles the list of :attr:`submobjects`."
+
+msgid "Get right coordinates of a box bounding the :class:`~.Mobject`"
+msgstr "Get right coordinates of a box bounding the :class:`~.Mobject`"
+
+msgid ":obj:`get_center_of_mass <manim.mobject.mobject.Mobject.get_center_of_mass>`"
+msgstr ":obj:`get_center_of_mass <manim.mobject.mobject.Mobject.get_center_of_mass>`"
+
+msgid "Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional."
+msgstr "Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional."
+
+msgid "Get coordinates of the middle of the path that forms the  :class:`~.Mobject`."
+msgstr "Get coordinates of the middle of the path that forms the  :class:`~.Mobject`."
+
+msgid "The list of time based updaters."
+msgstr "The list of time based updaters."
+
+msgid ":obj:`scale_to_fit_height <manim.mobject.mobject.Mobject.scale_to_fit_height>`"
+msgstr ":obj:`scale_to_fit_height <manim.mobject.mobject.Mobject.scale_to_fit_height>`"
+
+msgid ":obj:`family_members_with_points <manim.mobject.mobject.Mobject.family_members_with_points>`"
+msgstr ":obj:`family_members_with_points <manim.mobject.mobject.Mobject.family_members_with_points>`"
+
+msgid "The horizontal alignment for each column (left to right). Accepts the following characters ``\"l\"`` - left, ``\"c\"`` - center, ``\"r\"`` - right."
+msgstr "The horizontal alignment for each column (left to right). Accepts the following characters ``\"l\"`` - left, ``\"c\"`` - center, ``\"r\"`` - right."
+
+msgid "All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects."
+msgstr "All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects."
+
+msgid ":meth:`add_to_back`, :class:`~.BackgroundRectangle`"
+msgstr ":meth:`add_to_back`, :class:`~.BackgroundRectangle`"
+
+msgid "Apply a function to ``self`` and every submobject with points recursively."
+msgstr "Apply a function to ``self`` and every submobject with points recursively."
+
+msgid "If a :class:`~.Mobject` with points is being aligned to one without, treat both as groups, and push the one with points into its own submobjects list."
+msgstr "If a :class:`~.Mobject` with points is being aligned to one without, treat both as groups, and push the one with points into its own submobjects list."
+
+msgid "Saves an image of only this :class:`Mobject` at its position to a png file."
+msgstr "Saves an image of only this :class:`Mobject` at its position to a png file."
+
+msgid "If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big enough to fit all submobjects. If neither is set, they will be chosen to be about the same, tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high)."
+msgstr "If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big enough to fit all submobjects. If neither is set, they will be chosen to be about the same, tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high)."
+
+msgid ":obj:`add_background_rectangle_to_submobjects <manim.mobject.mobject.Mobject.add_background_rectangle_to_submobjects>`"
+msgstr ":obj:`add_background_rectangle_to_submobjects <manim.mobject.mobject.Mobject.add_background_rectangle_to_submobjects>`"
+
+msgid "Picture a box bounding the :class:`~.Mobject`.  Such a box has 9 'critical points': 4 corners, 4 edge center, the center. This returns one of them, along the given direction."
+msgstr "Picture a box bounding the :class:`~.Mobject`.  Such a box has 9 'critical points': 4 corners, 4 edge center, the center. This returns one of them, along the given direction."
+
+msgid "Match z coord."
+msgstr "Match z coord."

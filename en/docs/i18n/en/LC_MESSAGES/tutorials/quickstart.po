@@ -1,0 +1,95 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "This document will lead you step by step through the necessary procedure to get started with manim for the first time as soon as possible.  This tutorial assumes you have already installed manim following the steps in :doc:`../installation`."
+msgstr "This document will lead you step by step through the necessary procedure to get started with manim for the first time as soon as possible.  This tutorial assumes you have already installed manim following the steps in :doc:`../installation`."
+
+msgid "After showing some output, manim should render the scene into a .mp4 file, and open that file with the default movie player application.  You should see a video playing the following animation."
+msgstr "After showing some output, manim should render the scene into a .mp4 file, and open that file with the default movie player application.  You should see a video playing the following animation."
+
+msgid "and copy the following code in it."
+msgstr "and copy the following code in it."
+
+msgid "Some bells and whistles"
+msgstr "Some bells and whistles"
+
+msgid "Now let's look at the next two lines."
+msgstr "Now let's look at the next two lines."
+
+msgid "To start a new manim video project, all you need to do is choose a single folder where all of the files related to the video will reside.  For this example, this folder will be called ``project``,"
+msgstr "To start a new manim video project, all you need to do is choose a single folder where all of the files related to the video will reside.  For this example, this folder will be called ``project``,"
+
+msgid "Finally, the last line uses the animation :class:`.Create` to display the circle on the screen."
+msgstr "Finally, the last line uses the animation :class:`.Create` to display the circle on the screen."
+
+msgid "Our scene is a little basic, so let's add some bells and whistles.  Modify the ``scene.py`` file to contain the following:"
+msgstr "Our scene is a little basic, so let's add some bells and whistles.  Modify the ``scene.py`` file to contain the following:"
+
+msgid "With a working installation of manim and the bare basics under your belt, it is now time to start creating awesome mathematical animations.  For a look under the hood at what manim is doing when rendering the ``SquareToCircle`` scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of manim's features, as well as its configuration and other settings, see the other :doc:`../tutorials`.  For a list of all available features, see the :doc:`../reference` page."
+msgstr "With a working installation of manim and the bare basics under your belt, it is now time to start creating awesome mathematical animations.  For a look under the hood at what manim is doing when rendering the ``SquareToCircle`` scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of manim's features, as well as its configuration and other settings, see the other :doc:`../tutorials`.  For a list of all available features, see the :doc:`../reference` page."
+
+msgid "In case you like to work with Jupyterlab / Jupyter notebooks, there is good news: Manim ships with a ``%%manim`` IPython magic command which makes it easy to use in such a setting as well. Find out more in the :meth:`corresponding documentation <manim.utils.ipython_magic.ManimMagic.manim>`."
+msgstr "In case you like to work with Jupyterlab / Jupyter notebooks, there is good news: Manim ships with a ``%%manim`` IPython magic command which makes it easy to use in such a setting as well. Find out more in the :meth:`corresponding documentation <manim.utils.ipython_magic.ManimMagic.manim>`."
+
+msgid "The output should look as follows."
+msgstr "The output should look as follows."
+
+msgid "To produce your first scene, create a new file in your project folder called ``scene.py``,"
+msgstr "To produce your first scene, create a new file in your project folder called ``scene.py``,"
+
+msgid "imports all of the contents of the library.  This is the recommended way of using manim, as usually in a single script you will be using quite a few names from the manim namespace.  In particular, this line includes all of the names used in the script: ``Scene``, ``Circle``, ``PINK`` and ``Create``."
+msgstr "imports all of the contents of the library.  This is the recommended way of using manim, as usually in a single script you will be using quite a few names from the manim namespace.  In particular, this line includes all of the names used in the script: ``Scene``, ``Circle``, ``PINK`` and ``Create``."
+
+msgid "Quickstart"
+msgstr "Quickstart"
+
+msgid "Start a new project"
+msgstr "Start a new project"
+
+msgid "Then open your command line, navigate to your project directory, and execute the following command:"
+msgstr "Then open your command line, navigate to your project directory, and execute the following command:"
+
+msgid "If you see the video and it looks correct, congrats! You just wrote your first manim scene from scratch.  If you get an error message instead, or if do not see a video, or if the video output does not look like this, it is likely that manim has not been installed correctly. Please refer to the :doc:`../installation/troubleshooting` page for more information."
+msgstr "If you see the video and it looks correct, congrats! You just wrote your first manim scene from scratch.  If you get an error message instead, or if do not see a video, or if the video output does not look like this, it is likely that manim has not been installed correctly. Please refer to the :doc:`../installation/troubleshooting` page for more information."
+
+msgid "Let's go line by line over the script we just executed to see how manim was able to generate the video."
+msgstr "Let's go line by line over the script we just executed to see how manim was able to generate the video."
+
+msgid "The first line"
+msgstr "The first line"
+
+msgid "And render it using the following command:"
+msgstr "And render it using the following command:"
+
+msgid "Explanation"
+msgstr "Explanation"
+
+msgid "You're done!"
+msgstr "You're done!"
+
+msgid "Most of the time, the code for scripting an animation with manim will go inside the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Inside this method, you will create objects, display them on screen, and animate them."
+msgstr "Most of the time, the code for scripting an animation with manim will go inside the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Inside this method, you will create objects, display them on screen, and animate them."
+
+msgid "Your first Scene"
+msgstr "Your first Scene"
+
+msgid "This example shows one of the most basic features of manim: the ability to implement complicated and mathematically intensive animations (such as cleanly interpolating between two geometric shapes) in very few lines of code."
+msgstr "This example shows one of the most basic features of manim: the ability to implement complicated and mathematically intensive animations (such as cleanly interpolating between two geometric shapes) in very few lines of code."
+
+msgid "Every file containing code that produces a video with manim will be stored here, as well as any output files that manim produces and configuration files that manim needs."
+msgstr "Every file containing code that produces a video with manim will be stored here, as well as any output files that manim produces and configuration files that manim needs."
+
+msgid "Every animation must be contained within the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Other code, for example auxiliary or mathematical functions, may reside outside the class."
+msgstr "Every animation must be contained within the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Other code, for example auxiliary or mathematical functions, may reside outside the class."
+
+msgid "The next two lines create a circle and set its color and opacity."
+msgstr "The next two lines create a circle and set its color and opacity."

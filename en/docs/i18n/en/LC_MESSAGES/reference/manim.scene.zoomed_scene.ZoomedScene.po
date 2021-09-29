@@ -1,0 +1,65 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Bases: :class:`manim.scene.moving_camera_scene.MovingCameraScene`"
+msgstr "Bases: :class:`manim.scene.moving_camera_scene.MovingCameraScene`"
+
+msgid ":obj:`activate_zooming <manim.scene.zoomed_scene.ZoomedScene.activate_zooming>`"
+msgstr ":obj:`activate_zooming <manim.scene.zoomed_scene.ZoomedScene.activate_zooming>`"
+
+msgid "This is the animation of the popping out of the mini-display that shows the content of the zoomed camera."
+msgstr "This is the animation of the popping out of the mini-display that shows the content of the zoomed camera."
+
+msgid ":obj:`get_zoomed_display_pop_out_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoomed_display_pop_out_animation>`"
+msgstr ":obj:`get_zoomed_display_pop_out_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoomed_display_pop_out_animation>`"
+
+msgid "Returns the animation of camera zooming in."
+msgstr "Returns the animation of camera zooming in."
+
+msgid "This method is used internally by Manim to setup the scene for proper use."
+msgstr "This method is used internally by Manim to setup the scene for proper use."
+
+msgid "Whether or not to animate the activation of the zoomed camera."
+msgstr "Whether or not to animate the activation of the zoomed camera."
+
+msgid ":obj:`get_zoom_in_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoom_in_animation>`"
+msgstr ":obj:`get_zoom_in_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoom_in_animation>`"
+
+msgid "Any valid keyword arguments of ApplyMethod()"
+msgstr "Any valid keyword arguments of ApplyMethod()"
+
+msgid "The run_time of the animation of the camera zooming in."
+msgstr "The run_time of the animation of the camera zooming in."
+
+msgid "This is a Scene with special configurations made for when a particular part of the scene must be zoomed in on and displayed separately."
+msgstr "This is a Scene with special configurations made for when a particular part of the scene must be zoomed in on and displayed separately."
+
+msgid "Returns the Zoom factor of the Zoomed camera."
+msgstr "Returns the Zoom factor of the Zoomed camera."
+
+msgid "This method is used to activate the zooming for the zoomed_camera."
+msgstr "This method is used to activate the zooming for the zoomed_camera."
+
+msgid "ZoomedScene"
+msgstr "ZoomedScene"
+
+msgid ":obj:`get_zoom_factor <manim.scene.zoomed_scene.ZoomedScene.get_zoom_factor>`"
+msgstr ":obj:`get_zoom_factor <manim.scene.zoomed_scene.ZoomedScene.get_zoom_factor>`"
+
+msgid "The Animation of the Zoomed Display popping out."
+msgstr "The Animation of the Zoomed Display popping out."
+
+msgid "The animation of the camera zooming in."
+msgstr "The animation of the camera zooming in."
+
+msgid "Returns the Zoom factor of the Zoomed camera. Defined as the ratio between the height of the zoomed camera and the height of the zoomed mini display. :returns: The zoom factor. :rtype: float"
+msgstr "Returns the Zoom factor of the Zoomed camera. Defined as the ratio between the height of the zoomed camera and the height of the zoomed mini display. :returns: The zoom factor. :rtype: float"

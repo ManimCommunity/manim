@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Qualified name: ``manim.mobject.geometry.ArrowSquareFilledTip``"
+msgstr "Qualified name: ``manim.mobject.geometry.ArrowSquareFilledTip``"
+
+msgid "Square arrow tip with filled tip."
+msgstr "Square arrow tip with filled tip."
+
+msgid "Bases: :class:`manim.mobject.geometry.ArrowSquareTip`"
+msgstr "Bases: :class:`manim.mobject.geometry.ArrowSquareTip`"
+
+msgid "ArrowSquareFilledTip"
+msgstr "ArrowSquareFilledTip"

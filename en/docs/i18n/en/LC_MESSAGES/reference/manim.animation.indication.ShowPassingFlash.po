@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The mobject whose stroke is animated."
+msgstr "The mobject whose stroke is animated."
+
+msgid "Qualified name: ``manim.animation.indication.ShowPassingFlash``"
+msgstr "Qualified name: ``manim.animation.indication.ShowPassingFlash``"
+
+msgid "ShowPassingFlash"
+msgstr "ShowPassingFlash"
+
+msgid "Show only a sliver of the VMobject each frame."
+msgstr "Show only a sliver of the VMobject each frame."
+
+msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgstr "Bases: :class:`manim.animation.creation.ShowPartial`"
+
+msgid "The length of the sliver relative to the length of the stroke."
+msgstr "The length of the sliver relative to the length of the stroke."

@@ -1,0 +1,392 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Publishing an account of the incident"
+msgstr "Publishing an account of the incident"
+
+msgid "A person who makes a report should receive a follow-up response stating what action was taken in response to the report. If the team decided no response was needed, they should provide an explanation why it was not a Code of Conduct violation. Reports that are not made in good faith (such as \"reverse sexism\" or \"reverse racism\") may receive no response."
+msgstr "A person who makes a report should receive a follow-up response stating what action was taken in response to the report. If the team decided no response was needed, they should provide an explanation why it was not a Code of Conduct violation. Reports that are not made in good faith (such as \"reverse sexism\" or \"reverse racism\") may receive no response."
+
+msgid "Violent threats or language directed against another person"
+msgstr "Violent threats or language directed against another person"
+
+msgid "Any consequences of their behavior The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report. The reported person should be discouraged from contacting the reporter to discuss the report. If they wish to apologize to the reporter, the team can accept the apology on behalf of the reporter."
+msgstr "Any consequences of their behavior The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report. The reported person should be discouraged from contacting the reporter to discuss the report. If they wish to apologize to the reporter, the team can accept the apology on behalf of the reporter."
+
+msgid "If you believe someone is violating the code of conduct, or have any other concerns, please contact a Manim Community Dev, or Moderator immediately. They can be reached on Manim's Community Discord."
+msgstr "If you believe someone is violating the code of conduct, or have any other concerns, please contact a Manim Community Dev, or Moderator immediately. They can be reached on Manim's Community Discord."
+
+msgid "Decide further responses."
+msgstr "Decide further responses."
+
+msgid "The Manim Community includes members of varying skills, languages, personalities, cultural backgrounds, and experiences from around the globe. Through these differences, we continue to grow and collectively improve upon an open-source animation engine. When working in a community, it is important to remember that you are interacting with humans on the other end of your screen. This code of conduct will guide your interactions and keep Manim a positive environment for our developers, users, and fundamentally our growing community."
+msgstr "The Manim Community includes members of varying skills, languages, personalities, cultural backgrounds, and experiences from around the globe. Through these differences, we continue to grow and collectively improve upon an open-source animation engine. When working in a community, it is important to remember that you are interacting with humans on the other end of your screen. This code of conduct will guide your interactions and keep Manim a positive environment for our developers, users, and fundamentally our growing community."
+
+msgid "Manim Community Online Spaces"
+msgstr "Manim Community Online Spaces"
+
+msgid "The Manim Community Code of Conduct team will work with Manim Community moderators to draft a response to the reported person. The response should contain:"
+msgstr "The Manim Community Code of Conduct team will work with Manim Community moderators to draft a response to the reported person. The response should contain:"
+
+msgid "Pattern of inappropriate social contact, such as requesting/assuming inappropriate levels of intimacy with others"
+msgstr "Pattern of inappropriate social contact, such as requesting/assuming inappropriate levels of intimacy with others"
+
+msgid "Does this behavior negatively impact a marginalized group in our community? Is the reporter a person from a marginalized group in our community? How is the reporter being negatively impacted by the reported person's behavior? Are members of the marginalized group likely to disengage with the community if no action was taken on this report?"
+msgstr "Does this behavior negatively impact a marginalized group in our community? Is the reporter a person from a marginalized group in our community? How is the reporter being negatively impacted by the reported person's behavior? Are members of the marginalized group likely to disengage with the community if no action was taken on this report?"
+
+msgid "The reporter or reported person is someone you work closely with. This could be someone on your team or someone who works on the same project as you."
+msgstr "The reporter or reported person is someone you work closely with. This could be someone on your team or someone who works on the same project as you."
+
+msgid "Moderators are required to respond with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week."
+msgstr "Moderators are required to respond with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week."
+
+msgid "Reports which involve higher risk or higher impact may face more severe consequences than reports which involve lower risk or lower impact."
+msgstr "Reports which involve higher risk or higher impact may face more severe consequences than reports which involve lower risk or lower impact."
+
+msgid "Deliberate intimidation, stalking, or following"
+msgstr "Deliberate intimidation, stalking, or following"
+
+msgid "In cases where the moderators disagree on the suggested resolution for a report, the Manim Community Code of Conduct team may choose to notify the Manim Community Moderators."
+msgstr "In cases where the moderators disagree on the suggested resolution for a report, the Manim Community Code of Conduct team may choose to notify the Manim Community Moderators."
+
+msgid "Members of Manim Community are respectful, open, and considerate. Behaviors that reinforce these values contribute to our positive environment, and include:"
+msgstr "Members of Manim Community are respectful, open, and considerate. Behaviors that reinforce these values contribute to our positive environment, and include:"
+
+msgid "Possible private responses to an incident include:"
+msgstr "Possible private responses to an incident include:"
+
+msgid "Conflict of interest policy"
+msgstr "Conflict of interest policy"
+
+msgid "Some team members may have a conflict of interest and may be excluded from discussions of a particular incident report. Excluding those members, decisions on the behavioral modification plans and consequences will be determined by a two-thirds majority vote of the Manim Community Code of Conduct team."
+msgstr "Some team members may have a conflict of interest and may be excluded from discussions of a particular incident report. Excluding those members, decisions on the behavioral modification plans and consequences will be determined by a two-thirds majority vote of the Manim Community Code of Conduct team."
+
+msgid "Is this a Code of Conduct violation? Is this behavior on our list of inappropriate behavior? Is it borderline inappropriate behavior? Does it violate our community norms?"
+msgstr "Is this a Code of Conduct violation? Is this behavior on our list of inappropriate behavior? Is it borderline inappropriate behavior? Does it violate our community norms?"
+
+msgid "Gracefully accepting constructive criticism. When we disagree, we are courteous in raising our issues."
+msgstr "Gracefully accepting constructive criticism. When we disagree, we are courteous in raising our issues."
+
+msgid "Once the team has approved the behavioral modification plans and consequences, they will communicate the recommended response to the Manim Community moderators. The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report."
+msgstr "Once the team has approved the behavioral modification plans and consequences, they will communicate the recommended response to the Manim Community moderators. The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report."
+
+msgid "Thank you for helping make this a welcoming, friendly community for everyone."
+msgstr "Thank you for helping make this a welcoming, friendly community for everyone."
+
+msgid "This Code of Conduct was forked from the code of conduct from the Python Software Foundation and adapted by Manim Community."
+msgstr "This Code of Conduct was forked from the code of conduct from the Python Software Foundation and adapted by Manim Community."
+
+msgid "TL;DR Be excellent to each other; we're a community after all. If you run into issues with others in our community, please contact a Manim Community Dev, or Moderator."
+msgstr "TL;DR Be excellent to each other; we're a community after all. If you run into issues with others in our community, please contact a Manim Community Dev, or Moderator."
+
+msgid "When discussing a change to the Manim Community code of conduct or enforcement procedures, the Manim Community Code of Conduct team will follow this decision-making process:"
+msgstr "When discussing a change to the Manim Community code of conduct or enforcement procedures, the Manim Community Code of Conduct team will follow this decision-making process:"
+
+msgid "All community members"
+msgstr "All community members"
+
+msgid "Other conduct that is inappropriate for a professional audience including people of many different backgrounds Community members asked to stop any inappropriate behavior are expected to comply immediately."
+msgstr "Other conduct that is inappropriate for a professional audience including people of many different backgrounds Community members asked to stop any inappropriate behavior are expected to comply immediately."
+
+msgid "Using welcoming and inclusive language. We're accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference."
+msgstr "Using welcoming and inclusive language. We're accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference."
+
+msgid "The follow-up should be sent no later than one week after the receipt of the report. If deliberation or follow-up with the reported person takes longer than one week, the team should send a status update to the reporter."
+msgstr "The follow-up should be sent no later than one week after the receipt of the report. If deliberation or follow-up with the reported person takes longer than one week, the team should send a status update to the reporter."
+
+msgid "Attributions"
+msgstr "Attributions"
+
+msgid "Decide further responses"
+msgstr "Decide further responses"
+
+msgid "Acknowledge the receipt of the report."
+msgstr "Acknowledge the receipt of the report."
+
+msgid "Excessive swearing"
+msgstr "Excessive swearing"
+
+msgid "Acknowledge the report"
+msgstr "Acknowledge the report"
+
+msgid "Follow up with the reporter"
+msgstr "Follow up with the reporter"
+
+msgid "Maintainers"
+msgstr "Maintainers"
+
+msgid "Current list of voting members"
+msgstr "Current list of voting members"
+
+msgid "Moderators approval"
+msgstr "Moderators approval"
+
+msgid "Is there a risk of this behavior being repeated? Does the reported person understand why their behavior was inappropriate? Is there an established pattern of behavior from past reports?"
+msgstr "Is there a risk of this behavior being repeated? Does the reported person understand why their behavior was inappropriate? Is there an established pattern of behavior from past reports?"
+
+msgid "Creating additional online accounts in order to harass another person or circumvent a ban"
+msgstr "Creating additional online accounts in order to harass another person or circumvent a ban"
+
+msgid "This Code of Conduct applies to every member in official Manim Community online spaces, including:"
+msgstr "This Code of Conduct applies to every member in official Manim Community online spaces, including:"
+
+msgid "Evaluating a report"
+msgstr "Evaluating a report"
+
+msgid "Focusing on what is best for the community. We're respectful of the processes set forth in the community, and we work within them."
+msgstr "Focusing on what is best for the community. We're respectful of the processes set forth in the community, and we work within them."
+
+msgid "Summary of processes"
+msgstr "Summary of processes"
+
+msgid "Changes to Code of Conduct"
+msgstr "Changes to Code of Conduct"
+
+msgid "Risk"
+msgstr "Risk"
+
+msgid "Sustained disruption of online community discussions, in-person presentations, or other in-person events"
+msgstr "Sustained disruption of online community discussions, in-person presentations, or other in-person events"
+
+msgid "Team vote"
+msgstr "Team vote"
+
+msgid "Being respectful. Respectful of others, their positions, experiences, viewpoints, skills, commitments, time, and efforts."
+msgstr "Being respectful. Respectful of others, their positions, experiences, viewpoints, skills, commitments, time, and efforts."
+
+msgid "Moderators"
+msgstr "Moderators"
+
+msgid "The reporter or reported person is your metamour."
+msgstr "The reporter or reported person is your metamour."
+
+msgid "Contact Manim Community moderators to approve the behavioral modification plan and consequences."
+msgstr "Contact Manim Community moderators to approve the behavioral modification plan and consequences."
+
+msgid "This document summarizes the procedures the Manim Community Code of Conduct team uses to enforce the Code of Conduct."
+msgstr "This document summarizes the procedures the Manim Community Code of Conduct team uses to enforce the Code of Conduct."
+
+msgid "The Manim Discord"
+msgstr "The Manim Discord"
+
+msgid "When the team receives a report of a possible Code of Conduct violation, it will:"
+msgstr "When the team receives a report of a possible Code of Conduct violation, it will:"
+
+msgid "Unwelcome sexual attention or advances"
+msgstr "Unwelcome sexual attention or advances"
+
+msgid "Logging or taking screenshots of online activity for harassment purposes"
+msgstr "Logging or taking screenshots of online activity for harassment purposes"
+
+msgid "Code of Conduct"
+msgstr "Code of Conduct"
+
+msgid "All available Community Developers (i.e. those with \"write\" permissions, or above, on the Manim Community GitHub organization)."
+msgstr "All available Community Developers (i.e. those with \"write\" permissions, or above, on the Manim Community GitHub organization)."
+
+msgid "Board Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct team shall provide the Manim Community Moderators with a draft of the changes. The Manim Community Moderators will vote on the changes at a board meeting."
+msgstr "Board Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct team shall provide the Manim Community Moderators with a draft of the changes. The Manim Community Moderators will vote on the changes at a board meeting."
+
+msgid "Follow up with the reported person"
+msgstr "Follow up with the reported person"
+
+msgid "Harassment of any participants in any form"
+msgstr "Harassment of any participants in any form"
+
+msgid "Vote on behavioral modification plan and consequences for the reported person."
+msgstr "Vote on behavioral modification plan and consequences for the reported person."
+
+msgid "Examples of conflicts of interest include:"
+msgstr "Examples of conflicts of interest include:"
+
+msgid "Insults, put-downs, or jokes that are based upon stereotypes, that are exclusionary, or that hold others up for ridicule"
+msgstr "Insults, put-downs, or jokes that are based upon stereotypes, that are exclusionary, or that hold others up for ridicule"
+
+msgid "Continued one-on-one communication after requests to cease"
+msgstr "Continued one-on-one communication after requests to cease"
+
+msgid "Propose consequences for the reported behavior."
+msgstr "Propose consequences for the reported behavior."
+
+msgid "Brainstorm options. Team members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question."
+msgstr "Brainstorm options. Team members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question."
+
+msgid "Evaluate the reported incident."
+msgstr "Evaluate the reported incident."
+
+msgid "Purpose"
+msgstr "Purpose"
+
+msgid "A warning"
+msgstr "A warning"
+
+msgid "The reporter or reported person is your family member Committee members do not need to state why they have a conflict of interest, only that one exists. Other team members should not ask why the person has a conflict of interest."
+msgstr "The reporter or reported person is your family member Committee members do not need to state why they have a conflict of interest, only that one exists. Other team members should not ask why the person has a conflict of interest."
+
+msgid "A concrete behavioral modification plan"
+msgstr "A concrete behavioral modification plan"
+
+msgid "Incitement of violence or harassment towards any individual, including encouraging a person to commit suicide or to engage in self-harm"
+msgstr "Incitement of violence or harassment towards any individual, including encouraging a person to commit suicide or to engage in self-harm"
+
+msgid "Every member of our community has the right to have their identity respected. Manim Community is dedicated to providing a positive environment for everyone, regardless of age, gender identity and expression, sexual orientation, disability, physical appearance, body size, ethnicity, nationality, race, religion (or lack thereof), education, or socioeconomic status."
+msgstr "Every member of our community has the right to have their identity respected. Manim Community is dedicated to providing a positive environment for everyone, regardless of age, gender identity and expression, sexual orientation, disability, physical appearance, body size, ethnicity, nationality, race, religion (or lack thereof), education, or socioeconomic status."
+
+msgid "Our Community"
+msgstr "Our Community"
+
+msgid "Developers"
+msgstr "Developers"
+
+msgid "Anyone who has a conflict of interest will remove themselves from the discussion of the incident, and recluse themselves from voting on a response to the report."
+msgstr "Anyone who has a conflict of interest will remove themselves from the discussion of the incident, and recluse themselves from voting on a response to the report."
+
+msgid "Does this incident involve a community leader? Community members often look up to community leaders to set the standard of acceptable behavior"
+msgstr "Does this incident involve a community leader? Community members often look up to community leaders to set the standard of acceptable behavior"
+
+msgid "Being open. Open to collaboration, whether it's on problems, Pull Requests, issues, or otherwise."
+msgstr "Being open. Open to collaboration, whether it's on problems, Pull Requests, issues, or otherwise."
+
+msgid "Reviewers"
+msgstr "Reviewers"
+
+msgid "Enforcement Procedures"
+msgstr "Enforcement Procedures"
+
+msgid "Does this incident include sexual harassment?"
+msgstr "Does this incident include sexual harassment?"
+
+msgid "Follow up with the reported person."
+msgstr "Follow up with the reported person."
+
+msgid "Showing empathy towards other community members. We're attentive in our communications, whether in person or online, and we're tactful when approaching differing views."
+msgstr "Showing empathy towards other community members. We're attentive in our communications, whether in person or online, and we're tactful when approaching differing views."
+
+msgid "Being considerate. Considerate of their peers -- other Manim users and developers."
+msgstr "Being considerate. Considerate of their peers -- other Manim users and developers."
+
+msgid "Contact Information"
+msgstr "Contact Information"
+
+msgid "Propose a behavioral modification plan."
+msgstr "Propose a behavioral modification plan."
+
+msgid "License"
+msgstr "License"
+
+msgid "Permanently removing the reported person from the community's online space(s)"
+msgstr "Permanently removing the reported person from the community's online space(s)"
+
+msgid "What follows are examples of possible consequences to an incident report. This consequences list is not inclusive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary."
+msgstr "What follows are examples of possible consequences to an incident report. This consequences list is not inclusive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary."
+
+msgid "Propose consequences"
+msgstr "Propose consequences"
+
+msgid "Did this incident occur in a private conversation or a public space? Incidents that all community members can see will have a more negative impact."
+msgstr "Did this incident occur in a private conversation or a public space? Incidents that all community members can see will have a more negative impact."
+
+msgid "The reporter or reported person is a maintainer who regularly reviews your contributions"
+msgstr "The reporter or reported person is a maintainer who regularly reviews your contributions"
+
+msgid "Impact"
+msgstr "Impact"
+
+msgid "Examples of unacceptable behavior by participants include:"
+msgstr "Examples of unacceptable behavior by participants include:"
+
+msgid "You have a romantic or platonic relationship with either the reporter or the reported person. It's fine to participate if they are an acquaintance."
+msgstr "You have a romantic or platonic relationship with either the reporter or the reported person. It's fine to participate if they are an acquaintance."
+
+msgid "Jurisdiction"
+msgstr "Jurisdiction"
+
+msgid "Follow up with the reporter."
+msgstr "Follow up with the reporter."
+
+msgid "If the reported person provides additional context, the Manim Community Code of Conduct team may need to re-evaluate the behavioral modification plan and consequences."
+msgstr "If the reported person provides additional context, the Manim Community Code of Conduct team may need to re-evaluate the behavioral modification plan and consequences."
+
+msgid "Vote. Proposed changes to the code of conduct will be decided by a two-thirds majority of all voting members of the Code of Conduct team. Team members are listed in the charter. Currently active voting members are listed in the following section."
+msgstr "Vote. Proposed changes to the code of conduct will be decided by a two-thirds majority of all voting members of the Code of Conduct team. Team members are listed in the charter. Currently active voting members are listed in the following section."
+
+msgid "Evaluate conflicts of interest."
+msgstr "Evaluate conflicts of interest."
+
+msgid "A final warning"
+msgstr "A final warning"
+
+msgid "Does this pose a safety risk? Does the behavior put a person's physical safety at risk? Will this incident severely negatively impact someone's mental health?"
+msgstr "Does this pose a safety risk? Does the behavior put a person's physical safety at risk? Will this incident severely negatively impact someone's mental health?"
+
+msgid "Temporarily removing the reported person from the community's online space(s)"
+msgstr "Temporarily removing the reported person from the community's online space(s)"
+
+msgid "The negative impact of that behavior"
+msgstr "The negative impact of that behavior"
+
+msgid "Did this occur in a space that is within our Code of Conduct's scope? If the incident occurred outside the community, but a community member's mental health or physical safety may be negatively impacted if no action is taken, the incident may be in scope. Private conversations in community spaces are also in scope."
+msgstr "Did this occur in a space that is within our Code of Conduct's scope? If the incident occurred outside the community, but a community member's mental health or physical safety may be negatively impacted if no action is taken, the incident may be in scope. Private conversations in community spaces are also in scope."
+
+msgid "Our Standards"
+msgstr "Our Standards"
+
+msgid "If a member's behavior violates this code of conduct, the Manim Community Code of Conduct team may take any action they deem appropriate, including, but not limited to: warning the offender, temporary bans, deletion of offending messages, and expulsion from the community and its online spaces. The full list of consequences for inappropriate behavior is listed below in the Enforcement Procedures."
+msgstr "If a member's behavior violates this code of conduct, the Manim Community Code of Conduct team may take any action they deem appropriate, including, but not limited to: warning the offender, temporary bans, deletion of offending messages, and expulsion from the community and its online spaces. The full list of consequences for inappropriate behavior is listed below in the Enforcement Procedures."
+
+msgid "Sexual language and imagery in online communities or any conference venue, including talks"
+msgstr "Sexual language and imagery in online communities or any conference venue, including talks"
+
+msgid "Call a meeting of code of conduct team members without a conflict of interest."
+msgstr "Call a meeting of code of conduct team members without a conflict of interest."
+
+msgid "The ManimCommunity GitHub Organization and all of its repositories"
+msgstr "The ManimCommunity GitHub Organization and all of its repositories"
+
+msgid "Consequences"
+msgstr "Consequences"
+
+msgid "The Manim Reddit"
+msgstr "The Manim Reddit"
+
+msgid "Reporters should receive an acknowledgment of the receipt of their report within 48 hours."
+msgstr "Reporters should receive an acknowledgment of the receipt of their report within 48 hours."
+
+msgid "Nothing, if the behavior was determined to not be a Code of Conduct violation"
+msgstr "Nothing, if the behavior was determined to not be a Code of Conduct violation"
+
+msgid "Inappropriate Behavior"
+msgstr "Inappropriate Behavior"
+
+msgid "The Manim Twitter"
+msgstr "The Manim Twitter"
+
+msgid "Contributors"
+msgstr "Contributors"
+
+msgid "Unwelcome physical contact, including simulated physical contact (eg, textual descriptions like \"hug\" or \"backrub\") without consent or after a request to stop"
+msgstr "Unwelcome physical contact, including simulated physical contact (eg, textual descriptions like \"hug\" or \"backrub\") without consent or after a request to stop"
+
+msgid "This Code of Conduct applies to the following online spaces:"
+msgstr "This Code of Conduct applies to the following online spaces:"
+
+msgid "Publishing others' private information, such as a physical or electronic address, without explicit permission"
+msgstr "Publishing others' private information, such as a physical or electronic address, without explicit permission"
+
+msgid "A description of the person's behavior in neutral language"
+msgstr "A description of the person's behavior in neutral language"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "This Code of Conduct is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License."
+msgstr "This Code of Conduct is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License."

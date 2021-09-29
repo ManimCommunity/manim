@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "Animations drawing attention to particular mobjects."
+msgstr "Animations drawing attention to particular mobjects."
+
+msgid "Animations related to movement."
+msgstr "Animations related to movement."
+
+msgid "Animations that grow mobjects."
+msgstr "Animations that grow mobjects."
+
+msgid "Animate the display or removal of a mobject from a scene."
+msgstr "Animate the display or removal of a mobject from a scene."
+
+msgid "Fading in and out of view."
+msgstr "Fading in and out of view."
+
+msgid "Animations transforming one mobject into another."
+msgstr "Animations transforming one mobject into another."
+
+msgid "Animations"
+msgstr "Animations"
+
+msgid "Inheritance Graph"
+msgstr "Inheritance Graph"
+
+msgid "Animations related to rotation."
+msgstr "Animations related to rotation."
+
+msgid "Animations that update mobjects."
+msgstr "Animations that update mobjects."
+
+msgid "Animate mobjects."
+msgstr "Animate mobjects."
+
+msgid "Animations for changing numbers."
+msgstr "Animations for changing numbers."
+
+msgid "Tools for displaying multiple animations at once."
+msgstr "Tools for displaying multiple animations at once."

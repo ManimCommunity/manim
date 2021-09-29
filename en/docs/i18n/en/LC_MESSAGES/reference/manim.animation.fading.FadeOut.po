@@ -1,0 +1,35 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The position to which the mobject moves while being faded out. In case another mobject is given as target position, its center is used."
+msgstr "The position to which the mobject moves while being faded out. In case another mobject is given as target position, its center is used."
+
+msgid "FadeOut"
+msgstr "FadeOut"
+
+msgid "The mobjects to be faded out."
+msgstr "The mobjects to be faded out."
+
+msgid ":obj:`clean_up_from_scene <manim.animation.fading.FadeOut.clean_up_from_scene>`"
+msgstr ":obj:`clean_up_from_scene <manim.animation.fading.FadeOut.clean_up_from_scene>`"
+
+msgid "Bases: :class:`manim.animation.fading._Fade`"
+msgstr "Bases: :class:`manim.animation.fading._Fade`"
+
+msgid "The vector by which the mobject shifts while being faded out."
+msgstr "The vector by which the mobject shifts while being faded out."
+
+msgid "Qualified name: ``manim.animation.fading.FadeOut``"
+msgstr "Qualified name: ``manim.animation.fading.FadeOut``"
+
+msgid "The factor by which the mobject is scaled while being faded out."
+msgstr "The factor by which the mobject is scaled while being faded out."

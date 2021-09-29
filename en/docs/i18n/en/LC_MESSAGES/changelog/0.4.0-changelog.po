@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "v0.4.0"
+msgstr "v0.4.0"
+
+msgid ":pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon"
+msgstr ":pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon"
+
+msgid ":pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText"
+msgstr ":pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText"
+
+msgid ":pr:`989`: Fix the ``manim cfg export`` subcommand"
+msgstr ":pr:`989`: Fix the ``manim cfg export`` subcommand"
+
+msgid ":pr:`1003`: Fix animation :class:`~.GrowArrow`"
+msgstr ":pr:`1003`: Fix animation :class:`~.GrowArrow`"
+
+msgid ":pr:`998`: Allow using hexadecimal color codes with 3 characters"
+msgstr ":pr:`998`: Allow using hexadecimal color codes with 3 characters"
+
+msgid ":pr:`1032`: Remove ``Square.side_length`` property"
+msgstr ":pr:`1032`: Remove ``Square.side_length`` property"
+
+msgid ":pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows"
+msgstr ":pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows"
+
+msgid ":pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`"
+msgstr ":pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`"
+
+msgid ":pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`"
+msgstr ":pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`"
+
+msgid ":pr:`1005`: Fix the feature where ``-`` is used as the filename"
+msgstr ":pr:`1005`: Fix the feature where ``-`` is used as the filename"
+
+msgid ":pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`"
+msgstr ":pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`"
+
+msgid ":pr:`1047`: Add documentation and examples for :class:`~.Matrix`"
+msgstr ":pr:`1047`: Add documentation and examples for :class:`~.Matrix`"
+
+msgid ":pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`"
+msgstr ":pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`"
+
+msgid ":pr:`1067`: Add ManimPango to ReadTheDocs requirements"
+msgstr ":pr:`1067`: Add ManimPango to ReadTheDocs requirements"
+
+msgid ":pr:`1008`: CI pipeline: fix release asset upload"
+msgstr ":pr:`1008`: CI pipeline: fix release asset upload"
+
+msgid ":pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``."
+msgstr ":pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``."
+
+msgid ":pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails"
+msgstr ":pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails"
+
+msgid ":pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``"
+msgstr ":pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``"
+
+msgid "The changes since Manim Community release v0.3.0 are listed below."
+msgstr "The changes since Manim Community release v0.3.0 are listed below."
+
+msgid ":pr:`996`: Changed the message of ``manim --version`` to not include \"Edition\""
+msgstr ":pr:`996`: Changed the message of ``manim --version`` to not include \"Edition\""
+
+msgid ":pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points"
+msgstr ":pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points"
+
+msgid ":pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag"
+msgstr ":pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag"
+
+msgid ":pr:`969`: Fix the ``--tex_template`` CLI flag"
+msgstr ":pr:`969`: Fix the ``--tex_template`` CLI flag"
+
+msgid ":pr:`1048`: Use absolute path in ``make_and_open_docs.py``"
+msgstr ":pr:`1048`: Use absolute path in ``make_and_open_docs.py``"
+
+msgid ":pr:`1063`: Fix documentation related to ``.animate``"
+msgstr ":pr:`1063`: Fix documentation related to ``.animate``"
+
+msgid ":pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments"
+msgstr ":pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments"
+
+msgid ":pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties"
+msgstr ":pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties"
+
+msgid ":pr:`1059`: More descriptive error when accessing an unhandled mobject attribute"
+msgstr ":pr:`1059`: More descriptive error when accessing an unhandled mobject attribute"
+
+msgid ":pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``"
+msgstr ":pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``"
+
+msgid ":pr:`1065`: Remove duplicate word 'vector'"
+msgstr ":pr:`1065`: Remove duplicate word 'vector'"
+
+msgid ":pr:`1053`: Repair links to source code in stable version of documentation"
+msgstr ":pr:`1053`: Repair links to source code in stable version of documentation"
+
+msgid ":pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green"
+msgstr ":pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green"
+
+msgid ":pr:`1060`: Update Linux installation instructions to mention the installation of Pango"
+msgstr ":pr:`1060`: Update Linux installation instructions to mention the installation of Pango"
+
+msgid ":pr:`1022`: Fix ``-p`` flag when passing ``-s``"
+msgstr ":pr:`1022`: Fix ``-p`` flag when passing ``-s``"
+
+msgid ":pr:`1031`: Fix link to wikipedia vector graphics page"
+msgstr ":pr:`1031`: Fix link to wikipedia vector graphics page"
+
+msgid "Bugfixes and Enhancements"
+msgstr "Bugfixes and Enhancements"
+
+msgid ":pr:`1046`: Use any version of ``importlib-metadata``"
+msgstr ":pr:`1046`: Use any version of ``importlib-metadata``"
+
+msgid "March 3, 2021"
+msgstr "March 3, 2021"
+
+msgid ":pr:`1044`: ``register_font`` is available for macOS"
+msgstr ":pr:`1044`: ``register_font`` is available for macOS"
+
+msgid ":pr:`983`: Make sure last frame for animations with updaters is correct"
+msgstr ":pr:`983`: Make sure last frame for animations with updaters is correct"
+
+msgid ":pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods"
+msgstr ":pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods"
+
+msgid ":pr:`1010`: Disable STDIN interaction for ffmpeg concat."
+msgstr ":pr:`1010`: Disable STDIN interaction for ffmpeg concat."

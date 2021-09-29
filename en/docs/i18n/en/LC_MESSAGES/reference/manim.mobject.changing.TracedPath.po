@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The width of the trace."
+msgstr "The width of the trace."
+
+msgid "The time taken for the path to dissipate. Default set to ``None`` which disables dissipation."
+msgstr "The time taken for the path to dissipate. Default set to ``None`` which disables dissipation."
+
+msgid "The function to be traced."
+msgstr "The function to be traced."
+
+msgid "The color of the trace."
+msgstr "The color of the trace."
+
+msgid "Qualified name: ``manim.mobject.changing.TracedPath``"
+msgstr "Qualified name: ``manim.mobject.changing.TracedPath``"
+
+msgid "TracedPath"
+msgstr "TracedPath"

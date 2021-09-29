@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:36\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
+
+msgid "The scale of the text `det` w.r.t the matrix"
+msgstr "The scale of the text `det` w.r.t the matrix"
+
+msgid "Helper function to create determinant."
+msgstr "Helper function to create determinant."
+
+msgid "Mobjects representing matrices."
+msgstr "Mobjects representing matrices."
+
+msgid "The value of the determinant of the matrix"
+msgstr "The value of the determinant of the matrix"
+
+msgid "matrix"
+msgstr "matrix"
+
+msgid "The matrix whose determinant is to be created"
+msgstr "The matrix whose determinant is to be created"
+
+msgid "A VGroup containing the determinant"
+msgstr "A VGroup containing the determinant"
+
+msgid "A mobject that displays a matrix on the screen."
+msgstr "A mobject that displays a matrix on the screen."
+
+msgid "The background rectangle"
+msgstr "The background rectangle"
