@@ -1,62 +1,35 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.mobject.rst:2
 msgid "mobject"
-msgstr ""
+msgstr "mobject"
 
-#: manim.mobject.mobject:1 of
-msgid "Base classes for objects that can be displayed."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:15
-msgid "Classes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
-msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
-msgid ""
-"Mathematical Object: base class for objects that can be displayed on "
-"screen."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:31
-msgid "Functions"
-msgstr ""
-
-#: manim.mobject.mobject.override_animate:1 of
-msgid "Decorator for overriding method animations."
-msgstr ""
-
-#: manim.mobject.mobject.override_animate:3 of
-msgid ""
-"This allows to specify a method (returning an :class:`~.Animation`) which"
-" is called when the decorated method is used with the ``.animate`` syntax"
-" for animating the application of a method."
-msgstr ""
-
-#: manim.mobject.mobject.override_animate:9 of
 msgid ":attr:`Mobject.animate`"
-msgstr ""
+msgstr ":attr:`Mobject.animate`"
 
-#: manim.mobject.mobject.override_animate:13 of
-msgid ""
-"Overridden methods cannot be combined with normal or other overridden "
-"methods using method chaining with the ``.animate`` syntax."
-msgstr ""
+msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
+msgstr "Groups together multiple :class:`Mobjects <.Mobject>`."
 
-#: manim.mobject.mobject.override_animate:18 of
-msgid "Examples"
-msgstr ""
+msgid "Overridden methods cannot be combined with normal or other overridden methods using method chaining with the ``.animate`` syntax."
+msgstr "Overridden methods cannot be combined with normal or other overridden methods using method chaining with the ``.animate`` syntax."
 
+msgid "This allows to specify a method (returning an :class:`~.Animation`) which is called when the decorated method is used with the ``.animate`` syntax for animating the application of a method."
+msgstr "This allows to specify a method (returning an :class:`~.Animation`) which is called when the decorated method is used with the ``.animate`` syntax for animating the application of a method."
 
+msgid "Mathematical Object: base class for objects that can be displayed on screen."
+msgstr "Mathematical Object: base class for objects that can be displayed on screen."
+
+msgid "Decorator for overriding method animations."
+msgstr "Decorator for overriding method animations."
+
+msgid "Base classes for objects that can be displayed."
+msgstr "Base classes for objects that can be displayed."

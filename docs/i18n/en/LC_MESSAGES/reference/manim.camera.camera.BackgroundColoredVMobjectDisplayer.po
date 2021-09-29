@@ -1,173 +1,83 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:2
-msgid "BackgroundColoredVMobjectDisplayer"
-msgstr ""
+msgid ":obj:`display <manim.camera.camera.BackgroundColoredVMobjectDisplayer.display>`"
+msgstr ":obj:`display <manim.camera.camera.BackgroundColoredVMobjectDisplayer.display>`"
 
-#: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:4
-msgid "Qualified name: ``manim.camera.camera.BackgroundColoredVMobjectDisplayer``"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer:1 of
-msgid "Bases: :class:`object`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
-#: of
-msgid "Parameters"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer:1 of
-msgid "Camera object to use."
-msgstr ""
-
-#: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:14
-msgid "Methods"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid ""
-":obj:`display "
-"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.display>`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid "Displays the colored VMobjects."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid ""
-":obj:`get_background_array "
-"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array>`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:1
-#: of
-msgid "Gets the background array that has the passed file_name."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid ""
-":obj:`reset_pixel_array "
-"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.reset_pixel_array>`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid ""
-":obj:`resize_background_array "
-"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array>`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:1
-#: of
-msgid "Resizes the pixel array representing the background."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: of
-msgid ""
-":obj:`resize_background_array_to_match "
-"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match>`"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:1
-#: of
-msgid "Resizes the background array to match the passed pixel array."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:3 of
-msgid "The VMobjects"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
-#: of
-msgid "Returns"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:6 of
 msgid "The pixel array with the `cvmobjects` displayed."
-msgstr ""
+msgstr "The pixel array with the `cvmobjects` displayed."
 
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
-#: of
-msgid "Return type"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:3
-#: of
-msgid "The background image or its file name."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:5
-#: of
-msgid "The pixel array of the image."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:3
-#: of
-msgid "The pixel"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:5
-#: of
-msgid "The new width of the background"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:7
-#: of
-msgid "The new height of the background"
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:9
-#: of
-msgid "The PIL image mode, by default \"RGBA\""
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:12
-#: of
-msgid "The numpy pixel array of the resized background."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:3
-#: of
-msgid "The prospective pixel array."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:5
-#: of
-msgid "The pixel array whose width and height should be matched."
-msgstr ""
-
-#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:8
-#: of
 msgid "The resized background array."
-msgstr ""
+msgstr "The resized background array."
 
+msgid "The background image or its file name."
+msgstr "The background image or its file name."
 
+msgid ":obj:`reset_pixel_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.reset_pixel_array>`"
+msgstr ":obj:`reset_pixel_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.reset_pixel_array>`"
+
+msgid ":obj:`get_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array>`"
+msgstr ":obj:`get_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array>`"
+
+msgid "Qualified name: ``manim.camera.camera.BackgroundColoredVMobjectDisplayer``"
+msgstr "Qualified name: ``manim.camera.camera.BackgroundColoredVMobjectDisplayer``"
+
+msgid "Camera object to use."
+msgstr "Camera object to use."
+
+msgid ":obj:`resize_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array>`"
+msgstr ":obj:`resize_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array>`"
+
+msgid "The pixel array whose width and height should be matched."
+msgstr "The pixel array whose width and height should be matched."
+
+msgid "The PIL image mode, by default \"RGBA\""
+msgstr "The PIL image mode, by default \"RGBA\""
+
+msgid "The pixel array of the image."
+msgstr "The pixel array of the image."
+
+msgid "Gets the background array that has the passed file_name."
+msgstr "Gets the background array that has the passed file_name."
+
+msgid "The prospective pixel array."
+msgstr "The prospective pixel array."
+
+msgid "BackgroundColoredVMobjectDisplayer"
+msgstr "BackgroundColoredVMobjectDisplayer"
+
+msgid ":obj:`resize_background_array_to_match <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match>`"
+msgstr ":obj:`resize_background_array_to_match <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match>`"
+
+msgid "The VMobjects"
+msgstr "The VMobjects"
+
+msgid "The pixel"
+msgstr "The pixel"
+
+msgid "The new height of the background"
+msgstr "The new height of the background"
+
+msgid "The numpy pixel array of the resized background."
+msgstr "The numpy pixel array of the resized background."
+
+msgid "Displays the colored VMobjects."
+msgstr "Displays the colored VMobjects."
+
+msgid "Resizes the background array to match the passed pixel array."
+msgstr "Resizes the background array to match the passed pixel array."
+
+msgid "The new width of the background"
+msgstr "The new width of the background"
+
+msgid "Resizes the pixel array representing the background."
+msgstr "Resizes the pixel array representing the background."

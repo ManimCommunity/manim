@@ -1,112 +1,41 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:2
+msgid "The value that will overwrite the current number of the :class:`~.DecimalNumber`."
+msgstr "The value that will overwrite the current number of the :class:`~.DecimalNumber`."
+
 msgid "DecimalNumber"
-msgstr ""
+msgstr "DecimalNumber"
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:4
+msgid ":obj:`get_complex_formatter <manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
+msgstr ":obj:`get_complex_formatter <manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
+
 msgid "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
-msgstr ""
+msgstr "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
 
-#: manim.mobject.numbers.DecimalNumber:1 of
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber:1 of
-msgid "An mobject representing a decimal number."
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber:4 of
-msgid "Examples"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
-msgid ""
-":obj:`get_complex_formatter "
-"<manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
-msgid ""
-"Configuration is based first off instance attributes, but overwritten by "
-"any kew word argument."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
-msgid ""
-":obj:`increment_value "
-"<manim.mobject.numbers.DecimalNumber.increment_value>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
-msgid ""
-":obj:`set_submobjects_from_number "
-"<manim.mobject.numbers.DecimalNumber.set_submobjects_from_number>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
-#: manim.mobject.numbers.DecimalNumber.set_value:1 of
 msgid "Set the value of the :class:`~.DecimalNumber` to a new number."
-msgstr ""
+msgstr "Set the value of the :class:`~.DecimalNumber` to a new number."
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:29
-msgid "Attributes"
-msgstr ""
+msgid ":obj:`set_submobjects_from_number <manim.mobject.numbers.DecimalNumber.set_submobjects_from_number>`"
+msgstr ":obj:`set_submobjects_from_number <manim.mobject.numbers.DecimalNumber.set_submobjects_from_number>`"
 
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid "Used to animate the application of a method."
-msgstr ""
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words: - include_sign - group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
+msgstr "Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words: - include_sign - group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
 
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.numbers.DecimalNumber.animation_overrides>`\\"
-msgstr ""
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument."
+msgstr "Configuration is based first off instance attributes, but overwritten by any kew word argument."
 
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid "The depth of the mobject."
-msgstr ""
+msgid "An mobject representing a decimal number."
+msgstr "An mobject representing a decimal number."
 
-#: manim.mobject.numbers.DecimalNumber.font_size:1
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid "The font size of the tex mobject."
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid "The height of the mobject."
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1 of
-msgid "The width of the mobject."
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber.set_value of
-msgid "Parameters"
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber.get_formatter:1 of
-msgid ""
-"Configuration is based first off instance attributes, but overwritten by "
-"any kew word argument.  Relevant key words: - include_sign - "
-"group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
-msgstr ""
-
-#: manim.mobject.numbers.DecimalNumber.set_value:3 of
-msgid ""
-"The value that will overwrite the current number of the "
-":class:`~.DecimalNumber`."
-msgstr ""
-
-
+msgid ":obj:`increment_value <manim.mobject.numbers.DecimalNumber.increment_value>`"
+msgstr ":obj:`increment_value <manim.mobject.numbers.DecimalNumber.increment_value>`"

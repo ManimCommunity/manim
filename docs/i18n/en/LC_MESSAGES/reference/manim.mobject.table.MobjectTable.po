@@ -1,90 +1,26 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:2
 msgid "MobjectTable"
-msgstr ""
+msgstr "MobjectTable"
 
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:4
 msgid "Qualified name: ``manim.mobject.table.MobjectTable``"
-msgstr ""
+msgstr "Qualified name: ``manim.mobject.table.MobjectTable``"
 
-#: manim.mobject.table.MobjectTable:1 of
-msgid "Bases: :class:`manim.mobject.table.Table`"
-msgstr ""
+msgid "A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`."
+msgstr "A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`."
 
-#: manim.mobject.table.MobjectTable:1 of
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.Mobject`."
-msgstr ""
+msgid "Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`."
+msgstr "Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`."
 
-#: manim.mobject.table.MobjectTable:4 of
-msgid "Examples"
-msgstr ""
-
-#: manim.mobject.table.MobjectTable:26 of
-msgid ""
-"Special case of :class:`~.Table` with ``element_to_mobject`` set to an "
-"identity function. Here, every item in ``table`` must already be of type "
-":class:`~.Mobject`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst
-msgid "Parameters"
-msgstr ""
-
-#: manim.mobject.table.MobjectTable:29 of
-msgid ""
-"A 2D array or list of lists. Content of the table must be of type "
-":class:`~.Mobject`."
-msgstr ""
-
-#: manim.mobject.table.MobjectTable:30 of
-msgid ""
-"The :class:`~.Mobject` class applied to the table entries. Set as "
-"``lambda m : m`` to return itself."
-msgstr ""
-
-#: manim.mobject.table.MobjectTable:31 of
-msgid "Additional arguments to be passed to :class:`~.Table`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:21
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.table.MobjectTable.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:28:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:28:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.MobjectTable.rst:28:<autosummary>:1
-msgid "The width of the mobject."
-msgstr ""
-
-
+msgid "The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself."
+msgstr "The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself."

@@ -1,77 +1,32 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:2
-msgid "DoubleArrow"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:4
 msgid "Qualified name: ``manim.mobject.geometry.DoubleArrow``"
-msgstr ""
+msgstr "Qualified name: ``manim.mobject.geometry.DoubleArrow``"
 
-#: manim.mobject.geometry.DoubleArrow:1 of
-msgid "Bases: :class:`manim.mobject.geometry.Arrow`"
-msgstr ""
-
-#: manim.mobject.geometry.DoubleArrow:1 of
 msgid "An arrow with tips on both ends."
-msgstr ""
+msgstr "An arrow with tips on both ends."
 
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst
-msgid "Parameters"
-msgstr ""
+msgid "DoubleArrow"
+msgstr "DoubleArrow"
 
-#: manim.mobject.geometry.DoubleArrow:3 of
-msgid "Arguments to be passed to :class:`Arrow`"
-msgstr ""
-
-#: manim.mobject.geometry.DoubleArrow:5 of
-msgid "Additional arguments to be passed to :class:`Arrow`"
-msgstr ""
-
-#: manim.mobject.geometry.DoubleArrow:9 of
-msgid "Examples"
-msgstr ""
-
-#: manim.mobject.geometry.DoubleArrow:36 of
 msgid ":class:`ArrowTip`, :class:`CurvedDoubleArrow`"
-msgstr ""
+msgstr ":class:`ArrowTip`, :class:`CurvedDoubleArrow`"
 
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:14
-msgid "Methods"
-msgstr ""
+msgid "Additional arguments to be passed to :class:`Arrow`"
+msgstr "Additional arguments to be passed to :class:`Arrow`"
 
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:21
-msgid "Attributes"
-msgstr ""
+msgid "Arguments to be passed to :class:`Arrow`"
+msgstr "Arguments to be passed to :class:`Arrow`"
 
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.geometry.DoubleArrow.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:28:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:28:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.DoubleArrow.rst:28:<autosummary>:1
-msgid "The width of the mobject."
-msgstr ""
-
-
+msgid "Bases: :class:`manim.mobject.geometry.Arrow`"
+msgstr "Bases: :class:`manim.mobject.geometry.Arrow`"

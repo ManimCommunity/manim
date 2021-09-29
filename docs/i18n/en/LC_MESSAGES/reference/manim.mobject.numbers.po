@@ -1,37 +1,23 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.numbers.rst:2
 msgid "numbers"
-msgstr ""
+msgstr "numbers"
 
-#: manim.mobject.numbers:1 of
-msgid "Mobjects representing numbers."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.rst:15
-msgid "Classes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
-msgid "An mobject representing a decimal number."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
 msgid "A class for displaying Integers."
-msgstr ""
+msgstr "A class for displaying Integers."
 
-#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
-msgid ""
-"A class for displaying text that continuously updates to reflect the "
-"value of a python variable."
-msgstr ""
+msgid "Mobjects representing numbers."
+msgstr "Mobjects representing numbers."
 
-
+msgid "A class for displaying text that continuously updates to reflect the value of a python variable."
+msgstr "A class for displaying text that continuously updates to reflect the value of a python variable."

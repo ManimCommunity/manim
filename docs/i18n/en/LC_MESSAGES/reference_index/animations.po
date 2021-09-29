@@ -1,79 +1,50 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference_index/animations.rst:2
-msgid "Animations"
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:6
-msgid "Inheritance Graph"
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:27
-msgid "Module Index"
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Animate mobjects."
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Tools for displaying multiple animations at once."
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Animate the display or removal of a mobject from a scene."
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Fading in and out of view."
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Animations that grow mobjects."
-msgstr ""
-
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
 msgid "Animations drawing attention to particular mobjects."
-msgstr ""
+msgstr "Animations drawing attention to particular mobjects."
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
 msgid "Animations related to movement."
-msgstr ""
+msgstr "Animations related to movement."
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Animations for changing numbers."
-msgstr ""
+msgid "Animations that grow mobjects."
+msgstr "Animations that grow mobjects."
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid "Animations related to rotation."
-msgstr ""
+msgid "Animate the display or removal of a mobject from a scene."
+msgstr "Animate the display or removal of a mobject from a scene."
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Fading in and out of view."
+msgstr "Fading in and out of view."
+
 msgid "Animations transforming one mobject into another."
-msgstr ""
+msgstr "Animations transforming one mobject into another."
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid ""
-":obj:`transform_matching_parts "
-"<manim.animation.transform_matching_parts>`\\"
-msgstr ""
+msgid "Animations"
+msgstr "Animations"
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
-msgid ""
-"Animations that try to transform Mobjects while keeping track of "
-"identical parts."
-msgstr ""
+msgid "Inheritance Graph"
+msgstr "Inheritance Graph"
 
-#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations related to rotation."
+msgstr "Animations related to rotation."
+
 msgid "Animations that update mobjects."
-msgstr ""
+msgstr "Animations that update mobjects."
 
+msgid "Animate mobjects."
+msgstr "Animate mobjects."
 
+msgid "Animations for changing numbers."
+msgstr "Animations for changing numbers."
+
+msgid "Tools for displaying multiple animations at once."
+msgstr "Tools for displaying multiple animations at once."

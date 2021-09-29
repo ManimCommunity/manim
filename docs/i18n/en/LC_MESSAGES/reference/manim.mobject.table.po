@@ -1,53 +1,32 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.table.rst:2
 msgid "table"
-msgstr ""
+msgstr "table"
 
-#: manim.mobject.table:1 of
-msgid "Mobjects representing tables."
-msgstr ""
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
+msgstr "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
 
-#: manim.mobject.table:4 of
-msgid "Examples"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.rst:15
-msgid "Classes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.DecimalNumber` to display decimal entries."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.Integer`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
 msgid "A specialized :class:`~.Table` mobject for use with with LaTeX."
-msgstr ""
+msgstr "A specialized :class:`~.Table` mobject for use with with LaTeX."
 
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.Mobject`."
-msgstr ""
+msgid "Mobjects representing tables."
+msgstr "Mobjects representing tables."
 
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`."
+msgstr "A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`."
+
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`."
+msgstr "A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`."
+
 msgid "A mobject that displays a table on the screen."
-msgstr ""
-
-
+msgstr "A mobject that displays a table on the screen."

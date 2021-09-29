@@ -1,71 +1,35 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:2
-msgid "FocusOn"
-msgstr ""
+msgid "The point at which to shrink the spotlight. If it is a :class:`.~Mobject` its center will be used."
+msgstr "The point at which to shrink the spotlight. If it is a :class:`.~Mobject` its center will be used."
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:4
-msgid "Qualified name: ``manim.animation.indication.FocusOn``"
-msgstr ""
-
-#: manim.animation.indication.FocusOn:1 of
-msgid "Bases: :class:`manim.animation.transform.Transform`"
-msgstr ""
-
-#: manim.animation.indication.FocusOn:1 of
-msgid "Shrink a spotlight to a position."
-msgstr ""
-
-#: ../../source/reference/manim.animation.indication.FocusOn.rst
-msgid "Parameters"
-msgstr ""
-
-#: manim.animation.indication.FocusOn:3 of
-msgid ""
-"The point at which to shrink the spotlight. If it is a :class:`.~Mobject`"
-" its center will be used."
-msgstr ""
-
-#: manim.animation.indication.FocusOn:4 of
-msgid "The opacity of the spotlight."
-msgstr ""
-
-#: manim.animation.indication.FocusOn:5 of
-msgid "The color of the spotlight."
-msgstr ""
-
-#: manim.animation.indication.FocusOn:6 of
 msgid "The duration of the animation."
-msgstr ""
+msgstr "The duration of the animation."
 
-#: manim.animation.indication.FocusOn:7 of
-msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
-msgstr ""
+msgid "The color of the spotlight."
+msgstr "The color of the spotlight."
 
-#: manim.animation.indication.FocusOn:11 of
-msgid "Examples"
-msgstr ""
+msgid ":obj:`create_starting_mobject <manim.animation.indication.FocusOn.create_starting_mobject>`"
+msgstr ":obj:`create_starting_mobject <manim.animation.indication.FocusOn.create_starting_mobject>`"
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:14
-msgid "Methods"
-msgstr ""
+msgid "The opacity of the spotlight."
+msgstr "The opacity of the spotlight."
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:21:<autosummary>:1
-msgid ""
-":obj:`create_starting_mobject "
-"<manim.animation.indication.FocusOn.create_starting_mobject>`"
-msgstr ""
+msgid "Qualified name: ``manim.animation.indication.FocusOn``"
+msgstr "Qualified name: ``manim.animation.indication.FocusOn``"
 
-#: ../../source/reference/manim.animation.indication.FocusOn.rst:23
-msgid "Attributes"
-msgstr ""
+msgid "Shrink a spotlight to a position."
+msgstr "Shrink a spotlight to a position."
 
-
+msgid "FocusOn"
+msgstr "FocusOn"

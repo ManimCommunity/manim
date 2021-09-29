@@ -1,105 +1,56 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.animation.composition.Succession.rst:2
-msgid "Succession"
-msgstr ""
+msgid ":obj:`update_mobjects <manim.animation.composition.Succession.update_mobjects>`"
+msgstr ":obj:`update_mobjects <manim.animation.composition.Succession.update_mobjects>`"
 
-#: ../../source/reference/manim.animation.composition.Succession.rst:4
-msgid "Qualified name: ``manim.animation.composition.Succession``"
-msgstr ""
+msgid ":obj:`update_active_animation <manim.animation.composition.Succession.update_active_animation>`"
+msgstr ":obj:`update_active_animation <manim.animation.composition.Succession.update_active_animation>`"
 
-#: manim.animation.composition.Succession:1 of
-msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.composition.Succession.rst:14
-msgid "Methods"
-msgstr ""
-
-#: manim.animation.composition.Succession.begin:1
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1 of
-msgid "Begin the animation."
-msgstr ""
-
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1
-#: manim.animation.composition.Succession.finish:1 of
 msgid "Finish the animation."
-msgstr ""
+msgstr "Finish the animation."
 
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1
-#: manim.animation.composition.Succession.interpolate:1 of
-msgid "Set the animation progress."
-msgstr ""
+msgid "Succession"
+msgstr "Succession"
 
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1 of
-msgid ""
-":obj:`next_animation "
-"<manim.animation.composition.Succession.next_animation>`"
-msgstr ""
+msgid ":obj:`next_animation <manim.animation.composition.Succession.next_animation>`"
+msgstr ":obj:`next_animation <manim.animation.composition.Succession.next_animation>`"
 
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1 of
-msgid ""
-":obj:`update_active_animation "
-"<manim.animation.composition.Succession.update_active_animation>`"
-msgstr ""
-
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1 of
-msgid ""
-":obj:`update_mobjects "
-"<manim.animation.composition.Succession.update_mobjects>`"
-msgstr ""
-
-#: manim.animation.composition.Succession.begin:1:<autosummary>:1 of
 msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
-msgstr ""
+msgstr "Updates things like starting_mobject, and (for Transforms) target_mobject."
 
-#: manim.animation.composition.Succession.begin:3 of
-msgid ""
-"This method is called right as an animation is being played. As much "
-"initialization as possible, especially any mobject copying, should live "
-"in this method."
-msgstr ""
+msgid "Qualified name: ``manim.animation.composition.Succession``"
+msgstr "Qualified name: ``manim.animation.composition.Succession``"
 
-#: manim.animation.composition.Succession.begin
-#: manim.animation.composition.Succession.finish
-#: manim.animation.composition.Succession.interpolate
-#: manim.animation.composition.Succession.update_mobjects of
-msgid "Return type"
-msgstr ""
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject.  Note, since typically (always?) self.mobject will have its updating suspended during the animation, this will do nothing to self.mobject."
+msgstr "Updates things like starting_mobject, and (for Transforms) target_mobject.  Note, since typically (always?) self.mobject will have its updating suspended during the animation, this will do nothing to self.mobject."
 
-#: manim.animation.composition.Succession.finish:3 of
+msgid "Begin the animation."
+msgstr "Begin the animation."
+
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+msgstr "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+
 msgid "This method gets called when the animation is over."
-msgstr ""
+msgstr "This method gets called when the animation is over."
 
-#: manim.animation.composition.Succession.interpolate:3 of
+msgid "Set the animation progress."
+msgstr "Set the animation progress."
+
+msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgstr "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+
 msgid "This method gets called for every frame during an animation."
-msgstr ""
+msgstr "This method gets called for every frame during an animation."
 
-#: manim.animation.composition.Succession.interpolate
-#: manim.animation.composition.Succession.update_mobjects of
-msgid "Parameters"
-msgstr ""
-
-#: manim.animation.composition.Succession.interpolate:5 of
-msgid ""
-"The relative time to set the aniamtion to, 0 meaning the start, 1 meaning"
-" the end."
-msgstr ""
-
-#: manim.animation.composition.Succession.update_mobjects:1 of
-msgid ""
-"Updates things like starting_mobject, and (for Transforms) "
-"target_mobject.  Note, since typically (always?) self.mobject will have "
-"its updating suspended during the animation, this will do nothing to "
-"self.mobject."
-msgstr ""
-
-
+msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
+msgstr "Bases: :class:`manim.animation.composition.AnimationGroup`"

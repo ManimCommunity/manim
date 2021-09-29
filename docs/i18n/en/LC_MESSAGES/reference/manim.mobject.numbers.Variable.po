@@ -1,129 +1,50 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:2
-msgid "Variable"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:4
-msgid "Qualified name: ``manim.mobject.numbers.Variable``"
-msgstr ""
-
-#: manim.mobject.numbers.Variable:1 of
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
-msgstr ""
-
-#: manim.mobject.numbers.Variable:1 of
-msgid ""
-"A class for displaying text that continuously updates to reflect the "
-"value of a python variable."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:3 of
-msgid ""
-"Automatically adds the text for the label and the value when instantiated"
-" and added to the screen."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.Variable.rst
-msgid "Parameters"
-msgstr ""
-
-#: manim.mobject.numbers.Variable:5 of
-msgid "The python variable you need to keep track of and display."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:7 of
-msgid ""
-"The label for your variable, for example ``x = ...``. To use math mode, "
-"for e.g. subscripts, superscripts, etc. simply pass in a raw string."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:10 of
-msgid ""
-"The class used for displaying the number. Defaults to "
-":class:`DecimalNumber`."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:12 of
-msgid ""
-"The number of decimal places to display in your variable. Defaults to 2. "
-"If `var_type` is an :class:`Integer`, this parameter is ignored."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:15 of
-msgid "Other arguments to be passed to `~.Mobject`."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:20 of
-msgid "The label for your variable, for example ``x = ...``."
-msgstr ""
-
-#: manim.mobject.numbers.Variable of
-msgid "type"
-msgstr ""
-
-#: manim.mobject.numbers.Variable:22 of
-msgid ""
-"Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, "
-":class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
-msgstr ""
-
-#: manim.mobject.numbers.Variable:26 of
-msgid "Useful in updating the value of your variable on-screen."
-msgstr ""
-
-#: manim.mobject.numbers.Variable:32 of
 msgid "The tex for the value of your variable."
-msgstr ""
+msgstr "The tex for the value of your variable."
 
-#: manim.mobject.numbers.Variable:34 of
+msgid "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
+msgstr "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
+
 msgid "Union[:class:`DecimalNumber`, :class:`Integer`]"
-msgstr ""
+msgstr "Union[:class:`DecimalNumber`, :class:`Integer`]"
 
-#: manim.mobject.numbers.Variable:37 of
-msgid "Examples"
-msgstr ""
+msgid "Other arguments to be passed to `~.Mobject`."
+msgstr "Other arguments to be passed to `~.Mobject`."
 
-#: manim.mobject.numbers.Variable:38 of
-msgid "Normal usage::"
-msgstr ""
+msgid "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
+msgstr "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:14
-msgid "Methods"
-msgstr ""
+msgid "The label for your variable, for example ``x = ...``."
+msgstr "The label for your variable, for example ``x = ...``."
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:21
-msgid "Attributes"
-msgstr ""
+msgid "The label for your variable, for example ``x = ...``. To use math mode, for e.g. subscripts, superscripts, etc. simply pass in a raw string."
+msgstr "The label for your variable, for example ``x = ...``. To use math mode, for e.g. subscripts, superscripts, etc. simply pass in a raw string."
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
+msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
+msgstr "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.numbers.Variable.animation_overrides>`\\"
-msgstr ""
+msgid "Qualified name: ``manim.mobject.numbers.Variable``"
+msgstr "Qualified name: ``manim.mobject.numbers.Variable``"
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
+msgid "Variable"
+msgstr "Variable"
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
+msgid "Automatically adds the text for the label and the value when instantiated and added to the screen."
+msgstr "Automatically adds the text for the label and the value when instantiated and added to the screen."
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid "The width of the mobject."
-msgstr ""
+msgid "The python variable you need to keep track of and display."
+msgstr "The python variable you need to keep track of and display."
 
-
+msgid "Useful in updating the value of your variable on-screen."
+msgstr "Useful in updating the value of your variable on-screen."

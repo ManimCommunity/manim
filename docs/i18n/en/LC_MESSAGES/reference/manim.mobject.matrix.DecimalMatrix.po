@@ -1,81 +1,29 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:2
 msgid "DecimalMatrix"
-msgstr ""
+msgstr "DecimalMatrix"
 
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:4
-msgid "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:1 of
-msgid "Bases: :class:`manim.mobject.matrix.Matrix`"
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:1 of
-msgid "A mobject that displays a matrix with decimal entries on the screen."
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:4 of
-msgid "Examples"
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:17 of
 msgid "Will round/truncate the decimal places as per the provided config."
-msgstr ""
+msgstr "Will round/truncate the decimal places as per the provided config."
 
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst
-msgid "Parameters"
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:19 of
-msgid "A numpy 2d array or list of lists"
-msgstr ""
-
-#: manim.mobject.matrix.DecimalMatrix:21 of
 msgid "Mobject to use, by default DecimalNumber"
-msgstr ""
+msgstr "Mobject to use, by default DecimalNumber"
 
-#: manim.mobject.matrix.DecimalMatrix:23 of
+msgid "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
+msgstr "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
+
 msgid "Config for the desired mobject, by default {\"num_decimal_places\": 1}"
-msgstr ""
+msgstr "Config for the desired mobject, by default {\"num_decimal_places\": 1}"
 
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:21
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.matrix.DecimalMatrix.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid "The width of the mobject."
-msgstr ""
-
-
+msgid "A mobject that displays a matrix with decimal entries on the screen."
+msgstr "A mobject that displays a matrix with decimal entries on the screen."

@@ -1,39 +1,26 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"X-Generator: lokalise.com\n"
+"Project-Id-Version: Manim\n"
+"PO-Revision-Date: 2021-09-29 06:42\n"
+"Last-Translator: lokalise.com\n"
+"Language-Team: lokalise.com\n\n"
+"Language: en\n"
 
-#: ../../source/reference/manim.animation.creation.ShowSubmobjectsOneByOne.rst:2
-msgid "ShowSubmobjectsOneByOne"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowSubmobjectsOneByOne.rst:4
 msgid "Qualified name: ``manim.animation.creation.ShowSubmobjectsOneByOne``"
-msgstr ""
+msgstr "Qualified name: ``manim.animation.creation.ShowSubmobjectsOneByOne``"
 
-#: manim.animation.creation.ShowSubmobjectsOneByOne:1 of
+msgid "ShowSubmobjectsOneByOne"
+msgstr "ShowSubmobjectsOneByOne"
+
 msgid "Bases: :class:`manim.animation.creation.ShowIncreasingSubsets`"
-msgstr ""
+msgstr "Bases: :class:`manim.animation.creation.ShowIncreasingSubsets`"
 
-#: manim.animation.creation.ShowSubmobjectsOneByOne:1 of
-msgid ""
-"Show one submobject at a time, removing all previously displayed ones "
-"from screen."
-msgstr ""
+msgid ":obj:`update_submobject_list <manim.animation.creation.ShowSubmobjectsOneByOne.update_submobject_list>`"
+msgstr ":obj:`update_submobject_list <manim.animation.creation.ShowSubmobjectsOneByOne.update_submobject_list>`"
 
-#: ../../source/reference/manim.animation.creation.ShowSubmobjectsOneByOne.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowSubmobjectsOneByOne.rst:18:<autosummary>:1
-msgid ""
-":obj:`update_submobject_list "
-"<manim.animation.creation.ShowSubmobjectsOneByOne.update_submobject_list>`"
-msgstr ""
-
-
+msgid "Show one submobject at a time, removing all previously displayed ones from screen."
+msgstr "Show one submobject at a time, removing all previously displayed ones from screen."
