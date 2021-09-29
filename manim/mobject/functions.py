@@ -180,6 +180,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         use_smoothing
             Whether or not to smoothen the curves.
 
+
         .. note::
             The ``min_depth`` takes precedence over ``max_quads``.
             Depth here refers to (4 ^ depth) quads. A depth of 5
