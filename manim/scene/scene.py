@@ -1,8 +1,6 @@
 """Basic canvas for animations."""
 
-
 __all__ = ["Scene"]
-
 
 import copy
 import inspect
@@ -1006,11 +1004,33 @@ class Scene:
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
+            )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        return True
+
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
-        if self.skip_animation_preview or config["write_to_movie"]:
+        if not self.check_interactive_embed_is_valid():
             return
 
         def ipython(shell, namespace):

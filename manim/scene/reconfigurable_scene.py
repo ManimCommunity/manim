@@ -12,7 +12,7 @@ class ReconfigurableScene(Scene):
     """
 
     def __init__(self, allow_recursion=True, **kwargs):
-        Scene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.allow_recursion = allow_recursion
 
     def setup(self):

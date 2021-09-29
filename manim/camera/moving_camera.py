@@ -20,7 +20,7 @@ from ..utils.color import WHITE
 # TODO, think about how to incorporate perspective
 class CameraFrame(VGroup):
     def __init__(self, center=ORIGIN, **kwargs):
-        VGroup.__init__(self, center=center, **kwargs)
+        super().__init__(center=center, **kwargs)
         self.width = config["frame_width"]
         self.height = config["frame_height"]
 
@@ -57,7 +57,7 @@ class MovingCamera(Camera):
                 self.default_frame_stroke_width,
             )
         self.frame = frame
-        Camera.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     # TODO, make these work for a rotated frame
     @property
@@ -131,7 +131,7 @@ class MovingCamera(Camera):
     def capture_mobjects(self, mobjects, **kwargs):
         # self.reset_frame_center()
         # self.realign_frame_shape()
-        Camera.capture_mobjects(self, mobjects, **kwargs)
+        super().capture_mobjects(mobjects, **kwargs)
 
     # Since the frame can be moving around, the cairo
     # context used for updating should be regenerated
