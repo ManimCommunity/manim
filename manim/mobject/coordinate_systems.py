@@ -697,7 +697,7 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def get_implicit_graph(
+    def get_implicit_curve(
         self,
         func: Callable,
         min_depth: int = 5,
@@ -705,7 +705,7 @@ class CoordinateSystem:
         color: Color = WHITE,
         **kwargs,
     ) -> VMobject:
-        """Creates the graph of an implicit function.
+        """Creates the curves of an implicit function.
 
         Parameters
         ----------
@@ -728,7 +728,7 @@ class CoordinateSystem:
             class ImplicitExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    a = ax.get_implicit_graph(
+                    a = ax.get_implicit_curve(
                         lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
                     )
                     self.add(ax, a)
