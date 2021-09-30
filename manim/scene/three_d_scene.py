@@ -18,6 +18,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
+from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 
@@ -107,17 +108,28 @@ class ThreeDScene(Scene):
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        about: str = about.lower()
+        try:
+            if config.renderer != "opengl":
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
+                x.add_updater(lambda m, dt: x.increment_value(rate * dt))
+                self.add(x)
+            else:
+                cam: OpenGLCamera = self.camera
+                methods = {
+                    "theta": cam.increment_theta,
+                    "phi": cam.increment_phi,
+                    "gamma": cam.increment_gamma,
+                }
+                cam.add_updater(lambda m, dt: methods[about](rate * dt))
+                self.add(self.camera)
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.add_updater(lambda m, dt: m.increment_value(rate * dt))
-        self.add(x)
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """
