@@ -64,7 +64,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
-        Points must be a Nx3 numpy array, as must rgbas if it is not None
+        points must be a Nx3 numpy array
+        rgbas must be a Nx4 numpy array if it is not None
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -74,7 +75,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             color = Color(color) if color else self.color
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
