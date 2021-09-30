@@ -182,11 +182,11 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
 
 
         .. note::
-            A small min depth means that some small details might
+            A small ``min_depth`` :math:`d` means that some small details might
             be ignored if they don't cross an edge of one of the
-            (4 ^ min depth) uniform quads.
+            :math:`4^d` uniform quads.
 
-            The value of max quads strongly correspond to the
+            The value of ``max_quads`` strongly corresponds to the
             quality of the curve, but a higher number of quads
             may take longer to render.
 
