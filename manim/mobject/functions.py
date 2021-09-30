@@ -224,11 +224,11 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             np.array([self.x_range[1], self.y_range[1]]),
         )
         curves = plot_isoline(
-            lambda u: self.function(u[0], u[1]),
-            p_min,
-            p_max,
-            self.min_depth,
-            self.max_quads,
+            fn=lambda u: self.function(u[0], u[1]),
+            pmin=p_min,
+            pmax=p_max,
+            min_depth=self.min_depth,
+            max_quads=self.max_quads,
         )  # returns a list of lists of 2D points
         curves = [
             np.pad(curve, [(0, 0), (0, 1)]) for curve in curves if curve != []

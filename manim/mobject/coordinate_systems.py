@@ -737,12 +737,12 @@ class CoordinateSystem:
                     self.add(ax, a)
         """
         graph = ImplicitFunction(
-            func,
-            self.x_range[:2],
-            self.y_range[:2],
-            min_depth,
-            max_quads,
-            use_smoothing,
+            func=func,
+            x_range=self.x_range[:2],
+            y_range=self.y_range[:2],
+            min_depth=min_depth,
+            max_quads=max_quads,
+            use_smoothing=use_smoothing,
             color=color,
             **kwargs,
         )
