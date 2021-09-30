@@ -124,7 +124,7 @@ Fixed bugs
 * `#2039 <https://github.com/ManimCommunity/manim/pull/2039>`__: Added opengl compatibility for :meth:`~Cylinder.add_bases`.
 
 
-* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed issue of the logging message when cache is full 
+* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed issue of the logging message when cache is full
 
 
 * `#2026 <https://github.com/ManimCommunity/manim/pull/2026>`__: Fixed opengl shift animation for :class:~.Text
@@ -133,7 +133,7 @@ Fixed bugs
 * `#2028 <https://github.com/ManimCommunity/manim/pull/2028>`__: Fixed opengl overriding svg fill color
 
 
-* `#2043 <https://github.com/ManimCommunity/manim/pull/2043>`__: Fix bug where `~.NumberLine.add_labels()`  cannot accept non-mobject labels. 
+* `#2043 <https://github.com/ManimCommunity/manim/pull/2043>`__: Fix bug where `~.NumberLine.add_labels()`  cannot accept non-mobject labels.
 
 
 * `#2011 <https://github.com/ManimCommunity/manim/pull/2011>`__: Fixed `-a` flag for OpenGL.
@@ -196,7 +196,7 @@ Unclassified changes
 * `#2016 <https://github.com/ManimCommunity/manim/pull/2016>`__: Add Opengl support for Boolean Operation
 
 
-* `#2108 <https://github.com/ManimCommunity/manim/pull/2108>`__: Fix `NumberPlane` axis step 
+* `#2108 <https://github.com/ManimCommunity/manim/pull/2108>`__: Fix `NumberPlane` axis step
 
 
 * `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: LGTM Error Fix
@@ -204,4 +204,3 @@ Unclassified changes
 
 * `#2095 <https://github.com/ManimCommunity/manim/pull/2095>`__: Use math convention in polar coordinates
    - Switched the parameter names phi and theta in `cartesian_to_spherical` and `spherical_to_cartesian`
-
