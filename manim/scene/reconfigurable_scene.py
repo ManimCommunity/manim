@@ -1,11 +1,18 @@
 __all__ = ["ReconfigurableScene"]
 
+from manim.utils.deprecation import deprecated
+
 from ..animation.transform import Transform
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..scene.scene import Scene
 
 
+@deprecated(
+    since="0.11.0",
+    until="0.12.0",
+    message="Does not seem to work, and no plans to maintain it.",
+)
 class ReconfigurableScene(Scene):
     """
     Note, this seems to no longer work as intended.
