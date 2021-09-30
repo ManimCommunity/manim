@@ -135,17 +135,21 @@ class ThreeDScene(Scene):
         """
         This method stops all ambient camera rotation.
         """
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        about: str = about.lower()
+        try:
+            if config.renderer != "opengl":
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
+                x.clear_updaters()
+                self.remove(x)
+            else:
+                self.camera.clear_updaters()
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.clear_updaters()
-        self.remove(x)
 
     def begin_3dillusion_camera_rotation(
         self,
