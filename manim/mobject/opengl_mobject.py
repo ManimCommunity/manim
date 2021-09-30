@@ -2,7 +2,7 @@ import copy
 import itertools as it
 import random
 import sys
-from functools import wraps
+from functools import partialmethod, wraps
 from math import ceil
 from typing import Iterable, Optional, Tuple, Union
 
@@ -120,6 +120,18 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs):
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     def __str__(self):
         return self.__class__.__name__
