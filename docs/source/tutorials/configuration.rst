@@ -353,7 +353,8 @@ A list of all config options
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
    'verbosity', 'video_dir', 'webgl_renderer_path', 'window_position',
-    'window_monitor', 'window_size', 'write_all', 'write_to_movie', 'enable_wireframe']
+   'window_monitor', 'window_size', 'write_all', 'write_to_movie', 'enable_wireframe',
+   'force_window']
 
 
 A list of all CLI flags
