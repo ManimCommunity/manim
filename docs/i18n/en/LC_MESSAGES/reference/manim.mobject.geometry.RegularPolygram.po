@@ -1,0 +1,100 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:2
+msgid "RegularPolygram"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.RegularPolygram``"
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:1 of
+msgid "Bases: :class:`manim.mobject.geometry.Polygram`"
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:1 of
+msgid "A :class:`Polygram` with regularly spaced vertices."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:3 of
+msgid "The number of vertices."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:4 of
+msgid ""
+"The density of the :class:`RegularPolygram`.  Can be thought of as how "
+"many vertices to hop to draw a line between them. Every ``density``-th "
+"vertex is connected."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:4 of
+msgid "The density of the :class:`RegularPolygram`."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:6 of
+msgid ""
+"Can be thought of as how many vertices to hop to draw a line between "
+"them. Every ``density``-th vertex is connected."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:9 of
+msgid "The radius of the circle that the vertices are placed on."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:10 of
+msgid ""
+"The angle the vertices start at; the rotation of the "
+":class:`RegularPolygram`."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:12 of
+msgid "Forwarded to the parent constructor."
+msgstr ""
+
+#: manim.mobject.geometry.RegularPolygram:15 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.geometry.RegularPolygram.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

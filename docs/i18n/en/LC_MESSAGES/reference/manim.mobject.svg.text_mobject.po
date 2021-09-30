@@ -1,0 +1,139 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:2
+msgid "text\\_mobject"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:1 of
+msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:4 of
+msgid ""
+"Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the "
+"module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use "
+":class:`~.Text` to to add normal text."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:9 of
+msgid "See the corresponding tutorial :ref:`rendering-with-latex`"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:12 of
+msgid ""
+"The simplest way to add text to your animations is to use the "
+":class:`~.Text` class. It uses the Pango library to render text. With "
+"Pango, you are also able to render non-English alphabets like `你好` or  "
+"`こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:16
+#: manim.mobject.svg.text_mobject.register_font:13 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
+msgid ""
+"Display (non-LaTeX) text rendered using `Pango "
+"<https://pango.gnome.org/>`_."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
+msgid "Display a paragraph of text."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:33
+msgid "Functions"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:1 of
+msgid "Temporarily add a font file to Pango's search path."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:3 of
+msgid ""
+"This searches for the font_file at various places. The order it searches "
+"it described below."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:5 of
+msgid "Absolute path."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:6 of
+msgid "In ``assets/fonts`` folder."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:7 of
+msgid "In ``font/`` folder."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:8 of
+msgid "In the same directory."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:10 of
+msgid "The font file to add."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:14 of
+msgid "Use ``with register_font(...)`` to add a font file to search path."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font of
+msgid "Raises"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:22 of
+msgid "If the font doesn't exists."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:23 of
+msgid "If this method is used on macOS."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.register_font:24 of
+msgid ""
+"This method is available for macOS for ``ManimPango>=v0.2.3``. Using this"
+"     method with previous releases will raise an :class:`AttributeError` "
+"on macOS."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:1 of
+msgid "Function to remove unwanted invisible characters from some mobjects."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:3 of
+msgid "Any SVGMobject from which we want to remove unwanted invisible characters."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:6 of
+msgid "The SVGMobject without unwanted invisible characters."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Return type"
+msgstr ""
+
+

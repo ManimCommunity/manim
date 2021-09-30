@@ -4,7 +4,6 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 
 from typing import Callable, Optional
 
-import numpy as np
 from colour import Color
 
 from .._config import config

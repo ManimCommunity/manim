@@ -465,7 +465,7 @@ class TransformAnimations(Transform):
     def interpolate(self, alpha: float) -> None:
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
-        Transform.interpolate(self, alpha)
+        super().interpolate(alpha)
 
 
 class FadeTransform(Transform):

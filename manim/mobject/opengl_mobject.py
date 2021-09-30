@@ -2,7 +2,7 @@ import copy
 import itertools as it
 import random
 import sys
-from functools import wraps
+from functools import partialmethod, wraps
 from math import ceil
 from typing import Iterable, Optional, Tuple, Union
 
@@ -120,6 +120,18 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs):
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     def __str__(self):
         return self.__class__.__name__
@@ -419,8 +431,10 @@ class OpenGLMobject:
             mobjects[0].parent = self
 
         if self in mobjects:
-            raise Exception("Mobject cannot contain self")
+            raise ValueError("OpenGLMobject cannot contain self")
         for mobject in mobjects:
+            if not isinstance(mobject, OpenGLMobject):
+                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
@@ -1980,7 +1994,7 @@ class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
@@ -1990,7 +2004,7 @@ class OpenGLPoint(OpenGLMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_location(location)
 
     def get_width(self):
