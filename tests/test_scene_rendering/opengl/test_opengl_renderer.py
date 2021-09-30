@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from ..assert_utils import assert_file_exists
-from .simple_scenes import *
+from tests.assert_utils import assert_file_exists
+from tests.test_scene_rendering.simple_scenes import *
 
 
 def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_caching):

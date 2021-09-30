@@ -421,7 +421,7 @@ class Scene:
                     mobject_list_name="moving_mobjects",
                 )
                 self.moving_mobjects += mobjects
-            return self
+        return self
 
     def add_mobjects_from_animations(self, animations):
         curr_mobjects = self.get_mobject_family_members()
