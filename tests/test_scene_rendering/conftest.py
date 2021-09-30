@@ -48,6 +48,12 @@ def infallible_scenes_path():
 
 
 @pytest.fixture
+def use_opengl_renderer(enable_preview):
+    with tempconfig({"renderer": "opengl", "preview": enable_preview}):
+        yield
+
+
+@pytest.fixture
 def force_window_config_write_to_movie():
     with tempconfig({"force_window": True, "write_to_movie": True}):
         yield
