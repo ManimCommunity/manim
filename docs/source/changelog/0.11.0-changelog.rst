@@ -7,7 +7,7 @@ v0.11.0
 Contributors
 ============
 
-A total of 25 people contributed to this
+A total of 27 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -20,6 +20,7 @@ time.
 * Hugues Devimeux
 * Jerónimo Squartini
 * Laith Bahodi
+* Meredith Espinosa +
 * Mysaa
 * Naveen M K
 * Nicolai Weitkemper +
@@ -28,6 +29,7 @@ time.
 * icedcoffeeee
 * imadjamil +
 * leleogere +
+* Максим Заякин +
 
 
 The patches included in this release have been reviewed by
@@ -56,18 +58,24 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 40 pull requests were merged for this release.
+A total of 45 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* `#2095 <https://github.com/ManimCommunity/manim/pull/2095>`__: Changed angles for polar coordinates to use math convention
+   This PR switches the parameter names ``phi`` and ``theta`` in :func:`cartesian_to_spherical` and :func:`spherical_to_cartesian` to align with the `usual definition in mathematics <https://user-images.githubusercontent.com/83535735/131709630-87290522-7747-4b21-9411-dd3d35ebaf0f.png>`__.
 
 Deprecated classes and functions
 --------------------------------
 
-* `#2102 <https://github.com/ManimCommunity/manim/pull/2102>`__: Deprecated `SampleSpaceScene` and `ReconfigurableScene`
+* `#2102 <https://github.com/ManimCommunity/manim/pull/2102>`__: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`
 
 
-* `#2061 <https://github.com/ManimCommunity/manim/pull/2061>`__: Remove deprecated u-min/max and v-min/max in :class:'~.Surface'
+* `#2061 <https://github.com/ManimCommunity/manim/pull/2061>`__: Remove deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`
 
 
-* `#2024 <https://github.com/ManimCommunity/manim/pull/2024>`__: Deprecated redundant methods of Mobject
+* `#2024 <https://github.com/ManimCommunity/manim/pull/2024>`__: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`
 
 
 * `#1991 <https://github.com/ManimCommunity/manim/pull/1991>`__: Deprecated :meth:`.VMobject.get_points`
@@ -76,14 +84,18 @@ Deprecated classes and functions
 New features
 ------------
 
+* `#2118 <https://github.com/ManimCommunity/manim/pull/2118>`__: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines` 
+
+
 * `#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
 
 
 * `#1998 <https://github.com/ManimCommunity/manim/pull/1998>`__: Added support for Boolean Operations on VMobjects
-   - Boolean Operations :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection`, :class:`~.Exclusion`.
+   This PR introduces boolean operations for :class:`~.VMobject`, see details and examples at
+   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection`, :class:`~.Exclusion`.
 
-* `#1469 <https://github.com/ManimCommunity/manim/pull/1469>`__: Added proportion_from_point method to VMobject, which uses some new bezier curve utilities
-   Added new `VMobject.proportion_from_point` method and new `proportions_along_bezier_curve_for_point` and `point_lies_on_bezier_curve` bezier utility functions.
+* `#1469 <https://github.com/ManimCommunity/manim/pull/1469>`__: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve
+
 
 Enhancements
 ------------
@@ -91,16 +103,19 @@ Enhancements
 * `#2113 <https://github.com/ManimCommunity/manim/pull/2113>`__: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`
 
 
+* `#2016 <https://github.com/ManimCommunity/manim/pull/2016>`__: Added OpenGL support for :mod:`~.mobject.boolean_ops`
+
+
 * `#2084 <https://github.com/ManimCommunity/manim/pull/2084>`__: Added :meth:`~Table.get_highlighted_cell` and fixed :meth:`~Table.add_highlighted_cell`
-   Following the ideas of @kolibril13 and @behackl in PR #2079, this PR attempts to fix the issue in  #2078 with an additional method :meth:`~Table.get_highlighted_cell`.
-
-* `#2013 <https://github.com/ManimCommunity/manim/pull/2013>`__: Removed unnecesary check in :class:`~.TransformMatchingAbstractBase` - Fixes #1609
 
 
-* `#1971 <https://github.com/ManimCommunity/manim/pull/1971>`__: Add OpenGL support for :class:`~.StreamLines`
-   Add OpenGL support for :class:~.StreamLines
+* `#2013 <https://github.com/ManimCommunity/manim/pull/2013>`__: Removed unnecessary check in :class:`~.TransformMatchingAbstractBase`
 
-* `#2041 <https://github.com/ManimCommunity/manim/pull/2041>`__: Added config to enable opengl wireframe for debugging
+
+* `#1971 <https://github.com/ManimCommunity/manim/pull/1971>`__: Added OpenGL support for :class:`~.StreamLines`
+
+
+* `#2041 <https://github.com/ManimCommunity/manim/pull/2041>`__: Added config option to enable OpenGL wireframe for debugging
 
 
 Fixed bugs
@@ -109,67 +124,75 @@ Fixed bugs
 * `#2070 <https://github.com/ManimCommunity/manim/pull/2070>`__: Fixed :meth:`~OpenGLRenderer.get_frame` when window is created
 
 
-* `#2071 <https://github.com/ManimCommunity/manim/pull/2071>`__: Fixed :class:`~AnimationGroup` opengl compatibility
+* `#2071 <https://github.com/ManimCommunity/manim/pull/2071>`__: Fixed :class:`~AnimationGroup` OpenGL compatibility
+
+
+* `#2108 <https://github.com/ManimCommunity/manim/pull/2108>`__: Fixed swapped axis step values in :class:`~.NumberPlane`
 
 
 * `#2072 <https://github.com/ManimCommunity/manim/pull/2072>`__: Added OpenGL compatibility for :class:`~.Cube`.
 
 
-* `#2060 <https://github.com/ManimCommunity/manim/pull/2060>`__: Fixed opengl compatibility issue for meth:`~Line.set_opacity`
+* `#2060 <https://github.com/ManimCommunity/manim/pull/2060>`__: Fixed OpenGL compatibility issue for meth:`~Line.set_opacity`
 
 
-* `#2037 <https://github.com/ManimCommunity/manim/pull/2037>`__: Fixed OpenGL :meth:`~.OpenGLMobject.apply_complex_function`
+* `#2037 <https://github.com/ManimCommunity/manim/pull/2037>`__: Fixed return value of :meth:`~.OpenGLMobject.apply_complex_function`
 
 
-* `#2039 <https://github.com/ManimCommunity/manim/pull/2039>`__: Added opengl compatibility for :meth:`~Cylinder.add_bases`.
+* `#2039 <https://github.com/ManimCommunity/manim/pull/2039>`__: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`.
 
 
-* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed issue of the logging message when cache is full
+* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed error raised by logging when cache is full 
 
 
-* `#2026 <https://github.com/ManimCommunity/manim/pull/2026>`__: Fixed opengl shift animation for :class:~.Text
+* `#2026 <https://github.com/ManimCommunity/manim/pull/2026>`__: Fixed OpenGL shift animation for :class:`~.Text`
 
 
-* `#2028 <https://github.com/ManimCommunity/manim/pull/2028>`__: Fixed opengl overriding svg fill color
+* `#2028 <https://github.com/ManimCommunity/manim/pull/2028>`__: Fixed OpenGL overriding SVG fill color
 
 
-* `#2043 <https://github.com/ManimCommunity/manim/pull/2043>`__: Fix bug where `~.NumberLine.add_labels()`  cannot accept non-mobject labels.
+* `#2043 <https://github.com/ManimCommunity/manim/pull/2043>`__: Fixed bug where :meth:`.NumberLine.add_labels`  cannot accept non-mobject labels
 
 
-* `#2011 <https://github.com/ManimCommunity/manim/pull/2011>`__: Fixed `-a` flag for OpenGL.
+* `#2011 <https://github.com/ManimCommunity/manim/pull/2011>`__: Fixed ``-a`` flag for OpenGL rendering
 
 
-* `#1994 <https://github.com/ManimCommunity/manim/pull/1994>`__: Fix :meth:`~.input_to_graph_point` when passing a `line_graph`
+* `#1994 <https://github.com/ManimCommunity/manim/pull/1994>`__: Fix :meth:`~.input_to_graph_point` when passing a line graph (from :meth:`.Axes.get_line_graph`)
 
 
-* `#2017 <https://github.com/ManimCommunity/manim/pull/2017>`__: Avoid using deprecated get_points and fix :class:`~.OpenGLPMPoint` color
+* `#2017 <https://github.com/ManimCommunity/manim/pull/2017>`__: Avoided using deprecated ``get_points`` method and fixed :class:`~.OpenGLPMPoint` color
 
 
 Documentation-related changes
 -----------------------------
 
+* `#2115 <https://github.com/ManimCommunity/manim/pull/2115>`__: Improved docstring of :meth:`.PMobject.add_points`
+
+
+* `#2116 <https://github.com/ManimCommunity/manim/pull/2116>`__: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate
+
 * `#2101 <https://github.com/ManimCommunity/manim/pull/2101>`__: Added note that translation process is not ready
 
 
-* `#2055 <https://github.com/ManimCommunity/manim/pull/2055>`__: Fixed :meth:`~Graph.add_edges` and :meth:`~Graph.add_vertices` parameter types
-   Updates docs for Graph.add_edges and Graph.add_vertices so that the parameters `edges` and `vertices` are the right types.
-
-* `#862 <https://github.com/ManimCommunity/manim/pull/862>`__: Prepare documentation for translation (still work in progress)
+* `#2055 <https://github.com/ManimCommunity/manim/pull/2055>`__: Fixed parameter types of :meth:`.Graph.add_edges` and :meth:`.Graph.add_vertices`
 
 
-* `#2035 <https://github.com/ManimCommunity/manim/pull/2035>`__: Fix broken link in readme
+* `#862 <https://github.com/ManimCommunity/manim/pull/862>`__: Prepared documentation for translation (still work in progress)
 
 
-* `#2020 <https://github.com/ManimCommunity/manim/pull/2020>`__:  Corrected user-wide Config Paths for *NIX
+* `#2035 <https://github.com/ManimCommunity/manim/pull/2035>`__: Fixed broken link in README
+
+
+* `#2020 <https://github.com/ManimCommunity/manim/pull/2020>`__:  Corrected paths to user-wide configuration files for MacOS and Linux
 
 
 Changes concerning the testing system
 -------------------------------------
 
-* `#2008 <https://github.com/ManimCommunity/manim/pull/2008>`__: Reuse CLI flag tests for opengl
+* `#2008 <https://github.com/ManimCommunity/manim/pull/2008>`__: Reuse CLI flag tests for OpenGL
 
 
-* `#2080 <https://github.com/ManimCommunity/manim/pull/2080>`__: Reused tests for :class:`~Mobject`. with :class:`~OpenGLMobject`
+* `#2080 <https://github.com/ManimCommunity/manim/pull/2080>`__: Reused tests for :class:`~.Mobject`. for :class:`~.OpenGLMobject`
 
 
 Changes to our development infrastructure
@@ -184,23 +207,24 @@ Code quality improvements and similar refactors
 * `#2064 <https://github.com/ManimCommunity/manim/pull/2064>`__: Removed duplicate insert shader directory
 
 
-* `#2027 <https://github.com/ManimCommunity/manim/pull/2027>`__: Added missing space in info message for :meth:`~.SceneFileWriter.clean_cache`
-   This PR should fix the missing whitespace in an info message: `… ago.You can change this …`.
+* `#2027 <https://github.com/ManimCommunity/manim/pull/2027>`__: Improved wording in info message issued by :meth:`.SceneFileWriter.clean_cache`
 
-* `#1968 <https://github.com/ManimCommunity/manim/pull/1968>`__: Flake8 Changes + Fixing Warnings
+
+* `#1968 <https://github.com/ManimCommunity/manim/pull/1968>`__: Sharpened Flake8 configuration and fixed resulting warnings
+
+
+New releases
+------------
+
+* `#2114 <https://github.com/ManimCommunity/manim/pull/2114>`__: Prepared new release, ``v0.11.0``
 
 
 Unclassified changes
 --------------------
 
-* `#2016 <https://github.com/ManimCommunity/manim/pull/2016>`__: Add Opengl support for Boolean Operation
+* `#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Revert colour of background in docs to BLACK in `Mobject` page. 
 
 
-* `#2108 <https://github.com/ManimCommunity/manim/pull/2108>`__: Fix `NumberPlane` axis step
+* `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: Fixed several warnings issued by LGTM
 
 
-* `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: LGTM Error Fix
-   Fixes many LGTM issues.
-
-* `#2095 <https://github.com/ManimCommunity/manim/pull/2095>`__: Use math convention in polar coordinates
-   - Switched the parameter names phi and theta in `cartesian_to_spherical` and `spherical_to_cartesian`
