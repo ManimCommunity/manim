@@ -741,7 +741,7 @@ class CoordinateSystem:
         (
             graph.stretch(self.get_x_unit_size(), 0, about_point=ORIGIN)
             .stretch(self.get_y_unit_size(), 1, about_point=ORIGIN)
-            .shift(self.get_center())
+            .shift(self.get_origin())
         )
         return graph
 
