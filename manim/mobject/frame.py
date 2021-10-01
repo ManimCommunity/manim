@@ -61,7 +61,7 @@ class FullScreenFadeRectangle(FullScreenRectangle):
     since="v0.11.0",
     until="v0.12.0",
     message="This method is deprecated due to decluttering purpose.",
-    )
+)
 class PictureInPictureFrame(Rectangle):
     def __init__(self, height=3, aspect_ratio=16.0 / 9.0, **kwargs):
         super().__init__(width=aspect_ratio * height, height=height, **kwargs)
