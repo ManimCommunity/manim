@@ -2625,8 +2625,6 @@ class Mobject:
                     self.wait(0.5)
         """
         # changes the new mobject's center, height, or width to the original's before transformation
-        if match_center:
-            mobject.move_to(self.get_center())
         # if both width and height are matched then the object is stretched to fit both
         if match_height and match_width:
             mobject.stretch_to_fit_height(self.height)
@@ -2635,6 +2633,8 @@ class Mobject:
             mobject.match_height(self)
         elif match_width:
             mobject.match_width(self)
+        if match_center:
+            mobject.move_to(self.get_center())
 
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
