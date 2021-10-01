@@ -639,18 +639,15 @@ class StreamLines(VectorField):
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
-    x_min
-        The minimum x value at which agends are spawned
-    x_max
-        The maximum x value at which agends are spawned
-    y_min
-        The minimum y value at which agends are spawned
-    y_max
-        The maximum y value at which agends are spawned
-    delta_x
-        The distance in x direction between two agents.
-    delta_y
-        The distance in y direction between two agents.
+    x_range
+        A sequence of x_min, x_max, delta_x
+    y_range
+        A sequence of y_min, y_max, delta_y
+    z_range
+        A sequence of z_min, z_max, delta_z
+    three_dimensions
+        Enables three_dimensions. Default set to False, automatically turns True if
+        z_range is not None.
     noise_factor
         The amount by which the starting position of each agent is altered along each axis. Defaults to :code:`delta_y / 2` if not defined.
     n_repeats
@@ -676,7 +673,7 @@ class StreamLines(VectorField):
 
         class BasicUsage(Scene):
             def construct(self):
-                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT) - pos)/3
+                func = lambda pos: ((pos[0] * UR + pos[1] * LEFT) - pos) / 3
                 self.add(StreamLines(func))
 
     .. manim:: SpawningAndFlowingArea
@@ -684,20 +681,14 @@ class StreamLines(VectorField):
 
         class SpawningAndFlowingArea(Scene):
             def construct(self):
-                func = lambda pos: np.sin(pos[0])*UR+np.cos(pos[1])*LEFT+pos/5
+                func = lambda pos: np.sin(pos[0]) * UR + np.cos(pos[1]) * LEFT + pos / 5
                 stream_lines = StreamLines(
-                    func,
-                    x_min=-3, x_max=3, delta_x=0.2,
-                    y_min=-2, y_max=2, delta_y=0.2,
-                    padding=1
+                    func, x_range=[-3, 3, 0.2], y_range=[-2, 2, 0.2], padding=1
                 )
 
                 spawning_area = Rectangle(width=6, height=4)
                 flowing_area = Rectangle(width=8, height=6)
-                labels = [
-                    Tex("Spawning Area"),
-                    Tex("Flowing Area").shift(DOWN*2.5)
-                ]
+                labels = [Tex("Spawning Area"), Tex("Flowing Area").shift(DOWN * 2.5)]
                 for lbl in labels:
                     lbl.add_background_rectangle(opacity=0.6, buff=0.05)
 
@@ -892,15 +883,17 @@ class StreamLines(VectorField):
 
             class StreamLineCreation(Scene):
                 def construct(self):
-                    func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
+                    func = lambda pos: (pos[0] * UR + pos[1] * LEFT) - pos
                     stream_lines = StreamLines(
                         func,
                         color=YELLOW,
-                        delta_x=1, delta_y=1, stroke_width=3,
-                        virtual_time=1,          # use shorter lines
-                        max_anchors_per_line=5,  #better performance with fewer anchors
+                        x_range=[-7, 7, 1],
+                        y_range=[-4, 4, 1],
+                        stroke_width=3,
+                        virtual_time=1,  # use shorter lines
+                        max_anchors_per_line=5,  # better performance with fewer anchors
                     )
-                    self.play(stream_lines.create()) # uses virtual_time as run_time
+                    self.play(stream_lines.create())  # uses virtual_time as run_time
                     self.wait()
 
         """
@@ -948,11 +941,8 @@ class StreamLines(VectorField):
 
             class ContinuousMotion(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
-                    stream_lines = StreamLines(
-                        func, stroke_width=3,
-                        max_anchors_per_line=30
-                    )
+                    func = lambda pos: np.sin(pos[0] / 2) * UR + np.cos(pos[1] / 2) * LEFT
+                    stream_lines = StreamLines(func, stroke_width=3, max_anchors_per_line=30)
                     self.add(stream_lines)
                     stream_lines.start_animation(warm_up=False, flow_speed=1.5)
                     self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
@@ -1008,18 +998,12 @@ class StreamLines(VectorField):
 
             class EndAnimation(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
+                    func = lambda pos: np.sin(pos[0] / 2) * UR + np.cos(pos[1] / 2) * LEFT
                     stream_lines = StreamLines(
-                        func, stroke_width=3,
-                        max_anchors_per_line=5,
-                        virtual_time=1, color=BLUE
+                        func, stroke_width=3, max_anchors_per_line=5, virtual_time=1, color=BLUE
                     )
                     self.add(stream_lines)
-                    stream_lines.start_animation(
-                        warm_up=False,
-                        flow_speed=1.5,
-                        time_width=0.5
-                    )
+                    stream_lines.start_animation(warm_up=False, flow_speed=1.5, time_width=0.5)
                     self.wait(1)
                     self.play(stream_lines.end_animation())
 
