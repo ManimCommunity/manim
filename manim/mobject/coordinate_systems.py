@@ -1162,11 +1162,11 @@ class CoordinateSystem:
         if bounded_graph is not None:
             if bounded_graph.t_min > b:
                 raise ValueError(
-                    "Ranges not matching: {} < {}".format(bounded_graph.t_min, b)
+                    f"Ranges not matching: {bounded_graph.t_min} < {b}",
                 )
             if bounded_graph.t_max < a:
                 raise ValueError(
-                    "Ranges not matching: {} > {}".format(bounded_graph.t_max, a)
+                    f"Ranges not matching: {bounded_graph.t_max} > {a}",
                 )
             a = max(a, bounded_graph.t_min)
             b = min(b, bounded_graph.t_max)

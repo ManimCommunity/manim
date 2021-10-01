@@ -193,7 +193,9 @@ def test_get_area_with_riemann_rectangles(scene):
 def test_get_area(scene):
     ax = Axes().add_coordinates()
     curve1 = ax.get_graph(
-        lambda x: 2 * np.sin(x), x_range=[-5, ax.x_range[1]], color=DARK_BLUE
+        lambda x: 2 * np.sin(x),
+        x_range=[-5, ax.x_range[1]],
+        color=DARK_BLUE,
     )
     curve2 = ax.get_graph(lambda x: (x + 4) ** 2 - 2, x_range=[-5, -2], color=RED)
     area1 = ax.get_area(
