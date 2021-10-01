@@ -65,6 +65,7 @@ Mobjects
    manim.mobject.numbers
    manim.mobject.probability
    manim.mobject.shape_matchers
+   manim.mobject.table
    manim.mobject.three_d_utils
    manim.mobject.three_dimensions
    manim.mobject.value_tracker
@@ -154,6 +155,7 @@ Animations
    manim.animation.movement
    manim.animation.numbers
    manim.animation.rotation
+   manim.animation.specialized
    manim.animation.transform
    manim.animation.transform_matching_parts
    manim.animation.update
