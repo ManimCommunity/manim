@@ -210,7 +210,7 @@ class Mobject:
 
             class ChangedDefaultTextcolor(Scene):
                 def construct(self):
-                    self.camera.background_color
+                    self.camera.background_color = WHITE
                     Text.set_default(color=BLACK)
                     self.add(Text("Changing default values is easy!"))
 
