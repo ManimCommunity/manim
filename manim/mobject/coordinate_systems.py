@@ -716,12 +716,8 @@ class CoordinateSystem:
             The minimum depth of the function to calculate.
         max_quads
             The maximum number of quads to use.
-        use_smoothing
-            Whether or not to smoothen the curves.
-        color
-            The color of the graph.
         kwargs
-            Additional parameters to pass into :class:`VMobject`
+            Additional parameters to pass into :class:`ImplicitFunction`
 
         Examples
         --------
@@ -742,8 +738,6 @@ class CoordinateSystem:
             y_range=self.y_range[:2],
             min_depth=min_depth,
             max_quads=max_quads,
-            use_smoothing=use_smoothing,
-            color=color,
             **kwargs,
         )
         (

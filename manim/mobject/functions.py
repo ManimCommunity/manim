@@ -179,6 +179,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             The maximum number of quads to use.
         use_smoothing
             Whether or not to smoothen the curves.
+        kwargs
+            Additional parameters to pass into :class:`VMobject`
 
 
         .. note::
