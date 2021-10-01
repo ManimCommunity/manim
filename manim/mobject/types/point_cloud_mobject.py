@@ -63,9 +63,10 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return super().get_array_attrs() + ["rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
-        """
-        points must be a Nx3 numpy array
-        rgbas must be a Nx4 numpy array if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
