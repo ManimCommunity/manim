@@ -22,6 +22,7 @@ import typing
 from functools import reduce
 
 import numpy as np
+from _typeshed import SupportsLessThanT
 from scipy import linalg
 
 from ..utils.simple_functions import choose
@@ -102,14 +103,16 @@ def partial_quadratic_bezier_points(points, a, b):
 
 # Linear interpolation variants
 
+Interpolable = typing.TypeVar("Interpolable", float, np.ndarray)
 
-def interpolate(start: int, end: int, alpha: float) -> float:
+
+def interpolate(start: Interpolable, end: Interpolable, alpha: float) -> Interpolable:
     return (1 - alpha) * start + alpha * end
 
 
 def integer_interpolate(
-    start: float,
-    end: float,
+    start: int,
+    end: int,
     alpha: float,
 ) -> typing.Tuple[int, float]:
     """
