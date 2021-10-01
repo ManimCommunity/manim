@@ -101,11 +101,12 @@ Scenes
    ~scene.vector_space_scene
    ~scene.zoomed_scene
 
+
+
 **Scene** Inheritance Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
-   manim.scene.graph_scene
    manim.scene.moving_camera_scene
    manim.scene.reconfigurable_scene
    manim.scene.sample_space_scene
@@ -116,6 +117,8 @@ Scenes
    manim.scene.zoomed_scene
    :parts: 1
    :top-classes: manim.scene.scene.Scene, manim.scene.scene.RerunSceneHandler
+
+
 
 
 **********
