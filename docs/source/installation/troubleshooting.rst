@@ -231,7 +231,7 @@ We've dropped the use of CONFIG in the Community Version version 0.2.0, released
       CONFIG = {
           "stroke_color": RED
           "fill_opacity": 0.7
-          "radius": 3 
+          "radius": 3
           "my_awesome_property": 42
       }
       # add methods here
@@ -252,8 +252,8 @@ should now be defined like
           self.radius = 3
           self.my_awesome_property = 42
           super().__init__(
-              stroke_color = stroke_color, 
-              fill_opacity = fill_opacity, 
+              stroke_color = stroke_color,
+              fill_opacity = fill_opacity,
               **kwargs
           ) # passing arguments into the parent class
           # add methods here
@@ -287,4 +287,3 @@ If you are using anaconda, run the following command:
 .. code-block:: bash
 
   conda install -c conda-forge pycairo
-
