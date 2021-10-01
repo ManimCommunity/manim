@@ -252,10 +252,8 @@ should now be defined like
           self.radius = 3
           self.my_awesome_property = 42
           super().__init__(
-              stroke_color = stroke_color,
-              fill_opacity = fill_opacity,
-              **kwargs
-          ) # passing arguments into the parent class
+              stroke_color=stroke_color, fill_opacity=fill_opacity, **kwargs
+          )  # passing arguments into the parent class
           # add methods here
 
 For scenes, this is even easier:
