@@ -5,8 +5,8 @@ __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 from typing import Callable, Optional, Sequence
 
+import isosurfaces
 import numpy as np
-from isosurfaces import plot_isoline
 
 from .. import config
 from ..constants import *
@@ -223,7 +223,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             np.array([self.x_range[0], self.y_range[0]]),
             np.array([self.x_range[1], self.y_range[1]]),
         )
-        curves = plot_isoline(
+        curves = isosurfaces.plot_isoline(
             fn=lambda u: self.function(u[0], u[1]),
             pmin=p_min,
             pmax=p_max,
