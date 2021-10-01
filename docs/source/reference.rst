@@ -11,9 +11,9 @@ the :doc:`changelog`.
 .. toctree::
    :maxdepth: 3
 
-   reference_index/animations
-   reference_index/cameras
-   reference_index/configuration
-   reference_index/mobjects
-   reference_index/scenes
-   reference_index/utilities_misc
+   ref_animations
+   ref_cameras
+   ref_configuration
+   ref_mobjects
+   ref_scenes
+   ref_utilities_misc
