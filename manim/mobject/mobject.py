@@ -2600,7 +2600,12 @@ class Mobject:
     def interpolate_color(self, mobject1, mobject2, alpha):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject: "Mobject", copy_submobjects: bool = True):
+    def become(
+        self,
+        mobject: "Mobject",
+        copy_submobjects: bool = True,
+        match_center: bool = False,
+    ):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
 
@@ -2617,6 +2622,9 @@ class Mobject:
                     circ.become(square)
                     self.wait(0.5)
         """
+        if match_center:
+            mobject.move_to(self.get_center())
+
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
