@@ -83,7 +83,8 @@ class Transform(Animation):
     def path_func(
         self,
     ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        [Iterable[np.ndarray], Iterable[np.ndarray], float],
+        Iterable[np.ndarray],
     ]:
         return self._path_func
 
@@ -91,7 +92,8 @@ class Transform(Animation):
     def path_func(
         self,
         path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+            [Iterable[np.ndarray], Iterable[np.ndarray], float],
+            Iterable[np.ndarray],
         ],
     ) -> None:
         if path_func is not None:
@@ -136,6 +138,8 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in mobs))
         return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
@@ -245,7 +249,7 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'"
+                "MoveToTarget called on mobject" "without attribute 'target'",
             )
 
 
@@ -276,7 +280,7 @@ class ApplyMethod(Transform):
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
-                "the method you want to animate"
+                "the method you want to animate",
             )
         assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
@@ -364,7 +368,7 @@ class ApplyFunction(Transform):
         target = self.function(self.mobject.copy())
         if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
-                "Functions passed to ApplyFunction must return object of type Mobject"
+                "Functions passed to ApplyFunction must return object of type Mobject",
             )
         return target
 
@@ -461,7 +465,7 @@ class TransformAnimations(Transform):
     def interpolate(self, alpha: float) -> None:
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
-        Transform.interpolate(self, alpha)
+        super().interpolate(alpha)
 
 
 class FadeTransform(Transform):

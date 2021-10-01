@@ -64,14 +64,14 @@ def _determine_graph_layout(
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
             raise ValueError(
-                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices"
+                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices",
             )
         partition_count = len(partitions)
         for i in range(partition_count):
             for v in partitions[i]:
                 if nx_graph.nodes[v] is None:
                     raise ValueError(
-                        "The partition must contain arrays of vertices in the graph"
+                        "The partition must contain arrays of vertices in the graph",
                     )
                 nx_graph.nodes[v]["subset"] = i
         # Add missing vertices to their own side
@@ -93,7 +93,7 @@ def _determine_graph_layout(
     else:
         raise ValueError(
             f"The layout '{layout}' is neither a recognized automatic layout, "
-            "nor a vertex placement dictionary."
+            "nor a vertex placement dictionary.",
         )
 
 
@@ -132,7 +132,7 @@ def _tree_layout(
         else:
             for i in range(new_row_length):
                 result[new_row[i]] = np.array(
-                    [-1 + 2 * i / (new_row_length - 1), current_height, 0]
+                    [-1 + 2 * i / (new_row_length - 1), current_height, 0],
                 )
 
         _recursive_position_for_row(
@@ -144,7 +144,11 @@ def _tree_layout(
         )
 
     _recursive_position_for_row(
-        G, result, two_rows_before=[], last_row=[root_vertex], current_height=1
+        G,
+        result,
+        two_rows_before=[],
+        last_row=[root_vertex],
+        current_height=1,
     )
 
     height = max(map(lambda v: result[v][1], result))
@@ -507,7 +511,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         if vertex in self.vertices:
             raise ValueError(
-                f"Vertex identifier '{vertex}' is already used for a vertex in this graph."
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
             )
 
         self._graph.add_node(vertex)
@@ -541,7 +545,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_vertices(
         self: "Graph",
-        *vertices: List[Hashable],
+        *vertices: Hashable,
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
@@ -555,7 +559,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of hashable vertex identifiers.
+            Hashable vertex identifiers.
         positions
             A dictionary specifying the coordinates where the new vertices should be added.
             If ``None``, all vertices are created at the center of the graph.
@@ -601,7 +605,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         assert isinstance(vertex_config, dict)
         base_vertex_config = copy(self.default_vertex_config)
         base_vertex_config.update(
-            {key: val for key, val in vertex_config.items() if key not in vertices}
+            {key: val for key, val in vertex_config.items() if key not in vertices},
         )
         vertex_config = {
             v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
@@ -649,7 +653,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         """
         if vertex not in self.vertices:
             raise ValueError(
-                f"The graph does not contain a vertex with identifier '{vertex}'"
+                f"The graph does not contain a vertex with identifier '{vertex}'",
             )
 
         self._graph.remove_node(vertex)
@@ -674,7 +678,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of vertices to be removed from the graph.
+            Vertices to be removed from the graph.
 
         Examples
         --------
@@ -755,7 +759,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: List[Tuple[Hashable, Hashable]],
+        *edges: Tuple[Hashable, Hashable],
         edge_type: Type["Mobject"] = Line,
         edge_config: Optional[dict] = None,
     ):
@@ -765,7 +769,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         edges
-            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
             new vertices yourself beforehand to customize them.
         edge_type
@@ -796,7 +800,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         added_mobjects = sum(
             (
                 self._add_edge(
-                    edge, edge_type=edge_type, edge_config=edge_config[edge]
+                    edge,
+                    edge_type=edge_type,
+                    edge_config=edge_config[edge],
                 ).submobjects
                 for edge in edges
             ),
@@ -842,13 +848,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+    def remove_edges(self, *edges: Tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
         ----------
         edges
-            A list of edges to be removed from the graph.
+            Edges to be removed from the graph.
 
         Returns
         -------

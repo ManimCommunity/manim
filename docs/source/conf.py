@@ -71,6 +71,16 @@ html_extra_path = ["robots.txt"]
 
 exclude_patterns = []
 
+# -- Options for internationalization ----------------------------------------
+# Set the destination directory of the localized po files
+locale_dirs = ["../i18n/"]
+
+# Splits the text in more pot files.
+gettext_compact = False
+
+# Remove useless metadata from po files.
+gettext_last_translator = ""
+gettext_language_team = ""
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -142,7 +152,11 @@ inheritance_graph_attrs = dict(
 )
 
 inheritance_node_attrs = dict(
-    penwidth=0, shape="box", width=0.05, height=0.05, margin=0.05
+    penwidth=0,
+    shape="box",
+    width=0.05,
+    height=0.05,
+    margin=0.05,
 )
 
 inheritance_edge_attrs = dict(

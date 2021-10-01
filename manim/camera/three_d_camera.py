@@ -78,7 +78,7 @@ class ThreeDCamera(Camera):
 
     def capture_mobjects(self, mobjects, **kwargs):
         self.reset_rotation_matrix()
-        Camera.capture_mobjects(self, mobjects, **kwargs)
+        super().capture_mobjects(mobjects, **kwargs)
 
     def get_value_trackers(self):
         """Returns list of ValueTrackers of phi, theta, distance and gamma
@@ -121,7 +121,9 @@ class ThreeDCamera(Camera):
         return rgbas
 
     def get_stroke_rgbas(
-        self, vmobject, background=False
+        self,
+        vmobject,
+        background=False,
     ):  # NOTE : DocStrings From parent
         return self.modified_rgbas(vmobject, vmobject.get_stroke_rgbas(background))
 
@@ -129,7 +131,7 @@ class ThreeDCamera(Camera):
         return self.modified_rgbas(vmobject, vmobject.get_fill_rgbas())
 
     def get_mobjects_to_display(self, *args, **kwargs):  # NOTE : DocStrings From parent
-        mobjects = Camera.get_mobjects_to_display(self, *args, **kwargs)
+        mobjects = super().get_mobjects_to_display(*args, **kwargs)
         rot_matrix = self.get_rotation_matrix()
 
         def z_key(mob):
@@ -333,7 +335,9 @@ class ThreeDCamera(Camera):
         return self.project_points(point.reshape((1, 3)))[0, :]
 
     def transform_points_pre_display(
-        self, mobject, points
+        self,
+        mobject,
+        points,
     ):  # TODO: Write Docstrings for this Method.
         points = super().transform_points_pre_display(mobject, points)
         fixed_orientation = mobject in self.fixed_orientation_mobjects

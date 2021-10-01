@@ -76,12 +76,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 self.add(axes, surface)
     """
 
-    @deprecated_params(
-        params="u_min,u_max,v_min,v_max",
-        since="v0.9.0",
-        until="v0.10.0",
-        message="Use u_range and v_range instead.",
-    )
     def __init__(
         self,
         func: Callable[[float, float], np.ndarray],
@@ -98,10 +92,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
     ) -> None:
-        self.u_min = kwargs.pop("u_min", None) or u_range[0]
-        self.u_max = kwargs.pop("u_max", None) or u_range[1]
-        self.v_min = kwargs.pop("v_min", None) or v_range[0]
-        self.v_max = kwargs.pop("v_max", None) or v_range[1]
+        self.u_range = u_range
+        self.v_range = v_range
         super().__init__(**kwargs)
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
@@ -126,13 +118,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             u_res = v_res = res[0]
         else:
             u_res, v_res = res
-        u_min = self.u_min
-        u_max = self.u_max
-        v_min = self.v_min
-        v_max = self.v_max
 
-        u_values = np.linspace(u_min, u_max, u_res + 1)
-        v_values = np.linspace(v_min, v_max, v_res + 1)
+        u_values = np.linspace(*self.u_range, u_res + 1)
+        v_values = np.linspace(*self.v_range, v_res + 1)
 
         return u_values, v_values
 
@@ -151,7 +139,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         [u2, v2, 0],
                         [u1, v2, 0],
                         [u1, v1, 0],
-                    ]
+                    ],
                 )
                 faces.add(face)
                 face.u_index = i
@@ -227,7 +215,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             pivot_max = axes.z_range[1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
-                start=pivot_min, stop=pivot_max + pivot_frequency, step=pivot_frequency
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
             )
 
         for mob in self.family_members_with_points():
@@ -244,7 +234,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         )
                         color_index = min(color_index, 1)
                         mob_color = interpolate_color(
-                            new_colors[i - 1], new_colors[i], color_index
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
                         )
                         if config.renderer == "opengl":
                             mob.set_color(mob_color, recurse=False)
@@ -323,7 +315,7 @@ class Sphere(Surface):
 
     def func(self, u, v):
         return self.radius * np.array(
-            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
+            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
         )
 
 
@@ -397,6 +389,8 @@ class Cube(VGroup):
 
             self.add(face)
 
+    init_points = generate_points
+
 
 class Prism(Cube):
     """A cuboid.
@@ -420,7 +414,7 @@ class Prism(Cube):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        Cube.generate_points(self)
+        super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
 
@@ -515,7 +509,7 @@ class Cone(Surface):
                 r * np.sin(self.theta) * np.cos(phi),
                 r * np.sin(self.theta) * np.sin(phi),
                 r * np.cos(self.theta),
-            ]
+            ],
         )
 
     def _rotate_to_direction(self):
@@ -626,22 +620,24 @@ class Cylinder(Surface):
 
     def add_bases(self):
         """Adds the end caps of the cylinder."""
+        color = self.color if config["renderer"] == "opengl" else self.fill_color
+        opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
         self.base_top = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_top.shift(self.u_max * IN)
+        self.base_top.shift(self.u_range[1] * IN)
         self.base_bottom = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_bottom.shift(self.u_min * IN)
+        self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
 
     def _rotate_to_direction(self):

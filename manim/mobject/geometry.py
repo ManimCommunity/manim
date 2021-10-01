@@ -179,7 +179,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             anchor = self.get_end()
         angles = cartesian_to_spherical(handle - anchor)
         tip.rotate(
-            angles[2] - PI - tip.tip_angle
+            angles[2] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
         axis = [
             np.sin(angles[2]),
@@ -187,7 +187,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             0,
         ]  # Obtains the perpendicular of the tip
         tip.rotate(
-            -angles[1] + PI / 2, axis=axis
+            -angles[1] + PI / 2,
+            axis=axis,
         )  # Rotates the tip along the vertical wrt the axis
         tip.shift(anchor - tip.tip_point)
         return tip
@@ -257,10 +258,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return self.tip_length
 
     def get_first_handle(self):
-        return self.get_points()[1]
+        return self.points[1]
 
     def get_last_handle(self):
-        return self.get_points()[-2]
+        return self.points[-2]
 
     def get_end(self):
         if self.has_tip():
@@ -327,7 +328,7 @@ class Arc(TipableVMobject):
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.num_components,
-            )
+            ),
         )
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
@@ -342,7 +343,7 @@ class Arc(TipableVMobject):
                     start_angle + angle,
                     2 * n_components + 1,
                 )
-            ]
+            ],
         )
         theta = angle / n_components
         samples[1::2] /= np.cos(theta / 2)
@@ -358,9 +359,11 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                    self.start_angle, self.start_angle + self.angle, self.num_components
+                    self.start_angle,
+                    self.start_angle + self.angle,
+                    self.num_components,
                 )
-            ]
+            ],
         )
         # Figure out which control points will give the
         # Appropriate tangent lines to the circle
@@ -380,7 +383,7 @@ class Arc(TipableVMobject):
         anchors, and finds their intersection points
         """
         # First two anchors and handles
-        a1, h1, h2, a2 = self.get_points()[:4]
+        a1, h1, h2, a2 = self.points[:4]
 
         if np.all(a1 == a2):
             # For a1 and a2 to lie at the same point arc radius
@@ -406,7 +409,7 @@ class Arc(TipableVMobject):
         return self
 
     def stop_angle(self):
-        return angle_of_vector(self.get_points()[-1] - self.get_arc_center()) % TAU
+        return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
 
 
 class ArcBetweenPoints(Arc):
@@ -441,7 +444,7 @@ class ArcBetweenPoints(Arc):
             if radius < halfdist:
                 raise ValueError(
                     """ArcBetweenPoints called with a radius that is
-                            smaller than half the distance between the points."""
+                            smaller than half the distance between the points.""",
                 )
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
@@ -593,7 +596,7 @@ class Circle(Arc):
             The location of the point along the circle's circumference.
         """
 
-        start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
+        start_angle = angle_of_vector(self.points[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
     @staticmethod
@@ -746,7 +749,7 @@ class LabeledDot(Dot):
 
         if radius is None:
             radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
-        Dot.__init__(self, radius=radius, **kwargs)
+        super().__init__(radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
 
@@ -863,10 +866,10 @@ class AnnularSector(Arc):
             for radius in (self.inner_radius, self.outer_radius)
         )
         outer_arc.reverse_points()
-        self.append_points(inner_arc.get_points())
-        self.add_line_to(outer_arc.get_points()[0])
-        self.append_points(outer_arc.get_points())
-        self.add_line_to(inner_arc.get_points()[0])
+        self.append_points(inner_arc.points)
+        self.add_line_to(outer_arc.points[0])
+        self.append_points(outer_arc.points)
+        self.add_line_to(inner_arc.points[0])
 
     init_points = generate_points
 
@@ -940,8 +943,8 @@ class Annulus(Circle):
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
         inner_circle.reverse_points()
-        self.append_points(outer_circle.get_points())
-        self.append_points(inner_circle.get_points())
+        self.append_points(outer_circle.points)
+        self.append_points(inner_circle.points)
         self.shift(self.arc_center)
 
     init_points = generate_points
@@ -957,13 +960,16 @@ class Line(TipableVMobject):
 
     def generate_points(self):
         self.set_points_by_ends(
-            start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc
+            start=self.start,
+            end=self.end,
+            buff=self.buff,
+            path_arc=self.path_arc,
         )
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
         if path_arc:
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
-            self.set_points(arc.get_points())
+            self.set_points(arc.points)
         else:
             self.set_points_as_corners([start, end])
 
@@ -1082,15 +1088,6 @@ class Line(TipableVMobject):
     def set_length(self, length):
         return self.scale(length / self.get_length())
 
-    def set_opacity(self, opacity, family=True):
-        # Overwrite default, which would set
-        # the fill opacity
-        self.set_stroke(opacity=opacity)
-        if family:
-            for sm in self.submobjects:
-                sm.set_opacity(opacity, family)
-        return self
-
 
 class DashedLine(Line):
     """A dashed :class:`Line`.
@@ -1140,7 +1137,8 @@ class DashedLine(Line):
         **kwargs,
     ):
         self.dash_spacing = kwargs.pop(
-            "dash_spacing", None
+            "dash_spacing",
+            None,
         )  # Unused param, remove with deprecation warning
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
@@ -1166,7 +1164,8 @@ class DashedLine(Line):
 
         # Minimum number of dashes has to be 2
         return max(
-            2, int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio))
+            2,
+            int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio)),
         )
 
     def get_start(self) -> np.ndarray:
@@ -1183,7 +1182,7 @@ class DashedLine(Line):
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
-            return Line.get_start(self)
+            return super().get_start()
 
     def get_end(self) -> np.ndarray:
         """Returns the end point of the line.
@@ -1212,7 +1211,7 @@ class DashedLine(Line):
             array([-0.98333333,  0.        ,  0.        ])
         """
 
-        return self.submobjects[0].get_points()[1]
+        return self.submobjects[0].points[1]
 
     def get_last_handle(self) -> np.ndarray:
         """Returns the point of the last handle.
@@ -1225,7 +1224,7 @@ class DashedLine(Line):
             array([0.98333333, 0.        , 0.        ])
         """
 
-        return self.submobjects[-1].get_points()[-2]
+        return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):
@@ -1557,7 +1556,10 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(
-        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+        self,
+        integer_labels: bool = True,
+        n_dim: int = 2,
+        color: str = WHITE,
     ):
         """Creates a label based on the coordinates of the vector.
 
@@ -1737,7 +1739,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             self.start_new_path(first_vertex)
             self.add_points_as_corners(
-                [*(np.array(vertex) for vertex in vertices), first_vertex]
+                [*(np.array(vertex) for vertex in vertices), first_vertex],
             )
 
     def get_vertices(self) -> np.ndarray:
@@ -1860,7 +1862,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
             for arc1, arc2 in adjacent_pairs(arcs):
-                new_points.extend(arc1.get_points())
+                new_points.extend(arc1.points)
 
                 line = Line(arc1.get_end(), arc2.get_start())
 
@@ -1869,7 +1871,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
 
-                new_points.extend(line.get_points())
+                new_points.extend(line.points)
 
         self.set_points(new_points)
 
@@ -1973,7 +1975,9 @@ class RegularPolygram(Polygram):
         # polygon vertices.
         def gen_polygon_vertices(start_angle):
             reg_vertices, start_angle = regular_vertices(
-                num_vertices, radius=radius, start_angle=start_angle
+                num_vertices,
+                radius=radius,
+                start_angle=start_angle,
             )
 
             vertices = []
@@ -2108,7 +2112,7 @@ class Star(Polygon):
 
             if density <= 0 or density >= n / 2:
                 raise ValueError(
-                    f"Incompatible density {density} for number of points {n}"
+                    f"Incompatible density {density} for number of points {n}",
                 )
 
             outer_angle = TAU * density / n
@@ -2119,10 +2123,14 @@ class Star(Polygon):
             inner_radius = outer_radius / (np.cos(inner_angle) * inverse_x)
 
         outer_vertices, self.start_angle = regular_vertices(
-            n, radius=outer_radius, start_angle=start_angle
+            n,
+            radius=outer_radius,
+            start_angle=start_angle,
         )
         inner_vertices, _ = regular_vertices(
-            n, radius=inner_radius, start_angle=self.start_angle + inner_angle
+            n,
+            radius=inner_radius,
+            start_angle=self.start_angle + inner_angle,
         )
 
         vertices = []
@@ -2235,7 +2243,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
         # the arcs, so that their new values are usable.
         self.add(*arcs)
         for arc in arcs:
-            self.append_points(arc.get_points())
+            self.append_points(arc.points)
 
         # This enables the use of ArcPolygon.arcs as a convenience
         # because ArcPolygon[0] returns itself, not the first Arc.
@@ -2350,7 +2358,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, *arcs, **kwargs):
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
-                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
+                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints",
             )
         super().__init__(**kwargs)
         # Adding the arcs like this makes ArcPolygonFromArcs double as a VGroup.
@@ -2367,7 +2375,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
             if math.isnan(len_ratio) or math.isinf(len_ratio):
                 continue
             line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
-            self.append_points(line.get_points())
+            self.append_points(line.points)
 
 
 class Triangle(RegularPolygon):
@@ -2641,7 +2649,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
             array([2., 0., 0.])
 
         """
-        return self.get_points()[0]
+        return self.points[0]
 
     @property
     def vector(self):
@@ -2814,13 +2822,13 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(self, main_shape, *mobjects, **kwargs):
         super().__init__(**kwargs)
-        self.append_points(main_shape.get_points())
+        self.append_points(main_shape.points)
         if main_shape.get_direction() == "CW":
             sub_direction = "CCW"
         else:
             sub_direction = "CW"
         for mobject in mobjects:
-            self.append_points(mobject.force_direction(sub_direction).get_points())
+            self.append_points(mobject.force_direction(sub_direction).points)
 
 
 class Angle(VMobject, metaclass=ConvertToOpenGL):
@@ -2922,8 +2930,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 norm = l1.get_length()
                 a1 = Angle(l1, l2, other_angle=True, radius=norm - 0.5).set_color(GREEN)
                 a2 = Angle(l1, l2, other_angle=True, radius=norm).set_color(GREEN)
-                q1 = a1.get_points() #  save all coordinates of points of angle a1
-                q2 = a2.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
+                q1 = a1.points #  save all coordinates of points of angle a1
+                q2 = a2.reverse_direction().points  #  save all coordinates of points of angle a1 (in reversed direction)
                 pnts = np.concatenate([q1, q2, q1[0].reshape(1, 3)])  # adds points and ensures that path starts and ends at same point
                 mfill = VMobject().set_color(ORANGE)
                 mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
@@ -2952,7 +2960,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.dot_distance = dot_distance
         self.elbow = elbow
         inter = line_intersection(
-            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+            [line1.get_start(), line1.get_end()],
+            [line2.get_start(), line2.get_end()],
         )
 
         if radius is None:
@@ -2982,7 +2991,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             )
             angle_mobject = Elbow(**kwargs)
             angle_mobject.set_points_as_corners(
-                [anchor_angle_1, anchor_middle, anchor_angle_2]
+                [anchor_angle_1, anchor_middle, anchor_angle_2],
             )
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
@@ -3027,7 +3036,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 right_dot.move_to(dot_anchor)
                 self.add(right_dot)
 
-        self.set_points(angle_mobject.get_points())
+        self.set_points(angle_mobject.points)
 
     def get_lines(self) -> VGroup:
         """Get the lines forming an angle of the :class:`Angle` class.

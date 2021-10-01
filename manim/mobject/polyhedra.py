@@ -124,7 +124,8 @@ class Polyhedron(VGroup):
         return edges
 
     def create_faces(
-        self, face_coords: List[List[Union[List, np.ndarray]]]
+        self,
+        face_coords: List[List[Union[List, np.ndarray]]],
     ) -> "VGroup":
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
@@ -171,8 +172,7 @@ class Tetrahedron(Polyhedron):
 
     def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 4
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit, unit, unit]),
                 np.array([unit, -unit, -unit]),
@@ -207,8 +207,7 @@ class Octahedron(Polyhedron):
 
     def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 2
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit, 0, 0]),
                 np.array([-unit, 0, 0]),
@@ -255,8 +254,7 @@ class Icosahedron(Polyhedron):
     def __init__(self, edge_length: float = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * (1 / 2)
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([0, unit_b, unit_a]),
                 np.array([0, -unit_b, unit_a]),
@@ -322,8 +320,7 @@ class Dodecahedron(Polyhedron):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
         unit_c = edge_length * (1 / 2)
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit_a, unit_a, unit_a]),
                 np.array([unit_a, unit_a, -unit_a]),

@@ -53,6 +53,7 @@ cloup = "^0.7.0"
 requests = "*"
 dearpygui = { version = "^0.8", optional = true }
 screeninfo = "^0.6.7"
+skia-pathops = "^0.6.0"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
@@ -63,7 +64,7 @@ gui = ["dearpygui"]
 pytest-cov = "*"
 pytest = "^6.0"
 pylint = "*"
-Sphinx = "^3"
+Sphinx = "^4"
 sphinx-copybutton = "*"
 sphinxext-opengraph = "*"
 furo = "*"
@@ -76,6 +77,13 @@ flake8 = "^3.9.0"
 isort = "^5.8.0"
 pytest-xdist = "^2.2"
 psutil = ">=3.0"
+flake8-builtins = "^1.5.3"
+flake8-bugbear = "^21.4.3"
+flake8-docstrings = "^1.6.0"
+flake8-rst-docstrings = "^0.2.3"
+flake8-pytest-style = "^1.5.0"
+flake8-simplify = "^0.14.1"
+flake8-comprehensions = "^3.6.1"
 
 
 [tool.poetry.urls]
@@ -92,7 +100,7 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto"
+addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto --dist=loadfile"
 
 [tool.isort]
 # from https://black.readthedocs.io/en/stable/compatible_configs.html
