@@ -84,7 +84,7 @@ Deprecated classes and functions
 New features
 ------------
 
-* `#2118 <https://github.com/ManimCommunity/manim/pull/2118>`__: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines` 
+* `#2118 <https://github.com/ManimCommunity/manim/pull/2118>`__: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`
 
 
 * `#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
@@ -142,7 +142,7 @@ Fixed bugs
 * `#2039 <https://github.com/ManimCommunity/manim/pull/2039>`__: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`.
 
 
-* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed error raised by logging when cache is full 
+* `#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed error raised by logging when cache is full
 
 
 * `#2026 <https://github.com/ManimCommunity/manim/pull/2026>`__: Fixed OpenGL shift animation for :class:`~.Text`
@@ -222,9 +222,7 @@ New releases
 Unclassified changes
 --------------------
 
-* `#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Revert colour of background in docs to BLACK in `Mobject` page. 
+* `#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Revert colour of background in docs to BLACK in `Mobject` page.
 
 
 * `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: Fixed several warnings issued by LGTM
-
-
