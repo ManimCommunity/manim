@@ -20,12 +20,13 @@ from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..animation.update import UpdateFromAlphaFunc
-from ..constants import RIGHT, UP
-from ..mobject.geometry import Line, Vector
+from ..constants import OUT, RIGHT, UP
+from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
+from ..utils.deprecation import deprecated_params
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 from .types.opengl_vectorized_mobject import OpenGLVMobject
@@ -148,7 +149,7 @@ class VectorField(VGroup):
 
             class ScaleVectorFieldFunction(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[1])*RIGHT+np.cos(pos[0])*UP
+                    func = lambda pos: np.sin(pos[1]) * RIGHT + np.cos(pos[0]) * UP
                     vector_field = ArrowVectorField(func)
                     self.add(vector_field)
                     self.wait()
@@ -185,9 +186,9 @@ class VectorField(VGroup):
             The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
-            Whether to move the mobject along the vector field. If `True` the
+            Whether to move the mobject along the vector field. If `False` the
             vector field takes effect on the center of the given
-            :class:`~.Mobject`. If `False` the vector field takes effect on the
+            :class:`~.Mobject`. If `True` the vector field takes effect on the
             points of the individual points of the :class:`~.Mobject`,
             potentially distorting it.
 
@@ -203,8 +204,10 @@ class VectorField(VGroup):
 
             class Nudging(Scene):
                 def construct(self):
-                    func = lambda pos: np.sin(pos[1]/2)*RIGHT+np.cos(pos[0]/2)*UP
-                    vector_field = ArrowVectorField(func, delta_x=1, delta_y=1, length_func=lambda x:x/2)
+                    func = lambda pos: np.sin(pos[1] / 2) * RIGHT + np.cos(pos[0] / 2) * UP
+                    vector_field = ArrowVectorField(
+                        func, x_range=[-7, 7, 1], y_range=[-4, 4, 1], length_func=lambda x: x / 2
+                    )
                     self.add(vector_field)
                     circle = Circle(radius=2).shift(LEFT)
                     self.add(circle.copy().set_color(GRAY))
@@ -447,18 +450,15 @@ class ArrowVectorField(VectorField):
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
-    x_min
-        The minimum x value for which to draw vectors.
-    x_max
-        The maximum x value for which to draw vectors.
-    y_min
-        The minimum y value for which to draw vectors.
-    y_max
-        The maximum y value for which to draw vectors.
-    delta_x
-        The distance in x direction between two vectors.
-    delta_y
-        The distance in y direction between two vectors.
+    x_range
+        A sequence of x_min, x_max, delta_x
+    y_range
+        A sequence of y_min, y_max, delta_y
+    z_range
+        A sequence of z_min, z_max, delta_z
+    three_dimensions
+        Enables three_dimensions. Default set to False, automatically turns True if
+        z_range is not None.
     length_func
         The function determining the displayed size of the vectors. The actual size
         of the vector is passed, the returned value will be used as display size for the
@@ -478,20 +478,20 @@ class ArrowVectorField(VectorField):
 
         class BasicUsage(Scene):
             def construct(self):
-                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT)-pos)/3
+                func = lambda pos: ((pos[0] * UR + pos[1] * LEFT) - pos) / 3
                 self.add(ArrowVectorField(func))
 
     .. manim:: SizingAndSpacing
 
         class SizingAndSpacing(Scene):
             def construct(self):
-                func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
-                vf = ArrowVectorField(func, delta_x=1)
+                func = lambda pos: np.sin(pos[0] / 2) * UR + np.cos(pos[1] / 2) * LEFT
+                vf = ArrowVectorField(func, x_range=[-7, 7, 1])
                 self.add(vf)
                 self.wait()
 
                 length_func = lambda x: x / 3
-                vf2 = ArrowVectorField(func, delta_x=1, length_func=length_func)
+                vf2 = ArrowVectorField(func, x_range=[-7, 7, 1], length_func=length_func)
                 self.play(vf.animate.become(vf2))
                 self.wait()
 
@@ -500,15 +500,23 @@ class ArrowVectorField(VectorField):
 
         class Coloring(Scene):
             def construct(self):
-                func = lambda pos: pos-LEFT*5
+                func = lambda pos: pos - LEFT * 5
                 colors = [RED, YELLOW, BLUE, DARK_GRAY]
-                min_radius = Circle(radius=2,  color=colors[0]).shift(LEFT*5)
-                max_radius = Circle(radius=10, color=colors[-1]).shift(LEFT*5)
-                vf = ArrowVectorField(func, min_color_scheme_value=2, max_color_scheme_value=10, colors=colors)
+                min_radius = Circle(radius=2, color=colors[0]).shift(LEFT * 5)
+                max_radius = Circle(radius=10, color=colors[-1]).shift(LEFT * 5)
+                vf = ArrowVectorField(
+                    func, min_color_scheme_value=2, max_color_scheme_value=10, colors=colors
+                )
                 self.add(vf, min_radius, max_radius)
 
     """
 
+    @deprecated_params(
+        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Please use x_range and y_range instead.",
+    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -518,18 +526,46 @@ class ArrowVectorField(VectorField):
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
-        x_min: float = -(config["frame_width"] + 1) / 2,
-        x_max: float = (config["frame_width"] + 1) / 2,
-        y_min: float = -(config["frame_height"] + 1) / 2,
-        y_max: float = (config["frame_height"] + 1) / 2,
-        delta_x: float = 0.5,
-        delta_y: float = 0.5,
+        x_range: Sequence[float] = None,
+        y_range: Sequence[float] = None,
+        z_range: Sequence[float] = None,
+        three_dimensions: bool = False,  # Automatically True if z_range is set
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
         vector_config: Optional[dict] = None,
         **kwargs
     ):
+        self.x_range = x_range or [
+            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
+            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
+        ]
+        self.y_range = y_range or [
+            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
+            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
+        ]
+        self.ranges = [self.x_range, self.y_range]
+
+        if three_dimensions or z_range:
+            self.z_range = z_range or self.y_range.copy()
+            self.ranges += [self.z_range]
+        else:
+            self.ranges += [[0, 0]]
+
+        for i in range(len(self.ranges)):
+            if len(self.ranges[i]) == 2:
+                self.ranges[i] += [0.5]
+            self.ranges[i][1] += self.ranges[i][2]
+
+        if "delta_x" in kwargs:
+            self.ranges[0][2] = kwargs.pop("delta_x")
+            self.ranges[0][1] += self.ranges[0][2] - 0.5
+        if "delta_y" in kwargs:
+            self.ranges[1][2] = kwargs.pop("delta_y")
+            self.ranges[1][1] += self.ranges[1][2] - 0.5
+
+        self.x_range, self.y_range, self.z_range = self.ranges
+
         super().__init__(
             func,
             color,
@@ -539,13 +575,6 @@ class ArrowVectorField(VectorField):
             colors,
             **kwargs,
         )
-        # Rounding min and max values to fit delta value
-        self.x_min = floor(x_min / delta_x) * delta_x
-        self.x_max = ceil(x_max / delta_x) * delta_x
-        self.y_min = floor(y_min / delta_y) * delta_y
-        self.y_max = ceil(y_max / delta_y) * delta_y
-        self.delta_x = delta_x
-        self.delta_y = delta_y
 
         self.length_func = length_func
         self.opacity = opacity
@@ -554,10 +583,11 @@ class ArrowVectorField(VectorField):
         self.vector_config = vector_config
         self.func = func
 
-        x_range = np.arange(self.x_min, self.x_max, self.delta_x)
-        y_range = np.arange(self.y_min, self.y_max, self.delta_y)
-        for x, y in it.product(x_range, y_range):
-            self.add(self.get_vector(x * RIGHT + y * UP))
+        x_range = np.arange(*self.x_range)
+        y_range = np.arange(*self.y_range)
+        z_range = np.arange(*self.z_range)
+        for x, y, z in it.product(x_range, y_range, z_range):
+            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
