@@ -705,6 +705,12 @@ class StreamLines(VectorField):
 
     """
 
+    @deprecated_params(
+        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
+        since="v0.10.0",
+        until="v0.11.0",
+        message="Please use x_range and y_range instead.",
+    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -714,12 +720,10 @@ class StreamLines(VectorField):
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line starting positions:
-        x_min: float = -(config["frame_width"] + 1) / 2,
-        x_max: float = (config["frame_width"] + 1) / 2,
-        y_min: float = -(config["frame_height"] + 1) / 2,
-        y_max: float = (config["frame_height"] + 1) / 2,
-        delta_x: float = 0.5,
-        delta_y: float = 0.5,
+        x_range: Sequence[float] = None,
+        y_range: Sequence[float] = None,
+        z_range: Sequence[float] = None,
+        three_dimensions: bool = False,
         noise_factor: Optional[float] = None,
         n_repeats=1,
         # Determining how lines are drawn
@@ -732,6 +736,36 @@ class StreamLines(VectorField):
         opacity=1,
         **kwargs
     ):
+        self.x_range = x_range or [
+            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
+            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
+        ]
+        self.y_range = y_range or [
+            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
+            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
+        ]
+        self.ranges = [self.x_range, self.y_range]
+
+        if three_dimensions or z_range:
+            self.z_range = z_range or self.y_range.copy()
+            self.ranges += [self.z_range]
+        else:
+            self.ranges += [[0, 0]]
+
+        for i in range(len(self.ranges)):
+            if len(self.ranges[i]) == 2:
+                self.ranges[i] += [0.5]
+            self.ranges[i][1] += self.ranges[i][2]
+
+        if "delta_x" in kwargs:
+            self.ranges[0][2] = kwargs.pop("delta_x")
+            self.ranges[0][1] += self.ranges[0][2] - 0.5
+        if "delta_y" in kwargs:
+            self.ranges[1][2] = kwargs.pop("delta_y")
+            self.ranges[1][1] += self.ranges[1][2] - 0.5
+
+        self.x_range, self.y_range, self.z_range = self.ranges
+
         super().__init__(
             func,
             color,
@@ -741,13 +775,10 @@ class StreamLines(VectorField):
             colors,
             **kwargs,
         )
-        self.x_min = x_min
-        self.x_max = x_max
-        self.y_min = y_min
-        self.y_max = y_max
-        self.delta_x = delta_x
-        self.delta_y = delta_y
-        self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
+
+        self.noise_factor = (
+            noise_factor if noise_factor is not None else self.y_range[2] / 2
+        )
         self.n_repeats = n_repeats
         self.virtual_time = virtual_time
         self.max_anchors_per_line = max_anchors_per_line
@@ -760,19 +791,23 @@ class StreamLines(VectorField):
             [
                 (x - half_noise) * RIGHT
                 + (y - half_noise) * UP
+                + (z - half_noise) * OUT
                 + self.noise_factor * np.random.random(3)
                 for n in range(self.n_repeats)
-                for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
-                for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
+                for x in np.arange(*self.x_range)
+                for y in np.arange(*self.y_range)
+                for z in np.arange(*self.z_range)
             ],
         )
 
         def outside_box(p):
             return (
-                p[0] < self.x_min - self.padding
-                or p[0] > self.x_max + self.padding
-                or p[1] < self.y_min - self.padding
-                or p[1] > self.y_max + self.padding
+                p[0] < self.x_range[0] - self.padding
+                or p[0] > self.x_range[1] + self.padding - self.x_range[2]
+                or p[1] < self.y_range[0] - self.padding
+                or p[1] > self.y_range[1] + self.padding - self.y_range[2]
+                or p[2] < self.z_range[0] - self.padding
+                or p[2] > self.z_range[1] + self.padding - self.z_range[2]
             )
 
         max_steps = ceil(virtual_time / dt) + 1
@@ -816,7 +851,12 @@ class StreamLines(VectorField):
                         name="stroke_rgba",
                     )
                 else:
-                    line.color_using_background_image(self.background_img)
+                    if np.any(self.z_range != np.array([0, 0.5, 0.5])):
+                        line.set_stroke(
+                            [self.pos_to_color(p) for p in line.get_anchors()],
+                        )
+                    else:
+                        line.color_using_background_image(self.background_img)
                     line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [*self.submobjects]
