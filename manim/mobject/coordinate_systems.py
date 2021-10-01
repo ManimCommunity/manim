@@ -702,8 +702,6 @@ class CoordinateSystem:
         func: Callable,
         min_depth: int = 5,
         max_quads: int = 1500,
-        use_smoothing: bool = True,
-        color: Color = WHITE,
         **kwargs,
     ) -> ImplicitFunction:
         """Creates the curves of an implicit function.
