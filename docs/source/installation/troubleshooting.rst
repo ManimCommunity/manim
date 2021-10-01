@@ -229,10 +229,10 @@ We've dropped the use of CONFIG in the Community Version version 0.2.0, released
 
   class SomeMobject(Thing):
       CONFIG = {
-          "stroke_color": RED
-          "fill_opacity": 0.7
-          "radius": 3 
-          "my_awesome_property": 42
+          "stroke_color": RED,
+          "fill_opacity": 0.7,
+          "radius": 3,
+          "my_awesome_property": 42,
       }
       # add methods here
 
@@ -243,19 +243,17 @@ should now be defined like
   class SomeMobject(VMobject):
       def __init__(
           self,
-          stroke_color = RED,
-          fill_opacity = 0.7
-          radius = 3
-          my_awesome_property = 42,
+          stroke_color=RED,
+          fill_opacity=0.7,
+          radius=3,
+          my_awesome_property=42,
           **kwargs
       ):
           self.radius = 3
           self.my_awesome_property = 42
           super().__init__(
-              stroke_color = stroke_color, 
-              fill_opacity = fill_opacity, 
-              **kwargs
-          ) # passing arguments into the parent class
+              stroke_color=stroke_color, fill_opacity=fill_opacity, **kwargs
+          )  # passing arguments into the parent class
           # add methods here
 
 For scenes, this is even easier:
