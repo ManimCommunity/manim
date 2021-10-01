@@ -45,6 +45,7 @@ class FullScreenRectangle(ScreenRectangle):
     since="v0.11.0",
     until="v0.12.0",
     message="This method is deprecated due to decluttering purpose.",
+    replacement="FullScreenRectangle(stroke_width=0, fill_color=BLACK, fill_opacity=0.7)",
 )
 class FullScreenFadeRectangle(FullScreenRectangle):
     def __init__(self, stroke_width=0, fill_color=BLACK, fill_opacity=0.7, **kwargs):
@@ -61,8 +62,7 @@ class FullScreenFadeRectangle(FullScreenRectangle):
     since="v0.11.0",
     until="v0.12.0",
     message="This method is deprecated due to decluttering purpose.",
-    replacement="FullScreenRectangle(stroke_width=0, fill_color=BLACK, fill_opacity=0.7)",
-)
+    )
 class PictureInPictureFrame(Rectangle):
     def __init__(self, height=3, aspect_ratio=16.0 / 9.0, **kwargs):
         Rectangle.__init__(self, width=aspect_ratio * height, height=height, **kwargs)
