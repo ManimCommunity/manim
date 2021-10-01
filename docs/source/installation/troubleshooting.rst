@@ -182,3 +182,109 @@ operating system's documentation to find out where you can get it and how you
 have to install it.
 
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.
+
+(Windows) `Python is not recognized as an internal or external command, operable program or batch file.`
+--------------------------------------------------------------------------------------------------------
+
+1. Open System Properties (Right click Computer in the start menu, or use the keyboard shortcut Win+Pause)
+2. Click Advanced system settings in the sidebar.
+3. Click Environment Variables...
+4. Select PATH in the System variables section
+5. Click Edit
+6. Add Python's path to the end of the list (the paths are separated by semicolons). For example:
+
+.. code-block:: bash
+
+  C:\Windows;C:\Windows\System32;C:\Python27
+
+`choco install manimce` failed
+------------------------------
+
+If choco install manimce failed, it is likely being caused by Python not being added to your PATH variable properly. Try running the following commands in your terminal:
+1. `py --version`
+2. `python --version`
+3. `py3 --version`
+4. `python3 --version`
+Minimally, `py --version` and `python --version` should return a version. If none of these commands are recognized, this means that Python was installed on your system, but was not added to PATH. See above for directions to add it to your PATH variable.
+
+If any of these commands opens up the Windows store, this is likely interfering with the process. This is because Chocolatey runs a command that calls python or python3, and opening up the Windows store is not the expected behavior. See below to fix aliases.
+
+(Windows) Fix Aliases
+---------------------
+
+1. Go to the Windows Settings.
+2. Under Apps and Features, there are an application execution aliases.
+
+cm-super
+--------
+
+Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the `cm-super` package, then delete the `media` directory and try to render the scene again.
+
+Config
+------
+
+We've dropped the use of CONFIG in the Community Version version 0.2.0, released in January 2021. This means parameters that were previously specified in the CONFIG dictionary should now be passed directly into the constructor. Practically, this means that old constructions like
+
+.. code-block:: python
+
+  class SomeMobject(Thing):
+      CONFIG = {
+          "stroke_color": RED
+          "fill_opacity": 0.7
+          "radius": 3 
+          "my_awesome_property": 42
+      }
+      # add methods here
+
+should now be defined like
+
+.. code-block:: python
+
+  class SomeMobject(VMobject):
+      def __init__(
+          self,
+          stroke_color = RED,
+          fill_opacity = 0.7
+          radius = 3
+          my_awesome_property = 42,
+          **kwargs
+      ):
+          self.radius = 3
+          self.my_awesome_property = 42
+          super().__init__(
+              stroke_color = stroke_color, 
+              fill_opacity = fill_opacity, 
+              **kwargs
+          ) # passing arguments into the parent class
+          # add methods here
+
+For scenes, this is even easier:
+
+.. code-block:: python
+
+  class Test(Scene):
+      CONFIG = {"a": 1, "b": 2}
+
+becomes
+
+.. code-block:: python
+
+  class Test(Scene):
+      def construct(self):
+          self.a = 1
+          self.b = 2
+
+A python command does not work
+------------------------------
+
+If a python command does not work, try adding `python -m`  in front of it. For example, if `pip install manim` does not work, you can try `python -m pip install manim`
+
+undefined symbol
+----------------
+
+If you are using anaconda, run the following command:
+
+.. code-block:: bash
+
+  conda install -c conda-forge pycairo
+
