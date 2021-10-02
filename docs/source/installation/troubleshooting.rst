@@ -187,24 +187,7 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 ----------------------------------------------------------------------------------------------------------
 
 To fix this, you need to add the Python executable to your ``PATH`` environment variable.
-The following steps are due to `Michael Mrozek from a StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__.
-
-1. Open ``System Properties`` (Right click ``Computer`` in the start menu, or use the keyboard shortcut ``Win`` + ``Pause``)
-2. Click ``Advanced system settings`` in the sidebar.
-3. Click ``Environment Variables``...
-4. Select ``PATH`` in the ``System variables`` section
-5. Click ``Edit``
-6. Add Python's path to the end of the list (the paths are separated by semicolons).
-
-For example:
-
-.. code-block:: bash
-
-  C:\Windows;C:\Windows\System32;C:\Python27
-
-.. note::
-
-  Your Python install location may be in a different location
+Follow the steps by `Michael Mrozek from a StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__.
 
 ``choco install manimce`` failed
 --------------------------------
