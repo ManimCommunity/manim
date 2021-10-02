@@ -13,7 +13,8 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
 from .opengl_compatibility import ConvertToOpenGL
 
-string_to_mob_map = {}
+string_to_mob_map_cairo = {}
+string_to_mob_map_opengl = {}
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
@@ -169,9 +170,18 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return num_string
 
     def string_to_mob(self, string, mob_class=MathTex, **kwargs):
-        if string not in string_to_mob_map:
-            string_to_mob_map[string] = mob_class(string, font_size=1.0, **kwargs)
-        mob = string_to_mob_map[string].copy()
+        is_opengl = config.renderer == "opengl"
+        if string not in string_to_mob_map_opengl and is_opengl:
+            string_to_mob_map_opengl[string] = mob_class(
+                string, font_size=1.0, **kwargs
+            )
+        elif string not in string_to_mob_map_cairo and not is_opengl:
+            string_to_mob_map_cairo[string] = mob_class(string, font_size=1.0, **kwargs)
+        mob = (
+            string_to_mob_map_opengl[string].copy()
+            if is_opengl
+            else string_to_mob_map_cairo[string].copy()
+        )
         mob.font_size = self._font_size
         return mob
 
