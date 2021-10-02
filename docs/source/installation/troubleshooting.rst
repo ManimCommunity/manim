@@ -186,7 +186,7 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 (Windows) ``Python is not recognized as an internal or external command, operable program or batch file.``
 ----------------------------------------------------------------------------------------------------------
 
-1. Open ``System Properties`` (Right click ``Computer`` in the start menu, or use the keyboard shortcut ``Win``+``Pause``)
+1. Open ``System Properties`` (Right click ``Computer`` in the start menu, or use the keyboard shortcut ``Win`` + ``Pause``)
 2. Click ``Advanced system settings`` in the sidebar.
 3. Click ``Environment Variables``...
 4. Select ``PATH`` in the ``System variables`` section
