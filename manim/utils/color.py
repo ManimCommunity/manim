@@ -174,7 +174,7 @@ class Colors(Enum):
     .. note::
 
         The colors of type "C" have an alias equal to the colorname without a letter,
-        e.g. GREEN = GREEN_C
+        e.g. [0] = [0]_C
 
     """
 
@@ -185,11 +185,11 @@ class Colors(Enum):
     gray_d: str = "#444444"
     gray_e: str = "#222222"
     black: str = "#000000"
-    lighter_gray = gray_a
-    light_gray = gray_b
-    gray = gray_c
-    dark_gray = gray_d
-    darker_gray = gray_e
+    lighter_gray: str = gray_a
+    light_gray: str = gray_b
+    gray: str = gray_c
+    dark_gray: str = gray_d
+    darker_gray: str = gray_e
 
     blue_a: str = "#C7E9F1"
     blue_b: str = "#9CDCEB"
@@ -197,15 +197,15 @@ class Colors(Enum):
     blue_d: str = "#29ABCA"
     blue_e: str = "#236B8E"
     pure_blue: str = "#0000FF"
-    blue = blue_c
-    dark_blue = blue_e
+    blue: str = blue_c
+    dark_blue: str = blue_e
 
     teal_a: str = "#ACEAD7"
     teal_b: str = "#76DDC0"
     teal_c: str = "#5CD0B3"
     teal_d: str = "#55C1A7"
     teal_e: str = "#49A88F"
-    teal = teal_c
+    teal: str = teal_c
 
     green_a: str = "#C9E2AE"
     green_b: str = "#A6CF8C"
@@ -213,21 +213,21 @@ class Colors(Enum):
     green_d: str = "#77B05D"
     green_e: str = "#699C52"
     pure_green: str = "#00FF00"
-    green = green_c
+    green: str = green_c
 
     yellow_a: str = "#FFF1B6"
     yellow_b: str = "#FFEA94"
     yellow_c: str = "#FFFF00"
     yellow_d: str = "#F4D345"
     yellow_e: str = "#E8C11C"
-    yellow = yellow_c
+    yellow: str = yellow_c
 
     gold_a: str = "#F7C797"
     gold_b: str = "#F9B775"
     gold_c: str = "#F0AC5F"
     gold_d: str = "#E1A158"
     gold_e: str = "#C78D46"
-    gold = gold_c
+    gold: str = gold_c
 
     red_a: str = "#F7A1A3"
     red_b: str = "#FF8080"
@@ -235,21 +235,21 @@ class Colors(Enum):
     red_d: str = "#E65A4C"
     red_e: str = "#CF5044"
     pure_red: str = "#FF0000"
-    red = red_c
+    red: str = red_c
 
     maroon_a: str = "#ECABC1"
     maroon_b: str = "#EC92AB"
     maroon_c: str = "#C55F73"
     maroon_d: str = "#A24D61"
     maroon_e: str = "#94424F"
-    maroon = maroon_c
+    maroon: str = maroon_c
 
     purple_a: str = "#CAA3E8"
     purple_b: str = "#B189C6"
     purple_c: str = "#9A72AC"
     purple_d: str = "#715582"
     purple_e: str = "#644172"
-    purple = purple_c
+    purple: str = purple_c
 
     pink: str = "#D147BD"
     light_pink: str = "#DC75CD"
