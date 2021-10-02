@@ -184,21 +184,25 @@ have to install it.
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.
 
 (Windows) ``Python is not recognized as an internal or external command, operable program or batch file.``
---------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
 
-1. Open System Properties (Right click Computer in the start menu, or use the keyboard shortcut Win+Pause)
-2. Click Advanced system settings in the sidebar.
-3. Click Environment Variables...
-4. Select PATH in the System variables section
-5. Click Edit
+1. Open ``System Properties`` (Right click ``Computer`` in the start menu, or use the keyboard shortcut ``Win``+``Pause``)
+2. Click ``Advanced system settings`` in the sidebar.
+3. Click ``Environment Variables``...
+4. Select ``PATH`` in the ``System variables`` section
+5. Click ``Edit``
 6. Add Python's path to the end of the list (the paths are separated by semicolons). For example:
 
 .. code-block:: bash
 
   C:\Windows;C:\Windows\System32;C:\Python27
 
+.. note::
+
+  Your Python install location may be in a different location
+
 ``choco install manimce`` failed
-------------------------------
+--------------------------------
 
 If ``choco install manimce`` failed, it is likely being caused by Python not being added to your PATH variable properly. Try running the following commands in your terminal:
 
@@ -216,6 +220,7 @@ If any of these commands opens up the Windows store, this is likely interfering 
 
 1. Go to the Windows Settings.
 2. Under Apps and Features, there are an application execution aliases.
+3. Within this menu disable the alias that is causing the issue
 
 cm-super
 --------
@@ -225,7 +230,7 @@ Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the 
 Config
 ------
 
-We've dropped the use of CONFIG in the Community Version version 0.2.0, released in January 2021. This means parameters that were previously specified in the CONFIG dictionary should now be passed directly into the constructor. Practically, this means that old constructions like
+We've dropped the use of CONFIG in the Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021. This means parameters that were previously specified in the CONFIG dictionary should now be passed directly into the constructor. Practically, this means that old constructions like
 
 .. code-block:: python
 
