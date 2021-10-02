@@ -28,6 +28,7 @@ from ..mobject.geometry import (
     DashedLine,
     Dot,
     Line,
+    Polygon,
     Rectangle,
     RegularPolygon,
 )
@@ -1033,15 +1034,13 @@ class CoordinateSystem:
     def get_area(
         self,
         graph: "ParametricFunction",
-        x_range: Optional[Sequence[float]] = None,
+        x_range: Optional[Tuple[float, float]] = None,
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
-        dx_scaling: float = 1,
-        bounded: "ParametricFunction" = None,
+        bounded_graph: "ParametricFunction" = None,
         **kwargs,
     ):
-        """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
-        approximate the area under the graph passed.
+        """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
         Examples
         --------
@@ -1056,7 +1055,6 @@ class CoordinateSystem:
                     area = ax.get_area(
                         curve,
                         x_range=(PI / 2, 3 * PI / 2),
-                        dx_scaling=10,
                         color=(GREEN_B, GREEN_D),
                         opacity=1,
                     )
@@ -1066,37 +1064,56 @@ class CoordinateSystem:
         Parameters
         ----------
         graph
-            The graph/curve for which the area needs to be determined.
+            The graph/curve for which the area needs to be gotten.
         x_range
             The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
         color
-            The color of the area. Creates a gradient if an iterable of colors is provided.
+            The color of the area. Creates a gradient if a list of colors is provided.
         opacity
             The opacity of the area.
-        bounded
+        bounded_graph
             If a secondary :attr:`graph` is specified, encloses the area between the two curves.
-        dx_scaling
-            The factor by which the :attr:`dx` value is scaled.
         kwargs
-            Additional arguments to be passed to :meth:`~.CoordinateSystem.get_area`.
+            Additional parameters passed to :class:`~.Polygon`
 
         Returns
         -------
-        :class:`~.VGroup`
-            The :class:`~.VGroup` containing the Riemann Rectangles.
-        """
+        :class:`~.Polygon`
+            The :class:`~.Polygon` representing the area.
 
-        dx = kwargs.pop("dx", None) or self.x_range[2] / 500
-        return self.get_riemann_rectangles(
-            graph,
-            x_range=x_range,
-            dx=dx * dx_scaling,
-            bounded_graph=bounded,
-            blend=True,
-            color=color,
-            show_signed_area=kwargs.pop("show_signed_area", None) or False,
-            **kwargs,
-        ).set_opacity(opacity=opacity)
+        Raises
+        ------
+        :exc:`ValueError`
+            When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
+        """
+        if x_range is None:
+            a = graph.t_min
+            b = graph.t_max
+        else:
+            a, b = x_range
+        if bounded_graph is not None:
+            if bounded_graph.t_min > b:
+                raise ValueError(
+                    f"Ranges not matching: {bounded_graph.t_min} < {b}",
+                )
+            if bounded_graph.t_max < a:
+                raise ValueError(
+                    f"Ranges not matching: {bounded_graph.t_max} > {a}",
+                )
+            a = max(a, bounded_graph.t_min)
+            b = min(b, bounded_graph.t_max)
+
+        if bounded_graph is None:
+            points = (
+                [self.c2p(a)]
+                + [p for p in graph.points if a <= self.p2c(p)[0] <= b]
+                + [self.c2p(b)]
+            )
+        else:
+            points = [p for p in graph.points if a <= self.p2c(p)[0] <= b] + [
+                p for p in bounded_graph.points if a <= self.p2c(p)[0] <= b
+            ][::-1]
+        return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 
     def angle_of_tangent(
         self,
