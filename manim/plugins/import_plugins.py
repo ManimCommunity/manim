@@ -37,6 +37,6 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
             exec(f"{lst.__name__}=lst")
             __all__.append(lst.__name__)
     plugins_requested.remove(plugin.name)
-else:
-    if plugins_requested != []:
-        logger.warning("Missing Plugins: %s", plugins_requested)
+
+if plugins_requested != []:
+    logger.warning("Missing Plugins: %s", plugins_requested)

@@ -11,7 +11,7 @@ import random
 import sys
 import types
 import warnings
-from functools import reduce
+from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
 from typing import (
@@ -89,6 +89,7 @@ class Mobject:
             Callable[["Mobject"], "Animation"],
         ] = {}
         cls._add_intrinsic_animation_overrides()
+        cls._original__init__ = cls.__init__
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
         self.color = Color(color) if color else None
@@ -174,6 +175,51 @@ class Mobject:
                 f"{cls.animation_overrides[animation_class].__qualname__} and "
                 f"{override_func.__qualname__}.",
             )
+
+    @classmethod
+    def set_default(cls, **kwargs):
+        """Sets the default values of keyword arguments.
+
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+
+        Examples
+        --------
+
+        ::
+
+            >>> from manim import Square, GREEN
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color #83c167>, 0.25)
+            >>> Square.set_default()
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color white>, 0.0)
+
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
+
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.set_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     @property
     def animate(self):
