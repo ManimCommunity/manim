@@ -243,7 +243,12 @@ class CoordinateSystem:
             The positioned label.
         """
         return self._get_axis_label(
-            label, self.get_x_axis(), edge, direction, buff=buff, **kwargs
+            label,
+            self.get_x_axis(),
+            edge,
+            direction,
+            buff=buff,
+            **kwargs,
         )
 
     def get_y_axis_label(
@@ -291,7 +296,12 @@ class CoordinateSystem:
         """
 
         return self._get_axis_label(
-            label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
+            label,
+            self.get_y_axis(),
+            edge,
+            direction,
+            buff=buff,
+            **kwargs,
         )
 
     # move to a util_file, or Mobject()??
@@ -693,7 +703,9 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+            lambda t: self.coords_to_point(t, function(t)),
+            t_range=t_range,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -749,7 +761,8 @@ class CoordinateSystem:
     def get_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
+            lambda t: self.coords_to_point(*function(t)[:dim]),
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -1056,7 +1069,7 @@ class CoordinateSystem:
                             graph_point,
                         ],
                     ),
-                )
+                ),
             )
 
             rect = Rectangle().replace(points, stretch=True)
@@ -1203,7 +1216,10 @@ class CoordinateSystem:
         return angle_of_vector(p1 - p0)
 
     def slope_of_tangent(
-        self, x: float, graph: "ParametricFunction", **kwargs
+        self,
+        x: float,
+        graph: "ParametricFunction",
+        **kwargs,
     ) -> float:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
@@ -1234,7 +1250,10 @@ class CoordinateSystem:
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
     def get_derivative_graph(
-        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
+        self,
+        graph: "ParametricFunction",
+        color: Color = GREEN,
+        **kwargs,
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
 
@@ -1469,7 +1488,7 @@ class CoordinateSystem:
             *(
                 self.get_vertical_line(self.i2gp(x, graph), **kwargs)
                 for x in np.linspace(x_range[0], x_range[1], num_lines)
-            )
+            ),
         )
 
     def get_T_label(
@@ -1834,7 +1853,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 *(
                     Dot(point=vertex, radius=vertex_dot_radius, **vertex_dot_style)
                     for vertex in vertices
-                )
+                ),
             )
             line_graph["vertex_dots"] = vertex_dots
 
@@ -2015,7 +2034,12 @@ class ThreeDAxes(Axes):
         """
 
         positioned_label = self._get_axis_label(
-            label, self.get_z_axis(), edge, direction, buff=buff, **kwargs
+            label,
+            self.get_z_axis(),
+            edge,
+            direction,
+            buff=buff,
+            **kwargs,
         )
         positioned_label.rotate(rotation, axis=rotation_axis)
         return positioned_label
@@ -2265,7 +2289,9 @@ class NumberPlane(Axes):
     def get_vector(self, coords: Sequence[float], **kwargs):
         kwargs["buff"] = 0
         return Arrow(
-            self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
+            self.coords_to_point(0, 0),
+            self.coords_to_point(*coords),
+            **kwargs,
         )
 
     def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50):
@@ -2538,7 +2564,9 @@ class PolarPlane(Axes):
     def get_vector(self, coords, **kwargs):
         kwargs["buff"] = 0
         return Arrow(
-            self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
+            self.coords_to_point(0, 0),
+            self.coords_to_point(*coords),
+            **kwargs,
         )
 
     def prepare_for_nonlinear_transform(self, num_inserted_curves=50):
@@ -2851,7 +2879,9 @@ class ComplexPlane(NumberPlane):
         return [*x_numbers, *y_numbers]
 
     def get_coordinate_labels(
-        self, *numbers: Iterable[Union[float, complex]], **kwargs
+        self,
+        *numbers: Iterable[Union[float, complex]],
+        **kwargs,
     ) -> VGroup:
         """Generates the :class:`~.DecimalNumber` mobjects for the coordinates of the plane.
 

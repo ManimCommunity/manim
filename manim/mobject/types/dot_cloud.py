@@ -9,12 +9,20 @@ from .opengl_point_cloud_mobject import OpenGLPMobject
 
 class DotCloud(OpenGLPMobject):
     def __init__(
-        self, color=YELLOW, stroke_width=2.0, radius=2.0, density=10, **kwargs
+        self,
+        color=YELLOW,
+        stroke_width=2.0,
+        radius=2.0,
+        density=10,
+        **kwargs,
     ):
         self.radius = radius
         self.epsilon = 1.0 / density
         super().__init__(
-            stroke_width=stroke_width, density=density, color=color, **kwargs
+            stroke_width=stroke_width,
+            density=density,
+            color=color,
+            **kwargs,
         )
 
     def init_points(self):

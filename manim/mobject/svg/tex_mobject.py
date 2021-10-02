@@ -430,7 +430,11 @@ class Tex(MathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
+        self,
+        *tex_strings,
+        arg_separator="",
+        tex_environment="center",
+        **kwargs,
     ):
         super().__init__(
             *tex_strings,
@@ -470,7 +474,9 @@ class BulletedList(Tex):
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
         super().__init__(
-            *line_separated_items, tex_environment=tex_environment, **kwargs
+            *line_separated_items,
+            tex_environment=tex_environment,
+            **kwargs,
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)

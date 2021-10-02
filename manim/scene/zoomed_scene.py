@@ -84,7 +84,7 @@ class ZoomedScene(MovingCameraScene):
         zoom_factor=0.15,
         image_frame_stroke_width=3,
         zoom_activated=False,
-        **kwargs
+        **kwargs,
     ):
         self.zoomed_display_height = zoomed_display_height
         self.zoomed_display_width = zoomed_display_width
@@ -110,7 +110,8 @@ class ZoomedScene(MovingCameraScene):
         # Initialize camera and display
         zoomed_camera = MovingCamera(**self.zoomed_camera_config)
         zoomed_display = ImageMobjectFromCamera(
-            zoomed_camera, **self.zoomed_camera_image_mobject_config
+            zoomed_camera,
+            **self.zoomed_camera_image_mobject_config,
         )
         zoomed_display.add_display_frame()
         for mob in zoomed_camera.frame, zoomed_display:

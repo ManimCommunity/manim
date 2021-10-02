@@ -601,7 +601,10 @@ class Circle(Arc):
 
     @staticmethod
     def from_three_points(
-        p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
+        p1: Sequence[float],
+        p2: Sequence[float],
+        p3: Sequence[float],
+        **kwargs,
     ):
         """Returns a circle passing through the specified
         three points.
@@ -935,7 +938,10 @@ class Annulus(Circle):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs,
         )
 
     def generate_points(self):
@@ -1268,7 +1274,9 @@ class TangentLine(Line):
         a1 = np.clip(alpha - da, 0, 1)
         a2 = np.clip(alpha + da, 0, 1)
         super().__init__(
-            vmob.point_from_proportion(a1), vmob.point_from_proportion(a2), **kwargs
+            vmob.point_from_proportion(a1),
+            vmob.point_from_proportion(a2),
+            **kwargs,
         )
         self.scale(self.length / self.get_length())
 
@@ -2467,7 +2475,7 @@ class Rectangle(Polygon):
                         color=color,
                     )
                     for i in range(1, count)
-                )
+                ),
             )
             self.add(grid)
         if grid_ystep is not None:
@@ -2481,7 +2489,7 @@ class Rectangle(Polygon):
                         color=color,
                     )
                     for i in range(1, count)
-                )
+                ),
             )
             self.add(grid)
 
@@ -2742,7 +2750,10 @@ class ArrowCircleTip(ArrowTip, Circle):
     ):
         self.start_angle = start_angle
         Circle.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs,
         )
         self.width = length
         self.stretch_to_fit_height(length)

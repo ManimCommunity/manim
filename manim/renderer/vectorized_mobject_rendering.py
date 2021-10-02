@@ -275,7 +275,9 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
     vao = renderer.context.simple_vertex_array(
-        shader.shader_program, vbo, *stroke_data.dtype.names
+        shader.shader_program,
+        vbo,
+        *stroke_data.dtype.names,
     )
     renderer.frame_buffer_object.use()
     vao.render()

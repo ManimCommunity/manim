@@ -217,7 +217,7 @@ class VectorScene(Scene):
             *(
                 Vector(vect, color=color, stroke_width=self.basis_vector_stroke_width)
                 for vect, color in [([1, 0], i_hat_color), ([0, 1], j_hat_color)]
-            )
+            ),
         )
 
     def get_basis_vector_labels(self, **kwargs):
@@ -240,13 +240,17 @@ class VectorScene(Scene):
         return VGroup(
             *(
                 self.get_vector_label(
-                    vect, label, color=color, label_scale_factor=1, **kwargs
+                    vect,
+                    label,
+                    color=color,
+                    label_scale_factor=1,
+                    **kwargs,
                 )
                 for vect, label, color in [
                     (i_hat, "\\hat{\\imath}", X_COLOR),
                     (j_hat, "\\hat{\\jmath}", Y_COLOR),
                 ]
-            )
+            ),
         )
 
     def get_vector_label(
@@ -499,7 +503,7 @@ class VectorScene(Scene):
                 Dot(x * RIGHT + y * UP)
                 for x in range(-x_max, x_max)
                 for y in range(-y_max, y_max)
-            )
+            ),
         )
         dots.set_fill(BLACK, opacity=0)
         dots_halfway = dots.copy().shift(vector / 2).set_fill(WHITE, 1)
@@ -569,7 +573,7 @@ class LinearTransformationScene(VectorScene):
         i_hat_color: Color = X_COLOR,
         j_hat_color: Color = Y_COLOR,
         leave_ghost_vectors: bool = False,
-        **kwargs
+        **kwargs,
     ):
 
         super().__init__(**kwargs)
@@ -829,7 +833,12 @@ class LinearTransformationScene(VectorScene):
         return coords
 
     def add_transformable_label(
-        self, vector, label, transformation_name="L", new_label=None, **kwargs
+        self,
+        vector,
+        label,
+        transformation_name="L",
+        new_label=None,
+        **kwargs,
     ):
         """
         Method for creating, and animating the addition of
@@ -1021,7 +1030,9 @@ class LinearTransformationScene(VectorScene):
         """
         for label in self.transformable_labels:
             label.target = self.get_vector_label(
-                label.vector.target, label.target_text, **label.kwargs
+                label.vector.target,
+                label.target_text,
+                **label.kwargs,
             )
         return self.get_piece_movement(self.transformable_labels)
 

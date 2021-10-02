@@ -23,7 +23,11 @@ class OpenGLPMobject(OpenGLMobject):
     point_radius = _Uniforms()
 
     def __init__(
-        self, stroke_width=2.0, color=YELLOW, render_primitive=moderngl.POINTS, **kwargs
+        self,
+        stroke_width=2.0,
+        color=YELLOW,
+        render_primitive=moderngl.POINTS,
+        **kwargs,
     ):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)

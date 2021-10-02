@@ -26,7 +26,7 @@ class Rotating(Animation):
         about_edge: Optional[np.ndarray] = None,
         run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.axis = axis
         self.radians = radians
@@ -52,7 +52,7 @@ class Rotate(Transform):
         axis: np.ndarray = OUT,
         about_point: Optional[Sequence[float]] = None,
         about_edge: Optional[Sequence[float]] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         if "path_arc" not in kwargs:
             kwargs["path_arc"] = angle

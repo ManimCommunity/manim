@@ -37,7 +37,12 @@ class SurroundingRectangle(RoundedRectangle):
     """
 
     def __init__(
-        self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
+        self,
+        mobject,
+        color=YELLOW,
+        buff=SMALL_BUFF,
+        corner_radius=0.0,
+        **kwargs,
     ):
         self.color = color
         self.buff = buff
@@ -46,7 +51,7 @@ class SurroundingRectangle(RoundedRectangle):
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
             corner_radius=corner_radius,
-            **kwargs
+            **kwargs,
         )
         self.move_to(mobject)
 
@@ -84,7 +89,7 @@ class BackgroundRectangle(SurroundingRectangle):
         stroke_opacity=0,
         fill_opacity=0.75,
         buff=0,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             mobject,
@@ -93,7 +98,7 @@ class BackgroundRectangle(SurroundingRectangle):
             stroke_opacity=stroke_opacity,
             fill_opacity=fill_opacity,
             buff=buff,
-            **kwargs
+            **kwargs,
         )
         self.original_fill_opacity = self.fill_opacity
 
@@ -153,10 +158,12 @@ class Cross(VGroup):
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
-            Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
+            Line(UP + LEFT, DOWN + RIGHT),
+            Line(UP + RIGHT, DOWN + LEFT),
+            **kwargs,
         )
         if mobject is not None:
             self.replace(mobject, stretch=True)

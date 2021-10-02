@@ -983,7 +983,9 @@ class OpenGLMobject:
         respect to that point.
         """
         self.apply_points_function(
-            lambda points: scale_factor * points, works_on_bounding_box=True, **kwargs
+            lambda points: scale_factor * points,
+            works_on_bounding_box=True,
+            **kwargs,
         )
         return self
 
@@ -1006,7 +1008,8 @@ class OpenGLMobject:
     ):
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
-            lambda points: np.dot(points, rot_matrix_T), **kwargs
+            lambda points: np.dot(points, rot_matrix_T),
+            **kwargs,
         )
         return self
 
@@ -1018,7 +1021,8 @@ class OpenGLMobject:
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
         self.apply_points_function(
-            lambda points: np.array([function(p) for p in points]), **kwargs
+            lambda points: np.array([function(p) for p in points]),
+            **kwargs,
         )
         return self
 
@@ -1039,7 +1043,8 @@ class OpenGLMobject:
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
         self.apply_points_function(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
+            lambda points: np.dot(points, full_matrix.T),
+            **kwargs,
         )
         return self
 
@@ -1393,7 +1398,10 @@ class OpenGLMobject:
         from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
-            self, color=color, fill_opacity=opacity, **kwargs
+            self,
+            color=color,
+            fill_opacity=opacity,
+            **kwargs,
         )
         self.add_to_back(self.background_rectangle)
         return self
@@ -1523,7 +1531,7 @@ class OpenGLMobject:
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            )
+            ),
         )
 
     def get_z_index_reference_point(self):
@@ -2004,7 +2012,11 @@ class OpenGLGroup(OpenGLMobject):
 
 class OpenGLPoint(OpenGLMobject):
     def __init__(
-        self, location=ORIGIN, artificial_width=1e-6, artificial_height=1e-6, **kwargs
+        self,
+        location=ORIGIN,
+        artificial_width=1e-6,
+        artificial_height=1e-6,
+        **kwargs,
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height

@@ -52,7 +52,9 @@ def _determine_graph_layout(
         return layout
     elif layout in automatic_layouts and layout not in custom_layouts:
         auto_layout = automatic_layouts[layout](
-            nx_graph, scale=layout_scale, **layout_config
+            nx_graph,
+            scale=layout_scale,
+            **layout_config,
         )
         return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
@@ -80,7 +82,9 @@ def _determine_graph_layout(
                 nx_graph.nodes[v]["subset"] = partition_count
 
         auto_layout = automatic_layouts["partite"](
-            nx_graph, scale=layout_scale, **layout_config
+            nx_graph,
+            scale=layout_scale,
+            **layout_config,
         )
         return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "random":
@@ -749,7 +753,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            self[u].get_center(),
+            self[v].get_center(),
+            z_index=-1,
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 

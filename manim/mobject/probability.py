@@ -151,7 +151,10 @@ class SampleSpace(Rectangle):
         assert hasattr(self, "horizontal_parts")
         parts = self.horizontal_parts
         return self.get_subdivision_braces_and_labels(
-            parts, labels, direction, **kwargs
+            parts,
+            labels,
+            direction,
+            **kwargs,
         )
 
     def get_top_braces_and_labels(self, labels, **kwargs):
@@ -257,7 +260,7 @@ class BarChart(VGroup):
         bar_stroke_width: float = 3,
         bar_names: List[str] = [],
         bar_label_scale_val: float = 0.75,
-        **kwargs
+        **kwargs,
     ):  # What's the return type?
         super().__init__(**kwargs)
         self.n_ticks = n_ticks

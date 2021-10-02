@@ -471,7 +471,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         points = np.array(points)
         self.set_anchors_and_handles(
-            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppc))
+            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppc)),
         )
         return self
 
@@ -657,7 +657,8 @@ class OpenGLVMobject(OpenGLMobject):
             yield self.get_nth_curve_function(n)
 
     def get_curve_functions_with_lengths(
-        self, **kwargs
+        self,
+        **kwargs,
     ) -> Iterable[Tuple[Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
@@ -749,7 +750,7 @@ class OpenGLVMobject(OpenGLMobject):
                     *zip(
                         self.get_start_anchors(),
                         self.get_end_anchors(),
-                    )
+                    ),
                 ),
             ),
         )
@@ -1257,7 +1258,10 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         self.artificial_height = artificial_height
 
         super().__init__(
-            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs,
         )
         self.set_points(np.array([location]))
 
@@ -1279,7 +1283,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         message="Use dashed_ratio instead of positive_space_ratio.",
     )
     def __init__(
-        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
+        self,
+        vmobject,
+        num_dashes=15,
+        dashed_ratio=0.5,
+        color=WHITE,
+        **kwargs,
     ):
         # Simplify with removal of deprecation warning
         self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
@@ -1303,7 +1312,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
                         i * (dash_len + void_len) + dash_len,
                     )
                     for i in range(n)
-                )
+                ),
             )
         # Family is already taken care of by get_subcurve
         # implementation

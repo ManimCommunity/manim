@@ -60,7 +60,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         font_size: float = DEFAULT_FONT_SIZE,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.number = number
@@ -390,7 +390,12 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
+        self,
+        var,
+        label,
+        var_type=DecimalNumber,
+        num_decimal_places=2,
+        **kwargs,
     ):
 
         self.label = MathTex(label) if isinstance(label, str) else label

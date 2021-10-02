@@ -200,7 +200,7 @@ class Paragraph(VGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_no].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_no].__len__() + 1
         return chars
@@ -1144,7 +1144,7 @@ class MarkupText(SVGMobject):
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
-                *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
+                *(self._parse_color(grad["from"]), self._parse_color(grad["to"])),
             )
         # anti-aliasing
         if height is None and width is None:

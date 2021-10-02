@@ -702,7 +702,7 @@ class VMobject(Mobject):
             *(
                 interpolate(self.get_last_point(), point, a)
                 for a in np.linspace(0, 1, nppcc)[1:]
-            )
+            ),
         )
         return self
 
@@ -786,7 +786,10 @@ class VMobject(Mobject):
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc))
+            *(
+                interpolate(points[:-1], points[1:], a)
+                for a in np.linspace(0, 1, nppcc)
+            ),
         )
         return self
 
@@ -1139,7 +1142,8 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function(n)
 
     def get_curve_functions_with_lengths(
-        self, **kwargs
+        self,
+        **kwargs,
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
@@ -2227,7 +2231,12 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         message="Use dashed_ratio instead of positive_space_ratio.",
     )
     def __init__(
-        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
+        self,
+        vmobject,
+        num_dashes=15,
+        dashed_ratio=0.5,
+        color=WHITE,
+        **kwargs,
     ):
         # Simplify with removal of deprecation warning
         self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
@@ -2251,7 +2260,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                         i * (dash_len + void_len) + dash_len,
                     )
                     for i in range(n)
-                )
+                ),
             )
         # Family is already taken care of by get_subcurve
         # implementation

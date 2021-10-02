@@ -92,7 +92,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             else {}
         )
         super().__init__(
-            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs,
         )
         self.move_into_position(width, height)
 
@@ -189,7 +192,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                         within_defs=within_defs or is_defs,
                     )
                     for child in element.childNodes
-                )
+                ),
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
@@ -258,7 +261,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             A VMobject from the given path string, or d attribute.
         """
         return SVGPathMobject(
-            path_string, **self.path_string_config, **parse_style(style)
+            path_string,
+            **self.path_string_config,
+            **parse_style(style),
         )
 
     def attribute_to_float(self, attr):

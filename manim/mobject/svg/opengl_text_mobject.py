@@ -163,7 +163,8 @@ class OpenGLParagraph(OpenGLVGroup):
             [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
         super().__init__(
-            *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
+            *(self.lines[0][i] for i in range(self.lines[0].__len__())),
+            **config,
         )
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
@@ -191,7 +192,7 @@ class OpenGLParagraph(OpenGLVGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_no].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_no].__len__() + 1
         return chars
@@ -1001,7 +1002,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
-                *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
+                *(self._parse_color(grad["from"]), self._parse_color(grad["to"])),
             )
         # anti-aliasing
         if height is None and width is None:

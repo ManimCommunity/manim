@@ -22,7 +22,11 @@ if typing.TYPE_CHECKING:
 
 class GrowFromPoint(Transform):
     def __init__(
-        self, mobject: "Mobject", point: np.ndarray, point_color: str = None, **kwargs
+        self,
+        mobject: "Mobject",
+        point: np.ndarray,
+        point_color: str = None,
+        **kwargs,
     ) -> None:
         self.point = point
         self.point_color = point_color

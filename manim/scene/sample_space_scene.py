@@ -24,7 +24,13 @@ class SampleSpaceScene(Scene):
         self.add(self.get_sample_space(**config))
 
     def get_division_change_animations(
-        self, sample_space, parts, p_list, dimension=1, new_label_kwargs=None, **kwargs
+        self,
+        sample_space,
+        parts,
+        p_list,
+        dimension=1,
+        new_label_kwargs=None,
+        **kwargs,
     ):
         if new_label_kwargs is None:
             new_label_kwargs = {}
@@ -44,7 +50,8 @@ class SampleSpaceScene(Scene):
             label_kwargs = parts.label_kwargs
             label_kwargs.update(new_label_kwargs)
             new_braces, new_labels = sample_space.get_subdivision_braces_and_labels(
-                parts.target, **label_kwargs
+                parts.target,
+                **label_kwargs,
             )
             anims += [
                 Transform(parts.braces, new_braces),
@@ -73,7 +80,11 @@ class SampleSpaceScene(Scene):
         )
 
     def get_conditional_change_anims(
-        self, sub_sample_space_index, value, post_rects=None, **kwargs
+        self,
+        sub_sample_space_index,
+        value,
+        post_rects=None,
+        **kwargs,
     ):
         parts = self.sample_space.horizontal_parts
         sub_sample_space = parts[sub_sample_space_index]
@@ -96,7 +107,10 @@ class SampleSpaceScene(Scene):
 
     def get_prior_rectangles(self):
         return VGroup(
-            *(self.sample_space.horizontal_parts[i].vertical_parts[0] for i in range(2))
+            *(
+                self.sample_space.horizontal_parts[i].vertical_parts[0]
+                for i in range(2)
+            ),
         )
 
     def get_posterior_rectangles(self, buff=MED_LARGE_BUFF):
@@ -114,10 +128,17 @@ class SampleSpaceScene(Scene):
         return post_rects
 
     def get_posterior_rectangle_braces_and_labels(
-        self, post_rects, labels, direction=RIGHT, **kwargs
+        self,
+        post_rects,
+        labels,
+        direction=RIGHT,
+        **kwargs,
     ):
         return self.sample_space.get_subdivision_braces_and_labels(
-            post_rects, labels, direction, **kwargs
+            post_rects,
+            labels,
+            direction,
+            **kwargs,
         )
 
     def update_posterior_braces(self, post_rects):

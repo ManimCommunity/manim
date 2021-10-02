@@ -35,7 +35,7 @@ class ThreeDCamera(Camera):
         theta=-90 * DEGREES,
         gamma=0,
         zoom=1,
-        **kwargs
+        **kwargs,
     ):
         """Initializes the ThreeDCamera
 
@@ -371,7 +371,10 @@ class ThreeDCamera(Camera):
             return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
-        self, *mobjects, use_static_center_func=False, center_func=None
+        self,
+        *mobjects,
+        use_static_center_func=False,
+        center_func=None,
     ):
         """This method allows the mobject to have a fixed orientation,
         even when the camera moves around.

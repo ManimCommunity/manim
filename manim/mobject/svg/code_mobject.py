@@ -278,7 +278,10 @@ class Code(VGroup):
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
             super().__init__(
-                self.background_mobject, self.line_numbers, self.code, **kwargs
+                self.background_mobject,
+                self.line_numbers,
+                self.code,
+                **kwargs,
             )
         else:
             super().__init__(

@@ -21,7 +21,9 @@ class ChangingDecimal(Animation):
         self.check_validity_of_input(decimal_mob)
         self.number_update_func = number_update_func
         super().__init__(
-            decimal_mob, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            decimal_mob,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
         )
 
     def check_validity_of_input(self, decimal_mob: DecimalNumber) -> None:
@@ -34,9 +36,14 @@ class ChangingDecimal(Animation):
 
 class ChangeDecimalToValue(ChangingDecimal):
     def __init__(
-        self, decimal_mob: DecimalNumber, target_number: int, **kwargs
+        self,
+        decimal_mob: DecimalNumber,
+        target_number: int,
+        **kwargs,
     ) -> None:
         start_number = decimal_mob.number
         super().__init__(
-            decimal_mob, lambda a: interpolate(start_number, target_number, a), **kwargs
+            decimal_mob,
+            lambda a: interpolate(start_number, target_number, a),
+            **kwargs,
         )

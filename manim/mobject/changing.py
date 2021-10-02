@@ -41,7 +41,7 @@ class AnimatedBoundary(VGroup):
         back_and_forth=True,
         draw_rate_func=smooth,
         fade_rate_func=smooth,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.colors = colors
@@ -147,7 +147,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         stroke_width: float = 2,
         stroke_color: Color = WHITE,
         dissipating_time: Optional[float] = None,
-        **kwargs
+        **kwargs,
     ):
         kwargs.pop("min_distance_to_new_point", None)  #
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)

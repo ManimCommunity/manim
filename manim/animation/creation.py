@@ -113,7 +113,9 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+        self,
+        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None],
+        **kwargs,
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
@@ -127,7 +129,8 @@ class ShowPartial(Animation):
         alpha: float,
     ) -> None:
         submobject.pointwise_become_partial(
-            starting_submobject, *self._get_bounds(alpha)
+            starting_submobject,
+            *self._get_bounds(alpha),
         )
 
     def _get_bounds(self, alpha: float) -> None:
@@ -425,7 +428,9 @@ class ShowIncreasingSubsets(Animation):
         for mobj in self.all_submobs:
             mobj.set_opacity(0)
         super().__init__(
-            group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            group,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -517,6 +522,6 @@ class AddTextWordByWord(Succession):
                     Animation(word, run_time=0.005 * len(word) ** 1.5),
                 ]
                 for word in text_mobject
-            )
+            ),
         )
         super().__init__(*anims, **kwargs)

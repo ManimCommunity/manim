@@ -31,7 +31,7 @@ class AnimationGroup(Animation):
         run_time: Optional[float] = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
@@ -154,7 +154,7 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -166,7 +166,7 @@ class LaggedStartMap(LaggedStart):
         mobject: Mobject,
         arg_creator: Callable[[Mobject], str] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         args_list = []
         for submob in mobject:

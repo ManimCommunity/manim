@@ -94,7 +94,7 @@ class FocusOn(Transform):
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -152,7 +152,7 @@ class Indicate(Transform):
         scale_factor: float = 1.2,
         color: str = YELLOW,
         rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
@@ -226,7 +226,7 @@ class Flash(AnimationGroup):
         color: str = YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.point = point
         self.color = color
@@ -401,7 +401,7 @@ class ApplyWave(Homotopy):
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         x_min = mobject.get_left()[0]
         x_max = mobject.get_right()[0]
@@ -520,7 +520,7 @@ class Wiggle(Animation):
         scale_about_point: Optional[np.ndarray] = None,
         rotate_about_point: Optional[np.ndarray] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle
@@ -607,7 +607,7 @@ class Circumscribe(Succession):
         color: Color = YELLOW,
         run_time=1,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        **kwargs
+        **kwargs,
     ):
         if shape is Rectangle:
             frame = SurroundingRectangle(
@@ -647,5 +647,6 @@ class Circumscribe(Succession):
             )
         else:
             super().__init__(
-                ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
+                ShowPassingFlash(frame, time_width, run_time=run_time),
+                **kwargs,
             )

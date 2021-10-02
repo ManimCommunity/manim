@@ -57,7 +57,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         dt=1e-8,
         discontinuities=None,
         use_smoothing=True,
-        **kwargs
+        **kwargs,
     ):
         self.function = function
         t_range = [0, 1, 0.01] if t_range is None else t_range
@@ -161,7 +161,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """An implicit function.
 

@@ -24,11 +24,13 @@ class UpdateFromFunc(Animation):
         mobject: "Mobject",
         update_function: typing.Callable[["Mobject"], typing.Any],
         suspend_mobject_updating: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.update_function = update_function
         super().__init__(
-            mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            mobject,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -42,7 +44,10 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 
 class MaintainPositionRelativeTo(Animation):
     def __init__(
-        self, mobject: "Mobject", tracked_mobject: "Mobject", **kwargs
+        self,
+        mobject: "Mobject",
+        tracked_mobject: "Mobject",
+        **kwargs,
     ) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(

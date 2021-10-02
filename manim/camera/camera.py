@@ -462,7 +462,9 @@ class Camera:
         )
 
     def capture_mobject(
-        self, mobject, **kwargs
+        self,
+        mobject,
+        **kwargs,
     ):  # TODO Write better docstrings for this method.
         return self.capture_mobjects([mobject], **kwargs)
 

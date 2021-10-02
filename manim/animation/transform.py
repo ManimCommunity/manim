@@ -203,7 +203,10 @@ class ReplacementTransform(Transform):
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(
-            mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
+            mobject,
+            target_mobject,
+            replace_mobject_with_target_in_scene=True,
+            **kwargs,
         )
 
 
@@ -261,7 +264,10 @@ class _MethodAnimation(MoveToTarget):
 
 class ApplyMethod(Transform):
     def __init__(
-        self, method: Callable, *args, **kwargs
+        self,
+        method: Callable,
+        *args,
+        **kwargs,
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
         """
         Method is a method of Mobject, ``args`` are arguments for
@@ -410,7 +416,10 @@ class ApplyComplexFunction(ApplyMethod):
 
 class CyclicReplace(Transform):
     def __init__(
-        self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
+        self,
+        *mobjects: Mobject,
+        path_arc: float = 90 * DEGREES,
+        **kwargs,
     ) -> None:
         self.group = Group(*mobjects)
         super().__init__(self.group, path_arc=path_arc, **kwargs)
@@ -456,7 +465,10 @@ class TransformAnimations(Transform):
                     anim.starting_mobject.align_data(anim.target_mobject)
 
         super().__init__(
-            start_anim.mobject, end_anim.mobject, rate_func=rate_func, **kwargs
+            start_anim.mobject,
+            end_anim.mobject,
+            rate_func=rate_func,
+            **kwargs,
         )
         # Rewire starting and ending mobjects
         start_anim.mobject = self.starting_mobject

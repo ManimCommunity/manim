@@ -270,7 +270,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             *(
                 VGroup(*(row[i] for row in self.mob_matrix))
                 for i in range(len(self.mob_matrix[0]))
-            )
+            ),
         )
 
     def set_column_colors(self, *colors):

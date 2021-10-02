@@ -54,7 +54,7 @@ class _Fade(Transform):
         shift: Optional[np.ndarray] = None,
         target_position: Optional[Union[np.ndarray, Mobject]] = None,
         scale: float = 1,
-        **kwargs
+        **kwargs,
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")

@@ -473,7 +473,10 @@ def compass_directions(n: int = 4, start_vect: np.ndarray = RIGHT) -> np.ndarray
 
 
 def regular_vertices(
-    n: int, *, radius: float = 1, start_angle: Optional[float] = None
+    n: int,
+    *,
+    radius: float = 1,
+    start_angle: Optional[float] = None,
 ) -> Tuple[np.ndarray, float]:
     """Generates regularly spaced vertices around a circle centered at the origin.
 

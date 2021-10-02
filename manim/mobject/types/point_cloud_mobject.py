@@ -311,12 +311,15 @@ class PointCloudDot(Mobject1D):
         stroke_width=2,
         density=DEFAULT_POINT_DENSITY_1D,
         color=YELLOW,
-        **kwargs
+        **kwargs,
     ):
         self.radius = radius
         self.epsilon = 1.0 / density
         super().__init__(
-            stroke_width=stroke_width, density=density, color=color, **kwargs
+            stroke_width=stroke_width,
+            density=density,
+            color=color,
+            **kwargs,
         )
         self.shift(center)
 

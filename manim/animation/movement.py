@@ -26,7 +26,7 @@ class Homotopy(Animation):
         mobject: "Mobject",
         run_time: float = 3,
         apply_function_kwargs: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """
         Homotopy is a function from
@@ -49,7 +49,8 @@ class Homotopy(Animation):
     ) -> None:
         submobject.points = starting_submobject.points
         submobject.apply_function(
-            self.function_at_time_t(alpha), **self.apply_function_kwargs
+            self.function_at_time_t(alpha),
+            **self.apply_function_kwargs,
         )
 
 
@@ -66,7 +67,10 @@ class SmoothedVectorizedHomotopy(Homotopy):
 
 class ComplexHomotopy(Homotopy):
     def __init__(
-        self, complex_homotopy: Callable[[complex], float], mobject: "Mobject", **kwargs
+        self,
+        complex_homotopy: Callable[[complex], float],
+        mobject: "Mobject",
+        **kwargs,
     ) -> None:
         """
         Complex Homotopy a function Cx[0, 1] to C
@@ -92,7 +96,7 @@ class PhaseFlow(Animation):
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
         rate_func: Callable[[float], float] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
@@ -100,7 +104,7 @@ class PhaseFlow(Animation):
             mobject,
             suspend_mobject_updating=suspend_mobject_updating,
             rate_func=rate_func,
-            **kwargs
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -133,11 +137,13 @@ class MoveAlongPath(Animation):
         mobject: "Mobject",
         path: np.ndarray,
         suspend_mobject_updating: Optional[bool] = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.path = path
         super().__init__(
-            mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            mobject,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:

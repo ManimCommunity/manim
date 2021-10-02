@@ -336,7 +336,9 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
         # Overwrite superclass default to use
         # specialized path_string mobject
         return OpenGLTexSymbol(
-            path_string, **self.path_string_config, **parse_style(style)
+            path_string,
+            **self.path_string_config,
+            **parse_style(style),
         )
 
     def organize_submobjects_left_to_right(self):
@@ -415,7 +417,8 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
             list(self.tex_to_color_map.keys()),
         )
         split_list = split_string_list_to_isolate_substrings(
-            tex_strings, *substrings_to_isolate
+            tex_strings,
+            *substrings_to_isolate,
         )
         if self.arg_separator == " ":
             split_list = [str(x).strip() for x in split_list]
@@ -467,7 +470,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
                 return tex1 == tex2
 
         return OpenGLVGroup(
-            *(m for m in self.submobjects if test(tex, m.get_tex_string()))
+            *(m for m in self.submobjects if test(tex, m.get_tex_string())),
         )
 
     def get_part_by_tex(self, tex, **kwargs):
@@ -520,7 +523,11 @@ class OpenGLTex(OpenGLMathTex):
     """
 
     def __init__(
-        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
+        self,
+        *tex_strings,
+        arg_separator="",
+        tex_environment="center",
+        **kwargs,
     ):
         super().__init__(
             *tex_strings,
@@ -544,7 +551,10 @@ class OpenGLBulletedList(OpenGLTex):
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
         Tex.__init__(
-            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+            self,
+            *line_separated_items,
+            tex_environment=tex_environment,
+            **kwargs,
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)

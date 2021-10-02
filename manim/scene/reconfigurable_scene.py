@@ -40,23 +40,31 @@ class ReconfigurableScene(Scene):
         if not self.allow_recursion:
             return
         alt_scene = self.__class__(
-            skip_animations=True, allow_recursion=False, **new_config
+            skip_animations=True,
+            allow_recursion=False,
+            **new_config,
         )
         alt_state = alt_scene.states[len(self.states) - 1]
 
         if return_to_original_configuration:
             self.clear()
             self.transition_between_states(
-                state_copy, alt_state, **transformation_kwargs
+                state_copy,
+                alt_state,
+                **transformation_kwargs,
             )
             self.transition_between_states(
-                state_copy, original_state, **transformation_kwargs
+                state_copy,
+                original_state,
+                **transformation_kwargs,
             )
             self.clear()
             self.add(*original_state)
         else:
             self.transition_between_states(
-                original_state, alt_state, **transformation_kwargs
+                original_state,
+                alt_state,
+                **transformation_kwargs,
             )
             self.__dict__.update(new_config)
 

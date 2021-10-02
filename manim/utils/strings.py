@@ -57,13 +57,14 @@ def split_string_to_isolate_substrings(full_string, *substrings_to_isolate):
                     full_string.split(substring_to_isolate),
                     it.repeat(substring_to_isolate),
                 ),
-            )
+            ),
         ),
     )
     all_substrings.pop(-1)
     all_substrings = [s for s in all_substrings if s != ""]
     return split_string_list_to_isolate_substrings(
-        all_substrings, *substrings_to_isolate[1:]
+        all_substrings,
+        *substrings_to_isolate[1:],
     )
 
 
@@ -77,6 +78,6 @@ def split_string_list_to_isolate_substrings(string_list, *substrings_to_isolate)
             *(
                 split_string_to_isolate_substrings(s, *substrings_to_isolate)
                 for s in string_list
-            )
+            ),
         ),
     )

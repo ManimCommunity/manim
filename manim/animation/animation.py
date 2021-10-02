@@ -230,7 +230,7 @@ class Animation:
         if config["renderer"] == "opengl":
             return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -468,7 +468,10 @@ def prepare_animation(
 
 class Wait(Animation):
     def __init__(
-        self, run_time: float = 1, stop_condition=None, **kwargs
+        self,
+        run_time: float = 1,
+        stop_condition=None,
+        **kwargs,
     ):  # what is stop_condition?
         self.duration: float = run_time
         self.stop_condition = stop_condition

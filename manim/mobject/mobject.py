@@ -1149,7 +1149,8 @@ class Mobject:
 
         """
         self.apply_points_function_about_point(
-            lambda points: scale_factor * points, **kwargs
+            lambda points: scale_factor * points,
+            **kwargs,
         )
         return self
 
@@ -1167,7 +1168,9 @@ class Mobject:
         """Rotates the :class:`~.Mobject` about a certain point."""
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+            lambda points: np.dot(points, rot_matrix.T),
+            about_point,
+            **kwargs,
         )
         return self
 
@@ -1203,7 +1206,8 @@ class Mobject:
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
         self.apply_points_function_about_point(
-            lambda points: np.apply_along_axis(function, 1, points), **kwargs
+            lambda points: np.apply_along_axis(function, 1, points),
+            **kwargs,
         )
         return self
 
@@ -1224,7 +1228,8 @@ class Mobject:
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
+            lambda points: np.dot(points, full_matrix.T),
+            **kwargs,
         )
         return self
 
@@ -1666,7 +1671,10 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Colors = BLACK, opacity: float = 0.75, **kwargs
+        self,
+        color: Colors = BLACK,
+        opacity: float = 0.75,
+        **kwargs,
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1701,7 +1709,10 @@ class Mobject:
         from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
-            self, color=color, fill_opacity=opacity, **kwargs
+            self,
+            color=color,
+            fill_opacity=opacity,
+            **kwargs,
         )
         self.add_to_back(self.background_rectangle)
         return self
@@ -2019,7 +2030,7 @@ class Mobject:
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
-            )
+            ),
         )
 
     def get_z_index_reference_point(self):
