@@ -178,7 +178,13 @@ class OpenGLVMobject(OpenGLMobject):
             self.stroke_opacity = opacity
         if recurse:
             for submobject in self.submobjects:
-                submobject.set_stroke(color, width, opacity, background, recurse)
+                submobject.set_stroke(
+                    color=color,
+                    width=width,
+                    opacity=opacity,
+                    background=background,
+                    recurse=recurse,
+                )
 
         self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
 
