@@ -5,11 +5,13 @@ __all__ = ["deprecated", "deprecated_params"]
 
 import inspect
 import re
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, List, Optional, Tuple, TypeVar, Union
 
 from decorator import decorate, decorator
 
 from .. import logger
+
+T = TypeVar("T", bound=Callable[..., Any])
 
 
 def _get_callable_info(callable: Callable) -> Tuple[str, str]:
@@ -67,12 +69,12 @@ def _deprecation_text_component(
 
 
 def deprecated(
-    func: Callable = None,
+    func: Optional[T] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
     replacement: Optional[str] = None,
     message: Optional[str] = "",
-) -> Callable:
+) -> T:
     """Decorator to mark a callable as deprecated.
 
     The decorated callable will cause a warning when used. The docstring of the

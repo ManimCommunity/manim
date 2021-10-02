@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from _typeshed import SupportsLessThan
-
 """Base classes for objects that can be displayed."""
 
 
@@ -18,7 +16,17 @@ import warnings
 from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Mapping,
+    Protocol,
+    Sequence,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import numpy as np
 
@@ -35,6 +43,7 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
@@ -50,6 +59,12 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..camera.camera import Camera
     from ..utils.bezier import Interpolable
+
+    # Copy from typeshed.
+    class SupportsLessThan(Protocol):
+        def __lt__(self, __other: Any) -> bool:
+            ...
+
 
 # Generic type
 T = TypeVar("T")
@@ -445,6 +460,10 @@ class Mobject:
 
         """
         for m in mobjects:
+            # This type check is not required according to the type annotations
+            # but it was clearly useful in the past (not everyone uses
+            # types properly), so I'm leaving it. The type: ignore is to
+            # suppress warnings about it being unnecessary.
             if not isinstance(m, Mobject):  # type: ignore
                 raise TypeError("All submobjects must be of type Mobject")
             if m is self:
@@ -1373,16 +1392,31 @@ class Mobject:
             mob.points += about_point
         return self
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="rotate",
+    )
     def rotate_in_place(self: MOS, angle: float, axis: np.ndarray = OUT) -> MOS:
         # redundant with default behavior of rotate now.
         return self.rotate(angle, axis=axis)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_in_place(
         self: MOS, scale_factor: float, **kwargs: np.ndarray | None
     ) -> MOS:
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, **kwargs)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_about_point(self: MOS, scale_factor: float, point: np.ndarray) -> MOS:
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, about_point=point)
@@ -1513,6 +1547,11 @@ class Mobject:
     ) -> MOS:
         return self.stretch(factor, dim, about_point=point)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="stretch",
+    )
     def stretch_in_place(self: MOS, factor: float, dim: int) -> MOS:
         # Now redundant with stretch
         return self.stretch(factor, dim)
@@ -1820,7 +1859,7 @@ class Mobject:
 
     def set_color(
         self: MOS,
-        color: Color | ColorStr = YELLOW_C,
+        color: ColorStr = YELLOW_C,
         family: bool = True,
     ) -> MOS:
         """Condition is function which takes in one arguments, (x, y, z).
@@ -1834,7 +1873,7 @@ class Mobject:
         self.color = Color(color)
         return self
 
-    def set_color_by_gradient(self: MOS, *colors: Color | ColorStr) -> MOS:
+    def set_color_by_gradient(self: MOS, *colors: ColorStr) -> MOS:
         self.set_submobject_colors_by_gradient(*colors)
         return self
 
@@ -1853,7 +1892,7 @@ class Mobject:
         )
         return self
 
-    def set_submobject_colors_by_gradient(self: MOS, *colors: ColorStr | Color) -> MOS:
+    def set_submobject_colors_by_gradient(self: MOS, *colors: ColorStr) -> MOS:
         if len(colors) == 0:
             raise ValueError("Need at least one color")
         elif len(colors) == 1:
