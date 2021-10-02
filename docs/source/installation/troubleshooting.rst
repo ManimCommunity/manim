@@ -206,7 +206,7 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 ``choco install manimce`` failed
 --------------------------------
 
-If ``choco install manimce`` failed, it is likely being caused by Python not being added to your PATH variable properly. Try running the following commands in your terminal:
+If ``choco install manimce`` failed, it is likely being caused by Python not being added to your ``PATH`` variable properly. Try running the following commands in your terminal:
 
 1. ``py --version``
 2. ``python --version``
