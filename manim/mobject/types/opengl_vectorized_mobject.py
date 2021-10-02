@@ -5,6 +5,7 @@ from typing import Callable, Iterable, Optional, Tuple
 
 import moderngl
 import numpy as np
+from colour import Color
 
 from ... import config
 from ...constants import *
@@ -152,6 +153,14 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def set_fill(self, color=None, opacity=None, recurse=True):
+        if color is not None:
+            self.fill_color = Color(color)
+        if opacity is not None:
+            self.fill_opacity = opacity
+        if recurse:
+            for submobject in self.submobjects:
+                submobject.set_fill(color, opacity, recurse)
+
         self.set_rgba_array(color, opacity, "fill_rgba", recurse)
         return self
 
@@ -163,6 +172,20 @@ class OpenGLVMobject(OpenGLMobject):
         background=None,
         recurse=True,
     ):
+        if color is not None:
+            self.stroke_color = Color(color)
+        if opacity is not None:
+            self.stroke_opacity = opacity
+        if recurse:
+            for submobject in self.submobjects:
+                submobject.set_stroke(
+                    color=color,
+                    width=width,
+                    opacity=opacity,
+                    background=background,
+                    recurse=recurse,
+                )
+
         self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
 
         if width is not None:
@@ -235,9 +258,12 @@ class OpenGLVMobject(OpenGLMobject):
                 sm1.match_style(sm2)
         return self
 
-    def set_color(self, color, recurse=True):
-        self.set_fill(color, recurse=recurse)
-        self.set_stroke(color, recurse=recurse)
+    def set_color(self, color, opacity=None, recurse=True):
+        self.color = Color(color)
+        if opacity is not None:
+            self.opacity = opacity
+        self.set_fill(color, opacity=opacity, recurse=recurse)
+        self.set_stroke(color, opacity=opacity, recurse=recurse)
         return self
 
     def set_opacity(self, opacity, recurse=True):
