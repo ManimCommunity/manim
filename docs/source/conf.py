@@ -71,6 +71,16 @@ html_extra_path = ["robots.txt"]
 
 exclude_patterns = []
 
+# -- Options for internationalization ----------------------------------------
+# Set the destination directory of the localized po files
+locale_dirs = ["../i18n/"]
+
+# Splits the text in more pot files.
+gettext_compact = False
+
+# Remove useless metadata from po files.
+gettext_last_translator = ""
+gettext_language_team = ""
 
 # -- Options for HTML output -------------------------------------------------
 

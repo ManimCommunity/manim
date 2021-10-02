@@ -60,11 +60,13 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_array_attrs(self):
-        return Mobject.get_array_attrs(self) + ["rgbas"]
+        return super().get_array_attrs() + ["rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
-        """
-        Points must be a Nx3 numpy array, as must rgbas if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -74,7 +76,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             color = Color(color) if color else self.color
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
@@ -214,7 +216,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -231,7 +233,7 @@ class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
 
 class PGroup(PMobject):

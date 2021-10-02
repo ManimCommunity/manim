@@ -162,8 +162,8 @@ class OpenGLParagraph(OpenGLVGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
-        OpenGLVGroup.__init__(
-            self, *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
+        super().__init__(
+            *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
         )
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
@@ -451,8 +451,7 @@ class OpenGLText(OpenGLSVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             color=color,
             fill_opacity=fill_opacity,
@@ -949,8 +948,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
