@@ -21,7 +21,7 @@ from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 from .. import config
 from ..constants import *
-from ..mobject.functions import ParametricFunction
+from ..mobject.functions import ImplicitFunction, ParametricFunction
 from ..mobject.geometry import (
     Arrow,
     Circle,
@@ -200,7 +200,7 @@ class CoordinateSystem:
         return self.get_x_axis().get_unit_size()
 
     def get_y_unit_size(self):
-        return self.get_x_axis().get_unit_size()
+        return self.get_y_axis().get_unit_size()
 
     def get_x_axis_label(
         self,
@@ -696,6 +696,54 @@ class CoordinateSystem:
             lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
         )
         graph.underlying_function = function
+        return graph
+
+    def get_implicit_curve(
+        self,
+        func: Callable,
+        min_depth: int = 5,
+        max_quads: int = 1500,
+        **kwargs,
+    ) -> ImplicitFunction:
+        """Creates the curves of an implicit function.
+
+        Parameters
+        ----------
+        func
+            The function to graph, in the form of f(x, y) = 0.
+        min_depth
+            The minimum depth of the function to calculate.
+        max_quads
+            The maximum number of quads to use.
+        kwargs
+            Additional parameters to pass into :class:`ImplicitFunction`
+
+        Examples
+        --------
+        .. manim:: ImplicitExample
+            :save_last_frame:
+
+            class ImplicitExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    a = ax.get_implicit_curve(
+                        lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
+                    )
+                    self.add(ax, a)
+        """
+        graph = ImplicitFunction(
+            func=func,
+            x_range=self.x_range[:2],
+            y_range=self.y_range[:2],
+            min_depth=min_depth,
+            max_quads=max_quads,
+            **kwargs,
+        )
+        (
+            graph.stretch(self.get_x_unit_size(), 0, about_point=ORIGIN)
+            .stretch(self.get_y_unit_size(), 1, about_point=ORIGIN)
+            .shift(self.get_origin())
+        )
         return graph
 
     def get_parametric_curve(self, function, **kwargs):
