@@ -174,7 +174,7 @@ class Colors(Enum):
     .. note::
 
         The colors of type "C" have an alias equal to the colorname without a letter,
-        e.g. [0] = [0]_C
+        e.g. GREEN = GREEN_C
 
     """
 
