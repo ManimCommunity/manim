@@ -120,7 +120,7 @@ class Paragraph(VGroup):
 
     Parameters
     ----------
-    line_spacing : :class:`int`, optional
+    line_spacing : :class:`float`, optional
         Represents the spacing between lines. Default to -1, which means auto.
     alignment : :class:`str`, optional
         Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
@@ -411,7 +411,7 @@ class Text(SVGMobject):
         stroke_width: float = 0,
         color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
-        line_spacing: int = -1,
+        line_spacing: float = -1,
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
