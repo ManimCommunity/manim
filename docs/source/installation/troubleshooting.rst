@@ -277,7 +277,7 @@ becomes
 A python command does not work
 ------------------------------
 
-If a python command does not work, try adding ``python -m``  in front of it. For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``
+If a python command does not work, try adding ``python -m``  in front of it. For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``.
 
 undefined symbol
 ----------------
