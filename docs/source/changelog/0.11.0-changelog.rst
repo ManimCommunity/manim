@@ -77,11 +77,14 @@ Highlights
 ----------
 
 * `#2094 <https://github.com/ManimCommunity/manim/pull/2094>`__: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves
-   An :class:`~.ImplicitFunction` allows to plot the points :math:`(x, y)` that satisfy some equation :math:`f(x,y) = 0`.
+   An :class:`~.ImplicitFunction` that plots the points :math:`(x, y)` which satisfy some equation :math:`f(x,y) = 0`.
+
+* `#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
+
 
 * `#1998 <https://github.com/ManimCommunity/manim/pull/1998>`__: Added support for Boolean Operations on VMobjects
-   This PR introduces boolean operations for :class:`~.VMobject`, see details and examples at
-   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection`, :class:`~.Exclusion`.
+   This PR introduces boolean operations for :class:`~.VMobject`; see details and examples at
+   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection` and :class:`~.Exclusion`.
 
 Deprecated classes and functions
 --------------------------------
@@ -92,7 +95,7 @@ Deprecated classes and functions
 * `#2102 <https://github.com/ManimCommunity/manim/pull/2102>`__: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`
 
 
-* `#2061 <https://github.com/ManimCommunity/manim/pull/2061>`__: Remove deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`
+* `#2061 <https://github.com/ManimCommunity/manim/pull/2061>`__: Removed deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`
 
 
 * `#2024 <https://github.com/ManimCommunity/manim/pull/2024>`__: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`
@@ -105,9 +108,6 @@ New features
 ------------
 
 * `#2118 <https://github.com/ManimCommunity/manim/pull/2118>`__: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`
-
-
-* `#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
 
 
 * `#1469 <https://github.com/ManimCommunity/manim/pull/1469>`__: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve
@@ -224,7 +224,7 @@ Changes concerning the testing system
 * `#2008 <https://github.com/ManimCommunity/manim/pull/2008>`__: Reuse CLI flag tests for OpenGL
 
 
-* `#2080 <https://github.com/ManimCommunity/manim/pull/2080>`__: Reused tests for :class:`~.Mobject`. for :class:`~.OpenGLMobject`
+* `#2080 <https://github.com/ManimCommunity/manim/pull/2080>`__: Reused :class:`~.Mobject` tests for :class:`~.OpenGLMobject`
 
 
 Changes to our development infrastructure
