@@ -2,12 +2,12 @@
 v0.11.0
 *******
 
-:Date: October 01, 2021
+:Date: October 02, 2021
 
 Contributors
 ============
 
-A total of 27 people contributed to this
+A total of 31 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -16,6 +16,7 @@ time.
 * Charlie +
 * Christopher Besch +
 * Darylgolden
+* Evan Boehs +
 * GameDungeon
 * Hugues Devimeux
 * Jerónimo Squartini
@@ -26,6 +27,7 @@ time.
 * Nicolai Weitkemper +
 * Oliver
 * Ryan McCauley
+* Tim +
 * icedcoffeeee
 * imadjamil +
 * leleogere +
@@ -39,9 +41,11 @@ the following contributors.
 * Benjamin Hackl
 * Charlie
 * Darylgolden
+* Evan Boehs
 * GameDungeon
 * Hugues Devimeux
 * Jan-Hendrik Müller
+* Jason Villanueva
 * Laith Bahodi
 * Mark Miller
 * Mysaa
@@ -58,16 +62,32 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 45 pull requests were merged for this release.
+A total of 55 pull requests were merged for this release.
 
 Breaking changes
 ----------------
 
+* `#1990 <https://github.com/ManimCommunity/manim/pull/1990>`__: Changed and improved the implementation of :meth:`.CoordinateSystem.get_area` to work without Riemann rectangles
+   This changes how :meth:`.CoordinateSystem.get_area` is implemented. To mimic the old behavior (tiny Riemann rectangles), use :meth:`.CoordinateSystem.get_riemann_rectangles` with a small value for ``dx``.
+
 * `#2095 <https://github.com/ManimCommunity/manim/pull/2095>`__: Changed angles for polar coordinates to use math convention
    This PR switches the parameter names ``phi`` and ``theta`` in :func:`cartesian_to_spherical` and :func:`spherical_to_cartesian` to align with the `usual definition in mathematics <https://user-images.githubusercontent.com/83535735/131709630-87290522-7747-4b21-9411-dd3d35ebaf0f.png>`__.
 
+Highlights
+----------
+
+* `#2094 <https://github.com/ManimCommunity/manim/pull/2094>`__: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves
+   An :class:`~.ImplicitFunction` allows to plot the points :math:`(x, y)` that satisfy some equation :math:`f(x,y) = 0`.
+
+* `#1998 <https://github.com/ManimCommunity/manim/pull/1998>`__: Added support for Boolean Operations on VMobjects
+   This PR introduces boolean operations for :class:`~.VMobject`, see details and examples at
+   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection`, :class:`~.Exclusion`.
+
 Deprecated classes and functions
 --------------------------------
+
+* `#2123 <https://github.com/ManimCommunity/manim/pull/2123>`__: Renamed ``distance`` parameter of :class:`.ThreeDScene` and :class:`.ThreeDCamera` to ``focal_distance``
+
 
 * `#2102 <https://github.com/ManimCommunity/manim/pull/2102>`__: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`
 
@@ -90,15 +110,14 @@ New features
 * `#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
 
 
-* `#1998 <https://github.com/ManimCommunity/manim/pull/1998>`__: Added support for Boolean Operations on VMobjects
-   This PR introduces boolean operations for :class:`~.VMobject`, see details and examples at
-   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection`, :class:`~.Exclusion`.
-
 * `#1469 <https://github.com/ManimCommunity/manim/pull/1469>`__: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve
 
 
 Enhancements
 ------------
+
+* `#2111 <https://github.com/ManimCommunity/manim/pull/2111>`__: Improved setting of OpenGL colors
+
 
 * `#2113 <https://github.com/ManimCommunity/manim/pull/2113>`__: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`
 
@@ -166,10 +185,23 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
+* `#2131 <https://github.com/ManimCommunity/manim/pull/2131>`__: Copyedited the configuration tutorial in the documentation
+
+
+* `#2120 <https://github.com/ManimCommunity/manim/pull/2120>`__: Changed ``manim_directive`` to use a clean configuration via ``tempconfig``
+
+
+* `#2122 <https://github.com/ManimCommunity/manim/pull/2122>`__: Fixed broken links in inheritance graphs by moving them to ``reference.rst``
+
+
 * `#2115 <https://github.com/ManimCommunity/manim/pull/2115>`__: Improved docstring of :meth:`.PMobject.add_points`
 
 
 * `#2116 <https://github.com/ManimCommunity/manim/pull/2116>`__: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate
+
+
+* `#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Changed the way the background color was set in a documentation example to avoid leaking the setting to other examples
+
 
 * `#2101 <https://github.com/ManimCommunity/manim/pull/2101>`__: Added note that translation process is not ready
 
@@ -204,6 +236,18 @@ Changes to our development infrastructure
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* `#2050 <https://github.com/ManimCommunity/manim/pull/2050>`__: Make colour aliases IDE-friendly
+
+
+* `#2126 <https://github.com/ManimCommunity/manim/pull/2126>`__: Fixed whitespace in info message issued by :meth:`.SceneFileWriter.clean_cache`
+
+
+* `#2124 <https://github.com/ManimCommunity/manim/pull/2124>`__: Upgraded several dependencies (in particular: ``skia-pathops``)
+
+
+* `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: Fixed several warnings issued by LGTM
+
+
 * `#2064 <https://github.com/ManimCommunity/manim/pull/2064>`__: Removed duplicate insert shader directory
 
 
@@ -217,12 +261,3 @@ New releases
 ------------
 
 * `#2114 <https://github.com/ManimCommunity/manim/pull/2114>`__: Prepared new release, ``v0.11.0``
-
-
-Unclassified changes
---------------------
-
-* `#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Revert colour of background in docs to BLACK in `Mobject` page.
-
-
-* `#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: Fixed several warnings issued by LGTM
