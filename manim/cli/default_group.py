@@ -1,6 +1,6 @@
 """DefaultGroup allows a subcommand to act as the main command
 
-In particular, this class is what allows `manim` to act as `manim render`.
+In particular, this class is what allows ``manim`` to act as ``manim render``.
 """
 import cloup
 
@@ -10,7 +10,7 @@ __all__ = ["DefaultGroup"]
 
 
 class DefaultGroup(cloup.Group):
-    """Invokes a subcommand marked with `default=True` if any subcommand not
+    """Invokes a subcommand marked with ``default=True`` if any subcommand not
     chosen.
 
     :param default_if_no_args: resolves to the default command if no arguments
