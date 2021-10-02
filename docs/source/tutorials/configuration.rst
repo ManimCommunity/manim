@@ -129,7 +129,7 @@ open the file after it is rendered.
 The config files
 ****************
 
-As the last example shows, executing manim from the command-line might involve
+As the last example shows, executing manim from the command-line may involve
 using many flags at the same time.  This may become a nuisance if you must
 execute the same script many times in a short time period, for example when
 making small incremental tweaks to your scene script.  For this purpose, manim
