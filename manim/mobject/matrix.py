@@ -138,6 +138,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         element_alignment_corner=DR,
         left_bracket="[",
         right_bracket="]",
+        bracket_config={},
         **kwargs,
     ):
         """
@@ -168,6 +169,9 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             the left bracket type, by default "["
         right_bracket : :class:`str`, optional
             the right bracket type, by default "]"
+        bracket_config : :class:`dict`, optional
+            Additional arguments to be passed to :class:`~.MathTex` when constructing
+            the brackets.
 
         """
 
@@ -187,7 +191,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*it.chain(*mob_matrix))
         self.add(self.elements)
-        self.add_brackets(self.left_bracket, self.right_bracket)
+        self.add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
         self.center()
         self.mob_matrix = mob_matrix
         if self.add_background_rectangles_to_entries:
@@ -217,7 +221,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def add_brackets(self, left="[", right="]"):
+    def add_brackets(self, left="[", right="]", **kwargs):
         """Used internally. Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
@@ -235,7 +239,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The current matrix object (self).
         """
 
-        bracket_pair = MathTex(left, right)
+        bracket_pair = MathTex(left, right, **kwargs)
         bracket_pair.scale(2)
         bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
         l_bracket, r_bracket = bracket_pair.split()

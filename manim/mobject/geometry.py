@@ -1559,7 +1559,8 @@ class Vector(Arrow):
         self,
         integer_labels: bool = True,
         n_dim: int = 2,
-        color: str = WHITE,
+        color: Optional[Color] = None,
+        **kwargs,
     ):
         """Creates a label based on the coordinates of the vector.
 
@@ -1570,24 +1571,26 @@ class Vector(Arrow):
         n_dim
             The number of dimensions of the vector.
         color
-            The color of the label.
+            Sets the color of label, optional.
+        kwargs
+            Additional arguments to be passed to :class:`~.Matrix`.
 
         Examples
         --------
 
-        .. manim VectorCoordinateLabel
+        .. manim:: VectorCoordinateLabel
             :save_last_frame:
 
             class VectorCoordinateLabel(Scene):
                 def construct(self):
                     plane = NumberPlane()
 
-                    vect_1 = Vector([1, 2])
-                    vect_2 = Vector([-3, -2])
-                    label_1 = vect1.coordinate_label()
-                    label_2 = vect2.coordinate_label(color=YELLOW)
+                    vec_1 = Vector([1, 2])
+                    vec_2 = Vector([-3, -2])
+                    label_1 = vec_1.coordinate_label()
+                    label_2 = vec_2.coordinate_label(color=YELLOW)
 
-                    self.add(plane, vect_1, vect_2, label_1, label_2)
+                    self.add(plane, vec_1, vec_2, label_1, label_2)
         """
         # avoiding circular imports
         from .matrix import Matrix
@@ -1597,8 +1600,7 @@ class Vector(Arrow):
             vect = np.round(vect).astype(int)
         vect = vect[:n_dim]
         vect = vect.reshape((n_dim, 1))
-
-        label = Matrix(vect)
+        label = Matrix(vect, **kwargs)
         label.scale(LARGE_BUFF - 0.2)
 
         shift_dir = np.array(self.get_end())
@@ -1607,7 +1609,8 @@ class Vector(Arrow):
         else:  # Pointing left
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
-        label.set_color(color)
+        if color is not None:
+            label.set_color(label)
         return label
 
 
