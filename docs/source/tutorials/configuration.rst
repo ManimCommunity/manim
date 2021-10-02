@@ -4,7 +4,7 @@ Configuration
 Manim provides an extensive configuration system that allows it to adapt to
 many different use cases.  There are many configuration options that can be
 configured at different times during the scene rendering process.  Each option
-can be configured programmatically via `the ManimConfig class`_, or at the time
+can be configured programmatically via `the ManimConfig class`_, at the time
 of command invocation via `command-line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
@@ -12,7 +12,7 @@ is first imported via `the config files`_.
 The ManimConfig class
 *********************
 
-The most direct way of configuring manim is via the global ``config`` object,
+The most direct way of configuring manim is through the global ``config`` object,
 which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax or
 with dict-like syntax:
@@ -23,8 +23,8 @@ with dict-like syntax:
    >>> config.background_color = WHITE
    >>> config["background_color"] = WHITE
 
-The former is preferred; the latter is provided mostly for backwards
-compatibility.
+.. note:: The former is preferred; the latter is provided for backwards
+          compatibility.
 
 Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.Animation`, read some of their default configuration from the global
@@ -100,7 +100,6 @@ right after it's done rendering.
 
 .. note:: The ``-p`` flag does not change any properties of the global
           ``config`` dict.  The ``-p`` flag is only a command-line convenience.
-
 
 Examples
 ========
