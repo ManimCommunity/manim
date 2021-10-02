@@ -52,8 +52,8 @@ class ThreeDScene(Scene):
 
     @deprecated_params(
         params="distance",
-        since="v0.10.0",
-        until="v0.11.0",
+        since="v0.11.0",
+        until="v0.12.0",
         message="Use focal_distance instead.",
     )
     def set_camera_orientation(
@@ -199,8 +199,8 @@ class ThreeDScene(Scene):
 
     @deprecated_params(
         params="distance",
-        since="v0.10.0",
-        until="v0.11.0",
+        since="v0.11.0",
+        until="v0.12.0",
         message="Use focal_distance instead.",
     )
     def move_camera(

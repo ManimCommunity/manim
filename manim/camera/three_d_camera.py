@@ -164,7 +164,11 @@ class ThreeDCamera(Camera):
         """
         return self.theta_tracker.get_value()
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        message="use focal_distance instead.",
+    )
     def get_distance(self):
         return self.get_focal_distance()
 
@@ -219,7 +223,11 @@ class ThreeDCamera(Camera):
         """
         self.theta_tracker.set_value(value)
 
-    @deprecated
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        message="use focal_distance instead.",
+    )
     def set_distance(self, value):
         return self.set_focal_distance(value)
 
