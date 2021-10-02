@@ -194,7 +194,7 @@ The following steps are due to `Michael Mrozek from a StackExchange answer <http
 3. Click ``Environment Variables``...
 4. Select ``PATH`` in the ``System variables`` section
 5. Click ``Edit``
-6. Add Python's path to the end of the list (the paths are separated by semicolons). 
+6. Add Python's path to the end of the list (the paths are separated by semicolons).
 
 For example:
 
@@ -209,8 +209,8 @@ For example:
 ``choco install manimce`` failed
 --------------------------------
 
-If ``choco install manimce`` failed, 
-it is likely being caused by Python not being added to your ``PATH`` variable properly. 
+If ``choco install manimce`` failed,
+it is likely being caused by Python not being added to your ``PATH`` variable properly.
 Try running the following commands in your terminal:
 
 1. ``py --version``
@@ -218,15 +218,15 @@ Try running the following commands in your terminal:
 3. ``py3 --version``
 4. ``python3 --version``
 
-Minimally, ``py --version`` and ``python --version`` should return a version. 
-If none of these commands are recognized, 
-this means that Python was installed on your system, but was not added to PATH. 
+Minimally, ``py --version`` and ``python --version`` should return a version.
+If none of these commands are recognized,
+this means that Python was installed on your system, but was not added to PATH.
 See above for directions to add it to your PATH variable.
 
-If any of these commands opens up the Windows store, 
-this is likely interfering with the process. 
-This is because Chocolatey runs a command that calls python or python3, 
-and opening up the Windows store is not the expected behavior. 
+If any of these commands opens up the Windows store,
+this is likely interfering with the process.
+This is because Chocolatey runs a command that calls python or python3,
+and opening up the Windows store is not the expected behavior.
 See below to fix aliases.
 
 (Windows) Fix Aliases
@@ -239,17 +239,17 @@ See below to fix aliases.
 cm-super
 --------
 
-Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, 
-install the ``cm-super`` package, then delete the ``media`` directory and 
+Did you install LaTeX using MiKTeX? If so, open the MiKTeX console,
+install the ``cm-super`` package, then delete the ``media`` directory and
 try to render the scene again.
 
 Config
 ------
 
-We've dropped the use of CONFIG in the 
-Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021. 
-This means parameters that were previously specified in the 
-CONFIG dictionary should now be passed directly into the constructor. 
+We've dropped the use of CONFIG in the
+Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021.
+This means parameters that were previously specified in the
+CONFIG dictionary should now be passed directly into the constructor.
 Practically, this means that old constructions like:
 
 .. code-block:: python
@@ -302,8 +302,8 @@ becomes:
 A python command does not work
 ------------------------------
 
-If a python command does not work, 
-try adding ``python -m``  in front of it. 
+If a python command does not work,
+try adding ``python -m``  in front of it.
 For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``.
 
 undefined symbol
