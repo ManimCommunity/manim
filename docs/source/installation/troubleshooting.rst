@@ -201,6 +201,8 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 
   Your Python install location may be in a different location
 
+(This section is taken from `StackExchange<https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`).
+
 ``choco install manimce`` failed
 --------------------------------
 
