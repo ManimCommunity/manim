@@ -1,3 +1,0 @@
-[tool.pycln]
-path = "./manim/"
-expand_stars=true
