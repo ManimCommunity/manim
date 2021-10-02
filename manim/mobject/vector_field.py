@@ -9,8 +9,7 @@ __all__ = [
 import itertools as it
 import random
 from math import ceil, floor
-
-from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, Type, Iterable
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Sequence, Tuple, Type
 
 import numpy as np
 from colour import Color
