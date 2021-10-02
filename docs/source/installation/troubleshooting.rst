@@ -222,7 +222,7 @@ If any of these commands opens up the Windows store, this is likely interfering 
 
 1. Go to the Windows Settings.
 2. Under Apps and Features, there are an application execution aliases.
-3. Within this menu disable the alias that is causing the issue
+3. Within this menu disable the alias(es) that is causing the issue (``python`` and/or ``python3``).
 
 cm-super
 --------
