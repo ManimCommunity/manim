@@ -183,7 +183,7 @@ have to install it.
 
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.
 
-(Windows) `Python is not recognized as an internal or external command, operable program or batch file.`
+(Windows) ``Python is not recognized as an internal or external command, operable program or batch file.``
 --------------------------------------------------------------------------------------------------------
 
 1. Open System Properties (Right click Computer in the start menu, or use the keyboard shortcut Win+Pause)
@@ -197,15 +197,17 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 
   C:\Windows;C:\Windows\System32;C:\Python27
 
-`choco install manimce` failed
+``choco install manimce`` failed
 ------------------------------
 
-If choco install manimce failed, it is likely being caused by Python not being added to your PATH variable properly. Try running the following commands in your terminal:
-1. `py --version`
-2. `python --version`
-3. `py3 --version`
-4. `python3 --version`
-Minimally, `py --version` and `python --version` should return a version. If none of these commands are recognized, this means that Python was installed on your system, but was not added to PATH. See above for directions to add it to your PATH variable.
+If ``choco install manimce`` failed, it is likely being caused by Python not being added to your PATH variable properly. Try running the following commands in your terminal:
+
+1. ``py --version``
+2. ``python --version``
+3. ``py3 --version``
+4. ``python3 --version``
+
+Minimally, ``py --version`` and ``python --version`` should return a version. If none of these commands are recognized, this means that Python was installed on your system, but was not added to PATH. See above for directions to add it to your PATH variable.
 
 If any of these commands opens up the Windows store, this is likely interfering with the process. This is because Chocolatey runs a command that calls python or python3, and opening up the Windows store is not the expected behavior. See below to fix aliases.
 
@@ -218,7 +220,7 @@ If any of these commands opens up the Windows store, this is likely interfering 
 cm-super
 --------
 
-Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the `cm-super` package, then delete the `media` directory and try to render the scene again.
+Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the ``cm-super`` package, then delete the ``media`` directory and try to render the scene again.
 
 Config
 ------
@@ -275,7 +277,7 @@ becomes
 A python command does not work
 ------------------------------
 
-If a python command does not work, try adding `python -m`  in front of it. For example, if `pip install manim` does not work, you can try `python -m pip install manim`
+If a python command does not work, try adding ``python -m``  in front of it. For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``
 
 undefined symbol
 ----------------
