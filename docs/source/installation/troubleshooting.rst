@@ -186,12 +186,17 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 (Windows) ``Python is not recognized as an internal or external command, operable program or batch file.``
 ----------------------------------------------------------------------------------------------------------
 
+To fix this, you need to add the Python executable to your ``PATH`` environment variable.
+The following steps are due to `Michael Mrozek from a StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__.
+
 1. Open ``System Properties`` (Right click ``Computer`` in the start menu, or use the keyboard shortcut ``Win`` + ``Pause``)
 2. Click ``Advanced system settings`` in the sidebar.
 3. Click ``Environment Variables``...
 4. Select ``PATH`` in the ``System variables`` section
 5. Click ``Edit``
-6. Add Python's path to the end of the list (the paths are separated by semicolons). For example:
+6. Add Python's path to the end of the list (the paths are separated by semicolons). 
+
+For example:
 
 .. code-block:: bash
 
@@ -201,21 +206,28 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 
   Your Python install location may be in a different location
 
-(This section is taken from `StackExchange <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`_).
-
 ``choco install manimce`` failed
 --------------------------------
 
-If ``choco install manimce`` failed, it is likely being caused by Python not being added to your ``PATH`` variable properly. Try running the following commands in your terminal:
+If ``choco install manimce`` failed, 
+it is likely being caused by Python not being added to your ``PATH`` variable properly. 
+Try running the following commands in your terminal:
 
 1. ``py --version``
 2. ``python --version``
 3. ``py3 --version``
 4. ``python3 --version``
 
-Minimally, ``py --version`` and ``python --version`` should return a version. If none of these commands are recognized, this means that Python was installed on your system, but was not added to PATH. See above for directions to add it to your PATH variable.
+Minimally, ``py --version`` and ``python --version`` should return a version. 
+If none of these commands are recognized, 
+this means that Python was installed on your system, but was not added to PATH. 
+See above for directions to add it to your PATH variable.
 
-If any of these commands opens up the Windows store, this is likely interfering with the process. This is because Chocolatey runs a command that calls python or python3, and opening up the Windows store is not the expected behavior. See below to fix aliases.
+If any of these commands opens up the Windows store, 
+this is likely interfering with the process. 
+This is because Chocolatey runs a command that calls python or python3, 
+and opening up the Windows store is not the expected behavior. 
+See below to fix aliases.
 
 (Windows) Fix Aliases
 ---------------------
@@ -227,12 +239,18 @@ If any of these commands opens up the Windows store, this is likely interfering 
 cm-super
 --------
 
-Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the ``cm-super`` package, then delete the ``media`` directory and try to render the scene again.
+Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, 
+install the ``cm-super`` package, then delete the ``media`` directory and 
+try to render the scene again.
 
 Config
 ------
 
-We've dropped the use of CONFIG in the Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021. This means parameters that were previously specified in the CONFIG dictionary should now be passed directly into the constructor. Practically, this means that old constructions like
+We've dropped the use of CONFIG in the 
+Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021. 
+This means parameters that were previously specified in the 
+CONFIG dictionary should now be passed directly into the constructor. 
+Practically, this means that old constructions like:
 
 .. code-block:: python
 
@@ -245,7 +263,7 @@ We've dropped the use of CONFIG in the Community Version :doc:`version 0.2.0<../
       }
       # add methods here
 
-should now be defined like
+should now be defined like:
 
 .. code-block:: python
 
@@ -272,7 +290,7 @@ For scenes, this is even easier:
   class Test(Scene):
       CONFIG = {"a": 1, "b": 2}
 
-becomes
+becomes:
 
 .. code-block:: python
 
@@ -284,7 +302,9 @@ becomes
 A python command does not work
 ------------------------------
 
-If a python command does not work, try adding ``python -m``  in front of it. For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``.
+If a python command does not work, 
+try adding ``python -m``  in front of it. 
+For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``.
 
 undefined symbol
 ----------------
