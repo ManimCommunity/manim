@@ -9,11 +9,13 @@ __all__ = [
 
 import itertools as it
 from dataclasses import dataclass
+from typing import Any, Dict, Union
 
 import numpy as np
+from numpy import ndarray
 
 
-def merge_dicts_recursively(*dicts):
+def merge_dicts_recursively(*dicts) -> Dict[str, Any]:
     """
     Creates a dict whose keyset is the union of all the
     input dictionaries.  The value for each key is based
@@ -33,7 +35,7 @@ def merge_dicts_recursively(*dicts):
     return result
 
 
-def update_dict_recursively(current_dict, *others):
+def update_dict_recursively(current_dict: Dict[str, Any], *others) -> None:
     updated_dict = merge_dicts_recursively(current_dict, *others)
     current_dict.update(updated_dict)
 
@@ -55,10 +57,10 @@ class _Data:
     def __set_name__(self, obj, name):
         self.name = name
 
-    def __get__(self, obj, owner):
+    def __get__(self, obj: Any, owner: Any) -> Union[ndarray, float, int]:
         return obj.__dict__["data"][self.name]
 
-    def __set__(self, obj, array: np.ndarray):
+    def __set__(self, obj: Any, array: np.ndarray) -> None:
         obj.__dict__["data"][self.name] = array
 
 
@@ -70,8 +72,8 @@ class _Uniforms:
     def __set_name__(self, obj, name):
         self.name = name
 
-    def __get__(self, obj, owner):
+    def __get__(self, obj: Any, owner: Any) -> float:
         return obj.__dict__["uniforms"][self.name]
 
-    def __set__(self, obj, num: float):
+    def __set__(self, obj: Any, num: float) -> None:
         obj.__dict__["uniforms"][self.name] = num

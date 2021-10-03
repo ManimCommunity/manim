@@ -11,11 +11,14 @@ import os
 import re
 import unicodedata
 from pathlib import Path
+from typing import Optional
+
+from manim.utils.tex import TexTemplate
 
 from .. import config, logger
 
 
-def tex_hash(expression):
+def tex_hash(expression: str) -> str:
     id_str = str(expression)
     hasher = hashlib.sha256()
     hasher.update(id_str.encode())
@@ -23,7 +26,11 @@ def tex_hash(expression):
     return hasher.hexdigest()[:16]
 
 
-def tex_to_svg_file(expression, environment=None, tex_template=None):
+def tex_to_svg_file(
+    expression: str,
+    environment: Optional[str] = None,
+    tex_template: Optional[TexTemplate] = None,
+) -> str:
     """Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
@@ -51,7 +58,11 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
     return convert_to_svg(dvi_file, tex_template.output_format)
 
 
-def generate_tex_file(expression, environment=None, tex_template=None):
+def generate_tex_file(
+    expression: str,
+    environment: Optional[str] = None,
+    tex_template: Optional[TexTemplate] = None,
+) -> str:
     """Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
@@ -88,7 +99,12 @@ def generate_tex_file(expression, environment=None, tex_template=None):
     return result
 
 
-def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
+def tex_compilation_command(
+    tex_compiler: str,
+    output_format: str,
+    tex_file: str,
+    tex_dir: str,
+) -> str:
     """Prepares the tex compilation command with all necessary cli flags
 
     Parameters
@@ -140,7 +156,7 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     return " ".join(commands)
 
 
-def insight_inputenc_error(match):
+def insight_inputenc_error(match) -> None:
     code_point = chr(int(match[1], 16))
     name = unicodedata.name(code_point)
     yield f"TexTemplate does not support character '{name}' (U+{match[1]})"
@@ -156,7 +172,7 @@ LATEX_ERROR_INSIGHTS = [
 ]
 
 
-def compile_tex(tex_file, tex_compiler, output_format):
+def compile_tex(tex_file: str, tex_compiler: str, output_format: str) -> str:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
     Parameters
@@ -244,7 +260,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
     return result
 
 
-def convert_to_svg(dvi_file, extension, page=1):
+def convert_to_svg(dvi_file: str, extension: str, page: int = 1) -> str:
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters

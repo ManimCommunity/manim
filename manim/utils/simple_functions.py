@@ -34,7 +34,7 @@ def choose_using_cache(n, r):
     return CHOOSE_CACHE[n][r]
 
 
-def choose(n, r, use_cache=True):
+def choose(n, r, use_cache: bool = True):
     if use_cache:
         return choose_using_cache(n, r)
     if n < r:
@@ -88,7 +88,7 @@ def fdiv(a, b, zero_over_zero_value=None):
     return np.true_divide(a, b, out=out, where=where)
 
 
-def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
+def binary_search(function, target, lower_bound, upper_bound, tolerance: float = 1e-4):
     lh = lower_bound
     rh = upper_bound
     while abs(rh - lh) > tolerance:
