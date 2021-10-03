@@ -154,7 +154,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(self, color=None, opacity=None, recurse=True):
         if color is not None:
-            self.fill_color = Color(color)
+            if isinstance(color, str):
+                self.fill_color = Color(color)
+            else:
+                self.fill_color = color
         if opacity is not None:
             self.fill_opacity = opacity
         if recurse:
@@ -173,7 +176,10 @@ class OpenGLVMobject(OpenGLMobject):
         recurse=True,
     ):
         if color is not None:
-            self.stroke_color = Color(color)
+            if isinstance(color, str):
+                self.stroke_color = Color(color)
+            else:
+                self.stroke_color = color
         if opacity is not None:
             self.stroke_opacity = opacity
         if recurse:
@@ -259,9 +265,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def set_color(self, color, opacity=None, recurse=True):
-        self.color = Color(color)
+        if isinstance(color, str):
+            self.color = Color(color)
+        else:
+            self.color = color
         if opacity is not None:
             self.opacity = opacity
+
         self.set_fill(color, opacity=opacity, recurse=recurse)
         self.set_stroke(color, opacity=opacity, recurse=recurse)
         return self
