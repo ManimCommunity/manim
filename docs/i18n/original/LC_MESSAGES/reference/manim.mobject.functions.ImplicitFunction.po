@@ -1,0 +1,128 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:2
+msgid "ImplicitFunction"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:4
+msgid "Qualified name: ``manim.mobject.functions.ImplicitFunction``"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:1 of
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:1 of
+msgid "An implicit function."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:3 of
+msgid "The implicit function in the form ``f(x, y) = 0``."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:4 of
+msgid "The x min and max of the function."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:5 of
+msgid "The y min and max of the function."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:6 of
+msgid "The minimum depth of the function to calculate."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:7 of
+msgid "The maximum number of quads to use."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:8 of
+msgid "Whether or not to smoothen the curves."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:9 of
+msgid "Additional parameters to pass into :class:`VMobject`"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:12 of
+msgid ""
+"A small ``min_depth`` :math:`d` means that some small details might be "
+"ignored if they don't cross an edge of one of the :math:`4^d` uniform "
+"quads."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:16 of
+msgid ""
+"The value of ``max_quads`` strongly corresponds to the quality of the "
+"curve, but a higher number of quads may take longer to render."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction:21 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
+msgid ""
+":obj:`generate_points "
+"<manim.mobject.functions.ImplicitFunction.generate_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
+#: manim.mobject.functions.ImplicitFunction.generate_points:1 of
+msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
+#: of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.functions.ImplicitFunction.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
+#: of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
+#: of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
+#: of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.functions.ImplicitFunction.generate_points:3 of
+msgid ""
+"Gets called upon creation. This is an empty method that can be "
+"implemented by subclasses."
+msgstr ""
+
+

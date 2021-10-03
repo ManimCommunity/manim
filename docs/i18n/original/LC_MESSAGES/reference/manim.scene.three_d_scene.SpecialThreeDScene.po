@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -106,7 +106,7 @@ msgstr ""
 
 #: manim.scene.three_d_scene.SpecialThreeDScene.get_default_camera_position:3
 #: of
-msgid "Dictionary of phi, theta, distance, and gamma."
+msgid "Dictionary of phi, theta, focal_distance, and gamma."
 msgstr ""
 
 #: manim.scene.three_d_scene.SpecialThreeDScene.get_sphere of

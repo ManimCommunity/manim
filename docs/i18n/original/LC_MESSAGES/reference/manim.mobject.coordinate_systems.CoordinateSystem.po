@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,12 +28,13 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:7
 #: manim.mobject.coordinate_systems.CoordinateSystem.angle_of_tangent:5
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_T_label:14
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:5
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:4
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels:5
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_derivative_graph:4
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph:10
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label:4
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line:4
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:9
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_lines_to_point:4
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_riemann_rectangles:4
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group:5
@@ -111,9 +112,7 @@ msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_area:1 of
-msgid ""
-"Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small "
-"enough to visually approximate the area under the graph passed."
+msgid "Returns a :class:`~.Polygon` representing the area under the graph passed."
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
@@ -203,6 +202,18 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line:1 of
 msgid "A horizontal line from the y-axis to a given point in the scene."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`get_implicit_curve "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:1 of
+msgid "Creates the curves of an implicit function."
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.add_coordinates:1:<autosummary>:1
@@ -415,6 +426,7 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_origin
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group
@@ -461,6 +473,7 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_origin
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group
@@ -485,6 +498,7 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_graph_label
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_origin
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_secant_slope_group
@@ -541,42 +555,47 @@ msgstr ""
 msgid "A :class:`~.VGroup` of the label, triangle and vertical line mobjects."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:23 of
-msgid "The graph/curve for which the area needs to be determined."
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:21 of
+msgid "The graph/curve for which the area needs to be gotten."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:24 of
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:22 of
 msgid ""
 "The range of the minimum and maximum x-values of the area. ``x_range = "
 "[x_min, x_max]``."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:25 of
-msgid ""
-"The color of the area. Creates a gradient if an iterable of colors is "
-"provided."
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:23 of
+msgid "The color of the area. Creates a gradient if a list of colors is provided."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:26 of
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:24 of
 msgid "The opacity of the area."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:27 of
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:25 of
 msgid ""
 "If a secondary :attr:`graph` is specified, encloses the area between the "
 "two curves."
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:28 of
-msgid "The factor by which the :attr:`dx` value is scaled."
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:26 of
+msgid "Additional parameters passed to :class:`~.Polygon`"
 msgstr ""
 
-#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:29 of
-msgid "Additional arguments to be passed to :meth:`~.CoordinateSystem.get_area`."
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_area:28 of
+msgid "The :class:`~.Polygon` representing the area."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels
+#: manim.mobject.coordinate_systems.CoordinateSystem.p2c of
+msgid "Raises"
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_area:31 of
-msgid "The :class:`~.VGroup` containing the Riemann Rectangles."
+msgid ""
+"When x_ranges do not match (either area x_range, graph's x_range or "
+"bounded_graph's x_range)."
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels:1 of
@@ -728,6 +747,22 @@ msgstr ""
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_horizontal_line:22
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_vertical_line:22 of
 msgid ":class:`Line`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:3 of
+msgid "The function to graph, in the form of f(x, y) = 0."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:4 of
+msgid "The minimum depth of the function to calculate."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:5 of
+msgid "The maximum number of quads to use."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.get_implicit_curve:6 of
+msgid "Additional parameters to pass into :class:`ImplicitFunction`"
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.get_line_from_axis_to_point:3
@@ -1023,10 +1058,6 @@ msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.input_to_graph_point:23 of
 msgid ":class:`np.ndarray`"
-msgstr ""
-
-#: manim.mobject.coordinate_systems.CoordinateSystem.p2c of
-msgid "Raises"
 msgstr ""
 
 #: manim.mobject.coordinate_systems.CoordinateSystem.input_to_graph_point:25 of

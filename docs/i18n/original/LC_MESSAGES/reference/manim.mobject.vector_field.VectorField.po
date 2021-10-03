@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -34,6 +34,7 @@ msgstr ""
 
 #: manim.mobject.vector_field.VectorField.get_colored_background_image
 #: manim.mobject.vector_field.VectorField.get_nudge_updater
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function
 #: manim.mobject.vector_field.VectorField.nudge_submobjects
 #: manim.mobject.vector_field.VectorField.shift_func
 #: manim.mobject.vector_field.VectorField.start_submobject_movement
@@ -84,81 +85,93 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 msgid ""
 ":obj:`get_colored_background_image "
 "<manim.mobject.vector_field.VectorField.get_colored_background_image>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.get_colored_background_image:1 of
 msgid "Generate an image that displays the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 msgid ""
 ":obj:`get_nudge_updater "
 "<manim.mobject.vector_field.VectorField.get_nudge_updater>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.get_nudge_updater:1 of
 msgid ""
 "Get an update function to move a :class:`~.Mobject` along the vector "
 "field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+msgid ""
+":obj:`get_vectorized_rgba_gradient_function "
+"<manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:1
+#: of
+msgid "Generates a gradient of rgbas as a numpy array"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.nudge:1 of
 msgid "Nudge a :class:`~.Mobject` along the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 msgid ""
 ":obj:`nudge_submobjects "
 "<manim.mobject.vector_field.VectorField.nudge_submobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.nudge_submobjects:1 of
 msgid "Apply a nudge along the vector field to all submobjects."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.scale_func:1 of
 msgid "Scale a vector field function."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.shift_func:1 of
 msgid "Shift a vector field function."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 msgid ""
 ":obj:`start_submobject_movement "
 "<manim.mobject.vector_field.VectorField.start_submobject_movement>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.start_submobject_movement:1 of
 msgid "Start continuously moving all submobjects along the vector field."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 msgid ""
 ":obj:`stop_submobject_movement "
 "<manim.mobject.vector_field.VectorField.stop_submobject_movement>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:28:<autosummary>:1
 #: manim.mobject.vector_field.VectorField.stop_submobject_movement:1 of
 msgid ""
 "Stops the continuous movement started using "
 ":meth:`start_submobject_movement`."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:29
+#: ../../source/reference/manim.mobject.vector_field.VectorField.rst:30
 msgid "Attributes"
 msgstr ""
 
@@ -205,6 +218,7 @@ msgstr ""
 
 #: manim.mobject.vector_field.VectorField.get_colored_background_image
 #: manim.mobject.vector_field.VectorField.get_nudge_updater
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function
 #: manim.mobject.vector_field.VectorField.nudge_submobjects
 #: manim.mobject.vector_field.VectorField.shift_func
 #: manim.mobject.vector_field.VectorField.start_submobject_movement
@@ -218,6 +232,7 @@ msgstr ""
 
 #: manim.mobject.vector_field.VectorField.get_colored_background_image
 #: manim.mobject.vector_field.VectorField.get_nudge_updater
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function
 #: manim.mobject.vector_field.VectorField.nudge_submobjects
 #: manim.mobject.vector_field.VectorField.shift_func
 #: manim.mobject.vector_field.VectorField.start_submobject_movement
@@ -251,6 +266,23 @@ msgstr ""
 msgid "The update function."
 msgstr ""
 
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:3
+#: of
+msgid ""
+"start value used for inverse interpolation at "
+":func:`~.inverse_interpolate`"
+msgstr ""
+
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:4
+#: of
+msgid "end value used for inverse interpolation at :func:`~.inverse_interpolate`"
+msgstr ""
+
+#: manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:5
+#: of
+msgid "list of colors to generate the gradient"
+msgstr ""
+
 #: manim.mobject.vector_field.VectorField.nudge:3 of
 msgid "The mobject to move along the vector field"
 msgstr ""
@@ -271,9 +303,9 @@ msgstr ""
 
 #: manim.mobject.vector_field.VectorField.nudge:8 of
 msgid ""
-"Whether to move the mobject along the vector field. If `True` the vector "
-"field takes effect on the center of the given :class:`~.Mobject`. If "
-"`False` the vector field takes effect on the points of the individual "
+"Whether to move the mobject along the vector field. If `False` the vector"
+" field takes effect on the center of the given :class:`~.Mobject`. If "
+"`True` the vector field takes effect on the points of the individual "
 "points of the :class:`~.Mobject`, potentially distorting it."
 msgstr ""
 

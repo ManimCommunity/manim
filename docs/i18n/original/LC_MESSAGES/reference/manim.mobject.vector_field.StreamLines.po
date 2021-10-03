@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -76,74 +76,68 @@ msgid "The colors defining the color gradient of the vector field."
 msgstr ""
 
 #: manim.mobject.vector_field.StreamLines:13 of
-msgid "The minimum x value at which agends are spawned"
+msgid "A sequence of x_min, x_max, delta_x"
 msgstr ""
 
 #: manim.mobject.vector_field.StreamLines:14 of
-msgid "The maximum x value at which agends are spawned"
+msgid "A sequence of y_min, y_max, delta_y"
 msgstr ""
 
 #: manim.mobject.vector_field.StreamLines:15 of
-msgid "The minimum y value at which agends are spawned"
+msgid "A sequence of z_min, z_max, delta_z"
 msgstr ""
 
 #: manim.mobject.vector_field.StreamLines:16 of
-msgid "The maximum y value at which agends are spawned"
-msgstr ""
-
-#: manim.mobject.vector_field.StreamLines:17 of
-msgid "The distance in x direction between two agents."
+msgid ""
+"Enables three_dimensions. Default set to False, automatically turns True "
+"if z_range is not None."
 msgstr ""
 
 #: manim.mobject.vector_field.StreamLines:18 of
-msgid "The distance in y direction between two agents."
-msgstr ""
-
-#: manim.mobject.vector_field.StreamLines:19 of
 msgid ""
 "The amount by which the starting position of each agent is altered along "
 "each axis. Defaults to :code:`delta_y / 2` if not defined."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:20 of
+#: manim.mobject.vector_field.StreamLines:19 of
 msgid "The number of agents generated at each starting point."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:21 of
+#: manim.mobject.vector_field.StreamLines:20 of
 msgid ""
 "The factor by which the distance an agent moves per step is stretched. "
 "Lower values result in a better approximation of the trajectories in the "
 "vector field."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:22 of
+#: manim.mobject.vector_field.StreamLines:21 of
 msgid ""
 "The time the agents get to move in the vector field. Higher values "
 "therefore result in longer stream lines. However, this whole time gets "
 "simulated upon creation."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:23 of
+#: manim.mobject.vector_field.StreamLines:22 of
 msgid ""
 "The maximum number of anchors per line. Lines with more anchors get "
 "reduced in complexity, not in length."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:24 of
+#: manim.mobject.vector_field.StreamLines:23 of
 msgid ""
 "The distance agents can move out of the generation area before being "
 "terminated."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:25 of
+#: manim.mobject.vector_field.StreamLines:24 of
 msgid "The stroke with of the stream lines."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:26 of
+#: manim.mobject.vector_field.StreamLines:25 of
 msgid "The opacity of the stream lines."
 msgstr ""
 
-#: manim.mobject.vector_field.StreamLines:29
+#: manim.mobject.vector_field.StreamLines:28
 #: manim.mobject.vector_field.StreamLines.create:14
 #: manim.mobject.vector_field.StreamLines.end_animation:11
 #: manim.mobject.vector_field.StreamLines.start_animation:13 of

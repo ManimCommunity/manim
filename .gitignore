@@ -66,6 +66,7 @@ docs/i18n/**/*.mo
 docs/i18n/gettext
 docs/i18n/translatable.po
 docs/i18n/untranslatable.po
+docs/i18n/en/
 
 # PyBuilder
 target/

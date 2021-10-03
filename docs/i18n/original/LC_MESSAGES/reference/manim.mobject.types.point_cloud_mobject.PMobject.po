@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
 #: manim.mobject.types.point_cloud_mobject.PMobject.add_points:1 of
-msgid "Points must be a Nx3 numpy array, as must rgbas if it is not None"
+msgid "Add points."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
@@ -221,6 +221,12 @@ msgstr ""
 #: manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
 #: of
 msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.types.point_cloud_mobject.PMobject.add_points:3 of
+msgid ""
+"Points must be a Nx3 numpy array. Rgbas must be a Nx4 numpy array if it "
+"is not None."
 msgstr ""
 
 #: manim.mobject.types.point_cloud_mobject.PMobject.get_point_mobject:1 of

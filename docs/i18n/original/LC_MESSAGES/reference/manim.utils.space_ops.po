@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,7 +23,9 @@ msgstr ""
 #: manim.utils.space_ops.R3_to_complex
 #: manim.utils.space_ops.angle_axis_from_quaternion
 #: manim.utils.space_ops.angle_between_vectors
-#: manim.utils.space_ops.angle_of_vector manim.utils.space_ops.center_of_mass
+#: manim.utils.space_ops.angle_of_vector
+#: manim.utils.space_ops.cartesian_to_spherical
+#: manim.utils.space_ops.center_of_mass
 #: manim.utils.space_ops.compass_directions manim.utils.space_ops.complex_to_R3
 #: manim.utils.space_ops.earclip_triangulation
 #: manim.utils.space_ops.get_unit_normal
@@ -42,6 +44,7 @@ msgstr ""
 #: manim.utils.space_ops.rotation_matrix_transpose
 #: manim.utils.space_ops.rotation_matrix_transpose_from_quaternion
 #: manim.utils.space_ops.shoelace manim.utils.space_ops.shoelace_direction
+#: manim.utils.space_ops.spherical_to_cartesian
 #: manim.utils.space_ops.thick_diagonal manim.utils.space_ops.z_to_vector of
 msgid "Parameters"
 msgstr ""
@@ -49,7 +52,9 @@ msgstr ""
 #: manim.utils.space_ops.R3_to_complex
 #: manim.utils.space_ops.angle_axis_from_quaternion
 #: manim.utils.space_ops.angle_between_vectors
-#: manim.utils.space_ops.angle_of_vector manim.utils.space_ops.center_of_mass
+#: manim.utils.space_ops.angle_of_vector
+#: manim.utils.space_ops.cartesian_to_spherical
+#: manim.utils.space_ops.center_of_mass
 #: manim.utils.space_ops.compass_directions manim.utils.space_ops.complex_to_R3
 #: manim.utils.space_ops.earclip_triangulation
 #: manim.utils.space_ops.find_intersection
@@ -69,6 +74,7 @@ msgstr ""
 #: manim.utils.space_ops.rotation_matrix_transpose
 #: manim.utils.space_ops.rotation_matrix_transpose_from_quaternion
 #: manim.utils.space_ops.shoelace manim.utils.space_ops.shoelace_direction
+#: manim.utils.space_ops.spherical_to_cartesian
 #: manim.utils.space_ops.thick_diagonal manim.utils.space_ops.z_to_vector of
 msgid "Return type"
 msgstr ""
@@ -133,6 +139,16 @@ msgstr ""
 
 #: manim.utils.space_ops.angle_of_vector:5 of
 msgid "The angle of the vector projected."
+msgstr ""
+
+#: manim.utils.space_ops.cartesian_to_spherical:1 of
+msgid ""
+"Returns an array of numbers corresponding to each polar coordinate value "
+"(distance, phi, theta)."
+msgstr ""
+
+#: manim.utils.space_ops.cartesian_to_spherical:4 of
+msgid "A numpy array ``[x, y, z]``."
 msgstr ""
 
 #: manim.utils.space_ops.center_of_mass:1 of
@@ -473,6 +489,36 @@ msgstr ""
 
 #: manim.utils.space_ops.shoelace_direction:5 of
 msgid ":class:`str`"
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:1 of
+msgid ""
+"Returns a numpy array ``[x, y, z]`` based on the spherical coordinates "
+"given."
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:4 of
+msgid ""
+"A list of three floats that correspond to the following:  r - The "
+"distance between the point and the origin.  theta - The azimuthal angle "
+"of the point to the positive x-axis.  phi - The vertical angle of the "
+"point to the positive z-axis."
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:4 of
+msgid "A list of three floats that correspond to the following:"
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:6 of
+msgid "r - The distance between the point and the origin."
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:8 of
+msgid "theta - The azimuthal angle of the point to the positive x-axis."
+msgstr ""
+
+#: manim.utils.space_ops.spherical_to_cartesian:10 of
+msgid "phi - The vertical angle of the point to the positive z-axis."
 msgstr ""
 
 #: manim.utils.space_ops.z_to_vector:1 of

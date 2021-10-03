@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -49,6 +49,12 @@ msgstr ""
 #: manim.utils.color.rgb_to_color manim.utils.color.rgb_to_hex
 #: manim.utils.color.rgba_to_color of
 msgid "Return type"
+msgstr ""
+
+#: manim.utils.color.print_constant_definitions:1 of
+msgid ""
+"A simple function used to generate the constant values below. To run it "
+"paste this function and the Colors class into a file and run them."
 msgstr ""
 
 

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,6 +22,30 @@ msgstr ""
 
 #: ../../source/reference.rst:9
 msgid "The pages linked to here are currently a work in progress."
+msgstr ""
+
+#: ../../source/reference.rst:12
+msgid "Inheritance Graphs"
+msgstr ""
+
+#: ../../source/reference.rst:15
+msgid "Animations"
+msgstr ""
+
+#: ../../source/reference.rst:35
+msgid "Cameras"
+msgstr ""
+
+#: ../../source/reference.rst:47
+msgid "Mobjects"
+msgstr ""
+
+#: ../../source/reference.rst:84
+msgid "Scenes"
+msgstr ""
+
+#: ../../source/reference.rst:100
+msgid "Module Index"
 msgstr ""
 
 

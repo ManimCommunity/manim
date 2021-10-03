@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -242,9 +242,8 @@ msgstr ""
 msgid "The azimuthal angle i.e the angle that spins the camera around the Z_AXIS."
 msgstr ""
 
-#: manim.scene.three_d_scene.ThreeDScene.move_camera:8
-#: manim.scene.three_d_scene.ThreeDScene.set_camera_orientation:7 of
-msgid "The radial distance between ORIGIN and Camera."
+#: manim.scene.three_d_scene.ThreeDScene.move_camera:8 of
+msgid "The radial focal_distance between ORIGIN and Camera."
 msgstr ""
 
 #: manim.scene.three_d_scene.ThreeDScene.move_camera:10
@@ -287,6 +286,10 @@ msgstr ""
 msgid "The Mobjects whose orientation must be unfixed."
 msgstr ""
 
+#: manim.scene.three_d_scene.ThreeDScene.set_camera_orientation:7 of
+msgid "The focal_distance of the Camera."
+msgstr ""
+
 #: manim.scene.three_d_scene.ThreeDScene.set_camera_orientation:11 of
 msgid "The zoom factor of the scene."
 msgstr ""
@@ -294,8 +297,8 @@ msgstr ""
 #: manim.scene.three_d_scene.ThreeDScene.set_to_default_angled_camera_orientation:4
 #: of
 msgid ""
-"Some recognised kwargs are phi, theta, distance, gamma, which have the "
-"same meaning as the parameters in set_camera_orientation."
+"Some recognised kwargs are phi, theta, focal_distance, gamma, which have "
+"the same meaning as the parameters in set_camera_orientation."
 msgstr ""
 
 

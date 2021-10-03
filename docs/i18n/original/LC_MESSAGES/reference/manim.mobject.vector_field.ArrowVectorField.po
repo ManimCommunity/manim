@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"POT-Creation-Date: 2021-10-03 22:29+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -72,30 +72,24 @@ msgid "The colors defining the color gradient of the vector field."
 msgstr ""
 
 #: manim.mobject.vector_field.ArrowVectorField:14 of
-msgid "The minimum x value for which to draw vectors."
+msgid "A sequence of x_min, x_max, delta_x"
 msgstr ""
 
 #: manim.mobject.vector_field.ArrowVectorField:15 of
-msgid "The maximum x value for which to draw vectors."
+msgid "A sequence of y_min, y_max, delta_y"
 msgstr ""
 
 #: manim.mobject.vector_field.ArrowVectorField:16 of
-msgid "The minimum y value for which to draw vectors."
+msgid "A sequence of z_min, z_max, delta_z"
 msgstr ""
 
 #: manim.mobject.vector_field.ArrowVectorField:17 of
-msgid "The maximum y value for which to draw vectors."
-msgstr ""
-
-#: manim.mobject.vector_field.ArrowVectorField:18 of
-msgid "The distance in x direction between two vectors."
+msgid ""
+"Enables three_dimensions. Default set to False, automatically turns True "
+"if z_range is not None."
 msgstr ""
 
 #: manim.mobject.vector_field.ArrowVectorField:19 of
-msgid "The distance in y direction between two vectors."
-msgstr ""
-
-#: manim.mobject.vector_field.ArrowVectorField:20 of
 msgid ""
 "The function determining the displayed size of the vectors. The actual "
 "size of the vector is passed, the returned value will be used as display "
@@ -103,20 +97,20 @@ msgid ""
 " vectors to reduce the clutter."
 msgstr ""
 
-#: manim.mobject.vector_field.ArrowVectorField:23 of
+#: manim.mobject.vector_field.ArrowVectorField:22 of
 msgid "The opacity of the arrows."
 msgstr ""
 
-#: manim.mobject.vector_field.ArrowVectorField:24
+#: manim.mobject.vector_field.ArrowVectorField:23
 #: manim.mobject.vector_field.ArrowVectorField.get_vector:8 of
 msgid "Additional arguments to be passed to the :class:`~.Vector` constructor"
 msgstr ""
 
-#: manim.mobject.vector_field.ArrowVectorField:25 of
+#: manim.mobject.vector_field.ArrowVectorField:24 of
 msgid "Additional arguments to be passed to the :class:`~.VGroup` constructor"
 msgstr ""
 
-#: manim.mobject.vector_field.ArrowVectorField:29 of
+#: manim.mobject.vector_field.ArrowVectorField:28 of
 msgid "Examples"
 msgstr ""
 
