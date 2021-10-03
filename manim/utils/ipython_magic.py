@@ -177,5 +177,5 @@ else:
             return additional_args + args[:-1] + [""] + [args[-1]]
 
 
-def _generate_file_name():
+def _generate_file_name() -> str:
     return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")

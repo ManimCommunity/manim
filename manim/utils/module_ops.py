@@ -121,7 +121,11 @@ def prompt_user_for_choice(scene_classes):
         sys.exit(1)
 
 
-def scene_classes_from_file(file_path, require_single_scene=False, full_list=False):
+def scene_classes_from_file(
+    file_path,
+    require_single_scene: bool = False,
+    full_list: bool = False,
+):
     module = get_module(file_path)
     all_scene_classes = get_scene_classes_from_module(module)
     if full_list:

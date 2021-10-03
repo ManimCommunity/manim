@@ -1,14 +1,24 @@
 import itertools as it
+from typing import Any, List, Union
+
+from manim.mobject.geometry import Circle, Square
+from manim.mobject.opengl_mobject import OpenGLMobject
 
 
-def extract_mobject_family_members(mobject_list, only_those_with_points=False):
+def extract_mobject_family_members(
+    mobject_list: List[Union[Any, Square, OpenGLMobject, Circle]],
+    only_those_with_points: bool = False,
+) -> List[Union[Any, Square, OpenGLMobject, Circle]]:
     result = list(it.chain(*(mob.get_family() for mob in mobject_list)))
     if only_those_with_points:
         result = [mob for mob in result if mob.has_points()]
     return result
 
 
-def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
+def restructure_list_to_exclude_certain_family_members(
+    mobject_list: List[Union[Any, Square, OpenGLMobject, Circle]],
+    to_remove: List[Union[Any, Square, OpenGLMobject, Circle]],
+) -> List[Union[Any, Square, OpenGLMobject, Circle]]:
     """
     Removes anything in to_remove from mobject_list, but in the event that one of
     the items to be removed is a member of the family of an item in mobject_list,
