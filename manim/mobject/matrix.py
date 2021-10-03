@@ -167,11 +167,11 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             by default ``{}``.
         element_alignment_corner
             The corner to which elements are aligned, by default ``DR``.
-        left_bracket : :class:`str`, optional
+        left_bracket
             The left bracket type, by default ``"["``.
-        right_bracket : :class:`str`, optional
+        right_bracket
             The right bracket type, by default ``"]"``.
-        bracket_config : :class:`dict`, optional
+        bracket_config
             Additional arguments to be passed to :class:`~.MathTex` when constructing
             the brackets.
 
