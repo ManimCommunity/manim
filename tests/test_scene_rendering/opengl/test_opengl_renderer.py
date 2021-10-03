@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from manim.renderer.opengl_renderer import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
@@ -44,3 +45,36 @@ def test_force_window_opengl_render_with_format(
     scene.render()
     assert renderer.window is not None
     renderer.window.close()
+
+
+@pytest.mark.parametrize("enable_preview", [False])
+def test_get_frame_with_preview_disabled(use_opengl_renderer):
+    """Get frame is able to fetch frame with the correct dimensions when preview is disabled"""
+    scene = SquareToCircle()
+    assert isinstance(scene.renderer, OpenGLRenderer)
+    assert not config.preview
+
+    renderer = scene.renderer
+    renderer.update_frame(scene)
+    frame = renderer.get_frame()
+
+    # height and width are flipped
+    assert renderer.get_pixel_shape()[0] == frame.shape[1]
+    assert renderer.get_pixel_shape()[1] == frame.shape[0]
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("enable_preview", [True])
+def test_get_frame_with_preview_enabled(use_opengl_renderer):
+    """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""
+    scene = SquareToCircle()
+    assert isinstance(scene.renderer, OpenGLRenderer)
+    assert config.preview is True
+
+    renderer = scene.renderer
+    renderer.update_frame(scene)
+    frame = renderer.get_frame()
+
+    # height and width are flipped
+    assert renderer.get_pixel_shape()[0] == frame.shape[1]
+    assert renderer.get_pixel_shape()[1] == frame.shape[0]
