@@ -20,7 +20,6 @@ import subprocess as sp
 import time
 from pathlib import Path
 from shutil import copyfile
-from typing import List, Union
 
 from manim import __version__, config, logger
 
@@ -114,30 +113,26 @@ def write_to_movie() -> bool:
     )
 
 
-def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
+def add_extension_if_not_present(file_name, extension):
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
 
 
-def add_version_before_extension(file_name: Union[str, Path]) -> Path:
+def add_version_before_extension(file_name):
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
-def guarantee_existence(path: Path) -> str:
+def guarantee_existence(path):
     if not os.path.exists(path):
         os.makedirs(path)
     return os.path.abspath(path)
 
 
-def seek_full_path_from_defaults(
-    file_name: Union[str, Path],
-    default_dir: Path,
-    extensions: List[str],
-) -> Union[str, Path]:
+def seek_full_path_from_defaults(file_name, default_dir, extensions):
     possible_paths = [file_name]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
@@ -149,7 +144,7 @@ def seek_full_path_from_defaults(
     raise OSError(error)
 
 
-def modify_atime(file_path: str) -> None:
+def modify_atime(file_path):
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
@@ -160,7 +155,7 @@ def modify_atime(file_path: str) -> None:
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
 
 
-def open_file(file_path, in_browser: bool = False) -> None:
+def open_file(file_path, in_browser=False):
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else os.path.dirname(file_path))
@@ -219,7 +214,7 @@ def get_template_path():
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file: Path) -> None:
+def add_import_statement(file):
     """Prepends an import statement in a file
 
     Parameters
@@ -233,10 +228,7 @@ def add_import_statement(file: Path) -> None:
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(
-    project_dir: Path = Path("."),
-    template_name: str = "Default",
-) -> None:
+def copy_template_files(project_dir=Path("."), template_name="Default"):
     """Copies template files from templates dir to project_dir.
 
     Parameters

@@ -4,5 +4,3 @@ queries:
   - exclude: py/modification-of-locals
   - exclude: py/multiple-calls-to-init
   - exclude: py/missing-call-to-init
-  - exclude: py/attribute-shadows-method
-  - exclude: py/polluting-import

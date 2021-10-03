@@ -7,7 +7,6 @@ __all__ = [
 
 import copy
 import re
-from typing import Tuple
 
 
 class TexTemplate:
@@ -64,7 +63,7 @@ class TexTemplate:
         placeholder_text=None,
         post_doc_commands=None,
         **kwargs,
-    ) -> None:
+    ):
         self.tex_compiler = (
             tex_compiler
             if tex_compiler is not None
@@ -95,7 +94,7 @@ class TexTemplate:
         )
         self._rebuild()
 
-    def _rebuild(self) -> None:
+    def _rebuild(self):
         """Rebuilds the entire TeX template text from ``\\documentclass`` to ``\\end{document}`` according to all settings and choices."""
         self.body = (
             self.documentclass
@@ -155,7 +154,7 @@ class TexTemplate:
         """
         return self.body.replace(self.placeholder_text, expression)
 
-    def _texcode_for_environment(self, environment: str) -> Tuple[str, str]:
+    def _texcode_for_environment(self, environment):
         """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
         ``\\end{environment}`` strings
 
@@ -193,11 +192,7 @@ class TexTemplate:
 
         return begin, end
 
-    def get_texcode_for_expression_in_env(
-        self,
-        expression: str,
-        environment: str,
-    ) -> str:
+    def get_texcode_for_expression_in_env(self, expression, environment):
         r"""Inserts expression into TeX template wrapped in \begin{environment} and \end{environment}
 
         Parameters

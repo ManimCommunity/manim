@@ -12,10 +12,10 @@ from typing import Any
 
 import numpy as np
 
-# Sometimes there are elements that are not suitable for hashing (too long or
-# run-dependent).  This is used to filter them out.
 from .. import config, logger
 
+# Sometimes there are elements that are not suitable for hashing (too long or
+# run-dependent).  This is used to filter them out.
 KEYS_TO_FILTER_OUT = {
     "original_id",
     "background",
@@ -37,19 +37,18 @@ class _Memoizer:
     content-equality detection.
     """
 
-    ALREADY_PROCESSED_PLACEHOLDER: str
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
     ALREADY_PROCESSED_PLACEHOLDER = "AP"
-    THRESHOLD_WARNING: int = 170_000
+    THRESHOLD_WARNING = 170_000
 
     @classmethod
-    def reset_already_processed(cls) -> None:
+    def reset_already_processed(cls):
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: "_Memoizer", is_method: bool = False):
+    def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.

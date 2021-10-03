@@ -6,8 +6,8 @@ from ..utils.iterables import remove_list_redundancies
 
 def extract_mobject_family_members(
     mobjects,
-    use_z_index: bool = False,
-    only_those_with_points: bool = False,
+    use_z_index=False,
+    only_those_with_points=False,
 ):
     """Returns a list of the types of mobjects and their family members present.
     A "family" in this context refers to a mobject, its submobjects, and their
