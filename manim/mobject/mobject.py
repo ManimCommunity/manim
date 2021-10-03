@@ -180,43 +180,40 @@ class Mobject:
     def set_default(cls, **kwargs):
         """Sets the default values of keyword arguments.
 
-                If this method is called without any additional keyword
-                arguments, the original default values of the initialization
-                method of this class are restored.
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
 
-                Parameters
-                ----------
+        Parameters
+        ----------
 
-                kwargs
-                    Passing any keyword argument will update the default
-                    values of the keyword arguments of the initialization
-                    function of this class.
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
 
-                Examples
-                --------
+        Examples
+        --------
 
-                ::
+        ::
 
-                    >>> from manim import Square, GREEN
-                    >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-                    >>> s = Square(); s.color, s.fill_opacity
-                    (<Color #83c167>, 0.25)
-                    >>> Square.set_default()
-                    >>> s = Square(); s.color, s.fill_opacity
-                    (<Color white>, 0.0)
+            >>> from manim import Square, GREEN
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color #83c167>, 0.25)
+            >>> Square.set_default()
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color white>, 0.0)
 
-                .. manim:: ChangedDefaultTextcolor
-                    :save_last_frame:
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
 
-                    class ChangedDefaultTextcolor(Scene):
-                        def construct(self):
-        <<<<<<< HEAD
-                            self.camera.background_color
-        =======
-                            self.camera.background_color = WHITE
-        >>>>>>> 6d74f5e0a8599c1db9fa680bc024dae512246a0b
-                            Text.set_default(color=BLACK)
-                            self.add(Text("Changing default values is easy!"))
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.set_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
 
         """
         if kwargs:
