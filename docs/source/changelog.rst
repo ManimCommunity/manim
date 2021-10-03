@@ -5,6 +5,7 @@ Changelog
 
 .. toctree::
 
+    changelog/0.11.0-changelog
     changelog/0.10.0-changelog
     changelog/0.9.0-changelog
     changelog/0.8.0-changelog
