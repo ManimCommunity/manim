@@ -48,6 +48,7 @@ from .camera.moving_camera import *
 from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
+from .mobject.boolean_ops import *
 from .mobject.changing import *
 from .mobject.coordinate_systems import *
 from .mobject.frame import *

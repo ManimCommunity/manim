@@ -40,8 +40,10 @@ class OpenGLPMobject(OpenGLMobject):
         return ["points", "rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, opacity=None):
-        """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if rgbas is None and color is None:
             color = YELLOW
@@ -54,7 +56,7 @@ class OpenGLPMobject(OpenGLMobject):
         elif rgbas is not None:
             new_rgbas = rgbas
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
