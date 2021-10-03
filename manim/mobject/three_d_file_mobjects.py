@@ -145,7 +145,7 @@ class OBJMobject(VGroup):
 
     def __init__(self, fp, **kwargs):
 
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.fp = Path(fp)
         self.vertices = []
