@@ -68,7 +68,7 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import TYPE_CHECKING, Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence
 
 import numpy as np
 from colour import Color
@@ -93,9 +93,6 @@ from ..utils.space_ops import (
     rotate_vector,
 )
 from .opengl_compatibility import ConvertToOpenGL
-
-if TYPE_CHECKING:
-    from .matrix import Matrix
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -1564,7 +1561,7 @@ class Vector(Arrow):
         n_dim: int = 2,
         color: Optional[Color] = None,
         **kwargs,
-    ) -> Matrix:
+    ):
         """Creates a label based on the coordinates of the vector.
 
         Parameters
@@ -1594,6 +1591,11 @@ class Vector(Arrow):
                     label_2 = vec_2.coordinate_label(color=YELLOW)
 
                     self.add(plane, vec_1, vec_2, label_1, label_2)
+
+        Returns
+        -------
+        :class:`~.Matrix`
+            The label.
         """
         # avoiding circular imports
         from .matrix import Matrix
