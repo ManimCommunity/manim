@@ -1,0 +1,85 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:2
+msgid "Wiggle"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:4
+msgid "Qualified name: ``manim.animation.indication.Wiggle``"
+msgstr ""
+
+#: manim.animation.indication.Wiggle:1 of
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: manim.animation.indication.Wiggle:1 of
+msgid "Wiggle a Mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.indication.Wiggle:3 of
+msgid "The mobject to wiggle."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:5 of
+msgid "The factor by which the mobject will be temporarily scaled."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:6 of
+msgid "The wiggle angle."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:7 of
+msgid "The number of wiggles."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:8 of
+msgid "The point about which the mobject gets scaled."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:9 of
+msgid "The point around which the mobject gets rotated."
+msgstr ""
+
+#: manim.animation.indication.Wiggle:10 of
+msgid "The duration of the animation"
+msgstr ""
+
+#: manim.animation.indication.Wiggle:13 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
+msgid ""
+":obj:`get_rotate_about_point "
+"<manim.animation.indication.Wiggle.get_rotate_about_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
+msgid ""
+":obj:`get_scale_about_point "
+"<manim.animation.indication.Wiggle.get_scale_about_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
+msgid ""
+":obj:`interpolate_submobject "
+"<manim.animation.indication.Wiggle.interpolate_submobject>`"
+msgstr ""
+
+
