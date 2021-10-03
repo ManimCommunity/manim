@@ -13,5 +13,5 @@ do
 	cat $destFile >> translatable.po
 	echo "OK: $srcFile"
 done
-rm -rf en
-mv build-en en
+rm -rf original
+mv build-en original
