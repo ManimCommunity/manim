@@ -15,7 +15,6 @@ from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
-from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import fdiv
@@ -46,8 +45,6 @@ class NumberLine(Line):
         An iterable of specific values with elongated ticks.
     longer_tick_multiple
         Influences how many times larger elongated ticks are than regular ticks (2 = 2x).
-    color
-        The color of the line.
     rotation
         The angle (in radians) at which the line is rotated.
     stroke_width
@@ -144,7 +141,6 @@ class NumberLine(Line):
         longer_tick_multiple: int = 2,
         exclude_origin_tick: bool = False,
         # visuals
-        color: Color = LIGHT_GREY,
         rotation: float = 0,
         stroke_width: float = 2.0,
         # tip
@@ -200,7 +196,6 @@ class NumberLine(Line):
         self.exclude_origin_tick = exclude_origin_tick
         # visuals
         self.rotation = rotation
-        self.color = color
         # tip
         self.include_tip = include_tip
         self.tip_width = tip_width
@@ -217,7 +212,6 @@ class NumberLine(Line):
             self.x_min * RIGHT,
             self.x_max * RIGHT,
             stroke_width=stroke_width,
-            color=self.color,
             **kwargs,
         )
         if self.length:
