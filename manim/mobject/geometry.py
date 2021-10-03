@@ -1615,7 +1615,7 @@ class Vector(Arrow):
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
         if color is not None:
-            label.set_color(label)
+            label.set_color(color)
         return label
 
 
