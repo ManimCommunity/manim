@@ -208,9 +208,10 @@ class Mobject:
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
 
+            config.background_color = WHITE
+
             class ChangedDefaultTextcolor(Scene):
                 def construct(self):
-                    self.camera.background_color = WHITE
                     Text.set_default(color=BLACK)
                     self.add(Text("Changing default values is easy!"))
 

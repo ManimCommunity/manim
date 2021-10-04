@@ -234,6 +234,8 @@ class OpenGLRenderer:
         # Initialize texture map.
         self.path_to_texture_id = {}
 
+        self._background_color = color_to_rgba(config["background_color"], 1.0)
+
     def init_scene(self, scene):
         self.partial_movie_files = []
         self.file_writer = self._file_writer_class(
@@ -405,8 +407,7 @@ class OpenGLRenderer:
             scene.play_internal()
 
     def clear_screen(self):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
@@ -424,8 +425,7 @@ class OpenGLRenderer:
                 self.window.swap_buffers()
 
     def update_frame(self, scene):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
@@ -531,3 +531,11 @@ class OpenGLRenderer:
             # Only scale wrt one axis
             scale = fh / ph
             return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+
+    @property
+    def background_color(self):
+        return self._background_color
+
+    @background_color.setter
+    def background_color(self, value):
+        self._background_color = color_to_rgba(value, 1.0)
