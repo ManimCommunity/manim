@@ -288,6 +288,7 @@ class Scene:
         """
         pass  # To be implemented in subclasses
 
+    # todo: add next_section()
     def __str__(self):
         return self.__class__.__name__
 
