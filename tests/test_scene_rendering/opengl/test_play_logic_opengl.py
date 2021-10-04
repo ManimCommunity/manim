@@ -65,6 +65,7 @@ def test_non_static_wait_detection(using_temp_opengl_config, disabling_caching):
     assert not scene.is_current_animation_frozen_frame()
 
 
+@pytest.mark.xfail(reason="Should be fixed in #2133")
 def test_t_values_with_cached_data(using_temp_opengl_config):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
