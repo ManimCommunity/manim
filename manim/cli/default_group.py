@@ -12,10 +12,6 @@ __all__ = ["DefaultGroup"]
 class DefaultGroup(cloup.Group):
     """Invokes a subcommand marked with ``default=True`` if any subcommand not
     chosen.
-
-    :param default_if_no_args: resolves to the default command if no arguments
-                               passed.
-
     """
 
     def __init__(self, *args, **kwargs):
