@@ -1598,11 +1598,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
-        self._update_default_configs(
-            (self.axis_config, self.x_axis_config, self.y_axis_config),
-            (axis_config, x_axis_config, y_axis_config),
-        )
-
         self.x_axis_config = merge_dicts_recursively(
             self.axis_config,
             self.x_axis_config,
@@ -1625,12 +1620,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         lines_center_point = [((axis.x_max + axis.x_min) / 2) for axis in self.axes]
 
         self.shift(-self.coords_to_point(*lines_center_point))
-
-    @staticmethod
-    def _update_default_configs(default_configs, passed_configs):
-        for default_config, passed_config in zip(default_configs, passed_configs):
-            if passed_config is not None:
-                update_dict_recursively(default_config, passed_config)
 
     def _create_axis(
         self,
@@ -1920,7 +1909,6 @@ class ThreeDAxes(Axes):
         self.z_length = z_length
 
         self.z_axis_config = {}
-        self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
             self.axis_config,
             self.z_axis_config,
@@ -2108,15 +2096,6 @@ class NumberPlane(Axes):
             "stroke_width": 2,
             "stroke_opacity": 1,
         }
-
-        self._update_default_configs(
-            (self.axis_config, self.y_axis_config, self.background_line_style),
-            (
-                kwargs.pop("axis_config", None),
-                kwargs.pop("y_axis_config", None),
-                background_line_style,
-            ),
-        )
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
@@ -2427,11 +2406,6 @@ class PolarPlane(Axes):
             )
             if azimuth_step is None
             else azimuth_step
-        )
-
-        self._update_default_configs(
-            (self.radius_config, self.background_line_style),
-            (radius_config, background_line_style),
         )
 
         # Defaults to a faded version of line_config
