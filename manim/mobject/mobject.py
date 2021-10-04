@@ -2604,12 +2604,29 @@ class Mobject:
         self,
         mobject: "Mobject",
         copy_submobjects: bool = True,
-        match_center: bool = False,
         match_height: bool = False,
         match_width: bool = False,
+        match_center: bool = False,
+        match_depth: bool = False,
     ):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
+
+        .. note::
+
+            If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
+            will stretch to match the height and width of the original
+
+        Parameters
+        ----------
+        match_height
+            If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
+        match_width
+            If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
+        match_center
+            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+        match_depth
+            If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
 
         Examples
         --------
@@ -2624,7 +2641,8 @@ class Mobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-        # changes the new mobject's center, height, or width to the original's before transformation
+
+        # changes the new mobject's height, width, center, or depth to the original's before transformation
         # if both width and height are matched then the object is stretched to fit both
         if match_height and match_width:
             mobject.stretch_to_fit_height(self.height)
@@ -2635,6 +2653,8 @@ class Mobject:
             mobject.match_width(self)
         if match_center:
             mobject.move_to(self.get_center())
+        if match_depth:
+            mobject.match_depth(self)
 
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
