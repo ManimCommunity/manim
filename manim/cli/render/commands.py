@@ -37,7 +37,7 @@ def render(
 ):
     """Render SCENE(S) from the input FILE.
 
-    FILE is the file path of the script.
+    FILE is the file path of the script or a config file.
 
     SCENES is an optional list of scenes in the file.
     """
@@ -95,7 +95,7 @@ def render(
         return click_args
 
     config.digest_args(click_args)
-    file = args["file"]
+    file = Path(config.input_file)
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
