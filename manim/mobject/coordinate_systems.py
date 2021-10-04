@@ -52,7 +52,7 @@ from ..utils.color import (
     color_gradient,
     invert_color,
 )
-from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
