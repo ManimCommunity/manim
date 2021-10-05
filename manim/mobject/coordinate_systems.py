@@ -2783,8 +2783,8 @@ class PolarPlane(Axes):
 
             class PolarGraphExample(Scene):
                 def construct(self):
-                    plane = PolarPlane(3, 8)
-                    r = lambda theta: np.sin(theta) + np.cos(theta * 4)
+                    plane = PolarPlane()
+                    r = lambda theta: 2 * np.sin(theta * 5)
                     graph = plane.get_polar_graph(r, [0, 2 * PI], color=ORANGE)
                     self.add(plane, graph)
         """
