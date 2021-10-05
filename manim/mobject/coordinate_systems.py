@@ -2765,6 +2765,29 @@ class PolarPlane(Axes):
     def get_polar_graph(
         self, r_func: Callable, theta_range: Sequence[float] = [0, 2 * PI], **kwargs
     ):
+        """A polar graph.
+
+        Parameters
+        ----------
+        r_func
+            The function r of theta.
+        theta_range
+            The range of theta.
+        kwargs
+            Additional parameters passed to :class:`ParametricFunction`.
+
+        Examples
+        --------
+        .. manim:: PolarGraphExample
+            :save_last_frame:
+
+            class PolarGraphExample(Scene):
+                def construct(self):
+                    plane = PolarPlane(3, 8)
+                    r = lambda theta: np.sin(theta) + np.cos(theta * 4)
+                    graph = plane.get_polar_graph(r, [0, 2 * PI], color=ORANGE)
+                    self.add(plane, graph)
+        """
         return ParametricFunction(
             function=lambda th: self.pr2pt(r_func(th), th),
             t_range=theta_range,
