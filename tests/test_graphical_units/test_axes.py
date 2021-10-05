@@ -243,3 +243,11 @@ def test_get_z_axis_label(scene):
     lab = ax.get_z_axis_label(Tex("$z$-label"))
     scene.set_camera_orientation(phi=2 * PI / 5, theta=PI / 5)
     scene.add(ax, lab)
+
+
+@frames_comparison
+def test_polar_graph(scene):
+    polar = PolarPlane()
+    r = lambda theta: 4 * np.sin(theta * 4)
+    polar_graph = polar.get_polar_graph(r)
+    scene.add(polar, polar_graph)
