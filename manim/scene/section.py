@@ -1,7 +1,7 @@
 """building blocks of segmented video api"""
 
 import enum
-import typing
+from typing import Dict
 
 
 class SectionType(enum.Enum):
@@ -18,7 +18,8 @@ class SectionType(enum.Enum):
 
 
 class Section:
-    """a ::class `Scene` can be segmented into multiple Sections
+    """a ::class `Scene` can be segmented into multiple Sections.
+    It consists of multiple animations.
 
     ...
     Attributes
@@ -27,33 +28,38 @@ class Section:
         how is this slide to be played, what is supposed to happen when it ends
     name : string
         human readable, not-unique name of this section
+    first_animation : int
+        animation range start, inclusive
+        gets set on creating of instance, doesn't change afterwards
+    after_last_animation : int
+        animation range end, exclusive
+        gets increased every time a new animation is added
+    video : str
+        to be set once video for this section has been created
     """
 
     def __init__(self, type: SectionType, name: str, first_animation: int):
         self.type = type
-        # names are not intended to be unique
         self.name = name
-        # inclusive
         self.first_animation = first_animation
-        # exclusive
         self.after_last_animation = first_animation
         self.video = ""
 
     def empty(self) -> bool:
+        """are there no animations in this section?"""
+
         return self.first_animation == self.after_last_animation
 
-    def set_video(self, video: str) -> None:
-        self.video = video
-
     def get_dict(self) -> Dict:
+        """get dictionary representation"""
+
         return {
-            "slide_type": self.slide_type,
+            "type": self.type,
             "name": self.name,
-            "slide_id": self.slide_id,
             "first_animation": self.first_animation,
             "after_last_animation": self.after_last_animation,
             "video": self.video,
         }
 
     def __repr__(self):
-        return f"<Slide '{self.name}' from {self.first_animation} to {self.after_last_animation}, stored in '{self.video}'>"
+        return f"<Section '{self.name}' from {self.first_animation} to {self.after_last_animation}, stored in '{self.video}'>"
