@@ -187,7 +187,7 @@ If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvi
 ----------------------------------------------------------------------------------------------------------
 
 To fix this, you need to add the Python executable to your ``PATH`` environment variable.
-Follow the steps by `Michael Mrozek from a StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__.
+Follow the steps in `this StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__.
 
 ``choco install manimce`` failed
 --------------------------------
