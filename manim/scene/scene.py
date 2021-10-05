@@ -10,6 +10,7 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import List
 
 try:
     import dearpygui.dearpygui as dpg
@@ -37,6 +38,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
+from .section import Section
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -69,6 +71,10 @@ class Scene:
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
 
+    Attributes
+    ----------
+        sections : list of :class:`Section`s
+
 
     Examples
     --------
@@ -96,6 +102,7 @@ class Scene:
         self.skip_animations = skip_animations
 
         self.animations = None
+        self.sections: List[Section] = []
         self.stop_condition = None
         self.moving_mobjects = []
         self.static_mobjects = []
