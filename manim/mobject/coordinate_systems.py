@@ -2487,7 +2487,7 @@ class PolarPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non faded lines and circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
-        center = self.get_center_point()
+        center = self.get_origin()
         ratio_faded_lines = self.faded_line_ratio
         offset = self.azimuth_offset
 
@@ -2761,6 +2761,15 @@ class PolarPlane(Axes):
                 )
 
         return MathTex(string, font_size=font_size, **kwargs)
+
+    def get_polar_graph(
+        self, r_func: Callable, theta_range: Sequence[float] = [0, 2 * PI], **kwargs
+    ):
+        return ParametricFunction(
+            function=lambda th: self.pr2pt(r_func(th), th),
+            t_range=theta_range,
+            **kwargs,
+        )
 
 
 class ComplexPlane(NumberPlane):
