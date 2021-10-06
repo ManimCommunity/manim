@@ -11,7 +11,9 @@ __all__ = ["CameraFrame", "MovingCamera"]
 
 import math
 import operator
+
 from numpy import string_
+
 from .. import config
 from ..camera.camera import Camera
 from ..constants import *
@@ -56,7 +58,8 @@ class MovingCamera(Camera):
         if frame is None:
             frame = ScreenRectangle(height=config["frame_height"])
             frame.set_stroke(
-                self.default_frame_stroke_color, self.default_frame_stroke_width
+                self.default_frame_stroke_color,
+                self.default_frame_stroke_width,
             )
         self.frame = frame
         super().__init__(**kwargs)
@@ -176,7 +179,7 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
-    def auto_zoom(self, mobjects, margin = 0, only_mobjects_in_frame = False):
+    def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
         """Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects
 
         Parameters
@@ -200,14 +203,16 @@ class MovingCamera(Camera):
         scene_critical_x_right = None
         scene_critical_y_up = None
         scene_critical_y_down = None
-        
+
         for m in mobjects:
-            if ((m == self.frame) | (only_mobjects_in_frame & operator.not_(self.is_in_frame(m)))):
+            if (m == self.frame) | (
+                only_mobjects_in_frame & operator.not_(self.is_in_frame(m))
+            ):
                 # detected camera frame, should not be used to calculate final position of camera
                 continue
 
             # initialize scene critical points with first mobjects critical points
-            if (scene_critical_x_left == None): 
+            if scene_critical_x_left == None:
                 scene_critical_x_left = m.get_critical_point(LEFT)[0]
                 scene_critical_x_right = m.get_critical_point(RIGHT)[0]
                 scene_critical_y_up = m.get_critical_point(UP)[1]
@@ -216,16 +221,16 @@ class MovingCamera(Camera):
             else:
                 if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
                     scene_critical_x_left = m.get_critical_point(LEFT)[0]
-                
+
                 if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
                     scene_critical_x_right = m.get_critical_point(RIGHT)[0]
-                    
+
                 if m.get_critical_point(UP)[1] > scene_critical_y_up:
                     scene_critical_y_up = m.get_critical_point(UP)[1]
-                    
+
                 if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
                     scene_critical_y_down = m.get_critical_point(DOWN)[1]
-        
+
         # calculate center x and y
         x = (scene_critical_x_left + scene_critical_x_right) / 2
         y = (scene_critical_y_up + scene_critical_y_down) / 2
@@ -235,7 +240,7 @@ class MovingCamera(Camera):
         newHeight = abs(scene_critical_y_up - scene_critical_y_down)
 
         # zoom to fit all mobjects along the side that has the largest size
-        if (newWidth / self.frame.width > newHeight / self.frame.height):
-            return self.frame.animate.set_x(x).set_y(y).set(width = newWidth + margin)
+        if newWidth / self.frame.width > newHeight / self.frame.height:
+            return self.frame.animate.set_x(x).set_y(y).set(width=newWidth + margin)
         else:
-            return self.frame.animate.set_x(x).set_y(y).set(height = newHeight + margin)
+            return self.frame.animate.set_x(x).set_y(y).set(height=newHeight + margin)
