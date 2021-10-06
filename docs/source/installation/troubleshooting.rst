@@ -219,7 +219,7 @@ See below to fix aliases.
 2. Under Apps and Features, there are an application execution aliases.
 3. Within this menu disable the alias(es) that is causing the issue (``python`` and/or ``python3``).
 
-cm-super
+``IndexError: List index out of range``
 --------
 
 Did you install LaTeX using MiKTeX? If so, open the MiKTeX console,
