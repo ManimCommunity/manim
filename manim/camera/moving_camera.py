@@ -195,15 +195,6 @@ class MovingCamera(Camera):
         _AnimationBuilder
             Returns an animation that focuses on a given array of mobjects (or a singular mobject)
 
-        Examples
-        --------
-        ::
-
-            >>> circle = Circle(radius=1, color=RED).to_corner(UP+RIGHT)
-            >>> square = Square().to_corner(UP+LEFT)
-            >>> self.play(self.camera.auto_zoom(circle))
-            >>> self.play(self.camera.auto_zoom(square))
-            >>> self.play(self.camera.auto_zoom(self.mobjects, 1.2))
         """
         scene_critical_x_left = None
         scene_critical_x_right = None
