@@ -1,0 +1,3 @@
+files:
+  - source: /docs/i18n/original/LC_MESSAGES/**/*.po
+    translation: /docs/i18n/%two_letters_code%/LC_MESSAGES/**/%original_file_name%
