@@ -1,8 +1,7 @@
 from manim import *
 
-from .simple_zoom_scene import (
-    test_zoom_pan_to_center,
-)
+from .simple_zoom_scene import test_zoom_pan_to_center
+
 
 def test_zoom():
 
@@ -14,8 +13,9 @@ def test_zoom():
     scene = test_zoom_pan_to_center()
 
     scene.construct()
-    
-    assert(
-        scene.camera.frame_width == abs(s1.get_left()[0] - s2.get_right()[0])
-        and scene.camera.frame.get_center()[0] == (abs(s1.get_center()[0] + s2.get_center()[0]) / 2)
+
+    assert scene.camera.frame_width == abs(
+        s1.get_left()[0] - s2.get_right()[0]
+    ) and scene.camera.frame.get_center()[0] == (
+        abs(s1.get_center()[0] + s2.get_center()[0]) / 2
     )
