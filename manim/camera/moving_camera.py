@@ -177,74 +177,74 @@ class MovingCamera(Camera):
         return [self.frame]
 
     def auto_zoom(self, mobjects, margin = 0, only_mobjects_in_frame = False):
-            """Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects
+        """Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects
 
-            Parameters
-            ----------
-            mobjects
-                The mobject or array of mobjects that the camera should focus on
+        Parameters
+        ----------
+        mobjects
+            The mobject or array of mobjects that the camera should focus on
 
-            margin
-                The amount of padding that should be added to the view (optional)
+        margin
+            The amount of padding that should be added to the view (optional)
 
-            only_mobjects_in_frame
-                If set to True, only allows focusing on mobjects that are already in frame
+        only_mobjects_in_frame
+            If set to True, only allows focusing on mobjects that are already in frame
 
-            Returns
-            -------
-            _AnimationBuilder
-                Returns an animation that focuses on a given array of mobjects (or a singular mobject)
+        Returns
+        -------
+        _AnimationBuilder
+            Returns an animation that focuses on a given array of mobjects (or a singular mobject)
 
-            Examples
-            --------
-            ::
+        Examples
+        --------
+        ::
 
-                >>> circle = Circle(radius=1, color=RED).to_corner(UP+RIGHT)
-                >>> square = Square().to_corner(UP+LEFT)
-                >>> self.play(self.camera.auto_zoom(circle))
-                >>> self.play(self.camera.auto_zoom(square))
-                >>> self.play(self.camera.auto_zoom(self.mobjects, 1.2))
-            """
-            scene_critical_x_left = None
-            scene_critical_x_right = None
-            scene_critical_y_up = None
-            scene_critical_y_down = None
-            
-            for m in mobjects:
-                if ((m == self.frame) | (only_mobjects_in_frame & operator.not_(self.is_in_frame(m)))):
-                    # detected camera frame, should not be used to calculate final position of camera
-                    continue
+            >>> circle = Circle(radius=1, color=RED).to_corner(UP+RIGHT)
+            >>> square = Square().to_corner(UP+LEFT)
+            >>> self.play(self.camera.auto_zoom(circle))
+            >>> self.play(self.camera.auto_zoom(square))
+            >>> self.play(self.camera.auto_zoom(self.mobjects, 1.2))
+        """
+        scene_critical_x_left = None
+        scene_critical_x_right = None
+        scene_critical_y_up = None
+        scene_critical_y_down = None
+        
+        for m in mobjects:
+            if ((m == self.frame) | (only_mobjects_in_frame & operator.not_(self.is_in_frame(m)))):
+                # detected camera frame, should not be used to calculate final position of camera
+                continue
 
-                # initialize scene critical points with first mobjects critical points
-                if (scene_critical_x_left == None): 
-                    scene_critical_x_left = m.get_critical_point(LEFT)[0]
-                    scene_critical_x_right = m.get_critical_point(RIGHT)[0]
-                    scene_critical_y_up = m.get_critical_point(UP)[1]
-                    scene_critical_y_down = m.get_critical_point(DOWN)[1]
+            # initialize scene critical points with first mobjects critical points
+            if (scene_critical_x_left == None): 
+                scene_critical_x_left = m.get_critical_point(LEFT)[0]
+                scene_critical_x_right = m.get_critical_point(RIGHT)[0]
+                scene_critical_y_up = m.get_critical_point(UP)[1]
+                scene_critical_y_down = m.get_critical_point(DOWN)[1]
 
-                else:
-                    if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
-                        scene_critical_x_left = m.get_critical_point(LEFT)[0]
-                    
-                    if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
-                        scene_critical_x_right = m.get_critical_point(RIGHT)[0]
-                        
-                    if m.get_critical_point(UP)[1] > scene_critical_y_up:
-                        scene_critical_y_up = m.get_critical_point(UP)[1]
-                        
-                    if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
-                        scene_critical_y_down = m.get_critical_point(DOWN)[1]
-            
-            # calculate center x and y
-            x = (scene_critical_x_left + scene_critical_x_right) / 2
-            y = (scene_critical_y_up + scene_critical_y_down) / 2
-
-            # calculate proposed width and height of zoomed scene
-            newWidth = abs(scene_critical_x_left - scene_critical_x_right)
-            newHeight = abs(scene_critical_y_up - scene_critical_y_down)
-
-            # zoom to fit all mobjects along the side that has the largest size
-            if (newWidth / self.frame.width > newHeight / self.frame.height):
-                return self.frame.animate.set_x(x).set_y(y).set(width = newWidth + margin)
             else:
-                return self.frame.animate.set_x(x).set_y(y).set(height = newHeight + margin)
+                if m.get_critical_point(LEFT)[0] < scene_critical_x_left:
+                    scene_critical_x_left = m.get_critical_point(LEFT)[0]
+                
+                if m.get_critical_point(RIGHT)[0] > scene_critical_x_right:
+                    scene_critical_x_right = m.get_critical_point(RIGHT)[0]
+                    
+                if m.get_critical_point(UP)[1] > scene_critical_y_up:
+                    scene_critical_y_up = m.get_critical_point(UP)[1]
+                    
+                if m.get_critical_point(DOWN)[1] < scene_critical_y_down:
+                    scene_critical_y_down = m.get_critical_point(DOWN)[1]
+        
+        # calculate center x and y
+        x = (scene_critical_x_left + scene_critical_x_right) / 2
+        y = (scene_critical_y_up + scene_critical_y_down) / 2
+
+        # calculate proposed width and height of zoomed scene
+        newWidth = abs(scene_critical_x_left - scene_critical_x_right)
+        newHeight = abs(scene_critical_y_up - scene_critical_y_down)
+
+        # zoom to fit all mobjects along the side that has the largest size
+        if (newWidth / self.frame.width > newHeight / self.frame.height):
+            return self.frame.animate.set_x(x).set_y(y).set(width = newWidth + margin)
+        else:
+            return self.frame.animate.set_x(x).set_y(y).set(height = newHeight + margin)
