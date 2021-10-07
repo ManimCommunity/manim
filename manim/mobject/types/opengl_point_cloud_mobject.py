@@ -40,8 +40,10 @@ class OpenGLPMobject(OpenGLMobject):
         return ["points", "rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, opacity=None):
-        """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if rgbas is None and color is None:
             color = YELLOW
@@ -54,7 +56,7 @@ class OpenGLPMobject(OpenGLMobject):
         elif rgbas is not None:
             new_rgbas = rgbas
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
@@ -114,7 +116,7 @@ class OpenGLPMobject(OpenGLMobject):
 
     def filter_out(self, condition):
         for mob in self.family_members_with_points():
-            to_keep = ~np.apply_along_axis(condition, 1, mob.get_points())
+            to_keep = ~np.apply_along_axis(condition, 1, mob.points)
             for key in mob.data:
                 mob.data[key] = mob.data[key][to_keep]
         return self
@@ -124,7 +126,7 @@ class OpenGLPMobject(OpenGLMobject):
         function is any map from R^3 to R
         """
         for mob in self.family_members_with_points():
-            indices = np.argsort(np.apply_along_axis(function, 1, mob.get_points()))
+            indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
             for key in mob.data:
                 mob.data[key] = mob.data[key][indices]
         return self
@@ -136,7 +138,7 @@ class OpenGLPMobject(OpenGLMobject):
 
     def point_from_proportion(self, alpha):
         index = alpha * (self.get_num_points() - 1)
-        return self.get_points()[int(index)]
+        return self.points[int(index)]
 
     def pointwise_become_partial(self, pmobject, a, b):
         lower_index = int(a * pmobject.get_num_points())
@@ -146,7 +148,7 @@ class OpenGLPMobject(OpenGLMobject):
         return self
 
     def get_shader_data(self):
-        shader_data = np.zeros(len(self.get_points()), dtype=self.shader_dtype)
+        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
         self.read_data_to_shader(shader_data, "point", "points")
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
@@ -166,7 +168,7 @@ class OpenGLPGroup(OpenGLPMobject):
 
 
 class OpenGLPMPoint(OpenGLPMobject):
-    def __init__(self, location=ORIGIN, stroke_width=4.0, color=BLACK, **kwargs):
+    def __init__(self, location=ORIGIN, stroke_width=4.0, **kwargs):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)
 

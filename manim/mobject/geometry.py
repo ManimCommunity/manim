@@ -749,7 +749,7 @@ class LabeledDot(Dot):
 
         if radius is None:
             radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
-        Dot.__init__(self, radius=radius, **kwargs)
+        super().__init__(radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
 
@@ -1088,15 +1088,6 @@ class Line(TipableVMobject):
     def set_length(self, length):
         return self.scale(length / self.get_length())
 
-    def set_opacity(self, opacity, family=True):
-        # Overwrite default, which would set
-        # the fill opacity
-        self.set_stroke(opacity=opacity)
-        if family:
-            for sm in self.submobjects:
-                sm.set_opacity(opacity, family)
-        return self
-
 
 class DashedLine(Line):
     """A dashed :class:`Line`.
@@ -1191,7 +1182,7 @@ class DashedLine(Line):
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
-            return Line.get_start(self)
+            return super().get_start()
 
     def get_end(self) -> np.ndarray:
         """Returns the end point of the line.

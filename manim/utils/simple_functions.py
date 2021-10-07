@@ -95,9 +95,9 @@ def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
         mh = np.mean([lh, rh])
         lx, mx, rx = (function(h) for h in (lh, mh, rh))
         if lx == target:
-            return lx
+            return lh
         if rx == target:
-            return rx
+            return rh
 
         if lx <= target and rx >= target:
             if mx > target:

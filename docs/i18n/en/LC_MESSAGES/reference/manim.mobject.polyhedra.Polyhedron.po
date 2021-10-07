@@ -1,0 +1,158 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:2
+msgid "Polyhedron"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:4
+msgid "Qualified name: ``manim.mobject.polyhedra.Polyhedron``"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:1 of
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:1 of
+msgid "An abstract polyhedra class."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:3 of
+msgid ""
+"In this implementation, polyhedra are defined with a list of vertex "
+"coordinates in space, and a list of faces. This implementation mirrors "
+"that of a standard polyhedral data format (OFF, object file format)."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces
+#: manim.mobject.polyhedra.Polyhedron.get_edges of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:6 of
+msgid ""
+"A list of coordinates of the corresponding vertices in the polyhedron. "
+"Each coordinate will correspond to a vertex. The vertices are indexed "
+"with the usual indexing of Python."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:8 of
+msgid ""
+"A list of faces. Each face is a sublist containing the indices of the "
+"vertices that form the corners of that face."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:9 of
+msgid "Configuration for the polygons representing the faces of the polyhedron."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:10 of
+msgid ""
+"Configuration for the graph containing the vertices and edges of the "
+"polyhedron."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:13 of
+msgid "Examples"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:14 of
+msgid ""
+"To understand how to create a custom polyhedra, let's use the example of "
+"a rather simple one - a square pyramid."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:39 of
+msgid ""
+"In defining the polyhedron above, we first defined the coordinates of the"
+" vertices. These are the corners of the square base, given as the first "
+"four coordinates in the vertex list, and the apex, the last coordinate in"
+" the list."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:43 of
+msgid ""
+"Next, we define the faces of the polyhedron. The triangular surfaces of "
+"the pyramid are polygons with two adjacent vertices in the base and the "
+"vertex at the apex as corners. We thus define these surfaces in the first"
+" four elements of our face list. The last element defines the base of the"
+" pyramid."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron:47 of
+msgid ""
+"The graph and faces of polyhedra can also be accessed and modified "
+"directly, after instantiation. They are stored in the `graph` and `faces`"
+" attributes respectively."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1 of
+msgid "Creates VGroup of faces from a list of face coordinates."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid ""
+":obj:`extract_face_coords "
+"<manim.mobject.polyhedra.Polyhedron.extract_face_coords>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid "Extracts the coordinates of the vertices in the graph."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+#: manim.mobject.polyhedra.Polyhedron.get_edges:1 of
+msgid "Creates list of cyclic pairwise tuples."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1 of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1 of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.polyhedra.Polyhedron.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1 of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1 of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1 of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.create_faces
+#: manim.mobject.polyhedra.Polyhedron.extract_face_coords
+#: manim.mobject.polyhedra.Polyhedron.get_edges of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.polyhedra.Polyhedron.extract_face_coords:1 of
+msgid ""
+"Extracts the coordinates of the vertices in the graph. Used for updating "
+"faces."
+msgstr ""
+
+

@@ -1,0 +1,110 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.animation.Wait.rst:2
+msgid "Wait"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.Wait.rst:4
+msgid "Qualified name: ``manim.animation.animation.Wait``"
+msgstr ""
+
+#: manim.animation.animation.Wait:1 of
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.Wait.rst:14
+msgid "Methods"
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1 of
+msgid "Begin the animation."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`clean_up_from_scene "
+"<manim.animation.animation.Wait.clean_up_from_scene>`"
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1
+#: manim.animation.animation.Wait.clean_up_from_scene:1 of
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1
+#: manim.animation.animation.Wait.finish:1 of
+msgid "Finish the animation."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1
+#: manim.animation.animation.Wait.interpolate:1 of
+msgid "Set the animation progress."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:1:<autosummary>:1 of
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin:3 of
+msgid ""
+"This method is called right as an animation is being played. As much "
+"initialization as possible, especially any mobject copying, should live "
+"in this method."
+msgstr ""
+
+#: manim.animation.animation.Wait.begin
+#: manim.animation.animation.Wait.clean_up_from_scene
+#: manim.animation.animation.Wait.finish
+#: manim.animation.animation.Wait.interpolate
+#: manim.animation.animation.Wait.update_mobjects of
+msgid "Return type"
+msgstr ""
+
+#: manim.animation.animation.Wait.clean_up_from_scene:3 of
+msgid ""
+"This includes to :meth:`~.Scene.remove` the Animation's "
+":class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: manim.animation.animation.Wait.clean_up_from_scene
+#: manim.animation.animation.Wait.interpolate
+#: manim.animation.animation.Wait.update_mobjects of
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.animation.Wait.clean_up_from_scene:6 of
+msgid "The scene the animation should be cleaned up from."
+msgstr ""
+
+#: manim.animation.animation.Wait.finish:3 of
+msgid "This method gets called when the animation is over."
+msgstr ""
+
+#: manim.animation.animation.Wait.interpolate:3 of
+msgid "This method gets called for every frame during an animation."
+msgstr ""
+
+#: manim.animation.animation.Wait.interpolate:5 of
+msgid ""
+"The relative time to set the aniamtion to, 0 meaning the start, 1 meaning"
+" the end."
+msgstr ""
+
+#: manim.animation.animation.Wait.update_mobjects:1 of
+msgid ""
+"Updates things like starting_mobject, and (for Transforms) "
+"target_mobject.  Note, since typically (always?) self.mobject will have "
+"its updating suspended during the animation, this will do nothing to "
+"self.mobject."
+msgstr ""
+
+

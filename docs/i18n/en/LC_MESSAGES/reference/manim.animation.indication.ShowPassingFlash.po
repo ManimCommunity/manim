@@ -1,0 +1,60 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.indication.ShowPassingFlash.rst:2
+msgid "ShowPassingFlash"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.ShowPassingFlash.rst:4
+msgid "Qualified name: ``manim.animation.indication.ShowPassingFlash``"
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash:1 of
+msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash:1 of
+msgid "Show only a sliver of the VMobject each frame."
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash.finish of
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash:3 of
+msgid "The mobject whose stroke is animated."
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash:4 of
+msgid "The length of the sliver relative to the length of the stroke."
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash:7 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.ShowPassingFlash.rst:14
+msgid "Methods"
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash.finish:1
+#: manim.animation.indication.ShowPassingFlash.finish:1:<autosummary>:1 of
+msgid "Finish the animation."
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash.finish:3 of
+msgid "This method gets called when the animation is over."
+msgstr ""
+
+#: manim.animation.indication.ShowPassingFlash.finish of
+msgid "Return type"
+msgstr ""
+
+

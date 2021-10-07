@@ -354,7 +354,10 @@ class Shader:
         self.name = name
 
         # See if the program is cached.
-        if self.name in shader_program_cache:
+        if (
+            self.name in shader_program_cache
+            and shader_program_cache[self.name].ctx == self.context
+        ):
             self.shader_program = shader_program_cache[self.name]
         elif source is not None:
             # Generate the shader from inline code if it was passed.

@@ -53,7 +53,7 @@ class ManimBanner(VGroup):
     """
 
     def __init__(self, dark_theme: bool = True):
-        VGroup.__init__(self)
+        super().__init__()
 
         logo_green = "#81b29a"
         logo_blue = "#454866"

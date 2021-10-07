@@ -105,12 +105,16 @@ def render(
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
                     scene = SceneClass(renderer)
-                    status = scene.render()
-                    if status:
+                    rerun = scene.render()
+                    if rerun or config["write_all"]:
+                        renderer.num_plays = 0
                         continue
                     else:
                         keep_running = False
                         break
+                if config["write_all"]:
+                    keep_running = False
+
         except Exception:
             error_console.print_exception()
             sys.exit(1)

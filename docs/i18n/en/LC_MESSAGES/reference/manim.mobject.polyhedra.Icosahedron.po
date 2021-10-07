@@ -1,0 +1,71 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:2
+msgid "Icosahedron"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:4
+msgid "Qualified name: ``manim.mobject.polyhedra.Icosahedron``"
+msgstr ""
+
+#: manim.mobject.polyhedra.Icosahedron:1 of
+msgid "Bases: :class:`manim.mobject.polyhedra.Polyhedron`"
+msgstr ""
+
+#: manim.mobject.polyhedra.Icosahedron:1 of
+msgid ""
+"An icosahedron, one of the five platonic solids. It has 20 faces, 30 "
+"edges and 12 vertices."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.polyhedra.Icosahedron:3 of
+msgid "The length of an edge between any two vertices."
+msgstr ""
+
+#: manim.mobject.polyhedra.Icosahedron:6 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:28:<autosummary>:1
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.polyhedra.Icosahedron.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Icosahedron.rst:28:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

@@ -28,13 +28,13 @@ class MappingCamera(Camera):
         self.mapping_func = mapping_func
         self.min_num_curves = min_num_curves
         self.allow_object_intrusion = allow_object_intrusion
-        Camera.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def points_to_pixel_coords(self, points):
-        return Camera.points_to_pixel_coords(
-            self,
+        return super().points_to_pixel_coords(
             np.apply_along_axis(self.mapping_func, 1, points),
-        )
+        )  # TODO: There is an error here, but I don't know how to fix it:
+        # FIXME: Call to method Camera.points_to_pixel_coords with too few arguments; should be no fewer than 3.
 
     def capture_mobjects(self, mobjects, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
@@ -48,8 +48,7 @@ class MappingCamera(Camera):
                 and 0 < mobject.get_num_curves() < self.min_num_curves
             ):
                 mobject.insert_n_curves(self.min_num_curves)
-        Camera.capture_mobjects(
-            self,
+        super().capture_mobjects(
             mobject_copies,
             include_submobjects=False,
             excluded_mobjects=None,
@@ -79,7 +78,7 @@ class OldMultiCamera(Camera):
             )
             for camera_with_start_positions in cameras_with_start_positions
         ]
-        Camera.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def capture_mobjects(self, mobjects, **kwargs):
         for shifted_camera in self.shifted_cameras:
@@ -101,7 +100,7 @@ class OldMultiCamera(Camera):
             )
 
     def set_pixel_array(self, pixel_array, **kwargs):
-        Camera.set_pixel_array(self, pixel_array, **kwargs)
+        super().set_pixel_array(pixel_array, **kwargs)
         for shifted_camera in self.shifted_cameras:
             shifted_camera.camera.set_pixel_array(
                 pixel_array[
@@ -112,7 +111,7 @@ class OldMultiCamera(Camera):
             )
 
     def init_background(self):
-        Camera.init_background(self)
+        super().init_background()
         for shifted_camera in self.shifted_cameras:
             shifted_camera.camera.init_background()
 
@@ -132,8 +131,7 @@ class SplitScreenCamera(OldMultiCamera):
             # TODO: Round up on one if width is odd
             camera.reset_pixel_shape(camera.pixel_height, half_width)
 
-        OldMultiCamera.__init__(
-            self,
+        super().__init__(
             (left_camera, (0, 0)),
             (right_camera, (0, half_width)),
         )

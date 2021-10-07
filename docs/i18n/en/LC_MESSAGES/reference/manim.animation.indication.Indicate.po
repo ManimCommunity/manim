@@ -1,0 +1,63 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.indication.Indicate.rst:2
+msgid "Indicate"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Indicate.rst:4
+msgid "Qualified name: ``manim.animation.indication.Indicate``"
+msgstr ""
+
+#: manim.animation.indication.Indicate:1 of
+msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: manim.animation.indication.Indicate:1 of
+msgid "Indicate a Mobject by temporarily resizing and recoloring it."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Indicate.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.indication.Indicate:3 of
+msgid "The mobject to indicate."
+msgstr ""
+
+#: manim.animation.indication.Indicate:4 of
+msgid "The factor by which the mobject will be temporally scaled"
+msgstr ""
+
+#: manim.animation.indication.Indicate:5 of
+msgid "The color the mobject temporally takes."
+msgstr ""
+
+#: manim.animation.indication.Indicate:6 of
+msgid "The function definig the animation progress at every point in time."
+msgstr ""
+
+#: manim.animation.indication.Indicate:7 of
+msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
+msgstr ""
+
+#: manim.animation.indication.Indicate:11 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Indicate.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Indicate.rst:22
+msgid "Attributes"
+msgstr ""
+
+

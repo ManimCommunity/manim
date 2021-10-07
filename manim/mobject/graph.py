@@ -545,7 +545,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_vertices(
         self: "Graph",
-        *vertices: List[Hashable],
+        *vertices: Hashable,
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
@@ -559,7 +559,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of hashable vertex identifiers.
+            Hashable vertex identifiers.
         positions
             A dictionary specifying the coordinates where the new vertices should be added.
             If ``None``, all vertices are created at the center of the graph.
@@ -678,7 +678,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of vertices to be removed from the graph.
+            Vertices to be removed from the graph.
 
         Examples
         --------
@@ -759,7 +759,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: List[Tuple[Hashable, Hashable]],
+        *edges: Tuple[Hashable, Hashable],
         edge_type: Type["Mobject"] = Line,
         edge_config: Optional[dict] = None,
     ):
@@ -769,7 +769,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         edges
-            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
             new vertices yourself beforehand to customize them.
         edge_type
@@ -848,13 +848,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+    def remove_edges(self, *edges: Tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
         ----------
         edges
-            A list of edges to be removed from the graph.
+            Edges to be removed from the graph.
 
         Returns
         -------

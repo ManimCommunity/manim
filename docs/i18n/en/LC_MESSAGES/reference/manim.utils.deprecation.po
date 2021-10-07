@@ -1,0 +1,194 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.utils.deprecation.rst:2
+msgid "deprecation"
+msgstr ""
+
+#: manim.utils.deprecation:1 of
+msgid "Decorators for deprecating classes, functions and function parameters."
+msgstr ""
+
+#: ../../source/reference/manim.utils.deprecation.rst:20
+msgid "Functions"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:1 of
+msgid "Decorator to mark a callable as deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:3 of
+msgid ""
+"The decorated callable will cause a warning when used. The docstring of "
+"the deprecated callable is adjusted to indicate that this callable is "
+"deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated manim.utils.deprecation.deprecated_params
+#: of
+msgid "Parameters"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:6 of
+msgid "The function to be decorated. Should not be set by the user."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:7
+#: manim.utils.deprecation.deprecated_params:10 of
+msgid "The version or date since deprecation."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:8
+#: manim.utils.deprecation.deprecated_params:11 of
+msgid "The version or date until removal of the deprecated callable."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:9 of
+msgid "The identifier of the callable replacing the deprecated one."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:10
+#: manim.utils.deprecation.deprecated_params:12 of
+msgid "The reason for why the callable has been deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated manim.utils.deprecation.deprecated_params
+#: of
+msgid "Returns"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:12
+#: manim.utils.deprecation.deprecated_params:25 of
+msgid "The decorated callable."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated manim.utils.deprecation.deprecated_params
+#: of
+msgid "Return type"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:16
+#: manim.utils.deprecation.deprecated_params:32 of
+msgid "Examples"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:17
+#: manim.utils.deprecation.deprecated_params:33 of
+msgid "Basic usage::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:41 of
+msgid "You can specify additional information for a more precise warning::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated:55 of
+msgid "You may also use dates instead of versions::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:1 of
+msgid "Decorator to mark parameters of a callable as deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:3 of
+msgid ""
+"It can also be used to automatically redirect deprecated parameter values"
+" to their replacements."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:6 of
+msgid ""
+"The parameters to be deprecated. Can consist of:  * An iterable of "
+"strings, with each element representing a parameter to deprecate * A "
+"single string, with parameter names separated by commas or spaces."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:6 of
+msgid "The parameters to be deprecated. Can consist of:"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:8 of
+msgid ""
+"An iterable of strings, with each element representing a parameter to "
+"deprecate"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:9 of
+msgid "A single string, with parameter names separated by commas or spaces."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:13 of
+msgid ""
+"A list of parameter redirections. Each redirection can be one of the "
+"following:  * A tuple of two strings. The first string defines the name "
+"of the deprecated   parameter; the second string defines the name of the "
+"parameter to redirect to,   when attempting to use the first string.  * A"
+" function performing the mapping operation. The parameter names of the   "
+"function determine which parameters are used as input. The function must"
+"   return a dictionary which contains the redirected arguments.  "
+"Redirected parameters are also implicitly deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:13 of
+msgid ""
+"A list of parameter redirections. Each redirection can be one of the "
+"following:"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:15 of
+msgid ""
+"A tuple of two strings. The first string defines the name of the "
+"deprecated parameter; the second string defines the name of the parameter"
+" to redirect to, when attempting to use the first string."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:19 of
+msgid ""
+"A function performing the mapping operation. The parameter names of the "
+"function determine which parameters are used as input. The function must "
+"return a dictionary which contains the redirected arguments."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:23 of
+msgid "Redirected parameters are also implicitly deprecated."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params of
+msgid "Raises"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:28 of
+msgid "If no parameters are defined (neither explicitly nor implicitly)."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:29 of
+msgid "If defined parameters are invalid python identifiers."
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:45 of
+msgid "You can also specify additional information for a more precise warning::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:59 of
+msgid "Basic parameter redirection::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:73 of
+msgid "Redirecting using a calculated value::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:85 of
+msgid "Redirecting multiple parameter values to one::"
+msgstr ""
+
+#: manim.utils.deprecation.deprecated_params:97 of
+msgid "Redirect one parameter to multiple::"
+msgstr ""
+
+

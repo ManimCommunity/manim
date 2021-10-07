@@ -20,7 +20,7 @@ Examples
     class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
+            title.scale(0.75)
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
@@ -35,7 +35,7 @@ Examples
             t4 = Text("4. Prediction").set_color(WHITE)
             t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
 
-            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
+            x = VGroup(t1, t2, t3, t4).scale(0.7)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -162,8 +162,8 @@ class OpenGLParagraph(OpenGLVGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
-        OpenGLVGroup.__init__(
-            self, *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
+        super().__init__(
+            *(self.lines[0][i] for i in range(self.lines[0].__len__())), **config
         )
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
@@ -451,8 +451,7 @@ class OpenGLText(OpenGLSVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             color=color,
             fill_opacity=fill_opacity,
@@ -949,8 +948,7 @@ class OpenGLMarkupText(OpenGLSVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,

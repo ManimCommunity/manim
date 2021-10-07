@@ -1,5 +1,6 @@
 default_stages: [commit, push]
 fail_fast: false
+exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
@@ -27,22 +28,20 @@ repos:
     hooks:
       - id: add-trailing-comma
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.25.0
+    rev: v2.28.0
     hooks:
       - id: pyupgrade
         name: Update code to new python versions
         args: [--py37-plus]
-        exclude: ^manim/grpc/gen/
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
     hooks:
       - id: python-check-blanket-noqa
         name: Precision flake ignores
   - repo: https://github.com/psf/black
-    rev: 21.8b0
+    rev: 21.9b0
     hooks:
       - id: black
-        exclude: ^manim/grpc/gen/
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.11.0
     hooks:
