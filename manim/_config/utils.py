@@ -592,7 +592,7 @@ class ManimConfig(MutableMapping):
 
         # tuple keys
         gui_location = tuple(
-            map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"]))
+            map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"])),
         )
         setattr(self, "gui_location", gui_location)
 
