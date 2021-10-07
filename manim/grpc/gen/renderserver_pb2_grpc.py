@@ -3,11 +3,13 @@
 import grpc
 import renderserver_pb2 as renderserver__pb2
 
+from typing import Sequence, Tuple, AnyStr, Union
+
 
 class RenderServerStub:
     """Missing associated documentation comment in .proto file."""
 
-    def __init__(self, channel):
+    def __init__(self, channel: grpc.Channel) -> None:
         """Constructor.
 
         Args:
@@ -23,26 +25,11 @@ class RenderServerStub:
 class RenderServerServicer:
     """Missing associated documentation comment in .proto file."""
 
-    def UpdateSceneData(self, request, context):
+    def UpdateSceneData(self, request: renderserver__pb2, context: grpc.ServicerContext) -> None:
         """Called from Manim when a scene has been newly rendered."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
-
-
-def add_RenderServerServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-        "UpdateSceneData": grpc.unary_unary_rpc_method_handler(
-            servicer.UpdateSceneData,
-            request_deserializer=renderserver__pb2.UpdateSceneDataRequest.FromString,
-            response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
-        ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-        "renderserver.RenderServer",
-        rpc_method_handlers,
-    )
-    server.add_generic_rpc_handlers((generic_handler,))
 
 
 # This class is part of an EXPERIMENTAL API.
@@ -51,17 +38,17 @@ class RenderServer:
 
     @staticmethod
     def UpdateSceneData(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+        request: renderserver__pb2,
+        target: str,
+        options: Sequence[Tuple[AnyStr, AnyStr]] = (),
+        channel_credentials: Union[grpc.ChannelCredentials, None] = None,
+        call_credentials: Union[grpc.CallCredentials, None] = None,
+        insecure: bool = False,
+        compression: Union[grpc.Compression, None] = None,
+        wait_for_ready: Union[bool, None] = None,
+        timeout: Union[float, None] = None,
+        metadata: Union[Sequence[Tuple[str, Union[str, bytes]]], None] = None,
+    ) -> renderserver__pb2.EmptyResponse:
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -77,3 +64,20 @@ class RenderServer:
             timeout,
             metadata,
         )
+
+
+def add_RenderServerServicer_to_server(
+    servicer: RenderServerServicer, server: RenderServer
+) -> None:
+    rpc_method_handlers = {
+        "UpdateSceneData": grpc.unary_unary_rpc_method_handler(
+            servicer.UpdateSceneData,
+            request_deserializer=renderserver__pb2.UpdateSceneDataRequest.FromString,
+            response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        "renderserver.RenderServer",
+        rpc_method_handlers,
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
