@@ -216,7 +216,7 @@ class Mobject:
                     self.add(Text("Changing default values is easy!"))
 
                     # we revert the colour back to the default to prevent a bug in the docs.
-                    Text.set_default(color=BLACK)
+                    Text.set_default(color=WHITE)
 
         """
         if kwargs:
