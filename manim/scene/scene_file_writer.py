@@ -466,23 +466,31 @@ class SceneFileWriter:
         )
         return os.path.exists(path)
 
-    def combine_movie_files(self):
+    def combine_movie_files(self, partial_movie_files=None):
         """
         Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
+        # TODO: remove partial_movie_files in separate pr
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
-        # NOTE : Here we should do a check and raise an exception if partial
+        # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as
         # it's just an empty scene initialized.
 
+        # determine output path
         movie_file_path = self.movie_file_path
         if is_gif_format() and not config["output_file"]:
             movie_file_path = str(add_version_before_extension(self.gif_file_path))
-        self.combine_files(self.partial_movie_files, movie_file_path, is_gif_format())
+        self.combine_files(
+            self.partial_movie_files,
+            movie_file_path,
+            is_gif_format(),
+            self.includes_sound,
+        )
 
+        # handle sound
         if self.includes_sound:
             extension = config["movie_file_extension"]
             sound_file_path = movie_file_path.replace(extension, ".wav")
@@ -529,7 +537,13 @@ class SceneFileWriter:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
 
-    def combine_files(self, input_files: List[str], output_file: str, create_gif=False):
+    def combine_files(
+        self,
+        input_files: List[str],
+        output_file: str,
+        create_gif=False,
+        includes_sound=False,
+    ):
         file_list = os.path.join(
             self.partial_movie_directory,
             "partial_movie_file_list.txt",
@@ -560,18 +574,18 @@ class SceneFileWriter:
             "-nostdin",
         ]
 
-        if write_to_movie() and not is_gif_format():
-            commands += ["-c", "copy"]
-
         if create_gif:
             commands += [
                 "-vf",
                 f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
             ]
-        commands += [output_file]
+        else:
+            commands += ["-c", "copy"]
 
-        if not self.includes_sound:
-            commands.insert(-1, "-an")
+        if not includes_sound:
+            commands += ["-an"]
+
+        commands += [output_file]
 
         combine_process = subprocess.Popen(commands)
         combine_process.wait()
