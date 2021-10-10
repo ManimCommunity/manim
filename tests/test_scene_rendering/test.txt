@@ -1,9 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:None'
-file 'file:None'
-file 'file:None'
-file 'file:/home/chris/test/out/videos/simple_scenes/480p15/partial_movie_files/SceneWithMultipleWaitCalls/2201830969_2839631542_624296683.mp4'
-file 'file:/home/chris/test/out/videos/simple_scenes/480p15/partial_movie_files/SceneWithMultipleWaitCalls/2201830969_3766582681_437049909.mp4'
-file 'file:/home/chris/test/out/videos/simple_scenes/480p15/partial_movie_files/SceneWithMultipleWaitCalls/2201830969_2148686299_2798636654.mp4'
-file 'file:/home/chris/test/out/videos/simple_scenes/480p15/partial_movie_files/SceneWithMultipleWaitCalls/2201830969_2660657112_4059355777.mp4'
-file 'file:/home/chris/test/out/videos/simple_scenes/480p15/partial_movie_files/SceneWithMultipleWaitCalls/2201830969_2148686299_229487900.mp4'

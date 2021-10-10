@@ -484,7 +484,7 @@ class SceneFileWriter:
         if is_gif_format() and not config["output_file"]:
             movie_file_path = str(add_version_before_extension(self.gif_file_path))
         self.combine_files(
-            self.partial_movie_files,
+            partial_movie_files,
             movie_file_path,
             is_gif_format(),
             self.includes_sound,
@@ -555,6 +555,7 @@ class SceneFileWriter:
         with open(file_list, "w") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
+                print(pf_path)
                 if os.name == "nt":
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")
