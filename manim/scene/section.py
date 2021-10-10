@@ -1,7 +1,7 @@
 """building blocks of segmented video api"""
 
 import enum
-from typing import Dict
+from typing import Dict, List, Optional
 
 
 class SectionType(enum.Enum):
@@ -28,27 +28,22 @@ class Section:
         how is this slide to be played, what is supposed to happen when it ends
     name : string
         human readable, not-unique name of this section
-    first_animation : int
-        animation range start, inclusive
-        gets set on creating of instance, doesn't change afterwards
-    after_last_animation : int
-        animation range end, exclusive
-        gets increased every time a new animation is added
+    partial_movie_files : list of strings
+        animations belonging to this section
     video : str
-        to be set once video for this section has been created
+        path of video file with animations belonging to section
     """
 
-    def __init__(self, type: SectionType, name: str, first_animation: int):
+    def __init__(self, type: SectionType, video: Optional[str], name: str):
         self.type = type
+        self.video: Optional[str] = video
         self.name = name
-        self.first_animation = first_animation
-        self.after_last_animation = first_animation
-        self.video = ""
+        self.partial_movie_files: List[str] = []
 
     def empty(self) -> bool:
         """are there no animations in this section?"""
 
-        return self.first_animation == self.after_last_animation
+        return len(self.partial_movie_files) == 0
 
     def get_dict(self) -> Dict:
         """get dictionary representation"""
@@ -56,10 +51,8 @@ class Section:
         return {
             "type": self.type,
             "name": self.name,
-            "first_animation": self.first_animation,
-            "after_last_animation": self.after_last_animation,
             "video": self.video,
         }
 
     def __repr__(self):
-        return f"<Section '{self.name}' from {self.first_animation} to {self.after_last_animation}, stored in '{self.video}'>"
+        return f"<Section '{self.name}' stored in '{self.video}'>"

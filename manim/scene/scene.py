@@ -10,7 +10,7 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import List
+from typing import List, Optional
 
 try:
     import dearpygui.dearpygui as dpg
@@ -38,7 +38,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from .section import Section
+from .section import SectionType
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -71,11 +71,6 @@ class Scene:
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
 
-    Attributes
-    ----------
-        sections : list of :class:`Section`s
-
-
     Examples
     --------
     Override the :meth:`Scene.construct` method with your code.
@@ -102,7 +97,6 @@ class Scene:
         self.skip_animations = skip_animations
 
         self.animations = None
-        self.sections: List[Section] = []
         self.stop_condition = None
         self.moving_mobjects = []
         self.static_mobjects = []
@@ -295,7 +289,13 @@ class Scene:
         """
         pass  # To be implemented in subclasses
 
-    # todo: add next_section()
+    def next_section(
+        type: SectionType = SectionType.normal,
+        name: Optional[str] = None,
+    ) -> None:
+        """Create separation here; the last section gets finished and a new gets created."""
+        self.file_writer.next_section(type, name)
+
     def __str__(self):
         return self.__class__.__name__
 

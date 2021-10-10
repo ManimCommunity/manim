@@ -8,7 +8,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 from PIL import Image
@@ -29,6 +29,7 @@ from ..utils.file_ops import (
     write_to_movie,
 )
 from ..utils.sounds import get_full_sound_file_path
+from .section import Section, SectionType
 
 
 class SceneFileWriter:
@@ -38,6 +39,17 @@ class SceneFileWriter:
     This is mostly for Manim's internal use. You will rarely, if ever,
     have to use the methods for this class, unless tinkering with the very
     fabric of Manim's reality.
+
+    Attributes
+    ----------
+        sections : list of :class:`Section`s
+            used to segment scene
+
+        sections_output_dir : str
+            where are section videos stored
+
+        output_name : str
+            name of movie without extension and basis for section video names
 
     Some useful attributes are:
         "write_to_movie" (bool=False)
@@ -57,7 +69,10 @@ class SceneFileWriter:
         self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
-        self.partial_movie_files = []
+        self.partial_movie_files: List[str] = []
+        self.sections: List[Section] = []
+        # first section gets automatically created for convenience
+        self.next_section(SectionType.normal)
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -78,11 +93,11 @@ class SceneFileWriter:
             module_name = ""
 
         if SceneFileWriter.force_output_as_scene_name:
-            default_name = Path(scene_name)
+            self.output_name = Path(scene_name)
         elif config["output_file"] and not config["write_all"]:
-            default_name = config.get_dir("output_file")
+            self.output_name = config.get_dir("output_file")
         else:
-            default_name = Path(scene_name)
+            self.output_name = Path(scene_name)
 
         if config["media_dir"]:
             image_dir = guarantee_existence(
@@ -90,7 +105,7 @@ class SceneFileWriter:
             )
             self.image_file_path = os.path.join(
                 image_dir,
-                add_extension_if_not_present(default_name, ".png"),
+                add_extension_if_not_present(self.output_name, ".png"),
             )
 
         if write_to_movie():
@@ -101,14 +116,19 @@ class SceneFileWriter:
             self.movie_file_path = os.path.join(
                 movie_dir,
                 add_extension_if_not_present(
-                    default_name,
+                    self.output_name,
                     config["movie_file_extension"],
                 ),
             )
+            # TODO: create config for directory name
+            self.sections_output_dir = guarantee_existence(
+                os.path.join(movie_dir, "sections"),
+            )
+
             if is_gif_format():
                 self.gif_file_path = os.path.join(
                     movie_dir,
-                    add_extension_if_not_present(default_name, GIF_FILE_EXTENSION),
+                    add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
                 )
 
             self.partial_movie_directory = guarantee_existence(
@@ -119,8 +139,37 @@ class SceneFileWriter:
                 ),
             )
 
+    def finish_last_section(self) -> None:
+        """delete current section if empty"""
+        if len(self.sections) and self.sections[-1].empty():
+            self.sections.pop()
+
+    def next_section(self, type: SectionType, name: Optional[str] = None) -> None:
+        """create segmentation cut here"""
+        if name is None:
+            name = f"Section_{type}"
+        self.finish_last_section()
+
+        # images don't support sections
+        section_video: Optional[str] = None
+        assert config.dry_run == config["dry_run"]
+        if not config.dry_run and write_to_movie():
+            section_video = os.path.join(
+                self.sections_output_dir,
+                f"{self.output_name}_{len(self.sections)}_{name}.{config.movie_file_extension}",
+            )
+
+        self.sections.append(
+            Section(
+                type,
+                section_video,
+                name,
+            ),
+        )
+
     def add_partial_movie_file(self, hash_animation):
-        """Adds a new partial movie file path to scene.partial_movie_files from an hash. This method will compute the path from the hash.
+        """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash.
+        This method will compute the path from the hash.
 
         Parameters
         ----------
@@ -134,12 +183,14 @@ class SceneFileWriter:
         # i.e if an animation is skipped, scene.num_plays is still incremented and we add an element to partial_movie_file be even with num_plays.
         if hash_animation is None:
             self.partial_movie_files.append(None)
-            return
-        new_partial_movie_file = os.path.join(
-            self.partial_movie_directory,
-            f"{hash_animation}{config['movie_file_extension']}",
-        )
-        self.partial_movie_files.append(new_partial_movie_file)
+            self.sections[-1].partial_movie_files.append(None)
+        else:
+            new_partial_movie_file = os.path.join(
+                self.partial_movie_directory,
+                f"{hash_animation}{config['movie_file_extension']}",
+            )
+            self.partial_movie_files.append(new_partial_movie_file)
+            self.sections[-1].partial_movie_files.append(new_partial_movie_file)
 
     def get_resolution_directory(self):
         """Get the name of the resolution directory directly containing
@@ -375,6 +426,7 @@ class SceneFileWriter:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files(partial_movie_files=partial_movie_files)
+            self.combine_sections_files()
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -483,6 +535,11 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format() and not config["output_file"]:
             movie_file_path = str(add_version_before_extension(self.gif_file_path))
+        # TODO: add back once debug tests figured out
+        logger.debug(
+            f"Partial movie files to combine ({len(partial_movie_files)} files): %(p)s",
+            {"p": partial_movie_files[:5]},
+        )
         self.combine_files(
             partial_movie_files,
             movie_file_path,
@@ -521,7 +578,7 @@ class SceneFileWriter:
                 "-map",
                 "1:a:0",
                 "-loglevel",
-                config["ffmpeg_loglevel"].lower(),
+                config.ffmpeg_loglevel.lower(),
                 "-metadata",
                 f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
@@ -537,6 +594,11 @@ class SceneFileWriter:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
 
+    def combine_sections_files(self) -> None:
+        """Concatenate partial movie files belonging to single section."""
+        for section in self.sections:
+            self.combine_files(section.partial_movie_files, section.video)
+
     def combine_files(
         self,
         input_files: List[str],
@@ -548,10 +610,11 @@ class SceneFileWriter:
             self.partial_movie_directory,
             "partial_movie_file_list.txt",
         )
-        logger.debug(
-            f"Partial movie files to combine ({len(input_files)} files): %(p)s",
-            {"p": input_files[:5]},
-        )
+        # TODO: add back once debug tests figured out
+        # logger.debug(
+        #     f"Partial movie files to combine ({len(input_files)} files): %(p)s",
+        #     {"p": input_files[:5]},
+        # )
         with open(file_list, "w") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
@@ -569,7 +632,7 @@ class SceneFileWriter:
             "-i",
             file_list,
             "-loglevel",
-            config["ffmpeg_loglevel"].lower(),
+            config.ffmpeg_loglevel.lower(),
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
             "-nostdin",
