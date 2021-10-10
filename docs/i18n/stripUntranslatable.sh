@@ -1,17 +1,13 @@
 #!/bin/bash
 rm -f translatable.po
 rm -f untranslatable.po
-rm -rf build-en
-mkdir build-en
-pot_dir_prefix="en/LC_MESSAGES/"
-for i in `find $pot_dir_prefix -name "*.po"`
+pot_dir_prefix="gettext/"
+for srcFile in `find $pot_dir_prefix -name "*.pot"`
 do
-	srcFile=$i
-	destFile="build-$srcFile"
-	mkdir -p `dirname $destFile`
-	awk -f stripUntranslatable.awk $srcFile > $destFile
-	cat $destFile >> translatable.po
+	dstFile="$i.bld"
+	awk -f stripUntranslatable.awk $srcFile > $dstFile
+	cat $dstFile >> translatable.po
+	mv $srcFile $dstFile
+	rm $dstFile
 	echo "OK: $srcFile"
 done
-rm -rf en
-mv build-en en
