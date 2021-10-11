@@ -622,10 +622,10 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetGraphExample
+        .. manim:: PlotExample
             :save_last_frame:
 
-            class GetGraphExample(Scene):
+            class PlotExample(Scene):
                 def construct(self):
                     # construct the axes
                     ax_1 = Axes(
@@ -1276,10 +1276,10 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetDerivativeGraphExample
+        .. manim:: DerivativeGraphExample
             :save_last_frame:
 
-            class GetDerivativeGraphExample(Scene):
+            class DerivativeGraphExample(Scene):
                 def construct(self):
                     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
