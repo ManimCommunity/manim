@@ -214,9 +214,8 @@ class OpenGLSurface(OpenGLMobject):
                 shader_data["color"] = self.get_color_by_value(s_points)
             else:
                 shader_data["color"] = [
-                        color_to_rgba(self.color, self.opacity)
-                        for i in s_points
-                        ]
+                    color_to_rgba(self.color, self.opacity) for i in s_points
+                ]
         return shader_data
 
     def fill_in_shader_color_info(self, shader_data):
@@ -225,7 +224,10 @@ class OpenGLSurface(OpenGLMobject):
 
     def get_color_by_value(self, s_points):
         if type(self.color[0]) is tuple:
-            new_colors, pivots = [[i for i, j in self.color], [j for i, j in self.color]]
+            new_colors, pivots = [
+                [i for i, j in self.color],
+                [j for i, j in self.color],
+            ]
         else:
             new_colors = self.color
 
@@ -266,10 +268,10 @@ class OpenGLSurface(OpenGLMobject):
         return self.get_triangle_indices()
 
     @deprecated(
-            since="v0.12.0",
-            until="v0.13.0",
-            message='Pass list of colors into constructor instead.'
-            )
+        since="v0.12.0",
+        until="v0.13.0",
+        message="Pass list of colors into constructor instead.",
+    )
     def set_fill_by_value(self, axes, colors):
         # directly copied from three_dimensions.py with some compatibility changes.
         """Sets the color of each mobject of a parametric surface to a color relative to its z-value
