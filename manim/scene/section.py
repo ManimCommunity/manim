@@ -28,22 +28,28 @@ class Section:
         how is this slide to be played, what is supposed to happen when it ends
     name : string
         human readable, not-unique name of this section
-    partial_movie_files : list of strings
+    partial_movie_files : list of strings or Nones
         animations belonging to this section
-    video : str
+        None when not to be rendered -> still keeps section alive
+    video : str or None
         path of video file with animations belonging to section
+        None -> section is not to be saved
     """
 
     def __init__(self, type: SectionType, video: Optional[str], name: str):
         self.type = type
         self.video: Optional[str] = video
         self.name = name
-        self.partial_movie_files: List[str] = []
+        self.partial_movie_files: List[Optional[str]] = []
 
     def empty(self) -> bool:
         """are there no animations in this section?"""
 
         return len(self.partial_movie_files) == 0
+
+    def get_cleaned_partial_movie_files(self) -> List[str]:
+        """return not None partial_movie_files"""
+        return [el for el in self.partial_movie_files if el is not None]
 
     def get_dict(self) -> Dict:
         """get dictionary representation"""

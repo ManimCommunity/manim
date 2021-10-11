@@ -597,7 +597,12 @@ class SceneFileWriter:
     def combine_sections_files(self) -> None:
         """Concatenate partial movie files belonging to single section."""
         for section in self.sections:
-            self.combine_files(section.partial_movie_files, section.video)
+            # section doesn't want to be saved
+            if section.video is not None:
+                self.combine_files(
+                    section.get_cleaned_partial_movie_files(),
+                    section.video,
+                )
 
     def combine_files(
         self,
