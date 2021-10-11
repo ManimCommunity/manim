@@ -1287,8 +1287,8 @@ class CoordinateSystem:
                     curve_2 = ax.plot_derivative_graph(curve_1)
                     curves = VGroup(curve_1, curve_2)
 
-                    label_1 = ax.plot_label(curve_1, "x^2", x_val=-2, direction=DL)
-                    label_2 = ax.plot_label(curve_2, "2x", x_val=3, direction=RIGHT)
+                    label_1 = ax.get_graph_label(curve_1, "x^2", x_val=-2, direction=DL)
+                    label_2 = ax.get_graph_label(curve_2, "2x", x_val=3, direction=RIGHT)
                     labels = VGroup(label_1, label_2)
 
                     self.add(ax, curves, labels)
