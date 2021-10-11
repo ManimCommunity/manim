@@ -31,6 +31,7 @@ class OpenGLSurface(OpenGLMobject):
         # each coordinate is one more than the the number of
         # rows/columns of approximating squares
         resolution=None,
+        axes=None,
         color=GREY,
         opacity=1.0,
         gloss=0.3,
@@ -51,6 +52,7 @@ class OpenGLSurface(OpenGLMobject):
         # each coordinate is one more than the the number of
         # rows/columns of approximating squares
         self.resolution = resolution if resolution is not None else (101, 101)
+        self.axes = axes
         self.prefered_creation_axis = prefered_creation_axis
         # For du and dv steps.  Much smaller and numerical error
         # can crop up in the shaders.
@@ -208,16 +210,66 @@ class OpenGLSurface(OpenGLMobject):
             shader_data["point"] = s_points
             shader_data["du_point"] = du_points
             shader_data["dv_point"] = dv_points
-        self.fill_in_shader_color_info(shader_data)
+            if isinstance(self.color, list):
+                shader_data["color"] = self.get_color_by_value(s_points)
+            else:
+                shader_data["color"] = [
+                        color_to_rgba(self.color, self.opacity)
+                        for i in s_points
+                        ]
         return shader_data
 
     def fill_in_shader_color_info(self, shader_data):
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
+    def get_color_by_value(self, s_points):
+        if type(self.color[0]) is tuple:
+            new_colors, pivots = [[i for i, j in self.color], [j for i, j in self.color]]
+        else:
+            new_colors = self.color
+
+            pivot_min = self.axes.z_range[0]
+            pivot_max = self.axes.z_range[1]
+            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+            pivots = np.arange(
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
+            )
+
+        return_colors = []
+        for point in s_points:
+            z_value = self.axes.point_to_coords(point)[2]
+            if z_value <= pivots[0]:
+                return_colors.append(color_to_rgba(new_colors[0], self.opacity))
+            elif z_value >= pivots[-1]:
+                return_colors.append(color_to_rgba(new_colors[-1], self.opacity))
+            else:
+                for i, pivot in enumerate(pivots):
+                    if pivot > z_value:
+                        color_index = (z_value - pivots[i - 1]) / (
+                            pivots[i] - pivots[i - 1]
+                        )
+                        color_index = max(min(color_index, 1), 0)
+                        temp_color = interpolate_color(
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
+                        )
+                        break
+                return_colors.append(color_to_rgba(temp_color, self.opacity))
+
+        return return_colors
+
     def get_shader_vert_indices(self):
         return self.get_triangle_indices()
 
+    @deprecated(
+            since="v0.12.0",
+            until="v0.13.0",
+            message='Pass list of colors into constructor instead.'
+            )
     def set_fill_by_value(self, axes, colors):
         # directly copied from three_dimensions.py with some compatibility changes.
         """Sets the color of each mobject of a parametric surface to a color relative to its z-value
