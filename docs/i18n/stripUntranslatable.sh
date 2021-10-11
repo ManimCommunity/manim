@@ -2,12 +2,13 @@
 rm -f translatable.po
 rm -f untranslatable.po
 pot_dir_prefix="gettext/"
-for srcFile in `find $pot_dir_prefix -name "*.pot"`
+echo ""
+for srcFile in `find $pot_dir_prefix -name "*.pot" -type f`
 do
-	dstFile="$i.bld"
-	awk -f stripUntranslatable.awk $srcFile > $dstFile
+	printf "\r\033[KCleaning file \e[32m$srcFile\e[0m"
+	dstFile="$srcFile.bld"
+	awk -f stripUntranslatable.awk $srcFile | sed '/POT-Creation-Date/d'> $dstFile
 	cat $dstFile >> translatable.po
-	mv $srcFile $dstFile
-	rm $dstFile
-	echo "OK: $srcFile"
+	mv $dstFile $srcFile
 done
+echo ""

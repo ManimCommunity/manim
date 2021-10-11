@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst:2
 msgid "Octahedron"
@@ -16,25 +14,23 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.polyhedra.Octahedron``"
 msgstr ""
 
-#: manim.mobject.polyhedra.Octahedron:1 of
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Octahedron:1
 msgid "Bases: :class:`manim.mobject.polyhedra.Polyhedron`"
 msgstr ""
 
-#: manim.mobject.polyhedra.Octahedron:1 of
-msgid ""
-"An octahedron, one of the five platonic solids. It has 8 faces, 12 edges "
-"and 6 vertices."
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Octahedron:1
+msgid "An octahedron, one of the five platonic solids. It has 8 faces, 12 edges and 6 vertices."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Octahedron:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.polyhedra.Octahedron:3 of
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Octahedron:3
 msgid "The length of an edge between any two vertices."
 msgstr ""
 
-#: manim.mobject.polyhedra.Octahedron:6 of
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Octahedron:6
 msgid "Examples"
 msgstr ""
 
@@ -51,21 +47,11 @@ msgid "Used to animate the application of a method."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.polyhedra.Octahedron.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst:28:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.polyhedra.Octahedron.rst:28:<autosummary>:1
-msgid "The width of the mobject."
 msgstr ""
 
 

@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:2
 msgid "Arrow3D"
@@ -16,39 +14,39 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.three\\_dimensions.Arrow3D``"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:1 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:1
 msgid "Bases: :class:`manim.mobject.three_dimensions.Line3D`"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:1 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:1
 msgid "An arrow made out of a cylindrical line and a conical tip."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:4 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:4
 msgid "Examples"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:15 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:15
 msgid "The start position of the arrow."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:17 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:17
 msgid "The end position of the arrow."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:19 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:19
 msgid "The thickness of the arrow."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:21 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:21
 msgid "The height of the conical tip."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Arrow3D:23 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Arrow3D:23
 msgid "The base radius of the conical tip."
 msgstr ""
 
@@ -65,21 +63,11 @@ msgid "Used to animate the application of a method."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.three_dimensions.Arrow3D.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid "The width of the mobject."
 msgstr ""
 
 

@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.geometry.Square.rst:2
 msgid "Square"
@@ -16,27 +14,27 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.geometry.Square``"
 msgstr ""
 
-#: manim.mobject.geometry.Square:1 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:1
 msgid "Bases: :class:`manim.mobject.geometry.Rectangle`"
 msgstr ""
 
-#: manim.mobject.geometry.Square:1 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:1
 msgid "A rectangle with equal side lengths."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Square.rst
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.geometry.Square:3 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:3
 msgid "The length of the sides of the square."
 msgstr ""
 
-#: manim.mobject.geometry.Square:5 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:5
 msgid "Additional arguments to be passed to :class:`Square`"
 msgstr ""
 
-#: manim.mobject.geometry.Square:9 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Square:9
 msgid "Examples"
 msgstr ""
 
@@ -53,21 +51,11 @@ msgid "Used to animate the application of a method."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Square.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.geometry.Square.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Square.rst:28:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Square.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Square.rst:28:<autosummary>:1
-msgid "The width of the mobject."
 msgstr ""
 
 

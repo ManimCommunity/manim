@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/contributing/typings.rst:3
 msgid "Adding Typings"
@@ -21,15 +19,11 @@ msgid "This section is still a work in progress."
 msgstr ""
 
 #: ../../source/contributing/typings.rst:11
-msgid ""
-"If you've never used type hints before, this is a good place to get "
-"started: https://realpython.com/python-type-checking/#hello-types."
+msgid "If you've never used type hints before, this is a good place to get started: https://realpython.com/python-type-checking/#hello-types."
 msgstr ""
 
 #: ../../source/contributing/typings.rst:14
-msgid ""
-"When adding type hints to manim, there are some guidelines that should be"
-" followed:"
+msgid "When adding type hints to manim, there are some guidelines that should be followed:"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:16
@@ -57,10 +51,7 @@ msgid "For numpy arrays use the typehint ``np.ndarray``"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:44
-msgid ""
-"Functions that does not return a value should get the type hint ``None``."
-" (This annotations help catch the kinds of subtle bugs where you are "
-"trying to use a meaningless return value. )"
+msgid "Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:51
@@ -76,17 +67,11 @@ msgid "Functions and lambda functions should get the typehint ``Callable``"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:74
-msgid ""
-"Assuming that typical path objects are either Paths or strs, one can use "
-"the typehint ``typing.Union[str, pathlib.Path]``"
+msgid "Assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:77
-msgid ""
-"As a helper for tool for typesets, you can use `typestring-parser "
-"<https://github.com/Dominik1123/typestring-parser>`_ which can be "
-"accessed by first installing it via ``pip`` - ``pip install typestring-"
-"parser`` and then using ``from typestring_parser import parse``."
+msgid "As a helper for tool for typesets, you can use `typestring-parser <https://github.com/Dominik1123/typestring-parser>`_ which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and then using ``from typestring_parser import parse``."
 msgstr ""
 
 #: ../../source/contributing/typings.rst:96
@@ -102,9 +87,7 @@ msgid "Link to MyPy"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:99
-msgid ""
-"Mypy and numpy import errors: https://realpython.com/python-type-checking"
-"/#running-mypy"
+msgid "Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy"
 msgstr ""
 
 #: ../../source/contributing/typings.rst:100
@@ -117,12 +100,6 @@ msgstr ""
 
 #: ../../source/contributing/typings.rst:102
 msgid "The use of a TypeVar on the type hints for copy()."
-msgstr ""
-
-#: ../../source/contributing/typings.rst:103
-msgid ""
-"The definition and use of Protocols (like Sized, or Sequence, or "
-"Iterable...)"
 msgstr ""
 
 

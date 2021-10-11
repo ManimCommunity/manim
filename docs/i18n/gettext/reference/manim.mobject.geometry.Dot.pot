@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:2
 msgid "Dot"
@@ -16,43 +14,43 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.geometry.Dot``"
 msgstr ""
 
-#: manim.mobject.geometry.Dot:1 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:1
 msgid "Bases: :class:`manim.mobject.geometry.Circle`"
 msgstr ""
 
-#: manim.mobject.geometry.Dot:1 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:1
 msgid "A circle with a very small radius."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Dot.rst
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.geometry.Dot:3 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:3
 msgid "The location of the dot."
 msgstr ""
 
-#: manim.mobject.geometry.Dot:5 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:5
 msgid "The radius of the dot."
 msgstr ""
 
-#: manim.mobject.geometry.Dot:7 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:7
 msgid "The thickness of the outline of the dot."
 msgstr ""
 
-#: manim.mobject.geometry.Dot:9 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:9
 msgid "The opacity of the dot's fill_colour"
 msgstr ""
 
-#: manim.mobject.geometry.Dot:11 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:11
 msgid "The color of the dot."
 msgstr ""
 
-#: manim.mobject.geometry.Dot:13 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:13
 msgid "Additional arguments to be passed to :class:`Circle`"
 msgstr ""
 
-#: manim.mobject.geometry.Dot:17 of
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Dot:17
 msgid "Examples"
 msgstr ""
 
@@ -69,21 +67,11 @@ msgid "Used to animate the application of a method."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.geometry.Dot.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid "The width of the mobject."
 msgstr ""
 
 

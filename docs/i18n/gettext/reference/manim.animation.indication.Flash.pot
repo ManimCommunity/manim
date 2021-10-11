@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.animation.indication.Flash.rst:2
 msgid "Flash"
@@ -16,70 +14,60 @@ msgstr ""
 msgid "Qualified name: ``manim.animation.indication.Flash``"
 msgstr ""
 
-#: manim.animation.indication.Flash:1 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
 msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
 msgstr ""
 
-#: manim.animation.indication.Flash:1 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
 msgid "Send out lines in all directions."
 msgstr ""
 
-#: ../../source/reference/manim.animation.indication.Flash.rst
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.animation.indication.Flash:3 of
-msgid ""
-"The center of the flash lines. If it is a :class:`.~Mobject` its center "
-"will be used."
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:3
+msgid "The center of the flash lines. If it is a :class:`.~Mobject` its center will be used."
 msgstr ""
 
-#: manim.animation.indication.Flash:4 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:4
 msgid "The length of the flash lines."
 msgstr ""
 
-#: manim.animation.indication.Flash:5 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:5
 msgid "The number of flash lines."
 msgstr ""
 
-#: manim.animation.indication.Flash:6 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:6
 msgid "The distance from `point` at which the flash lines start."
 msgstr ""
 
-#: manim.animation.indication.Flash:7 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:7
 msgid "The stroke width of the flash lines."
 msgstr ""
 
-#: manim.animation.indication.Flash:8 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:8
 msgid "The color of the flash lines."
 msgstr ""
 
-#: manim.animation.indication.Flash:9 of
-msgid ""
-"The time width used for the flash lines. See :class:`.~ShowPassingFlash` "
-"for more details."
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:9
+msgid "The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details."
 msgstr ""
 
-#: manim.animation.indication.Flash:10 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:10
 msgid "The duration of the animation."
 msgstr ""
 
-#: manim.animation.indication.Flash:11 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:11
 msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
 msgstr ""
 
-#: manim.animation.indication.Flash:15 of
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:15
 msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.Flash.rst:14
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.animation.indication.Flash.rst:19:<autosummary>:1
-msgid ""
-":obj:`create_line_anims "
-"<manim.animation.indication.Flash.create_line_anims>`"
 msgstr ""
 
 

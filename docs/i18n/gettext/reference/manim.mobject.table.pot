@@ -2,21 +2,19 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.table.rst:2
 msgid "table"
 msgstr ""
 
-#: manim.mobject.table:1 of
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table:1
 msgid "Mobjects representing tables."
 msgstr ""
 
-#: manim.mobject.table:4 of
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table:4
 msgid "Examples"
 msgstr ""
 
@@ -25,15 +23,11 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.DecimalNumber` to display decimal entries."
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.Integer`."
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
@@ -41,13 +35,7 @@ msgid "A specialized :class:`~.Table` mobject for use with with LaTeX."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid ""
-"A specialized :class:`~.Table` mobject for use with with "
-":class:`~.Mobject`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
-msgid "A mobject that displays a table on the screen."
+msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`."
 msgstr ""
 
 

@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst:2
 msgid "Dot3D"
@@ -16,31 +14,31 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.three\\_dimensions.Dot3D``"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:1 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:1
 msgid "Bases: :class:`manim.mobject.three_dimensions.Sphere`"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:1 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:1
 msgid "A spherical dot."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:0
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:3 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:3
 msgid "The location of the dot."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:5 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:5
 msgid "The radius of the dot."
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:7 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:7
 msgid "The color of the :class:`Dot3D`"
 msgstr ""
 
-#: manim.mobject.three_dimensions.Dot3D:11 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Dot3D:11
 msgid "Examples"
 msgstr ""
 
@@ -57,21 +55,11 @@ msgid "Used to animate the application of a method."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst:28:<autosummary>:1
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.three_dimensions.Dot3D.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst:28:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Dot3D.rst:28:<autosummary>:1
-msgid "The width of the mobject."
 msgstr ""
 
 

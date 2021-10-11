@@ -2,17 +2,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:2
 msgid "three\\_dimensions"
 msgstr ""
 
-#: manim.mobject.three_dimensions:1 of
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions:1
 msgid "Three-dimensional mobjects."
 msgstr ""
 
@@ -41,12 +39,6 @@ msgid "A cylindrical line, for use in ThreeDScene."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ""
-":obj:`ParametricSurface "
-"<manim.mobject.three_dimensions.ParametricSurface>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "Creates a parametric surface"
 msgstr ""
 
@@ -60,10 +52,6 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "Creates a Parametric Surface using a checkerboard pattern."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid "A torus."
 msgstr ""
 
 

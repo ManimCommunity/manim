@@ -2,11 +2,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
-"POT-Creation-Date: 2021-09-16 14:16+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:2
 msgid "ValueTracker"
@@ -16,38 +14,28 @@ msgstr ""
 msgid "Qualified name: ``manim.mobject.value\\_tracker.ValueTracker``"
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:1
 msgid "Bases: :class:`manim.mobject.mobject.Mobject`"
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:1 of
-msgid ""
-"A mobject that can be used for tracking (real-valued) parameters. Useful "
-"for animating parameter changes."
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:1
+msgid "A mobject that can be used for tracking (real-valued) parameters. Useful for animating parameter changes."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:4 of
-msgid ""
-"Not meant to be displayed.  Instead the position encodes some number, "
-"often one which another animation or continual_animation uses for its "
-"update function, and by treating it as a mobject it can still be animated"
-" and manipulated just like anything else."
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:4
+msgid "Not meant to be displayed.  Instead the position encodes some number, often one which another animation or continual_animation uses for its update function, and by treating it as a mobject it can still be animated and manipulated just like anything else."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:9 of
-msgid ""
-"This value changes continuously when animated using the :attr:`animate` "
-"syntax."
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:9
+msgid "This value changes continuously when animated using the :attr:`animate` syntax."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:12 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:12
 msgid "Examples"
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker:41 of
-msgid ""
-"You can also link ValueTrackers to updaters. In this case, you have to "
-"make sure that the ValueTracker is added to the scene by ``add``"
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:41
+msgid "You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``add``"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:14
@@ -55,28 +43,22 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
-#: manim.mobject.value_tracker.ValueTracker.get_value:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1
 msgid "Get the current value of this ValueTracker."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
-msgid ""
-":obj:`increment_value "
-"<manim.mobject.value_tracker.ValueTracker.increment_value>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
-#: manim.mobject.value_tracker.ValueTracker.increment_value:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.increment_value:1
 msgid "Increments (adds) a scalar value  to the ValueTracker"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
-#: manim.mobject.value_tracker.ValueTracker.interpolate:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.interpolate:1
 msgid "Turns self into an interpolation between mobject1 and mobject2."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
-#: manim.mobject.value_tracker.ValueTracker.set_value:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.set_value:1
 msgid "Sets a new scalar value to the ValueTracker"
 msgstr ""
 
@@ -84,35 +66,24 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
 msgid "Used to animate the application of a method."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1 of
-msgid ""
-":obj:`animation_overrides "
-"<manim.mobject.value_tracker.ValueTracker.animation_overrides>`\\"
-msgstr ""
-
-#: manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1 of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
 msgid "The width of the mobject."
 msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.get_value of
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:0
 msgid "Return type"
-msgstr ""
-
-#: manim.mobject.value_tracker.ValueTracker.increment_value
-#: manim.mobject.value_tracker.ValueTracker.set_value of
-msgid "Parameters"
 msgstr ""
 
 
