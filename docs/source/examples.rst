@@ -374,7 +374,7 @@ Plotting with Manim
 .. manim:: HeatDiagramPlot
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
-    :ref_methods: Axes.get_line_graph Axes.get_axis_labels
+    :ref_methods: Axes.plot_line_graph Axes.get_axis_labels
 
     class HeatDiagramPlot(Scene):
         def construct(self):
@@ -393,7 +393,7 @@ Plotting with Manim
 
             x_vals = [0, 8, 38, 39]
             y_vals = [20, 0, 0, -5]
-            graph = ax.get_line_graph(x_values=x_vals, y_values=y_vals)
+            graph = ax.plot_line_graph(x_values=x_vals, y_values=y_vals)
 
             self.add(ax, labels, graph)
 
