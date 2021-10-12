@@ -1315,6 +1315,11 @@ class CoordinateSystem:
 
         return self.plot(deriv, color=color, **kwargs)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_derivative_graph",
+    )
     def get_derivative_graph(
         self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
