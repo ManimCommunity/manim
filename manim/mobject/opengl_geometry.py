@@ -25,7 +25,7 @@ __all__ = [
     "OpenGLRectangle",
     "OpenGLSquare",
     "OpenGLRoundedRectangle",
-    ]
+]
 
 import numpy as np
 
