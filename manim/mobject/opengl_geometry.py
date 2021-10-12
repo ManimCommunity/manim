@@ -1,3 +1,32 @@
+__all__ = [
+    "OpenGLTipableVMobject",
+    "OpenGLArc",
+    "OpenGLArcBetweenPoints",
+    "OpenGLCurvedArrow",
+    "OpenGLCurvedDoubleArrow",
+    "OpenGLCircle",
+    "OpenGLDot",
+    "OpenGLEllipse",
+    "OpenGLAnnularSector",
+    "OpenGLSector",
+    "OpenGLAnnulus",
+    "OpenGLLine",
+    "OpenGLDashedLine",
+    "OpenGLTangentLine",
+    "OpenGLElbow",
+    "OpenGLArrow",
+    "OpenGLVector",
+    "OpenGLDoubleArrow",
+    "OpenGLCubicBezier",
+    "OpenGLPolygon",
+    "OpenGLRegularPolygon",
+    "OpenGLTriangle",
+    "OpenGLArrowTip",
+    "OpenGLRectangle",
+    "OpenGLSquare",
+    "OpenGLRoundedRectangle",
+    ]
+
 import numpy as np
 
 from .. import logger
