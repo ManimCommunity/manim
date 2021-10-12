@@ -700,7 +700,7 @@ class CoordinateSystem:
 
     @deprecated(
         since="v0.11.0",
-        until="v0.12.0",
+        until="v0.13.0",
         replacement="plot",
     )
     def get_graph(
@@ -761,7 +761,7 @@ class CoordinateSystem:
 
     @deprecated(
         since="v0.11.0",
-        until="v0.12.0",
+        until="v0.13.0",
         replacement="plot_implicit_curve",
     )
     def get_implicit_curve(
@@ -783,7 +783,7 @@ class CoordinateSystem:
 
     @deprecated(
         since="v0.11.0",
-        until="v0.12.0",
+        until="v0.13.0",
         replacement="plot_parametric_curve",
     )
     def get_parametric_curve(self, function, **kwargs):
@@ -1882,7 +1882,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     @deprecated(
         since="v0.11.0",
-        until="v0.12.0",
+        until="v0.13.0",
         replacement="plot_line_graph",
     )
     def get_line_graph(
