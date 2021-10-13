@@ -12,7 +12,7 @@ from .. import config
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
-from ..constants import DEGREES, PI
+from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
@@ -24,7 +24,6 @@ from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated_params
-from ..utils.space_ops import spherical_to_cartesian, z_to_vector
 
 
 class ThreeDScene(Scene):
@@ -347,33 +346,10 @@ class ThreeDScene(Scene):
             self.add(*mobjects)
             self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
         else:
-
-            def face_camera(mob: OpenGLMobject):
-                def update_func(
-                    m: OpenGLMobject,
-                    copy: OpenGLMobject,
-                    center: np.ndarray,
-                ):
-                    camera: OpenGLCamera = self.camera
-                    theta, phi, _ = camera.euler_angles
-                    theta -= PI / 2
-
-                    m.become(
-                        copy.copy()
-                        .rotate(PI / 2)
-                        .apply_matrix(
-                            z_to_vector(spherical_to_cartesian([1, theta, phi])),
-                        ),
-                    ).move_to(center)
-
-                copy, center = mob.copy(), mob.get_center()
-                mob.fixed_orientation: bool = True
-                return mob.add_updater(lambda m=mob: update_func(m, copy, center))
-
             for mob in mobjects:
                 mob: OpenGLMobject
-                mob.save_state()
-                self.add(face_camera(mob))
+                mob.fix_orientation()
+                self.add(mob)
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
         """
@@ -414,9 +390,7 @@ class ThreeDScene(Scene):
         else:
             for mob in mobjects:
                 mob: OpenGLMobject
-                if hasattr(mob, "fixed_orientation") and mob.fixed_orientation:
-                    mob.fixed_orientation = False
-                    mob.clear_updaters().restore()
+                mob.unfix_orientation()
                 self.remove(mob)
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
