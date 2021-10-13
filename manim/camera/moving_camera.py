@@ -196,7 +196,8 @@ class MovingCamera(Camera):
         Returns
         -------
         _AnimationBuilder
-            Returns an animation that focuses on a given array of mobjects (or a singular mobject)
+            Returns an animation that zooms the camera view to a given
+            list of mobjects.
 
         """
         scene_critical_x_left = None
