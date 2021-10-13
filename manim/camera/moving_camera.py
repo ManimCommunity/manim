@@ -179,6 +179,7 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
+    # This method only works when 2D-objects in the XY-plane are considered.
     def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
@@ -207,8 +208,8 @@ class MovingCamera(Camera):
         scene_critical_y_down = None
 
         for m in mobjects:
-            if (m == self.frame) | (
-                only_mobjects_in_frame & operator.not_(self.is_in_frame(m))
+            if (m == self.frame) or (
+                only_mobjects_in_frame and operator.not_(self.is_in_frame(m))
             ):
                 # detected camera frame, should not be used to calculate final position of camera
                 continue
@@ -238,11 +239,11 @@ class MovingCamera(Camera):
         y = (scene_critical_y_up + scene_critical_y_down) / 2
 
         # calculate proposed width and height of zoomed scene
-        newWidth = abs(scene_critical_x_left - scene_critical_x_right)
-        newHeight = abs(scene_critical_y_up - scene_critical_y_down)
+        new_Width = abs(scene_critical_x_left - scene_critical_x_right)
+        new_Height = abs(scene_critical_y_up - scene_critical_y_down)
 
         # zoom to fit all mobjects along the side that has the largest size
-        if newWidth / self.frame.width > newHeight / self.frame.height:
-            return self.frame.animate.set_x(x).set_y(y).set(width=newWidth + margin)
+        if new_Width / self.frame.width > new_Height / self.frame.height:
+            return self.frame.animate.set_x(x).set_y(y).set(width=new_Width + margin)
         else:
-            return self.frame.animate.set_x(x).set_y(y).set(height=newHeight + margin)
+            return self.frame.animate.set_x(x).set_y(y).set(height=new_Height + margin)

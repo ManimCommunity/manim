@@ -1,8 +1,5 @@
 from manim import *
 
-from .simple_zoom_scene import test_zoom_pan_to_center
-
-
 def test_zoom():
 
     s1 = Square()
@@ -10,9 +7,9 @@ def test_zoom():
     s2 = Square()
     s2.set_x(10)
 
-    scene = test_zoom_pan_to_center()
-
-    scene.construct()
+    scene = MovingCameraScene() 
+    scene.add(s1, s2) 
+    scene.play(scene.camera.auto_zoom([s1, s2]))
 
     assert (
         scene.camera.frame_width
