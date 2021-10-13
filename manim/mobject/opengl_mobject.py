@@ -52,6 +52,8 @@ class OpenGLMobject:
     rgbas = _Data()
 
     is_fixed_in_frame = _Uniforms()
+    is_fixed_orientation = _Uniforms()
+    mob_center = _Uniforms()  # for fixed orientation reference
     gloss = _Uniforms()
     shadow = _Uniforms()
 
@@ -71,6 +73,7 @@ class OpenGLMobject:
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame=False,
+        is_fixed_orientation=False,
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
@@ -95,6 +98,7 @@ class OpenGLMobject:
         self.depth_test = depth_test
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
+        self.is_fixed_orientation = float(is_fixed_orientation)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -1766,6 +1770,17 @@ class OpenGLMobject:
     @affects_shader_info_id
     def unfix_from_frame(self):
         self.is_fixed_in_frame = 0.0
+        return self
+
+    @affects_shader_info_id
+    def fix_orientation(self):
+        self.is_fixed_orientation = 1.0
+        self.mob_center = tuple(self.get_center())
+        return self
+
+    @affects_shader_info_id
+    def unfix_orientation(self):
+        self.is_fixed_orientation = 0.0
         return self
 
     @affects_shader_info_id
