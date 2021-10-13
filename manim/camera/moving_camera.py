@@ -188,7 +188,7 @@ class MovingCamera(Camera):
             The mobject or array of mobjects that the camera should focus on
 
         margin
-            The amount of padding that should be added to the view (optional)
+            The width of the margin that is added to the frame (optional, 0 by default).
 
         only_mobjects_in_frame
             If set to True, only allows focusing on mobjects that are already in frame
