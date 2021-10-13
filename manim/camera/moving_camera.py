@@ -180,7 +180,8 @@ class MovingCamera(Camera):
         return [self.frame]
 
     def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
-        """Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects
+        """Zooms on to a given array of mobjects (or a singular mobject)
+        and automatically resizes to frame all the mobjects.
 
         Parameters
         ----------
