@@ -191,7 +191,7 @@ class MovingCamera(Camera):
             The width of the margin that is added to the frame (optional, 0 by default).
 
         only_mobjects_in_frame
-            If set to True, only allows focusing on mobjects that are already in frame
+            If set to ``True``, only allows focusing on mobjects that are already in frame.
 
         Returns
         -------
