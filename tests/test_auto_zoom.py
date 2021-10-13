@@ -1,5 +1,6 @@
 from manim import *
 
+
 def test_zoom():
 
     s1 = Square()
@@ -7,8 +8,8 @@ def test_zoom():
     s2 = Square()
     s2.set_x(10)
 
-    scene = MovingCameraScene() 
-    scene.add(s1, s2) 
+    scene = MovingCameraScene()
+    scene.add(s1, s2)
     scene.play(scene.camera.auto_zoom([s1, s2]))
 
     assert (
