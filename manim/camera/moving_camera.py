@@ -185,7 +185,7 @@ class MovingCamera(Camera):
         Parameters
         ----------
         mobjects
-            The mobject or array of mobjects that the camera should focus on
+            The mobject or array of mobjects that the camera will focus on.
 
         margin
             The width of the margin that is added to the frame (optional, 0 by default).
