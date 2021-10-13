@@ -591,14 +591,16 @@ class ManimConfig(MutableMapping):
             setattr(self, key, parser["CLI"].getfloat(key))
 
         # tuple keys
-        gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
+        gui_location = tuple(
+            map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"])),
+        )
         setattr(self, "gui_location", gui_location)
 
         window_size = parser["CLI"][
             "window_size"
         ]  # if not "default", get a tuple of the position
         if window_size != "default":
-            window_size = tuple(map(int, re.split(";|,|-", window_size)))
+            window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
         setattr(self, "window_size", window_size)
 
         # plugins
