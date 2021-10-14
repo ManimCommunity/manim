@@ -32,7 +32,7 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.iterables import tuplify
-from ..utils.space_ops import normalize, z_to_vector
+from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -748,6 +748,46 @@ class Line3D(Cylinder):
 
     def get_end(self):
         return self.end
+
+    @classmethod
+    def parallel_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        point = np.array(point)
+        vect = normalize(line.vect)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
+
+    @classmethod
+    def perp_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        point = np.array(point)
+
+        # Check if the point given lies on the span of the line.
+        multiple = lambda a: len(a) == a.count(a[0])
+        if multiple(list((point - line.start) / line.vect)):
+            raise ValueError("Could not find the perpendicular.")
+
+        norm = np.cross(line.vect, point - line.start)
+        start, end = perpendicular_bisector([line.start, line.end], norm)
+        vect = normalize(end - start)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
 
 
 class Arrow3D(Line3D):
