@@ -757,6 +757,31 @@ class Line3D(Cylinder):
         length: float = 5,
         **kwargs
     ):
+        """Returns a line parallel to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be parallel to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: ParallelLineExample
+            :save_last_frame:
+
+            class ParallelLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.parallel_to(line1, color=YELLOW)
+                    self.add(ax, line1, line2)
+        """
         point = np.array(point)
         vect = normalize(line.vect)
         return cls(
@@ -773,6 +798,31 @@ class Line3D(Cylinder):
         length: float = 5,
         **kwargs
     ):
+        """Returns a line perpendicular to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be perpendicular to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: PerpLineExample
+            :save_last_frame:
+
+            class PerpLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.perp_to(line1, color=BLUE)
+                    self.add(ax, line1, line2)
+        """
         point = np.array(point)
 
         # Check if the point given lies on the span of the line.
