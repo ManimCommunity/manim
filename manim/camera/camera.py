@@ -461,9 +461,7 @@ class Camera:
             ],
         )
 
-    def capture_mobject(
-        self, mobject, **kwargs
-    ):
+    def capture_mobject(self, mobject, **kwargs):
         """Capture mobjects by printing them on :attr:`pixel_array`.
 
         This is a single-mobject version of :meth:`capture_mobjects`.

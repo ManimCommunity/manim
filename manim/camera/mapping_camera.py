@@ -33,7 +33,8 @@ class MappingCamera(Camera):
 
     def points_to_pixel_coords(self, mobject, points):
         return super().points_to_pixel_coords(
-            mobject, np.apply_along_axis(self.mapping_func, 1, points),
+            mobject,
+            np.apply_along_axis(self.mapping_func, 1, points),
         )
 
     def capture_mobjects(self, mobjects, **kwargs):
