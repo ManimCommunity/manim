@@ -49,10 +49,31 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
-
 class VMobject(Mobject):
-    """A vectorized mobject."""
+    """A vectorized mobject
 
+    Parameters
+    ----------
+    background_stroke_color
+	The purpose  of background stroke is to have something 
+        that won't overlap fill, e.g.  For text against some 
+        textured background.
+    sheen_factor
+	When a color c is set, there will be a second color
+        computed based on interpolating c to WHITE by with
+        sheen_factor, and the display will gradient to this
+        secondary color in the direction of sheen_direction.
+    close_new_points
+	Indicates that it will not be displayed, but
+        that it should count in parent mobject's path
+    tolerance_point_for_equality
+	This is within a pixel
+        TODO, do we care about accounting for varying zoom levels?
+
+    Examples
+    --------
+   """
+	
     def __init__(
         self,
         fill_color=None,
@@ -60,28 +81,17 @@ class VMobject(Mobject):
         stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        # The purpose of background stroke is to have
-        # something that won't overlap the fill, e.g.
-        # For text against some textured background
         background_stroke_color=BLACK,
         background_stroke_opacity=1.0,
-        background_stroke_width=0,
-        # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
-        # sheen_factor, and the display will gradient to this
-        # secondary color in the direction of sheen_direction.
+        background_stroke_width=0,        
         sheen_factor=0.0,
         sheen_direction=UL,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
         make_smooth_after_applying_functions=False,
         background_image=None,
         shade_in_3d=False,
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
+        
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
         **kwargs,
