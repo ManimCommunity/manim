@@ -14,6 +14,29 @@ from manim.utils.space_ops import normalize_along_axis
 
 
 class OpenGLSurface(OpenGLMobject):
+    """Creates a Surface.
+    Parameters
+    ----------
+    uv_func :
+        The function that defines the surface.
+    u_range :
+        The range of the ``u`` variable: ``(u_min, u_max)``.
+    v_range :
+        The range of the ``v`` variable: ``(v_min, v_max)``.
+    resolution :
+        The number of samples taken of the surface.
+    axes :
+        Axes on which the surface is to be drawn. Optional
+        parameter used when coloring a surface by z-value.
+    color :
+        Color of the surface. Passing a list of colors and a
+        axes will color the surface by z-value. Passing a
+        list of tuples in the form `[(color, pivot)]` allows
+        user-defined pivots where the color transitions.
+    opacity :
+        Opacity of the surface.
+    """
+
     shader_dtype = [
         ("point", np.float32, (3,)),
         ("du_point", np.float32, (3,)),
