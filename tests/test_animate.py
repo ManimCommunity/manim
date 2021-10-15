@@ -116,3 +116,32 @@ def test_animate_with_args_misplaced():
 
     with pytest.raises(ValueError, match="must be passed before"):
         s.animate(run_time=run_time)(run_time=run_time).scale(scale_factor)
+
+        
+class RemoverTest1(Scene):
+    def construct(self):
+        s = Square()
+        c = Circle()
+        self.play(
+            AnimationGroup(
+                Create(s, remover=True),
+                Write(c, remover=True),
+            )
+        )
+
+        
+class RemoverTest2(Scene):
+    def construct(self):
+        s = Square()
+        c = Circle()
+        self.play(
+            AnimationGroup(
+                Create(s),
+                Write(c),
+                remover=True
+            )
+        )
+
+
+def test_animate_remover():
+    assert type(RemoverTest1) is RemoverTest2
