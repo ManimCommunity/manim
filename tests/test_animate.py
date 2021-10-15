@@ -5,7 +5,7 @@ from manim.animation.creation import Uncreate
 from manim.mobject.geometry import Dot, Line, Square
 from manim.mobject.mobject import override_animate
 from manim.mobject.types.vectorized_mobject import VGroup
-
+from manim import *
 
 def test_simple_animate():
     s = Square()
