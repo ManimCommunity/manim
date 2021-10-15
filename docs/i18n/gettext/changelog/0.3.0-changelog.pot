@@ -1,0 +1,221 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.3.0-changelog.rst:3
+msgid "v0.3.0"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:5
+msgid "February 1, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:7
+msgid "The changes since Manim Community release v0.2.0 are listed below."
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:11
+msgid "New Features"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:13
+msgid ":pr:`945`: :meth:`~.Graph.change_layout` method for :class:`~.Graph` mobject"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:14
+msgid ":pr:`943`: IPython %%manim magic"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:15
+msgid ":pr:`970`: Added ``--version`` command line flag"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:16
+msgid ":pr:`948`: Allow passing a code string to :class:`~.Code`"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:17
+msgid ":pr:`917`: Allow overriding new-style method animations"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:18
+msgid ":pr:`756`: Allow setting frame_height and frame_width via config file"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:19
+msgid ":pr:`939`: Added custom font files support"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:20
+msgid ":pr:`892`: Added ManimCommunity colors"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:21
+msgid ":pr:`922`: Tree layout for Graph mobject"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:22
+msgid ":pr:`935`: Added code of conduct"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:23
+msgid ":pr:`916`: Multi-column layout for partite graphs"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:24
+msgid ":pr:`742`: Units: Pixels, Munits, Percent in :mod:`~.utils.unit`"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:25
+msgid ":pr:`893`: Convenience method :meth:`~.Graph.from_networkx` for creating a graph from a networkx graph"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:28
+msgid "Bugfixes and Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:30
+msgid ":pr:`988`: Fix Windows CI pipeline by adding missing LaTeX package"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:31
+msgid ":pr:`961`: Added typings and docs for vectorized mobjects and bezier related functions"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:32
+msgid ":pr:`977`: JupyterLab docker image and documentation for manim and IPython"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:33
+msgid ":pr:`985`: Fix variable name for webgl renderer"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:34
+msgid ":pr:`954`: Fix edges lagging behind vertices in animations of graphs"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:35
+msgid ":pr:`980`: Allow usage of custom Pygments styles in Code"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:36
+msgid ":pr:`952`: Allow passing tween information to the WebGL frontend"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:37
+msgid ":pr:`978`: Fix ``possible_paths`` not printing in ``code_mobject``"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:38
+msgid ":pr:`976`: Update ``ManimPango``"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:39
+msgid ":pr:`967`: Automatically import plugins"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:40
+msgid ":pr:`971`: Make ManimCommunity look consistent"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:41
+msgid ":pr:`957`: Raise ``NotImplementedError`` when trying to chain overridden method animations"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:42
+msgid ":pr:`947`: Several fixes and improvements for :class:`~.PointCloundDot`"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:43
+msgid ":pr:`923`: Documentation: move installation instructions for developers to page for developers"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:44
+msgid ":pr:`964`: Added unit test for :class:`~.NumberLine`'s unit vector"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:45
+msgid ":pr:`960`: Magnitude of :class:`~.NumberLine`'s unit vector should be ``unit_size``, not 1"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:46
+msgid ":pr:`958`: Fix code formatting in ``utils/debug.py``"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:47
+msgid ":pr:`953`: Update license year"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:48
+msgid ":pr:`944`: Interpolate stroke opacity in :class:`~.FadeIn` and update ``stroke_opacity`` and ``fill_opacity`` in :meth:`~.VMobject.set_stroke` and :meth:`~.VMobject.set_fill`"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:49
+msgid ":pr:`865`: Rename ``get_submobject_index_labels`` to ``index_labels``"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:50
+msgid ":pr:`941`: Added keyword arguments ``x_min``, ``x_max``, ``y_min``, ``y_max`` to :class:`~.ThreeDAxes`"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:51
+msgid ":pr:`886`: Let the render progress bar show details about the rendered animation again"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:52
+msgid ":pr:`936`: Fix :class:`~.BulletedList` TeX environment problem and add a typing to ``get_module``"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:53
+msgid ":pr:`938`: Remove dependency on progressbar"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:54
+msgid ":pr:`937`: Change 'brew cask install' to 'brew install --cask' for CI pipeline"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:55
+msgid ":pr:`933`: Make matrix work with lists again"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:56
+msgid ":pr:`932`: Correctly parse ``log_dir`` option"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:57
+msgid ":pr:`920`: Raise error if markup in :class:`~.MarkupText` is invalid"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:58
+msgid ":pr:`929`: Raise an error if a :class:`~.Matrix` object is created with < 2-dimensional input"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:59
+msgid ":pr:`907`: Make Scene.add_sound work again (when running with ``--disable_caching``)"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:60
+msgid ":pr:`906`: Allow new-style method animation to be used in animation groups"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:61
+msgid ":pr:`908`: Removed deprecated command line arguments from documentation"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:62
+msgid ":pr:`903`: Tiny grammar improvements"
+msgstr ""
+
+#: ../../source/changelog/0.3.0-changelog.rst:63
+msgid ":pr:`904`: Added blank line between imports and class example"
+msgstr ""
+
+

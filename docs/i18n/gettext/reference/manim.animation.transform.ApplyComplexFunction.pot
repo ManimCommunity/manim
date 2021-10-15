@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.ApplyComplexFunction.rst:2
+msgid "ApplyComplexFunction"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ApplyComplexFunction.rst:4
+msgid "Qualified name: ``manim.animation.transform.ApplyComplexFunction``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyComplexFunction:1
+msgid "Bases: :class:`manim.animation.transform.ApplyMethod`"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyComplexFunction:1
+msgid "Method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyComplexFunction:6
+msgid "Relies on the fact that mobject methods return the mobject"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ApplyComplexFunction.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ApplyComplexFunction.rst:21
+msgid "Attributes"
+msgstr ""
+
+
