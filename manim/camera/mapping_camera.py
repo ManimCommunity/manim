@@ -2,6 +2,7 @@
 
 __all__ = ["MappingCamera", "OldMultiCamera", "SplitScreenCamera"]
 
+import math
 
 import numpy as np
 
@@ -125,9 +126,9 @@ class SplitScreenCamera(OldMultiCamera):
         self.left_camera = left_camera
         self.right_camera = right_camera
 
-        half_width = self.pixel_width / 2
+        half_width = math.ceil(self.pixel_width / 2)
         for camera in [self.left_camera, self.right_camera]:
-            camera.reset_pixel_shape(camera.pixel_height, half_width + (half_width % 2))  # Round up to an even number
+            camera.reset_pixel_shape(camera.pixel_height, half_width)
 
         super().__init__(
             (left_camera, (0, 0)),
