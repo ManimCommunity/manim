@@ -2,7 +2,9 @@ import numpy as np
 
 
 def show_diff_helper(
-    frame_number: int, frame_data: np.ndarray, expected_frame_data: np.ndarray
+    frame_number: int,
+    frame_data: np.ndarray,
+    expected_frame_data: np.ndarray,
 ):
     """Will visually display with matplotlib differences between frame generated and the one expected."""
     import matplotlib.gridspec as gridspec

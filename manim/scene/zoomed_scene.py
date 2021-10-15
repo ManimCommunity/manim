@@ -99,14 +99,14 @@ class ZoomedScene(MovingCameraScene):
         self.zoom_factor = zoom_factor
         self.image_frame_stroke_width = image_frame_stroke_width
         self.zoom_activated = zoom_activated
-        MovingCameraScene.__init__(self, camera_class=camera_class, **kwargs)
+        super().__init__(camera_class=camera_class, **kwargs)
 
     def setup(self):
         """
         This method is used internally by Manim to
         setup the scene for proper use.
         """
-        MovingCameraScene.setup(self)
+        super().setup()
         # Initialize camera and display
         zoomed_camera = MovingCamera(**self.zoomed_camera_config)
         zoomed_display = ImageMobjectFromCamera(
@@ -124,7 +124,8 @@ class ZoomedScene(MovingCameraScene):
             zoomed_display.move_to(self.zoomed_display_center)
         else:
             zoomed_display.to_corner(
-                self.zoomed_display_corner, buff=self.zoomed_display_corner_buff
+                self.zoomed_display_corner,
+                buff=self.zoomed_display_corner_buff,
             )
 
         self.zoomed_camera = zoomed_camera

@@ -267,10 +267,10 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """
 
         return VGroup(
-            *[
-                VGroup(*[row[i] for row in self.mob_matrix])
+            *(
+                VGroup(*(row[i] for row in self.mob_matrix))
                 for i in range(len(self.mob_matrix[0]))
-            ]
+            )
         )
 
     def set_column_colors(self, *colors):
@@ -323,7 +323,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                     m0.add(SurroundingRectangle(m0.get_rows()[1]))
                     self.add(m0)
         """
-        return VGroup(*[VGroup(*row) for row in self.mob_matrix])
+        return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix.
@@ -467,8 +467,7 @@ class DecimalMatrix(Matrix):
         element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
             Config for the desired mobject, by default {"num_decimal_places": 1}
         """
-        Matrix.__init__(
-            self,
+        super().__init__(
             matrix,
             element_to_mobject=element_to_mobject,
             element_to_mobject_config=element_to_mobject_config,
@@ -505,7 +504,7 @@ class IntegerMatrix(Matrix):
         element_to_mobject : :class:`~.Mobject`, optional
             Mobject to use, by default Integer
         """
-        Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class MobjectMatrix(Matrix):
@@ -528,11 +527,14 @@ class MobjectMatrix(Matrix):
     """
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
-        Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
+        super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)
 
 
 def get_det_text(
-    matrix, determinant=None, background_rect=False, initial_scale_factor=2
+    matrix,
+    determinant=None,
+    background_rect=False,
+    initial_scale_factor=2,
 ):
     r"""Helper function to create determinant.
 

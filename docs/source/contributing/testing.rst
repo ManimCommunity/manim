@@ -8,20 +8,20 @@ feature has been broken and/or been unintentionally modified.
 How Manim tests
 ---------------
 
-Manim uses pytest as its testing framework. 
-To start the testing process, go to the root directory of the project and run pytest in your terminal. 
+Manim uses pytest as its testing framework.
+To start the testing process, go to the root directory of the project and run pytest in your terminal.
 Any errors that occur during testing will be displayed in the terminal.
 
-Some useful pytest flags: 
+Some useful pytest flags:
 
 - ``-x`` will make pytest stop at the first failure it encounters
-  
+
 - ``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)
-  
+
 - ``--skip_slow`` will skip the (arbitrarily) slow tests
 
 - ``--show_diff`` will show a visual comparison in case a unit test is failing.
-  
+
 
 How it Works
 ~~~~~~~~~~~~
@@ -129,7 +129,7 @@ The Main Directories
 - ``test_graphical_units/``:
 
   Contains graphical tests.
-    
+
 - ``test_scene_rendering/``:
 
   For tests that need to render a scene in some way, such as tests for CLI
@@ -169,7 +169,7 @@ For example, to test the ``Circle`` VMobject which resides in
 The name of the module is indicated by the variable __module_test__, that **must** be declared in any graphical test file. The module name is used to store the graphical control data.
 
 .. important::
-    You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a 
+    You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a
     parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
 
 Here's an example in ``test_geometry.py``:
@@ -196,7 +196,7 @@ The decorator can be used with or without parentheses. **By default, the test on
       circle = Circle()
       scene.play(Animation(circle))
 
-You can also specify, when needed, which base scene you need (ThreeDScene, for example) : 
+You can also specify, when needed, which base scene you need (ThreeDScene, for example) :
 
 .. code:: python
 
@@ -211,16 +211,16 @@ Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise 
 
 .. warning::
   If you run pytest now, you will get a ``FileNotFound`` error. This is because
-  you have not created control data for your test. 
+  you have not created control data for your test.
 
-To create the control data for your test, you have to use the flag ``--set_test`` along with pytest. 
-For the example above, it would be 
+To create the control data for your test, you have to use the flag ``--set_test`` along with pytest.
+For the example above, it would be
 
 .. code-block:: bash
 
     pytest test_geometry.py::test_circle --set_test -s
 
-(``-s`` is here to see manim logs, so you can see what's going on). 
+(``-s`` is here to see manim logs, so you can see what's going on).
 
 Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
 
@@ -251,7 +251,7 @@ To test videos generated, we use the decorator
         out, err, exit_code = capture(command)
         assert exit_code == 0, err
 
-.. note:: ``assert exit*\ code == 0, err`` is used in case of the command fails 
+.. note:: ``assert exit*\ code == 0, err`` is used in case of the command fails
   to run. The decorator takes two arguments: json name and the path
   to where the video should be generated, starting from the ``media/`` dir.
 

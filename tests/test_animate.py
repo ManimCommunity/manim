@@ -70,12 +70,14 @@ def test_chaining_overridden_animate():
             return Uncreate(self.line, **anim_args)
 
     with pytest.raises(
-        NotImplementedError, match="not supported for overridden animations"
+        NotImplementedError,
+        match="not supported for overridden animations",
     ):
         DotsWithLine().animate.shift((1, 0, 0)).remove_line()
 
     with pytest.raises(
-        NotImplementedError, match="not supported for overridden animations"
+        NotImplementedError,
+        match="not supported for overridden animations",
     ):
         DotsWithLine().animate.remove_line().shift((1, 0, 0))
 

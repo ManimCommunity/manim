@@ -36,7 +36,9 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
 
 
 def _deprecation_text_component(
-    since: Optional[str], until: Optional[str], message: str
+    since: Optional[str],
+    until: Optional[str],
+    message: str,
 ) -> str:
     """Generates a text component used in deprecation messages.
 

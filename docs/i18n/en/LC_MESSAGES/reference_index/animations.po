@@ -1,0 +1,79 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference_index/animations.rst:2
+msgid "Animations"
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:6
+msgid "Inheritance Graph"
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:27
+msgid "Module Index"
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animate mobjects."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Tools for displaying multiple animations at once."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animate the display or removal of a mobject from a scene."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Fading in and out of view."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations that grow mobjects."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations drawing attention to particular mobjects."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations related to movement."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations for changing numbers."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations related to rotation."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations transforming one mobject into another."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid ""
+":obj:`transform_matching_parts "
+"<manim.animation.transform_matching_parts>`\\"
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid ""
+"Animations that try to transform Mobjects while keeping track of "
+"identical parts."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:46:<autosummary>:1
+msgid "Animations that update mobjects."
+msgstr ""
+
+

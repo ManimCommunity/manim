@@ -30,7 +30,8 @@ SVG_DEFAULT_ATTRIBUTES: Dict[str, str] = {
 
 
 def cascade_element_style(
-    element: MinidomElement, inherited: Dict[str, str]
+    element: MinidomElement,
+    inherited: Dict[str, str],
 ) -> Dict[str, str]:
     """Collect the element's style attributes based upon both its inheritance and its own attributes.
 

@@ -1,0 +1,51 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.creation.Create.rst:2
+msgid "Create"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Create.rst:4
+msgid "Qualified name: ``manim.animation.creation.Create``"
+msgstr ""
+
+#: manim.animation.creation.Create:1 of
+msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgstr ""
+
+#: manim.animation.creation.Create:1 of
+msgid "Incrementally show a VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Create.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.creation.Create:3 of
+msgid "The VMobject to animate."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Create.rst
+msgid "Raises"
+msgstr ""
+
+#: manim.animation.creation.Create:6 of
+msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
+msgstr ""
+
+#: manim.animation.creation.Create:9 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Create.rst:14
+msgid "Methods"
+msgstr ""
+
+

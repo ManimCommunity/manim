@@ -27,7 +27,7 @@ def straight_path(start_points, end_points, alpha):
     return interpolate(start_points, end_points, alpha)
 
 
-def path_along_arc(arc_angle, axis=OUT):
+def path_along_arc(arc_angle, axis=OUT, arc_centers=None):
     """
     If vect is vector from start to end, [vect[:,1], -vect[:,0]] is
     perpendicular to vect in the left direction.
@@ -39,10 +39,13 @@ def path_along_arc(arc_angle, axis=OUT):
     unit_axis = axis / np.linalg.norm(axis)
 
     def path(start_points, end_points, alpha):
-        vects = end_points - start_points
-        centers = start_points + 0.5 * vects
-        if arc_angle != np.pi:
-            centers += np.cross(unit_axis, vects / 2.0) / np.tan(arc_angle / 2)
+        if arc_centers is None:
+            vects = end_points - start_points
+            centers = start_points + 0.5 * vects
+            if arc_angle != np.pi:
+                centers += np.cross(unit_axis, vects / 2.0) / np.tan(arc_angle / 2)
+        else:
+            centers = arc_centers
         rot_matrix = rotation_matrix(alpha * arc_angle, unit_axis)
         return centers + np.dot(start_points - centers, rot_matrix.T)
 

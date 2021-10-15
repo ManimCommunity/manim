@@ -19,6 +19,17 @@ def test_TransformFromCopy(scene):
 
 
 @frames_comparison(last_frame=False)
+def test_FullRotation(scene):
+    s = VGroup(*(Square() for _ in range(4))).arrange()
+    scene.play(
+        Rotate(s[0], -2 * TAU),
+        Rotate(s[1], -1 * TAU),
+        Rotate(s[2], 1 * TAU),
+        Rotate(s[3], 2 * TAU),
+    )
+
+
+@frames_comparison(last_frame=False)
 def test_ClockwiseTransform(scene):
     square = Square()
     circle = Circle()
@@ -98,8 +109,9 @@ def test_ApplyComplexFunction(scene):
     square = Square()
     scene.play(
         ApplyComplexFunction(
-            lambda complex_num: complex_num + 2 * np.complex(0, 1), square
-        )
+            lambda complex_num: complex_num + 2 * complex(0, 1),
+            square,
+        ),
     )
 
 

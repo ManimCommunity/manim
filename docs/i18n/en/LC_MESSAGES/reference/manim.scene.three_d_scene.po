@@ -1,0 +1,33 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.scene.three_d_scene.rst:2
+msgid "three\\_d\\_scene"
+msgstr ""
+
+#: manim.scene.three_d_scene:1 of
+msgid "A scene suitable for rendering three-dimensional objects and animations."
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.rst:22:<autosummary>:1
+msgid "An extension of :class:`ThreeDScene` with more settings."
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.rst:22:<autosummary>:1
+msgid ""
+"This is a Scene, with special configurations and properties that make it "
+"suitable for Three Dimensional Scenes."
+msgstr ""
+
+

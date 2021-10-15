@@ -1,0 +1,189 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:2
+msgid "ComplexPlane"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:4
+msgid "Qualified name: ``manim.mobject.coordinate\\_systems.ComplexPlane``"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane:1 of
+msgid "Bases: :class:`manim.mobject.coordinate_systems.NumberPlane`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane:1 of
+msgid "A :class:`~.NumberPlane` specialized for use with complex numbers."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane:4 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:35
+msgid "References: :class:`~.Dot` :class:`~.MathTex`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+msgid ""
+":obj:`add_coordinates "
+"<manim.mobject.coordinate_systems.ComplexPlane.add_coordinates>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1 of
+msgid ""
+"Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels`"
+" to the plane."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+msgid ""
+":obj:`get_coordinate_labels "
+"<manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels:1 of
+msgid ""
+"Generates the :class:`~.DecimalNumber` mobjects for the coordinates of "
+"the plane."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.n2p:1 of
+msgid "Abbreviation for :meth:`number_to_point`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+msgid ""
+":obj:`number_to_point "
+"<manim.mobject.coordinate_systems.ComplexPlane.number_to_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point:1 of
+msgid ""
+"Accepts a float/complex number and returns the equivalent point on the "
+"plane."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.p2n:1 of
+msgid "Abbreviation for :meth:`point_to_number`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+msgid ""
+":obj:`point_to_number "
+"<manim.mobject.coordinate_systems.ComplexPlane.point_to_number>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number:1 of
+msgid ""
+"Accepts a point and returns a complex number equivalent to that point on "
+"the plane."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:27
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
+#: of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.coordinate_systems.ComplexPlane.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
+#: of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
+#: of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
+#: of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels
+#: manim.mobject.coordinate_systems.ComplexPlane.n2p
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point
+#: manim.mobject.coordinate_systems.ComplexPlane.p2n
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:3
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels:3 of
+msgid ""
+"An iterable of floats/complex numbers. Floats are positioned along the "
+"x-axis, complex numbers along the y-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:4
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels:4 of
+msgid ""
+"Additional arguments to be passed to "
+":meth:`~.NumberLine.get_number_mobject`, i.e. :class:`~.DecimalNumber`."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels:6 of
+msgid "A :class:`~.VGroup` containing the positioned label mobjects."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels
+#: manim.mobject.coordinate_systems.ComplexPlane.n2p
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point
+#: manim.mobject.coordinate_systems.ComplexPlane.p2n
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point:3 of
+msgid "The number. Can be a float or a complex number."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.number_to_point:5 of
+msgid "The point on the plane."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number:3 of
+msgid "The point in manim's coordinate-system"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ComplexPlane.point_to_number:5 of
+msgid "A complex number consisting of real and imaginary components."
+msgstr ""
+
+

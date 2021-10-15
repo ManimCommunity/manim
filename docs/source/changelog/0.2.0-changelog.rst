@@ -90,4 +90,3 @@ Other changes
 - Change several ``str.format()`` to ``f``-strings (:pr:`867`)
 - Update javascript renderer (:pr:`830`)
 - Bump version number to 0.2.0, update changelog (:pr:`894`)
-

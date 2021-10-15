@@ -7,5 +7,5 @@ def get_project_root() -> Path:
 
 def get_svg_resource(filename):
     return str(
-        get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename
+        get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename,
     )

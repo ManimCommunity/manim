@@ -1,0 +1,67 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:2
+msgid "SurroundingRectangle"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:4
+msgid "Qualified name: ``manim.mobject.shape\\_matchers.SurroundingRectangle``"
+msgstr ""
+
+#: manim.mobject.shape_matchers.SurroundingRectangle:1 of
+msgid "Bases: :class:`manim.mobject.geometry.RoundedRectangle`"
+msgstr ""
+
+#: manim.mobject.shape_matchers.SurroundingRectangle:1 of
+msgid "A rectangle surrounding a :class:`~.Mobject`"
+msgstr ""
+
+#: manim.mobject.shape_matchers.SurroundingRectangle:4 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid ""
+":obj:`animate "
+"<manim.mobject.shape_matchers.SurroundingRectangle.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.shape_matchers.SurroundingRectangle.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.SurroundingRectangle.rst:28:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

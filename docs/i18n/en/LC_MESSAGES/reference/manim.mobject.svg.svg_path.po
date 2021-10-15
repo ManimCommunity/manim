@@ -1,0 +1,97 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.svg.svg_path.rst:2
+msgid "svg\\_path"
+msgstr ""
+
+#: manim.mobject.svg.svg_path:1 of
+msgid "Mobjects generated from an SVG pathstring."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.rst:29
+msgid "Functions"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.correct_out_of_range_radii:1 of
+msgid "Correction of out-of-range radii."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.correct_out_of_range_radii:3 of
+msgid ""
+"See: "
+"https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.elliptical_arc_to_cubic_bezier:1 of
+msgid "Generate cubic bezier points to approximate SVG elliptical arc."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.elliptical_arc_to_cubic_bezier:3 of
+msgid "See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.get_elliptical_arc_center_parameters:1 of
+msgid "Conversion from endpoint to center parameterization."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.get_elliptical_arc_center_parameters:3 of
+msgid ""
+"See: "
+"https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.grouped:1 of
+msgid "Group iterable into arrays of n items."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers:1 of
+msgid ""
+"Parse the SVG string representing a sequence of numbers into an array of "
+"floats."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers:3 of
+msgid ""
+"String representing a sequence of numbers, separated by commas, spaces, "
+"etc."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers:6 of
+msgid "List of float values parsed out of the string."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.string_to_numbers of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.svg.svg_path.vector_angle:1 of
+msgid "Calculate the dot product angle between two vectors."
+msgstr ""
+
+#: manim.mobject.svg.svg_path.vector_angle:3 of
+msgid ""
+"This clamps the argument to the arc cosine due to roundoff errors from "
+"some SVG files."
+msgstr ""
+
+

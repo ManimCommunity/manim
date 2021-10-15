@@ -18,6 +18,7 @@ some are detailed below:
 *  Plugins to extend Manim functionality
 *  Testing (graphical, unit & video)
 *  Website design and development
+*  Translating documentation and docstrings
 
 .. note::
    Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.
@@ -36,3 +37,4 @@ Contributing can be confusing, so here are a few guides:
    contributing/typings
    contributing/admonitions
    contributing/testing
+   contributing/internationalization

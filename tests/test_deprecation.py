@@ -215,15 +215,15 @@ class Top:
         return kwargs
 
     @deprecated_params(
-        redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}]
+        redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}],
     )
     def qux(self, **kwargs):
         return kwargs
 
     @deprecated_params(
         redirections=[
-            lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)}
-        ]
+            lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)},
+        ],
     )
     def quux(self, **kwargs):
         return kwargs
@@ -232,8 +232,8 @@ class Top:
         redirections=[
             lambda point2D=1: {"x": point2D[0], "y": point2D[1]}
             if isinstance(point2D, tuple)
-            else {"x": point2D, "y": point2D}
-        ]
+            else {"x": point2D, "y": point2D},
+        ],
     )
     def quuz(self, **kwargs):
         return kwargs

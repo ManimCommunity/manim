@@ -1,0 +1,172 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:2
+msgid "ThreeDAxes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:4
+msgid "Qualified name: ``manim.mobject.coordinate\\_systems.ThreeDAxes``"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:1 of
+msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:1 of
+msgid "A 3-dimensional set of axes."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:3 of
+msgid "The :code:`[x_min, x_max, x_step]` values of the x-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:4 of
+msgid "The :code:`[y_min, y_max, y_step]` values of the y-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:5 of
+msgid "The :code:`[z_min, z_max, z_step]` values of the z-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:6 of
+msgid "The length of the x-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:7 of
+msgid "The length of the y-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:8 of
+msgid "The length of the z-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:9 of
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the z-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:10 of
+msgid "The direction of the normal."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:11 of
+msgid "The number of pieces used to construct the axes."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:12 of
+msgid "The direction of the light source."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:13
+#: manim.mobject.coordinate_systems.ThreeDAxes:14 of
+msgid "Currently non-functional."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes:15 of
+msgid "Additional arguments to be passed to :class:`Axes`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
+msgid ""
+":obj:`get_z_axis_label "
+"<manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1 of
+msgid "Generate an x-axis label."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+#: of
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`animation_overrides "
+"<manim.mobject.coordinate_systems.ThreeDAxes.animation_overrides>`\\"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+#: of
+msgid "The depth of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+#: of
+msgid "The height of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
+#: of
+msgid "The width of the mobject."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:4 of
+msgid "Examples"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:15 of
+msgid ""
+"The label. Defaults to :class:`~.MathTex` for ``str`` and ``float`` "
+"inputs."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:16 of
+msgid ""
+"The edge of the x-axis to which the label will be added, by default "
+"``UR``."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:17 of
+msgid ""
+"Allows for further positioning of the label from an edge, by default "
+"``UR``."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:18 of
+msgid "The distance of the label from the line."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:19 of
+msgid "The angle at which to rotate the label, by default ``PI/2``."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:20 of
+msgid "The axis about which to rotate the label, by default ``RIGHT``."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:22 of
+msgid "The positioned label."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label of
+msgid "Return type"
+msgstr ""
+
+

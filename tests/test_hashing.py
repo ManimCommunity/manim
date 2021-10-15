@@ -9,7 +9,7 @@ from manim import Square
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 
 
-@pytest.fixture(autouse=True, scope="function")
+@pytest.fixture(autouse=True)
 def reset_already_processed():
     hashing._Memoizer.reset_already_processed()
 

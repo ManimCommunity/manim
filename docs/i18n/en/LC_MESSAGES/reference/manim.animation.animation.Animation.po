@@ -1,0 +1,388 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"POT-Creation-Date: 2021-09-16 14:16+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/reference/manim.animation.animation.Animation.rst:2
+msgid "Animation"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.Animation.rst:4
+msgid "Qualified name: ``manim.animation.animation.Animation``"
+msgstr ""
+
+#: manim.animation.animation.Animation:1 of
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: manim.animation.animation.Animation:1 of
+msgid "An animation."
+msgstr ""
+
+#: manim.animation.animation.Animation:3 of
+msgid "Animations have a fixed time span."
+msgstr ""
+
+#: manim.animation.animation.Animation.clean_up_from_scene
+#: manim.animation.animation.Animation.get_sub_alpha
+#: manim.animation.animation.Animation.interpolate
+#: manim.animation.animation.Animation.interpolate_mobject
+#: manim.animation.animation.Animation.set_name
+#: manim.animation.animation.Animation.set_rate_func
+#: manim.animation.animation.Animation.set_run_time
+#: manim.animation.animation.Animation.update_mobjects of
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.animation.Animation:5 of
+msgid ""
+"The mobject to be animated. This is not required for all types of "
+"animations."
+msgstr ""
+
+#: manim.animation.animation.Animation:6 of
+msgid ""
+"Defines the delay after which the animation is applied to submobjects. "
+"This lag is relative to the duration of the animation.  This does not "
+"influence the total runtime of the animation. Instead the runtime of "
+"individual animations is adjusted so that the complete animation has the "
+"defined run time."
+msgstr ""
+
+#: manim.animation.animation.Animation:6 of
+msgid ""
+"Defines the delay after which the animation is applied to submobjects. "
+"This lag is relative to the duration of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation:9 of
+msgid ""
+"This does not influence the total runtime of the animation. Instead the "
+"runtime of individual animations is adjusted so that the complete "
+"animation has the defined run time."
+msgstr ""
+
+#: manim.animation.animation.Animation:12 of
+msgid "The duration of the animation in seconds."
+msgstr ""
+
+#: manim.animation.animation.Animation:13 of
+msgid ""
+"The function defining the animation progress based on the relative "
+"runtime (see  :mod:`~.rate_functions`) .  For example ``rate_func(0.5)`` "
+"is the proportion of the animation that is done after half of the "
+"animations run time."
+msgstr ""
+
+#: manim.animation.animation.Animation:13 of
+msgid ""
+"The function defining the animation progress based on the relative "
+"runtime (see  :mod:`~.rate_functions`) ."
+msgstr ""
+
+#: manim.animation.animation.Animation:15 of
+msgid ""
+"For example ``rate_func(0.5)`` is the proportion of the animation that is"
+" done after half of the animations run time."
+msgstr ""
+
+#: manim.animation.animation.Animation:17 of
+msgid ""
+"The name of the animation. This gets displayed while rendering the "
+"animation. Defaults to <class-name>(<Mobject-name>)."
+msgstr ""
+
+#: manim.animation.animation.Animation:19 of
+msgid ""
+"Whether the given mobject should be removed from the scene after this "
+"animation."
+msgstr ""
+
+#: manim.animation.animation.Animation:20 of
+msgid "Whether updaters of the mobject should be suspended during the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation:23 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.Animation.rst:14
+msgid "Methods"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid "Begin the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`clean_up_from_scene "
+"<manim.animation.animation.Animation.clean_up_from_scene>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.clean_up_from_scene:1 of
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.copy:1 of
+msgid "Create a copy of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`create_starting_mobject "
+"<manim.animation.animation.Animation.create_starting_mobject>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.finish:1 of
+msgid "Finish the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`get_all_families_zipped "
+"<manim.animation.animation.Animation.get_all_families_zipped>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`get_all_mobjects "
+"<manim.animation.animation.Animation.get_all_mobjects>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1 of
+msgid "Get all mobjects involved in the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`get_all_mobjects_to_update "
+"<manim.animation.animation.Animation.get_all_mobjects_to_update>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects_to_update:1 of
+msgid "Get all mobjects to be updated during the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.get_rate_func:1 of
+msgid "Get the rate function of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.get_run_time:1 of
+msgid "Get the run time of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.get_sub_alpha:1 of
+msgid "Get the animation progress of any submobjects subanimation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.interpolate:1 of
+msgid "Set the animation progress."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`interpolate_mobject "
+"<manim.animation.animation.Animation.interpolate_mobject>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.interpolate_mobject:1 of
+msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`interpolate_submobject "
+"<manim.animation.animation.Animation.interpolate_submobject>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.is_remover:1 of
+msgid "Test if a the animation is a remover."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.set_name:1 of
+msgid "Set the name of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.set_rate_func:1 of
+msgid "Set the rate function of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1
+#: manim.animation.animation.Animation.set_run_time:1 of
+msgid "Set the run time of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid ""
+":obj:`update_mobjects "
+"<manim.animation.animation.Animation.update_mobjects>`"
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:1:<autosummary>:1 of
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin:3 of
+msgid ""
+"This method is called right as an animation is being played. As much "
+"initialization as possible, especially any mobject copying, should live "
+"in this method."
+msgstr ""
+
+#: manim.animation.animation.Animation.begin
+#: manim.animation.animation.Animation.clean_up_from_scene
+#: manim.animation.animation.Animation.copy
+#: manim.animation.animation.Animation.finish
+#: manim.animation.animation.Animation.get_all_mobjects
+#: manim.animation.animation.Animation.get_all_mobjects_to_update
+#: manim.animation.animation.Animation.get_rate_func
+#: manim.animation.animation.Animation.get_run_time
+#: manim.animation.animation.Animation.get_sub_alpha
+#: manim.animation.animation.Animation.interpolate
+#: manim.animation.animation.Animation.interpolate_mobject
+#: manim.animation.animation.Animation.is_remover
+#: manim.animation.animation.Animation.set_name
+#: manim.animation.animation.Animation.set_rate_func
+#: manim.animation.animation.Animation.set_run_time
+#: manim.animation.animation.Animation.update_mobjects of
+msgid "Return type"
+msgstr ""
+
+#: manim.animation.animation.Animation.clean_up_from_scene:3 of
+msgid ""
+"This includes to :meth:`~.Scene.remove` the Animation's "
+":class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: manim.animation.animation.Animation.clean_up_from_scene:6 of
+msgid "The scene the animation should be cleaned up from."
+msgstr ""
+
+#: manim.animation.animation.Animation.copy
+#: manim.animation.animation.Animation.get_all_mobjects
+#: manim.animation.animation.Animation.get_all_mobjects_to_update
+#: manim.animation.animation.Animation.get_rate_func
+#: manim.animation.animation.Animation.get_run_time
+#: manim.animation.animation.Animation.get_sub_alpha
+#: manim.animation.animation.Animation.is_remover
+#: manim.animation.animation.Animation.set_name
+#: manim.animation.animation.Animation.set_rate_func
+#: manim.animation.animation.Animation.set_run_time of
+msgid "Returns"
+msgstr ""
+
+#: manim.animation.animation.Animation.copy:3 of
+msgid "A copy of ``self``"
+msgstr ""
+
+#: manim.animation.animation.Animation.finish:3 of
+msgid "This method gets called when the animation is over."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_all_mobjects:3 of
+msgid "Ordering must match the ordering of arguments to interpolate_submobject"
+msgstr ""
+
+#: manim.animation.animation.Animation.get_all_mobjects:5 of
+msgid "The sequence of mobjects."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_all_mobjects_to_update:3 of
+msgid "The list of mobjects to be updated during the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_rate_func:3 of
+msgid "The rate function of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_run_time:3 of
+msgid "The time the animation takes in seconds."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_sub_alpha:3 of
+msgid "The overall animation progress"
+msgstr ""
+
+#: manim.animation.animation.Animation.get_sub_alpha:4 of
+msgid "The index of the subanimation."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_sub_alpha:5 of
+msgid "The total count of subanimations."
+msgstr ""
+
+#: manim.animation.animation.Animation.get_sub_alpha:7 of
+msgid "The progress of the subanimation."
+msgstr ""
+
+#: manim.animation.animation.Animation.interpolate:3 of
+msgid "This method gets called for every frame during an animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.interpolate:5 of
+msgid ""
+"The relative time to set the aniamtion to, 0 meaning the start, 1 meaning"
+" the end."
+msgstr ""
+
+#: manim.animation.animation.Animation.interpolate_mobject:3 of
+msgid ""
+"A float between 0 and 1 expressing the ratio to which the animation is "
+"completed. For example, alpha-values of 0, 0.5, and 1 correspond to the "
+"animation being completed 0%, 50%, and 100%, respectively."
+msgstr ""
+
+#: manim.animation.animation.Animation.is_remover:3 of
+msgid "``True`` if the animation is a remover, ``False`` otherwise."
+msgstr ""
+
+#: manim.animation.animation.Animation.set_name:3 of
+msgid "The new name of the animation."
+msgstr ""
+
+#: manim.animation.animation.Animation.set_name:5
+#: manim.animation.animation.Animation.set_rate_func:5
+#: manim.animation.animation.Animation.set_run_time:7 of
+msgid "``self``"
+msgstr ""
+
+#: manim.animation.animation.Animation.set_rate_func:3
+#: manim.animation.animation.Animation.set_run_time:3 of
+msgid "The new time the animation should take in seconds."
+msgstr ""
+
+#: manim.animation.animation.Animation.set_run_time:4 of
+msgid ""
+"The run_time of an animation should not be changed while it is already "
+"running."
+msgstr ""
+
+#: manim.animation.animation.Animation.update_mobjects:1 of
+msgid ""
+"Updates things like starting_mobject, and (for Transforms) "
+"target_mobject.  Note, since typically (always?) self.mobject will have "
+"its updating suspended during the animation, this will do nothing to "
+"self.mobject."
+msgstr ""
+
+

@@ -60,6 +60,12 @@ docs/source/_autosummary/
 docs/source/reference/
 docs/source/_build/
 docs/rendering_times.csv
+#i18n
+docs/i18n/.doctrees
+docs/i18n/**/*.mo
+docs/i18n/gettext
+docs/i18n/translatable.po
+docs/i18n/untranslatable.po
 
 # PyBuilder
 target/

@@ -2,8 +2,7 @@
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
 
@@ -15,6 +14,9 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
+
+if TYPE_CHECKING:
+    from ..scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
@@ -70,7 +72,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: Optional[dict] = None,
         **kwargs
     ):
-        assert type(mobject) is type(target_mobject)
 
         if isinstance(mobject, OpenGLVMobject):
             group_type = OpenGLVGroup
@@ -109,7 +110,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
                 target_map.pop(key2, None)
         if len(key_mapped_source) > 0:
             anims.append(
-                FadeTransformPieces(key_mapped_source, key_mapped_target, **kwargs)
+                FadeTransformPieces(key_mapped_source, key_mapped_target, **kwargs),
             )
 
         fade_source = group_type()
@@ -128,7 +129,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         else:
             anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs)
+                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs),
             )
 
         super().__init__(*anims)
@@ -220,7 +221,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         mobject.save_state()
         mobject.center()
         mobject.set_height(1)
-        result = hash(np.round(mobject.get_points(), 3).tobytes())
+        result = hash(np.round(mobject.points, 3).tobytes())
         mobject.restore()
         return result
 
