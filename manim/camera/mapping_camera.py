@@ -30,11 +30,10 @@ class MappingCamera(Camera):
         self.allow_object_intrusion = allow_object_intrusion
         super().__init__(**kwargs)
 
-    def points_to_pixel_coords(self, points):
+    def points_to_pixel_coords(self, mobject, points):
         return super().points_to_pixel_coords(
-            np.apply_along_axis(self.mapping_func, 1, points),
-        )  # TODO: There is an error here, but I don't know how to fix it:
-        # FIXME: Call to method Camera.points_to_pixel_coords with too few arguments; should be no fewer than 3.
+            mobject, np.apply_along_axis(self.mapping_func, 1, points),
+        )
 
     def capture_mobjects(self, mobjects, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
@@ -128,8 +127,7 @@ class SplitScreenCamera(OldMultiCamera):
 
         half_width = self.pixel_width / 2
         for camera in [self.left_camera, self.right_camera]:
-            # TODO: Round up on one if width is odd
-            camera.reset_pixel_shape(camera.pixel_height, half_width)
+            camera.reset_pixel_shape(camera.pixel_height, half_width + (half_width % 2))  # Round up to an even number
 
         super().__init__(
             (left_camera, (0, 0)),
