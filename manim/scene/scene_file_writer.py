@@ -147,16 +147,15 @@ class SceneFileWriter:
     def next_section(self, type: SectionType, name: Optional[str] = None) -> None:
         """create segmentation cut here"""
         if name is None:
-            name = f"Section_{type}"
+            name = f"{type.name}_section"
         self.finish_last_section()
 
         # images don't support sections
         section_video: Optional[str] = None
-        assert config.dry_run == config["dry_run"]
         if not config.dry_run and write_to_movie():
             section_video = os.path.join(
                 self.sections_output_dir,
-                f"{self.output_name}_{len(self.sections)}_{name}.{config.movie_file_extension}",
+                f"{self.output_name}_{len(self.sections)}_{name}{config.movie_file_extension}",
             )
 
         self.sections.append(

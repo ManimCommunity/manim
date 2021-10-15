@@ -290,11 +290,12 @@ class Scene:
         pass  # To be implemented in subclasses
 
     def next_section(
+        self,
         type: SectionType = SectionType.normal,
         name: Optional[str] = None,
     ) -> None:
         """Create separation here; the last section gets finished and a new gets created."""
-        self.file_writer.next_section(type, name)
+        self.renderer.file_writer.next_section(type, name)
 
     def __str__(self):
         return self.__class__.__name__

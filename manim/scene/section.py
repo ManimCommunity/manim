@@ -1,10 +1,10 @@
 """building blocks of segmented video api"""
 
-import enum
+from enum import Enum
 from typing import Dict, List, Optional
 
 
-class SectionType(enum.Enum):
+class SectionType(Enum):
     """The type of a section defines how it is to be played in a presentation"""
 
     # start, end, wait for continuation by user
