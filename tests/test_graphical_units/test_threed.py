@@ -117,10 +117,8 @@ def test_SurfaceColorscale(scene):
     trig_plane = Surface(
         lambda x, y: axes.c2p(x, y, param_trig(x, y)),
         resolution=(resolution_fa, resolution_fa),
-        v_min=-3,
-        v_max=+3,
-        u_min=-3,
-        u_max=+3,
+        v_range=[-3, 3],
+        u_range=[-3, 3],
     )
     trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
     scene.add(axes, trig_plane)

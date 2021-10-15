@@ -6,6 +6,7 @@ import shutil
 import webbrowser
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List
 
 from manim import Group, config, logger, tempconfig
 from manim.__main__ import main
@@ -120,6 +121,7 @@ def video_viewer(video_path, small_width, large_width):
 
 try:
     from IPython import get_ipython
+    from IPython.core.interactiveshell import InteractiveShell
     from IPython.core.magic import (
         Magics,
         line_cell_magic,
@@ -135,13 +137,18 @@ else:
 
     @magics_class
     class ManimMagic(Magics):
-        def __init__(self, shell):
+        def __init__(self, shell: InteractiveShell) -> None:
             super().__init__(shell)
             self.rendered_files = {}
 
         @needs_local_scope
         @line_cell_magic
-        def manim(self, line, cell=None, local_ns=None):
+        def manim(
+            self,
+            line: str,
+            cell: str = None,
+            local_ns: Dict[str, Any] = None,
+        ) -> None:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
 
@@ -270,7 +277,7 @@ else:
                 else:
                     display(video_viewer(tmpfile, "350px", "900px"))
 
-        def add_additional_args(self, args):
+        def add_additional_args(self, args: List[str]) -> List[str]:
             additional_args = ["--jupyter"]
             # Use webm to support transparency
             if "-t" in args and "--format" not in args:
@@ -278,5 +285,5 @@ else:
             return additional_args + args[:-1] + [""] + [args[-1]]
 
 
-def _generate_file_name():
+def _generate_file_name() -> str:
     return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")

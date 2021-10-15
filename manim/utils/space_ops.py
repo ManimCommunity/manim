@@ -27,6 +27,8 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "cartesian_to_spherical",
+    "spherical_to_cartesian",
     "perpendicular_bisector",
 ]
 
@@ -752,22 +754,45 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     return [indices[mi] for mi in meta_indices]
 
 
-def cartesian_to_spherical(vec):
+def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
+    """Returns an array of numbers corresponding to each
+    polar coordinate value (distance, phi, theta).
+
+    Parameters
+    ----------
+    vec
+        A numpy array ``[x, y, z]``.
+    """
     norm = np.linalg.norm(vec)
     if norm == 0:
         return 0, 0, 0
     r = norm
-    theta = np.arccos(vec[2] / r)
-    phi = np.arctan2(vec[1], vec[0])
-    return r, theta, phi
+    phi = np.arccos(vec[2] / r)
+    theta = np.arctan2(vec[1], vec[0])
+    return np.array([r, phi, theta])
 
 
-def spherical_to_cartesian(r, theta, phi):
+def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
+    """Returns a numpy array ``[x, y, z]`` based on the spherical
+    coordinates given.
+
+    Parameters
+    ----------
+    spherical
+        A list of three floats that correspond to the following:
+
+        r - The distance between the point and the origin.
+
+        theta - The azimuthal angle of the point to the positive x-axis.
+
+        phi - The vertical angle of the point to the positive z-axis.
+    """
+    r, theta, phi = spherical
     return np.array(
         [
-            r * np.cos(phi) * np.sin(theta),
-            r * np.sin(phi) * np.sin(theta),
-            r * np.cos(theta),
+            r * np.cos(theta) * np.sin(phi),
+            r * np.sin(theta) * np.sin(phi),
+            r * np.cos(phi),
         ],
     )
 

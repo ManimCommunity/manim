@@ -85,7 +85,7 @@ class MovingCameraScene(Scene):
     """
 
     def __init__(self, camera_class=MovingCamera, **kwargs):
-        Scene.__init__(self, camera_class=camera_class, **kwargs)
+        super().__init__(camera_class=camera_class, **kwargs)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -97,7 +97,7 @@ class MovingCameraScene(Scene):
         *animations : Animation
             The Animations whose mobjects will be checked.
         """
-        moving_mobjects = Scene.get_moving_mobjects(self, *animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
         movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
         for movement_indicator in movement_indicators:

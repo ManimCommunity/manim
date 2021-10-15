@@ -2,6 +2,9 @@
 Internationalization
 ====================
 
+.. note::
+   The translation process is currently not yet ready. Please avoid translating pages for now.
+
 If you want to help with translating the docs:
 
 #. Make sure you have a `Transifex <https://www.transifex.com/>`_ account. Transifex is a tool for colaborative translation and allows the Manim team to review translations.

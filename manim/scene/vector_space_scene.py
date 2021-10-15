@@ -42,7 +42,7 @@ Z_COLOR = BLUE_D
 # actually doing a lot of animating.
 class VectorScene(Scene):
     def __init__(self, basis_vector_stroke_width=6, **kwargs):
-        Scene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
     def add_plane(self, animate=False, **kwargs):
@@ -572,7 +572,7 @@ class LinearTransformationScene(VectorScene):
         **kwargs
     ):
 
-        VectorScene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.include_background_plane = include_background_plane
         self.include_foreground_plane = include_foreground_plane
@@ -801,7 +801,7 @@ class LinearTransformationScene(VectorScene):
         Arrow
             The arrow representing the vector.
         """
-        vector = VectorScene.add_vector(self, vector, color=color, **kwargs)
+        vector = super().add_vector(vector, color=color, **kwargs)
         self.moving_vectors.append(vector)
         return vector
 
@@ -824,7 +824,7 @@ class LinearTransformationScene(VectorScene):
         Matrix
             The column matrix representing the vector.
         """
-        coords = VectorScene.write_vector_coordinates(self, vector, **kwargs)
+        coords = super().write_vector_coordinates(vector, **kwargs)
         self.add_foreground_mobject(coords)
         return coords
 

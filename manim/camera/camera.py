@@ -187,8 +187,7 @@ class Camera:
         for _type in self.display_funcs:
             if isinstance(mobject, _type):
                 return _type
-        else:
-            raise TypeError(f"Displaying an object of class {_type} is not supported")
+        raise TypeError(f"Displaying an object of class {_type} is not supported")
 
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width

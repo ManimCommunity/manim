@@ -131,8 +131,14 @@ class Animation:
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self.starting_mobject: Mobject = Mobject()
-        self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        if config["renderer"] == "opengl":
+            self.starting_mobject: OpenGLMobject = OpenGLMobject()
+            self.mobject: OpenGLMobject = (
+                mobject if mobject is not None else OpenGLMobject()
+            )
+        else:
+            self.starting_mobject: Mobject = Mobject()
+            self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 

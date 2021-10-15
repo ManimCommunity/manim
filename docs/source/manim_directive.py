@@ -155,7 +155,7 @@ class ManimDirective(Directive):
             )
             return [node]
 
-        from manim import config
+        from manim import config, tempconfig
 
         global classnamedict
 
@@ -189,7 +189,6 @@ class ManimDirective(Directive):
         frame_rate = QUALITIES[quality]["frame_rate"]
         pixel_height = QUALITIES[quality]["pixel_height"]
         pixel_width = QUALITIES[quality]["pixel_width"]
-        qualitydir = f"{pixel_height}p{frame_rate}"
 
         state_machine = self.state_machine
         document = state_machine.document
@@ -217,18 +216,18 @@ class ManimDirective(Directive):
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
-        config_code = [
-            f'config["frame_rate"] = {frame_rate}',
-            f'config["pixel_height"] = {pixel_height}',
-            f'config["pixel_width"] = {pixel_width}',
-            f'config["save_last_frame"] = {save_last_frame}',
-            f'config["write_to_movie"] = {not save_last_frame}',
-            f'config["output_file"] = r"{output_file}"',
-        ]
+        example_config = {
+            "frame_rate": frame_rate,
+            "pixel_height": pixel_height,
+            "pixel_width": pixel_width,
+            "save_last_frame": save_last_frame,
+            "write_to_movie": not save_last_frame,
+            "output_file": output_file,
+        }
         if save_last_frame:
-            config_code.append('config["format"] = None')
+            example_config["format"] = None
         if save_as_gif:
-            config_code.append('config["format"] = "gif"')
+            example_config["format"] = "gif"
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
@@ -238,11 +237,14 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
-            *config_code,
             *user_code,
             f"{clsname}().render()",
         ]
-        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+
+        with tempconfig(example_config):
+            run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+            video_dir = config.get_dir("video_dir")
+            images_dir = config.get_dir("images_dir")
 
         _write_rendering_stats(
             clsname,
@@ -253,15 +255,15 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
-            filesrc = config.get_dir("video_dir") / filename
+            filesrc = video_dir / filename
             destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = config.get_dir("video_dir") / filename
+            filesrc = video_dir / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
-            filesrc = config.get_dir("images_dir") / filename
+            filesrc = images_dir / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
         rendered_template = jinja2.Template(TEMPLATE).render(
