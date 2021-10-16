@@ -1025,6 +1025,9 @@ class Scene:
         elif not self.renderer.window:
             logger.warning("Disabling interactive embed as no window was created")
             return False
+        elif config.dry_run:
+            logger.warning("Disabling interactive embed as dry_run is enabled")
+            return False
         return True
 
     def interactive_embed(self):

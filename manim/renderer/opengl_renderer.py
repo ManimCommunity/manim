@@ -282,6 +282,7 @@ class OpenGLRenderer:
             and not config["save_last_frame"]
             and not config["format"]
             and not config["write_to_movie"]
+            and not config["dry_run"]
         )
 
     def get_pixel_shape(self):
@@ -443,15 +444,15 @@ class OpenGLRenderer:
     def scene_finished(self, scene):
         # When num_plays is 0, no images have been output, so output a single
         # image in this case
-        if self.num_plays:
+        if self.num_plays > 0:
             self.file_writer.finish()
-            return
-        elif config.write_to_movie and self.should_save_last_frame():
-            config.save_last_frame = True
+        elif self.num_plays == 0 and config.write_to_movie:
             config.write_to_movie = False
 
-        self.update_frame(scene)
-        self.file_writer.save_final_image(self.get_image())
+        if self.should_save_last_frame():
+            config.save_last_frame = True
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
 
     def should_save_last_frame(self):
         if config["save_last_frame"]:
