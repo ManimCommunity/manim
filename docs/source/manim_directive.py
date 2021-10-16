@@ -241,7 +241,7 @@ class ManimDirective(Directive):
 
         renderer = self.options.get("renderer", "opengl")
         if renderer:
-            config_code.append(f'config["renderer"] = "{ renderer }"')
+            example_config["renderer"] = renderer
             if renderer == "opengl":
                 from manim.renderer.shader import shader_program_cache
 
