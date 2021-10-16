@@ -19,7 +19,8 @@ def test_guarantee_existence(tmp_path):
 def test_guarantee_empty_existence(tmp_path):
     test_dir = os.path.join(tmp_path, "test")
     os.mkdir(test_dir)
-    os.mknod(os.path.join(test_dir, "test.txt"))
+    f = open(os.path.join(test_dir, "test.txt"), "x")
+    f.close()
 
     guarantee_empty_existence(test_dir)
     # test if dir got created
