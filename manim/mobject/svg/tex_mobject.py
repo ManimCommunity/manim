@@ -36,7 +36,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK, WHITE
 from ...utils.deprecation import deprecated_params
-from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
@@ -121,7 +120,7 @@ class SingleStringMathTex(SVGMobject):
     @property
     def font_size(self):
         """The font size of the tex mobject."""
-        return self._font_size
+        return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
 
     @font_size.setter
     def font_size(self, font_val):
@@ -133,13 +132,7 @@ class SingleStringMathTex(SVGMobject):
 
             # scale to a factor of the initial height so that setting
             # font_size does not depend on current size.
-            self.scale(
-                SCALE_FACTOR_PER_FONT_POINT
-                * font_val
-                * self.initial_height
-                / self.height
-            )
-            self._font_size = font_val
+            self.scale(font_val / self.font_size)
 
     def get_modified_expression(self, tex_string):
         result = tex_string
@@ -305,8 +298,8 @@ class MathTex(SingleStringMathTex):
                         compilation error. If you didn't use the double brace
                         split intentionally, add spaces between the braces to
                         avoid the automatic splitting: {{ ... }} --> { { ... } }.
-                        """
-                    )
+                        """,
+                    ),
                 )
             raise compilation_error
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
@@ -329,9 +322,10 @@ class MathTex(SingleStringMathTex):
             [
                 f"({re.escape(ss)})"
                 for ss in it.chain(
-                    self.substrings_to_isolate, self.tex_to_color_map.keys()
+                    self.substrings_to_isolate,
+                    self.tex_to_color_map.keys(),
                 )
-            ]
+            ],
         )
         pattern = "|".join(patterns)
         if pattern:

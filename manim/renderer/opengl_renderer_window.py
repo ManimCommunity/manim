@@ -28,7 +28,7 @@ class Window(PygletWindow):
 
             #  by default window_height = 9/16 * window_width
             window_height = int(
-                window_width * config.frame_height // config.frame_width
+                window_width * config.frame_height // config.frame_width,
             )
             size = (window_width, window_height)
         else:
@@ -61,7 +61,9 @@ class Window(PygletWindow):
         super().on_mouse_scroll(x, y, x_offset, y_offset)
         point = self.renderer.pixel_coords_to_space_coords(x, y)
         offset = self.renderer.pixel_coords_to_space_coords(
-            x_offset, y_offset, relative=True
+            x_offset,
+            y_offset,
+            relative=True,
         )
         self.renderer.scene.on_mouse_scroll(point, offset)
 
@@ -89,12 +91,12 @@ class Window(PygletWindow):
         # x,y for integers x and y
         if len(custom_position) == 1:
             raise ValueError(
-                "window_position must specify both Y and X positions (Y/X -> UR). Also accepts LEFT/RIGHT/ORIGIN/UP/DOWN."
+                "window_position must specify both Y and X positions (Y/X -> UR). Also accepts LEFT/RIGHT/ORIGIN/UP/DOWN.",
             )
         # in the form Y/X (UR)
-        if custom_position == "LEFT" or custom_position == "RIGHT":
+        if custom_position in ["LEFT", "RIGHT"]:
             custom_position = "O" + custom_position[0]
-        elif custom_position == "UP" or custom_position == "DOWN":
+        elif custom_position in ["UP", "DOWN"]:
             custom_position = custom_position[0] + "O"
         elif custom_position == "ORIGIN":
             custom_position = "O" * 2

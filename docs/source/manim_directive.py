@@ -133,7 +133,8 @@ class ManimDirective(Directive):
     option_spec = {
         "hide_source": bool,
         "quality": lambda arg: directives.choice(
-            arg, ("low", "medium", "high", "fourk")
+            arg,
+            ("low", "medium", "high", "fourk"),
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
@@ -146,14 +147,25 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
+        # Render is skipped if the tag skip-manim is present
+        should_skip = (
+            "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
+        )
+        # Or if we are making the pot-files
+        should_skip = (
+            should_skip
+            or self.state.document.settings.env.app.builder.name == "gettext"
+        )
+        if should_skip:
             node = skip_manim_node()
             self.state.nested_parse(
-                StringList(self.content[0]), self.content_offset, node
+                StringList(self.content[0]),
+                self.content_offset,
+                node,
             )
             return [node]
 
-        from manim import config
+        from manim import config, tempconfig
 
         global classnamedict
 
@@ -214,18 +226,18 @@ class ManimDirective(Directive):
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
-        config_code = [
-            f'config["frame_rate"] = {frame_rate}',
-            f'config["pixel_height"] = {pixel_height}',
-            f'config["pixel_width"] = {pixel_width}',
-            f'config["save_last_frame"] = {save_last_frame}',
-            f'config["write_to_movie"] = {not save_last_frame}',
-            f'config["output_file"] = r"{output_file}"',
-        ]
+        example_config = {
+            "frame_rate": frame_rate,
+            "pixel_height": pixel_height,
+            "pixel_width": pixel_width,
+            "save_last_frame": save_last_frame,
+            "write_to_movie": not save_last_frame,
+            "output_file": output_file,
+        }
         if save_last_frame:
-            config_code.append('config["format"] = None')
+            example_config["format"] = None
         if save_as_gif:
-            config_code.append('config["format"] = "gif"')
+            example_config["format"] = "gif"
 
         renderer = self.options.get("renderer", "opengl")
         if renderer:
@@ -243,11 +255,14 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
-            *config_code,
             *user_code,
             f"{clsname}().render()",
         ]
-        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+
+        with tempconfig(example_config):
+            run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+            video_dir = config.get_dir("video_dir")
+            images_dir = config.get_dir("images_dir")
 
         _write_rendering_stats(
             clsname,
@@ -258,15 +273,15 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
-            filesrc = config.get_dir("video_dir") / filename
+            filesrc = video_dir / filename
             destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = config.get_dir("video_dir") / filename
+            filesrc = video_dir / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
-            filesrc = config.get_dir("images_dir") / filename
+            filesrc = images_dir / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
         rendered_template = jinja2.Template(TEMPLATE).render(
@@ -281,7 +296,8 @@ class ManimDirective(Directive):
             ref_block=ref_block,
         )
         state_machine.insert_input(
-            rendered_template.split("\n"), source=document.attributes["source"]
+            rendered_template.split("\n"),
+            source=document.attributes["source"],
         )
 
         return []
@@ -297,7 +313,7 @@ def _write_rendering_stats(scene_name, run_time, file_name):
                 re.sub(r"^(reference\/)|(manim\.)", "", file_name),
                 scene_name,
                 "%.3f" % run_time,
-            ]
+            ],
         )
 
 
@@ -320,7 +336,7 @@ def _log_rendering_times(*args):
                     continue
                 time_sum = sum(float(row[2]) for row in group)
                 print(
-                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES"
+                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
                 )
                 for row in group:
                     print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")

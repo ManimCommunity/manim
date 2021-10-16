@@ -12,7 +12,9 @@ from ..utils.logging_tester import *
 )
 def test_logging_to_file(tmp_path, python_version):
     path_basic_scene = os.path.join(
-        "tests", "test_logging", "basic_scenes_square_to_circle.py"
+        "tests",
+        "test_logging",
+        "basic_scenes_square_to_circle.py",
     )
     command = [
         python_version,
@@ -37,7 +39,9 @@ def test_logging_to_file(tmp_path, python_version):
 )
 def test_logging_when_scene_is_not_specified(tmp_path, python_version):
     path_basic_scene = os.path.join(
-        "tests", "test_logging", "basic_scenes_square_to_circle.py"
+        "tests",
+        "test_logging",
+        "basic_scenes_square_to_circle.py",
     )
     command = [
         python_version,

@@ -23,7 +23,7 @@ class WebGLCamera(Camera):
                     "style": vmobject.get_style(simple=True),
                     "id": id(vmobject),
                     "needs_redraw": needs_redraw,
-                }
+                },
             )
 
     def reset(self):

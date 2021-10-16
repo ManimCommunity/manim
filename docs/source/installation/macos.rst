@@ -16,7 +16,7 @@ follow `Homebrew's installation instructions <https://docs.brew.sh/Installation>
    layer between Intel and ARM architectures. This is no longer necessary, Manim can
    (and is recommended to) be installed natively.
 
-   
+
 Required Dependencies
 ---------------------
 
@@ -28,7 +28,7 @@ and some required Python packages), run:
    brew install py3cairo ffmpeg
 
 On *Apple Silicon* based machines (i.e., devices with the M1 chip or similar; if
-you are unsure which processor you have check by opening the Apple menu, select 
+you are unsure which processor you have check by opening the Apple menu, select
 *About This Mac* and check the entry next to *Chip*), some additional dependencies
 are required, namely:
 
@@ -66,7 +66,7 @@ In order to make use of Manim's interface to LaTeX for, e.g., rendering
 equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
-For MacOS, the recommended LaTeX distribution is 
+For MacOS, the recommended LaTeX distribution is
 `MacTeX <http://www.tug.org/mactex/>`__. You can install it by following
 the instructions from the link, or alternatively also via Homebrew by
 running:
@@ -79,7 +79,7 @@ running:
 
    MacTeX is a *full* LaTeX distribution and will require more than 4GB of
    disk space. If this is an issue for you, consider installing a smaller
-   distribution like 
+   distribution like
    `BasicTeX <http://www.tug.org/mactex/morepackages.html>`__.
 
 Should you choose to work with some partial TeX distribution, the full list

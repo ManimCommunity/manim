@@ -13,7 +13,7 @@ def test_vmobject_point_from_propotion():
             np.array([0, 0, 0]),
             np.array([4, 0, 0]),
             np.array([4, 2, 0]),
-        ]
+        ],
     )
 
     # Total length of 6, so halfway along the object
@@ -191,7 +191,7 @@ def test_vgroup_item_assignment_at_correct_position():
     """Test VGroup item-assignment adds to correct position for VMObjects"""
     n_items = 10
     vgroup = VGroup()
-    for i in range(n_items):
+    for _i in range(n_items):
         vgroup.add(VMobject())
     new_obj = VMobject()
     vgroup[6] = new_obj

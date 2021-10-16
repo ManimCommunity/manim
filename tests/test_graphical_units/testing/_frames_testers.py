@@ -73,5 +73,5 @@ class _ControlDataWriter(_FramesTester):
         self.frames = self.frames.astype("uint8")
         np.savez_compressed(self.file_path, frame_data=self.frames)
         logger.info(
-            f"{self._number_frames_written} control frames saved in {self.file_path}"
+            f"{self._number_frames_written} control frames saved in {self.file_path}",
         )

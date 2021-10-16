@@ -331,7 +331,8 @@ class NumberLine(Line):
         **number_config,
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(
-            self.decimal_number_config, number_config
+            self.decimal_number_config,
+            number_config,
         )
         if direction is None:
             direction = self.label_direction
@@ -396,11 +397,11 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
+            label = self.create_label_tex(label)
             if hasattr(label, "font_size"):
                 label.font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
-            label = self.create_label_tex(label)
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
             labels.add(label)
 
@@ -422,7 +423,7 @@ class NumberLine(Line):
             The label.
         """
 
-        if isinstance(label_tex, float) or isinstance(label_tex, int):
+        if isinstance(label_tex, (float, int)):
             label_tex = MathTex(label_tex)
         elif isinstance(label_tex, str):
             label_tex = Tex(label_tex)

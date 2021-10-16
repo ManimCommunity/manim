@@ -1417,7 +1417,7 @@ FetchSceneDataResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _FETCHSCENEDATARESPONSE,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.FetchSceneDataResponse)
     },
 )
@@ -1428,7 +1428,7 @@ Scene = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _SCENE,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.Scene)
     },
 )
@@ -1443,7 +1443,7 @@ Animation = _reflection.GeneratedProtocolMessageType(
             (_message.Message,),
             {
                 "DESCRIPTOR": _ANIMATION_ATTRIBUTETWEENDATA,
-                "__module__": "frameserver_pb2"
+                "__module__": "frameserver_pb2",
                 # @@protoc_insertion_point(class_scope:frameserver.Animation.AttributeTweenData)
             },
         ),
@@ -1452,12 +1452,12 @@ Animation = _reflection.GeneratedProtocolMessageType(
             (_message.Message,),
             {
                 "DESCRIPTOR": _ANIMATION_MOBJECTTWEENDATA,
-                "__module__": "frameserver_pb2"
+                "__module__": "frameserver_pb2",
                 # @@protoc_insertion_point(class_scope:frameserver.Animation.MobjectTweenData)
             },
         ),
         "DESCRIPTOR": _ANIMATION,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.Animation)
     },
 )
@@ -1470,7 +1470,7 @@ Updater = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _UPDATER,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.Updater)
     },
 )
@@ -1481,7 +1481,7 @@ FrameRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _FRAMEREQUEST,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.FrameRequest)
     },
 )
@@ -1492,7 +1492,7 @@ Style = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _STYLE,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.Style)
     },
 )
@@ -1503,7 +1503,7 @@ Point = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _POINT,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.Point)
     },
 )
@@ -1514,7 +1514,7 @@ MobjectData = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _MOBJECTDATA,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.MobjectData)
     },
 )
@@ -1525,7 +1525,7 @@ VMobjectData = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _VMOBJECTDATA,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.VMobjectData)
     },
 )
@@ -1536,7 +1536,7 @@ ImageMobjectData = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _IMAGEMOBJECTDATA,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.ImageMobjectData)
     },
 )
@@ -1547,7 +1547,7 @@ FrameData = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _FRAMEDATA,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.FrameData)
     },
 )
@@ -1558,7 +1558,7 @@ FrameResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _FRAMERESPONSE,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.FrameResponse)
     },
 )
@@ -1569,7 +1569,7 @@ EmptyRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _EMPTYREQUEST,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.EmptyRequest)
     },
 )
@@ -1580,7 +1580,7 @@ EmptyResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _EMPTYRESPONSE,
-        "__module__": "frameserver_pb2"
+        "__module__": "frameserver_pb2",
         # @@protoc_insertion_point(class_scope:frameserver.EmptyResponse)
     },
 )

@@ -30,7 +30,7 @@ Examples
     class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
+            title.scale(0.75)
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
@@ -41,7 +41,7 @@ Examples
 
             t4 = Text("4. Prediction").set_color(WHITE)
 
-            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -121,7 +121,7 @@ class Paragraph(VGroup):
 
     Parameters
     ----------
-    line_spacing : :class:`int`, optional
+    line_spacing : :class:`float`, optional
         Represents the spacing between lines. Default to -1, which means auto.
     alignment : :class:`str`, optional
         Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
@@ -160,7 +160,7 @@ class Paragraph(VGroup):
                     char_index_counter : char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
-                ]
+                ],
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
         self.lines = []
@@ -172,7 +172,7 @@ class Paragraph(VGroup):
             self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
+            [self.alignment for _ in range(chars_lines_text_list.__len__())],
         )
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
@@ -236,7 +236,7 @@ class Paragraph(VGroup):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
-                self.get_center() + self.lines_initial_positions[line_no]
+                self.get_center() + self.lines_initial_positions[line_no],
             )
         return self
 
@@ -265,7 +265,7 @@ class Paragraph(VGroup):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
-                np.array([self.get_center()[0], self[line_no].get_center()[1], 0])
+                np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
@@ -274,8 +274,8 @@ class Paragraph(VGroup):
                         self.get_right()[0] - self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
         elif self.lines[1][line_no] == "left":
             self[line_no].move_to(
@@ -284,8 +284,8 @@ class Paragraph(VGroup):
                         self.get_left()[0] + self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
-                )
+                    ],
+                ),
             )
 
 
@@ -365,8 +365,8 @@ class Text(SVGMobject):
         class MultipleFonts(Scene):
             def construct(self):
                 morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
-                    "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
+                japanese = Text(
+                    "日本へようこそ", t2c={"日本": BLUE}
                 )  # works same as ``Text``.
                 mess = Text("Multi-Language", weight=BOLD)
                 russ = Text("Здравствуйте मस नम म ", font="sans-serif")
@@ -374,8 +374,8 @@ class Text(SVGMobject):
                 arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,arb,japanese)
+                chinese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning, japanese, mess, russ, hin, arb, chinese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
 
@@ -412,7 +412,7 @@ class Text(SVGMobject):
         stroke_width: float = 0,
         color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
-        line_spacing: int = -1,
+        line_spacing: float = -1,
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
@@ -424,8 +424,8 @@ class Text(SVGMobject):
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
-        height: int = None,
-        width: int = None,
+        height: float = None,
+        width: float = None,
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
@@ -505,9 +505,9 @@ class Text(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -536,21 +536,22 @@ class Text(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
+        # TODO: use pango's font size scaling.
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         else:
-            # multiply by (1/2.4) because it makes it work.
-            self.scale(
-                TEXT_MOB_SCALE_FACTOR
-                * (1 / 2.4)
-                * font_val
-                * self.initial_height
-                / self.height
-            )
+            self.scale(font_val / self.font_size)
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -562,7 +563,7 @@ class Text(SVGMobject):
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
+                        self.submobjects[submobjects_char_index - 1].get_center(),
                     )
                 chars.add(space)
             else:
@@ -971,14 +972,14 @@ class MarkupText(SVGMobject):
         class MultiLanguage(Scene):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
-                chin = MarkupText(
-                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
+                japanese = MarkupText(
+                    '<span fgcolor="blue">日本</span>へようこそ'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", weight=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
-                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
-                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                chinese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, japanese, mess, russ, hin, chinese).arrange(DOWN)
                 self.add(group)
 
     You can justify the text by passing :attr:`justify` parameter.
@@ -1078,7 +1079,7 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
             logger.warning(
-                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
             )
         gradientmap = self.extract_gradient_tags()
         validate_error = MarkupUtils.validate(self.text)
@@ -1112,9 +1113,9 @@ class MarkupText(SVGMobject):
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.get_points()) == 0:
+            if len(each.points) == 0:
                 continue
-            points = each.get_points()
+            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -1154,7 +1155,14 @@ class MarkupText(SVGMobject):
 
     @property
     def font_size(self):
-        return self._font_size
+        return (
+            self.height
+            / self.initial_height
+            / TEXT_MOB_SCALE_FACTOR
+            * 2.4
+            * self._font_size
+            / DEFAULT_FONT_SIZE
+        )
 
     @font_size.setter
     def font_size(self, font_val):
@@ -1162,13 +1170,7 @@ class MarkupText(SVGMobject):
         if font_val <= 0:
             raise ValueError("font_size must be greater than 0.")
         else:
-            self.scale(
-                TEXT_MOB_SCALE_FACTOR
-                * (1 / 2.4)
-                * font_val
-                * self.initial_height
-                / self.height
-            )
+            self.scale(font_val / self.font_size)
 
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
@@ -1262,7 +1264,7 @@ class MarkupText(SVGMobject):
                     "to": tag.group(2),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
@@ -1304,7 +1306,7 @@ class MarkupText(SVGMobject):
                     "color": tag.group(1),
                     "start_offset": start_offset,
                     "end_offset": end_offset,
-                }
+                },
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap

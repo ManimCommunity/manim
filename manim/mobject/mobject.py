@@ -11,7 +11,7 @@ import random
 import sys
 import types
 import warnings
-from functools import reduce
+from functools import partialmethod, reduce
 from math import ceil
 from pathlib import Path
 from typing import (
@@ -41,16 +41,12 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import (
-    angle_between_vectors,
-    normalize,
-    rotation_matrix,
-    rotation_matrix_transpose,
-)
+from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
@@ -89,9 +85,11 @@ class Mobject:
         super().__init_subclass__(**kwargs)
 
         cls.animation_overrides: Dict[
-            Type["Animation"], Callable[["Mobject"], "Animation"]
+            Type["Animation"],
+            Callable[["Mobject"], "Animation"],
         ] = {}
         cls._add_intrinsic_animation_overrides()
+        cls._original__init__ = cls.__init__
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
         self.color = Color(color) if color else None
@@ -107,23 +105,10 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
-        # OpenGL data.
-        self.data = {}
-        self.depth_test = False
-        self.is_fixed_in_frame = False
-        self.gloss = 0.0
-        self.shadow = 0.0
-        self.needs_new_bounding_box = True
-        self.parents = []
-        self.family = [self]
-
-        self.init_gl_data()
-        self.init_gl_points()
-        self.init_gl_colors()
-
     @classmethod
     def animation_override_for(
-        cls, animation_class: Type["Animation"]
+        cls,
+        animation_class: Type["Animation"],
     ) -> "Optional[Callable[[Mobject, ...], Animation]]":
         """Returns the function defining a specific animation override for this class.
 
@@ -188,43 +173,56 @@ class Mobject:
                 f"The animation {animation_class.__name__} for "
                 f"{cls.__name__} is overridden by more than one method: "
                 f"{cls.animation_overrides[animation_class].__qualname__} and "
-                f"{override_func.__qualname__}."
+                f"{override_func.__qualname__}.",
             )
 
-    def init_gl_data(self):
-        pass
+    @classmethod
+    def set_default(cls, **kwargs):
+        """Sets the default values of keyword arguments.
 
-    def init_gl_points(self):
-        pass
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
 
-    def init_gl_colors(self):
-        pass
+        Parameters
+        ----------
 
-    def get_bounding_box(self):
-        if self.needs_new_bounding_box:
-            self.data["bounding_box"] = self.compute_bounding_box()
-            self.needs_new_bounding_box = False
-        return self.data["bounding_box"]
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
 
-    def compute_bounding_box(self):
-        all_points = np.vstack(
-            [
-                self.data["points"],
-                *(
-                    mob.get_bounding_box()
-                    for mob in self.get_family()[1:]
-                    if mob.has_points()
-                ),
-            ]
-        )
-        if len(all_points) == 0:
-            return np.zeros((3, self.dim))
+        Examples
+        --------
+
+        ::
+
+            >>> from manim import Square, GREEN
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color #83c167>, 0.25)
+            >>> Square.set_default()
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color white>, 0.0)
+
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
+
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.set_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
+
+                    # we revert the colour back to the default to prevent a bug in the docs.
+                    Text.set_default(color=WHITE)
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
-            # Lower left and upper right corners
-            mins = all_points.min(0)
-            maxs = all_points.max(0)
-            mids = (mins + maxs) / 2
-            return np.array([mins, mids, maxs])
+            cls.__init__ = cls._original__init__
 
     @property
     def animate(self):
@@ -349,14 +347,6 @@ class Mobject:
         """
         pass
 
-    def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
-        for mob in self.get_family(recurse_down):
-            mob.needs_new_bounding_box = True
-        if recurse_up:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
-
     def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
 
@@ -416,24 +406,13 @@ class Mobject:
             ValueError: Mobject cannot contain self
 
         """
-        if config.renderer == "opengl":
-            if self in mobjects:
-                raise Exception("Mobject cannot contain self")
-            for mobject in mobjects:
-                if mobject not in self.submobjects:
-                    self.submobjects.append(mobject)
-                if self not in mobject.parents:
-                    mobject.parents.append(self)
-            self.assemble_family()
-            return self
-        else:
-            for m in mobjects:
-                if not isinstance(m, Mobject):
-                    raise TypeError("All submobjects must be of type Mobject")
-                if m is self:
-                    raise ValueError("Mobject cannot contain self")
-            self.submobjects = list_update(self.submobjects, mobjects)
-            return self
+        for m in mobjects:
+            if not isinstance(m, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+            if m is self:
+                raise ValueError("Mobject cannot contain self")
+        self.submobjects = list_update(self.submobjects, mobjects)
+        return self
 
     def __add__(self, mobject):
         raise NotImplementedError
@@ -754,7 +733,7 @@ class Mobject:
         """Saves an image of only this :class:`Mobject` at its position to a png
         file."""
         self.get_image().save(
-            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
+            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
 
     def copy(self: T) -> T:
@@ -851,10 +830,7 @@ class Mobject:
         :meth:`get_time_based_updaters`
 
         """
-        for updater in self.updaters:
-            if "dt" in get_parameters(updater):
-                return True
-        return False
+        return any("dt" in get_parameters(updater) for updater in self.updaters)
 
     def get_updaters(self) -> List[Updater]:
         """Return all updaters.
@@ -1129,21 +1105,12 @@ class Mobject:
         :meth:`move_to`
         """
 
-        if config.renderer == "opengl":
-            self.apply_points_function(
-                lambda points: points + vectors[0],
-                about_edge=None,
-                works_on_bounding_box=True,
-            )
-            return self
-        else:
-            total_vector = reduce(op.add, vectors)
-            for mob in self.family_members_with_points():
-                mob.points = mob.points.astype("float")
-                mob.points += total_vector
-                if hasattr(mob, "data") and "points" in mob.data:
-                    mob.data["points"] += total_vector
-            return self
+        total_vector = reduce(op.add, vectors)
+        for mob in self.family_members_with_points():
+            mob.points = mob.points.astype("float")
+            mob.points += total_vector
+
+        return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
         r"""Scale the size by a factor.
@@ -1186,18 +1153,10 @@ class Mobject:
         :meth:`move_to`
 
         """
-        if config.renderer == "opengl":
-            self.apply_points_function(
-                lambda points: scale_factor * points,
-                works_on_bounding_box=True,
-                **kwargs,
-            )
-            return self
-        else:
-            self.apply_points_function_about_point(
-                lambda points: scale_factor * points, **kwargs
-            )
-            return self
+        self.apply_points_function_about_point(
+            lambda points: scale_factor * points, **kwargs
+        )
+        return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes=[]):
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
@@ -1211,18 +1170,11 @@ class Mobject:
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
-        if config.renderer == "opengl":
-            rot_matrix_T = rotation_matrix_transpose(angle, axis)
-            self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T), about_point, **kwargs
-            )
-            return self
-        else:
-            rot_matrix = rotation_matrix(angle, axis)
-            self.apply_points_function_about_point(
-                lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
-            )
-            return self
+        rot_matrix = rotation_matrix(angle, axis)
+        self.apply_points_function_about_point(
+            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+        )
+        return self
 
     def flip(self, axis=UP, **kwargs):
         """Flips/Mirrors an mobject about its center.
@@ -1347,34 +1299,12 @@ class Mobject:
     # In place operations.
     # Note, much of these are now redundant with default behavior of
     # above methods
-    def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
-    ):
-        if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
-
-        for mob in self.get_family():
-            arrs = []
-            if len(self.data["points"]):
-                arrs.append(mob.data["points"])
-            if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
-
-            for arr in arrs:
-                if about_point is None:
-                    arr[:] = func(arr)
-                else:
-                    arr[:] = func(arr - about_point) + about_point
-
-        if not works_on_bounding_box:
-            self.refresh_bounding_box(recurse_down=True)
-        else:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
 
     def apply_points_function_about_point(
-        self, func, about_point=None, about_edge=None
+        self,
+        func,
+        about_point=None,
+        about_edge=None,
     ):
         if about_point is None:
             if about_edge is None:
@@ -1386,14 +1316,29 @@ class Mobject:
             mob.points += about_point
         return self
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="rotate",
+    )
     def rotate_in_place(self, angle, axis=OUT):
         # redundant with default behavior of rotate now.
         return self.rotate(angle, axis=axis)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_in_place(self, scale_factor, **kwargs):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, **kwargs)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="scale",
+    )
     def scale_about_point(self, scale_factor, point):
         # Redundant with default behavior of scale now.
         return self.scale(scale_factor, about_point=point)
@@ -1503,6 +1448,11 @@ class Mobject:
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.12.0",
+        replacement="stretch",
+    )
     def stretch_in_place(self, factor, dim):
         # Now redundant with stretch
         return self.stretch(factor, dim)
@@ -1657,7 +1607,10 @@ class Mobject:
         return self
 
     def move_to(
-        self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
+        self,
+        point_or_mobject,
+        aligned_edge=ORIGIN,
+        coor_mask=np.array([1, 1, 1]),
     ):
         """Move center of the :class:`~.Mobject` to certain coordinate."""
         if isinstance(point_or_mobject, Mobject):
@@ -1676,17 +1629,23 @@ class Mobject:
             self.stretch_to_fit_height(mobject.height)
         else:
             self.rescale_to_fit(
-                mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
+                mobject.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False,
             )
         self.shift(mobject.get_center() - self.get_center())
         return self
 
     def surround(
-        self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF
+        self,
+        mobject: "Mobject",
+        dim_to_match=0,
+        stretch=False,
+        buff=MED_SMALL_BUFF,
     ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
-        self.scale_in_place((length + buff) / length)
+        self.scale((length + buff) / length)
         return self
 
     def put_start_and_end_on(self, start, end):
@@ -1783,10 +1742,17 @@ class Mobject:
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         self.set_submobject_colors_by_radial_gradient(
-            center, radius, inner_color, outer_color
+            center,
+            radius,
+            inner_color,
+            outer_color,
         )
         return self
 
@@ -1804,7 +1770,11 @@ class Mobject:
         return self
 
     def set_submobject_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         if center is None:
             center = self.get_center()
@@ -1892,10 +1862,7 @@ class Mobject:
         return self.get_all_points()
 
     def get_num_points(self):
-        if config.renderer == "opengl":
-            return len(self.data["points"])
-        else:
-            return len(self.points)
+        return len(self.points)
 
     def get_extremum_along_dim(self, points=None, dim=0, key=0):
         if points is None:
@@ -1929,7 +1896,9 @@ class Mobject:
             return result
         for dim in range(self.dim):
             result[dim] = self.get_extremum_along_dim(
-                all_points, dim=dim, key=direction[dim]
+                all_points,
+                dim=dim,
+                key=direction[dim],
             )
         return result
 
@@ -2005,9 +1974,14 @@ class Mobject:
 
     def length_over_dim(self, dim):
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return self.reduce_across_dimension(
-            np.max, np.max, dim
-        ) - self.reduce_across_dimension(np.min, np.min, dim)
+        return (
+            self.reduce_across_dimension(
+                np.max,
+                np.max,
+                dim,
+            )
+            - self.reduce_across_dimension(np.min, np.min, dim)
+        )
 
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
@@ -2028,24 +2002,21 @@ class Mobject:
     def get_start(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
-        if config.renderer == "opengl":
-            return np.array(self.data["points"][0])
-        else:
-            return np.array(self.points[0])
+        return np.array(self.points[0])
 
     def get_end(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
-        if config.renderer == "opengl":
-            return np.array(self.data["points"][-1])
-        else:
-            return np.array(self.points[-1])
+        return np.array(self.points[-1])
 
     def get_start_and_end(self):
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
+        raise NotImplementedError("Please override in a child class.")
+
+    def proportion_from_point(self, point):
         raise NotImplementedError("Please override in a child class.")
 
     def get_pieces(self, n_pieces):
@@ -2163,15 +2134,9 @@ class Mobject:
         return result + self.submobjects
 
     def get_family(self, recurse=True):
-        if config.renderer == "opengl":
-            if recurse:
-                return self.family
-            else:
-                return [self]
-        else:
-            sub_families = list(map(Mobject.get_family, self.submobjects))
-            all_mobjects = [self] + list(it.chain(*sub_families))
-            return remove_list_redundancies(all_mobjects)
+        sub_families = list(map(Mobject.get_family, self.submobjects))
+        all_mobjects = [self] + list(it.chain(*sub_families))
+        return remove_list_redundancies(all_mobjects)
 
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.get_num_points() > 0]
@@ -2357,10 +2322,18 @@ class Mobject:
             return alignments
 
         row_alignments = init_alignments(
-            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+            row_alignments,
+            rows,
+            {"u": UP, "c": ORIGIN, "d": DOWN},
+            "row",
+            RIGHT,
         )
         col_alignments = init_alignments(
-            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+            col_alignments,
+            cols,
+            {"l": LEFT, "c": ORIGIN, "r": RIGHT},
+            "col",
+            UP,
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
@@ -2376,7 +2349,7 @@ class Mobject:
         }
         if flow_order not in mapper:
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
         flow_order = mapper[flow_order]
 
@@ -2632,12 +2605,7 @@ class Mobject:
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config.renderer == "opengl":
-            self.data["points"][:] = path_func(
-                mobject1.data["points"], mobject2.data["points"], alpha
-            )
-        else:
-            self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
@@ -2691,18 +2659,11 @@ class Mobject:
 
     # Errors
     def throw_error_if_no_points(self):
-        if config.renderer == "opengl":
-            if len(self.data["points"]) == 0:
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
-        else:
-            if self.has_no_points():
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
+        if self.has_no_points():
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call Mobject.{caller_name} for a Mobject with no points",
+            )
 
     # About z-index
     def set_z_index(
@@ -2786,7 +2747,7 @@ class _AnimationBuilder:
     def __call__(self, **kwargs):
         if self.cannot_pass_args:
             raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once"
+                "Animation arguments must be passed before accessing methods and can only be passed once",
             )
 
         self.anim_args = kwargs
@@ -2802,7 +2763,7 @@ class _AnimationBuilder:
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
                 "Method chaining is currently not supported for "
-                "overridden animations"
+                "overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):

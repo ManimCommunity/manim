@@ -81,7 +81,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 request.first_request or self.previous_scene != requested_scene
             ):
                 previous_mobjects = extract_mobject_family_members(
-                    self.previous_scene.mobjects, only_those_with_points=True
+                    self.previous_scene.mobjects,
+                    only_those_with_points=True,
                 )
                 # Remove everything from the previous scene.
                 ids_to_remove = [
@@ -95,7 +96,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 mobjects_to_add = [
                     serialize_mobject(mobject)
                     for mobject in extract_mobject_family_members(
-                        requested_scene.mobjects, only_those_with_points=True
+                        requested_scene.mobjects,
+                        only_those_with_points=True,
                     )
                     if not isinstance(mobject, ValueTracker)
                 ]
@@ -111,7 +113,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                         flickered_mobject_ids = [
                             mob.original_id
                             for mob in extract_mobject_family_members(
-                                animation.mobject, only_those_with_points=True
+                                animation.mobject,
+                                only_those_with_points=True,
                             )
                         ]
                     else:
@@ -119,14 +122,15 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                             # Add offset vector to submobjects.
                             root_mobject_center = animation.mobject.get_center()
                             for updated_mobject in extract_mobject_family_members(
-                                animation.mobject, only_those_with_points=True
+                                animation.mobject,
+                                only_those_with_points=True,
                             ):
                                 mobject_tween_data_list.append(
                                     frameserver_pb2.Animation.MobjectTweenData(
                                         id=updated_mobject.original_id,
                                         root_mobject_offset=updated_mobject.get_center()
                                         - root_mobject_center,
-                                    )
+                                    ),
                                 )
                     animation_proto = frameserver_pb2.Animation(
                         name=animation.__class__.__name__,
@@ -152,10 +156,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                                     flickered_mobject_ids=[
                                         mob.original_id
                                         for mob in extract_mobject_family_members(
-                                            updated_mobject, only_those_with_points=True
+                                            updated_mobject,
+                                            only_those_with_points=True,
                                         )
-                                    ]
-                                )
+                                    ],
+                                ),
                             )
                             break
                         else:
@@ -172,10 +177,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                             [
                                 serialize_mobject(mobject)
                                 for mobject in extract_mobject_family_members(
-                                    animation.mobject, only_those_with_points=True
+                                    animation.mobject,
+                                    only_those_with_points=True,
                                 )
                                 if not isinstance(mobject, ValueTracker)
-                            ]
+                            ],
                         )
                 for (
                     updated_mobject,
@@ -188,15 +194,18 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                                 [
                                     serialize_mobject(mobject)
                                     for mobject in extract_mobject_family_members(
-                                        updated_mobject, only_those_with_points=True
+                                        updated_mobject,
+                                        only_those_with_points=True,
                                     )
                                     if not isinstance(mobject, ValueTracker)
-                                ]
+                                ],
                             )
 
             resp = frameserver_pb2.FrameResponse(
                 frame_data=frameserver_pb2.FrameData(
-                    remove=ids_to_remove, add=mobjects_to_add, update=update_data
+                    remove=ids_to_remove,
+                    add=mobjects_to_add,
+                    update=update_data,
                 ),
                 scene_finished=scene_finished,
                 animations=animations,
@@ -250,7 +259,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.exception = None
         try:
             self.scene_class = scene_classes_from_file(
-                self.input_file_path, require_single_scene=True
+                self.input_file_path,
+                require_single_scene=True,
             )
             self.generate_keyframe_data()
         except Exception as e:
@@ -288,10 +298,13 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     request.scene.background_color = "#000000"
             else:
                 lines = traceback.format_exception(
-                    None, self.exception, self.exception.__traceback__
+                    None,
+                    self.exception,
+                    self.exception.__traceback__,
                 )
                 request = renderserver_pb2.UpdateSceneDataRequest(
-                    has_exception=True, exception="\n".join(lines)
+                    has_exception=True,
+                    exception="\n".join(lines),
                 )
             stub.UpdateSceneData(request)
 
@@ -309,7 +322,7 @@ def generate_attribute_tween_data(animation):
                         attribute="position",
                         start_data=animation.starting_mobject.get_center(),
                         end_data=animation.target_mobject.get_center(),
-                    )
+                    ),
                 )
             else:
                 return None
@@ -372,7 +385,7 @@ def serialize_mobject(mobject):
             mob_proto.image_mobject_data.path = mobject.path[len(assets_dir_path) + 1 :]
         else:
             logger.info(
-                f"Expected path {mobject.path} to be under the assets dir ({assets_dir_path})"
+                f"Expected path {mobject.path} to be under the assets dir ({assets_dir_path})",
             )
         mob_proto.image_mobject_data.height = mobject.height
         mob_proto.image_mobject_data.width = mobject.width
@@ -386,7 +399,8 @@ def serialize_mobject(mobject):
 def get(input_file_path):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     frameserver_pb2_grpc.add_FrameServerServicer_to_server(
-        FrameServer(server, input_file_path), server
+        FrameServer(server, input_file_path),
+        server,
     )
     server.add_insecure_port("localhost:50051")
     return server

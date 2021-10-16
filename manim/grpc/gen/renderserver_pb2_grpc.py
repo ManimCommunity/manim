@@ -39,7 +39,8 @@ def add_RenderServerServicer_to_server(servicer, server):
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "renderserver.RenderServer", rpc_method_handlers
+        "renderserver.RenderServer",
+        rpc_method_handlers,
     )
     server.add_generic_rpc_handlers((generic_handler,))
 

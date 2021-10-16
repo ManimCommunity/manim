@@ -44,7 +44,9 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
         tex_template = config["tex_template"]
     tex_file = generate_tex_file(expression, environment, tex_template)
     dvi_file = compile_tex(
-        tex_file, tex_template.tex_compiler, tex_template.output_format
+        tex_file,
+        tex_template.tex_compiler,
+        tex_template.output_format,
     )
     return convert_to_svg(dvi_file, tex_template.output_format)
 
@@ -177,7 +179,10 @@ def compile_tex(tex_file, tex_compiler, output_format):
     tex_dir = Path(config.get_dir("tex_dir")).as_posix()
     if not os.path.exists(result):
         command = tex_compilation_command(
-            tex_compiler, output_format, tex_file, tex_dir
+            tex_compiler,
+            output_format,
+            tex_file,
+            tex_dir,
         )
         exit_code = os.system(command)
         if exit_code != 0:
@@ -185,7 +190,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
             if not Path(log_file).exists():
                 raise RuntimeError(
                     f"{tex_compiler} failed but did not produce a log file. "
-                    "Check your LaTeX installation."
+                    "Check your LaTeX installation.",
                 )
             with open(log_file) as f:
                 log = f.readlines()
@@ -197,7 +202,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                         tex = g.readlines()
                         for log_index in error_pos:
                             logger.error(
-                                f"LaTeX compilation error: {log[log_index][2:]}"
+                                f"LaTeX compilation error: {log[log_index][2:]}",
                             )
                             index_line = log_index
                             context = "Context for error:\n\n"
@@ -234,7 +239,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
             raise ValueError(
                 f"{tex_compiler} error converting to"
                 f" {output_format[1:]}. See log output above or"
-                f" the log file: {log_file}"
+                f" the log file: {log_file}",
             )
     return result
 
@@ -279,7 +284,7 @@ def convert_to_svg(dvi_file, extension, page=1):
             f"Your installation does not support converting {extension} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."
             f" If this does not solve the problem, please refer to our troubleshooting guide at:"
-            f" https://docs.manim.community/en/stable/installation/troubleshooting.html"
+            f" https://docs.manim.community/en/stable/installation/troubleshooting.html",
         )
 
     return result

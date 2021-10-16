@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/contributing.rst:3
+msgid "Contributing"
+msgstr ""
+
+#: ../../source/contributing.rst:5
+msgid "Thank you for your interest in contributing to Manim! However you have decided to contribute or interact with the community, please always be civil and respect other members of the community. If you haven't read our :doc:`code of conduct<conduct>`, do so here. Manim is Free and Open Source Software (FOSS) for mathematical animations. As such, **we welcome everyone** who is interested in mathematics, pedagogy, computer animations, open-source, software development, and beyond. Manim accepts many kinds of contributions, some are detailed below:"
+msgstr ""
+
+#: ../../source/contributing.rst:14
+msgid "Code maintenance and development"
+msgstr ""
+
+#: ../../source/contributing.rst:15
+msgid "DevOps"
+msgstr ""
+
+#: ../../source/contributing.rst:16
+msgid "Documentation"
+msgstr ""
+
+#: ../../source/contributing.rst:17
+msgid "Developing educational content & narrative documentation"
+msgstr ""
+
+#: ../../source/contributing.rst:18
+msgid "Plugins to extend Manim functionality"
+msgstr ""
+
+#: ../../source/contributing.rst:19
+msgid "Testing (graphical, unit & video)"
+msgstr ""
+
+#: ../../source/contributing.rst:20
+msgid "Website design and development"
+msgstr ""
+
+#: ../../source/contributing.rst:21
+msgid "Translating documentation and docstrings"
+msgstr ""
+
+#: ../../source/contributing.rst:24
+msgid "Please ensure that you are reading the latest version of this guide by ensuring that \"latest\" is selected in the version switcher."
+msgstr ""
+
+

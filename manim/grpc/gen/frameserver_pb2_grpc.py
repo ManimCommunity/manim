@@ -71,7 +71,8 @@ def add_FrameServerServicer_to_server(servicer, server):
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "frameserver.FrameServer", rpc_method_handlers
+        "frameserver.FrameServer",
+        rpc_method_handlers,
     )
     server.add_generic_rpc_handlers((generic_handler,))
 

@@ -324,7 +324,7 @@ Plotting with Manim
                x_range=[0, 10], y_range=[0, 100, 10], axis_config={"include_tip": False}
            )
            labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
-           
+
            t = ValueTracker(0)
 
            def func(x):
@@ -368,10 +368,10 @@ Plotting with Manim
             line_1 = ax.get_vertical_line(ax.input_to_graph_point(2, curve_1), color=YELLOW)
             line_2 = ax.get_vertical_line(ax.i2gp(3, curve_1), color=YELLOW)
 
-            area_1 = ax.get_area(curve_1, x_range=[0.3, 0.6], dx_scaling=40, color=BLUE)
-            area_2 = ax.get_area(curve_2, [2, 3], bounded=curve_1, color=GREY, opacity=0.2)
+            riemann_area = ax.get_riemann_rectangles(curve_1, x_range=[0.3, 0.6], dx=0.03, color=BLUE, fill_opacity=0.5)
+            area = ax.get_area(curve_2, [2, 3], bounded_graph=curve_1, color=GREY, opacity=0.5)
 
-            self.add(ax, labels, curve_1, curve_2, line_1, line_2, area_1, area_2)
+            self.add(ax, labels, curve_1, curve_2, line_1, line_2, riemann_area, area)
 
 .. manim:: HeatDiagramPlot
     :save_last_frame:
@@ -523,14 +523,14 @@ Special Camera Settings
 
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
-    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
+    :ref_classes: ThreeDScene ThreeDAxes Surface
     :ref_methods: ThreeDScene.set_camera_orientation
     :renderer: cairo
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
             axes = ThreeDAxes()
-            sphere = ParametricSurface(
+            sphere = Surface(
                 lambda u, v: np.array([
                     1.5 * np.cos(u) * np.cos(v),
                     1.5 * np.cos(u) * np.sin(v),
@@ -577,9 +577,8 @@ Special Camera Settings
 
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
-   :ref_classes: ThreeDScene ParametricSurface
-   :renderer: cairo
-   
+   :ref_classes: ThreeDScene Surface
+
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
            resolution_fa = 42
@@ -593,14 +592,14 @@ Special Camera Settings
                z = np.exp(-(d ** 2 / (2.0 * sigma ** 2)))
                return np.array([x, y, z])
 
-           gauss_plane = ParametricSurface(
+           gauss_plane = Surface(
                param_gauss,
                resolution=(resolution_fa, resolution_fa),
                v_range=[-2, +2],
                u_range=[-2, +2]
            )
 
-           gauss_plane.scale_about_point(2, ORIGIN)
+           gauss_plane.scale(2, about_point=ORIGIN)
            gauss_plane.set_style(fill_opacity=1,stroke_color=GREEN)
            gauss_plane.set_fill_by_checkerboard(ORANGE, BLUE, opacity=0.5)
            axes = ThreeDAxes()

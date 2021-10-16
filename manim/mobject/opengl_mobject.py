@@ -2,7 +2,7 @@ import copy
 import itertools as it
 import random
 import sys
-from functools import wraps
+from functools import partialmethod, wraps
 from math import ceil
 from typing import Iterable, Optional, Tuple, Union
 
@@ -12,9 +12,10 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..utils.bezier import interpolate
+from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.config_ops import _Data, _Uniforms
+from ..utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -65,7 +66,7 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow=0.0,
         # For shaders
-        render_primitive=moderngl.TRIANGLE_STRIP,
+        render_primitive=moderngl.TRIANGLES,
         texture_paths=None,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
@@ -74,13 +75,14 @@ class OpenGLMobject:
         # Event listener
         listen_to_events=False,
         model_matrix=None,
+        should_render=True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.color = Color(color)
+        self.color = Color(color) if color else None
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
@@ -120,6 +122,20 @@ class OpenGLMobject:
         if self.depth_test:
             self.apply_depth_test()
 
+        self.should_render = should_render
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs):
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -134,7 +150,7 @@ class OpenGLMobject:
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
-        # Typically implemented in subclass, unlpess purposefully left blank
+        # Typically implemented in subclass, unless purposefully left blank
         pass
 
     def set_data(self, data):
@@ -266,6 +282,11 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
+    def apply_over_attr_arrays(self, func):
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
+
     def append_points(self, new_points):
         self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
@@ -277,8 +298,15 @@ class OpenGLMobject:
                 mob.data[key] = mob.data[key][::-1]
         return self
 
+    def get_midpoint(self):
+        return self.point_from_proportion(0.5)
+
     def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
     ):
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
@@ -286,7 +314,7 @@ class OpenGLMobject:
         for mob in self.get_family():
             arrs = []
             if mob.has_points():
-                arrs.append(mob.get_points())
+                arrs.append(mob.points)
             if works_on_bounding_box:
                 arrs.append(mob.get_bounding_box())
 
@@ -306,8 +334,9 @@ class OpenGLMobject:
     # Others related to points
 
     def match_points(self, mobject):
-        self.set_points(mobject.get_points())
+        self.set_points(mobject.points)
 
+    @deprecated(since="0.11.0", replacement="self.points")
     def get_points(self):
         return self.points
 
@@ -319,7 +348,7 @@ class OpenGLMobject:
 
     def get_all_points(self):
         if self.submobjects:
-            return np.vstack([sm.get_points() for sm in self.get_family()])
+            return np.vstack([sm.points for sm in self.get_family()])
         else:
             return self.points
 
@@ -341,7 +370,7 @@ class OpenGLMobject:
                     for mob in self.get_family()[1:]
                     if mob.has_points()
                 ),
-            ]
+            ],
         )
         if len(all_points) == 0:
             return np.zeros((3, self.dim))
@@ -407,8 +436,10 @@ class OpenGLMobject:
             mobjects[0].parent = self
 
         if self in mobjects:
-            raise Exception("Mobject cannot contain self")
+            raise ValueError("OpenGLMobject cannot contain self")
         for mobject in mobjects:
+            if not isinstance(mobject, OpenGLMobject):
+                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
@@ -646,10 +677,18 @@ class OpenGLMobject:
             return alignments
 
         row_alignments = init_alignments(
-            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+            row_alignments,
+            rows,
+            {"u": UP, "c": ORIGIN, "d": DOWN},
+            "row",
+            RIGHT,
         )
         col_alignments = init_alignments(
-            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+            col_alignments,
+            cols,
+            {"l": LEFT, "c": ORIGIN, "r": RIGHT},
+            "col",
+            UP,
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
@@ -665,7 +704,7 @@ class OpenGLMobject:
         }
         if flow_order not in mapper:
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
         flow_order = mapper[flow_order]
 
@@ -1030,16 +1069,16 @@ class OpenGLMobject:
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
         for mob in self.family_members_with_points():
-            alphas = np.dot(mob.get_points(), np.transpose(axis))
+            alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
             alphas = alphas ** wag_factor
             mob.set_points(
-                mob.get_points()
+                mob.points
                 + np.dot(
                     alphas.reshape((len(alphas), 1)),
                     np.array(direction).reshape((1, mob.dim)),
-                )
+                ),
             )
         return self
 
@@ -1088,7 +1127,7 @@ class OpenGLMobject:
             else:
                 target_aligner = mob
             target_point = target_aligner.get_bounding_box_point(
-                aligned_edge + direction
+                aligned_edge + direction,
             )
         else:
             target_point = mobject_or_point
@@ -1186,7 +1225,10 @@ class OpenGLMobject:
         return self
 
     def move_to(
-        self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
+        self,
+        point_or_mobject,
+        aligned_edge=ORIGIN,
+        coor_mask=np.array([1, 1, 1]),
     ):
         if isinstance(point_or_mobject, OpenGLMobject):
             target = point_or_mobject.get_bounding_box_point(aligned_edge)
@@ -1205,7 +1247,9 @@ class OpenGLMobject:
                 self.rescale_to_fit(mobject.length_over_dim(i), i, stretch=True)
         else:
             self.rescale_to_fit(
-                mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
+                mobject.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False,
             )
         self.shift(mobject.get_center() - self.get_center())
         return self
@@ -1266,10 +1310,31 @@ class OpenGLMobject:
                 mob.data[name] = rgbas.copy()
         return self
 
+    def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
+        """Directly set rgba data from `rgbas` and optionally do the same recursively
+        with submobjects. This can be used if the `rgbas` have already been generated
+        with the correct shape and simply need to be set.
+
+        Parameters
+        ----------
+        rgbas
+            the rgba to be set as data
+        name
+            the name of the data attribute to be set
+        recurse
+            set to true to recursively apply this method to submobjects
+        """
+        for mob in self.get_family(recurse):
+            mob.data[name] = rgbas.copy()
+
     def set_color(self, color, opacity=None, recurse=True):
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
+        if color is not None:
+            self.color = Color(color)
+        if opacity is not None:
+            self.opacity = opacity
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
@@ -1385,8 +1450,8 @@ class OpenGLMobject:
                     corner_vect,
                     out=np.zeros(len(direction)),
                     where=((corner_vect) != 0),
-                )
-            )
+                ),
+            ),
         )
 
     def get_top(self):
@@ -1622,7 +1687,9 @@ class OpenGLMobject:
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
             self.uniforms[key] = interpolate(
-                mobject1.uniforms[key], mobject2.uniforms[key], alpha
+                mobject1.uniforms[key],
+                mobject2.uniforms[key],
+                alpha,
             )
         return self
 
@@ -1665,7 +1732,9 @@ class OpenGLMobject:
 
     def lock_matching_data(self, mobject1, mobject2):
         for sm, sm1, sm2 in zip(
-            self.get_family(), mobject1.get_family(), mobject2.get_family()
+            self.get_family(),
+            mobject1.get_family(),
+            mobject2.get_family(),
         ):
             keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
             sm.lock_data(
@@ -1673,8 +1742,8 @@ class OpenGLMobject:
                     filter(
                         lambda key: np.all(sm1.data[key] == sm2.data[key]),
                         keys,
-                    )
-                )
+                    ),
+                ),
             )
         return self
 
@@ -1735,7 +1804,11 @@ class OpenGLMobject:
         return self
 
     def set_color_by_xyz_func(
-        self, glsl_snippet, min_value=-5.0, max_value=5.0, colormap="viridis"
+        self,
+        glsl_snippet,
+        min_value=-5.0,
+        max_value=5.0,
+        colormap="viridis",
     ):
         """
         Pass in a glsl expression in terms of x, y and z which returns
@@ -1752,7 +1825,7 @@ class OpenGLMobject:
                 float(min_value),
                 float(max_value),
                 get_colormap_code(rgb_list),
-            )
+            ),
         )
         return self
 
@@ -1800,7 +1873,8 @@ class OpenGLMobject:
         d_len = len(self.data[data_key])
         if d_len != 1 and d_len != len(array):
             self.data[data_key] = resize_with_interpolation(
-                self.data[data_key], len(array)
+                self.data[data_key],
+                len(array),
             )
         return self
 
@@ -1929,7 +2003,7 @@ class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
@@ -1939,7 +2013,7 @@ class OpenGLPoint(OpenGLMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_location(location)
 
     def get_width(self):
@@ -1974,7 +2048,7 @@ class _AnimationBuilder:
     def __call__(self, **kwargs):
         if self.cannot_pass_args:
             raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once"
+                "Animation arguments must be passed before accessing methods and can only be passed once",
             )
 
         self.anim_args = kwargs
@@ -1990,7 +2064,7 @@ class _AnimationBuilder:
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
                 "Method chaining is currently not supported for "
-                "overridden animations"
+                "overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
