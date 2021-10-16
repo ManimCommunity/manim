@@ -3,6 +3,7 @@
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",
+    "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
