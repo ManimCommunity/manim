@@ -1,5 +1,5 @@
 {
-    "name": "SquareToCircle",
+    "name": "SquareToCircleWithDefaultValues",
     "config": {
         "codec_name": "h264",
         "width": 1920,
@@ -7,5 +7,8 @@
         "avg_frame_rate": "60/1",
         "duration": "1.000000",
         "nb_frames": "60"
-    }
+    },
+    "section_index": [
+        "0_unnamed_normal.mp4"
+    ]
 }

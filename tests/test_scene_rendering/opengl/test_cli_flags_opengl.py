@@ -6,6 +6,7 @@ from PIL import Image
 
 from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
+from tests.utils.commands import capture
 from tests.utils.video_tester import *
 
 

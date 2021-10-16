@@ -24,7 +24,7 @@ def get_config_from_video(path_to_video: str):
         path_to_video,
     ]
     config, err, exitcode = capture(command)
-    assert exitcode == 0, err
+    assert exitcode == 0, f"FFprobe error: {err}"
     return json.loads(config)["streams"][0]
 
 
@@ -32,7 +32,7 @@ def get_dir_index(dirpath: str) -> List[str]:
     index_files: List[str] = []
     for root, dirs, files in os.walk(dirpath):
         for file in files:
-            index_files.append(f"/{os.path.relpath(os.path.join(root, file), dirpath)}")
+            index_files.append(f"{os.path.relpath(os.path.join(root, file), dirpath)}")
     return index_files
 
 
