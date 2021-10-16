@@ -7,7 +7,7 @@ from click.testing import CliRunner
 from manim import __version__
 from manim.__main__ import main
 
-from .utils.video_tester import *
+from .utils.commands import capture
 
 
 def test_manim_version():

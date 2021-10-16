@@ -2,23 +2,15 @@
 
 import json
 import os
-import subprocess
+import pathlib
+from typing import List
 
 from manim import logger
 
-
-def capture(command):
-    proc = subprocess.Popen(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding="utf8",
-    )
-    out, err = proc.communicate()
-    return out, err, proc.returncode
+from ..utils.commands import capture
 
 
-def get_config_from_video(path_to_video):
+def get_config_from_video(path_to_video: str):
     command = [
         "ffprobe",
         "-v",
@@ -33,12 +25,24 @@ def get_config_from_video(path_to_video):
     ]
     config, err, exitcode = capture(command)
     assert exitcode == 0, err
-    return config
+    return json.loads(config)["streams"][0]
 
 
-def save_control_data_from_video(path_to_video, name):
-    """Helper used to set up a new test that will compare videos. This will create a new .json file in control_data/videos_data that contains
-    information tested of the video, including its hash. Refer to the wiki for more information.
+def get_dir_index(dirpath: str) -> List[str]:
+    index_files: List[str] = []
+    for root, dirs, files in os.walk(dirpath):
+        for file in files:
+            index_files.append(f"/{os.path.relpath(os.path.join(root, file), dirpath)}")
+    return index_files
+
+
+def save_control_data_from_video(path_to_video: str, name: str) -> None:
+    """Helper used to set up a new test that will compare videos.
+    This will create a new .json file in control_data/videos_data that contains:
+    - the name of the video,
+    - the specification (called 'config' in the code) of the video, like fps and resolution and
+    - the paths of all files in the sections subdirectory (like section videos).
+    Refer to the wiki for more information.
 
     Parameters
     ----------
@@ -46,13 +50,24 @@ def save_control_data_from_video(path_to_video, name):
         Path to the video to extract information from.
     name : :class:`str`
         Name of the test. The .json file will be named with it.
+
+    See Also
+    --------
+    tests/utils/video_tester.py : read control data and compare with output of test
     """
+    # TODO: "sections" might be changed in the future
+    path_to_sections = os.path.join(
+        pathlib.Path(path_to_video).parent.absolute(), "sections"
+    )
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
-    config_video = get_config_from_video(path_to_video)
+    # TODO: "config" might be a confusing name for the specification of the video, it isn't referring to the Manim config after all
+    config = get_config_from_video(path_to_video)
+    section_index = get_dir_index(path_to_sections)
     data = {
         "name": name,
-        "config": json.loads(config_video)["streams"][0],
+        "config": config,
+        "section_index": section_index,
     }
     path_saved = os.path.join(path_control_data, f"{name}.json")
     with open(path_saved, "w") as f:

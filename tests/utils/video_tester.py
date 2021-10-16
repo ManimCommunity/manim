@@ -1,29 +1,17 @@
 import json
 import os
+import pathlib
 import subprocess
 from functools import wraps
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 
-from ..utils.commands import capture
-
-
-def _get_config_from_video(path_to_video):
-    command = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=width,height,nb_frames,duration,avg_frame_rate,codec_name",
-        "-print_format",
-        "json",
-        path_to_video,
-    ]
-    config, err, exitcode = capture(command)
-    assert exitcode == 0, err
-    return json.loads(config)["streams"][0]
+from ..helpers.video_utils import (
+    get_config_from_video,
+    get_dir_index,
+    save_control_data_from_video,
+)
 
 
 def _load_video_data(path_to_data):
@@ -32,9 +20,14 @@ def _load_video_data(path_to_data):
 
 
 def _check_video_data(path_control_data, path_to_video_generated):
+    path_to_sections_generated = os.path.join(
+        pathlib.Path(path_to_video_generated).parent.absolute(), "sections"
+    )
     control_data = _load_video_data(path_control_data)
-    config_generated = _get_config_from_video(path_to_video_generated)
+    config_generated = get_config_from_video(path_to_video_generated)
+    section_index_generated = get_dir_index(path_to_sections_generated)
     config_expected = control_data["config"]
+    section_index_expected = control_data["section_index"]
     diff_keys = [
         d1[0]
         for d1, d2 in zip(config_expected.items(), config_generated.items())
@@ -44,7 +37,15 @@ def _check_video_data(path_control_data, path_to_video_generated):
     newline = "\n"
     assert (
         len(diff_keys) == 0
-    ), f"Config don't match. : \n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
+    ), f"Config don't match:\n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
+
+    unexpectedly_generated = section_index_generated - section_index_expected
+    ungenerated_expected = section_index_expected - section_index_generated
+    if len(unexpectedly_generated) or len(ungenerated_expected):
+        dif = [
+            f"'{dif}' got unexpectedly generated" for dif in unexpectedly_generated
+        ] + [f"'{dif}' didn't get generated" for dif in ungenerated_expected]
+        raise AssertionError(f"Sections don't match:\n{newline.join(dif)}")
 
 
 def video_comparison(control_data_file, scene_path_from_media_dir):
@@ -58,11 +59,15 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
 
     scene_path_from_media_dir : :class:`str`
         The path of the scene generated, from the media dir. Example: /videos/1080p60/SquareToCircle.mp4.
+
+    See Also
+    --------
+    tests/helpers/video_utils.py : create control data
     """
 
     def decorator(f):
         @wraps(f)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, request: FixtureRequest, **kwargs):
             # NOTE : Every args goes seemingly in kwargs instead of args; this is perhaps Pytest.
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
@@ -83,7 +88,13 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
                         break
-            _check_video_data(path_control_data, str(path_video_generated))
+            setting_test = request.config.getoption("--set_test")
+            if setting_test:
+                save_control_data_from_video(
+                    path_control_data, str(path_video_generated)
+                )
+            else:
+                _check_video_data(path_control_data, str(path_video_generated))
             return result
 
         return wrapper
