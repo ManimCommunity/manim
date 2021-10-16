@@ -1,0 +1,74 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:2
+msgid "Transform"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:4
+msgid "Qualified name: ``manim.animation.transform.Transform``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform:1
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:25:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.begin:1
+msgid "Begin the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:25:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.clean_up_from_scene:1
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:25:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.get_all_mobjects:1
+msgid "Get all mobjects involved in the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Transform.rst:27
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.begin:0
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.clean_up_from_scene:0
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.get_all_mobjects:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.clean_up_from_scene:3
+msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.clean_up_from_scene:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.clean_up_from_scene:6
+msgid "The scene the animation should be cleaned up from."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.get_all_mobjects:3
+msgid "Ordering must match the ordering of arguments to interpolate_submobject"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform.get_all_mobjects:0
+msgid "Returns"
+msgstr ""
+
+
