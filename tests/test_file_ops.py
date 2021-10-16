@@ -11,7 +11,8 @@ def test_guarantee_existence(tmp_path):
     guarantee_existence(test_dir)
     # test if file dir got created
     assert_dir_exists(test_dir)
-    os.mknod(os.path.join(test_dir, "test.txt"))
+    f = open(os.path.join(test_dir, "test.txt"), "x")
+    f.close()
     # test if file didn't get deleted
     guarantee_existence(test_dir)
 
