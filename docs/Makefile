@@ -27,8 +27,6 @@ cleanall: clean
 i18n:
 	cd source
 	$(SPHINXBUILD) -M gettext "$(SOURCEDIR)" ../i18n/ -t skip-manim $(SPHINXOPTS) $(O)
-	rm -rf ../i18n/en/
-	sphinx-intl update --language=en -p ../i18n/gettext/
 	cd ../i18n
 	bash stripUntranslatable.sh
 

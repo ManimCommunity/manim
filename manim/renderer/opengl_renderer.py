@@ -87,7 +87,7 @@ class OpenGLCamera(OpenGLMobject):
         self.light_source = OpenGLPoint(self.light_source_position)
 
         self.default_model_matrix = model_matrix
-        super().__init__(model_matrix=model_matrix, **kwargs)
+        super().__init__(model_matrix=model_matrix, should_render=False, **kwargs)
 
         if euler_angles is None:
             euler_angles = [0, 0, 0]
@@ -429,6 +429,8 @@ class OpenGLRenderer:
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
+            if not mobject.should_render:
+                continue
             self.render_mobject(mobject)
 
         for obj in scene.meshes:
