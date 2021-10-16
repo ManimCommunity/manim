@@ -21,6 +21,7 @@ from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
+    guarantee_empty_existence,
     guarantee_existence,
     is_gif_format,
     is_png_format,
@@ -120,8 +121,8 @@ class SceneFileWriter:
                     config["movie_file_extension"],
                 ),
             )
-            # TODO: create config for directory name
-            self.sections_output_dir = guarantee_existence(
+            # TODO: create config for sections directory name
+            self.sections_output_dir = guarantee_empty_existence(
                 os.path.join(movie_dir, "sections"),
             )
 
@@ -144,10 +145,8 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].empty():
             self.sections.pop()
 
-    def next_section(self, type: SectionType, name: Optional[str] = None) -> None:
+    def next_section(self, type: SectionType, name: str = "unnamed") -> None:
         """create segmentation cut here"""
-        if name is None:
-            name = f"{type.name}_section"
         self.finish_last_section()
 
         # images don't support sections
@@ -155,7 +154,7 @@ class SceneFileWriter:
         if not config.dry_run and write_to_movie():
             section_video = os.path.join(
                 self.sections_output_dir,
-                f"{self.output_name}_{len(self.sections)}_{name}{config.movie_file_extension}",
+                f"{len(self.sections)}_{name}_{type.name}{config.movie_file_extension}",
             )
 
         self.sections.append(

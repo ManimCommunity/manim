@@ -16,6 +16,7 @@ __all__ = [
 
 import os
 import platform
+import shutil
 import subprocess as sp
 import time
 from pathlib import Path
@@ -129,6 +130,13 @@ def add_version_before_extension(file_name):
 def guarantee_existence(path):
     if not os.path.exists(path):
         os.makedirs(path)
+    return os.path.abspath(path)
+
+
+def guarantee_empty_existence(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
     return os.path.abspath(path)
 
 
