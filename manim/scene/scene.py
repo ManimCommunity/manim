@@ -113,6 +113,7 @@ class Scene:
         self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
+        self.interactive_mode = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1032,6 +1033,7 @@ class Scene:
         """
         if not self.check_interactive_embed_is_valid():
             return
+        self.interactive_mode = True
 
         def ipython(shell, namespace):
             import manim

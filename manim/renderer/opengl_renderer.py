@@ -441,12 +441,22 @@ class OpenGLRenderer:
     def scene_finished(self, scene):
         # When num_plays is 0, no images have been output, so output a single
         # image in this case
-        if config["save_last_frame"] or (
-            config["format"] == "png" and self.num_plays == 0
-        ):
-            self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
-        self.file_writer.finish()
+        if self.num_plays:
+            self.file_writer.finish()
+            return
+        elif config.write_to_movie and self.should_save_last_frame():
+            config.save_last_frame = True
+            config.write_to_movie = False
+
+        self.update_frame(scene)
+        self.file_writer.save_final_image(self.get_image())
+
+    def should_save_last_frame(self):
+        if config["save_last_frame"]:
+            return True
+        if self.scene.interactive_mode:
+            return False
+        return self.num_plays == 0
 
     def get_image(self) -> Image.Image:
         """Returns an image from the current frame. The first argument passed to image represents
