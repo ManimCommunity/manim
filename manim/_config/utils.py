@@ -544,7 +544,6 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "enable_wireframe",
             "force_window",
-            # "dry_run"
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
