@@ -22,7 +22,6 @@ from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
-    guarantee_empty_existence,
     guarantee_existence,
     is_gif_format,
     is_png_format,
@@ -149,13 +148,13 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].empty():
             self.sections.pop()
 
-    def next_section(self, type: str, name: str = "unnamed") -> None:
+    def next_section(self, type: str, name: str) -> None:
         """create segmentation cut here"""
         self.finish_last_section()
 
         # images don't support sections
         section_video: Optional[str] = None
-        if not config.dry_run and write_to_movie():
+        if not config.dry_run and write_to_movie() and config.save_sections:
             # relative to metadata file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
@@ -169,7 +168,7 @@ class SceneFileWriter:
 
     def add_partial_movie_file(self, hash_animation):
         """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash.
-        This method will compute the path from the hash.
+        This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
         Parameters
         ----------
@@ -426,7 +425,7 @@ class SceneFileWriter:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files(partial_movie_files=partial_movie_files)
-            self.combine_sections_files()
+            self.combine_section_files()
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -648,16 +647,15 @@ class SceneFileWriter:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
 
-    def combine_sections_files(self) -> None:
-        """Concatenate partial movie files belonging to single section.
-        Perform this for every section in this scene."""
+    def combine_section_files(self) -> None:
+        """Concatenate partial movie files for each section."""
 
         if not config.save_sections:
             return
         self.finish_last_section()
         sections_meta: List[Dict[str, str | int]] = []
         for section in self.sections:
-            # section doesn't want to be saved
+            # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 self.combine_files(

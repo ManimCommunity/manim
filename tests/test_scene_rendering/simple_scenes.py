@@ -52,6 +52,7 @@ class SceneWithNonStaticWait(Scene):
 
 class SceneWithSections(Scene):
     def construct(self):
+        # this would be defined in a third party application using the segmented video API
         class PresentationSectionType(str, Enum):
             # start, end, wait for continuation by user
             NORMAL = "presentation.normal"

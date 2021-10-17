@@ -1,4 +1,4 @@
-"""building blocks of segmented video api"""
+"""building blocks of segmented video API"""
 
 import os
 from enum import Enum
@@ -8,11 +8,12 @@ from manim import get_video_metadata
 
 
 class DefaultSectionType(str, Enum):
-    """The type of a section defines how it is to be played in a presentation.
-    This class can be reimplemented for more types:
+    """The type of a section can be used for third party applications.
+    A presentation system could for example use the types to created loops.
 
     Examples
     --------
+    This class can be reimplemented for more types:
         class PresentationSectionType(str, Enum):
             # start, end, wait for continuation by user
             NORMAL = "presentation.normal"
@@ -35,14 +36,13 @@ class Section:
     Attributes
     ----------
     type : SectionType
-        how is this slide to be played, what is supposed to happen when it ends
     name : string
         human readable, not-unique name of this section
     partial_movie_files : list of strings or Nones
         animations belonging to this section
-        None when not to be rendered -> still keeps section alive
+        None when not to be saved -> still keeps section alive
     video : str or None
-        path of video file with animations belonging to section
+        path of video file from sections directory with animations belonging to section
         None -> section is not to be saved
     """
 
@@ -53,7 +53,9 @@ class Section:
         self.partial_movie_files: List[Optional[str]] = []
 
     def empty(self) -> bool:
-        """are there no animations in this section?"""
+        """Are there no animations in this section?
+        None animations also get counted.
+        """
 
         return len(self.partial_movie_files) == 0
 
@@ -63,6 +65,7 @@ class Section:
 
     def get_dict(self, sections_dir: str) -> Dict[str, str | int]:
         """Get dictionary representation with metadata of output video.
+        The output video must have been created in the `sections_dir` before executing this method.
         This is the main part of the Segmented Video API.
         """
         if self.video is None:

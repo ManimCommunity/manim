@@ -126,7 +126,7 @@ render_options = option_group(
         "--save_sections",
         default=None,
         is_flag=True,
-        help="Save single videos for each section in a addition to movie file.",
+        help="Save videos for each section in addition to movie file.",
     ),
     option(
         "-s",

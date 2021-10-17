@@ -66,7 +66,7 @@ def assert_file_not_exists(filepath: Union[str, PathLike]) -> None:
 
 
 def assert_dir_not_exists(dirpath: Union[str, PathLike]) -> None:
-    """Assert if directory doesn't exist
+    """Assert if directory doesn't exist.
 
     Parameters
     ----------
@@ -85,8 +85,10 @@ def assert_dir_not_exists(dirpath: Union[str, PathLike]) -> None:
 
 
 def assert_shallow_dict_compare(a: Dict, b: Dict, message_start: str) -> None:
+    """Assert if a and b are the same.
+    Print helpful error with custom message start.
+    """
     diff_keys = [d1[0] for d1, d2 in zip(a.items(), b.items()) if d1[1] != d2[1]]
-    # \n does not work in f-strings.
     mismatch = "\n".join(
         [f"For {key}, got {a[key]}, expected: {b[key]}." for key in diff_keys]
     )

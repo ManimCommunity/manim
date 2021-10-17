@@ -896,7 +896,7 @@ class ManimConfig(MutableMapping):
     save_sections = property(
         lambda self: self._d["save_sections"],
         lambda self, val: self._set_boolean("save_sections", val),
-        doc="Whether to save single videos for each sections in addition to the movie file.",
+        doc="Whether to save single videos for each section in addition to the movie file.",
     )
 
     enable_wireframe = property(
