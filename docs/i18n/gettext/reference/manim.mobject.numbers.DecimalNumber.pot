@@ -1,0 +1,76 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:2
+msgid "DecimalNumber"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:4
+msgid "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:1
+msgid "An mobject representing a decimal number."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:4
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:27:<autosummary>:1
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.set_value:1
+msgid "Set the value of the :class:`~.DecimalNumber` to a new number."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:29
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1
+msgid "The font size of the tex mobject."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:0
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.set_value:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.get_formatter:1
+msgid "Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words: - include_sign - group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
+msgstr ""
+
+
