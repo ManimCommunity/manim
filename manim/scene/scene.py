@@ -12,6 +12,8 @@ import types
 from queue import Queue
 from typing import List, Optional
 
+from manim.scene.section import DefaultSectionType
+
 try:
     import dearpygui.dearpygui as dpg
 
@@ -38,7 +40,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from .section import SectionType
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -291,7 +292,7 @@ class Scene:
 
     def next_section(
         self,
-        type: SectionType = SectionType.normal,
+        type: str = DefaultSectionType.NORMAL,
         name: str = "unnamed",
     ) -> None:
         """Create separation here; the last section gets finished and a new gets created."""

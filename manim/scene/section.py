@@ -4,17 +4,24 @@ from enum import Enum
 from typing import Dict, List, Optional
 
 
-class SectionType(Enum):
-    """The type of a section defines how it is to be played in a presentation"""
+class DefaultSectionType(str, Enum):
+    """The type of a section defines how it is to be played in a presentation.
+    This class can be reimplemented for more types:
 
-    # start, end, wait for continuation by user
-    normal = 1
-    # start, end, immediately continue to next section
-    skip = 2
-    # start, end, restart, immediately continue to next section when continued by user
-    loop = 3
-    # start, end, restart, finish animation first when user continues
-    complete_loop = 4
+    Examples
+    --------
+    >>> class PresentationSectionType(str, Enum):
+    >>>     # start, end, wait for continuation by user
+    >>>     NORMAL = 1
+    >>>     # start, end, immediately continue to next section
+    >>>     SKIP = 2
+    >>>     # start, end, restart, immediately continue to next section when continued by user
+    >>>     LOOP = 3
+    >>>     # start, end, restart, finish animation first when user continues
+    >>>     COMPLETE_LOOP = 4
+    """
+
+    NORMAL = "normal"
 
 
 class Section:
@@ -36,7 +43,7 @@ class Section:
         None -> section is not to be saved
     """
 
-    def __init__(self, type: SectionType, video: Optional[str], name: str):
+    def __init__(self, type: str, video: Optional[str], name: str):
         self.type = type
         self.video: Optional[str] = video
         self.name = name
@@ -60,7 +67,7 @@ class Section:
 
         return {
             "name": self.name,
-            "type": self.type.name,
+            "type": self.type,
             "video": self.video,
         }
 

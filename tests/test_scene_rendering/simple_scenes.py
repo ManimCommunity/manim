@@ -50,6 +50,17 @@ class SceneWithNonStaticWait(Scene):
         self.wait()
 
 
+class PresentationSectionType(str, Enum):
+    # start, end, wait for continuation by user
+    NORMAL = 1
+    # start, end, immediately continue to next section
+    SKIP = 2
+    # start, end, restart, immediately continue to next section when continued by user
+    LOOP = 3
+    # start, end, restart, finish animation first when user continues
+    COMPLETE_LOOP = 4
+
+
 class SceneWithSections(Scene):
     def construct(self):
         self.wait()
@@ -60,16 +71,16 @@ class SceneWithSections(Scene):
         self.next_section(name="test")
         self.wait()
 
-        self.next_section(type=SectionType.normal)
+        self.next_section(type=DefaultSectionType.NORMAL)
         self.wait()
 
-        self.next_section(type=SectionType.skip)
+        self.next_section(type=PresentationSectionType.SKIP)
         self.wait()
 
-        self.next_section(type=SectionType.loop)
+        self.next_section(type=PresentationSectionType.LOOP)
         self.wait()
 
-        self.next_section(type=SectionType.complete_loop)
+        self.next_section(type=PresentationSectionType.COMPLETE_LOOP)
         self.wait()
 
         self.next_section(

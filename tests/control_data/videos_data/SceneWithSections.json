@@ -10,50 +10,43 @@
     },
     "section_index": [
         ".",
-        "SceneWithSections_0006.mp4",
-        "SceneWithSections_0005.mp4",
-        "SceneWithSections_0004.mp4",
-        "SceneWithSections_0003.mp4",
-        "SceneWithSections_0002.mp4",
-        "SceneWithSections_0001.mp4",
-        "SceneWithSections.json",
-        "SceneWithSections_0000.mp4"
+        "SceneWithSections.json"
     ],
     "section_meta": [
         {
             "name": "unnamed",
             "type": "normal",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0000.mp4"
+            "video": "SceneWithSections_0000.mp4"
         },
         {
             "name": "unnamed",
             "type": "normal",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0001.mp4"
+            "video": "SceneWithSections_0001.mp4"
         },
         {
             "name": "test",
             "type": "normal",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0002.mp4"
+            "video": "SceneWithSections_0002.mp4"
         },
         {
             "name": "unnamed",
             "type": "normal",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0003.mp4"
+            "video": "SceneWithSections_0003.mp4"
         },
         {
             "name": "unnamed",
-            "type": "skip",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0004.mp4"
+            "type": "2",
+            "video": "SceneWithSections_0004.mp4"
         },
         {
             "name": "unnamed",
-            "type": "loop",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0005.mp4"
+            "type": "3",
+            "video": "SceneWithSections_0005.mp4"
         },
         {
             "name": "unnamed",
-            "type": "complete_loop",
-            "video": "/tmp/pytest-of-chris/pytest-14/popen-gw0/test_many_sections0/videos/simple_scenes/480p15/sections/SceneWithSections_0006.mp4"
+            "type": "4",
+            "video": "SceneWithSections_0006.mp4"
         }
     ]
 }

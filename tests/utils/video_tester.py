@@ -55,24 +55,29 @@ def _check_video_data(path_control_data, path_to_video_generated):
     path_to_section_meta_generated = os.path.join(
         path_to_sections_generated, f"{scene_name}.json"
     )
-    section_meta_generated = get_section_meta(path_to_sections_generated)
+    section_meta_generated = get_section_meta(path_to_section_meta_generated)
     section_meta_expected = control_data["section_meta"]
 
     # sections metadata file
+    if len(section_meta_generated) != len(section_meta_expected):
+        raise AssertionError(
+            f"expected {len(section_meta_expected)} sections ({', '.join([el['name'] for el in section_meta_expected])}), but {len(section_meta_generated)} ({', '.join([el['name'] for el in section_meta_generated])}) got generated (in '{path_to_section_meta_generated}')"
+        )
+    # check individual
     for section_generated, section_expected in zip(
         section_meta_generated, section_meta_expected
     ):
         if section_generated["name"] != section_expected["name"]:
             raise AssertionError(
-                f"Section {section_generated} doesn't have the expected name '{section_expected['name']}'"
+                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected name '{section_expected['name']}'"
             )
         if section_generated["type"] != section_expected["type"]:
             raise AssertionError(
-                f"Section {section_generated} doesn't have the expected type '{section_expected['type']}'"
+                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected type '{section_expected['type']}'"
             )
         if section_generated["video"] != section_expected["video"]:
             raise AssertionError(
-                f"Section {section_generated} doesn't have the expected path to video '{section_expected['video']}'"
+                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected path to video '{section_expected['video']}'"
             )
 
 

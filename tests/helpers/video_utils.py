@@ -29,6 +29,7 @@ def get_config_from_video(path_to_video: str):
 
 
 def get_dir_index(dirpath: str) -> List[str]:
+    # test if sections have been created in the first place, doesn't work with multiple scene but this isn't an issue with tests
     if not os.path.isdir(dirpath):
         return []
     # indicate that the sections directory has been created
@@ -40,7 +41,8 @@ def get_dir_index(dirpath: str) -> List[str]:
 
 
 def get_section_meta(metapath: str) -> List[Dict[str, str]]:
-    if not os.path.isfile(metapath):
+    # test if sections have been created in the first place
+    if not os.path.isdir(pathlib.Path(metapath).parent.absolute()):
         return []
     with open(metapath) as file:
         sections = json.load(file)
@@ -75,7 +77,11 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
     # TODO: "config" might be a confusing name for the specification of the movie, it isn't referring to the Manim config after all
     config = get_config_from_video(path_to_video)
     section_index = get_dir_index(path_to_sections)
-    section_meta = get_section_meta(os.path.join(path_to_sections, f"{name}.json"))
+    # this is the name of the section used in the test, not the name of the test itself, it can be found as a parameter
+    scene_name = "".join(os.path.basename(path_to_video).split(".")[:-1])
+    section_meta = get_section_meta(
+        os.path.join(path_to_sections, f"{scene_name}.json")
+    )
     data = {
         "name": name,
         "config": config,

@@ -31,7 +31,7 @@ from ..utils.file_ops import (
     write_to_movie,
 )
 from ..utils.sounds import get_full_sound_file_path
-from .section import Section, SectionType
+from .section import DefaultSectionType, Section
 
 
 class SceneFileWriter:
@@ -74,7 +74,7 @@ class SceneFileWriter:
         self.partial_movie_files: List[str] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
-        self.next_section(SectionType.normal)
+        self.next_section(DefaultSectionType.NORMAL)
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -149,17 +149,15 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].empty():
             self.sections.pop()
 
-    def next_section(self, type: SectionType, name: str = "unnamed") -> None:
+    def next_section(self, type: str, name: str = "unnamed") -> None:
         """create segmentation cut here"""
         self.finish_last_section()
 
         # images don't support sections
         section_video: Optional[str] = None
         if not config.dry_run and write_to_movie():
-            section_video = os.path.join(
-                self.sections_output_dir,
-                f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}",
-            )
+            # relative to metadata file
+            section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
         self.sections.append(
             Section(
