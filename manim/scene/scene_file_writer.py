@@ -664,7 +664,7 @@ class SceneFileWriter:
                     section.get_clean_partial_movie_files(),
                     os.path.join(self.sections_output_dir, section.video),
                 )
-                sections_meta.append(section.get_dict())
+                sections_meta.append(section.get_dict(self.sections_output_dir))
             with open(
                 os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
             ) as file:

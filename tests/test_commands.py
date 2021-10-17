@@ -4,10 +4,8 @@ from textwrap import dedent
 
 from click.testing import CliRunner
 
-from manim import __version__
+from manim import __version__, capture
 from manim.__main__ import main
-
-from .utils.commands import capture
 
 
 def test_manim_version():

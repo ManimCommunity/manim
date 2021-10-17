@@ -3,29 +3,9 @@
 import json
 import os
 import pathlib
-from typing import Dict, List
+from typing import Any, Dict, List
 
-from manim import config, logger
-
-from ..utils.commands import capture
-
-
-def get_config_from_video(path_to_video: str):
-    command = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=width,height,nb_frames,duration,avg_frame_rate,codec_name",
-        "-print_format",
-        "json",
-        path_to_video,
-    ]
-    config, err, exitcode = capture(command)
-    assert exitcode == 0, f"FFprobe error: {err}"
-    return json.loads(config)["streams"][0]
+from manim import get_video_metadata, logger
 
 
 def get_dir_index(dirpath: str) -> List[str]:
@@ -40,9 +20,10 @@ def get_dir_index(dirpath: str) -> List[str]:
     return index_files
 
 
-def get_section_meta(metapath: str) -> List[Dict[str, str]]:
+def get_section_meta(metapath: str) -> List[Dict[str, Any]]:
+    parent_folder = pathlib.Path(metapath).parent.absolute()
     # test if sections have been created in the first place
-    if not os.path.isdir(pathlib.Path(metapath).parent.absolute()):
+    if not os.path.isdir(parent_folder):
         return []
     with open(metapath) as file:
         sections = json.load(file)
@@ -75,7 +56,7 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
     # TODO: "config" might be a confusing name for the specification of the movie, it isn't referring to the Manim config after all
-    config = get_config_from_video(path_to_video)
+    config = get_video_metadata(path_to_video)
     section_index = get_dir_index(path_to_sections)
     # this is the name of the section used in the test, not the name of the test itself, it can be found as a parameter
     scene_name = "".join(os.path.basename(path_to_video).split(".")[:-1])

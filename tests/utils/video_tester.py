@@ -1,44 +1,36 @@
 import json
 import os
 import pathlib
-import subprocess
 from functools import wraps
 
-import pytest
-from _pytest.fixtures import FixtureRequest
+from manim import get_video_metadata
 
+from ..assert_utils import assert_shallow_dict_compare
 from ..helpers.video_utils import (
-    get_config_from_video,
     get_dir_index,
     get_section_meta,
     save_control_data_from_video,
 )
 
 
-def _load_video_data(path_to_data):
+def load_video_data(path_to_data):
     with open(path_to_data) as f:
         return json.load(f)
 
 
-def _check_video_data(path_control_data, path_to_video_generated):
+def check_video_data(path_control_data, path_to_video_generated):
     # movie file specification
     path_to_sections_generated = os.path.join(
         pathlib.Path(path_to_video_generated).parent.absolute(),
         "sections",
     )
-    control_data = _load_video_data(path_control_data)
-    config_generated = get_config_from_video(path_to_video_generated)
+    control_data = load_video_data(path_control_data)
+    config_generated = get_video_metadata(path_to_video_generated)
     config_expected = control_data["config"]
-    diff_keys = [
-        d1[0]
-        for d1, d2 in zip(config_expected.items(), config_generated.items())
-        if d1[1] != d2[1]
-    ]
-    # \n does not work in f-strings.
-    newline = "\n"
-    assert (
-        len(diff_keys) == 0
-    ), f"Config don't match:\n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
+
+    assert_shallow_dict_compare(
+        config_generated, config_expected, "Movie file specification mismatch:"
+    )
 
     # sections directory index
     section_index_generated = set(get_dir_index(path_to_sections_generated))
@@ -49,7 +41,8 @@ def _check_video_data(path_control_data, path_to_video_generated):
         dif = [
             f"'{dif}' got unexpectedly generated" for dif in unexpectedly_generated
         ] + [f"'{dif}' didn't get generated" for dif in ungenerated_expected]
-        raise AssertionError(f"Sections don't match:\n{newline.join(dif)}")
+        mismatch = "\n".join(dif)
+        raise AssertionError(f"Sections don't match:\n{mismatch}")
 
     scene_name = "".join(os.path.basename(path_to_video_generated).split(".")[:-1])
     path_to_section_meta_generated = os.path.join(
@@ -63,22 +56,15 @@ def _check_video_data(path_control_data, path_to_video_generated):
         raise AssertionError(
             f"expected {len(section_meta_expected)} sections ({', '.join([el['name'] for el in section_meta_expected])}), but {len(section_meta_generated)} ({', '.join([el['name'] for el in section_meta_generated])}) got generated (in '{path_to_section_meta_generated}')"
         )
-    # check individual
+    # check individual sections
     for section_generated, section_expected in zip(
         section_meta_generated, section_meta_expected
     ):
-        if section_generated["name"] != section_expected["name"]:
-            raise AssertionError(
-                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected name '{section_expected['name']}'"
-            )
-        if section_generated["type"] != section_expected["type"]:
-            raise AssertionError(
-                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected type '{section_expected['type']}'"
-            )
-        if section_generated["video"] != section_expected["video"]:
-            raise AssertionError(
-                f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't have the expected path to video '{section_expected['video']}'"
-            )
+        assert_shallow_dict_compare(
+            section_generated,
+            section_expected,
+            f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't match expected Section (in '{section_expected}'):",
+        )
 
 
 def video_comparison(control_data_file, scene_path_from_media_dir):
@@ -117,13 +103,13 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
             if not os.path.exists(path_video_generated):
                 for parent in reversed(path_video_generated.parents):
                     if not parent.exists():
-                        pytest.fail(
+                        raise AssertionError(
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
                         break
             # TODO: use when pytest --set_test option
-            save_control_data_from_video(path_video_generated, control_data_file[:-5])
-            # _check_video_data(path_control_data, str(path_video_generated))
+            # save_control_data_from_video(path_video_generated, control_data_file[:-5])
+            check_video_data(path_control_data, str(path_video_generated))
             return result
 
         return wrapper

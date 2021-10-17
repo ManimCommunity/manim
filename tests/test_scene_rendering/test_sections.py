@@ -1,9 +1,12 @@
+import os
 import sys
 
+import pytest
+
+from manim import capture
 from tests.assert_utils import assert_dir_exists, assert_dir_not_exists
 
-from ..utils.commands import capture
-from ..utils.video_tester import *
+from ..utils.video_tester import video_comparison
 
 
 @pytest.mark.slow

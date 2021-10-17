@@ -65,13 +65,15 @@ class SceneWithSections(Scene):
         self.wait()
 
         self.next_section()
-        self.wait()
+        self.wait(2)
 
         self.next_section(name="test")
         self.wait()
 
-        self.next_section(type=DefaultSectionType.NORMAL)
-        self.wait()
+        self.next_section(
+            "Prepare For Unforeseen Consequencesλ", DefaultSectionType.NORMAL
+        )
+        self.wait(2)
 
         self.next_section(type=PresentationSectionType.SKIP)
         self.wait()

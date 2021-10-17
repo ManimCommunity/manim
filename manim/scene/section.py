@@ -1,7 +1,10 @@
 """building blocks of segmented video api"""
 
+import os
 from enum import Enum
 from typing import Dict, List, Optional
+
+from manim import get_video_metadata
 
 
 class DefaultSectionType(str, Enum):
@@ -58,18 +61,24 @@ class Section:
         """return not None partial_movie_files"""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self) -> Dict[str, str]:
-        """get dictionary representation"""
+    def get_dict(self, sections_dir: str) -> Dict[str, str]:
+        """Get dictionary representation with metadata of output video.
+        This is the main part of the Segmented Video API.
+        """
         if self.video is None:
             raise ValueError(
                 f"section '{self.name} can't be exported as dict, it doesn't have a video path assigned to it'"
             )
 
-        return {
-            "name": self.name,
-            "type": self.type,
-            "video": self.video,
-        }
+        video_metadata = get_video_metadata(os.path.join(sections_dir, self.video))
+        return dict(
+            {
+                "name": self.name,
+                "type": self.type,
+                "video": self.video,
+            },
+            **video_metadata,
+        )
 
     def __repr__(self):
         return f"<Section '{self.name}' stored in '{self.video}'>"

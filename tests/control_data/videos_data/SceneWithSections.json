@@ -5,8 +5,8 @@
         "width": 854,
         "height": 480,
         "avg_frame_rate": "15/1",
-        "duration": "7.000000",
-        "nb_frames": "105"
+        "duration": "9.000000",
+        "nb_frames": "135"
     },
     "section_index": [
         ".",
@@ -23,37 +23,79 @@
         {
             "name": "unnamed",
             "type": "default.normal",
-            "video": "SceneWithSections_0000.mp4"
+            "video": "SceneWithSections_0000.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15"
         },
         {
             "name": "unnamed",
             "type": "default.normal",
-            "video": "SceneWithSections_0001.mp4"
+            "video": "SceneWithSections_0001.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30"
         },
         {
             "name": "test",
             "type": "default.normal",
-            "video": "SceneWithSections_0002.mp4"
+            "video": "SceneWithSections_0002.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15"
         },
         {
-            "name": "unnamed",
-            "type": "default.normal",
-            "video": "SceneWithSections_0003.mp4"
+            "name": "default.normal",
+            "type": "Prepare For Unforeseen Consequences\u03bb",
+            "video": "SceneWithSections_0003.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30"
         },
         {
             "name": "unnamed",
             "type": "presentation.skip",
-            "video": "SceneWithSections_0004.mp4"
+            "video": "SceneWithSections_0004.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15"
         },
         {
             "name": "unnamed",
             "type": "presentation.loop",
-            "video": "SceneWithSections_0005.mp4"
+            "video": "SceneWithSections_0005.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15"
         },
         {
             "name": "unnamed",
             "type": "presentation.complete_loop",
-            "video": "SceneWithSections_0006.mp4"
+            "video": "SceneWithSections_0006.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15"
         }
     ]
 }
