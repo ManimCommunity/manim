@@ -61,7 +61,7 @@ class Section:
         """return not None partial_movie_files"""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self, sections_dir: str) -> Dict[str, str]:
+    def get_dict(self, sections_dir: str) -> Dict[str, str | int]:
         """Get dictionary representation with metadata of output video.
         This is the main part of the Segmented Video API.
         """

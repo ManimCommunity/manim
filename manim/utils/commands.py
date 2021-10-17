@@ -14,7 +14,7 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str) -> Dict[str, str]:
+def get_video_metadata(path_to_video: str) -> Dict[str, str | int]:
     command = [
         "ffprobe",
         "-v",

@@ -655,7 +655,7 @@ class SceneFileWriter:
         if not config.save_sections:
             return
         self.finish_last_section()
-        sections_meta: List[Dict[str, str]] = []
+        sections_meta: List[Dict[str, str | int]] = []
         for section in self.sections:
             # section doesn't want to be saved
             if section.video is not None:
