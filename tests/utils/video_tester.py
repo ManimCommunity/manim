@@ -122,10 +122,8 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
                         )
                         break
             # TODO: use when pytest --set_test option
-            # save_control_data_from_video(
-            #     path_video_generated, control_data_file[:-5]
-            # )
-            _check_video_data(path_control_data, str(path_video_generated))
+            save_control_data_from_video(path_video_generated, control_data_file[:-5])
+            # _check_video_data(path_control_data, str(path_video_generated))
             return result
 
         return wrapper

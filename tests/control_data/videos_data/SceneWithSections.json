@@ -10,42 +10,49 @@
     },
     "section_index": [
         ".",
-        "SceneWithSections.json"
+        "SceneWithSections_0006.mp4",
+        "SceneWithSections_0005.mp4",
+        "SceneWithSections_0004.mp4",
+        "SceneWithSections_0003.mp4",
+        "SceneWithSections_0002.mp4",
+        "SceneWithSections_0001.mp4",
+        "SceneWithSections.json",
+        "SceneWithSections_0000.mp4"
     ],
     "section_meta": [
         {
             "name": "unnamed",
-            "type": "normal",
+            "type": "default.normal",
             "video": "SceneWithSections_0000.mp4"
         },
         {
             "name": "unnamed",
-            "type": "normal",
+            "type": "default.normal",
             "video": "SceneWithSections_0001.mp4"
         },
         {
             "name": "test",
-            "type": "normal",
+            "type": "default.normal",
             "video": "SceneWithSections_0002.mp4"
         },
         {
             "name": "unnamed",
-            "type": "normal",
+            "type": "default.normal",
             "video": "SceneWithSections_0003.mp4"
         },
         {
             "name": "unnamed",
-            "type": "2",
+            "type": "presentation.skip",
             "video": "SceneWithSections_0004.mp4"
         },
         {
             "name": "unnamed",
-            "type": "3",
+            "type": "presentation.loop",
             "video": "SceneWithSections_0005.mp4"
         },
         {
             "name": "unnamed",
-            "type": "4",
+            "type": "presentation.complete_loop",
             "video": "SceneWithSections_0006.mp4"
         }
     ]

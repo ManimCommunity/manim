@@ -10,12 +10,13 @@
     },
     "section_index": [
         ".",
-        "SquareToCircle.json"
+        "SquareToCircle.json",
+        "SquareToCircle_0000.mp4"
     ],
     "section_meta": [
         {
             "name": "unnamed",
-            "type": "normal",
+            "type": "default.normal",
             "video": "SquareToCircle_0000.mp4"
         }
     ]
