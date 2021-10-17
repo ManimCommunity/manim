@@ -3,12 +3,13 @@
 __all__ = ["SceneFileWriter"]
 
 import datetime
+import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 from PIL import Image
@@ -121,7 +122,7 @@ class SceneFileWriter:
                     config["movie_file_extension"],
                 ),
             )
-            # TODO: /dev/null would be good (doesn't work on Windows), everyone likes defensive programming, right?
+            # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = ""
             if config.save_sections:
                 # TODO: create config for sections directory name
@@ -519,6 +520,60 @@ class SceneFileWriter:
         )
         return os.path.exists(path)
 
+    def combine_files(
+        self,
+        input_files: List[str],
+        output_file: str,
+        create_gif=False,
+        includes_sound=False,
+    ):
+        file_list = os.path.join(
+            self.partial_movie_directory,
+            "partial_movie_file_list.txt",
+        )
+        # TODO: add back once debug tests figured out
+        # logger.debug(
+        #     f"Partial movie files to combine ({len(input_files)} files): %(p)s",
+        #     {"p": input_files[:5]},
+        # )
+        with open(file_list, "w") as fp:
+            fp.write("# This file is used internally by FFMPEG.\n")
+            for pf_path in input_files:
+                if os.name == "nt":
+                    pf_path = pf_path.replace("\\", "/")
+                fp.write(f"file 'file:{pf_path}'\n")
+        commands = [
+            FFMPEG_BIN,
+            "-y",  # overwrite output file if it exists
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            file_list,
+            "-loglevel",
+            config.ffmpeg_loglevel.lower(),
+            "-metadata",
+            f"comment=Rendered with Manim Community v{__version__}",
+            "-nostdin",
+        ]
+
+        if create_gif:
+            commands += [
+                "-vf",
+                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+            ]
+        else:
+            commands += ["-c", "copy"]
+
+        if not includes_sound:
+            commands += ["-an"]
+
+        commands += [output_file]
+
+        combine_process = subprocess.Popen(commands)
+        combine_process.wait()
+
     def combine_movie_files(self, partial_movie_files=None):
         """
         Used internally by Manim to combine the separate
@@ -596,10 +651,13 @@ class SceneFileWriter:
                 modify_atime(file_path)
 
     def combine_sections_files(self) -> None:
-        """Concatenate partial movie files belonging to single section."""
+        """Concatenate partial movie files belonging to single section.
+        Perform this for every section in this scene."""
+
         if not config.save_sections:
             return
         self.finish_last_section()
+        sections_meta: List[Dict[str, str]] = []
         for section in self.sections:
             # section doesn't want to be saved
             if section.video is not None:
@@ -608,61 +666,11 @@ class SceneFileWriter:
                     section.get_cleaned_partial_movie_files(),
                     section.video,
                 )
-        # TODO: add metadata file
-
-    def combine_files(
-        self,
-        input_files: List[str],
-        output_file: str,
-        create_gif=False,
-        includes_sound=False,
-    ):
-        file_list = os.path.join(
-            self.partial_movie_directory,
-            "partial_movie_file_list.txt",
-        )
-        # TODO: add back once debug tests figured out
-        # logger.debug(
-        #     f"Partial movie files to combine ({len(input_files)} files): %(p)s",
-        #     {"p": input_files[:5]},
-        # )
-        with open(file_list, "w") as fp:
-            fp.write("# This file is used internally by FFMPEG.\n")
-            for pf_path in input_files:
-                if os.name == "nt":
-                    pf_path = pf_path.replace("\\", "/")
-                fp.write(f"file 'file:{pf_path}'\n")
-        commands = [
-            FFMPEG_BIN,
-            "-y",  # overwrite output file if it exists
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            file_list,
-            "-loglevel",
-            config.ffmpeg_loglevel.lower(),
-            "-metadata",
-            f"comment=Rendered with Manim Community v{__version__}",
-            "-nostdin",
-        ]
-
-        if create_gif:
-            commands += [
-                "-vf",
-                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
-            ]
-        else:
-            commands += ["-c", "copy"]
-
-        if not includes_sound:
-            commands += ["-an"]
-
-        commands += [output_file]
-
-        combine_process = subprocess.Popen(commands)
-        combine_process.wait()
+                sections_meta.append(section.get_dict())
+            with open(
+                os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
+            ) as file:
+                json.dump(sections_meta, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""

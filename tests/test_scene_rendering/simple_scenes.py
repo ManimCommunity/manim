@@ -48,3 +48,30 @@ class SceneWithNonStaticWait(Scene):
         s.add_updater(lambda mob, dt: None)
         self.add(s)
         self.wait()
+
+
+class SceneWithSections(Scene):
+    def construct(self):
+        self.wait()
+
+        self.next_section()
+        self.wait()
+
+        self.next_section(name="test")
+        self.wait()
+
+        self.next_section(type=SectionType.normal)
+        self.wait()
+
+        self.next_section(type=SectionType.skip)
+        self.wait()
+
+        self.next_section(type=SectionType.loop)
+        self.wait()
+
+        self.next_section(type=SectionType.complete_loop)
+        self.wait()
+
+        self.next_section(
+            name="this section should be removed as it doesn't contain any animations"
+        )

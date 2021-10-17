@@ -10,6 +10,7 @@ from _pytest.fixtures import FixtureRequest
 from ..helpers.video_utils import (
     get_config_from_video,
     get_dir_index,
+    get_section_meta,
     save_control_data_from_video,
 )
 
@@ -20,8 +21,10 @@ def _load_video_data(path_to_data):
 
 
 def _check_video_data(path_control_data, path_to_video_generated):
+    # movie file specification
     path_to_sections_generated = os.path.join(
-        pathlib.Path(path_to_video_generated).parent.absolute(), "sections"
+        pathlib.Path(path_to_video_generated).parent.absolute(),
+        "sections",
     )
     control_data = _load_video_data(path_control_data)
     config_generated = get_config_from_video(path_to_video_generated)
@@ -37,6 +40,7 @@ def _check_video_data(path_control_data, path_to_video_generated):
         len(diff_keys) == 0
     ), f"Config don't match:\n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
 
+    # sections directory index
     section_index_generated = set(get_dir_index(path_to_sections_generated))
     section_index_expected = set(control_data["section_index"])
     unexpectedly_generated = section_index_generated - section_index_expected
@@ -46,6 +50,30 @@ def _check_video_data(path_control_data, path_to_video_generated):
             f"'{dif}' got unexpectedly generated" for dif in unexpectedly_generated
         ] + [f"'{dif}' didn't get generated" for dif in ungenerated_expected]
         raise AssertionError(f"Sections don't match:\n{newline.join(dif)}")
+
+    scene_name = "".join(os.path.basename(path_to_video_generated).split(".")[:-1])
+    path_to_section_meta_generated = os.path.join(
+        path_to_sections_generated, f"{scene_name}.json"
+    )
+    section_meta_generated = get_section_meta(path_to_sections_generated)
+    section_meta_expected = control_data["section_meta"]
+
+    # sections metadata file
+    for section_generated, section_expected in zip(
+        section_meta_generated, section_meta_expected
+    ):
+        if section_generated["name"] != section_expected["name"]:
+            raise AssertionError(
+                f"Section {section_generated} doesn't have the expected name '{section_expected['name']}'"
+            )
+        if section_generated["type"] != section_expected["type"]:
+            raise AssertionError(
+                f"Section {section_generated} doesn't have the expected type '{section_expected['type']}'"
+            )
+        if section_generated["video"] != section_expected["video"]:
+            raise AssertionError(
+                f"Section {section_generated} doesn't have the expected path to video '{section_expected['video']}'"
+            )
 
 
 def video_comparison(control_data_file, scene_path_from_media_dir):

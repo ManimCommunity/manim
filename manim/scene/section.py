@@ -51,12 +51,16 @@ class Section:
         """return not None partial_movie_files"""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self) -> Dict:
+    def get_dict(self) -> Dict[str, str]:
         """get dictionary representation"""
+        if self.video is None:
+            raise ValueError(
+                f"section '{self.name} can't be exported as dict, it doesn't have a video path assigned to it'"
+            )
 
         return {
-            "type": self.type,
             "name": self.name,
+            "type": self.type.name,
             "video": self.video,
         }
 

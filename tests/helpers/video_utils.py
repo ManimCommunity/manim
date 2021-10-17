@@ -3,7 +3,7 @@
 import json
 import os
 import pathlib
-from typing import List
+from typing import Dict, List
 
 from manim import config, logger
 
@@ -39,6 +39,14 @@ def get_dir_index(dirpath: str) -> List[str]:
     return index_files
 
 
+def get_section_meta(metapath: str) -> List[Dict[str, str]]:
+    if not os.path.isfile(metapath):
+        return []
+    with open(metapath) as file:
+        sections = json.load(file)
+    return sections
+
+
 def save_control_data_from_video(path_to_video: str, name: str) -> None:
     """Helper used to set up a new test that will compare videos.
     This will create a new .json file in control_data/videos_data that contains:
@@ -64,13 +72,15 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
     )
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
-    # TODO: "config" might be a confusing name for the specification of the video, it isn't referring to the Manim config after all
+    # TODO: "config" might be a confusing name for the specification of the movie, it isn't referring to the Manim config after all
     config = get_config_from_video(path_to_video)
     section_index = get_dir_index(path_to_sections)
+    section_meta = get_section_meta(os.path.join(path_to_sections, f"{name}.json"))
     data = {
         "name": name,
         "config": config,
         "section_index": section_index,
+        "section_meta": section_meta,
     }
     path_saved = os.path.join(path_control_data, f"{name}.json")
     with open(path_saved, "w") as f:
