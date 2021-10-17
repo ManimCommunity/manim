@@ -63,7 +63,8 @@ def check_video_data(path_control_data, path_to_video_generated):
         assert_shallow_dict_compare(
             section_generated,
             section_expected,
-            f"Section {section_generated} (in '{path_to_section_meta_generated}') doesn't match expected Section (in '{section_expected}'):",
+            # using json to pretty print dicts
+            f"Section {json.dumps(section_generated, indent=4)} (in '{path_to_section_meta_generated}') doesn't match expected Section (in '{json.dumps(section_expected, indent=4)}'):",
         )
 
 

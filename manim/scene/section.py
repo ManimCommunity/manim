@@ -2,7 +2,7 @@
 
 import os
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from manim import get_video_metadata
 
@@ -63,7 +63,7 @@ class Section:
         """return not None partial_movie_files"""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self, sections_dir: str) -> Dict[str, str | int]:
+    def get_dict(self, sections_dir: str) -> Dict[str, Any]:
         """Get dictionary representation with metadata of output video.
         The output video must have been created in the `sections_dir` before executing this method.
         This is the main part of the Segmented Video API.

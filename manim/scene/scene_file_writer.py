@@ -9,7 +9,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from PIL import Image
@@ -73,7 +73,7 @@ class SceneFileWriter:
         self.partial_movie_files: List[str] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
-        self.next_section(DefaultSectionType.NORMAL)
+        self.next_section(DefaultSectionType.NORMAL, "autocreated")
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -653,7 +653,7 @@ class SceneFileWriter:
         if not config.save_sections:
             return
         self.finish_last_section()
-        sections_meta: List[Dict[str, str | int]] = []
+        sections_meta: List[Dict[str, Any]] = []
         for section in self.sections:
             # only if section does want to be saved
             if section.video is not None:

@@ -1,6 +1,6 @@
 import json
 from subprocess import run
-from typing import Dict
+from typing import Any, Dict
 
 __all__ = [
     "capture",
@@ -14,7 +14,7 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str) -> Dict[str, str | int]:
+def get_video_metadata(path_to_video: str) -> Dict[str, Any]:
     command = [
         "ffprobe",
         "-v",
