@@ -1,5 +1,5 @@
 {
-    "name": "SquareToCircleWithlFlag",
+    "name": "SceneWithEnabledSections",
     "config": {
         "codec_name": "h264",
         "width": 854,
@@ -8,5 +8,8 @@
         "duration": "1.000000",
         "nb_frames": "15"
     },
-    "section_index": []
+    "section_index": [
+        ".",
+        "SquareToCircle_0000.mp4"
+    ]
 }

@@ -5,7 +5,7 @@ import os
 import pathlib
 from typing import List
 
-from manim import logger
+from manim import config, logger
 
 from ..utils.commands import capture
 
@@ -29,7 +29,10 @@ def get_config_from_video(path_to_video: str):
 
 
 def get_dir_index(dirpath: str) -> List[str]:
-    index_files: List[str] = []
+    if not os.path.isdir(dirpath):
+        return []
+    # indicate that the sections directory has been created
+    index_files: List[str] = ["."]
     for root, dirs, files in os.walk(dirpath):
         for file in files:
             index_files.append(f"{os.path.relpath(os.path.join(root, file), dirpath)}")

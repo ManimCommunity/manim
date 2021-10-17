@@ -273,6 +273,7 @@ class ManimConfig(MutableMapping):
         "preview",
         "progress_bar",
         "save_as_gif",
+        "save_sections",
         "save_last_frame",
         "save_pngs",
         "scene_names",
@@ -528,6 +529,7 @@ class ManimConfig(MutableMapping):
             "write_all",
             "save_pngs",
             "save_as_gif",
+            "save_sections",
             "preview",
             "show_in_file_browser",
             "log_to_file",
@@ -676,6 +678,7 @@ class ManimConfig(MutableMapping):
             "save_last_frame",
             "save_pngs",
             "save_as_gif",
+            "save_sections",
             "write_all",
             "disable_caching",
             "format",
@@ -888,6 +891,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["save_as_gif"],
         lambda self, val: self._set_boolean("save_as_gif", val),
         doc="Whether to save the rendered scene in .gif format (-i).",
+    )
+
+    save_sections = property(
+        lambda self: self._d["save_sections"],
+        lambda self, val: self._set_boolean("save_sections", val),
+        doc="Whether to save single videos for each sections in addition to the movie file.",
     )
 
     enable_wireframe = property(

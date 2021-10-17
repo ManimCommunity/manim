@@ -30,8 +30,8 @@ def assert_dir_exists(dirpath: typing.Union[str, PathLike]) -> None:
 
     Parameters
     ----------
-    filepath
-        Filepath to check.
+    dirpath
+        Path to directory to check.
 
     Raises
     ------
@@ -62,4 +62,23 @@ def assert_file_not_exists(filepath: typing.Union[str, PathLike]) -> None:
     path = Path(filepath)
     if path.is_file():
         message = f"{path.absolute()} is a file. Other elements in the parent directory are \n{pformat([path.name for path in list(path.parent.iterdir())])}"
+        raise AssertionError(message)
+
+
+def assert_dir_not_exists(dirpath: typing.Union[str, PathLike]) -> None:
+    """Assert if directory doesn't exist
+
+    Parameters
+    ----------
+    dirpath
+        Path to directory to check.
+
+    Raises
+    ------
+    AssertionError
+        If dirpath points to a directory.
+    """
+    path = Path(dirpath)
+    if path.is_dir():
+        message = f"{path.absolute()} is a directory. Other elements in the parent directory are \n{pformat([path.name for path in list(path.parent.iterdir())])}"
         raise AssertionError(message)

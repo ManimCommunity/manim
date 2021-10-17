@@ -121,10 +121,13 @@ class SceneFileWriter:
                     config["movie_file_extension"],
                 ),
             )
-            # TODO: create config for sections directory name
-            self.sections_output_dir = guarantee_empty_existence(
-                os.path.join(movie_dir, "sections"),
-            )
+            # TODO: /dev/null would be good (doesn't work on Windows), everyone likes defensive programming, right?
+            self.sections_output_dir = ""
+            if config.save_sections:
+                # TODO: create config for sections directory name
+                self.sections_output_dir = guarantee_existence(
+                    os.path.join(movie_dir, "sections"),
+                )
 
             if is_gif_format():
                 self.gif_file_path = os.path.join(
@@ -154,7 +157,7 @@ class SceneFileWriter:
         if not config.dry_run and write_to_movie():
             section_video = os.path.join(
                 self.sections_output_dir,
-                f"{len(self.sections)}_{name}_{type.name}{config.movie_file_extension}",
+                f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}",
             )
 
         self.sections.append(
@@ -522,7 +525,7 @@ class SceneFileWriter:
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
-        # TODO: remove partial_movie_files in separate pr
+        # TODO: remove partial_movie_files in separate PR
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
@@ -594,13 +597,18 @@ class SceneFileWriter:
 
     def combine_sections_files(self) -> None:
         """Concatenate partial movie files belonging to single section."""
+        if not config.save_sections:
+            return
+        self.finish_last_section()
         for section in self.sections:
             # section doesn't want to be saved
             if section.video is not None:
+                logger.info(f"Combining partial files for section '{section.name}'")
                 self.combine_files(
                     section.get_cleaned_partial_movie_files(),
                     section.video,
                 )
+        # TODO: add metadata file
 
     def combine_files(
         self,
@@ -621,7 +629,6 @@ class SceneFileWriter:
         with open(file_list, "w") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
-                print(pf_path)
                 if os.name == "nt":
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")

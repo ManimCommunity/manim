@@ -8,6 +8,7 @@ from PIL import Image
 
 from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
+from tests.assert_utils import assert_dir_exists, assert_dir_not_exists
 
 from ..utils.commands import capture
 from ..utils.video_tester import *
@@ -97,6 +98,58 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
     is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
     assert not is_empty, "running manim with -s flag did not render an image"
+
+
+@video_comparison(
+    "SceneWithDisabledSections.json",
+    "videos/simple_scenes/480p15/SquareToCircle.mp4",
+)
+def test_no_sections(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    _, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
+    assert_dir_exists(scene_dir)
+    # TODO: "sections" might change in the future
+    assert_dir_not_exists(os.path.join(scene_dir, "sections"))
+
+
+@pytest.mark.slow
+@video_comparison(
+    "SceneWithEnabledSections.json",
+    "videos/simple_scenes/480p15/SquareToCircle.mp4",
+)
+def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--save_sections",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    _, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
+    assert_dir_exists(scene_dir)
+    # TODO: "sections" might change in the future
+    assert_dir_exists(os.path.join(scene_dir, "sections"))
 
 
 @pytest.mark.slow
