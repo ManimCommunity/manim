@@ -10,15 +10,15 @@ class DefaultSectionType(str, Enum):
 
     Examples
     --------
-    >>> class PresentationSectionType(str, Enum):
-    >>>     # start, end, wait for continuation by user
-    >>>     NORMAL = "presentation.normal"
-    >>>     # start, end, immediately continue to next section
-    >>>     SKIP = "presentation.skip"
-    >>>     # start, end, restart, immediately continue to next section when continued by user
-    >>>     LOOP = "presentation.loop"
-    >>>     # start, end, restart, finish animation first when user continues
-    >>>     COMPLETE_LOOP = "presentation.complete_loop"
+        class PresentationSectionType(str, Enum):
+            # start, end, wait for continuation by user
+            NORMAL = "presentation.normal"
+            # start, end, immediately continue to next section
+            SKIP = "presentation.skip"
+            # start, end, restart, immediately continue to next section when continued by user
+            LOOP = "presentation.loop"
+            # start, end, restart, finish animation first when user continues
+            COMPLETE_LOOP = "presentation.complete_loop"
     """
 
     NORMAL = "default.normal"
