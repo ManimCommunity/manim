@@ -792,7 +792,7 @@ msgid "The animation type to be overridden"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_animation_override:6
-msgid "The function returning an animation replacing the default animation. It gets passed the parameters given to the animnation constructor."
+msgid "The function returning an aniamtion replacing the default animation. It gets passed the parameters given to the animnation constructor."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_animation_override:9
