@@ -1,0 +1,29 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.iterables.rst:2
+msgid "iterables"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables:1
+msgid "Operations on iterables."
+msgstr ""
+
+#: ../../source/reference/manim.utils.iterables.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:1
+msgid "Takes in a list, and returns a list of tuples, (batch, prop) such that all items in a batch have the same output when put into property_func, and such that chaining all these batches together would give the original list (i.e. order is preserved)"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:1
+msgid "Used instead of list(set(l1).update(l2)) to maintain order, making sure duplicates are removed from l1, not l2."
+msgstr ""
+
+

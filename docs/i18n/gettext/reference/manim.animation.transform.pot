@@ -1,0 +1,48 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.rst:2
+msgid "transform"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform:1
+msgid "Animations transforming one mobject into another."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Method is a method of Mobject, ``args`` are arguments for that method."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Animation that applies a pointwise function to a mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Fades one mobject into another."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Fades submobjects of one mobject into submobjects of another one."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Replaces and morphs a mobject into a target mobject."
+msgstr ""
+
+

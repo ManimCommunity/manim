@@ -1,0 +1,115 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:2
+msgid "Cylinder"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:4
+msgid "Qualified name: ``manim.mobject.three\\_dimensions.Cylinder``"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:1
+msgid "Bases: :class:`manim.mobject.three_dimensions.Surface`"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:1
+msgid "A cylinder, defined by its height, radius and direction,"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:4
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:6
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:15
+msgid "The radius of the cylinder."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:17
+msgid "The height of the cylinder."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:19
+msgid "The direction of the central axis of the cylinder."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:21
+msgid "The height along the height axis (given by direction) to start and end on."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder:23
+msgid "Whether to show the end caps or not."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1
+msgid "Adds the end caps of the cylinder."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
+msgid "Converts from cylindrical coordinates to cartesian."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.func:1
+msgid "Converts from cylindrical coordinates to cartesian. :param u: The height. :type u: :class:`float` :param v: The azimuthal angle. :type v: :class:`float`"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:7
+msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:13
+msgid "Either ``\"CW\"`` or ``\"CCW\"``."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.get_direction:0
+msgid "Return type"
+msgstr ""
+
+

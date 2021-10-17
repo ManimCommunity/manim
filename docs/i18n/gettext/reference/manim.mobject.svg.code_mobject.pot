@@ -1,0 +1,87 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.rst:2
+msgid "code\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject:1
+msgid "Mobject representing highlighted source code listings."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.rst:26:<autosummary>:1
+msgid "A highlighted source code listing."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.rst:29
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:1
+msgid "Function to highlight code from string to html."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:0
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:3
+msgid "Code string."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:5
+msgid "The name of the programming language the given code was written in."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:7
+msgid "Code style name."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:9
+msgid "Defines whether line numbers should be inserted in the html file."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:11
+msgid "Some html css styles."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:13
+msgid "Path of code file."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.hilite_me:15
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:5
+msgid "Defines the first line's number in the line count."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:1
+msgid "Function that inserts line numbers in the highlighted HTML code."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:3
+msgid "html string of highlighted code."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:8
+msgid "The generated html string with having line numbers."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.insert_line_numbers_in_html:0
+msgid "Return type"
+msgstr ""
+
+
