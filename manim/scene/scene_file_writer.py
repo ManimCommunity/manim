@@ -661,8 +661,8 @@ class SceneFileWriter:
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 self.combine_files(
-                    section.get_cleaned_partial_movie_files(),
-                    section.video,
+                    section.get_clean_partial_movie_files(),
+                    os.path.join(self.sections_output_dir, section.video),
                 )
                 sections_meta.append(section.get_dict())
             with open(

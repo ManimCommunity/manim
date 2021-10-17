@@ -52,13 +52,13 @@ class SceneWithNonStaticWait(Scene):
 
 class PresentationSectionType(str, Enum):
     # start, end, wait for continuation by user
-    NORMAL = 1
+    NORMAL = "presentation.normal"
     # start, end, immediately continue to next section
-    SKIP = 2
+    SKIP = "presentation.skip"
     # start, end, restart, immediately continue to next section when continued by user
-    LOOP = 3
+    LOOP = "presentation.loop"
     # start, end, restart, finish animation first when user continues
-    COMPLETE_LOOP = 4
+    COMPLETE_LOOP = "presentation.complete_loop"
 
 
 class SceneWithSections(Scene):

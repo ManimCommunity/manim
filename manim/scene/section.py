@@ -12,16 +12,16 @@ class DefaultSectionType(str, Enum):
     --------
     >>> class PresentationSectionType(str, Enum):
     >>>     # start, end, wait for continuation by user
-    >>>     NORMAL = 1
+    >>>     NORMAL = "presentation.normal"
     >>>     # start, end, immediately continue to next section
-    >>>     SKIP = 2
+    >>>     SKIP = "presentation.skip"
     >>>     # start, end, restart, immediately continue to next section when continued by user
-    >>>     LOOP = 3
+    >>>     LOOP = "presentation.loop"
     >>>     # start, end, restart, finish animation first when user continues
-    >>>     COMPLETE_LOOP = 4
+    >>>     COMPLETE_LOOP = "presentation.complete_loop"
     """
 
-    NORMAL = "normal"
+    NORMAL = "default.normal"
 
 
 class Section:
@@ -54,7 +54,7 @@ class Section:
 
         return len(self.partial_movie_files) == 0
 
-    def get_cleaned_partial_movie_files(self) -> List[str]:
+    def get_clean_partial_movie_files(self) -> List[str]:
         """return not None partial_movie_files"""
         return [el for el in self.partial_movie_files if el is not None]
 
