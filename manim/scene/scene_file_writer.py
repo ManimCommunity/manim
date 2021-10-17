@@ -85,7 +85,7 @@ class SceneFileWriter:
 
         if config["media_dir"]:
             image_dir = guarantee_existence(
-                config.get_dir("images_dir", module_name=module_name),
+                config.get_dir("images_dir", scene_name=scene_name, module_name=module_name),
             )
             self.image_file_path = os.path.join(
                 image_dir,
@@ -94,7 +94,7 @@ class SceneFileWriter:
 
         if write_to_movie():
             movie_dir = guarantee_existence(
-                config.get_dir("video_dir", module_name=module_name),
+                config.get_dir("video_dir", scene_name=scene_name, module_name=module_name),
             )
 
             self.movie_file_path = os.path.join(
