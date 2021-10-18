@@ -292,13 +292,13 @@ class Scene:
 
     def next_section(
         self,
-        type: str = DefaultSectionType.NORMAL,
         name: str = "unnamed",
+        type: str = DefaultSectionType.NORMAL,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         Refer to the documentation on how to use sections.
         """
-        self.renderer.file_writer.next_section(type, name)
+        self.renderer.file_writer.next_section(name, type)
 
     def __str__(self):
         return self.__class__.__name__

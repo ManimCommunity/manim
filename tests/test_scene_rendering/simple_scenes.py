@@ -63,6 +63,7 @@ class SceneWithSections(Scene):
             # start, end, restart, finish animation first when user continues
             COMPLETE_LOOP = "presentation.complete_loop"
 
+        # this animation is part of the first, automatically created section
         self.wait()
 
         self.next_section()
@@ -79,12 +80,24 @@ class SceneWithSections(Scene):
         self.next_section(type=PresentationSectionType.SKIP)
         self.wait()
 
-        self.next_section(type=PresentationSectionType.LOOP)
-        self.wait()
-
-        self.next_section(type=PresentationSectionType.COMPLETE_LOOP)
-        self.wait()
-
         self.next_section(
             name="this section should be removed as it doesn't contain any animations"
         )
+
+
+class ElaborateSceneWithSections(Scene):
+    def construct(self):
+        # the first automatically created section should be deleted <- it's empty
+        self.next_section("create square")
+        square = Square()
+        self.play(FadeIn(square))
+        self.wait()
+
+        self.next_section("transform to circle")
+        circle = Circle()
+        self.play(Transform(square, circle))
+        self.wait()
+
+        self.next_section("fade out")
+        self.play(FadeOut(square))
+        self.wait()

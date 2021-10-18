@@ -73,7 +73,7 @@ class SceneFileWriter:
         self.partial_movie_files: List[str] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
-        self.next_section(DefaultSectionType.NORMAL, "autocreated")
+        self.next_section("autocreated", DefaultSectionType.NORMAL)
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -148,7 +148,7 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].empty():
             self.sections.pop()
 
-    def next_section(self, type: str, name: str) -> None:
+    def next_section(self, name: str, type: str) -> None:
         """create segmentation cut here"""
         self.finish_last_section()
 
