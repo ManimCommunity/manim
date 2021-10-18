@@ -1,25 +1,24 @@
 {
     "name": "SceneWithSections",
-    "config": {
+    "movie_metadata": {
         "codec_name": "h264",
         "width": 854,
         "height": 480,
         "avg_frame_rate": "15/1",
-        "duration": "9.000000",
-        "nb_frames": "135"
+        "duration": "7.000000",
+        "nb_frames": "105"
     },
-    "section_index": [
+    "section_dir_layout": [
         ".",
-        "SceneWithSections_0006.mp4",
-        "SceneWithSections_0005.mp4",
         "SceneWithSections_0004.mp4",
         "SceneWithSections_0003.mp4",
         "SceneWithSections_0002.mp4",
         "SceneWithSections_0001.mp4",
         "SceneWithSections.json",
-        "SceneWithSections_0000.mp4"
+        "SceneWithSections_0000.mp4",
+        "."
     ],
-    "section_meta": [
+    "section_index": [
         {
             "name": "autocreated",
             "type": "default.normal",
@@ -54,8 +53,8 @@
             "nb_frames": "15"
         },
         {
-            "name": "default.normal",
-            "type": "Prepare For Unforeseen Consequences\u03bb",
+            "name": "Prepare For Unforeseen Consequences\u03bb",
+            "type": "default.normal",
             "video": "SceneWithSections_0003.mp4",
             "codec_name": "h264",
             "width": 854,
@@ -68,28 +67,6 @@
             "name": "unnamed",
             "type": "presentation.skip",
             "video": "SceneWithSections_0004.mp4",
-            "codec_name": "h264",
-            "width": 854,
-            "height": 480,
-            "avg_frame_rate": "15/1",
-            "duration": "1.000000",
-            "nb_frames": "15"
-        },
-        {
-            "name": "unnamed",
-            "type": "presentation.loop",
-            "video": "SceneWithSections_0005.mp4",
-            "codec_name": "h264",
-            "width": 854,
-            "height": 480,
-            "avg_frame_rate": "15/1",
-            "duration": "1.000000",
-            "nb_frames": "15"
-        },
-        {
-            "name": "unnamed",
-            "type": "presentation.complete_loop",
-            "video": "SceneWithSections_0006.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,

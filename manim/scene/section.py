@@ -65,6 +65,7 @@ class Section:
 
     def get_dict(self, sections_dir: str) -> Dict[str, Any]:
         """Get dictionary representation with metadata of output video.
+        The output from this function is used from every section to build the sections index file.
         The output video must have been created in the `sections_dir` before executing this method.
         This is the main part of the Segmented Video API.
         """

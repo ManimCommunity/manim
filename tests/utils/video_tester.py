@@ -7,64 +7,68 @@ from manim import get_video_metadata
 
 from ..assert_utils import assert_shallow_dict_compare
 from ..helpers.video_utils import (
-    get_dir_index,
-    get_section_meta,
+    get_section_dir_layout,
+    get_section_index,
     save_control_data_from_video,
 )
 
 
-def load_video_data(path_to_data):
+def load_control_data(path_to_data):
     with open(path_to_data) as f:
         return json.load(f)
 
 
-def check_video_data(path_control_data, path_to_video_generated):
+def check_video_data(path_control_data, path_video_gen):
+    """Compare control data with generated output.
+    Used abbreviations:
+        exp  -> expected
+        gen  -> generated
+        sec  -> section
+        meta -> metadata
+    """
     # movie file specification
-    path_to_sections_generated = os.path.join(
-        pathlib.Path(path_to_video_generated).parent.absolute(),
+    path_sec_gen = os.path.join(
+        pathlib.Path(path_video_gen).parent.absolute(),
         "sections",
     )
-    control_data = load_video_data(path_control_data)
-    config_generated = get_video_metadata(path_to_video_generated)
-    config_expected = control_data["config"]
+    control_data = load_control_data(path_control_data)
+    movie_meta_gen = get_video_metadata(path_video_gen)
+    movie_meta_exp = control_data["movie_metadata"]
 
     assert_shallow_dict_compare(
-        config_generated, config_expected, "Movie file specification mismatch:"
+        movie_meta_gen, movie_meta_exp, "Movie file metadata mismatch:"
     )
 
-    # sections directory index
-    section_index_generated = set(get_dir_index(path_to_sections_generated))
-    section_index_expected = set(control_data["section_index"])
-    unexpectedly_generated = section_index_generated - section_index_expected
-    ungenerated_expected = section_index_expected - section_index_generated
-    if len(unexpectedly_generated) or len(ungenerated_expected):
-        dif = [
-            f"'{dif}' got unexpectedly generated" for dif in unexpectedly_generated
-        ] + [f"'{dif}' didn't get generated" for dif in ungenerated_expected]
+    # sections directory layout
+    sec_dir_layout_gen = set(get_section_dir_layout(path_sec_gen))
+    sec_dir_layout_exp = set(control_data["section_dir_layout"])
+
+    unexp_gen = sec_dir_layout_gen - sec_dir_layout_exp
+    ungen_exp = sec_dir_layout_exp - sec_dir_layout_gen
+    if len(unexp_gen) or len(ungen_exp):
+        dif = [f"'{dif}' got unexpectedly generated" for dif in unexp_gen] + [
+            f"'{dif}' didn't get generated" for dif in ungen_exp
+        ]
         mismatch = "\n".join(dif)
         raise AssertionError(f"Sections don't match:\n{mismatch}")
 
-    scene_name = "".join(os.path.basename(path_to_video_generated).split(".")[:-1])
-    path_to_section_meta_generated = os.path.join(
-        path_to_sections_generated, f"{scene_name}.json"
-    )
-    section_meta_generated = get_section_meta(path_to_section_meta_generated)
-    section_meta_expected = control_data["section_meta"]
+    # sections index file
+    scene_name = "".join(os.path.basename(path_video_gen).split(".")[:-1])
+    path_sec_index_gen = os.path.join(path_sec_gen, f"{scene_name}.json")
+    sec_index_gen = get_section_index(path_sec_index_gen)
+    sec_index_exp = control_data["section_index"]
 
-    # sections metadata file
-    if len(section_meta_generated) != len(section_meta_expected):
+    if len(sec_index_gen) != len(sec_index_exp):
         raise AssertionError(
-            f"expected {len(section_meta_expected)} sections ({', '.join([el['name'] for el in section_meta_expected])}), but {len(section_meta_generated)} ({', '.join([el['name'] for el in section_meta_generated])}) got generated (in '{path_to_section_meta_generated}')"
+            f"expected {len(sec_index_exp)} sections ({', '.join([el['name'] for el in sec_index_exp])}), but {len(sec_index_gen)} ({', '.join([el['name'] for el in sec_index_gen])}) got generated (in '{path_sec_index_gen}')"
         )
     # check individual sections
-    for section_generated, section_expected in zip(
-        section_meta_generated, section_meta_expected
-    ):
+    for sec_gen, sec_exp in zip(sec_index_gen, sec_index_exp):
         assert_shallow_dict_compare(
-            section_generated,
-            section_expected,
+            sec_gen,
+            sec_exp,
             # using json to pretty print dicts
-            f"Section {json.dumps(section_generated, indent=4)} (in '{path_to_section_meta_generated}') doesn't match expected Section (in '{json.dumps(section_expected, indent=4)}'):",
+            f"Section {json.dumps(sec_gen, indent=4)} (in '{path_sec_index_gen}') doesn't match expected Section (in '{json.dumps(sec_exp, indent=4)}'):",
         )
 
 
@@ -100,17 +104,16 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
                 "videos_data",
                 control_data_file,
             )
-            path_video_generated = tmp_path / scene_path_from_media_dir
-            if not os.path.exists(path_video_generated):
-                for parent in reversed(path_video_generated.parents):
+            path_video_gen = tmp_path / scene_path_from_media_dir
+            if not os.path.exists(path_video_gen):
+                for parent in reversed(path_video_gen.parents):
                     if not parent.exists():
                         raise AssertionError(
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
-                        break
             # TODO: use when pytest --set_test option
-            # save_control_data_from_video(path_video_generated, control_data_file[:-5])
-            check_video_data(path_control_data, str(path_video_generated))
+            # save_control_data_from_video(path_video_gen, control_data_file[:-5])
+            check_video_data(path_control_data, str(path_video_gen))
             return result
 
         return wrapper

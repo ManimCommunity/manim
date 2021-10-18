@@ -1,6 +1,6 @@
 {
     "name": "SceneWithEnabledSections",
-    "config": {
+    "movie_metadata": {
         "codec_name": "h264",
         "width": 854,
         "height": 480,
@@ -8,12 +8,13 @@
         "duration": "1.000000",
         "nb_frames": "15"
     },
-    "section_index": [
+    "section_dir_layout": [
         ".",
         "SquareToCircle.json",
-        "SquareToCircle_0000.mp4"
+        "SquareToCircle_0000.mp4",
+        "."
     ],
-    "section_meta": [
+    "section_index": [
         {
             "name": "autocreated",
             "type": "default.normal",

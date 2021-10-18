@@ -1,6 +1,6 @@
 {
     "name": "SquareToCircleWithDefaultValues",
-    "config": {
+    "movie_metadata": {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
@@ -8,6 +8,6 @@
         "duration": "1.000000",
         "nb_frames": "60"
     },
-    "section_index": [],
-    "section_meta": []
+    "section_dir_layout": [],
+    "section_index": []
 }

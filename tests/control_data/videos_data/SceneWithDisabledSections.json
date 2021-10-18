@@ -1,6 +1,6 @@
 {
     "name": "SceneWithDisabledSections",
-    "config": {
+    "movie_metadata": {
         "codec_name": "h264",
         "width": 854,
         "height": 480,
@@ -8,6 +8,6 @@
         "duration": "1.000000",
         "nb_frames": "15"
     },
-    "section_index": [],
-    "section_meta": []
+    "section_dir_layout": [],
+    "section_index": []
 }

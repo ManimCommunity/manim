@@ -155,7 +155,7 @@ class SceneFileWriter:
         # images don't support sections
         section_video: Optional[str] = None
         if not config.dry_run and write_to_movie() and config.save_sections:
-            # relative to metadata file
+            # relative to index file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
         self.sections.append(
@@ -653,7 +653,7 @@ class SceneFileWriter:
         if not config.save_sections:
             return
         self.finish_last_section()
-        sections_meta: List[Dict[str, Any]] = []
+        sections_index: List[Dict[str, Any]] = []
         for section in self.sections:
             # only if section does want to be saved
             if section.video is not None:
@@ -662,11 +662,11 @@ class SceneFileWriter:
                     section.get_clean_partial_movie_files(),
                     os.path.join(self.sections_output_dir, section.video),
                 )
-                sections_meta.append(section.get_dict(self.sections_output_dir))
+                sections_index.append(section.get_dict(self.sections_output_dir))
             with open(
                 os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
             ) as file:
-                json.dump(sections_meta, file, indent=4)
+                json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
