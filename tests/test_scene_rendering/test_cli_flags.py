@@ -36,7 +36,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
 
 @pytest.mark.slow
 def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "SquareToCircle"
+    scene_name = "NoAnimations"
     resolutions = [
         (720, 480),
         (1280, 720),
