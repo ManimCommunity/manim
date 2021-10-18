@@ -163,7 +163,8 @@ Be aware that you need at least one animation in each section. For example this 
    def construct(self):
        self.next_section()
        # this section doesn't have any animations and will be removed
-       # but no error will be thrown; feel free to tend your flock of empty sections if you so desire
+       # but no error will be thrown
+       # feel free to tend your flock of empty sections if you so desire
        self.add(Circle())
        self.next_section()
 
@@ -178,13 +179,13 @@ One way of fixing this is to wait a little:
        self.wait()
        self.next_section()
 
-For videos to be created for each section you have to add the `--use_sections` flag to the Manim call like this:
+For videos to be created for each section you have to add the ``--use_sections`` flag to the Manim call like this:
 
 .. code-block:: bash
 
    manim --use_sections scene.py
 
-If you do this, the `media` folder will look like this:
+If you do this, the ``media`` folder will look like this:
 
 .. code-block:: bash
 
@@ -210,7 +211,7 @@ If you do this, the `media` folder will look like this:
                     ├── ElaborateSceneWithSections_0002.mp4
                     └── ElaborateSceneWithSections.json
 
-As you can see each section receives their own output video in the `sections` directory.
+As you can see each section receives their own output video in the ``sections`` directory.
 The JSON file in here contains some useful information for each section:
 
 .. code-block:: json
