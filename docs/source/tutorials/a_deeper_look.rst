@@ -215,6 +215,7 @@ As you can see each section receives their own output video in the ``sections`` 
 The JSON file in here contains some useful information for each section:
 
 .. code-block:: json
+
     [
         {
             "name": "create square",
