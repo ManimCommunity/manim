@@ -43,7 +43,7 @@ class Section:
     partial_movie_files
         Animations belonging to this section.
     video
-        Path to video file from sections directory with animations belonging to section.
+        Path to video file with animations belonging to section relative to sections directory.
         If ``None``, then the section will not be saved.
 
     See Also
