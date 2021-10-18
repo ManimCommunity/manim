@@ -278,7 +278,7 @@ class Animation:
         Parameters
         ----------
         alpha
-            The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
+            The relative time to set the animation to, 0 meaning the start, 1 meaning
             the end.
         """
         self.interpolate_mobject(alpha)
