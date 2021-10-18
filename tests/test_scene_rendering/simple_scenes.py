@@ -73,7 +73,7 @@ class SceneWithSections(Scene):
         self.wait()
 
         self.next_section(
-            "Prepare For Unforeseen Consequencesλ", DefaultSectionType.NORMAL
+            "Prepare For Unforeseen Consequences.", DefaultSectionType.NORMAL
         )
         self.wait(2)
 
