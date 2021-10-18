@@ -791,7 +791,7 @@ class Line3D(Cylinder):
         )
 
     @classmethod
-    def perp_to(
+    def perpendicular_to(
         cls,
         line: "Line3D",
         point: Sequence[float] = ORIGIN,
@@ -820,7 +820,7 @@ class Line3D(Cylinder):
                     self.set_camera_orientation(PI / 3, -PI / 4)
                     ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
                     line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
-                    line2 = Line3D.perp_to(line1, color=BLUE)
+                    line2 = Line3D.perpendicular_to(line1, color=BLUE)
                     self.add(ax, line1, line2)
         """
         point = np.array(point)
