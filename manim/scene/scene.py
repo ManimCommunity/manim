@@ -296,7 +296,7 @@ class Scene:
         type: str = DefaultSectionType.NORMAL,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
-        Refer to the documentation on how to use sections (https://docs.manim.community/en/stable/tutorials/a_deeper_look.html#sections).
+        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
         """
         self.renderer.file_writer.next_section(name, type)
 

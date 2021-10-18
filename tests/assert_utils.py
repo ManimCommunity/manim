@@ -90,6 +90,7 @@ def assert_dir_not_exists(dirpath: Union[str, PathLike]) -> None:
 
 def assert_shallow_dict_compare(a: Dict, b: Dict, message_start: str) -> None:
     """Assert that Directories ``a`` and ``b`` are the same.
+
     ``b`` is treated as the expected values that ``a`` shall abide by.
     Print helpful error with custom message start.
     """

@@ -36,14 +36,19 @@ class Section:
     ...
     Attributes
     ----------
-    type :
-    name :
-        human readable, not-unique name of this section
-    partial_movie_files :
-        animations belonging to this section
-    video :
-        path of video file from sections directory with animations belonging to section
-        None -> section is not to be saved
+    type
+        Can be used by a third party applications to classify different types of sections.
+    name
+        Human readable, non-unique name for this section.
+    partial_movie_files
+        Animations belonging to this section.
+    video
+        Path to video file from sections directory with animations belonging to section.
+        If ``None``, then the section will not be saved.
+
+    See Also
+    --------
+    :class:`.DefaultSectionType`
     """
 
     def __init__(self, type: str, video: Optional[str], name: str):
