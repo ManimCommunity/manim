@@ -825,12 +825,10 @@ class Line3D(Cylinder):
         """
         point = np.array(point)
 
-        # Check if the point given lies on the span of the line.
-        multiple = lambda a: len(a) == a.count(a[0])
-        if multiple(list((point - line.start) / line.vect)):
+        norm = np.cross(line.vect, point - line.start)
+        if all(np.linalg.norm(norm) == np.zeros(3)):
             raise ValueError("Could not find the perpendicular.")
 
-        norm = np.cross(line.vect, point - line.start)
         start, end = perpendicular_bisector([line.start, line.end], norm)
         vect = normalize(end - start)
         return cls(
