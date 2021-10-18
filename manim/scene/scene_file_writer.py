@@ -43,7 +43,7 @@ class SceneFileWriter:
 
     Attributes
     ----------
-        sections : list of :class:`Section`s
+        sections : list of :class:`.Section`
             used to segment scene
 
         sections_output_dir : str
@@ -144,12 +144,12 @@ class SceneFileWriter:
             )
 
     def finish_last_section(self) -> None:
-        """delete current section if empty"""
-        if len(self.sections) and self.sections[-1].empty():
+        """Delete current section if it is empty."""
+        if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
     def next_section(self, name: str, type: str) -> None:
-        """create segmentation cut here"""
+        """Create segmentation cut here."""
         self.finish_last_section()
 
         # images don't support sections
@@ -425,7 +425,8 @@ class SceneFileWriter:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files(partial_movie_files=partial_movie_files)
-            self.combine_section_files()
+            if config.save_sections:
+                self.combine_section_files()
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -572,8 +573,7 @@ class SceneFileWriter:
         combine_process.wait()
 
     def combine_movie_files(self, partial_movie_files=None):
-        """
-        Used internally by Manim to combine the separate
+        """Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
@@ -650,8 +650,6 @@ class SceneFileWriter:
     def combine_section_files(self) -> None:
         """Concatenate partial movie files for each section."""
 
-        if not config.save_sections:
-            return
         self.finish_last_section()
         sections_index: List[Dict[str, Any]] = []
         for section in self.sections:

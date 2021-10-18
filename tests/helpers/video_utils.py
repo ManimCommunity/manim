@@ -32,11 +32,13 @@ def get_section_index(metapath: str) -> List[Dict[str, Any]]:
 
 def save_control_data_from_video(path_to_video: str, name: str) -> None:
     """Helper used to set up a new test that will compare videos.
-    This will create a new .json file in control_data/videos_data that contains:
+
+    This will create a new ``.json`` file in ``control_data/videos_data`` that contains:
     - the name of the video,
     - the metadata of the video, like fps and resolution and
     - the paths of all files in the sections subdirectory (like section videos).
-    Refer to the wiki for more information.
+
+    Refer to the documentation for more information.
 
     Parameters
     ----------

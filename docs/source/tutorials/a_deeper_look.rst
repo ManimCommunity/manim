@@ -252,6 +252,8 @@ The JSON file in here contains some useful information for each section:
         }
     ]
 
+This data can be used by third party applications, like a presentation system or automated video editing tool.
+
 
 
 

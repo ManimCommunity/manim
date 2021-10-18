@@ -13,7 +13,8 @@ class DefaultSectionType(str, Enum):
 
     Examples
     --------
-    This class can be reimplemented for more types:
+    This class can be reimplemented for more types::
+
         class PresentationSectionType(str, Enum):
             # start, end, wait for continuation by user
             NORMAL = "presentation.normal"
@@ -29,49 +30,50 @@ class DefaultSectionType(str, Enum):
 
 
 class Section:
-    """a ::class `Scene` can be segmented into multiple Sections.
+    """A :class:`.Scene` can be segmented into multiple Sections.
     It consists of multiple animations.
 
     ...
     Attributes
     ----------
-    type : SectionType
-    name : string
+    type :
+    name :
         human readable, not-unique name of this section
-    partial_movie_files : list of strings or Nones
+    partial_movie_files :
         animations belonging to this section
-        None when not to be saved -> still keeps section alive
-    video : str or None
+    video :
         path of video file from sections directory with animations belonging to section
         None -> section is not to be saved
     """
 
     def __init__(self, type: str, video: Optional[str], name: str):
         self.type = type
+        # None when not to be saved -> still keeps section alive
         self.video: Optional[str] = video
         self.name = name
         self.partial_movie_files: List[Optional[str]] = []
 
-    def empty(self) -> bool:
-        """Are there no animations in this section?
-        None animations also get counted.
-        """
+    def is_empty(self) -> bool:
+        """Check whether this section is empty.
 
+        Note that animations represented by ``None`` are also counted.
+        """
         return len(self.partial_movie_files) == 0
 
     def get_clean_partial_movie_files(self) -> List[str]:
-        """return not None partial_movie_files"""
+        """Return all partial movie files that are not ``None``."""
         return [el for el in self.partial_movie_files if el is not None]
 
     def get_dict(self, sections_dir: str) -> Dict[str, Any]:
         """Get dictionary representation with metadata of output video.
+
         The output from this function is used from every section to build the sections index file.
-        The output video must have been created in the `sections_dir` before executing this method.
+        The output video must have been created in the ``sections_dir`` before executing this method.
         This is the main part of the Segmented Video API.
         """
         if self.video is None:
             raise ValueError(
-                f"section '{self.name} can't be exported as dict, it doesn't have a video path assigned to it'"
+                f"Section '{self.name}' cannot be exported as dict, it does not have a video path assigned to it"
             )
 
         video_metadata = get_video_metadata(os.path.join(sections_dir, self.video))
