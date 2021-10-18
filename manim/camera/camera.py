@@ -9,7 +9,7 @@ import operator as op
 import pathlib
 import time
 from functools import reduce
-from typing import Union, Any
+from typing import Any, Union
 
 import cairo
 import numpy as np
