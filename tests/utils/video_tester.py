@@ -112,7 +112,7 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
                             f"'{parent.name}' does not exist in '{parent.parent}' (which exists). ",
                         )
             # TODO: use when pytest --set_test option
-            # save_control_data_from_video(path_video_gen, control_data_file[:-5])
+            save_control_data_from_video(path_video_gen, control_data_file[:-5])
             check_video_data(path_control_data, str(path_video_gen))
             return result
 
