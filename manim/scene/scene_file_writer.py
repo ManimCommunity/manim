@@ -592,7 +592,6 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format() and not config["output_file"]:
             movie_file_path = str(add_version_before_extension(self.gif_file_path))
-        # TODO: add back once debug tests figured out
         logger.debug(
             f"Partial movie files to combine ({len(partial_movie_files)} files): %(p)s",
             {"p": partial_movie_files[:5]},
