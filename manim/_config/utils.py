@@ -291,6 +291,7 @@ class ManimConfig(MutableMapping):
         "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
+        "sections_dir",
         "fullscreen",
         "window_position",
         "window_size",
@@ -568,6 +569,7 @@ class ManimConfig(MutableMapping):
             "media_dir",
             "log_dir",
             "video_dir",
+            "sections_dir",
             "images_dir",
             "text_dir",
             "tex_dir",
@@ -754,6 +756,7 @@ class ManimConfig(MutableMapping):
             for opt in [
                 "media_dir",
                 "video_dir",
+                "sections_dir",
                 "images_dir",
                 "text_dir",
                 "tex_dir",
@@ -1419,6 +1422,7 @@ class ManimConfig(MutableMapping):
             "assets_dir",
             "media_dir",
             "video_dir",
+            "sections_dir",
             "images_dir",
             "text_dir",
             "tex_dir",
@@ -1474,6 +1478,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["video_dir"],
         lambda self, val: self._set_dir("video_dir", val),
         doc="Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    sections_dir = property(
+        lambda self: self._d["sections_dir"],
+        lambda self, val: self._set_dir("sections_dir", val),
+        doc="Directory to place section videos (no flag).  See :meth:`ManimConfig.get_dir`.",
     )
 
     images_dir = property(

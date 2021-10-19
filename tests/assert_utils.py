@@ -1,10 +1,10 @@
-from os import PathLike
+import os
 from pathlib import Path
 from pprint import pformat
 from typing import Dict, List, Union
 
 
-def assert_file_exists(filepath: Union[str, PathLike]) -> None:
+def assert_file_exists(filepath: Union[str, os.PathLike]) -> None:
     """Assert that filepath points to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
     This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
@@ -26,7 +26,7 @@ def assert_file_exists(filepath: Union[str, PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_dir_exists(dirpath: Union[str, PathLike]) -> None:
+def assert_dir_exists(dirpath: Union[str, os.PathLike]) -> None:
     """Assert that directory exists.
 
     Parameters
@@ -46,7 +46,24 @@ def assert_dir_exists(dirpath: Union[str, PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_file_not_exists(filepath: Union[str, PathLike]) -> None:
+def assert_dir_filled(dirpath: Union[str, os.PathLike]) -> None:
+    """Assert that directory exists and contains at least one file or directory (or file like objects like symlinks on Linux).
+
+    Parameters
+    ----------
+    dirpath
+        Path to directory to check.
+
+    Raises
+    ------
+    AssertionError
+        If dirpath does not point to a directory (if the file does exist or it's a file) or the directory is empty.
+    """
+    if len(os.listdir(dirpath)) == 0:
+        raise AssertionError(f"{dirpath} is an empty directory.")
+
+
+def assert_file_not_exists(filepath: Union[str, os.PathLike]) -> None:
     """Assert that filepath does not point to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
     This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
@@ -68,7 +85,7 @@ def assert_file_not_exists(filepath: Union[str, PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_dir_not_exists(dirpath: Union[str, PathLike]) -> None:
+def assert_dir_not_exists(dirpath: Union[str, os.PathLike]) -> None:
     """Assert that directory does not exist.
 
     Parameters

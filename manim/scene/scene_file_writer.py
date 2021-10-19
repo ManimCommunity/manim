@@ -102,7 +102,9 @@ class SceneFileWriter:
 
         if config["media_dir"]:
             image_dir = guarantee_existence(
-                config.get_dir("images_dir", module_name=module_name),
+                config.get_dir(
+                    "images_dir", module_name=module_name, scene_name=scene_name
+                ),
             )
             self.image_file_path = os.path.join(
                 image_dir,
@@ -111,7 +113,9 @@ class SceneFileWriter:
 
         if write_to_movie():
             movie_dir = guarantee_existence(
-                config.get_dir("video_dir", module_name=module_name),
+                config.get_dir(
+                    "video_dir", module_name=module_name, scene_name=scene_name
+                ),
             )
 
             self.movie_file_path = os.path.join(
@@ -124,9 +128,10 @@ class SceneFileWriter:
             # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = ""
             if config.save_sections:
-                # TODO: create config for sections directory name
                 self.sections_output_dir = guarantee_existence(
-                    os.path.join(movie_dir, "sections"),
+                    config.get_dir(
+                        "sections_dir", module_name=module_name, scene_name=scene_name
+                    )
                 )
 
             if is_gif_format():
@@ -424,9 +429,9 @@ class SceneFileWriter:
         if write_to_movie():
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
-            self.combine_movie_files(partial_movie_files=partial_movie_files)
+            self.combine_to_movie(partial_movie_files=partial_movie_files)
             if config.save_sections:
-                self.combine_section_files()
+                self.combine_to_section_videos()
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -572,12 +577,12 @@ class SceneFileWriter:
         combine_process = subprocess.Popen(commands)
         combine_process.wait()
 
-    def combine_movie_files(self, partial_movie_files=None):
+    def combine_to_movie(self, partial_movie_files=None):
         """Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
-        # TODO: remove partial_movie_files in separate PR
+        # TODO: remove partial_movie_files from parameter <- gets immediately overwritten
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
@@ -647,7 +652,7 @@ class SceneFileWriter:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
 
-    def combine_section_files(self) -> None:
+    def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
 
         self.finish_last_section()

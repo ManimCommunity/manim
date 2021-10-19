@@ -75,6 +75,10 @@ def check_video_data(path_control_data, path_video_gen):
 def video_comparison(control_data_file, scene_path_from_media_dir):
     """Decorator used for any test that needs to check a rendered scene/video.
 
+    .. warning::
+        The directories, such as the movie dir or sections dir, are expected to abide by the default.
+        This requirement could be dropped if the manim config were to be accessible from ``wrapper`` like in ``frames_comparison.py``.
+
     Parameters
     ----------
     control_data_file : :class:`str`
