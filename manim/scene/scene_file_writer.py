@@ -534,11 +534,10 @@ class SceneFileWriter:
             self.partial_movie_directory,
             "partial_movie_file_list.txt",
         )
-        # TODO: add back once debug tests figured out
-        # logger.debug(
-        #     f"Partial movie files to combine ({len(input_files)} files): %(p)s",
-        #     {"p": input_files[:5]},
-        # )
+        logger.debug(
+            f"Partial movie files to combine ({len(input_files)} files): %(p)s",
+            {"p": input_files[:5]},
+        )
         with open(file_list, "w") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
