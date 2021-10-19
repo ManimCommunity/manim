@@ -158,7 +158,7 @@ class Mobject:
         animation_class
             The animation type to be overridden
         override_func
-            The function returning an aniamtion replacing the default animation. It gets
+            The function returning an animation replacing the default animation. It gets
             passed the parameters given to the animnation constructor.
 
         Raises
@@ -214,6 +214,9 @@ class Mobject:
                 def construct(self):
                     Text.set_default(color=BLACK)
                     self.add(Text("Changing default values is easy!"))
+
+                    # we revert the colour back to the default to prevent a bug in the docs.
+                    Text.set_default(color=WHITE)
 
         """
         if kwargs:
