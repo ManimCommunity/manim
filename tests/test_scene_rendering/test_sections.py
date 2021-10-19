@@ -31,7 +31,6 @@ def test_no_sections(tmp_path, manim_cfg_file, simple_scenes_path):
 
     scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
     assert_dir_exists(scene_dir)
-    # TODO: "sections" might change in the future
     assert_dir_not_exists(os.path.join(scene_dir, "sections"))
 
 
@@ -58,7 +57,6 @@ def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
 
     scene_dir = os.path.join(tmp_path, "videos", "simple_scenes", "480p15")
     assert_dir_exists(scene_dir)
-    # TODO: "sections" might change in the future
     assert_dir_exists(os.path.join(scene_dir, "sections"))
 
 
