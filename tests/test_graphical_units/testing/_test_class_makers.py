@@ -56,8 +56,7 @@ class DummySceneFileWriter(SceneFileWriter):
     def end_animation(self, allow_write):
         pass
 
-    # TODO: remove redundant partial_movie_files parameter
-    def combine_to_movie(self, partial_movie_files):
+    def combine_to_movie(self):
         pass
 
     def combine_to_section_videos(self):
