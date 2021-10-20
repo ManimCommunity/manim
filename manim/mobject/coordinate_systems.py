@@ -1978,7 +1978,7 @@ class ThreeDAxes(Axes):
         rotation_axis=RIGHT,
         **kwargs,
     ) -> "Mobject":
-        """Generate an z-axis label.
+        """Generate a z-axis label.
 
         Examples
         --------
