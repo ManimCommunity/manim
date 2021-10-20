@@ -89,7 +89,7 @@ class VMobject(Mobject):
         make_smooth_after_applying_functions=False,
         background_image=None,
         shade_in_3d=False,
-        #TODO, do we care about accounting for varying zoom levels?
+        # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
         **kwargs,
