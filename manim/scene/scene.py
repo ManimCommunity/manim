@@ -894,13 +894,13 @@ class Scene:
                 times = np.array([])
                 on_node = 0
 
-                for dur, s in zip(np.diff(nodes), speeds):
-                    rel_speed_change = s / self.speed
+                for duration, speed in zip(np.diff(nodes), speeds):
+                    rel_speed_change = speed / self.speed
                     adj_func = np.vectorize(
                         lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x,
                     )
                     func_unity_at = 2 / (rel_speed_change + 1)
-                    adj_time = run_time * dur
+                    adj_time = run_time * duration
                     dt = self.speed / config["frame_rate"]
                     times = np.append(
                         times,
@@ -908,7 +908,7 @@ class Scene:
                         * adj_time
                         + nodes[on_node] * run_time,
                     )
-                    self.speed = s
+                    self.speed = speed
                     on_node += 1
             else:
                 dt = self.speed / config["frame_rate"]
