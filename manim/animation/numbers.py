@@ -29,7 +29,7 @@ class ChangingDecimal(Animation):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
     def interpolate_mobject(self, alpha: float) -> None:
-        self.mobject.set_value(self.number_update_func(alpha))
+        self.mobject.set_value(self.number_update_func(self.rate_func(alpha)))
 
 
 class ChangeDecimalToValue(ChangingDecimal):
