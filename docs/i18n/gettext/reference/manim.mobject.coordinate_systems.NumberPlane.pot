@@ -1,0 +1,93 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:2
+msgid "NumberPlane"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:4
+msgid "Qualified name: ``manim.mobject.coordinate\\_systems.NumberPlane``"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
+msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
+msgid "Creates a cartesian plane with background lines."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:3
+msgid "The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:4
+msgid "The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:5
+msgid "The width of the plane."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:6
+msgid "The height of the plane."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:7
+msgid "Arguments that influence the construction of the background lines of the plane."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:8
+msgid "Similar to :attr:`background_line_style`, affects the construction of the scene's background lines."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:9
+msgid "Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:10
+msgid "Currently non-functional."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:11
+msgid "Additional arguments to be passed to :class:`Axes`."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:16
+msgid "If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:20
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

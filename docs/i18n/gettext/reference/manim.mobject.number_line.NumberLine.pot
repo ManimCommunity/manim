@@ -1,0 +1,186 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:2
+msgid "NumberLine"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:4
+msgid "Qualified name: ``manim.mobject.number\\_line.NumberLine``"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:1
+msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:1
+msgid "Creates a number line with tick marks. Number ranges that include both negative and positive values will be generated from the 0 point, and may not include a tick at the min / max values as the tick locations are dependent on the step size."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.create_label_tex:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.n2p:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.p2n:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:5
+msgid "The :code:`[x_min, x_max, x_step]` values to create the line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:6
+msgid "The length of the number line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:7
+msgid "The distance between each tick of the line. Overwritten by :attr:`length`, if specified."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:8
+msgid "Whether to include ticks on the number line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:9
+msgid "The length of each tick mark."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:10
+msgid "An iterable of specific values with elongated ticks."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:11
+msgid "Influences how many times larger elongated ticks are than regular ticks (2 = 2x)."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:12
+msgid "The color of the line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:13
+msgid "The angle (in radians) at which the line is rotated."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:14
+msgid "The thickness of the line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:15
+msgid "Whether to add a tip to the end of the line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:16
+msgid "The width of the tip."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:17
+msgid "The height of the tip."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:18
+msgid "Whether to add numbers to the tick marks. The number of decimal places is determined by the step size, this default can be overridden by ``decimal_number_config``."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:20
+msgid "The size of the label mobjects. Defaults to 36."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:21
+msgid "The specific position to which label mobjects are added on the line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:22
+msgid "The distance between the line and the label mobject."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:23
+msgid "Arguments that can be passed to :class:`~.numbers.DecimalNumber` to influence number mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:24
+msgid "An explicit iterable of numbers to not be added to the number line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:25
+msgid "An explicit iterable of numbers to add to the number line"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:26
+msgid "Additional arguments to be passed to :class:`~.Line`."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:29
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.create_label_tex:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:72
+msgid "The constructed number line."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.create_label_tex:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.n2p:0
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.p2n:0
+msgid "Return type"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:38:<autosummary>:1
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1
+msgid "Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:38:<autosummary>:1
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.create_label_tex:1
+msgid "Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:38:<autosummary>:1
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.n2p:1
+msgid "Abbreviation for number_to_point"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:38:<autosummary>:1
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.p2n:1
+msgid "Abbreviation for point_to_number"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:40
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.create_label_tex:6
+msgid "The label."
+msgstr ""
+
+
