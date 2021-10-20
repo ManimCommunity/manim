@@ -51,12 +51,12 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
-    """A vectorized mobject
+    """A vectorized mobject.
 
     Parameters
     ----------
     background_stroke_color
-        The purpose  of background stroke is to have something
+        The purpose of background stroke is to have something
         that won't overlap fill, e.g.  For text against some
         textured background.
     sheen_factor
@@ -69,9 +69,6 @@ class VMobject(Mobject):
         that it should count in parent mobject's path
     tolerance_point_for_equality
         This is within a pixel
-        TODO, do we care about accounting for varying zoom levels?
-
-    Examples
     --------
     """
 
@@ -92,6 +89,7 @@ class VMobject(Mobject):
         make_smooth_after_applying_functions=False,
         background_image=None,
         shade_in_3d=False,
+        #TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
         **kwargs,
