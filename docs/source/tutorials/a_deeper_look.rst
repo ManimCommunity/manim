@@ -137,6 +137,126 @@ resolutions, e.g. ``-s -ql``, ``-s -qh``
 
 
 
+Sections
+********
+
+In addition to the movie output file one can use sections. Each section produces
+its own output video. The cuts between two sections can be set like this:
+
+.. code-block:: python
+
+    def construct(self):
+        # play the first animations...
+        # you don't need a section in the very beginning as it gets created automatically
+        self.next_section()
+        # play more animations...
+        self.next_section("this is an optional name that doesn't have to be unique")
+        # play even more animations...
+        self.next_section("this is a section without any animations, it will be removed")
+
+All the animations between two of these cuts get concatenated into a single output
+video file.
+Be aware that you need at least one animation in each section. For example this wouldn't create an output video:
+
+.. code-block:: python
+
+   def construct(self):
+       self.next_section()
+       # this section doesn't have any animations and will be removed
+       # but no error will be thrown
+       # feel free to tend your flock of empty sections if you so desire
+       self.add(Circle())
+       self.next_section()
+
+One way of fixing this is to wait a little:
+
+.. code-block:: python
+
+   def construct(self):
+       self.next_section()
+       self.add(Circle())
+       # now we wait 1sec and have an animation to satisfy the section
+       self.wait()
+       self.next_section()
+
+For videos to be created for each section you have to add the ``--use_sections`` flag to the Manim call like this:
+
+.. code-block:: bash
+
+   manim --use_sections scene.py
+
+If you do this, the ``media`` folder will look like this:
+
+.. code-block:: bash
+
+    media
+    ├── images
+    │   └── simple_scenes
+    └── videos
+        └── simple_scenes
+            └── 480p15
+                ├── ElaborateSceneWithSections.mp4
+                ├── partial_movie_files
+                │   └── ElaborateSceneWithSections
+                │       ├── 2201830969_104169243_1331664314.mp4
+                │       ├── 2201830969_398514950_125983425.mp4
+                │       ├── 2201830969_398514950_3447021159.mp4
+                │       ├── 2201830969_398514950_4144009089.mp4
+                │       ├── 2201830969_4218360830_1789939690.mp4
+                │       ├── 3163782288_524160878_1793580042.mp4
+                │       └── partial_movie_file_list.txt
+                └── sections
+                    ├── ElaborateSceneWithSections_0000.mp4
+                    ├── ElaborateSceneWithSections_0001.mp4
+                    ├── ElaborateSceneWithSections_0002.mp4
+                    └── ElaborateSceneWithSections.json
+
+As you can see each section receives their own output video in the ``sections`` directory.
+The JSON file in here contains some useful information for each section:
+
+.. code-block:: json
+
+    [
+        {
+            "name": "create square",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0000.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30"
+        },
+        {
+            "name": "transform to circle",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0001.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30"
+        },
+        {
+            "name": "fade out",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0002.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30"
+        }
+    ]
+
+This data can be used by third party applications, like a presentation system or automated video editing tool.
+
+
+
+
 Some command line flags
 ***********************
 

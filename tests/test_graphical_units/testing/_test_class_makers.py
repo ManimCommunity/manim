@@ -44,6 +44,9 @@ class DummySceneFileWriter(SceneFileWriter):
     def init_output_directories(self, scene_name):
         pass
 
+    def next_section(self, type, name=None):
+        pass
+
     def add_partial_movie_file(self, hash_animation):
         pass
 
@@ -53,7 +56,11 @@ class DummySceneFileWriter(SceneFileWriter):
     def end_animation(self, allow_write):
         pass
 
-    def combine_movie_files(self, partial_movie_files):
+    # TODO: remove redundant partial_movie_files parameter
+    def combine_to_movie(self, partial_movie_files):
+        pass
+
+    def combine_to_section_videos(self):
         pass
 
     def clean_cache(self):
