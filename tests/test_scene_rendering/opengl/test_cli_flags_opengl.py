@@ -56,10 +56,10 @@ def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
             "-m",
             "manim",
             "--media_dir",
-            tmp_path,
+            str(tmp_path),
             "--resolution",
             f"{width}{separator}{height}",
-            simple_scenes_path,
+            str(simple_scenes_path),
             scene_name,
         ]
 
