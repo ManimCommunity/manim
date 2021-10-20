@@ -63,6 +63,7 @@ class Animation:
     suspend_mobject_updating
         Whether updaters of the mobject should be suspended during the animation.
 
+
     .. NOTE::
 
         In the current implementation of this class, the specified rate function is applied
