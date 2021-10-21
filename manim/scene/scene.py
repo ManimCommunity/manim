@@ -908,8 +908,9 @@ class Scene:
                     if duration != 0:
                         rel_speed_change = speed / self.speed
 
-                        # A function through which evenly spaced time values
-                        # are passed to change speed, with following conditions
+                        # This function is applied to evenly spaced time values
+                        # to change its distribution, and hence the speed
+                        # The function should meet the following conditions
                         # f(0) = 0, f'(0) = 1, f'(f^-1(1)) = rel_speed_change
                         # Following is a vertical parabola satisying above conditions
                         adj_func = np.vectorize(
@@ -922,9 +923,10 @@ class Scene:
                         dt = self.speed / config["frame_rate"]
                         times = np.append(
                             times,
-                            # Generate evenly spaced time stamps, stretch to [0, 1)
-                            # then pass through above function, and squish it
-                            # back to original range
+                            # Generate evenly spaced time stamps from [0, f^-1(1))
+                            # then pass through above function to get the range to
+                            # [0, 1). adj_time is used to to stretch or squish the
+                            # range to desired run_time and duration
                             adj_func(
                                 np.arange(0, func_unity_at * adj_time, dt) / adj_time
                             )
