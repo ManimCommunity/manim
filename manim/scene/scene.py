@@ -107,7 +107,7 @@ class Scene:
         self.duration = None
         self.last_t = None
         self.speed = 1
-        self.speedinfo = None
+        self.animation_speedinfo = None
         self.queue = Queue()
         self.skip_animation_preview = False
         self.meshes = []
@@ -734,26 +734,26 @@ class Scene:
     @contextmanager
     def changing_scene_speed_to(
         self,
-        speedinfo: Dict[float, float],
+        animation_speedinfo: Dict[float, float],
         retain_final_speed=True,
     ):
         """
-        Changes speed of the scene while playing the following animation.
-        If play/wait are called multiple times, speed change is applied to
+        Changes speed of the scene while playing the animations.
+        If there are multiple animations, speed change is applied to
         each of them again. To spread the effect over multiple animations
-        instead use :class:`AnimationGroup` with ``lag_ratio=1`` to combine
-        animations into one.
+        instead, use :class:`AnimationGroup` with ``lag_ratio=1`` to
+        combine multiple animations into one.
         Parameters
         ----------
-        speedinfo : Dict[float, float]
+        animation_speedinfo : Dict[float, float]
             Contains nodes (percentage of run_time) and its corresponding speed factor.
         retain_final_speed : bool, optional
             Speed of scene will remain changed to final speed on exit if true.
         """
         init_speed = self.speed
-        self.speedinfo = speedinfo
+        self.animation_speedinfo = animation_speedinfo
         yield
-        self.speedinfo = None
+        self.animation_speedinfo = None
         if not retain_final_speed:
             self.speed = init_speed
 
@@ -793,7 +793,9 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(self, animations, duration, speedinfo):
+    def _get_animation_time_progression(
+        self, animations, duration, animation_speedinfo
+    ):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -824,13 +826,13 @@ class Scene:
                     f"Waiting for {stop_condition.__name__}",
                     n_iterations=-1,  # So it doesn't show % progress
                     override_skip_animations=True,
-                    speedinfo=speedinfo,
+                    animation_speedinfo=animation_speedinfo,
                 )
             else:
                 time_progression = self.get_time_progression(
                     duration,
                     f"Waiting {self.renderer.num_plays}",
-                    speedinfo=speedinfo,
+                    animation_speedinfo=animation_speedinfo,
                 )
         else:
             time_progression = self.get_time_progression(
@@ -842,7 +844,7 @@ class Scene:
                         (", etc." if len(animations) > 1 else ""),
                     ],
                 ),
-                speedinfo=speedinfo,
+                animation_speedinfo=animation_speedinfo,
             )
         return time_progression
 
@@ -852,7 +854,7 @@ class Scene:
         description,
         n_iterations=None,
         override_skip_animations=False,
-        speedinfo=None,
+        animation_speedinfo=None,
     ):
         """
         You will hardly use this when making your own animations.
@@ -875,6 +877,9 @@ class Scene:
         override_skip_animations : bool, optional
             Whether or not to show skipped animations in the progress bar.
 
+        animation_speedinfo : Dict[float, float]
+            Contains nodes (percentage of run_time) and its corresponding speed factor.
+
         Returns
         -------
         time_progression
@@ -883,33 +888,42 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            if speedinfo is not None:
-                nodes = list(speedinfo.keys())
-                speeds = list(speedinfo.values())
-                if nodes[0] != 0:
-                    nodes.insert(0, 0)
-                if nodes[-1] != 1:
-                    nodes.append(1)
-                    speeds.append(speeds[-1])
+            if animation_speedinfo is not None:
+                # Add last node if not already there
+                animation_speedinfo[1] = sorted(animation_speedinfo.items())[-1][1]
                 times = np.array([])
-                on_node = 0
+                prev_node = 0
 
-                for duration, speed in zip(np.diff(nodes), speeds):
-                    rel_speed_change = speed / self.speed
-                    adj_func = np.vectorize(
-                        lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x,
-                    )
-                    func_unity_at = 2 / (rel_speed_change + 1)
-                    adj_time = run_time * duration
-                    dt = self.speed / config["frame_rate"]
-                    times = np.append(
-                        times,
-                        adj_func(np.arange(0, func_unity_at * adj_time, dt) / adj_time)
-                        * adj_time
-                        + nodes[on_node] * run_time,
-                    )
+                for node, speed in sorted(animation_speedinfo.items()):
+                    duration = node - prev_node
+                    if duration != 0:
+                        rel_speed_change = speed / self.speed
+
+                        # A function through which evenly spaced time values
+                        # are passed to change speed, with following conditions
+                        # f(0) = 0, f'(0) = 1, f'(f^-1(1)) = rel_speed_change
+                        # Following is a vertical parabola satisying above conditions
+                        adj_func = np.vectorize(
+                            lambda x: (rel_speed_change ** 2 - 1) / 4 * x ** 2 + x,
+                        )
+                        # The value of f^-1(1) for this function
+                        func_unity_at = 2 / (rel_speed_change + 1)
+
+                        adj_time = run_time * duration
+                        dt = self.speed / config["frame_rate"]
+                        times = np.append(
+                            times,
+                            # Generate evenly spaced time stamps, stretch to [0, 1)
+                            # then pass through above function, and squish it
+                            # back to original range
+                            adj_func(
+                                np.arange(0, func_unity_at * adj_time, dt) / adj_time
+                            )
+                            * adj_time
+                            + prev_node * run_time,
+                        )
                     self.speed = speed
-                    on_node += 1
+                    prev_node = node
             else:
                 dt = self.speed / config["frame_rate"]
                 times = np.arange(0, run_time, dt)
@@ -1050,7 +1064,7 @@ class Scene:
         self.time_progression = self._get_animation_time_progression(
             self.animations,
             self.duration,
-            self.speedinfo,
+            self.animation_speedinfo,
         )
         for t in self.time_progression:
             self.update_to_time(t)
