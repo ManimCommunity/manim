@@ -1005,6 +1005,7 @@ class Scene:
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
+        self.animation_speedinfo = play_kwargs.pop("animation_speedinfo", None)
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
