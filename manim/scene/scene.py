@@ -732,7 +732,7 @@ class Scene:
         return all_moving_mobject_families, static_mobjects
 
     @contextmanager
-    def changing_scene_speed_to(
+    def scene_speed_changing(
         self,
         animation_speedinfo: Dict[float, float],
         retain_final_speed=True,
