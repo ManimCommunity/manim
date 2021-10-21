@@ -33,7 +33,6 @@ class Section:
     """A :class:`.Scene` can be segmented into multiple Sections.
     It consists of multiple animations.
 
-    ...
     Attributes
     ----------
     type
