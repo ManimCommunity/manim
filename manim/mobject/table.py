@@ -73,6 +73,7 @@ from ..animation.creation import *
 from ..constants import *
 from ..mobject.geometry import Line, Polygon
 from ..mobject.numbers import DecimalNumber, Integer
+from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -816,6 +817,42 @@ class Table(VGroup):
         rec = Polygon(edge_UL, edge_UR, edge_DR, edge_DL, **kwargs)
         return rec
 
+    def get_highlighted_cell(
+        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
+    ) -> "BackgroundRectangle":
+        """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
+
+        Parameters
+        ----------
+        pos
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
+            of the table.
+        color
+            The color used to highlight the cell.
+        kwargs : Any
+            Additional arguments to be passed to :class:`~.BackgroundRectangle`.
+
+        Examples
+        --------
+
+        .. manim:: GetHighlightedCellExample
+            :save_last_frame:
+
+            class GetHighlightedCellExample(Scene):
+                def construct(self):
+                    table = Table(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    highlight = table.get_highlighted_cell((2,2), color=GREEN)
+                    table.add_to_back(highlight)
+                    self.add(table)
+        """
+        cell = self.get_cell(pos)
+        bg_cell = BackgroundRectangle(cell, color=color, **kwargs)
+        return bg_cell
+
     def add_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
     ) -> "Table":
@@ -829,7 +866,7 @@ class Table(VGroup):
         color
             The color used to highlight the cell.
         kwargs : Any
-            Additional arguments to be passed to :meth:`~.add_background_rectangle`.
+            Additional arguments to be passed to :class:`~.BackgroundRectangle`.
 
         Examples
         --------
@@ -847,11 +884,10 @@ class Table(VGroup):
                     table.add_highlighted_cell((2,2), color=GREEN)
                     self.add(table)
         """
-        cell = self.get_cell(pos)
+        bg_cell = self.get_highlighted_cell(pos, color=color)
+        self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
-        entry.add_background_rectangle(color=color, **kwargs)
-        entry.background_rectangle.stretch_to_fit_height(cell.get_height())
-        entry.background_rectangle.stretch_to_fit_width(cell.get_width())
+        entry.background_rectangle = bg_cell
         return self
 
     def create(

@@ -48,7 +48,6 @@ import os
 import re
 from collections import defaultdict
 from pathlib import Path
-from posixpath import dirname
 from textwrap import dedent, indent
 
 import click

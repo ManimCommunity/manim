@@ -1,0 +1,82 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:2
+msgid "Rectangle"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.Rectangle``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:1
+msgid "Bases: :class:`manim.mobject.geometry.Polygon`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:1
+msgid "A quadrilateral with two sets of parallel sides."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:3
+msgid "The color of the rectangle."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:5
+msgid "The vertical height of the rectangle."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:7
+msgid "The horizontal width of the rectangle."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:9
+msgid "Space between vertical grid lines."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:11
+msgid "Space between horizontal grid lines."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:13
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:15
+msgid "No purpose."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:17
+msgid "Additional arguments to be passed to :class:`Polygon`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Rectangle:21
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Rectangle.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

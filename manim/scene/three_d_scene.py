@@ -3,23 +3,27 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+import warnings
 from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 
 from .. import config
 from ..animation.animation import Animation
-from ..animation.transform import ApplyMethod
+from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
+from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
+from ..utils.deprecation import deprecated_params
 
 
 class ThreeDScene(Scene):
@@ -46,14 +50,21 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
+    @deprecated_params(
+        params="distance",
+        since="v0.11.0",
+        until="v0.12.0",
+        message="Use focal_distance instead.",
+    )
     def set_camera_orientation(
         self,
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
         zoom: Optional[float] = None,
-        distance: Optional[float] = None,
+        focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        **kwargs,
     ):
         """
         This method sets the orientation of the camera in the scene.
@@ -66,8 +77,8 @@ class ThreeDScene(Scene):
         theta : int or float, optional
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
 
-        distance : int or float, optional
-            The radial distance between ORIGIN and Camera.
+        focal_distance : int or float, optional
+            The focal_distance of the Camera.
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -79,12 +90,13 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
+        focal_distance = kwargs.pop("distance", focal_distance)
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
             self.renderer.camera.set_theta(theta)
-        if distance is not None:
-            self.renderer.camera.set_distance(distance)
+        if focal_distance is not None:
+            self.renderer.camera.set_focal_distance(focal_distance)
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
         if zoom is not None:
@@ -107,33 +119,48 @@ class ThreeDScene(Scene):
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        about: str = about.lower()
+        try:
+            if config.renderer != "opengl":
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
+                x.add_updater(lambda m, dt: x.increment_value(rate * dt))
+                self.add(x)
+            else:
+                cam: OpenGLCamera = self.camera
+                methods = {
+                    "theta": cam.increment_theta,
+                    "phi": cam.increment_phi,
+                    "gamma": cam.increment_gamma,
+                }
+                cam.add_updater(lambda m, dt: methods[about](rate * dt))
+                self.add(self.camera)
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.add_updater(lambda m, dt: m.increment_value(rate * dt))
-        self.add(x)
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """
         This method stops all ambient camera rotation.
         """
-        if about.lower() == "phi":
-            x = self.renderer.camera.phi_tracker
-        elif about.lower() == "gamma":
-            x = self.renderer.camera.gamma_tracker
-        elif about.lower() == "theta":
-            x = self.renderer.camera.theta_tracker
-        else:
+        about: str = about.lower()
+        try:
+            if config.renderer != "opengl":
+                trackers = {
+                    "theta": self.camera.theta_tracker,
+                    "phi": self.camera.phi_tracker,
+                    "gamma": self.camera.gamma_tracker,
+                }
+                x: ValueTracker = trackers[about]
+                x.clear_updaters()
+                self.remove(x)
+            else:
+                self.camera.clear_updaters()
+        except:
             raise ValueError("Invalid ambient rotation angle.")
-
-        x.clear_updaters()
-        self.remove(x)
 
     def begin_3dillusion_camera_rotation(
         self,
@@ -170,13 +197,19 @@ class ThreeDScene(Scene):
         self.renderer.camera.phi_tracker.clear_updaters()
         self.remove(self.renderer.camera.phi_tracker)
 
+    @deprecated_params(
+        params="distance",
+        since="v0.11.0",
+        until="v0.12.0",
+        message="Use focal_distance instead.",
+    )
     def move_camera(
         self,
         phi: Optional[float] = None,
         theta: Optional[float] = None,
         gamma: Optional[float] = None,
         zoom: Optional[float] = None,
-        distance: Optional[float] = None,
+        focal_distance: Optional[float] = None,
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         added_anims: Iterable["Animation"] = [],
         **kwargs,
@@ -193,8 +226,8 @@ class ThreeDScene(Scene):
         theta : int or float, optional
             The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
 
-        distance : int or float, optional
-            The radial distance between ORIGIN and Camera.
+        focal_distance : int or float, optional
+            The radial focal_distance between ORIGIN and Camera.
 
         gamma : int or float, optional
             The rotation of the camera about the vector from the ORIGIN to the Camera.
@@ -210,31 +243,68 @@ class ThreeDScene(Scene):
 
         """
         anims = []
-        value_tracker_pairs = [
-            (phi, self.renderer.camera.phi_tracker),
-            (theta, self.renderer.camera.theta_tracker),
-            (distance, self.renderer.camera.distance_tracker),
-            (gamma, self.renderer.camera.gamma_tracker),
-            (zoom, self.renderer.camera.zoom_tracker),
-        ]
-        for value, tracker in value_tracker_pairs:
-            if value is not None:
-                anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
-        if frame_center is not None:
-            anims.append(
-                ApplyMethod(
-                    self.renderer.camera._frame_center.move_to, frame_center, **kwargs
-                ),
-            )
+        focal_distance = kwargs.pop("distance", focal_distance)
 
-        self.play(*anims + added_anims)
+        if config.renderer != "opengl":
+            self.camera: ThreeDCamera
+            value_tracker_pairs = [
+                (phi, self.camera.phi_tracker),
+                (theta, self.camera.theta_tracker),
+                (focal_distance, self.camera.focal_distance_tracker),
+                (gamma, self.camera.gamma_tracker),
+                (zoom, self.camera.zoom_tracker),
+            ]
+            for value, tracker in value_tracker_pairs:
+                if value is not None:
+                    anims.append(tracker.animate.set_value(value))
+            if frame_center is not None:
+                anims.append(self.camera._frame_center.animate.move_to(frame_center))
+        else:
+            cam: OpenGLCamera = self.camera
+            cam2 = cam.copy()
+            methods = {
+                "theta": cam2.set_theta,
+                "phi": cam2.set_phi,
+                "gamma": cam2.set_gamma,
+                "zoom": cam2.scale,
+                "frame_center": cam2.move_to,
+            }
+            if frame_center is not None:
+                if isinstance(frame_center, OpenGLMobject):
+                    frame_center = frame_center.get_center()
+                frame_center = list(frame_center)
+
+            for value, method in [
+                [theta, "theta"],
+                [phi, "phi"],
+                [gamma, "gamma"],
+                [
+                    config.frame_height / (zoom * cam.height)
+                    if zoom is not None
+                    else None,
+                    "zoom",
+                ],
+                [frame_center, "frame_center"],
+            ]:
+                if value is not None:
+                    methods[method](value)
+
+            if focal_distance is not None:
+                warnings.warn(
+                    "focal distance of OpenGLCamera can not be adjusted.",
+                    stacklevel=2,
+                )
+
+            anims += [Transform(cam, cam2)]
+
+        self.play(*anims + added_anims, **kwargs)
 
         # These lines are added to improve performance. If manim thinks that frame_center is moving,
         # it is required to redraw every object. These lines remove frame_center from the Scene once
         # its animation is done, ensuring that manim does not think that it is moving. Since the
         # frame_center is never actually drawn, this shouldn't break anything.
-        if frame_center is not None:
-            self.remove(self.renderer.camera._frame_center)
+        if frame_center is not None and config.renderer != "opengl":
+            self.remove(self.camera._frame_center)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -246,7 +316,7 @@ class ThreeDScene(Scene):
         *animations : Animation
             The animations whose mobjects will be checked.
         """
-        moving_mobjects = Scene.get_moving_mobjects(self, *animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         camera_mobjects = self.renderer.camera.get_value_trackers() + [
             self.renderer.camera._frame_center,
         ]
@@ -326,7 +396,7 @@ class ThreeDScene(Scene):
         Parameters
         ----------
         **kwargs
-            Some recognised kwargs are phi, theta, distance, gamma,
+            Some recognised kwargs are phi, theta, focal_distance, gamma,
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
@@ -387,7 +457,7 @@ class SpecialThreeDScene(ThreeDScene):
         else:
             _config = self.low_quality_config
         _config = merge_dicts_recursively(_config, kwargs)
-        ThreeDScene.__init__(self, **_config)
+        super().__init__(**_config)
 
     def get_axes(self):
         """Return a set of 3D axes.
@@ -437,7 +507,7 @@ class SpecialThreeDScene(ThreeDScene):
         Returns
         -------
         dict
-            Dictionary of phi, theta, distance, and gamma.
+            Dictionary of phi, theta, focal_distance, and gamma.
         """
         return self.default_angled_camera_position
 

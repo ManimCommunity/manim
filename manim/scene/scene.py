@@ -1,8 +1,6 @@
 """Basic canvas for animations."""
 
-
 __all__ = ["Scene"]
-
 
 import copy
 import inspect
@@ -13,7 +11,9 @@ import time
 import types
 from contextlib import contextmanager
 from queue import Queue
-from typing import Dict
+from typing import Dict, List, Optional
+
+from manim.scene.section import DefaultSectionType
 
 try:
     import dearpygui.dearpygui as dpg
@@ -72,7 +72,6 @@ class Scene:
 
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
-
 
     Examples
     --------
@@ -294,6 +293,16 @@ class Scene:
         """
         pass  # To be implemented in subclasses
 
+    def next_section(
+        self,
+        name: str = "unnamed",
+        type: str = DefaultSectionType.NORMAL,
+    ) -> None:
+        """Create separation here; the last section gets finished and a new one gets created.
+        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        """
+        self.renderer.file_writer.next_section(name, type)
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -427,7 +436,7 @@ class Scene:
                     mobject_list_name="moving_mobjects",
                 )
                 self.moving_mobjects += mobjects
-            return self
+        return self
 
     def add_mobjects_from_animations(self, animations):
         curr_mobjects = self.get_mobject_family_members()
@@ -1083,11 +1092,33 @@ class Scene:
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
+            )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        return True
+
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
-        if self.skip_animation_preview or config["write_to_movie"]:
+        if not self.check_interactive_embed_is_valid():
             return
 
         def ipython(shell, namespace):

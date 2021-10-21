@@ -325,8 +325,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         self.remover = remover
         max_stroke_width = vmobject.get_stroke_width()
         max_time_width = kwargs.pop("time_width", self.time_width)
-        AnimationGroup.__init__(
-            self,
+        super().__init__(
             *(
                 ShowPassingFlash(
                     vmobject.deepcopy().set_stroke(width=stroke_width),

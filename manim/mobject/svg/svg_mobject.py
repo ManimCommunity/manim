@@ -585,4 +585,4 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 recurse=propagate_colors,
             )
         else:
-            VMobject.init_colors(self, propagate_colors=propagate_colors)
+            super().init_colors(propagate_colors=propagate_colors)
