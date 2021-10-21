@@ -759,12 +759,11 @@ class Scene:
         retain_final_speed : bool, optional
             Speed of scene will remain changed to final speed on exit if true.
         """
-        init_speed = self.speed
         self.animation_speedinfo = animation_speedinfo
         yield
         self.animation_speedinfo = None
-        if not retain_final_speed:
-            self.speed = init_speed
+        if retain_final_speed:
+            self.speed = sorted(animation_speedinfo.items())[-1][1]
 
     def compile_animations(self, *args, **kwargs):
         """
@@ -898,10 +897,11 @@ class Scene:
             times = [run_time]
         else:
             if animation_speedinfo is not None:
-                # Add last node if not already there
+                # Add (1, final_speed) to speedinfo if not already there
                 animation_speedinfo[1] = sorted(animation_speedinfo.items())[-1][1]
                 times = np.array([])
                 prev_node = 0
+                init_speed = self.speed
 
                 for node, speed in sorted(animation_speedinfo.items()):
                     duration = node - prev_node
@@ -935,6 +935,7 @@ class Scene:
                         )
                     self.speed = speed
                     prev_node = node
+                self.speed = init_speed
             else:
                 dt = self.speed / config["frame_rate"]
                 times = np.arange(0, run_time, dt)
