@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import MathTex, SingleStringMathTex, Tex, config
+from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config
 
 
 def test_MathTex():
@@ -105,3 +105,60 @@ def test_changing_font_size():
     num.font_size = 48
 
     assert num.height == Tex("0", font_size=48).height
+
+
+def test_log_error_context(capsys):
+    """Test that the environment context of an error is correctly logged if it exists"""
+    invalid_tex = r"""
+        some text that is fine
+
+        \begin{unbalanced_braces}{
+        not fine
+        \end{not_even_the_right_env}
+        """
+
+    with pytest.raises(ValueError) as err:
+        Tex(invalid_tex)
+
+    # validate useful TeX error logged to user
+    assert "unbalanced_braces" in str(capsys.readouterr().out)
+    # validate useful error message raised
+    assert "See log output above or the log file" in str(err.value)
+
+
+def test_log_error_no_relevant_context(capsys):
+    """Test that an error with no environment context contains no environment context"""
+    failing_preamble = r"""\usepackage{fontspec}
+    \setmainfont[Ligatures=TeX]{not_a_font}"""
+
+    with pytest.raises(ValueError) as err:
+        Tex(
+            "The template uses a non-existent font",
+            tex_template=TexTemplate(preamble=failing_preamble),
+        )
+
+    # validate useless TeX error not logged for user
+    assert "Context" not in str(capsys.readouterr().out)
+    # validate useful error message raised
+    # this won't happen if an error is raised while formatting the message
+    assert "See log output above or the log file" in str(err.value)
+
+
+def test_error_in_nested_context(capsys):
+    """Test that displayed error context is not excessively large"""
+    invalid_tex = r"""
+    \begin{align}
+      \begin{tabular}{ c }
+        no need to display \\
+        this correct text \\
+      \end{tabular}
+      \notacontrolsequence
+    \end{align}
+    """
+
+    with pytest.raises(ValueError) as err:
+        Tex(invalid_tex)
+
+    stdout = str(capsys.readouterr().out)
+    # validate useless context is not included
+    assert r"\begin{frame}" not in stdout

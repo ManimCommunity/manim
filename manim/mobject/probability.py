@@ -58,8 +58,7 @@ class SampleSpace(Rectangle):
         stroke_color=LIGHT_GREY,
         default_label_scale_val=1,
     ):
-        Rectangle.__init__(
-            self,
+        super().__init__(
             height=height,
             width=width,
             fill_color=fill_color,
@@ -260,7 +259,7 @@ class BarChart(VGroup):
         bar_label_scale_val: float = 0.75,
         **kwargs
     ):  # What's the return type?
-        VGroup.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.n_ticks = n_ticks
         self.tick_width = tick_width
         self.label_y_axis = label_y_axis

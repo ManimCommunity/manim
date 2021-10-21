@@ -1,0 +1,21 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graph.rst:2
+msgid "graph"
+msgstr ""
+
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph:1
+msgid "Mobjects used to represent mathematical graphs (think graph theory, not plotting)."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graph.rst:15
+msgid "Classes"
+msgstr ""
+
+
