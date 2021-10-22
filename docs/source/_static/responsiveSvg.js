@@ -27,7 +27,7 @@ window.addEventListener("load", function () {
                 text: "#e07a5f",
                 box: "#fff",
                 edge: "#413c3c",
-                background: "#f1ece9"
+                background: "#ffffff"
             };
             additions = `
             .node polygon {
@@ -44,16 +44,16 @@ window.addEventListener("load", function () {
                 .node text {
                     fill: ${colors.text};
                 }
-                
+
                 .node polygon {
                     fill: ${colors.box};
                 }
-                
+
                 .edge polygon {
                     fill: ${colors.edge};
                     stroke: ${colors.edge};
                 }
-                
+
                 .edge path {
                     stroke: ${colors.edge};
                 }

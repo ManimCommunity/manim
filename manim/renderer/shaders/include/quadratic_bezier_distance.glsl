@@ -56,7 +56,7 @@ int cubic_solve(float a, float b, float c, float d, out float roots[3]){
     int n_valid_roots = 0;
     for(int i = 0; i < 3; i++){
         float r = all_roots[i];
-        if(3*r*r + 2*b*r + c > 0){ 
+        if(3*r*r + 2*b*r + c > 0){
             roots[n_valid_roots] = r;
             n_valid_roots++;
         }
@@ -98,7 +98,7 @@ float min_dist_to_curve(vec2 p, vec2 b2, float degree){
     float d = -p.x;
 
     float roots[3];
-    int n = cubic_solve(a, b, c, d, roots);  
+    int n = cubic_solve(a, b, c, d, roots);
     // At most 2 roots will have been populated.
     float d0 = dist_to_point_on_curve(p, roots[0], b2);
     if(n == 1) return d0;

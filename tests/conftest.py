@@ -1,7 +1,10 @@
 import os
 import sys
+from pathlib import Path
 
 import pytest
+
+from manim import config, tempconfig
 
 
 def pytest_addoption(parser):
@@ -17,6 +20,12 @@ def pytest_addoption(parser):
         default=False,
         help="Will show a visual comparison if a graphical unit test fails.",
     )
+    parser.addoption(
+        "--set_test",
+        action="store_true",
+        default=False,
+        help="Will create the control data for EACH running tests. ",
+    )
 
 
 def pytest_configure(config):
@@ -28,7 +37,7 @@ def pytest_collection_modifyitems(config, items):
         return
     else:
         slow_skip = pytest.mark.skip(
-            reason="Slow test skipped due to --disable_slow flag."
+            reason="Slow test skipped due to --disable_slow flag.",
         )
         for item in items:
             if "slow" in item.keywords:
@@ -51,3 +60,13 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
+
+
+@pytest.fixture
+def using_opengl_renderer():
+    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
+    with tempconfig({"renderer": "opengl"}):
+        yield
+    # as a special case needed to manually revert back to cairo
+    # due to side effects of setting the renderer
+    config.renderer = "cairo"

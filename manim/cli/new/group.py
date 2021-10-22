@@ -32,7 +32,7 @@ def select_resolution():
     resolution_options = []
     for quality in QUALITIES.items():
         resolution_options.append(
-            (quality[1]["pixel_height"], quality[1]["pixel_width"])
+            (quality[1]["pixel_height"], quality[1]["pixel_width"]),
         )
     resolution_options.pop()
     choice = click.prompt(
@@ -100,7 +100,7 @@ def project(default_settings, **args):
 
     if project_name.is_dir():
         console.print(
-            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n"
+            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n",
         )
     else:
         project_name.mkdir()
@@ -140,7 +140,7 @@ def scene(**args):
     FILE is the name of file in which the SCENE will be inserted.
     """
     if not Path("main.py").exists():
-        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project direcotory.")
+        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project directory.")
 
     template_name = click.prompt(
         "template",
@@ -159,7 +159,6 @@ def scene(**args):
             # file exists so we are going to append new scene to that file
             with open(file_name, "a") as f:
                 f.write("\n\n\n" + scene)
-            pass
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
             with open(file_name, "w") as f:

@@ -8,15 +8,14 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-import typing
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple
 
 import numpy as np
 
 from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
 
 
@@ -43,7 +42,10 @@ class Homotopy(Animation):
         return lambda p: self.homotopy(*p, t)
 
     def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
+        self,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
+        alpha: float,
     ) -> None:
         submobject.points = starting_submobject.points
         submobject.apply_function(
@@ -53,9 +55,12 @@ class Homotopy(Animation):
 
 class SmoothedVectorizedHomotopy(Homotopy):
     def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
+        self,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
+        alpha: float,
     ) -> None:
-        Homotopy.interpolate_submobject(self, submobject, starting_submobject, alpha)
+        super().interpolate_submobject(submobject, starting_submobject, alpha)
         submobject.make_smooth()
 
 
@@ -68,12 +73,15 @@ class ComplexHomotopy(Homotopy):
         """
 
         def homotopy(
-            x: float, y: float, z: float, t: float
+            x: float,
+            y: float,
+            z: float,
+            t: float,
         ) -> Tuple[float, float, float]:
             c = complex_homotopy(complex(x, y), t)
             return (c.real, c.imag, z)
 
-        Homotopy.__init__(self, homotopy, mobject, **kwargs)
+        super().__init__(homotopy, mobject, **kwargs)
 
 
 class PhaseFlow(Animation):
@@ -97,7 +105,9 @@ class PhaseFlow(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
-            dt = self.virtual_time * (alpha - self.last_alpha)
+            dt = self.virtual_time * (
+                self.rate_func(alpha) - self.rate_func(self.last_alpha)
+            )
             self.mobject.apply_function(lambda p: p + dt * self.function(p))
         self.last_alpha = alpha
 
@@ -131,5 +141,5 @@ class MoveAlongPath(Animation):
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
-        point = self.path.point_from_proportion(alpha)
+        point = self.path.point_from_proportion(self.rate_func(alpha))
         self.mobject.move_to(point)

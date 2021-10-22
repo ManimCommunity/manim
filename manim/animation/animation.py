@@ -1,6 +1,12 @@
 """Animate mobjects."""
 
 
+from .. import config, logger
+from ..mobject import mobject, opengl_mobject
+from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
+from ..utils.rate_functions import smooth
+
 __all__ = ["Animation", "Wait", "override_animation"]
 
 
@@ -20,12 +26,6 @@ from typing import (
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
-from .. import logger
-from ..mobject import mobject, opengl_mobject
-from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.deprecation import deprecated
-from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -79,9 +79,9 @@ class Animation:
                 self.add(groups)
 
                 # Label groups
-                self.add(Text("lag_ratio = ").scale(0.7).next_to(groups, UP, buff=1.5))
+                self.add(Text("lag_ratio = ", font_size=36).next_to(groups, UP, buff=1.5))
                 for group, ratio in zip(groups, ratios):
-                    self.add(Text(str(ratio)).scale(0.7).next_to(group, UP))
+                    self.add(Text(str(ratio), font_size=36).next_to(group, UP))
 
                 #Animate groups with different lag_ratios
                 self.play(AnimationGroup(*[
@@ -96,9 +96,9 @@ class Animation:
 
     def __new__(
         cls,
-        mobject: Optional[Mobject] = None,
+        mobject=None,
         *args,
-        use_override: bool = True,
+        use_override=True,
         **kwargs,
     ):
         if isinstance(mobject, Mobject) and use_override:
@@ -106,11 +106,9 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    (
-                        f"The {cls.__name__} animation has been is overridden for "
-                        f"{type(mobject).__name__} mobjects. use_override = False can "
-                        f" be used as keyword argument to prevent animation overriding."
-                    )
+                    f"The {cls.__name__} animation has been is overridden for "
+                    f"{type(mobject).__name__} mobjects. use_override = False can "
+                    f" be used as keyword argument to prevent animation overriding.",
                 )
                 return anim
         return super().__new__(cls)
@@ -133,8 +131,14 @@ class Animation:
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self.starting_mobject: Mobject = Mobject()
-        self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        if config["renderer"] == "opengl":
+            self.starting_mobject: OpenGLMobject = OpenGLMobject()
+            self.mobject: OpenGLMobject = (
+                mobject if mobject is not None else OpenGLMobject()
+            )
+        else:
+            self.starting_mobject: Mobject = Mobject()
+            self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -143,15 +147,13 @@ class Animation:
                 (
                     "CONFIG has been removed from ManimCommunity.",
                     "Please use keyword arguments instead.",
-                )
+                ),
             )
 
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
-        ):
+        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -225,8 +227,10 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
-            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -274,17 +278,21 @@ class Animation:
         Parameters
         ----------
         alpha
-            The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
+            The relative time to set the animation to, 0 meaning the start, 1 meaning
             the end.
         """
-        alpha = min(max(alpha, 0), 1)
-        self.interpolate_mobject(self.rate_func(alpha))
-
-    @deprecated(until="v0.6.0", replacement="interpolate")
-    def update(self, alpha: float) -> None:
-        self.interpolate(alpha)
+        self.interpolate_mobject(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        """Interpolates the mobject of the :class:`Animation` based on alpha value.
+
+        Parameters
+        ----------
+        alpha
+            A float between 0 and 1 expressing the ratio to which the animation
+            is completed. For example, alpha-values of 0, 0.5, and 1 correspond
+            to the animation being completed 0%, 50%, and 100%, respectively.
+        """
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
@@ -294,7 +302,7 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differes in Transform().
+        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> "Animation":
         # Typically implemented by subclass
@@ -324,7 +332,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return min(max((value - lower), 0), 1)
+        return self.rate_func(value - lower)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
@@ -386,7 +394,7 @@ class Animation:
         Returns
         -------
         Callable[[float], float]
-            The rate fucntion of the animation.
+            The rate function of the animation.
         """
         return self.rate_func
 
@@ -418,7 +426,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Union["Animation", "mobject._AnimationBuilder"]
+    anim: Union["Animation", "mobject._AnimationBuilder"],
 ) -> "Animation":
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

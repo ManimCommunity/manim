@@ -6,7 +6,7 @@ from manim import BraceLabel, Mobject, config
 def test_mobject_copy():
     """Test that a copy is a deepcopy."""
     orig = Mobject()
-    orig.add(*[Mobject() for _ in range(10)])
+    orig.add(*(Mobject() for _ in range(10)))
     copy = orig.copy()
 
     assert orig is orig

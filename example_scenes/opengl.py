@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import manim.utils.opengl as opengl
-import manim.utils.space_ops as space_ops
 from manim import *
 from manim.opengl import *
 
@@ -42,7 +41,7 @@ def get_plane_mesh(context):
             [-1, 0, -1, 1],
             [1, 0, -1, 1],
             [1, 0, 1, 1],
-        ]
+        ],
     )
     attributes["in_color"] = np.array(
         [
@@ -67,19 +66,79 @@ def get_plane_mesh(context):
             [0, 0, 1, 1],
             [0, 0, 1, 1],
             [0, 0, 1, 1],
-        ]
+        ],
     )
     return Mesh(shader, attributes)
+
+
+class TextTest(Scene):
+    def construct(self):
+        import string
+
+        text = Text(string.ascii_lowercase, stroke_width=4, stroke_color=BLUE).scale(2)
+        text2 = (
+            Text(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
+            .scale(2)
+            .next_to(text, DOWN)
+        )
+        # self.add(text, text2)
+        self.play(Write(text))
+        self.play(Write(text2))
+        self.interactive_embed()
+
+
+class GuiTest(Scene):
+    def construct(self):
+        mesh = get_plane_mesh(self.renderer.context)
+        # mesh.attributes["in_vert"][:, 0]
+        self.add(mesh)
+
+        def update_mesh(mesh, dt):
+            mesh.model_matrix = np.matmul(
+                opengl.rotation_matrix(z=dt),
+                mesh.model_matrix,
+            )
+
+        mesh.add_updater(update_mesh)
+
+        self.interactive_embed()
+
+
+class GuiTest2(Scene):
+    def construct(self):
+        mesh = get_plane_mesh(self.renderer.context)
+        mesh.attributes["in_vert"][:, 0] -= 2
+        self.add(mesh)
+
+        mesh2 = get_plane_mesh(self.renderer.context)
+        mesh2.attributes["in_vert"][:, 0] += 2
+        self.add(mesh2)
+
+        def callback(sender, data):
+            mesh2.attributes["in_color"][:, 3] = dpg.get_value(sender)
+
+        self.widgets.append(
+            {
+                "name": "mesh2 opacity",
+                "widget": "slider_float",
+                "callback": callback,
+                "min_value": 0,
+                "max_value": 1,
+                "default_value": 1,
+            },
+        )
+
+        self.interactive_embed()
 
 
 class ThreeDMobjectTest(Scene):
     def construct(self):
         # config["background_color"] = "#333333"
 
-        s = OpenGLSquare(fill_opacity=0.5).shift(2 * RIGHT)
+        s = Square(fill_opacity=0.5).shift(2 * RIGHT)
         self.add(s)
 
-        sp = OpenGLSphere().shift(2 * LEFT)
+        sp = Sphere().shift(2 * LEFT)
         self.add(sp)
 
         mesh = get_plane_mesh(self.renderer.context)
@@ -87,7 +146,8 @@ class ThreeDMobjectTest(Scene):
 
         def update_mesh(mesh, dt):
             mesh.model_matrix = np.matmul(
-                opengl.rotation_matrix(z=dt), mesh.model_matrix
+                opengl.rotation_matrix(z=dt),
+                mesh.model_matrix,
             )
 
         mesh.add_updater(update_mesh)
@@ -98,7 +158,10 @@ class ThreeDMobjectTest(Scene):
 class NamedFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
-        surface.shader.set_uniform("u_resolution", (854.0, 480.0, 0.0))
+        surface.shader.set_uniform(
+            "u_resolution",
+            (config["pixel_width"], config["pixel_height"], 0.0),
+        )
         surface.shader.set_uniform("u_time", 0)
         self.add(surface)
 
@@ -127,6 +190,7 @@ class InlineFullScreenQuad(Scene):
 
             uniform vec2 u_resolution;
             uniform float u_time;
+            out vec4 frag_color;
 
             //  Function from Iñigo Quiles
             //  https://www.shadertoy.com/view/MsS3Wc
@@ -153,12 +217,14 @@ class InlineFullScreenQuad(Scene):
                 // and the Saturation to the radius
                 color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
 
-                gl_FragColor = vec4(color,1.0);
+                frag_color = vec4(color,1.0);
             }
             """,
-            output_color_variable="gl_FragColor",
         )
-        surface.shader.set_uniform("u_resolution", (854.0, 480.0))
+        surface.shader.set_uniform(
+            "u_resolution",
+            (config["pixel_width"], config["pixel_height"]),
+        )
         shader_time = 0
 
         def update_surface(surface):
@@ -182,6 +248,7 @@ class SimpleInlineFullScreenQuad(Scene):
             uniform float v_red;
             uniform float v_green;
             uniform float v_blue;
+            out vec4 frag_color;
 
             void main() {
               frag_color = vec4(v_red, v_green, v_blue, 1);
@@ -223,7 +290,7 @@ class InlineShaderExample(Scene):
     def construct(self):
         config["background_color"] = "#333333"
 
-        c = OpenGLCircle(fill_opacity=0.7).shift(UL)
+        c = Circle(fill_opacity=0.7).shift(UL)
         self.add(c)
 
         shader = Shader(
@@ -259,7 +326,8 @@ class InlineShaderExample(Scene):
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
+            "u_projection_matrix",
+            opengl.orthographic_projection_matrix(),
         )
 
         attributes = np.zeros(
@@ -277,7 +345,7 @@ class InlineShaderExample(Scene):
                 [-1, -1, 0, 1],
                 [1, -1, 0, 1],
                 [1, 1, 0, 1],
-            ]
+            ],
         )
         attributes["in_color"] = np.array(
             [
@@ -287,7 +355,7 @@ class InlineShaderExample(Scene):
                 [0, 0, 1, 1],
                 [0, 0, 1, 1],
                 [0, 0, 1, 1],
-            ]
+            ],
         )
         mesh = Mesh(shader, attributes)
         self.add(mesh)
@@ -304,7 +372,8 @@ class NamedShaderExample(Scene):
         view_matrix = self.camera.get_view_matrix()
         shader.set_uniform("u_model_view_matrix", view_matrix)
         shader.set_uniform(
-            "u_projection_matrix", opengl.perspective_projection_matrix()
+            "u_projection_matrix",
+            opengl.perspective_projection_matrix(),
         )
         attributes = np.zeros(
             6,
@@ -320,7 +389,7 @@ class NamedShaderExample(Scene):
                 [-1, -1, 0, 1],
                 [1, -1, 0, 1],
                 [1, 1, 0, 1],
-            ]
+            ],
         )
         mesh = Mesh(shader, attributes)
         self.add(mesh)
@@ -330,10 +399,10 @@ class NamedShaderExample(Scene):
 
 class InteractiveDevelopment(Scene):
     def construct(self):
-        circle = OpenGLCircle()
+        circle = Circle()
         circle.set_fill(BLUE, opacity=0.5)
         circle.set_stroke(BLUE_E, width=4)
-        square = OpenGLSquare()
+        square = Square()
 
         self.play(Create(square))
         self.wait()
@@ -342,7 +411,7 @@ class InteractiveDevelopment(Scene):
         # lines as if they were part of this construct method.
         # In particular, 'square', 'circle' and 'self' will all be
         # part of the local namespace in that terminal.
-        self.embed()
+        # self.embed()
 
         # Try copying and pasting some of the lines below into
         # the interactive shell
@@ -352,10 +421,12 @@ class InteractiveDevelopment(Scene):
         self.play(Rotate(circle, 90 * DEGREES))
         self.play(circle.animate.shift(2 * RIGHT).scale(0.25))
 
-        # text = Text("""
+        # text = Text(
+        #     """
         #     In general, using the interactive shell
         #     is very helpful when developing new scenes
-        # """)
+        # """
+        # )
         # self.play(Write(text))
 
         # # In the interactive shell, you can just type
@@ -382,9 +453,9 @@ class SurfaceExample(Scene):
         # self.add(surface_text)
         # self.wait(0.1)
 
-        torus1 = OpenGLTorus(r1=1, r2=1)
-        torus2 = OpenGLTorus(r1=3, r2=1)
-        sphere = OpenGLSphere(radius=3, resolution=torus1.resolution)
+        torus1 = Torus(major_radius=1, minor_radius=1)
+        torus2 = Torus(major_radius=3, minor_radius=1)
+        sphere = Sphere(radius=3, resolution=torus1.resolution)
         # You can texture a surface with up to two images, which will
         # be interpreted as the side towards the light, and away from
         # the light.  These can be either urls, or paths to a local file

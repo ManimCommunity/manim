@@ -18,14 +18,13 @@ import numpy as np
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
-from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
+from ...mobject.types.vectorized_mobject import VMobject
+from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
 
-class SVGMobject(metaclass=MetaVMobject):
+class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     """A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file.
 
     SVGMobjects are constructed from the XML data within the SVG file
@@ -41,6 +40,7 @@ class SVGMobject(metaclass=MetaVMobject):
         class Sample(Scene):
             def construct(self):
                 self.play(FadeIn(SVGMobject("manim-logo-sidebar.svg")))
+
     Parameters
     --------
     file_name : :class:`str`
@@ -75,6 +75,7 @@ class SVGMobject(metaclass=MetaVMobject):
         fill_opacity=1.0,
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
+        color=None,
         **kwargs,
     ):
         self.def_map = {}
@@ -82,11 +83,17 @@ class SVGMobject(metaclass=MetaVMobject):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        self.path_string_config = {
-            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
-            "should_remove_null_curves": should_remove_null_curves,
-        }
-        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
+        self.path_string_config = (
+            {
+                "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+                "should_remove_null_curves": should_remove_null_curves,
+            }
+            if config.renderer == "opengl"
+            else {}
+        )
+        super().__init__(
+            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -118,7 +125,7 @@ class SVGMobject(metaclass=MetaVMobject):
                 self.file_path = path
                 return
         error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
-        raise IOError(error)
+        raise OSError(error)
 
     def generate_points(self):
         """Called by the Mobject abstract base class. Responsible for generating
@@ -127,7 +134,7 @@ class SVGMobject(metaclass=MetaVMobject):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, {})
+            mobjects = self.get_mobjects_from(svg, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -175,12 +182,14 @@ class SVGMobject(metaclass=MetaVMobject):
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
-                *[
+                *(
                     self.get_mobjects_from(
-                        child, style, within_defs=within_defs or is_defs
+                        child,
+                        style,
+                        within_defs=within_defs or is_defs,
                     )
                     for child in element.childNodes
-                ]
+                )
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
@@ -203,15 +212,11 @@ class SVGMobject(metaclass=MetaVMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        if config["renderer"] == "opengl":
-            self.handle_transforms(element, OpenGLVGroup(*result))
-        else:
-            self.handle_transforms(element, VGroup(*result))
+        group_cls = self.get_group_class()
+
+        self.handle_transforms(element, group_cls(*result))
         if len(result) > 1 and not self.unpack_groups:
-            if config["renderer"] == "opengl":
-                result = [OpenGLVGroup(*result)]
-            else:
-                result = [VGroup(*result)]
+            result = [group_cls(*result)]
 
         if within_defs and element.hasAttribute("id"):
             # it seems wasteful to throw away the actual element,
@@ -222,6 +227,19 @@ class SVGMobject(metaclass=MetaVMobject):
             return []
 
         return result
+
+    def generate_style(self):
+        style = {
+            "fill-opacity": self.fill_opacity,
+            "stroke-opacity": self.stroke_opacity,
+        }
+        if self.color:
+            style["fill"] = style["stroke"] = self.color.get_hex_l()
+        if self.fill_color:
+            style["fill"] = self.fill_color
+        if self.stroke_color:
+            style["stroke"] = self.stroke_color
+        return style
 
     def path_string_to_mobject(self, path_string: str, style: dict):
         """Converts a SVG path element's ``d`` attribute to a mobject.
@@ -236,7 +254,7 @@ class SVGMobject(metaclass=MetaVMobject):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject from the given path string, or d attribute.
         """
         return SVGPathMobject(
@@ -257,12 +275,14 @@ class SVGMobject(metaclass=MetaVMobject):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + ".-e"]
+            [char for char in attr if char in string.digits + ".-e"],
         )
         return float(stripped_attr)
 
     def use_to_mobjects(
-        self, use_element: MinidomElement, local_style: Dict
+        self,
+        use_element: MinidomElement,
+        local_style: Dict,
     ) -> List[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
 
@@ -275,7 +295,7 @@ class SVGMobject(metaclass=MetaVMobject):
         local_style : :class:`Dict`
             The styling using SVG property names at the point the element is `<use>`d.
             Not all values are applied; styles defined when the element is specified in
-            the `<def>` tag cannot be overriden here.
+            the `<def>` tag cannot be overridden here.
 
         Returns
         -------
@@ -316,12 +336,12 @@ class SVGMobject(metaclass=MetaVMobject):
         Line
             A Line VMobject
         """
-        x1, y1, x2, y2 = [
+        x1, y1, x2, y2 = (
             self.attribute_to_float(line_element.getAttribute(key))
             if line_element.hasAttribute(key)
             else 0.0
             for key in ("x1", "y1", "x2", "y2")
-        ]
+        )
         return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
 
     def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
@@ -357,33 +377,18 @@ class SVGMobject(metaclass=MetaVMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
-            else:
-                mob = Rectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
+            mob = Rectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                **parsed_style,
+            )
         else:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
-            else:
-                mob = RoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
+            mob = RoundedRectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                corner_radius=corner_radius,
+                **parsed_style,
+            )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
@@ -404,12 +409,12 @@ class SVGMobject(metaclass=MetaVMobject):
         Circle
             A Circle VMobject
         """
-        x, y, r = [
+        x, y, r = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "r")
-        ]
+        )
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
@@ -429,12 +434,12 @@ class SVGMobject(metaclass=MetaVMobject):
         Circle
             A Circle VMobject
         """
-        x, y, rx, ry = [
+        x, y, rx, ry = (
             self.attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "rx", "ry")
-        ]
+        )
         return (
             Circle(**parse_style(style))
             .scale(rx * RIGHT + ry * UP)
@@ -454,7 +459,7 @@ class SVGMobject(metaclass=MetaVMobject):
 
         Returns
         -------
-        VMobjectFromSVGPathstring
+        SVGPathMobject
             A VMobject representing the polygon.
         """
         # This seems hacky... yes it is.
@@ -493,8 +498,8 @@ class SVGMobject(metaclass=MetaVMobject):
         # Borrowed/Inspired from:
         # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
-        # match any SVG transformation with its parameter (until final parenthese)
-        # [^)]*    == anything but a closing parenthese
+        # match any SVG transformation with its parameter (until final parenthesis)
+        # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
         transforms = re.findall(transform_regex, transform_attr_value)
@@ -517,7 +522,7 @@ class SVGMobject(metaclass=MetaVMobject):
 
                 for mob in mobject.family_members_with_points():
                     if config["renderer"] == "opengl":
-                        mob.data["points"] = np.dot(mob.data["points"], matrix)
+                        mob.points = np.dot(mob.points, matrix)
                     else:
                         mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
@@ -543,7 +548,8 @@ class SVGMobject(metaclass=MetaVMobject):
                 # TODO: handle rotate, skewX and skewY
                 # for now adding a warning message
                 logger.warning(
-                    "Handling of %s transform is not supported yet!", op_name
+                    "Handling of %s transform is not supported yet!",
+                    op_name,
                 )
 
     def flatten(self, input_list):
@@ -579,4 +585,4 @@ class SVGMobject(metaclass=MetaVMobject):
                 recurse=propagate_colors,
             )
         else:
-            VMobject.init_colors(self, propagate_colors=propagate_colors)
+            super().init_colors(propagate_colors=propagate_colors)

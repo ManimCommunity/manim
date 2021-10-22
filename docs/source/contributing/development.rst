@@ -40,48 +40,75 @@ For first-time contributors
    .. code-block:: shell
 
       git remote add upstream https://github.com/ManimCommunity/manim.git
- 
+
 #. Now, ``git remote -v`` should show two remote repositories named:
-   
+
    - ``origin``, your forked repository
    - ``upstream`` the ManimCommunity repository
 
 #. Install Manim:
- 
-   - See our :doc:`instructions for developers<../installation/for_dev>` for
-     details and continue here afterwards.
+
+   - Follow the steps in our :doc:`installation instructions
+     <../installation>` to install **Manim's dependencies**,
+     primarily ``ffmpeg`` and ``LaTeX``.
+
+   - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
+     developer installation of Manim. Poetry is a tool for dependency
+     management and packaging in Python. It allows you to declare the libraries
+     your project depends on, and it will manage (install / update) them
+     for you. In addition, Poetry provides a simple interface for
+     managing virtual environments.
+
+     If you choose to use Poetry as well, follow `Poetry's installation
+     guidelines <https://python-poetry.org/docs/master/#installation>`__
+     to install it on your system, then run ``poetry install`` from
+     your cloned repository. Poetry will then install Manim, as well
+     as create and enter a virtual environment. You can always re-enter
+     that environment by running ``poetry shell``.
+
+   - In case you decided against Poetry, you can install Manim via pip
+     by running ``python3 -m pip install .``. Note that due to our
+     development infrastructure being based on Poetry, we currently
+     do not support editable installs via ``pip``, so you will have
+     to re-run this command every time you make changes to the source
+     code.
+
+   .. note::
+
+      The following steps assume that you chose to install and work with
+      Poetry.
 
 #. Install Pre-Commit:
 
    .. code-block:: shell
 
       poetry run pre-commit install
-   
+
    This will ensure during development that each of your commits is properly
-   formatted against our linter and formatters, ``black``, ``flake8``, and
-   ``isort``.
+   formatted against our linter and formatters, ``black``, ``flake8``,
+   ``isort`` and ``codespell``.
 
 You are now ready to work on manim!
 
 Develop your contribution
 -------------------------
 
-#. Checkout your local repository's master branch and pull the latest
+#. Checkout your local repository's main branch and pull the latest
    changes from ManimCommunity, ``upstream``, into your local repository:
 
    .. code-block:: shell
 
-      git checkout master 
-      git pull --rebase upstream master
+      git checkout main
+      git pull --rebase upstream main
 
 #. Create a branch for the changes you want to work on rather than working
-   off of master:
+   off of your local main branch:
 
    .. code-block:: shell
 
-      git checkout -b <new branch name> upstream/master
+      git checkout -b <new branch name> upstream/main
 
-   This ensures you can easily update your local repository's master with the
+   This ensures you can easily update your local repository's main with the
    first step and switch branches to work on multiple features.
 
 #. Write some awesome code!
@@ -91,7 +118,7 @@ Develop your contribution
    ``git add .``, or add specific files with
 
    .. code-block:: shell
-   
+
       git add <file/directory>
 
    and commit these changes to your local history with ``git commit``. If you
@@ -99,7 +126,7 @@ Develop your contribution
    hooks fail.
 
    .. tip::
-   
+
       When crafting commit messages, it is highly recommended that
       you adhere to `these guidelines <https://www.conventionalcommits.org/en/v1.0.0/>`_.
 
@@ -114,7 +141,7 @@ Develop your contribution
 
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   See the :doc:`documentation guide <documentation>` for more information about how we
+   See the :doc:`documentation guide <docstrings>` for more information about how we
    prefer our code to be documented. The content of the docstrings will be
    rendered in the :doc:`reference manual <../reference>`.
 
@@ -124,7 +151,7 @@ Develop your contribution
       to the documentation!
 
       .. autosummary::
-         :toctree: reference
+         :toctree: ../reference
 
          manim_directive
 
@@ -172,7 +199,7 @@ them."
    Choose the branch from your fork as the head repository - see the
    screenshot below.
 
-   .. image:: /_static/pull-requests.PNG
+   .. image:: /_static/pull-requests.png
       :align: center
 
    Please make sure you follow the template (this is the default
@@ -185,8 +212,8 @@ Your changes are eligible to be merged if:
 #. the tests in our pipeline pass
 #. at least one (two for more complex changes) Community Developer approves the changes
 
-You can check for merge conflicts between the current upstream/master and
-your branch by executing ``git pull upstream master`` locally. If this
+You can check for merge conflicts between the current upstream/main and
+your branch by executing ``git pull upstream main`` locally. If this
 generates any merge conflicts, you need to resolve them and push an
 updated version of the branch to your fork of the repository.
 
@@ -199,7 +226,7 @@ sticks to our coding conventions.
   and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The GitHub pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
+  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``.
   To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems
   manually that were detected by ``flake8``.
 
@@ -240,7 +267,7 @@ Further useful guidelines
    to them in your new issue (even if the old ones are closed).
 
 #. When submitting a code review, it is highly recommended that you adhere to
-   `these general guidelines <https://conventionalcomments.org/>`_. 
+   `these general guidelines <https://conventionalcomments.org/>`_.
 
 #. If you find stale or inactive issues that seem to be irrelevant, please post
    a comment saying 'This issue should be closed', and a community developer

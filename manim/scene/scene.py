@@ -1,18 +1,25 @@
 """Basic canvas for animations."""
 
-
 __all__ = ["Scene"]
-
 
 import copy
 import inspect
 import platform
 import random
 import threading
+import time
 import types
-import warnings
 from queue import Queue
+from typing import List, Optional
 
+from manim.scene.section import DefaultSectionType
+
+try:
+    import dearpygui.dearpygui as dpg
+
+    dearpygui_imported = True
+except ImportError:
+    dearpygui_imported = False
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -22,17 +29,17 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
+from ..gui.gui import configure_pygui
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.shader import Mesh
+from ..renderer.opengl_renderer import OpenGLRenderer
+from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -46,7 +53,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue.put(("rerun_file", [], {}))
 
 
-class Scene(Container):
+class Scene:
     """A Scene is the canvas of your animation.
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
@@ -64,7 +71,6 @@ class Scene(Container):
 
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
-
 
     Examples
     --------
@@ -84,16 +90,17 @@ class Scene(Container):
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
-        **kwargs,
+        skip_animations=False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self.skip_animations = skip_animations
 
         self.animations = None
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
         self.time_progression = None
         self.duration = None
         self.last_t = None
@@ -101,16 +108,25 @@ class Scene(Container):
         self.skip_animation_preview = False
         self.meshes = []
         self.camera_target = ORIGIN
+        self.widgets = []
+        self.dearpygui_imported = dearpygui_imported
+        self.updaters = []
+        self.point_lights = []
+        self.ambient_light = None
+        self.key_to_function_map = {}
+        self.mouse_press_callbacks = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
+            if renderer is None:
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
+                skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
@@ -122,8 +138,6 @@ class Scene(Container):
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-        Container.__init__(self, **kwargs)
 
     @property
     def camera(self):
@@ -161,7 +175,7 @@ class Scene(Container):
                         raise Exception(
                             f"{free_variable_name} is referenced from an updater "
                             "but is not an attribute of the Scene, which isn't "
-                            "allowed."
+                            "allowed.",
                         )
 
                     # Add the cloned object's name to the free variable list.
@@ -170,7 +184,7 @@ class Scene(Container):
                     # Add a cell containing the cloned object's reference to the
                     # closure list.
                     cloned_closure.append(
-                        types.CellType(clone_from_id[id(free_variable_value)])
+                        types.CellType(clone_from_id[id(free_variable_value)]),
                     )
 
                 cloned_updater = types.FunctionType(
@@ -217,7 +231,7 @@ class Scene(Container):
             or config["save_last_frame"]
         ):
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
@@ -276,6 +290,16 @@ class Scene(Container):
         """
         pass  # To be implemented in subclasses
 
+    def next_section(
+        self,
+        name: str = "unnamed",
+        type: str = DefaultSectionType.NORMAL,
+    ) -> None:
+        """Create separation here; the last section gets finished and a new one gets created.
+        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        """
+        self.renderer.file_writer.next_section(name, type)
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -308,8 +332,13 @@ class Scene(Container):
             mobject.update(dt)
 
     def update_meshes(self, dt):
-        for mesh in self.meshes:
-            mesh.update(dt)
+        for obj in self.meshes:
+            for mesh in obj.get_family():
+                mesh.update(dt)
+
+    def update_self(self, dt):
+        for func in self.updaters:
+            func(dt)
 
     def should_update_mobjects(self):
         """
@@ -321,7 +350,7 @@ class Scene(Container):
             bool
         """
         return self.always_update_mobjects or any(
-            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()]
+            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
         )
 
     def get_top_level_mobjects(self):
@@ -338,7 +367,7 @@ class Scene(Container):
         families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
-            num_families = sum([(mobject in family) for family in families])
+            num_families = sum((mobject in family) for family in families)
             return num_families == 1
 
         return list(filter(is_top_level, self.mobjects))
@@ -362,7 +391,8 @@ class Scene(Container):
             return family_members
         else:
             return extract_mobject_family_members(
-                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+                self.mobjects,
+                use_z_index=self.renderer.camera.use_z_index,
             )
 
     def add(self, *mobjects):
@@ -385,7 +415,7 @@ class Scene(Container):
             new_mobjects = []
             new_meshes = []
             for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Mesh):
+                if isinstance(mobject_or_mesh, Object3D):
                     new_meshes.append(mobject_or_mesh)
                 else:
                     new_mobjects.append(mobject_or_mesh)
@@ -399,13 +429,13 @@ class Scene(Container):
             self.mobjects += mobjects
             if self.moving_mobjects:
                 self.restructure_mobjects(
-                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                    to_remove=mobjects,
+                    mobject_list_name="moving_mobjects",
                 )
                 self.moving_mobjects += mobjects
-            return self
+        return self
 
     def add_mobjects_from_animations(self, animations):
-
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             # Anything animated that's not already in the
@@ -430,15 +460,16 @@ class Scene(Container):
             mobjects_to_remove = []
             meshes_to_remove = set()
             for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Mesh):
+                if isinstance(mobject_or_mesh, Object3D):
                     meshes_to_remove.add(mobject_or_mesh)
                 else:
                     mobjects_to_remove.append(mobject_or_mesh)
             self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects, mobjects_to_remove
+                self.mobjects,
+                mobjects_to_remove,
             )
             self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes)
+                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
             )
             return self
         else:
@@ -446,8 +477,17 @@ class Scene(Container):
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
 
+    def add_updater(self, func):
+        self.updaters.append(func)
+
+    def remove_updater(self, func):
+        self.updaters = [f for f in self.updaters if f is not func]
+
     def restructure_mobjects(
-        self, to_remove, mobject_list_name="mobjects", extract_families=True
+        self,
+        to_remove,
+        mobject_list_name="mobjects",
+        extract_families=True,
     ):
         """
         tl:wr
@@ -478,7 +518,8 @@ class Scene(Container):
         """
         if extract_families:
             to_remove = extract_mobject_family_members(
-                to_remove, use_z_index=self.renderer.camera.use_z_index
+                to_remove,
+                use_z_index=self.renderer.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -691,7 +732,8 @@ class Scene(Container):
             use_z_index=self.renderer.camera.use_z_index,
         )
         static_mobjects = list_difference_update(
-            all_mobject_families, all_moving_mobject_families
+            all_mobject_families,
+            all_moving_mobject_families,
         )
         return all_moving_mobject_families, static_mobjects
 
@@ -718,11 +760,11 @@ class Scene(Container):
                 if inspect.ismethod(arg):
                     raise TypeError(
                         "Passing Mobject methods to Scene.play is no longer"
-                        " supported. Use Mobject.animate instead."
+                        " supported. Use Mobject.animate instead.",
                     )
                 else:
                     raise TypeError(
-                        f"Unexpected argument {arg} passed to Scene.play()."
+                        f"Unexpected argument {arg} passed to Scene.play().",
                     )
 
         for animation in animations:
@@ -765,7 +807,8 @@ class Scene(Container):
                 )
             else:
                 time_progression = self.get_time_progression(
-                    duration, f"Waiting {self.renderer.num_plays}"
+                    duration,
+                    f"Waiting {self.renderer.num_plays}",
                 )
         else:
             time_progression = self.get_time_progression(
@@ -775,13 +818,17 @@ class Scene(Container):
                         f"Animation {self.renderer.num_plays}: ",
                         str(animations[0]),
                         (", etc." if len(animations) > 1 else ""),
-                    ]
+                    ],
                 ),
             )
         return time_progression
 
     def get_time_progression(
-        self, run_time, description, n_iterations=None, override_skip_animations=False
+        self,
+        run_time,
+        description,
+        n_iterations=None,
+        override_skip_animations=False,
     ):
         """
         You will hardly use this when making your own animations.
@@ -872,9 +919,10 @@ class Scene(Container):
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(self, *animations: Animation, **play_kwargs):
-        """Given a list of animations, compile statics and moving mobjects, duration from them.
+        """Given a list of animations, compile the corresponding
+        static and moving mobjects, and gather the animation durations.
 
-        This also begin the animations.
+        This also begins the animations.
 
         Parameters
         ----------
@@ -896,10 +944,10 @@ class Scene(Container):
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = None
-        self.static_mobjects = None
+        self.moving_mobjects = []
+        self.static_mobjects = []
 
-        if not config.renderer == "opengl":
+        if config.renderer != "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
                 self.update_mobjects(dt=0)  # Any problems with this?
                 if self.should_update_mobjects():
@@ -925,7 +973,7 @@ class Scene(Container):
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:
-        """Returns wether the current animation produces a static frame (generally a Wait)."""
+        """Returns whether the current animation produces a static frame (generally a Wait)."""
         return (
             isinstance(self.animations[0], Wait)
             and len(self.animations) == 1
@@ -948,7 +996,8 @@ class Scene(Container):
         """
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration
+            self.animations,
+            self.duration,
         )
         for t in self.time_progression:
             self.update_to_time(t)
@@ -967,10 +1016,34 @@ class Scene(Container):
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
+            )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        return True
+
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
+        if not self.check_interactive_embed_is_valid():
+            return
 
         def ipython(shell, namespace):
             import manim
@@ -1012,7 +1085,23 @@ class Scene(Container):
             target=ipython,
             args=(shell, local_namespace),
         )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
         keyboard_thread.start()
+
+        if self.dearpygui_imported and config["enable_gui"]:
+            if not dpg.is_dearpygui_running():
+                gui_thread = threading.Thread(
+                    target=configure_pygui,
+                    args=(self.renderer, self.widgets),
+                    kwargs={"update": False},
+                )
+                gui_thread.start()
+            else:
+                configure_pygui(self.renderer, self.widgets, update=True)
+
+        self.camera.model_matrix = self.camera.default_model_matrix
 
         self.interact(shell, keyboard_thread)
 
@@ -1023,14 +1112,20 @@ class Scene(Container):
         file_observer.start()
 
         self.quit_interaction = False
-        keyboard_thread_needs_join = True
+        keyboard_thread_needs_join = shell.pt_app is not None
+        assert self.queue.qsize() == 0
+
+        last_time = time.time()
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
                     # Intentionally skip calling join() on the file thread to save time.
                     if not tup[0].endswith("keyboard"):
-                        shell.pt_app.app.exit(exception=EOFError)
+                        if shell.pt_app:
+                            shell.pt_app.app.exit(exception=EOFError)
+                        file_observer.unschedule_all()
+                        raise RerunSceneException
                     keyboard_thread.join()
 
                     kwargs = tup[2]
@@ -1046,9 +1141,16 @@ class Scene(Container):
                     #     ]
 
                     keyboard_thread.join()
+                    file_observer.unschedule_all()
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
+                        shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
+                    # Remove exit_keyboard from the queue if necessary.
+                    while self.queue.qsize() > 0:
+                        self.queue.get()
                     keyboard_thread_needs_join = False
                     break
                 else:
@@ -1056,15 +1158,26 @@ class Scene(Container):
                     getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
-                dt = 1 / config["frame_rate"]
+                dt = time.time() - last_time
+                last_time = time.time()
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
+                self.update_self(dt)
 
         # Join the keyboard thread if necessary.
         if shell is not None and keyboard_thread_needs_join:
             shell.pt_app.app.exit(exception=EOFError)
             keyboard_thread.join()
+            # Remove exit_keyboard from the queue if necessary.
+            while self.queue.qsize() > 0:
+                self.queue.get()
+
+        file_observer.stop()
+        file_observer.join()
+
+        if self.dearpygui_imported and config["enable_gui"]:
+            dpg.stop_dearpygui()
 
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
@@ -1092,7 +1205,7 @@ class Scene(Container):
         )
 
         # Use the locals of the caller as the local namespace
-        # once embeded, and add a few custom shortcuts.
+        # once embedded, and add a few custom shortcuts.
         local_ns = inspect.currentframe().f_back.f_locals
         # local_ns["touch"] = self.interact
         for method in (
@@ -1120,6 +1233,7 @@ class Scene(Container):
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
+        self.update_self(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
@@ -1154,7 +1268,7 @@ class Scene(Container):
                     dot.set_color(RED)
                     self.wait()
 
-        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return
@@ -1172,8 +1286,9 @@ class Scene(Container):
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        factor = 1 + np.arctan(-2.1 * offset[1])
-        self.camera.scale(factor, about_point=self.camera_target)
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
@@ -1188,6 +1303,9 @@ class Scene(Container):
             self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
+        else:
+            if char in self.key_to_function_map:
+                self.key_to_function_map[char]()
 
     def on_key_release(self, symbol, modifiers):
         pass
@@ -1228,14 +1346,16 @@ class Scene(Container):
             camera_position = self.camera.get_position()
             camera_y_axis = self.camera.model_matrix[:3, 1]
             axis_of_rotation = space_ops.normalize(
-                np.cross(camera_y_axis, camera_position)
+                np.cross(camera_y_axis, camera_position),
             )
             rotation_matrix = space_ops.rotation_matrix(
-                d_point[1], axis_of_rotation, homogeneous=True
+                d_point[1],
+                axis_of_rotation,
+                homogeneous=True,
             )
 
-            maximum_polar_angle = PI / 2
-            minimum_polar_angle = -PI / 2
+            maximum_polar_angle = self.camera.maximum_polar_angle
+            minimum_polar_angle = self.camera.minimum_polar_angle
 
             potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
             potential_camera_location = potential_camera_model_matrix[:3, 3]
@@ -1246,21 +1366,24 @@ class Scene(Container):
                 else 1
             )
             potential_polar_angle = sign * np.arccos(
-                potential_camera_location[2] / np.linalg.norm(potential_camera_location)
+                potential_camera_location[2]
+                / np.linalg.norm(potential_camera_location),
             )
             if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
                 self.camera.model_matrix = potential_camera_model_matrix
             else:
                 sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
                 current_polar_angle = sign * np.arccos(
-                    camera_position[2] / np.linalg.norm(camera_position)
+                    camera_position[2] / np.linalg.norm(camera_position),
                 )
                 if potential_polar_angle > maximum_polar_angle:
                     polar_angle_delta = maximum_polar_angle - current_polar_angle
                 else:
                     polar_angle_delta = minimum_polar_angle - current_polar_angle
                 rotation_matrix = space_ops.rotation_matrix(
-                    polar_angle_delta, axis_of_rotation, homogeneous=True
+                    polar_angle_delta,
+                    axis_of_rotation,
+                    homogeneous=True,
                 )
                 self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
 
@@ -1281,3 +1404,10 @@ class Scene(Container):
                 @ self.camera.model_matrix
             )
             self.camera_target += total_shift_vector
+
+    def set_key_function(self, char, func):
+        self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()

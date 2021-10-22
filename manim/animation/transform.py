@@ -26,7 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
 
 import numpy as np
 
@@ -50,10 +50,12 @@ class Transform(Animation):
         path_func: Optional[Callable] = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
+        path_arc_centers: np.ndarray = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
+        self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
         self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
@@ -71,13 +73,18 @@ class Transform(Animation):
     @path_arc.setter
     def path_arc(self, path_arc: float) -> None:
         self._path_arc = path_arc
-        self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
+        self._path_func = path_along_arc(
+            arc_angle=self._path_arc,
+            axis=self.path_arc_axis,
+            arc_centers=self.path_arc_centers,
+        )
 
     @property
     def path_func(
         self,
     ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        [Iterable[np.ndarray], Iterable[np.ndarray], float],
+        Iterable[np.ndarray],
     ]:
         return self._path_func
 
@@ -85,7 +92,8 @@ class Transform(Animation):
     def path_func(
         self,
         path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+            [Iterable[np.ndarray], Iterable[np.ndarray], float],
+            Iterable[np.ndarray],
         ],
     ) -> None:
         if path_func is not None:
@@ -130,7 +138,9 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(*[mob.family_members_with_points() for mob in mobs])
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in mobs))
+        return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
         self,
@@ -144,6 +154,53 @@ class Transform(Animation):
 
 
 class ReplacementTransform(Transform):
+    """Replaces and morphs a mobject into a target mobject.
+
+    Parameters
+    ----------
+    mobject
+        The starting :class:`~.Mobject`.
+    target_mobject
+        The target :class:`~.Mobject`.
+    kwargs
+        Further keyword arguments that are passed to :class:`Transform`.
+
+    Examples
+    --------
+
+    .. manim:: ReplacementTransformOrTransform
+        :quality: low
+
+        class ReplacementTransformOrTransform(Scene):
+            def construct(self):
+                # set up the numbers
+                r_transform = VGroup(*[Integer(i) for i in range(1,4)])
+                text_1 = Text("ReplacementTransform", color=RED)
+                r_transform.add(text_1)
+
+                transform = VGroup(*[Integer(i) for i in range(4,7)])
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(r_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                r_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs replace each other and none are left behind
+                self.play(ReplacementTransform(r_transform[0], r_transform[1]))
+                self.play(ReplacementTransform(r_transform[1], r_transform[2]))
+
+                # The mobs linger after the Transform()
+                self.play(Transform(transform[0], transform[1]))
+                self.play(Transform(transform[1], transform[2]))
+                self.wait()
+
+    """
+
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
@@ -192,7 +249,7 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'"
+                "MoveToTarget called on mobject" "without attribute 'target'",
             )
 
 
@@ -223,7 +280,7 @@ class ApplyMethod(Transform):
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
-                "the method you want to animate"
+                "the method you want to animate",
             )
         assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
@@ -308,11 +365,10 @@ class ApplyFunction(Transform):
         super().__init__(mobject, **kwargs)
 
     def create_target(self) -> Any:
-        assert isinstance(self.mobject, Mobject)
         target = self.function(self.mobject.copy())
-        if not isinstance(target, Mobject):
+        if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
-                "Functions passed to ApplyFunction must return object of type Mobject"
+                "Functions passed to ApplyFunction must return object of type Mobject",
             )
         return target
 
@@ -409,7 +465,7 @@ class TransformAnimations(Transform):
     def interpolate(self, alpha: float) -> None:
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
-        Transform.interpolate(self, alpha)
+        super().interpolate(alpha)
 
 
 class FadeTransform(Transform):

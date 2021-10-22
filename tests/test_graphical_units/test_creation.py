@@ -1,79 +1,67 @@
-import pytest
-
 from manim import *
+from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
-
-
-class CreateTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(Create(square))
+__module_test__ = "creation"
 
 
-class UncreateTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Uncreate(square))
+@frames_comparison(last_frame=False)
+def test_create(scene):
+    square = Square()
+    scene.play(Create(square))
 
 
-class DrawBorderThenFillTest(Scene):
-    def construct(self):
-        square = Square(fill_opacity=1)
-        self.play(DrawBorderThenFill(square))
+@frames_comparison(last_frame=False)
+def test_uncreate(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Uncreate(square))
+
+
+@frames_comparison(last_frame=False)
+def test_DrawBorderThenFill(scene):
+    square = Square(fill_opacity=1)
+    scene.play(DrawBorderThenFill(square))
 
 
 # NOTE : Here should be the Write Test. But for some reasons it appears that this function is untestable (see issue #157)
+@frames_comparison(last_frame=False)
+def test_FadeOut(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(FadeOut(square))
 
 
-class FadeOutTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(FadeOut(square))
+@frames_comparison(last_frame=False)
+def test_FadeIn(scene):
+    square = Square()
+    scene.play(FadeIn(square))
 
 
-class FadeInTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(FadeIn(square))
+@frames_comparison(last_frame=False)
+def test_GrowFromPoint(scene):
+    square = Square()
+    scene.play(GrowFromPoint(square, np.array((1, 1, 0))))
 
 
-class GrowFromPointTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(GrowFromPoint(square, np.array((1, 1, 0))))
+@frames_comparison(last_frame=False)
+def test_GrowFromCenter(scene):
+    square = Square()
+    scene.play(GrowFromCenter(square))
 
 
-class GrowFromCenterTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(GrowFromCenter(square))
+@frames_comparison(last_frame=False)
+def test_GrowFromEdge(scene):
+    square = Square()
+    scene.play(GrowFromEdge(square, DOWN))
 
 
-class GrowFromEdgeTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(GrowFromEdge(square, DOWN))
+@frames_comparison(last_frame=False)
+def test_SpinInFromNothing(scene):
+    square = Square()
+    scene.play(SpinInFromNothing(square))
 
 
-class SpinInFromNothingTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(SpinInFromNothing(square))
-
-
-class ShrinkToCenterTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(ShrinkToCenter(square))
-
-
-MODULE_NAME = "creation"
-
-
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+@frames_comparison(last_frame=False)
+def test_ShrinkToCenter(scene):
+    square = Square()
+    scene.play(ShrinkToCenter(square))

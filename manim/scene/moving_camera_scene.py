@@ -48,23 +48,19 @@ Examples
 
 .. manim:: MovingCameraOnGraph
 
-    class MovingCameraOnGraph(GraphScene, MovingCameraScene):
-        def setup(self):
-            GraphScene.setup(self)
-
+    class MovingCameraOnGraph(MovingCameraScene):
         def construct(self):
             self.camera.frame.save_state()
-            self.setup_axes(animate=False)
-            graph = self.get_graph(lambda x: np.sin(x),
-                                   color=WHITE,
-                                   x_min=0,
-                                   x_max=3 * PI
-                                   )
-            dot_at_start_graph = Dot().move_to(graph.points[0])
-            dot_at_end_graph = Dot().move_to(graph.points[-1])
-            self.add(graph, dot_at_end_graph, dot_at_start_graph)
-            self.play(self.camera.frame.animate.scale(0.5).move_to(dot_at_start_graph))
-            self.play(self.camera.frame.animate.move_to(dot_at_end_graph))
+
+            ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
+            graph = ax.get_graph(lambda x: np.sin(x), color=WHITE, x_range=[0, 3 * PI])
+
+            dot_1 = Dot(ax.i2gp(graph.t_min, graph))
+            dot_2 = Dot(ax.i2gp(graph.t_max, graph))
+            self.add(ax, graph, dot_1, dot_2)
+
+            self.play(self.camera.frame.animate.scale(0.5).move_to(dot_1))
+            self.play(self.camera.frame.animate.move_to(dot_2))
             self.play(Restore(self.camera.frame))
             self.wait()
 
@@ -89,7 +85,7 @@ class MovingCameraScene(Scene):
     """
 
     def __init__(self, camera_class=MovingCamera, **kwargs):
-        Scene.__init__(self, camera_class=camera_class, **kwargs)
+        super().__init__(camera_class=camera_class, **kwargs)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -101,7 +97,7 @@ class MovingCameraScene(Scene):
         *animations : Animation
             The Animations whose mobjects will be checked.
         """
-        moving_mobjects = Scene.get_moving_mobjects(self, *animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
         movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
         for movement_indicator in movement_indicators:

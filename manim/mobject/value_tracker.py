@@ -3,15 +3,14 @@
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 
-from typing import Union
-
 import numpy as np
 
 from ..mobject.mobject import Mobject
 from ..utils.paths import straight_path
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class ValueTracker(Mobject):
+class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
 
@@ -69,8 +68,8 @@ class ValueTracker(Mobject):
     """
 
     def __init__(self, value=0, **kwargs):
-        Mobject.__init__(self, **kwargs)
-        self.points = np.zeros((1, 3))
+        super().__init__(**kwargs)
+        self.set_points(np.zeros((1, 3)))
         self.set_value(value)
 
     def get_value(self) -> float:
@@ -131,7 +130,7 @@ class ValueTracker(Mobject):
         Turns self into an interpolation between mobject1
         and mobject2.
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.set_points(path_func(mobject1.points, mobject2.points, alpha))
         return self
 
 

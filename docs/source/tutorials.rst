@@ -9,3 +9,4 @@ Tutorials
    tutorials/a_deeper_look
    tutorials/building_blocks
    tutorials/configuration
+   tutorials/using_text

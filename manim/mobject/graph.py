@@ -10,11 +10,14 @@ from typing import Hashable, List, Optional, Tuple, Type, Union
 import networkx as nx
 import numpy as np
 
+from manim.mobject.opengl_mobject import OpenGLMobject
+
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
-from .mobject import Group, Mobject, override_animate
+from .mobject import Mobject, override_animate
+from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
@@ -61,14 +64,14 @@ def _determine_graph_layout(
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
             raise ValueError(
-                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices"
+                "The partite layout requires the 'partitions' parameter to contain the partition of the vertices",
             )
         partition_count = len(partitions)
         for i in range(partition_count):
             for v in partitions[i]:
                 if nx_graph.nodes[v] is None:
                     raise ValueError(
-                        "The partition must contain arrays of vertices in the graph"
+                        "The partition must contain arrays of vertices in the graph",
                     )
                 nx_graph.nodes[v]["subset"] = i
         # Add missing vertices to their own side
@@ -90,7 +93,7 @@ def _determine_graph_layout(
     else:
         raise ValueError(
             f"The layout '{layout}' is neither a recognized automatic layout, "
-            "nor a vertex placement dictionary."
+            "nor a vertex placement dictionary.",
         )
 
 
@@ -129,7 +132,7 @@ def _tree_layout(
         else:
             for i in range(new_row_length):
                 result[new_row[i]] = np.array(
-                    [-1 + 2 * i / (new_row_length - 1), current_height, 0]
+                    [-1 + 2 * i / (new_row_length - 1), current_height, 0],
                 )
 
         _recursive_position_for_row(
@@ -141,7 +144,11 @@ def _tree_layout(
         )
 
     _recursive_position_for_row(
-        G, result, two_rows_before=[], last_row=[root_vertex], current_height=1
+        G,
+        result,
+        two_rows_before=[],
+        last_row=[root_vertex],
+        current_height=1,
     )
 
     height = max(map(lambda v: result[v][1], result))
@@ -152,7 +159,7 @@ def _tree_layout(
     }
 
 
-class Graph(VMobject):
+class Graph(VMobject, metaclass=ConvertToOpenGL):
     """An undirected graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
@@ -324,7 +331,6 @@ class Graph(VMobject):
 
     .. manim:: Tree
 
-        from manim import *
         import networkx as nx
 
         class Tree(Scene):
@@ -505,13 +511,13 @@ class Graph(VMobject):
 
         if vertex in self.vertices:
             raise ValueError(
-                f"Vertex identifier '{vertex}' is already used for a vertex in this graph."
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
             )
 
         self._graph.add_node(vertex)
         self._layout[vertex] = position
 
-        if isinstance(label, Mobject):
+        if isinstance(label, (Mobject, OpenGLMobject)):
             self._labels[vertex] = label
         elif label is True:
             self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
@@ -539,7 +545,7 @@ class Graph(VMobject):
 
     def add_vertices(
         self: "Graph",
-        *vertices: List[Hashable],
+        *vertices: Hashable,
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
@@ -553,7 +559,7 @@ class Graph(VMobject):
         ----------
 
         vertices
-            A list of hashable vertex identifiers.
+            Hashable vertex identifiers.
         positions
             A dictionary specifying the coordinates where the new vertices should be added.
             If ``None``, all vertices are created at the center of the graph.
@@ -599,7 +605,7 @@ class Graph(VMobject):
         assert isinstance(vertex_config, dict)
         base_vertex_config = copy(self.default_vertex_config)
         base_vertex_config.update(
-            {key: val for key, val in vertex_config.items() if key not in vertices}
+            {key: val for key, val in vertex_config.items() if key not in vertices},
         )
         vertex_config = {
             v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
@@ -627,7 +633,7 @@ class Graph(VMobject):
         animation = anim_args.pop("animation", Create)
 
         vertex_mobjects = self.add_vertices(*args, **kwargs)
-        return AnimationGroup(*[animation(v, **anim_args) for v in vertex_mobjects])
+        return AnimationGroup(*(animation(v, **anim_args) for v in vertex_mobjects))
 
     def _remove_vertex(self, vertex):
         """Remove a vertex (as well as all incident edges) from the graph.
@@ -647,7 +653,7 @@ class Graph(VMobject):
         """
         if vertex not in self.vertices:
             raise ValueError(
-                f"The graph does not contain a vertex with identifier '{vertex}'"
+                f"The graph does not contain a vertex with identifier '{vertex}'",
             )
 
         self._graph.remove_node(vertex)
@@ -663,7 +669,7 @@ class Graph(VMobject):
         to_remove.append(self.vertices.pop(vertex))
 
         self.remove(*to_remove)
-        return Group(*to_remove)
+        return self.get_group_class()(*to_remove)
 
     def remove_vertices(self, *vertices):
         """Remove several vertices from the graph.
@@ -672,7 +678,7 @@ class Graph(VMobject):
         ----------
 
         vertices
-            A list of vertices to be removed from the graph.
+            Vertices to be removed from the graph.
 
         Examples
         --------
@@ -680,9 +686,7 @@ class Graph(VMobject):
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
             >>> removed = G.remove_vertices(2, 3); removed
-            Group
-            >>> removed.submobjects
-            [Line, Line, Dot, Dot]
+            VGroup(Line, Line, Dot, Dot)
             >>> G
             Graph on 1 vertices and 0 edges
 
@@ -690,7 +694,7 @@ class Graph(VMobject):
         mobjects = []
         for v in vertices:
             mobjects.extend(self._remove_vertex(v).submobjects)
-        return Group(*mobjects)
+        return self.get_group_class()(*mobjects)
 
     @override_animate(remove_vertices)
     def _remove_vertices_animation(self, *vertices, anim_args=None):
@@ -700,7 +704,7 @@ class Graph(VMobject):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertices(*vertices)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     def _add_edge(
         self,
@@ -751,11 +755,11 @@ class Graph(VMobject):
 
         self.add(edge_mobject)
         added_mobjects.append(edge_mobject)
-        return Group(*added_mobjects)
+        return self.get_group_class()(*added_mobjects)
 
     def add_edges(
         self,
-        *edges: List[Tuple[Hashable, Hashable]],
+        *edges: Tuple[Hashable, Hashable],
         edge_type: Type["Mobject"] = Line,
         edge_config: Optional[dict] = None,
     ):
@@ -765,7 +769,7 @@ class Graph(VMobject):
         ----------
 
         edges
-            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
             new vertices yourself beforehand to customize them.
         edge_type
@@ -794,15 +798,17 @@ class Graph(VMobject):
         edge_config = base_edge_config
 
         added_mobjects = sum(
-            [
+            (
                 self._add_edge(
-                    edge, edge_type=edge_type, edge_config=edge_config[edge]
+                    edge,
+                    edge_type=edge_type,
+                    edge_config=edge_config[edge],
                 ).submobjects
                 for edge in edges
-            ],
+            ),
             [],
         )
-        return Group(*added_mobjects)
+        return self.get_group_class()(*added_mobjects)
 
     @override_animate(add_edges)
     def _add_edges_animation(self, *args, anim_args=None, **kwargs):
@@ -811,7 +817,7 @@ class Graph(VMobject):
         animation = anim_args.pop("animation", Create)
 
         mobjects = self.add_edges(*args, **kwargs)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     def _remove_edge(self, edge: Tuple[Hashable]):
         """Remove an edge from the graph.
@@ -842,13 +848,13 @@ class Graph(VMobject):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+    def remove_edges(self, *edges: Tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
         ----------
         edges
-            A list of edges to be removed from the graph.
+            Edges to be removed from the graph.
 
         Returns
         -------
@@ -857,7 +863,7 @@ class Graph(VMobject):
 
         """
         edge_mobjects = [self._remove_edge(edge) for edge in edges]
-        return Group(*edge_mobjects)
+        return self.get_group_class()(*edge_mobjects)
 
     @override_animate(remove_edges)
     def _remove_edges_animation(self, *edges, anim_args=None):
@@ -867,7 +873,7 @@ class Graph(VMobject):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_edges(*edges)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":

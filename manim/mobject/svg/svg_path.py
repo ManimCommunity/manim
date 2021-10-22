@@ -1,7 +1,7 @@
 """Mobjects generated from an SVG pathstring."""
 
 
-__all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
+__all__ = ["SVGPathMobject", "string_to_numbers"]
 
 
 import re
@@ -12,8 +12,8 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...mobject.types.vectorized_mobject import MetaVMobject
-from ...utils.deprecation import deprecated
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
 
 
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
@@ -105,7 +105,7 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
-    ## Out of range parameters
+    # Out of range parameters
     # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
     # If rx or ry are 0 then this arc is treated as a
     # straight line segment (a "lineto") joining the endpoints.
@@ -121,7 +121,15 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     # Convert from endpoint to center parameterization.
     cx, cy, theta1, dtheta = get_elliptical_arc_center_parameters(
-        x1, y1, rx, ry, phi, fA, fS, x2, y2
+        x1,
+        y1,
+        rx,
+        ry,
+        phi,
+        fA,
+        fS,
+        x2,
+        y2,
     )
 
     # For a given arc we should "chop" it up into segments if it is too big
@@ -205,12 +213,17 @@ def string_to_numbers(num_string: str) -> List[float]:
             except ValueError:
                 # in this case, it's something like "2.4.3.14 which should be parsed as "2.4 0.3 0.14"
                 undotted_parts = s.split(".")
-                float_results.append(undotted_parts[0] + "." + undotted_parts[1])
-                float_results += ["." + u for u in undotted_parts[2:]]
+                float_results.append(float(undotted_parts[0] + "." + undotted_parts[1]))
+                float_results += [float("." + u) for u in undotted_parts[2:]]
     return float_results
 
 
-class SVGPathMobject(metaclass=MetaVMobject):
+def grouped(iterable, n):
+    """Group iterable into arrays of n items."""
+    return (np.array(v) for v in zip(*[iter(iterable)] * n))
+
+
+class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         if config.renderer == "opengl":
@@ -252,7 +265,7 @@ class SVGPathMobject(metaclass=MetaVMobject):
             zip(
                 re.findall(pattern, self.path_string),
                 re.split(pattern, self.path_string)[1:],
-            )
+            ),
         )
         # Which mobject should new points be added to
         prev_command = None
@@ -279,14 +292,17 @@ class SVGPathMobject(metaclass=MetaVMobject):
 
         # Keep track of the most recently completed point
         if config["renderer"] == "opengl":
-            points = self.data["points"]
+            points = self.points
         else:
             points = self.points
         start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
-            command, is_relative, coord_string, start_point
+            command,
+            is_relative,
+            coord_string,
+            start_point,
         )
 
         if command == "M":  # moveto
@@ -308,7 +324,7 @@ class SVGPathMobject(metaclass=MetaVMobject):
 
         elif command == "S":  # Smooth cubic
             if config["renderer"] == "opengl":
-                points = self.data["points"]
+                points = self.points
             else:
                 points = self.points
             prev_handle = start_point
@@ -317,7 +333,9 @@ class SVGPathMobject(metaclass=MetaVMobject):
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
                 self.add_cubic_bezier_curve_to(
-                    new_handle, new_points[i], new_points[i + 1]
+                    new_handle,
+                    new_points[i],
+                    new_points[i + 1],
                 )
                 start_point = new_points[i + 1]
                 prev_handle = new_points[i]
@@ -379,21 +397,37 @@ class SVGPathMobject(metaclass=MetaVMobject):
 
         # arcs are weirdest, handle them first.
         if command == "A":
-            # We have to handle offsets here because ellipses are complicated.
-            if is_relative:
-                numbers[5] += start_point[0]
-                numbers[6] += start_point[1]
+            result = np.zeros((0, self.dim))
+            last_end_point = None
+            for elliptic_numbers in grouped(numbers, 7):
+                # The startpoint changes with each iteration.
+                if last_end_point is not None:
+                    start_point = last_end_point
 
-            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
-            # is equivalent to omitting the elliptical arc segment entirely.
-            # for more information of where this math came from visit:
-            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-            if start_point[0] == numbers[5] and start_point[1] == numbers[6]:
-                return
+                # We have to handle offsets here because ellipses are complicated.
+                if is_relative:
+                    elliptic_numbers[5] += start_point[0]
+                    elliptic_numbers[6] += start_point[1]
 
-            result = np.array(
-                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
-            )
+                # If the endpoints (x1, y1) and (x2, y2) are identical, then this
+                # is equivalent to omitting the elliptical arc segment entirely.
+                # for more information of where this math came from visit:
+                #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+                if (
+                    start_point[0] == elliptic_numbers[5]
+                    and start_point[1] == elliptic_numbers[6]
+                ):
+                    continue
+
+                result = np.append(
+                    result,
+                    elliptical_arc_to_cubic_bezier(*start_point[:2], *elliptic_numbers),
+                    axis=0,
+                )
+
+                # We store the endpoint so that it can be the startpoint for the
+                # next iteration.
+                last_end_point = elliptic_numbers[5:]
 
             return result
 
@@ -445,9 +479,3 @@ class SVGPathMobject(metaclass=MetaVMobject):
         self.current_path_start = point
         super().start_new_path(point)
         return self
-
-
-@deprecated(until="v0.7.0", replacement="SVGPathMobject")
-class VMobjectFromSVGPathstring(SVGPathMobject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)

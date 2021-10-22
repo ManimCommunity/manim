@@ -57,11 +57,18 @@ class CairoRenderer:
     time: time elapsed since initialisation of scene.
     """
 
-    def __init__(self, camera_class=None, skip_animations=False, **kwargs):
+    def __init__(
+        self,
+        file_writer_class=SceneFileWriter,
+        camera_class=None,
+        skip_animations=False,
+        **kwargs,
+    ):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
         self.file_writer = None
+        self._file_writer_class = file_writer_class
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
@@ -72,7 +79,7 @@ class CairoRenderer:
         self.static_image = None
 
     def init_scene(self, scene):
-        self.file_writer = SceneFileWriter(
+        self.file_writer = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
@@ -94,7 +101,10 @@ class CairoRenderer:
                 hash_current_animation = f"uncached_{self.num_plays:05}"
             else:
                 hash_current_animation = get_hash_from_play_call(
-                    scene, self.camera, scene.animations, scene.mobjects
+                    scene,
+                    self.camera,
+                    scene.animations,
+                    scene.mobjects,
                 )
                 if self.file_writer.is_already_cached(hash_current_animation):
                     logger.info(
@@ -153,7 +163,7 @@ class CairoRenderer:
         """
         if self.skip_animations and not ignore_skipping:
             return
-        if mobjects is None:
+        if not mobjects:
             mobjects = list_update(
                 scene.mobjects,
                 scene.foreground_mobjects,
@@ -223,7 +233,9 @@ class CairoRenderer:
         self.camera.get_image().show()
 
     def save_static_frame_data(
-        self, scene, static_mobjects: typing.Iterable[Mobject]
+        self,
+        scene,
+        static_mobjects: typing.Iterable[Mobject],
     ) -> typing.Iterable[Mobject]:
         """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer
         static mobjects.
@@ -257,13 +269,17 @@ class CairoRenderer:
         """
         if config["save_last_frame"]:
             self.skip_animations = True
-        if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
-                self.skip_animations = True
-        if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
-                self.skip_animations = True
-                raise EndSceneEarlyException()
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
 
     def scene_finished(self, scene):
         # If no animations in scene, render an image instead

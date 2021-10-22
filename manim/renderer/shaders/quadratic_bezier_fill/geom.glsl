@@ -131,4 +131,3 @@ void main(){
     }
     // Don't emit any vertices for bezier_degree 0
 }
-
