@@ -1,0 +1,103 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.ArrowTip.rst:2
+msgid "ArrowTip"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowTip.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.ArrowTip``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:1
+msgid "Base class for arrow tips."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:3
+msgid ":class:`ArrowTriangleTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareTip`, :class:`ArrowSquareFilledTip`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:6
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:6
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.length:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_angle:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_point:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.vector:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:7
+msgid "Cannot be used directly, only intended for inheritance::"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:14
+msgid "Instead, use one of the pre-defined ones, or make a custom one like this:"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:33
+msgid "Using a class inherited from :class:`ArrowTip` to get a non-filled tip is a shorthand to manually specifying the arrow tip style as follows::"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:39
+msgid "The following example illustrates the usage of all of the predefined arrow tips."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowTip.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowTip.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1
+msgid "The base point of the arrow tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.length:1
+msgid "The length of the arrow tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_angle:1
+msgid "The angle of the arrow tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_point:1
+msgid "The tip point of the arrow tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.vector:1
+msgid "The vector pointing from the base point to the tip point."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

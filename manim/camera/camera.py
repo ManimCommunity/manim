@@ -9,7 +9,7 @@ import operator as op
 import pathlib
 import time
 from functools import reduce
-from typing import Union
+from typing import Any, Union
 
 import cairo
 import numpy as np
@@ -461,9 +461,20 @@ class Camera:
             ],
         )
 
-    def capture_mobject(
-        self, mobject, **kwargs
-    ):  # TODO Write better docstrings for this method.
+    def capture_mobject(self, mobject: Mobject, **kwargs: Any):
+        """Capture mobjects by storing it in :attr:`pixel_array`.
+
+        This is a single-mobject version of :meth:`capture_mobjects`.
+
+        Parameters
+        ----------
+        mobject
+            Mobject to capture.
+
+        kwargs
+            Keyword arguments to be passed to :meth:`get_mobjects_to_display`.
+
+        """
         return self.capture_mobjects([mobject], **kwargs)
 
     def capture_mobjects(self, mobjects, **kwargs):
