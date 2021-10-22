@@ -1,3 +1,4 @@
+import os
 import sys
 
 import numpy as np
@@ -106,6 +107,118 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
     is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
     assert not is_empty, "running manim with -s flag did not render an image"
+
+
+@pytest.mark.slow
+def test_image_output_for_static_scene(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "StaticScene"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--renderer",
+        "opengl",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = (tmp_path / "videos").exists()
+    assert not exists, "running manim with static scene rendered a video"
+
+    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
+    assert not is_empty, "running manim without animations did not render an image"
+
+
+@pytest.mark.slow
+def test_no_image_output_with_interactive_embed(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    """Check no image is output for a static scene when interactive embed is called"""
+    scene_name = "InteractiveStaticScene"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--renderer",
+        "opengl",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = (tmp_path / "videos").exists()
+    assert not exists, "running manim with static scene rendered a video"
+
+    is_empty = len(os.listdir(tmp_path / "images" / "simple_scenes")) == 0
+    assert (
+        is_empty
+    ), "running manim static scene with interactive embed rendered an image"
+
+
+@pytest.mark.slow
+def test_no_default_image_output_with_non_static_scene(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    scene_name = "SceneWithNonStaticWait"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--renderer",
+        "opengl",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = (tmp_path / "videos").exists()
+    assert not exists, "running manim with static scene rendered a video"
+
+    is_empty = len(os.listdir(tmp_path / "images" / "simple_scenes")) == 0
+    assert (
+        is_empty
+    ), "running manim static scene with interactive embed rendered an image"
+
+
+@pytest.mark.slow
+def test_image_output_for_static_scene_with_write_to_movie(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    scene_name = "StaticScene"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--write_to_movie",
+        "--renderer",
+        "opengl",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = len(os.listdir(tmp_path / "videos")) == 0
+    assert not exists, "running manim with static scene rendered a video"
+
+    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
+    assert not is_empty, "running manim without animations did not render an image"
 
 
 @pytest.mark.slow
