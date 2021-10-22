@@ -6,7 +6,6 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -401,13 +400,18 @@ class OpenGLRenderer:
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    @handle_play_like_call
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
+        self.animation_start_time = time.time()
+        self.file_writer.begin_animation(not self.skip_animations)
+
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
+        
+        self.file_writer.end_animation(not self.skip_animations)
         self.time += scene.duration
+        self.num_plays += 1
 
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
