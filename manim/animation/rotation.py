@@ -37,7 +37,7 @@ class Rotating(Animation):
     def interpolate_mobject(self, alpha: float) -> None:
         self.mobject.become(self.starting_mobject)
         self.mobject.rotate(
-            alpha * self.radians,
+            self.rate_func(alpha) * self.radians,
             axis=self.axis,
             about_point=self.about_point,
             about_edge=self.about_edge,
