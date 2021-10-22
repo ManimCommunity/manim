@@ -112,6 +112,7 @@ class CairoRenderer:
                         {"hash_current_animation": hash_current_animation},
                     )
                     self.skip_animations = True
+                    self.time += scene.duration
         # adding None as a partial movie file will make file_writer ignore the latter.
         self.file_writer.add_partial_movie_file(hash_current_animation)
         self.animations_hashes.append(hash_current_animation)
@@ -204,9 +205,9 @@ class CairoRenderer:
             The number of times to add frame.
         """
         dt = 1 / self.camera.frame_rate
-        self.time += num_frames * dt
         if self.skip_animations:
             return
+        self.time += num_frames * dt
         for _ in range(num_frames):
             self.file_writer.write_frame(frame)
 
