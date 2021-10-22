@@ -1,9 +1,11 @@
+import os
 import tempfile
 from pathlib import Path
 
 import numpy as np
 
-from manim import WHITE, Scene, Square, config, tempconfig
+from manim import WHITE, Scene, Square, Tex, Text, config, tempconfig
+from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
 def test_tempconfig():
@@ -32,6 +34,8 @@ def test_tempconfig():
 class MyScene(Scene):
     def construct(self):
         self.add(Square())
+        self.add(Text("Prepare for unforeseen consequencesλ"))
+        self.add(Tex(r"$\lambda$"))
         self.wait(1)
 
 
@@ -73,6 +77,7 @@ def test_digest_file(tmp_path):
             [CLI]
             media_dir = this_is_my_favorite_path
             video_dir = {media_dir}/videos
+            sections_dir = {media_dir}/{scene_name}/prepare_for_unforeseen_consequences
             frame_height = 10
             """,
         )
@@ -81,6 +86,50 @@ def test_digest_file(tmp_path):
 
         assert config.get_dir("media_dir") == Path("this_is_my_favorite_path")
         assert config.get_dir("video_dir") == Path("this_is_my_favorite_path/videos")
+        assert config.get_dir("sections_dir", scene_name="test") == Path(
+            "this_is_my_favorite_path/test/prepare_for_unforeseen_consequences"
+        )
+
+
+def test_custom_dirs(tmp_path):
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "save_sections": True,
+            "frame_rate": 15,
+            "pixel_height": 854,
+            "pixel_width": 480,
+            "save_sections": True,
+            "sections_dir": "{media_dir}/test_sections",
+            "video_dir": "{media_dir}/test_video",
+            "partial_movie_dir": "{media_dir}/test_partial_movie_dir",
+            "images_dir": "{media_dir}/test_images",
+            "text_dir": "{media_dir}/test_text",
+            "tex_dir": "{media_dir}/test_tex",
+        }
+    ):
+        scene = MyScene()
+        scene.render()
+
+        assert_dir_filled(os.path.join(tmp_path, "test_sections"))
+        assert_file_exists(os.path.join(tmp_path, "test_sections", "MyScene.json"))
+
+        assert_dir_filled(os.path.join(tmp_path, "test_video"))
+        assert_file_exists(os.path.join(tmp_path, "test_video", "MyScene.mp4"))
+
+        assert_dir_filled(os.path.join(tmp_path, "test_partial_movie_dir"))
+        assert_file_exists(
+            os.path.join(
+                tmp_path, "test_partial_movie_dir", "partial_movie_file_list.txt"
+            )
+        )
+
+        # TODO: another example with image output would be nice
+        assert_dir_exists(os.path.join(tmp_path, "test_images"))
+
+        assert_dir_filled(os.path.join(tmp_path, "test_text"))
+        assert_dir_filled(os.path.join(tmp_path, "test_tex"))
+        # TODO: testing the log dir would be nice but it doesn't get generated for some reason and test crashes when setting "log_to_file" to True
 
 
 def test_frame_size(tmp_path):
