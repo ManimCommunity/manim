@@ -408,7 +408,7 @@ class OpenGLRenderer:
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
-        
+
         self.file_writer.end_animation(not self.skip_animations)
         self.time += scene.duration
         self.num_plays += 1
