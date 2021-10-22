@@ -10,6 +10,9 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import List, Optional
+
+from manim.scene.section import DefaultSectionType
 
 try:
     import dearpygui.dearpygui as dpg
@@ -68,7 +71,6 @@ class Scene:
 
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
-
 
     Examples
     --------
@@ -287,6 +289,16 @@ class Scene:
 
         """
         pass  # To be implemented in subclasses
+
+    def next_section(
+        self,
+        name: str = "unnamed",
+        type: str = DefaultSectionType.NORMAL,
+    ) -> None:
+        """Create separation here; the last section gets finished and a new one gets created.
+        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        """
+        self.renderer.file_writer.next_section(name, type)
 
     def __str__(self):
         return self.__class__.__name__

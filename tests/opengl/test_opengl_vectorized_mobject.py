@@ -54,7 +54,7 @@ def test_vgroup_add(using_opengl_renderer):
         # If only one of the added object is not an instance of OpenGLVMobject, none of them should be added
         obj.add(OpenGLVMobject(), OpenGLMobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a OpenGLMobject cannot contain itself
         obj.add(obj)
 
@@ -74,7 +74,7 @@ def test_vgroup_add_dunder(using_opengl_renderer):
         # If only one of the added object is not an instance of OpenGLVMobject, none of them should be added
         obj += (OpenGLVMobject(), OpenGLMobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a OpenGLMobject cannot contain itself
         obj += obj
 
