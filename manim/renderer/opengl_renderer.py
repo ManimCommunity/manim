@@ -225,6 +225,8 @@ class OpenGLRenderer:
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animation_start_time = 0
+        self.animation_elapsed_time = 0
+        self.time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -405,6 +407,7 @@ class OpenGLRenderer:
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
+        self.time += scene.duration
 
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
