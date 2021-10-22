@@ -1,6 +1,6 @@
 import pytest
 
-from manim import config, Mobject, Scene, tempconfig, FadeIn, Circle, Square
+from manim import Circle, FadeIn, Mobject, Scene, Square, config, tempconfig
 
 
 def test_scene_add_remove():
