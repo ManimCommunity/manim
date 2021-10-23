@@ -444,6 +444,12 @@ class CoordinateSystem:
             if isinstance(values, dict):
                 axis.add_labels(values, **kwargs)
                 labels = axis.labels
+            elif values is None and axis.scaling.custom_labels:
+                tick_range = axis.get_tick_range()
+                axis.add_labels(
+                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
+                )
+
             else:
                 axis.add_numbers(values, **kwargs)
                 labels = axis.numbers
@@ -1570,7 +1576,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     x_range=[0.0001, 10.0001, 1],  # min must be > 0, log is undefined at 0.
                     y_range=[-2, 6, 1],
                     tips=False,
-                    axis_config={"include_numbers": True, "exclude_origin_tick": False},
+                    axis_config={"include_numbers": True},
                     y_axis_config={"scaling": LogBase(custom_labels=True)},
                 )
 
