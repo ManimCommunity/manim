@@ -69,7 +69,6 @@ class VMobject(Mobject):
         that it should count in parent mobject's path
     tolerance_point_for_equality
         This is within a pixel
-    --------
     """
 
     def __init__(
