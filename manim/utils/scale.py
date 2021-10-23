@@ -1,5 +1,5 @@
 import math
-from typing import TYPE_CHECKING, Any, Dict, Iterable
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List
 
 __all__ = ["LogBase", "LinearBase"]
 
@@ -14,7 +14,6 @@ class _ScaleBase:
 
     def __init__(self, custom_labels: bool = False):
         """
-
         Parameters
         ----------
         custom_labels
@@ -55,7 +54,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Dict[Iterable[float], Iterable["Mobject"]]:
+    ) -> List["Mobject"]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -66,7 +65,8 @@ class _ScaleBase:
         Returns
         -------
         Dict
-            A dict consistiong of the position/labels. Passed to :meth:`~.NumberLine.add_labels()`
+            A list consisting of the labels.
+            Can be passed to :meth:`~.NumberLine.add_labels() along with ``val_range``.
 
         Raises
         ------
@@ -78,6 +78,14 @@ class _ScaleBase:
 
 class LinearBase(_ScaleBase):
     def __init__(self, scale_factor: float = 1.0):
+        """The default scaling class.
+
+        Parameters
+        ----------
+        scale_factor
+            The slope of the linear function, by default 1.0
+        """
+
         super().__init__()
         self.scale_factor = scale_factor
 
@@ -97,7 +105,16 @@ class LogBase(_ScaleBase):
         base
             The base of the log, by default 10.
         custom_labels : bool, optional
+            For use with :class:`~.Axes`:
             Whetherer or not to include ``LaTeX`` axis labels, by default True.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            func = ParametricFunction(lambda x: x, scaling=LogBase(base=2))
+
         """
         super().__init__()
         self.base = base
@@ -117,7 +134,9 @@ class LogBase(_ScaleBase):
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
         **base_config: Dict[str, Any],
-    ) -> Dict:
+    ) -> List["Mobject"]:
+        """Produces custom :class:`~.Integer` labels in the form of ``10^2``."""
+
         # uses `format` syntax to control the number of decimal places.
         tex_labels = [
             Integer(
@@ -127,5 +146,4 @@ class LogBase(_ScaleBase):
             )
             for i in val_range
         ]
-        labels = dict(zip(val_range, tex_labels))
-        return labels
+        return tex_labels

@@ -19,6 +19,18 @@ from .opengl_compatibility import ConvertToOpenGL
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
 
+    Parameters
+    ----------
+
+    function
+        The function to be plotted in the form of ``(lambda x: x**2)``
+    t_range
+        Determines the length that the function spans. By default ``[0, 1]``
+    scaling
+        Instructions
+
+
+
     Examples
     --------
 
@@ -53,7 +65,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        function=None,
+        function: Callable[[float, float], float],
         t_range=None,
         scaling: _ScaleBase = LinearBase(),
         dt=1e-8,

@@ -1877,8 +1877,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             The range of the axis : ``(x_min, x_max, x_step)``.
         """
         if axis_range[0] > 0:
+            # min greater than 0
             return axis_range[0]
         if axis_range[1] < 0:
+            # max less than 0
             return axis_range[1]
         else:
             return 0

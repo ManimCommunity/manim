@@ -246,9 +246,12 @@ class NumberLine(Line):
         self.rotate(self.rotation)
         if self.include_numbers or self.numbers_to_include is not None:
             if self.scaling.custom_labels:
+                tick_range = self.get_tick_range()
+
                 self.add_labels(
+                    tick_range,
                     self.scaling.get_custom_labels(
-                        self.get_tick_range(),
+                        tick_range,
                         unit_decimal_places=decimal_number_config["num_decimal_places"],
                     ),
                 )
