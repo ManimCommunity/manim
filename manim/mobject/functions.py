@@ -3,7 +3,7 @@
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Iterable, Optional, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
@@ -21,7 +21,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-
     function
         The function to be plotted in the form of ``(lambda x: x**2)``
     t_range
@@ -68,11 +67,11 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float, float], float],
-        t_range=None,
+        t_range: Optional[Sequence[float]] = None,
         scaling: _ScaleBase = LinearBase(),
-        dt=1e-8,
-        discontinuities=None,
-        use_smoothing=True,
+        dt: float = 1e-8,
+        discontinuities: bool = None,
+        use_smoothing: bool = True,
         **kwargs
     ):
         self.function = function
