@@ -249,10 +249,16 @@ class NumberLine(Line):
                 tick_range = self.get_tick_range()
 
                 self.add_labels(
-                    tick_range,
-                    self.scaling.get_custom_labels(
-                        tick_range,
-                        unit_decimal_places=decimal_number_config["num_decimal_places"],
+                    dict(
+                        zip(
+                            tick_range,
+                            self.scaling.get_custom_labels(
+                                tick_range,
+                                unit_decimal_places=decimal_number_config[
+                                    "num_decimal_places"
+                                ],
+                            ),
+                        )
                     ),
                 )
 

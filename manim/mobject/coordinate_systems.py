@@ -18,6 +18,7 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.utils.scale import LinearBase
 
 from .. import config
 from ..constants import *
@@ -1616,7 +1617,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.axis_config = {
             "include_tip": tips,
             "numbers_to_exclude": [0],
-            "exclude_origin_tick": True,
         }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
@@ -1634,6 +1634,24 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.axis_config,
             self.y_axis_config,
         )
+
+        # excluding the origin tick removes a tick at the 0-point of the axis
+        # This is desired for LinearBase because the 0 point is always the x-axis
+        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
+
+        # i.e. with LogBase range [-2, 4]:
+        # it would remove the "0" tick, which is actually 10^0,
+        # not the lowest tick on the graph (which is 10^-2).
+
+        if self.x_axis_config.get("scaling") is not LinearBase:
+            self.x_axis_config["exclude_origin_tick"] = False
+        else:
+            self.x_axis_config["exclude_origin_tick"] = True
+
+        if self.y_axis_config.get("scaling") is not LinearBase:
+            self.y_axis_config["exclude_origin_tick"] = False
+        else:
+            self.y_axis_config["exclude_origin_tick"] = True
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)

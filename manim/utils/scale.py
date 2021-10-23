@@ -54,7 +54,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> List["Mobject"]:
+    ) -> Iterable["Mobject"]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -135,7 +135,18 @@ class LogBase(_ScaleBase):
         unit_decimal_places: int = 0,
         **base_config: Dict[str, Any],
     ) -> List["Mobject"]:
-        """Produces custom :class:`~.Integer` labels in the form of ``10^2``."""
+        """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
+
+        Parameters
+        ----------
+
+        val_range
+            The iterable of values used to create the labels. Determines the exponent.
+        units_decimal_places
+            The number of decimal places to include in the exponent
+        base_config
+            Additional arguments to be passed to :class:`~.Integer`.
+        """
 
         # uses `format` syntax to control the number of decimal places.
         tex_labels = [
