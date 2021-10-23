@@ -125,7 +125,11 @@ class LogBase(_ScaleBase):
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
-        """Inverse of ``function``."""
+        """Inverse of ``function``. The value must be greater than 0"""
+        if value <= 0:
+            raise ValueError(
+                "log(0) is undefined. Make sure the value is in the domain of the function"
+            )
         value = math.log(value, self.base)
         return value
 

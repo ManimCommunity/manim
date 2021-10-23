@@ -449,7 +449,7 @@ class CoordinateSystem:
                 axis.add_labels(
                     dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
                 )
-
+                labels = axis.labels
             else:
                 axis.add_numbers(values, **kwargs)
                 labels = axis.numbers

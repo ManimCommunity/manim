@@ -27,8 +27,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     t_range
         Determines the length that the function spans. By default ``[0, 1]``
     scaling
-        Instructions
-
+        Scaling class applied to the points of the function. Default of :class:`~.LinearBase`.
+    use_smoothing
+        Whether to interpolate between the points of the function after they have been created.
+        (Will have odd behaviour with a low number of points)
 
 
     Examples

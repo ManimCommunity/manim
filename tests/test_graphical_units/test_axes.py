@@ -243,3 +243,18 @@ def test_get_z_axis_label(scene):
     lab = ax.get_z_axis_label(Tex("$z$-label"))
     scene.set_camera_orientation(phi=2 * PI / 5, theta=PI / 5)
     scene.add(ax, lab)
+
+
+@frames_comparison
+def test_log_scaling_graph(scene):
+    ax = Axes(
+        x_range=[0, 8],
+        y_range=[-2, 4],
+        x_length=10,
+        y_axis_config={"scaling": LogBase()},
+    )
+    ax.add_coordinates()
+
+    gr = ax.get_graph(lambda x: x, use_smoothing=False, x_range=[0.01, 8])
+
+    scene.add(ax, gr)
