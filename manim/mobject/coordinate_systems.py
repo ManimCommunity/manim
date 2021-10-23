@@ -2191,7 +2191,8 @@ class NumberPlane(Axes):
         )
 
     def _get_lines(self) -> Tuple[VGroup, VGroup]:
-        """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+        """Generate all the lines, faded and not faded.
+         Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
         -------
@@ -2250,7 +2251,8 @@ class NumberPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
+            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second
+             (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
 
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
@@ -2261,25 +2263,20 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
+        # need to unpack all three values
+        x_min, x_max, _ = axis_perpendicular_to.x_range
+
+        # account for different axis scalings (logarithmic), where
+        # negative values do not exist and [-2 , 4] should output lines
+        # similar to [0, 6]
+        if axis_perpendicular_to.x_min > 0 and x_min < 0:
+            x_min, x_max = (0, np.abs(x_min) + np.abs(x_max))
+
         # min/max used in case range does not include 0. i.e. if (2,6):
-        # the range becomes (0,4), not (0,6), to produce the correct number of lines
+        # the range becomes (0,4), not (0,6).
         ranges = (
-            np.arange(
-                0,
-                min(
-                    axis_perpendicular_to.x_range[1] - axis_perpendicular_to.x_range[0],
-                    axis_perpendicular_to.x_range[1],
-                ),
-                step,
-            ),
-            np.arange(
-                0,
-                max(
-                    axis_perpendicular_to.x_range[0] - axis_perpendicular_to.x_range[1],
-                    axis_perpendicular_to.x_range[0],
-                ),
-                -step,
-            ),
+            np.arange(0, min(x_max - x_min, x_max), step),
+            np.arange(0, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:
