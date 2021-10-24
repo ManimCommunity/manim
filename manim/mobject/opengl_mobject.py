@@ -75,6 +75,7 @@ class OpenGLMobject:
         # Event listener
         listen_to_events=False,
         model_matrix=None,
+        should_render=True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
@@ -120,6 +121,8 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+        self.should_render = should_render
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
