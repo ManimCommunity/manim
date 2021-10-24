@@ -93,7 +93,7 @@ Basic Concepts
             image.background_rectangle = SurroundingRectangle(image, GREEN)
             self.add(image, image.background_rectangle)
 
-.. manim:: BooleanOperations 
+.. manim:: BooleanOperations
     :ref_classes: Union Intersection Exclusion
 
     class BooleanOperations(Scene):
