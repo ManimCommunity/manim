@@ -179,11 +179,11 @@ One way of fixing this is to wait a little:
        self.wait()
        self.next_section()
 
-For videos to be created for each section you have to add the ``--use_sections`` flag to the Manim call like this:
+For videos to be created for each section you have to add the ``--save_sections`` flag to the Manim call like this:
 
 .. code-block:: bash
 
-   manim --use_sections scene.py
+   manim --save_sections scene.py
 
 If you do this, the ``media`` folder will look like this:
 

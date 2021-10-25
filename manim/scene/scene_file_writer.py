@@ -417,7 +417,7 @@ class SceneFileWriter:
             if time_diff < frame_duration:
                 sleep(frame_duration - time_diff)
 
-    def finish(self, partial_movie_files=None):
+    def finish(self):
         """
         Finishes writing to the FFMPEG buffer or writing images
         to output directory.
@@ -429,7 +429,7 @@ class SceneFileWriter:
         if write_to_movie():
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
-            self.combine_to_movie(partial_movie_files=partial_movie_files)
+            self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()
             if config["flush_cache"]:
@@ -576,12 +576,11 @@ class SceneFileWriter:
         combine_process = subprocess.Popen(commands)
         combine_process.wait()
 
-    def combine_to_movie(self, partial_movie_files=None):
+    def combine_to_movie(self):
         """Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
-        # TODO: remove partial_movie_files from parameter <- gets immediately overwritten
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
