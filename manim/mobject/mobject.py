@@ -158,7 +158,7 @@ class Mobject:
         animation_class
             The animation type to be overridden
         override_func
-            The function returning an aniamtion replacing the default animation. It gets
+            The function returning an animation replacing the default animation. It gets
             passed the parameters given to the animnation constructor.
 
         Raises
@@ -208,11 +208,15 @@ class Mobject:
         .. manim:: ChangedDefaultTextcolor
             :save_last_frame:
 
+            config.background_color = WHITE
+
             class ChangedDefaultTextcolor(Scene):
                 def construct(self):
-                    self.camera.background_color = WHITE
                     Text.set_default(color=BLACK)
                     self.add(Text("Changing default values is easy!"))
+
+                    # we revert the colour back to the default to prevent a bug in the docs.
+                    Text.set_default(color=WHITE)
 
         """
         if kwargs:

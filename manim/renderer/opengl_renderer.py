@@ -6,7 +6,6 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -87,7 +86,7 @@ class OpenGLCamera(OpenGLMobject):
         self.light_source = OpenGLPoint(self.light_source_position)
 
         self.default_model_matrix = model_matrix
-        super().__init__(model_matrix=model_matrix, **kwargs)
+        super().__init__(model_matrix=model_matrix, should_render=False, **kwargs)
 
         if euler_angles is None:
             euler_angles = [0, 0, 0]
@@ -225,6 +224,8 @@ class OpenGLRenderer:
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animation_start_time = 0
+        self.animation_elapsed_time = 0
+        self.time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -233,6 +234,8 @@ class OpenGLRenderer:
 
         # Initialize texture map.
         self.path_to_texture_id = {}
+
+        self._background_color = color_to_rgba(config["background_color"], 1.0)
 
     def init_scene(self, scene):
         self.partial_movie_files = []
@@ -280,6 +283,7 @@ class OpenGLRenderer:
             and not config["save_last_frame"]
             and not config["format"]
             and not config["write_to_movie"]
+            and not config["dry_run"]
         )
 
     def get_pixel_shape(self):
@@ -397,16 +401,21 @@ class OpenGLRenderer:
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    @handle_play_like_call
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
+        self.animation_start_time = time.time()
+        self.file_writer.begin_animation(not self.skip_animations)
+
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
 
+        self.file_writer.end_animation(not self.skip_animations)
+        self.time += scene.duration
+        self.num_plays += 1
+
     def clear_screen(self):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
@@ -424,11 +433,12 @@ class OpenGLRenderer:
                 self.window.swap_buffers()
 
     def update_frame(self, scene):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
+            if not mobject.should_render:
+                continue
             self.render_mobject(mobject)
 
         for obj in scene.meshes:
@@ -441,12 +451,22 @@ class OpenGLRenderer:
     def scene_finished(self, scene):
         # When num_plays is 0, no images have been output, so output a single
         # image in this case
-        if config["save_last_frame"] or (
-            config["format"] == "png" and self.num_plays == 0
-        ):
+        if self.num_plays > 0:
+            self.file_writer.finish()
+        elif self.num_plays == 0 and config.write_to_movie:
+            config.write_to_movie = False
+
+        if self.should_save_last_frame():
+            config.save_last_frame = True
             self.update_frame(scene)
             self.file_writer.save_final_image(self.get_image())
-        self.file_writer.finish()
+
+    def should_save_last_frame(self):
+        if config["save_last_frame"]:
+            return True
+        if self.scene.interactive_mode:
+            return False
+        return self.num_plays == 0
 
     def get_image(self) -> Image.Image:
         """Returns an image from the current frame. The first argument passed to image represents
@@ -531,3 +551,11 @@ class OpenGLRenderer:
             # Only scale wrt one axis
             scale = fh / ph
             return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+
+    @property
+    def background_color(self):
+        return self._background_color
+
+    @background_color.setter
+    def background_color(self, value):
+        self._background_color = color_to_rgba(value, 1.0)

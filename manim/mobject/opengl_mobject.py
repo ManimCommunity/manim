@@ -75,6 +75,7 @@ class OpenGLMobject:
         # Event listener
         listen_to_events=False,
         model_matrix=None,
+        should_render=True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
@@ -120,6 +121,8 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+        self.should_render = should_render
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -1326,6 +1329,10 @@ class OpenGLMobject:
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
+        if color is not None:
+            self.color = Color(color)
+        if opacity is not None:
+            self.opacity = opacity
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
