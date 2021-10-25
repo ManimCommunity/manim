@@ -106,7 +106,7 @@ class SceneFileWriter:
                     "images_dir", module_name=module_name, scene_name=scene_name
                 ),
             )
-            self.image_file_path = os.path.join(
+            self.image_file_path = Path().joinpath(
                 image_dir,
                 add_extension_if_not_present(self.output_name, ".png"),
             )
@@ -118,7 +118,7 @@ class SceneFileWriter:
                 ),
             )
 
-            self.movie_file_path = os.path.join(
+            self.movie_file_path = Path().joinpath(
                 movie_dir,
                 add_extension_if_not_present(
                     self.output_name,
@@ -135,7 +135,7 @@ class SceneFileWriter:
                 )
 
             if is_gif_format():
-                self.gif_file_path = os.path.join(
+                self.gif_file_path = Path().joinpath(
                     movie_dir,
                     add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
                 )
@@ -189,7 +189,7 @@ class SceneFileWriter:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = os.path.join(
+            new_partial_movie_file = Path().joinpath(
                 self.partial_movie_directory,
                 f"{hash_animation}{config['movie_file_extension']}",
             )
@@ -517,11 +517,11 @@ class SceneFileWriter:
         """
         if not hasattr(self, "partial_movie_directory") or not write_to_movie():
             return False
-        path = os.path.join(
+        path = Path().joinpath(
             self.partial_movie_directory,
             f"{hash_invocation}{config['movie_file_extension']}",
         )
-        return os.path.exists(path)
+        return Path(path).exists()
 
     def combine_files(
         self,
@@ -530,7 +530,7 @@ class SceneFileWriter:
         create_gif=False,
         includes_sound=False,
     ):
-        file_list = os.path.join(
+        file_list = Path().joinpath(
             self.partial_movie_directory,
             "partial_movie_file_list.txt",
         )
@@ -657,18 +657,19 @@ class SceneFileWriter:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
-                    os.path.join(self.sections_output_dir, section.video),
+                    Path().joinpath(self.sections_output_dir, section.video),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
             with open(
-                os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
+                Path().joinpath(self.sections_output_dir, f"{self.output_name}.json"),
+                "w",
             ) as file:
                 json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
         cached_partial_movies = [
-            os.path.join(self.partial_movie_directory, file_name)
+            Path().joinpath(self.partial_movie_directory, file_name)
             for file_name in os.listdir(self.partial_movie_directory)
             if file_name != "partial_movie_file_list.txt"
         ]
@@ -678,7 +679,7 @@ class SceneFileWriter:
             )
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
-                key=os.path.getatime,
+                key=Path().lstat().st_atime,
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             for file_to_delete in oldest_files_to_delete:
@@ -691,7 +692,7 @@ class SceneFileWriter:
     def flush_cache_directory(self):
         """Delete all the cached partial movie files"""
         cached_partial_movies = [
-            os.path.join(self.partial_movie_directory, file_name)
+            Path().joinpath(self.partial_movie_directory, file_name)
             for file_name in os.listdir(self.partial_movie_directory)
             if file_name != "partial_movie_file_list.txt"
         ]

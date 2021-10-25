@@ -811,7 +811,7 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
-        if not os.path.isfile(filename):
+        if not Path(filename).is_file():
             raise FileNotFoundError(
                 errno.ENOENT,
                 "Error: --config_file could not find a valid config file.",
@@ -854,7 +854,7 @@ class ManimConfig(MutableMapping):
         self._set_boolean("log_to_file", val)
         if val:
             log_dir = self.get_dir("log_dir")
-            if not os.path.exists(log_dir):
+            if not Path(log_dir).resolve().exists():
                 os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
 

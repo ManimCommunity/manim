@@ -77,11 +77,11 @@ def generate_tex_file(expression, environment=None, tex_template=None):
         output = tex_template.get_texcode_for_expression(expression)
 
     tex_dir = config.get_dir("tex_dir")
-    if not os.path.exists(tex_dir):
+    if not Path(tex_dir).exists():
         os.makedirs(tex_dir)
 
-    result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
-    if not os.path.exists(result):
+    result = str(Path().joinpath(tex_dir, tex_hash(output))) + ".tex"
+    if not Path(result).exists():
         logger.info('Writing "{}" to {}'.format("".join(expression), result))
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
@@ -168,7 +168,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
     result = Path(result).as_posix()
     tex_file = Path(tex_file).as_posix()
     tex_dir = Path(config.get_dir("tex_dir")).as_posix()
-    if not os.path.exists(result):
+    if not Path(result).exists():
         command = tex_compilation_command(
             tex_compiler,
             output_format,
@@ -207,7 +207,7 @@ def convert_to_svg(dvi_file, extension, page=1):
     result = dvi_file.replace(extension, ".svg")
     result = Path(result).as_posix()
     dvi_file = Path(dvi_file).as_posix()
-    if not os.path.exists(result):
+    if not Path(result).exists():
         commands = [
             "dvisvgm",
             "--pdf" if extension == ".pdf" else "",
@@ -222,7 +222,7 @@ def convert_to_svg(dvi_file, extension, page=1):
         os.system(" ".join(commands))
 
     # if the file does not exist now, this means conversion failed
-    if not os.path.exists(result):
+    if not Path(result).exists():
         raise ValueError(
             f"Your installation does not support converting {extension} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."

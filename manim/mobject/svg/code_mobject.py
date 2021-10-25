@@ -7,6 +7,7 @@ __all__ = [
 import html
 import os
 import re
+from pathlib import Path
 
 import numpy as np
 from pygments import highlight
@@ -294,11 +295,11 @@ class Code(VGroup):
         if self.file_name is None:
             raise Exception("Must specify file for Code")
         possible_paths = [
-            os.path.join(os.path.join("assets", "codes"), self.file_name),
+            Path().joinpath("assets", "codes", self.file_name),
             self.file_name,
         ]
         for path in possible_paths:
-            if os.path.exists(path):
+            if Path(path).exists():
                 self.file_path = path
                 return
         error = (
@@ -380,11 +381,11 @@ class Code(VGroup):
 
         if self.generate_html_file:
             os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"),
+                Path().joinpath("assets", "codes", "generated_html_files"),
                 exist_ok=True,
             )
             with open(
-                os.path.join(
+                Path().joinpath(
                     "assets",
                     "codes",
                     "generated_html_files",

@@ -21,11 +21,13 @@ def get_shader_dir():
 
 def find_file(file_name, directories=None):
     # Check if what was passed in is already a valid path to a file
-    if os.path.exists(file_name):
+    if Path(file_name).exists():
         return file_name
-    possible_paths = (os.path.join(directory, file_name) for directory in directories)
+    possible_paths = (
+        Path().joinpath(directory, file_name) for directory in directories
+    )
     for path in possible_paths:
-        if os.path.exists(path):
+        if Path(path).exists():
             return path
         else:
             logger.debug(f"{path} does not exist.")
@@ -110,7 +112,7 @@ class ShaderWrapper:
     def init_program_code(self):
         def get_code(name):
             return get_shader_code_from_file(
-                os.path.join(self.shader_folder, f"{name}.glsl"),
+                Path().joinpath(self.shader_folder, f"{name}.glsl"),
             )
 
         self.program_code = {
@@ -183,7 +185,7 @@ def get_shader_code_from_file(filename):
     )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            os.path.join("include", line.replace("#include ../include/", "")),
+            Path().joinpath("include", line.replace("#include ../include/", "")),
         )
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result

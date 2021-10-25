@@ -35,7 +35,7 @@ def get_shader_code_from_file(file_path):
         for match in include_lines:
             include_path = match.group("include_path")
             included_code = get_shader_code_from_file(
-                os.path.join(file_path.parent / include_path),
+                Path().joinpath(file_path.parent / include_path),
             )
             source = source.replace(match.group(0), included_code)
         file_path_to_code_map[file_path] = source

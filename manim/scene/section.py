@@ -1,7 +1,7 @@
 """building blocks of segmented video API"""
 
-import os
 from enum import Enum
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from manim import get_video_metadata
@@ -81,7 +81,7 @@ class Section:
                 f"Section '{self.name}' cannot be exported as dict, it does not have a video path assigned to it"
             )
 
-        video_metadata = get_video_metadata(os.path.join(sections_dir, self.video))
+        video_metadata = get_video_metadata(Path().joinpath(sections_dir, self.video))
         return dict(
             {
                 "name": self.name,

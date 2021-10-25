@@ -639,11 +639,11 @@ class OpenGLText(OpenGLSVGMobject):
         line_spacing = self.line_spacing * 10
         dir_name = config.get_dir("text_dir")
         disable_liga = self.disable_ligatures
-        if not os.path.exists(dir_name):
+        if not Path(dir_name).exists():
             os.makedirs(dir_name)
         hash_name = self.text2hash()
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
+        file_name = Path().joinpath(dir_name, hash_name) + ".svg"
+        if Path(file_name).exists():
             return file_name
         settings = self.text2settings()
         width = 600
@@ -1025,11 +1025,11 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         line_spacing = self.line_spacing * 10
         dir_name = config.get_dir("text_dir")
         disable_liga = self.disable_ligatures
-        if not os.path.exists(dir_name):
+        if not Path(dir_name).exists():
             os.makedirs(dir_name)
         hash_name = self.text2hash()
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
+        file_name = Path().joinpath(dir_name, hash_name) + ".svg"
+        if Path(file_name).exists():
             return file_name
 
         logger.debug(f"Setting Text {self.text}")

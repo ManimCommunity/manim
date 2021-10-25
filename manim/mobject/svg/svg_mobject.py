@@ -9,6 +9,7 @@ import os
 import re
 import string
 import warnings
+from pathlib import Path
 from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
@@ -103,25 +104,34 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
-        if os.path.exists(self.file_name):
+        if Path(self.file_name).exists():
             self.file_path = self.file_name
             return
 
-        relative = os.path.join(os.getcwd(), self.file_name)
-        if os.path.exists(relative):
+        relative = Path().cwd().joinpath(self.file_name)
+        if Path(relative).exists():
             self.file_path = relative
             return
 
         possible_paths = [
-            os.path.join(config.get_dir("assets_dir"), self.file_name),
-            os.path.join(config.get_dir("assets_dir"), self.file_name + ".svg"),
-            os.path.join(config.get_dir("assets_dir"), self.file_name + ".xdv"),
+            Path().joinpath(
+                config.get_dir("assets_dir"),
+                self.file_name,
+            ),
+            Path().joinpath(
+                config.get_dir("assets_dir"),
+                self.file_name + ".svg",
+            ),
+            Path().joinpath(
+                config.get_dir("assets_dir"),
+                self.file_name + ".xdv",
+            ),
             self.file_name,
             self.file_name + ".svg",
             self.file_name + ".xdv",
         ]
         for path in possible_paths:
-            if os.path.exists(path):
+            if Path(path).exists():
                 self.file_path = path
                 return
         error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"

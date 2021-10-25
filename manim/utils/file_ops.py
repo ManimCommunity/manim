@@ -129,16 +129,16 @@ def add_version_before_extension(file_name):
 
 
 def guarantee_existence(path):
-    if not os.path.exists(path):
+    if not Path(path).exists():
         os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(path).resolve()
 
 
 def guarantee_empty_existence(path):
-    if os.path.exists(path):
+    if Path(path).exists():
         shutil.rmtree(path)
     os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(path).resolve()
 
 
 def seek_full_path_from_defaults(file_name, default_dir, extensions):
@@ -147,7 +147,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
     for path in possible_paths:
-        if os.path.exists(path):
+        if Path(path).exists():
             return path
     error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
     raise OSError(error)
@@ -161,20 +161,24 @@ def modify_atime(file_path):
     file_path : :class:`str`
         The path of the file.
     """
-    os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
+    os.utime(file_path, times=(time.time(), Path(file_path).lstat().st_mtime))
 
 
 def open_file(file_path, in_browser=False):
     current_os = platform.system()
     if current_os == "Windows":
-        os.startfile(file_path if not in_browser else os.path.dirname(file_path))
+        os.startfile(file_path if not in_browser else Path(file_path).resolve().parent)
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = (
+                file_path if not in_browser else Path(file_path).resolve().parent
+            )
         elif current_os.startswith("CYGWIN"):
             commands = ["cygstart"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = (
+                file_path if not in_browser else Path(file_path).resolve().parent
+            )
         elif current_os == "Darwin":
             commands = ["open"] if not in_browser else ["open", "-R"]
         else:

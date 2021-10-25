@@ -688,12 +688,12 @@ class Text(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
+        if not Path(dir_name).exists():
             os.makedirs(dir_name)
         hash_name = self.text2hash()
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
+        file_name = str(Path().joinpath(dir_name, hash_name)) + ".svg"
 
-        if os.path.exists(file_name):
+        if Path(file_name).exists():
             svg_file = file_name
         else:
             settings = self.text2settings()
@@ -1192,11 +1192,11 @@ class MarkupText(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
+        if not Path(dir_name).exists():
             os.makedirs(dir_name)
         hash_name = self.text2hash()
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
+        file_name = str(Path().joinpath(dir_name, hash_name)) + ".svg"
+        if Path(file_name).exists():
             svg_file = file_name
         else:
             logger.debug(f"Setting Text {self.text}")
