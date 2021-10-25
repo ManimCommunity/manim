@@ -42,8 +42,8 @@ class FullScreenRectangle(ScreenRectangle):
 
 
 @deprecated(
-    since="v0.11.0",
-    until="v0.12.0",
+    since="v0.12.0",
+    until="v0.13.0",
     message="This method is deprecated due to decluttering purpose.",
     replacement="FullScreenRectangle(stroke_width=0, fill_color=BLACK, fill_opacity=0.7)",
 )
@@ -58,8 +58,8 @@ class FullScreenFadeRectangle(FullScreenRectangle):
 
 
 @deprecated(
-    since="v0.11.0",
-    until="v0.12.0",
+    since="v0.12.0",
+    until="v0.13.0",
     message="This method is deprecated due to decluttering purpose.",
 )
 class PictureInPictureFrame(Rectangle):
