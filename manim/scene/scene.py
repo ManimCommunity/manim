@@ -115,6 +115,7 @@ class Scene:
         self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
+        self.interactive_mode = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1036,6 +1037,9 @@ class Scene:
         elif not self.renderer.window:
             logger.warning("Disabling interactive embed as no window was created")
             return False
+        elif config.dry_run:
+            logger.warning("Disabling interactive embed as dry_run is enabled")
+            return False
         return True
 
     def interactive_embed(self):
@@ -1044,6 +1048,7 @@ class Scene:
         """
         if not self.check_interactive_embed_is_valid():
             return
+        self.interactive_mode = True
 
         def ipython(shell, namespace):
             import manim

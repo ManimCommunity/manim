@@ -12,6 +12,7 @@ Module Index
    constants
    ~utils.bezier
    ~utils.color
+   ~utils.commands
    ~utils.config_ops
    ~utils.deprecation
    ~utils.hashing
