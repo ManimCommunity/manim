@@ -210,11 +210,14 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
         end_offset = write_offset + submob.points.shape[0]
 
         points[write_offset:end_offset] = submob.points
-        colors[write_offset:end_offset] = np.repeat(
-            submob.stroke_rgba,
-            submob.points.shape[0],
-            axis=0,
-        )
+        if submob.stroke_rgba.shape[0] == points[write_offset:end_offset].shape[0]:
+            colors[write_offset:end_offset] = submob.stroke_rgba
+        else:
+            colors[write_offset:end_offset] = np.repeat(
+                submob.stroke_rgba,
+                submob.points.shape[0],
+                axis=0,
+            )
         widths[write_offset:end_offset] = np.repeat(
             submob.stroke_width,
             submob.points.shape[0],
