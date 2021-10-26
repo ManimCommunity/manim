@@ -234,7 +234,7 @@ class OpenGLSurface(OpenGLMobject):
             shader_data["du_point"] = du_points
             shader_data["dv_point"] = dv_points
             if isinstance(self.color, list):
-                shader_data["color"] = self.get_color_by_value(s_points)
+                shader_data["color"] = self._get_color_by_value(s_points)
             else:
                 shader_data["color"] = [
                     color_to_rgba(self.color, self.opacity) for i in s_points
@@ -245,7 +245,19 @@ class OpenGLSurface(OpenGLMobject):
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
-    def get_color_by_value(self, s_points):
+    def _get_color_by_value(self, s_points):
+        """Matches each vertex to a color associated to it's z-value.
+
+        Parameters
+        ----------
+        s_points
+           The verticies of the surface.
+
+        Returns
+        -------
+        List
+            A list of colors matching the vertex inputs.
+        """
         if type(self.color[0]) is tuple:
             new_colors, pivots = [
                 [i for i, j in self.color],
