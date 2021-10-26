@@ -450,8 +450,8 @@ class OpenGLMobject:
         return self
 
     @deprecated(
-        since="v0.10.0",
-        until="v0.11.0",
+        since="v0.12.0",
+        until="v0.13.0",
         replacement="self.submobjects",
         message="Switching to using properties for submobjects",
     )
