@@ -50,6 +50,19 @@ class SceneWithNonStaticWait(Scene):
         self.wait()
 
 
+class StaticScene(Scene):
+    def construct(self):
+        dot = Dot().set_color(GREEN)
+        self.add(dot)
+
+
+class InteractiveStaticScene(Scene):
+    def construct(self):
+        dot = Dot().set_color(GREEN)
+        self.add(dot)
+        self.interactive_mode = True
+
+
 class SceneWithSections(Scene):
     def construct(self):
         # this would be defined in a third party application using the segmented video API
