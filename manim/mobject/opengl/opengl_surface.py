@@ -251,7 +251,7 @@ class OpenGLSurface(OpenGLMobject):
         Parameters
         ----------
         s_points
-           The verticies of the surface.
+           The vertices of the surface.
 
         Returns
         -------
