@@ -1,0 +1,125 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:2
+msgid "Arrow"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.Arrow``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:1
+msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:1
+msgid "An arrow."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:3
+msgid "Arguments to be passed to :class:`Line`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:5
+msgid "The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:7
+msgid "The distance of the arrow from its start and end points."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:9
+msgid ":attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:11
+msgid ":attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:13
+msgid "Additional arguments to be passed to :class:`Line`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:17
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_normal_vector:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:6
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:80
+msgid ":class:`ArrowTip`, :class:`CurvedArrow`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1
+msgid "Returns the default tip_length of the arrow."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_normal_vector:1
+msgid "Returns the normal of a vector."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.reset_normal_vector:1
+msgid "Resets the normal of a vector"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1
+msgid "Scale an arrow, but keep stroke width and arrow tip size fixed."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid "Used internally."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:26
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_normal_vector:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:3
+msgid ":meth:`~.Mobject.scale`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:17
+msgid "Manually scaling the object using the default method :meth:`~.Mobject.scale` does not have the same properties::"
+msgstr ""
+
+
