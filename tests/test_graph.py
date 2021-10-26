@@ -91,5 +91,8 @@ def test_custom_animation_mobject_list():
     assert scene.mobjects == [G]
     with tempconfig({'dry_run': True, 'quality': 'low_quality'}):
         scene.play(G.animate.add_vertices(4))
-    assert str(G) == "Graph on 4 vertices and 2 edges"
-    assert scene.mobjects == [G]
+        assert str(G) == "Graph on 4 vertices and 2 edges"
+        assert scene.mobjects == [G]
+        scene.play(G.animate.remove_vertices(2))
+        assert str(G) == "Graph on 3 vertices and 0 edges"
+        assert scene.mobjects == [G]
