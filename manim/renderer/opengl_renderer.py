@@ -1,5 +1,6 @@
 import itertools as it
 import time
+from typing import Any
 
 import moderngl
 import numpy as np
@@ -216,9 +217,10 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, skip_animations=False):
+    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
+        self._file_writer_class = file_writer_class
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
@@ -238,7 +240,7 @@ class OpenGLRenderer:
 
     def init_scene(self, scene):
         self.partial_movie_files = []
-        self.file_writer = SceneFileWriter(
+        self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
@@ -388,7 +390,7 @@ class OpenGLRenderer:
         raises an EndSceneEarlyException if they don't correspond.
         """
         # there is always at least one section -> no out of bounds here
-        # self.skip_animations = self.file_writer.sections[len(self.file_writer.sections) - 1].skip_animations
+        self.skip_animations = self.file_writer.sections[-1].skip_animations
         if (
             config["from_animation_number"]
             and self.num_plays < config["from_animation_number"]
