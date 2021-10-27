@@ -1,9 +1,13 @@
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Square, VDict, VGroup
+from manim import BLACK, Circle, Line, Square, VDict, VGroup
 from manim.mobject.opengl_mobject import OpenGLMobject
-from manim.mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.opengl_vectorized_mobject import (
+    OpenGLVMobject,
+    OrderedVGroup,
+    OrderStrategy,
+)
 
 
 def test_opengl_vmobject_point_from_propotion(using_opengl_renderer):
@@ -206,3 +210,112 @@ def test_vgroup_item_assignment_only_allows_vmobjects(using_opengl_renderer):
     vgroup = VGroup(OpenGLVMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"
+
+
+def test_ordered_vgroup_priority_strategy_single_shader(using_opengl_renderer):
+    """Priority strategy should add data in order objects were appended. In the
+    case where only one shader is set they will be combined into one"""
+    expected_points = np.array([[0.0, 0.0, 0.0], [2.0, 2.0, 2.0], [1.0, 1.0, 1.0]])
+    a = OpenGLVMobject().set_points([expected_points[0]])
+    b = OpenGLVMobject().set_points([expected_points[1]])
+    c = OpenGLVMobject().set_points([expected_points[2]])
+
+    ordered_group = OrderedVGroup(a, b, c, order_strategy=OrderStrategy.PRIORITY)
+    wrappers = ordered_group.get_shader_wrapper_list()
+
+    assert len(wrappers) == 1, "expected 1 wrapper, but got " + str(len(wrappers))
+
+    wrapper = wrappers[0]
+    assert np.alltrue(wrapper.vert_data["point"][0] == expected_points[0])
+    assert np.alltrue(wrapper.vert_data["point"][1] == expected_points[1])
+    assert np.alltrue(wrapper.vert_data["point"][2] == expected_points[2])
+
+
+def test_ordered_vgroup_priority_strategy_multiple_shaders(using_opengl_renderer):
+    """Priority strategy should add data in order objects were appended. In the
+    case where there are multiple shaders it will not combine shaders if the shader types
+    are not in order"""
+    expected_points = np.array([[0.0, 0.0, 0.0], [2.0, 2.0, 2.0], [1.0, 1.0, 1.0]])
+    a = OpenGLVMobject().set_points([expected_points[0]])
+    b = OpenGLVMobject().set_points([expected_points[1]])
+    c = OpenGLVMobject().set_points([expected_points[2]])
+
+    ordered_group = OrderedVGroup(a, b, c, order_strategy=OrderStrategy.PRIORITY)
+    wrappers = ordered_group.get_shader_wrapper_list()
+
+    assert len(wrappers) == 1, "expected 1 wrapper, but got " + str(len(wrappers))
+
+    wrapper = wrappers[0]
+    assert np.alltrue(wrapper.vert_data["point"][0] == expected_points[0])
+    assert np.alltrue(wrapper.vert_data["point"][1] == expected_points[1])
+    assert np.alltrue(wrapper.vert_data["point"][2] == expected_points[2])
+
+
+def test_ordered_vgroup_priority_strategy_multiple_shaders_in_order(
+    using_opengl_renderer,
+):
+    """Priority strategy should add data in order objects were appended. In the
+    case where there are multiple shaders it will combine shaders if the shader types
+    are in order"""
+    expected_points = np.array([[0.0, 0.0, 0.0], [2.0, 2.0, 2.0], [1.0, 1.0, 1.0]])
+    a = OpenGLVMobject().set_points([expected_points[0]])
+    b = OpenGLVMobject().set_points([expected_points[1]])
+    c = OpenGLVMobject().set_points([expected_points[2]]).set_fill(BLACK, 1.0)
+
+    ordered_group = OrderedVGroup(a, b, c, order_strategy=OrderStrategy.PRIORITY)
+    wrappers = ordered_group.get_shader_wrapper_list()
+
+    assert len(wrappers) == 3, "expected 3 wrappers, but got " + str(len(wrappers))
+
+    assert "stroke" in wrappers[0].shader_folder
+    assert np.alltrue(wrappers[0].vert_data["point"][0] == expected_points[0])
+
+    assert "stroke" in wrappers[0].shader_folder
+    assert np.alltrue(wrappers[0].vert_data["point"][1] == expected_points[1])
+
+    assert "fill" in wrappers[1].shader_folder
+    assert np.alltrue(wrappers[1].vert_data["point"][0] == expected_points[2])
+    assert "stroke" in wrappers[2].shader_folder
+    assert np.alltrue(wrappers[2].vert_data["point"][0] == expected_points[2])
+
+
+def test_ordered_vgroup_fill_stroke_merge_strategy(using_opengl_renderer):
+    """Fill Stroke merge should combine all shaders of the same type and prioritise fill shaders
+    before strokes"""
+    expected_points = np.array([[0.0, 0.0, 0.0], [2.0, 2.0, 2.0], [1.0, 1.0, 1.0]])
+    a = OpenGLVMobject().set_points([expected_points[0]]).set_fill(BLACK, 1.0)
+    b = OpenGLVMobject().set_points([expected_points[1]]).set_fill(BLACK, 1.0)
+    c = OpenGLVMobject().set_points([expected_points[2]]).set_fill(BLACK, 1.0)
+
+    ordered_group = OrderedVGroup(a, b, c, order_strategy=OrderStrategy.MERGE)
+    wrappers = ordered_group.get_shader_wrapper_list()
+
+    assert len(wrappers) == 2, "expected 2 wrappers, but got " + str(len(wrappers))
+
+    assert "fill" in wrappers[0].shader_folder
+    assert np.alltrue(wrappers[0].vert_data["point"] == expected_points)
+
+    assert "stroke" in wrappers[1].shader_folder
+    assert np.alltrue(wrappers[1].vert_data["point"] == expected_points)
+
+
+def test_ordered_vgroup_fill_stroke_merge_strategy_stroke_behind_fill(
+    using_opengl_renderer,
+):
+    """Fill Stroke merge should combine all shaders of the same type and prioritise stroke shaders
+    before fill if draw_stroke_behind_fill is set"""
+    expected_points = np.array([[0.0, 0.0, 0.0], [2.0, 2.0, 2.0], [1.0, 1.0, 1.0]])
+    a = OpenGLVMobject().set_points([expected_points[0]]).set_fill(BLACK, 1.0)
+    b = OpenGLVMobject().set_points([expected_points[1]]).set_fill(BLACK, 1.0)
+    c = OpenGLVMobject().set_points([expected_points[2]]).set_fill(BLACK, 1.0)
+
+    ordered_group = OrderedVGroup(a, b, c, order_strategy=OrderStrategy.MERGE)
+    wrappers = ordered_group.get_shader_wrapper_list()
+
+    assert len(wrappers) == 2, "expected 2 wrappers, but got " + str(len(wrappers))
+
+    assert "fill" in wrappers[0].shader_folder
+    assert np.alltrue(wrappers[0].vert_data["point"] == expected_points)
+
+    assert "stroke" in wrappers[1].shader_folder
+    assert np.alltrue(wrappers[1].vert_data["point"] == expected_points)

@@ -1819,7 +1819,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             z_values = np.zeros(x_values.shape)
 
         line_graph = VDict()
-        graph = VGroup(color=line_color, **kwargs)
+        if config["renderer"] == "opengl":
+            graph = VGroup(color=line_color, draw_stroke_behind_fill=True, **kwargs)
+        else:
+            graph = VGroup(color=line_color, **kwargs)
 
         vertices = [
             self.coords_to_point(x, y, z)
