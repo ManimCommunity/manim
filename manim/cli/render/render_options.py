@@ -123,6 +123,12 @@ render_options = option_group(
         help="Save as a gif (Deprecated).",
     ),
     option(
+        "--save_sections",
+        default=None,
+        is_flag=True,
+        help="Save section videos in addition to movie file.",
+    ),
+    option(
         "-s",
         "--save_last_frame",
         default=None,

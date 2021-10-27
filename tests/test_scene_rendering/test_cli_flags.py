@@ -6,10 +6,11 @@ import pytest
 from click.testing import CliRunner
 from PIL import Image
 
+from manim import capture
 from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
 
-from ..utils.video_tester import *
+from ..utils.video_tester import video_comparison
 
 
 @pytest.mark.slow

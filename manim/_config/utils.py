@@ -245,6 +245,7 @@ class ManimConfig(MutableMapping):
         "custom_folders",
         "disable_caching",
         "disable_caching_warning",
+        "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
         "format",
@@ -273,6 +274,7 @@ class ManimConfig(MutableMapping):
         "preview",
         "progress_bar",
         "save_as_gif",
+        "save_sections",
         "save_last_frame",
         "save_pngs",
         "scene_names",
@@ -290,6 +292,7 @@ class ManimConfig(MutableMapping):
         "use_projection_stroke_shaders",
         "verbosity",
         "video_dir",
+        "sections_dir",
         "fullscreen",
         "window_position",
         "window_size",
@@ -528,6 +531,7 @@ class ManimConfig(MutableMapping):
             "write_all",
             "save_pngs",
             "save_as_gif",
+            "save_sections",
             "preview",
             "show_in_file_browser",
             "log_to_file",
@@ -566,6 +570,7 @@ class ManimConfig(MutableMapping):
             "media_dir",
             "log_dir",
             "video_dir",
+            "sections_dir",
             "images_dir",
             "text_dir",
             "tex_dir",
@@ -676,6 +681,7 @@ class ManimConfig(MutableMapping):
             "save_last_frame",
             "save_pngs",
             "save_as_gif",
+            "save_sections",
             "write_all",
             "disable_caching",
             "format",
@@ -695,6 +701,7 @@ class ManimConfig(MutableMapping):
             "zero_pad",
             "enable_wireframe",
             "force_window",
+            "dry_run",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -702,10 +709,6 @@ class ManimConfig(MutableMapping):
                 # not change the current config
                 if attr is not None:
                     self[key] = attr
-
-        # dry_run is special because it can only be set to True
-        if getattr(args, "dry_run", False):
-            self["dry_run"] = True
 
         for key in [
             "media_dir",  # always set this one first
@@ -751,6 +754,7 @@ class ManimConfig(MutableMapping):
             for opt in [
                 "media_dir",
                 "video_dir",
+                "sections_dir",
                 "images_dir",
                 "text_dir",
                 "tex_dir",
@@ -890,6 +894,12 @@ class ManimConfig(MutableMapping):
         doc="Whether to save the rendered scene in .gif format (-i).",
     )
 
+    save_sections = property(
+        lambda self: self._d["save_sections"],
+        lambda self, val: self._set_boolean("save_sections", val),
+        doc="Whether to save single videos for each section in addition to the movie file.",
+    )
+
     enable_wireframe = property(
         lambda self: self._d["enable_wireframe"],
         lambda self, val: self._set_boolean("enable_wireframe", val),
@@ -900,6 +910,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["force_window"],
         lambda self, val: self._set_boolean("force_window", val),
         doc="Set to force window when using the opengl renderer",
+    )
+
+    dry_run = property(
+        lambda self: self._d["dry_run"],
+        lambda self, val: self._set_boolean("dry_run", val),
+        doc="Enable dry_run so that no output files are generated and window is disabled.",
     )
 
     @property
@@ -1127,27 +1143,16 @@ class ManimConfig(MutableMapping):
     @property
     def dry_run(self):
         """Whether dry run is enabled."""
-        return (
-            self.write_to_movie is False
-            and self.write_all is False
-            and self.save_last_frame is False
-            and not self.format
-        )
+        return self._d["dry_run"]
 
     @dry_run.setter
     def dry_run(self, val: bool) -> None:
+        self._d["dry_run"] = val
         if val:
             self.write_to_movie = False
             self.write_all = False
             self.save_last_frame = False
             self.format = None
-        else:
-            raise ValueError(
-                "It is unclear what it means to set dry_run to "
-                "False.  Instead, try setting each option "
-                "individually. (write_to_movie, write_all, "
-                "save_last_frame, save_pngs, or save_as_gif)",
-            )
 
     @property
     def renderer(self):
@@ -1410,6 +1415,7 @@ class ManimConfig(MutableMapping):
             "assets_dir",
             "media_dir",
             "video_dir",
+            "sections_dir",
             "images_dir",
             "text_dir",
             "tex_dir",
@@ -1465,6 +1471,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["video_dir"],
         lambda self, val: self._set_dir("video_dir", val),
         doc="Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    sections_dir = property(
+        lambda self: self._d["sections_dir"],
+        lambda self, val: self._set_dir("sections_dir", val),
+        doc="Directory to place section videos (no flag).  See :meth:`ManimConfig.get_dir`.",
     )
 
     images_dir = property(
