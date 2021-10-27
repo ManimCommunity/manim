@@ -4,20 +4,13 @@ __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
 import typing
-import warnings
 
 from ..animation.animation import Animation
 from ..mobject.numbers import DecimalNumber
 from ..utils.bezier import interpolate
-from ..utils.deprecation import deprecated_params
 
 
 class ChangingDecimal(Animation):
-    @deprecated_params(
-        "tracked_mobject position_update_func",
-        until="v0.6.0",
-        message="Use a mobject updater instead.",
-    )
     def __init__(
         self,
         decimal_mob: DecimalNumber,
@@ -36,7 +29,7 @@ class ChangingDecimal(Animation):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
     def interpolate_mobject(self, alpha: float) -> None:
-        self.mobject.set_value(self.number_update_func(alpha))
+        self.mobject.set_value(self.number_update_func(self.rate_func(alpha)))
 
 
 class ChangeDecimalToValue(ChangingDecimal):

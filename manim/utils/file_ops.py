@@ -3,6 +3,7 @@
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",
+    "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
@@ -16,6 +17,7 @@ __all__ = [
 
 import os
 import platform
+import shutil
 import subprocess as sp
 import time
 from pathlib import Path
@@ -132,6 +134,13 @@ def guarantee_existence(path):
     return os.path.abspath(path)
 
 
+def guarantee_empty_existence(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+    return os.path.abspath(path)
+
+
 def seek_full_path_from_defaults(file_name, default_dir, extensions):
     possible_paths = [file_name]
     possible_paths += [
@@ -141,7 +150,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
         if os.path.exists(path):
             return path
     error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
-    raise IOError(error)
+    raise OSError(error)
 
 
 def modify_atime(file_path):
@@ -239,10 +248,10 @@ def copy_template_files(project_dir=Path("."), template_name="Default"):
             Name of template.
     """
     template_cfg_path = Path.resolve(
-        Path(__file__).parent.parent / "templates/template.cfg"
+        Path(__file__).parent.parent / "templates/template.cfg",
     )
     template_scene_path = Path.resolve(
-        Path(__file__).parent.parent / f"templates/{template_name}.mtp"
+        Path(__file__).parent.parent / f"templates/{template_name}.mtp",
     )
 
     if not template_cfg_path.exists():

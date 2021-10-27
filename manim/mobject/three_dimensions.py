@@ -2,6 +2,7 @@
 
 __all__ = [
     "ThreeDVMobject",
+    "Surface",
     "ParametricSurface",
     "Sphere",
     "Dot3D",
@@ -14,18 +15,24 @@ __all__ = [
     "Torus",
 ]
 
+
+from typing import *
+
 import numpy as np
+from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
+from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.iterables import tuplify
-from ..utils.space_ops import normalize, z_to_vector
+from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -33,8 +40,21 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class ParametricSurface(VGroup):
-    """Creates a Parametric Surface
+class Surface(VGroup, metaclass=ConvertToOpenGL):
+    """Creates a Parametric Surface using a checkerboard pattern.
+
+    Parameters
+    ----------
+    func :
+        The function that defines the surface.
+    u_range :
+        The range of the ``u`` variable: ``(u_min, u_max)``.
+    v_range :
+        The range of the ``v`` variable: ``(v_min, v_max)``.
+    resolution :
+        The number of samples taken of the surface. A tuple
+        can be used to define different resolutions for ``u`` and
+        ``v`` respectively.
 
     Examples
     --------
@@ -47,12 +67,10 @@ class ParametricSurface(VGroup):
 
             def construct(self):
                 axes = ThreeDAxes(x_range=[-4,4], x_length=8)
-                surface = ParametricSurface(
+                surface = Surface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
-                    u_min=-PI,
-                    u_max=PI,
-                    v_min=0,
-                    v_max=TAU,
+                    u_range=[-PI, PI],
+                    v_range=[0, TAU]
                 )
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
@@ -60,27 +78,23 @@ class ParametricSurface(VGroup):
 
     def __init__(
         self,
-        func,
-        u_min=0,
-        u_max=1,
-        v_min=0,
-        v_max=1,
-        resolution=32,
-        surface_piece_config={},
-        fill_color=BLUE_D,
-        fill_opacity=1.0,
-        checkerboard_colors=[BLUE_D, BLUE_E],
-        stroke_color=LIGHT_GREY,
-        stroke_width=0.5,
-        should_make_jagged=False,
-        pre_function_handle_to_anchor_scale_factor=0.00001,
+        func: Callable[[float, float], np.ndarray],
+        u_range: Sequence[float] = [0, 1],
+        v_range: Sequence[float] = [0, 1],
+        resolution: Sequence[int] = 32,
+        surface_piece_config: dict = {},
+        fill_color: "Color" = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
+        stroke_color: "Color" = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
-    ):
+    ) -> None:
+        self.u_range = u_range
+        self.v_range = v_range
         super().__init__(**kwargs)
-        self.u_min = u_min
-        self.u_max = u_max
-        self.v_min = v_min
-        self.v_max = v_max
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.fill_color = fill_color
@@ -104,13 +118,9 @@ class ParametricSurface(VGroup):
             u_res = v_res = res[0]
         else:
             u_res, v_res = res
-        u_min = self.u_min
-        u_max = self.u_max
-        v_min = self.v_min
-        v_max = self.v_max
 
-        u_values = np.linspace(u_min, u_max, u_res + 1)
-        v_values = np.linspace(v_min, v_max, v_res + 1)
+        u_values = np.linspace(*self.u_range, u_res + 1)
+        v_values = np.linspace(*self.v_range, v_res + 1)
 
         return u_values, v_values
 
@@ -129,7 +139,7 @@ class ParametricSurface(VGroup):
                         [u2, v2, 0],
                         [u1, v2, 0],
                         [u1, v1, 0],
-                    ]
+                    ],
                 )
                 faces.add(face)
                 face.u_index = i
@@ -155,11 +165,98 @@ class ParametricSurface(VGroup):
             face.set_fill(colors[c_index], opacity=opacity)
         return self
 
+    def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
+        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+
+        Parameters
+        ----------
+        axes :
+            The axes for the parametric surface, which will be used to map z-values to colors.
+        colors :
+            A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
+            containing colors paired with numbers, then those numbers will be used as the pivots.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The parametric surface with a gradient applied by value. For chaining.
+
+        Examples
+        --------
+        .. manim:: FillByValueExample
+            :save_last_frame:
+
+            class FillByValueExample(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 42
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+                    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+                    def param_surface(u, v):
+                        x = u
+                        y = v
+                        z = np.sin(x) * np.cos(y)
+                        return z
+                    surface_plane = Surface(
+                        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+                        resolution=(resolution_fa, resolution_fa),
+                        v_range=[0, 5],
+                        u_range=[0, 5],
+                        )
+                    surface_plane.set_style(fill_opacity=1)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    self.add(axes, surface_plane)
+        """
+        if type(colors[0]) is tuple:
+            new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
+        else:
+            new_colors = colors
+
+            pivot_min = axes.z_range[0]
+            pivot_max = axes.z_range[1]
+            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
+            pivots = np.arange(
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
+            )
+
+        for mob in self.family_members_with_points():
+            z_value = axes.point_to_coords(mob.get_midpoint())[2]
+            if z_value <= pivots[0]:
+                mob.set_color(new_colors[0])
+            elif z_value >= pivots[-1]:
+                mob.set_color(new_colors[-1])
+            else:
+                for i, pivot in enumerate(pivots):
+                    if pivot > z_value:
+                        color_index = (z_value - pivots[i - 1]) / (
+                            pivots[i] - pivots[i - 1]
+                        )
+                        color_index = min(color_index, 1)
+                        mob_color = interpolate_color(
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
+                        )
+                        if config.renderer == "opengl":
+                            mob.set_color(mob_color, recurse=False)
+                        else:
+                            mob.set_color(mob_color, family=False)
+                        break
+
+        return self
+
+
+@deprecated(since="v0.10.0", replacement=Surface)
+class ParametricSurface(Surface):
+    # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
+    """Creates a parametric surface"""
+
 
 # Specific shapes
 
 
-class Sphere(ParametricSurface):
+class Sphere(Surface):
     """A mobject representing a three-dimensional sphere.
 
     Examples
@@ -175,10 +272,8 @@ class Sphere(ParametricSurface):
                     center=(3, 0, 0),
                     radius=1,
                     resolution=(20, 20),
-                    u_min=0.001,
-                    u_max=PI - 0.001,
-                    v_min=0,
-                    v_max=TAU,
+                    u_range=[0.001, PI - 0.001],
+                    v_range=[0, TAU]
                 )
                 sphere1.set_color(RED)
                 self.add(sphere1)
@@ -194,31 +289,34 @@ class Sphere(ParametricSurface):
         self,
         center=ORIGIN,
         radius=1,
-        resolution=(12, 24),
-        u_min=0.001,
-        u_max=PI - 0.001,
-        v_min=0,
-        v_max=TAU,
+        resolution=None,
+        u_range=(0, TAU),
+        v_range=(0, PI),
         **kwargs
     ):
-        ParametricSurface.__init__(
-            self,
+        if config.renderer == "opengl":
+            res_value = (101, 51)
+        else:
+            res_value = (24, 12)
+
+        resolution = resolution if resolution is not None else res_value
+
+        self.radius = radius
+
+        super().__init__(
             self.func,
             resolution=resolution,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=u_range,
+            v_range=v_range,
             **kwargs,
         )
-        self.radius = radius
-        self.scale(self.radius)
+
         self.shift(center)
 
-    def func(
-        self, u, v
-    ):  # FIXME: An attribute defined in manim.mobject.three_dimensions line 56 hides this method
-        return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
+    def func(self, u, v):
+        return self.radius * np.array(
+            [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)],
+        )
 
 
 class Dot3D(Sphere):
@@ -250,8 +348,15 @@ class Dot3D(Sphere):
                 self.add(axes, dot_1, dot_2,dot_3)
     """
 
-    def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        Sphere.__init__(self, center=point, radius=radius, **kwargs)
+    def __init__(
+        self,
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        color=WHITE,
+        resolution=(8, 8),
+        **kwargs
+    ):
+        super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
 
 
@@ -284,6 +389,8 @@ class Cube(VGroup):
 
             self.add(face)
 
+    init_points = generate_points
+
 
 class Prism(Cube):
     """A cuboid.
@@ -304,15 +411,15 @@ class Prism(Cube):
 
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
-        Cube.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def generate_points(self):
-        Cube.generate_points(self)
+        super().generate_points()
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
 
 
-class Cone(ParametricSurface):
+class Cone(Surface):
     """A circular cone.
     Can be defined using 2 parameters: its height, and its base radius.
     The polar angle, theta, can be calculated using arctan(base_radius /
@@ -341,10 +448,8 @@ class Cone(ParametricSurface):
         The direction of the apex.
     show_base : :class:`bool`
         Whether to show the base plane or not.
-    v_min : :class:`float`
-        The azimuthal angle to start at.
-    v_max : :class:`float`
-        The azimuthal angle to end at.
+    v_range : :class:`Sequence[float]`
+        The azimuthal angle to start and end at.
     u_min : :class:`float`
         The radius at the apex.
     checkerboard_colors : :class:`bool`
@@ -357,8 +462,7 @@ class Cone(ParametricSurface):
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         u_min=0,
         checkerboard_colors=False,
         **kwargs
@@ -366,13 +470,10 @@ class Cone(ParametricSurface):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
-            v_min=v_min,
-            v_max=v_max,
-            u_min=u_min,
-            u_max=np.sqrt(base_radius ** 2 + height ** 2),
+            v_range=v_range,
+            u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -408,7 +509,7 @@ class Cone(ParametricSurface):
                 r * np.sin(self.theta) * np.cos(phi),
                 r * np.sin(self.theta) * np.sin(phi),
                 r * np.cos(self.theta),
-            ]
+            ],
         )
 
     def _rotate_to_direction(self):
@@ -449,7 +550,7 @@ class Cone(ParametricSurface):
         return self.direction
 
 
-class Cylinder(ParametricSurface):
+class Cylinder(Surface):
     """A cylinder, defined by its height, radius and direction,
 
     Examples
@@ -472,10 +573,8 @@ class Cylinder(ParametricSurface):
         The height of the cylinder.
     direction : :class:`numpy.array`
         The direction of the central axis of the cylinder.
-    v_min : :class:`float`
-        The height along the height axis (given by direction) to start on.
-    v_max : :class:`float`
-        The height along the height axis (given by direction) to end on.
+    v_range : :class:`Sequence[float]`
+        The height along the height axis (given by direction) to start and end on.
     show_ends : :class:`bool`
         Whether to show the end caps or not.
     """
@@ -485,22 +584,18 @@ class Cylinder(ParametricSurface):
         radius=1,
         height=2,
         direction=Z_AXIS,
-        v_min=0,
-        v_max=TAU,
+        v_range=[0, TAU],
         show_ends=True,
-        resolution=24,
+        resolution=(24, 24),
         **kwargs
     ):
         self._height = height
         self.radius = radius
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
             resolution=resolution,
-            u_min=-self._height / 2,
-            u_max=self._height / 2,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=[-self._height / 2, self._height / 2],
+            v_range=v_range,
             **kwargs,
         )
         if show_ends:
@@ -525,22 +620,24 @@ class Cylinder(ParametricSurface):
 
     def add_bases(self):
         """Adds the end caps of the cylinder."""
+        color = self.color if config["renderer"] == "opengl" else self.fill_color
+        opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
         self.base_top = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_top.shift(self.u_max * IN)
+        self.base_top.shift(self.u_range[1] * IN)
         self.base_bottom = Circle(
             radius=self.radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
+            color=color,
+            fill_opacity=opacity,
             shade_in_3d=True,
             stroke_width=0,
         )
-        self.base_bottom.shift(self.u_min * IN)
+        self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
 
     def _rotate_to_direction(self):
@@ -629,8 +726,7 @@ class Line3D(Cylinder):
         # start and end, if they're mobjects
         self.start = self.pointify(start, self.direction)
         self.end = self.pointify(end, -self.direction)
-        Cylinder.__init__(
-            self,
+        super().__init__(
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
@@ -652,6 +748,94 @@ class Line3D(Cylinder):
 
     def get_end(self):
         return self.end
+
+    @classmethod
+    def parallel_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        """Returns a line parallel to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be parallel to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: ParallelLineExample
+            :save_last_frame:
+
+            class ParallelLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.parallel_to(line1, color=YELLOW)
+                    self.add(ax, line1, line2)
+        """
+        point = np.array(point)
+        vect = normalize(line.vect)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
+
+    @classmethod
+    def perpendicular_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        """Returns a line perpendicular to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be perpendicular to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: PerpLineExample
+            :save_last_frame:
+
+            class PerpLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.perpendicular_to(line1, color=BLUE)
+                    self.add(ax, line1, line2)
+        """
+        point = np.array(point)
+
+        norm = np.cross(line.vect, point - line.start)
+        if all(np.linalg.norm(norm) == np.zeros(3)):
+            raise ValueError("Could not find the perpendicular.")
+
+        start, end = perpendicular_bisector([line.start, line.end], norm)
+        vect = normalize(end - start)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
 
 
 class Arrow3D(Line3D):
@@ -693,8 +877,8 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        Line3D.__init__(
-            self, start=start, end=end, thickness=thickness, color=color, **kwargs
+        super().__init__(
+            start=start, end=end, thickness=thickness, color=color, **kwargs
         )
 
         self.length = np.linalg.norm(self.vect)
@@ -712,7 +896,7 @@ class Arrow3D(Line3D):
         self.set_color(color)
 
 
-class Torus(ParametricSurface):
+class Torus(Surface):
     """A torus.
 
     Examples
@@ -739,22 +923,24 @@ class Torus(ParametricSurface):
         self,
         major_radius=3,
         minor_radius=1,
-        u_min=0,
-        u_max=TAU,
-        v_min=0,
-        v_max=TAU,
-        resolution=24,
+        u_range=(0, TAU),
+        v_range=(0, TAU),
+        resolution=None,
         **kwargs
     ):
+        if config.renderer == "opengl":
+            res_value = (101, 101)
+        else:
+            res_value = (24, 24)
+
+        resolution = resolution if resolution is not None else res_value
+
         self.R = major_radius
         self.r = minor_radius
-        ParametricSurface.__init__(
-            self,
+        super().__init__(
             self.func,
-            u_min=u_min,
-            u_max=u_max,
-            v_min=v_min,
-            v_max=v_max,
+            u_range=u_range,
+            v_range=v_range,
             resolution=resolution,
             **kwargs,
         )

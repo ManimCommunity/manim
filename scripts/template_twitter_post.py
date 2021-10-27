@@ -10,7 +10,7 @@ class TwitterScene(Scene):
         self.camera.background_color = "#ece6e2"
         version = Tex(f"v{version_num}").to_corner(UR).set_color(BLACK)
         self.add(version)
-        ## add twitter scene content here
+        # add twitter scene content here
 
         banner = ManimBanner(dark_theme=False).scale(0.3).to_corner(DR)
         self.play(FadeIn(banner))

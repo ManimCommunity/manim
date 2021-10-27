@@ -3,6 +3,7 @@ build:
   image: latest
   apt_packages:
     - libpango1.0-dev
+    - ffmpeg
 python:
    version: 3.8
    install:

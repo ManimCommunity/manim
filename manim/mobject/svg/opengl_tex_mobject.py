@@ -163,8 +163,6 @@ __all__ = [
     "OpenGLTex",
     "OpenGLBulletedList",
     "OpenGLTitle",
-    "OpenGLTexMobject",
-    "OpenGLTextMobject",
 ]
 
 
@@ -182,7 +180,6 @@ from ...mobject.types.opengl_vectorized_mobject import (
     OpenGLVGroup,
 )
 from ...utils.color import BLACK
-from ...utils.deprecation import deprecated
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
@@ -236,8 +233,7 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        OpenGLSVGMobject.__init__(
-            self,
+        super().__init__(
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
@@ -296,10 +292,10 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             tex = tex.replace("\\\\", "\\quad\\\\")
 
         # Handle imbalanced \left and \right
-        num_lefts, num_rights = [
+        num_lefts, num_rights = (
             len([s for s in tex.split(substr)[1:] if s and s[0] in "(){}[]|.\\"])
             for substr in ("\\left", "\\right")
-        ]
+        )
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
@@ -401,8 +397,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
         self.tex_environment = tex_environment
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
-        OpenGLSingleStringMathTex.__init__(
-            self,
+        super().__init__(
             self.arg_separator.join(tex_strings),
             tex_environment=self.tex_environment,
             tex_template=self.tex_template,
@@ -416,7 +411,8 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
 
     def break_up_tex_strings(self, tex_strings):
         substrings_to_isolate = op.add(
-            self.substrings_to_isolate, list(self.tex_to_color_map.keys())
+            self.substrings_to_isolate,
+            list(self.tex_to_color_map.keys()),
         )
         split_list = split_string_list_to_isolate_substrings(
             tex_strings, *substrings_to_isolate
@@ -471,7 +467,7 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
                 return tex1 == tex2
 
         return OpenGLVGroup(
-            *[m for m in self.submobjects if test(tex, m.get_tex_string())]
+            *(m for m in self.submobjects if test(tex, m.get_tex_string()))
         )
 
     def get_part_by_tex(self, tex, **kwargs):
@@ -526,8 +522,7 @@ class OpenGLTex(OpenGLMathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        OpenGLMathTex.__init__(
-            self,
+        super().__init__(
             *tex_strings,
             arg_separator=arg_separator,
             tex_environment=tex_environment,
@@ -599,15 +594,3 @@ class OpenGLTitle(OpenGLTex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-@deprecated(until="v0.7.0", replacement="MathTex")
-class OpenGLTexMobject(OpenGLMathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-@deprecated(until="v0.7.0", replacement="Tex")
-class OpenGLTextMobject(OpenGLTex):
-    def __init__(self, *text_parts, **kwargs):
-        Tex.__init__(self, *text_parts, **kwargs)

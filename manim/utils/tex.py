@@ -256,7 +256,7 @@ class TexTemplateFromFile(TexTemplate):
         super().__init__(**kwargs)
 
     def _rebuild(self):
-        with open(self.template_file, "r") as infile:
+        with open(self.template_file) as infile:
             self.body = infile.read()
 
     def file_not_mutable(self):

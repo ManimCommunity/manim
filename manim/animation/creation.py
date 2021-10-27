@@ -15,17 +15,17 @@ r"""Animate the display or removal of a mobject from a scene.
             s6 = Square()
             s7 = Square()
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
-            t1 = Text("Write").scale(0.5).next_to(s1, UP)
-            t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("Create").scale(0.5).next_to(s3, UP)
-            t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
-            t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
-            t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
-            t7 = Text("ShowSubmobjectsOneByOne").scale(0.45).next_to(s7, UP)
+            t1 = Text("Write", font_size=24).next_to(s1, UP)
+            t2 = Text("AddTextLetterByLetter", font_size=24).next_to(s2, UP)
+            t3 = Text("Create", font_size=24).next_to(s3, UP)
+            t4 = Text("Uncreate", font_size=24).next_to(s4, UP)
+            t5 = Text("DrawBorderThenFill", font_size=24).next_to(s5, UP)
+            t6 = Text("ShowIncreasingSubsets", font_size=22).next_to(s6, UP)
+            t7 = Text("ShowSubmobjectsOneByOne", font_size=22).next_to(s7, UP)
 
             self.add(s1, s2, s3, s4, s5, s6, s7, t1, t2, t3, t4, t5, t6, t7)
 
-            texts = [Text("manim").scale(0.6), Text("manim").scale(0.6)]
+            texts = [Text("manim", font_size=29), Text("manim", font_size=29)]
             texts[0].move_to(s1.get_center())
             texts[1].move_to(s2.get_center())
             self.add(*texts)
@@ -76,7 +76,6 @@ from typing import (
     Callable,
     Dict,
     Iterable,
-    List,
     Optional,
     Sequence,
     Tuple,
@@ -92,10 +91,10 @@ if TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
+from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 
@@ -113,13 +112,19 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject, None], **kwargs):
-        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("This Animation only works on vectorized mobjects")
+    def __init__(
+        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+    ):
+        pointwise = getattr(mobject, "pointwise_become_partial", None)
+        if not callable(pointwise):
+            raise NotImplementedError("This animation is not defined for this Mobject.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        alpha: float,
     ) -> None:
         submobject.pointwise_become_partial(
             starting_submobject, *self._get_bounds(alpha)
@@ -158,7 +163,7 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject],
+        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface],
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
@@ -252,7 +257,11 @@ class DrawBorderThenFill(Animation):
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, outline, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        outline,
+        alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
         subalpha: int
@@ -273,20 +282,30 @@ class Write(DrawBorderThenFill):
 
         class ShowWrite(Scene):
             def construct(self):
-                self.play(Write(Text("Hello").scale(3)))
+                self.play(Write(Text("Hello", font_size=144)))
+
+    .. manim:: ShowWriteReversed
+
+        class ShowWriteReversed(Scene):
+            def construct(self):
+                self.play(Write(Text("Hello", font_size=144), reverse=True))
     """
 
     def __init__(
         self,
         vmobject: Union[VMobject, OpenGLVMobject],
         rate_func: Callable[[float], float] = linear,
+        reverse: bool = False,
         **kwargs,
     ) -> None:
         run_time: Optional[float] = kwargs.pop("run_time", None)
         lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
+        self.reverse = reverse
         super().__init__(
             vmobject,
             rate_func=rate_func,
@@ -311,6 +330,19 @@ class Write(DrawBorderThenFill):
             lag_ratio = min(4.0 / length, 0.2)
         return run_time, lag_ratio
 
+    def reverse_submobjects(self) -> None:
+        self.mobject.invert(recursive=True)
+
+    def begin(self) -> None:
+        if self.reverse:
+            self.reverse_submobjects()
+        super().begin()
+
+    def finish(self) -> None:
+        super().finish()
+        if self.reverse:
+            self.reverse_submobjects()
+
 
 class Unwrite(Write):
     """Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`.
@@ -323,59 +355,46 @@ class Unwrite(Write):
     Examples
     --------
 
-    .. manim:: UnwriteReverseFalse
-
-        class UnwriteReverseFalse(Scene):
-            def construct(self):
-                text = Tex("Alice and Bob").scale(3)
-                self.add(text)
-                self.play(Unwrite(text))
-
     .. manim :: UnwriteReverseTrue
 
         class UnwriteReverseTrue(Scene):
             def construct(self):
                 text = Tex("Alice and Bob").scale(3)
                 self.add(text)
-                self.play(Unwrite(text,reverse=True))
+                self.play(Unwrite(text))
 
+    .. manim:: UnwriteReverseFalse
+
+        class UnwriteReverseFalse(Scene):
+            def construct(self):
+                text = Tex("Alice and Bob").scale(3)
+                self.add(text)
+                self.play(Unwrite(text, reverse=False))
     """
 
     def __init__(
         self,
         vmobject: VMobject,
         rate_func: Callable[[float], float] = linear,
-        reverse: bool = False,
+        reverse: bool = True,
         **kwargs,
     ) -> None:
 
-        self.vmobject = vmobject
-        self.reverse = reverse
         run_time: Optional[float] = kwargs.pop("run_time", None)
         lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
         super().__init__(
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
             rate_func=lambda t: -rate_func(t) + 1,
+            reverse=reverse,
             **kwargs,
         )
-
-    def begin(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().begin()
-
-    def finish(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().finish()
-
-    def reverse_submobjects(self) -> None:
-        self.vmobject.invert(recursive=True)
 
 
 class ShowIncreasingSubsets(Animation):
@@ -411,7 +430,7 @@ class ShowIncreasingSubsets(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
-        index = int(self.int_func(alpha * n_submobs))
+        index = int(self.int_func(self.rate_func(alpha) * n_submobs))
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
@@ -492,12 +511,12 @@ class AddTextWordByWord(Succession):
         self.time_per_char = time_per_char
         tpc = self.time_per_char
         anims = it.chain(
-            *[
+            *(
                 [
                     ShowIncreasingSubsets(word, run_time=tpc * len(word)),
                     Animation(word, run_time=0.005 * len(word) ** 1.5),
                 ]
                 for word in text_mobject
-            ]
+            )
         )
         super().__init__(*anims, **kwargs)

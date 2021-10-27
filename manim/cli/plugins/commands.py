@@ -18,7 +18,11 @@ from ...plugins.plugins_flags import list_plugins
     help="Manages Manim plugins.",
 )
 @click.option(
-    "-l", "--list", "list_available", is_flag=True, help="List available plugins."
+    "-l",
+    "--list",
+    "list_available",
+    is_flag=True,
+    help="List available plugins.",
 )
 def plugins(list_available):
     if list_available:

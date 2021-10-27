@@ -37,7 +37,7 @@ class Rotating(Animation):
     def interpolate_mobject(self, alpha: float) -> None:
         self.mobject.become(self.starting_mobject)
         self.mobject.rotate(
-            alpha * self.radians,
+            self.rate_func(alpha) * self.radians,
             axis=self.axis,
             about_point=self.about_point,
             about_edge=self.about_edge,
@@ -62,7 +62,9 @@ class Rotate(Transform):
         self.axis = axis
         self.about_edge = about_edge
         self.about_point = about_point
-        super().__init__(mobject, **kwargs)
+        if self.about_point is None:
+            self.about_point = mobject.get_center()
+        super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
 
     def create_target(self) -> "Mobject":
         target = self.mobject.copy()

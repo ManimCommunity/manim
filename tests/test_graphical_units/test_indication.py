@@ -1,71 +1,61 @@
-import pytest
-
 from manim import *
+from tests.test_graphical_units.testing.frames_comparison import frames_comparison
 
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
-from ..utils.testing_utils import get_scenes_to_test
-
-
-class FocusOnTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(FocusOn(square))
+__module_test__ = "indication"
 
 
-class IndicateTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Indicate(square))
+@frames_comparison(last_frame=False)
+def test_FocusOn(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(FocusOn(square))
 
 
-class FlashTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Flash(ORIGIN))
+@frames_comparison(last_frame=False)
+def test_Indicate(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Indicate(square))
 
 
-class CircumscribeTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Circumscribe(square))
-        self.wait()
+@frames_comparison(last_frame=False)
+def test_Flash(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Flash(ORIGIN))
 
 
-class ShowPassingFlashTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(ShowPassingFlash(square.copy()))
+@frames_comparison(last_frame=False)
+def test_Circumscribe(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Circumscribe(square))
+    scene.wait()
 
 
-class ShowCreationThenFadeOutTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(ShowCreationThenFadeOut(square.copy()))
+@frames_comparison(last_frame=False)
+def test_ShowPassingFlash(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(ShowPassingFlash(square.copy()))
 
 
-class ApplyWaveTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(ApplyWave(square))
+@frames_comparison(last_frame=False)
+def test_ShowCreationThenFadeOut(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(ShowCreationThenFadeOut(square.copy()))
 
 
-class WiggleTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Wiggle(square))
+@frames_comparison(last_frame=False)
+def test_ApplyWave(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(ApplyWave(square))
 
 
-MODULE_NAME = "indication"
-
-
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+@frames_comparison(last_frame=False)
+def test_Wiggle(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Wiggle(square))

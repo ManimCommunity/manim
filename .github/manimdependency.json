@@ -29,14 +29,24 @@
             "standalone",
             "preview",
             "doublestroke",
+            "ms",
+            "everysel",
+            "setspace",
+            "rsfs",
             "relsize",
+            "ragged2e",
             "fundus-calligra",
+            "microtype",
             "wasysym",
             "physics",
             "dvisvgm",
-            "rsfs",
+            "jknapltx",
             "wasy",
-            "cm-super"
+            "cm-super",
+            "babel-english",
+            "gnu-freefont",
+            "mathastext",
+            "cbfonts-fd"
         ]
     }
 }

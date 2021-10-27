@@ -25,15 +25,17 @@ __all__ = [
 def get_shader_code_from_file(file_path):
     if file_path in file_path_to_code_map:
         return file_path_to_code_map[file_path]
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         source = f.read()
         include_lines = re.finditer(
-            r"^#include (?P<include_path>.*\.glsl)$", source, flags=re.MULTILINE
+            r"^#include (?P<include_path>.*\.glsl)$",
+            source,
+            flags=re.MULTILINE,
         )
         for match in include_lines:
             include_path = match.group("include_path")
             included_code = get_shader_code_from_file(
-                os.path.join(file_path.parent / include_path)
+                os.path.join(file_path.parent / include_path),
             )
             source = source.replace(match.group(0), included_code)
         file_path_to_code_map[file_path] = source
@@ -50,7 +52,7 @@ def filter_attributes(unfiltered_attributes, attributes):
                     dtype_name,
                     unfiltered_attributes.dtype[i].subdtype[0].str,
                     unfiltered_attributes.dtype[i].shape,
-                )
+                ),
             )
 
     filtered_attributes = np.zeros(
@@ -107,7 +109,7 @@ class Object3D:
         for child in children:
             if child.parent is not None:
                 raise Exception(
-                    "Attempt to add child that's already added to another Object3D"
+                    "Attempt to add child that's already added to another Object3D",
                 )
         self.remove(*children, current_children_only=False)
         self.children.extend(children)
@@ -119,11 +121,18 @@ class Object3D:
             for child in children:
                 if child.parent != self:
                     raise Exception(
-                        "Attempt to remove child that isn't added to this Object3D"
+                        "Attempt to remove child that isn't added to this Object3D",
                     )
         self.children = list(filter(lambda child: child not in children, self.children))
         for child in children:
             child.parent = None
+
+    def get_position(self):
+        return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
 
     def get_meshes(self):
         dfs = [self]
@@ -161,7 +170,7 @@ class Object3D:
         normal_matrices = [self.normal_matrix]
         current_object = self
         while current_object.parent is not None:
-            normal_matrices.append(current_object.parent.normal_matrix)
+            normal_matrices.append(current_object.parent.model_matrix)
             current_object = current_object.parent
         return np.linalg.multi_dot(list(reversed(normal_matrices)))[:3, :3]
 
@@ -262,7 +271,7 @@ class Mesh(Object3D):
         else:
             raise Exception(
                 "Mesh requires either attributes and a Shader or a Geometry and a "
-                "Material"
+                "Material",
             )
         self.use_depth_test = use_depth_test
         self.primitive = primitive
@@ -282,6 +291,17 @@ class Mesh(Object3D):
         copy.normal_matrix = self.normal_matrix.copy()
         # TODO: Copy updaters?
         return copy
+
+    def set_uniforms(self, renderer):
+        self.shader.set_uniform(
+            "u_model_matrix",
+            opengl.matrix_to_shader_input(self.model_matrix),
+        )
+        self.shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
+        self.shader.set_uniform(
+            "u_projection_matrix",
+            renderer.camera.projection_matrix,
+        )
 
     def render(self):
         if self.skip_render:
@@ -334,7 +354,10 @@ class Shader:
         self.name = name
 
         # See if the program is cached.
-        if self.name in shader_program_cache:
+        if (
+            self.name in shader_program_cache
+            and shader_program_cache[self.name].ctx == self.context
+        ):
             self.shader_program = shader_program_cache[self.name]
         elif source is not None:
             # Generate the shader from inline code if it was passed.
@@ -412,7 +435,8 @@ class FullScreenQuad(Mesh):
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
+            "u_projection_matrix",
+            opengl.orthographic_projection_matrix(),
         )
         super().__init__(shader, attributes)
 

@@ -4,7 +4,7 @@ Configuration
 Manim provides an extensive configuration system that allows it to adapt to
 many different use cases.  There are many configuration options that can be
 configured at different times during the scene rendering process.  Each option
-can be configured programmatically via `the ManimConfig class`_, or at the time
+can be configured programmatically via `the ManimConfig class`_, at the time
 of command invocation via `command-line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
@@ -12,7 +12,7 @@ is first imported via `the config files`_.
 The ManimConfig class
 *********************
 
-The most direct way of configuring manim is via the global ``config`` object,
+The most direct way of configuring manim is through the global ``config`` object,
 which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax or
 with dict-like syntax:
@@ -23,8 +23,8 @@ with dict-like syntax:
    >>> config.background_color = WHITE
    >>> config["background_color"] = WHITE
 
-The former is preferred; the latter is provided mostly for backwards
-compatibility.
+.. note:: The former is preferred; the latter is provided for backwards
+          compatibility.
 
 Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.Animation`, read some of their default configuration from the global
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   manim -ql <file.py> SceneName 
+   manim -ql <file.py> SceneName
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -101,7 +101,6 @@ right after it's done rendering.
 .. note:: The ``-p`` flag does not change any properties of the global
           ``config`` dict.  The ``-p`` flag is only a command-line convenience.
 
-
 Examples
 ========
 
@@ -110,7 +109,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   manim -sqh <file.py> SceneName 
+   manim -sqh <file.py> SceneName
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +119,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
+   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim render --help``.  A complete list
@@ -162,7 +161,7 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   manim -o myscene -i -c WHITE <file.py> SceneName 
+   manim -o myscene -i -c WHITE <file.py> SceneName
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -213,8 +212,8 @@ The user-wide config file lives in a special folder, depending on the operating
 system.
 
 * Windows: :code:`UserDirectory`/AppData/Roaming/Manim/manim.cfg
-* MacOS: :code:`UserDirectory`/config/manim/manim.cfg
-* Linux: :code:`UserDirectory`/config/manim/manim.cfg
+* MacOS: :code:`UserDirectory`/.config/manim/manim.cfg
+* Linux: :code:`UserDirectory`/.config/manim/manim.cfg
 
 Here, :code:`UserDirectory` is the user's home folder.
 
@@ -344,16 +343,17 @@ A list of all config options
    'bottom', 'custom_folders', 'disable_caching', 'dry_run',
    'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', 'images_dir', 'input_file', 'left_side',
+   'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
    'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
+   'pixel_height', 'pixel_width', 'plugins', 'preview',
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
-   'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
-   'write_to_movie']
+   'verbosity', 'video_dir', 'webgl_renderer_path', 'window_position',
+   'window_monitor', 'window_size', 'write_all', 'write_to_movie', 'enable_wireframe',
+   'force_window']
 
 
 A list of all CLI flags
@@ -361,7 +361,7 @@ A list of all CLI flags
 
 .. code::
 
-   manim -h
+   manim --help
 
    Usage: manim [OPTIONS] COMMAND [ARGS]...
 
@@ -369,7 +369,7 @@ A list of all CLI flags
 
    Options:
      --version   Show the version and exit.
-     -h, --help  Show this message and exit.
+     --help  Show this message and exit.
 
    Commands:
      render*  Render SCENE(S) from the input FILE.
@@ -377,11 +377,11 @@ A list of all CLI flags
      plugins  Manages Manim plugins.
 
      Made with <3 by Manim Community developers.
-     
-Each of the subcommands has its own help page which can be 
+
+Each of the subcommands has its own help page which can be
 
 .. code::
 
-   manim render -h
-   manim cfg -h
-   manim plugins -h
+   manim render --help
+   manim cfg --help
+   manim plugins --help

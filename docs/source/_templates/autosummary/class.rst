@@ -1,4 +1,6 @@
-{{ fullname | escape | underline}}
+{{ name | escape | underline}}
+
+Qualified name: ``{{ fullname | escape }}``
 
 .. currentmodule:: {{ module }}
 

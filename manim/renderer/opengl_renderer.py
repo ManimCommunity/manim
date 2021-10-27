@@ -1,15 +1,13 @@
 import itertools as it
-import re
 import time
 
 import moderngl
 import numpy as np
 from PIL import Image
 
-from manim import config
-from manim.renderer.cairo_renderer import handle_play_like_call
+from manim import config, logger
 from manim.utils.caching import handle_caching_play
-from manim.utils.color import color_to_rgb, color_to_rgba
+from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
@@ -17,6 +15,7 @@ from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
+from ..utils.config_ops import _Data
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
@@ -25,7 +24,6 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
-from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -34,6 +32,8 @@ from .vectorized_mobject_rendering import (
 
 
 class OpenGLCamera(OpenGLMobject):
+    euler_angles = _Data()
+
     def __init__(
         self,
         frame_shape=None,
@@ -43,15 +43,26 @@ class OpenGLCamera(OpenGLMobject):
         focal_distance=2,
         light_source_position=[-10, 10, 10],
         orthographic=False,
+        minimum_polar_angle=-PI / 2,
+        maximum_polar_angle=PI / 2,
+        model_matrix=None,
         **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
+        self.minimum_polar_angle = minimum_polar_angle
+        self.maximum_polar_angle = maximum_polar_angle
         if self.orthographic:
             self.projection_matrix = opengl.orthographic_projection_matrix()
+            self.unformatted_projection_matrix = opengl.orthographic_projection_matrix(
+                format=False,
+            )
         else:
             self.projection_matrix = opengl.perspective_projection_matrix()
+            self.unformatted_projection_matrix = opengl.perspective_projection_matrix(
+                format=False,
+            )
 
         if frame_shape is None:
             self.frame_shape = (config["frame_width"], config["frame_height"])
@@ -63,10 +74,8 @@ class OpenGLCamera(OpenGLMobject):
         else:
             self.center_point = center_point
 
-        if euler_angles is None:
-            self.euler_angles = [0, 0, 0]
-        else:
-            self.euler_angles = euler_angles
+        if model_matrix is None:
+            model_matrix = opengl.translation_matrix(0, 0, 11)
 
         self.focal_distance = focal_distance
 
@@ -76,24 +85,28 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        self.model_matrix = opengl.translation_matrix(0, 0, 11)
-        self.default_model_matrix = opengl.translation_matrix(0, 0, 11)
+        self.default_model_matrix = model_matrix
+        super().__init__(model_matrix=model_matrix, should_render=False, **kwargs)
 
-        super().__init__(**kwargs)
+        if euler_angles is None:
+            euler_angles = [0, 0, 0]
+        euler_angles = np.array(euler_angles, dtype=float)
+
+        self.euler_angles = euler_angles
+        self.refresh_rotation_matrix()
 
     def get_position(self):
         return self.model_matrix[:, 3][:3]
+
+    def set_position(self, position):
+        self.model_matrix[:, 3][:3] = position
+        return self
 
     def get_view_matrix(self, format=True):
         if format:
             return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
         else:
             return np.linalg.inv(self.model_matrix)
-
-    def init_data(self):
-        super().init_data()
-        self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
-        self.refresh_rotation_matrix()
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -111,7 +124,7 @@ class OpenGLCamera(OpenGLMobject):
 
     def refresh_rotation_matrix(self):
         # Rotate based on camera orientation
-        theta, phi, gamma = self.data["euler_angles"]
+        theta, phi, gamma = self.euler_angles
         quat = quaternion_mult(
             quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
             quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
@@ -136,11 +149,11 @@ class OpenGLCamera(OpenGLMobject):
 
     def set_euler_angles(self, theta=None, phi=None, gamma=None):
         if theta is not None:
-            self.data["euler_angles"][0] = theta
+            self.euler_angles[0] = theta
         if phi is not None:
-            self.data["euler_angles"][1] = phi
+            self.euler_angles[1] = phi
         if gamma is not None:
-            self.data["euler_angles"][2] = gamma
+            self.euler_angles[2] = gamma
         self.refresh_rotation_matrix()
         return self
 
@@ -154,19 +167,19 @@ class OpenGLCamera(OpenGLMobject):
         return self.set_euler_angles(gamma=gamma)
 
     def increment_theta(self, dtheta):
-        self.data["euler_angles"][0] += dtheta
+        self.euler_angles[0] += dtheta
         self.refresh_rotation_matrix()
         return self
 
     def increment_phi(self, dphi):
-        phi = self.data["euler_angles"][1]
+        phi = self.euler_angles[1]
         new_phi = clip(phi + dphi, -PI / 2, PI / 2)
-        self.data["euler_angles"][1] = new_phi
+        self.euler_angles[1] = new_phi
         self.refresh_rotation_matrix()
         return self
 
     def increment_gamma(self, dgamma):
-        self.data["euler_angles"][2] += dgamma
+        self.euler_angles[2] += dgamma
         self.refresh_rotation_matrix()
         return self
 
@@ -175,14 +188,14 @@ class OpenGLCamera(OpenGLMobject):
 
     def get_center(self):
         # Assumes first point is at the center
-        return self.get_points()[0]
+        return self.points[0]
 
     def get_width(self):
-        points = self.get_points()
+        points = self.points
         return points[2, 0] - points[1, 0]
 
     def get_height(self):
-        points = self.get_points()
+        points = self.points
         return points[4, 1] - points[3, 1]
 
     def get_focal_distance(self):
@@ -203,12 +216,16 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, skip_animations=False):
+    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
+        self._file_writer_class = file_writer_class
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
+        self.animation_start_time = 0
+        self.animation_elapsed_time = 0
+        self.time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -218,24 +235,35 @@ class OpenGLRenderer:
         # Initialize texture map.
         self.path_to_texture_id = {}
 
+        self._background_color = color_to_rgba(config["background_color"], 1.0)
+
     def init_scene(self, scene):
         self.partial_movie_files = []
-        self.file_writer = SceneFileWriter(
+        self.file_writer = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
         self.scene = scene
         if not hasattr(self, "window"):
-            if config["preview"]:
+            if self.should_create_window():
+                from .opengl_renderer_window import Window
+
                 self.window = Window(self)
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:
                 self.window = None
-                self.context = moderngl.create_standalone_context()
+                try:
+                    self.context = moderngl.create_context(standalone=True)
+                except Exception:
+                    self.context = moderngl.create_context(
+                        standalone=True,
+                        backend="egl",
+                    )
                 self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
                 self.frame_buffer_object.use()
             self.context.enable(moderngl.BLEND)
+            self.context.wireframe = config["enable_wireframe"]
             self.context.blend_func = (
                 moderngl.SRC_ALPHA,
                 moderngl.ONE_MINUS_SRC_ALPHA,
@@ -243,8 +271,26 @@ class OpenGLRenderer:
                 moderngl.ONE,
             )
 
+    def should_create_window(self):
+        if config["force_window"]:
+            logger.warning(
+                "'--force_window' is enabled, this is intended for debugging purposes "
+                "and may impact performance if used when outputting files",
+            )
+            return True
+        return (
+            config["preview"]
+            and not config["save_last_frame"]
+            and not config["format"]
+            and not config["write_to_movie"]
+            and not config["dry_run"]
+        )
+
     def get_pixel_shape(self):
-        return self.frame_buffer_object.viewport[2:4]
+        if hasattr(self, "frame_buffer_object"):
+            return self.frame_buffer_object.viewport[2:4]
+        else:
+            return None
 
     def refresh_perspective_uniforms(self, camera):
         pw, ph = self.get_pixel_shape()
@@ -287,7 +333,8 @@ class OpenGLRenderer:
 
             # Set uniforms.
             for name, value in it.chain(
-                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+                shader_wrapper.uniforms.items(),
+                self.perspective_uniforms.items(),
             ):
                 try:
                     shader.set_uniform(name, value)
@@ -296,7 +343,8 @@ class OpenGLRenderer:
             try:
                 shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
-                    "u_projection_matrix", self.scene.camera.projection_matrix
+                    "u_projection_matrix",
+                    self.scene.camera.projection_matrix,
                 )
             except KeyError:
                 pass
@@ -313,7 +361,9 @@ class OpenGLRenderer:
                 shader_wrapper.vert_data,
                 indices=shader_wrapper.vert_indices,
                 use_depth_test=shader_wrapper.depth_test,
+                primitive=mobject.render_primitive,
             )
+            mesh.set_uniforms(self)
             mesh.render()
 
     def get_texture_id(self, path):
@@ -338,25 +388,34 @@ class OpenGLRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
-                self.skip_animations = True
-        if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
-                self.skip_animations = True
-                raise EndSceneEarlyException()
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
 
     @handle_caching_play
-    @handle_play_like_call
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
+        self.animation_start_time = time.time()
+        self.file_writer.begin_animation(not self.skip_animations)
+
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
 
+        self.file_writer.end_animation(not self.skip_animations)
+        self.time += scene.duration
+        self.num_plays += 1
+
     def clear_screen(self):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
@@ -365,8 +424,7 @@ class OpenGLRenderer:
         if self.skip_animations:
             return
 
-        if config["write_to_movie"]:
-            self.file_writer.write_frame(self)
+        self.file_writer.write_frame(self)
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -375,33 +433,65 @@ class OpenGLRenderer:
                 self.window.swap_buffers()
 
     def update_frame(self, scene):
-        window_background_color = color_to_rgba(config["background_color"])
-        self.frame_buffer_object.clear(*window_background_color)
+        self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(scene.camera)
 
         for mobject in scene.mobjects:
+            if not mobject.should_render:
+                continue
             self.render_mobject(mobject)
-
-        view_matrix = scene.camera.get_view_matrix(format=False)
-        opengl_view_matrix = opengl.matrix_to_shader_input(view_matrix)
-        from moderngl.program_members.uniform import Uniform
 
         for obj in scene.meshes:
             for mesh in obj.get_meshes():
-                mesh.shader.set_uniform(
-                    "u_model_matrix", opengl.matrix_to_shader_input(mesh.model_matrix)
-                )
-                mesh.shader.set_uniform("u_view_matrix", opengl_view_matrix)
-                mesh.shader.set_uniform(
-                    "u_projection_matrix",
-                    scene.camera.projection_matrix,
-                )
+                mesh.set_uniforms(self)
                 mesh.render()
 
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene):
-        self.file_writer.finish()
+        # When num_plays is 0, no images have been output, so output a single
+        # image in this case
+        if self.num_plays > 0:
+            self.file_writer.finish()
+        elif self.num_plays == 0 and config.write_to_movie:
+            config.write_to_movie = False
+
+        if self.should_save_last_frame():
+            config.save_last_frame = True
+            self.update_frame(scene)
+            self.file_writer.save_final_image(self.get_image())
+
+    def should_save_last_frame(self):
+        if config["save_last_frame"]:
+            return True
+        if self.scene.interactive_mode:
+            return False
+        return self.num_plays == 0
+
+    def get_image(self) -> Image.Image:
+        """Returns an image from the current frame. The first argument passed to image represents
+        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
+        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
+        used for the decoder tand represent the stride and orientation. 0 means there is no
+        padding expected between bytes and -1 represents the orientation and means the first
+        line of the image is the bottom line on the screen.
+
+        Returns
+        -------
+        PIL.Image
+            The PIL image of the array.
+        """
+        raw_buffer_data = self.get_raw_frame_buffer_object_data()
+        image = Image.frombytes(
+            "RGBA",
+            self.get_pixel_shape(),
+            raw_buffer_data,
+            "raw",
+            "RGBA",
+            0,
+            -1,
+        )
+        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
@@ -417,7 +507,8 @@ class OpenGLRenderer:
                 samples=samples,
             ),
             depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height), samples=samples
+                (pixel_width, pixel_height),
+                samples=samples,
             ),
         )
 
@@ -440,14 +531,18 @@ class OpenGLRenderer:
     def get_frame(self):
         # get current pixel values as numpy data in order to test output
         raw = self.get_raw_frame_buffer_object_data(dtype="f1")
-        result_dimensions = (config["pixel_height"], config["pixel_width"], 4)
+        pixel_shape = self.get_pixel_shape()
+        result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
         np_buf = np.flipud(np_buf)
         return np_buf
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
-        pw, ph = config["pixel_width"], config["pixel_height"]
+        pixel_shape = self.get_pixel_shape()
+        if pixel_shape is None:
+            return np.array([0, 0, 0])
+        pw, ph = pixel_shape
         fw, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:
@@ -456,3 +551,11 @@ class OpenGLRenderer:
             # Only scale wrt one axis
             scale = fh / ph
             return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+
+    @property
+    def background_color(self):
+        return self._background_color
+
+    @background_color.setter
+    def background_color(self, value):
+        self._background_color = color_to_rgba(value, 1.0)

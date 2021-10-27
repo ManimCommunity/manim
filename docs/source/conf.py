@@ -20,20 +20,6 @@ import manim
 sys.path.insert(0, os.path.abspath("."))
 
 
-if os.environ.get("READTHEDOCS") == "True":
-    site_path = get_python_lib()
-    # we need to add ffmpeg to the path
-    ffmpeg_path = os.path.join(site_path, "imageio_ffmpeg", "binaries")
-    # the included binary is named ffmpeg-linux..., create a symlink
-    [ffmpeg_bin] = [
-        file for file in os.listdir(ffmpeg_path) if file.startswith("ffmpeg-")
-    ]
-    os.symlink(
-        os.path.join(ffmpeg_path, ffmpeg_bin), os.path.join(ffmpeg_path, "ffmpeg")
-    )
-    os.environ["PATH"] += os.pathsep + ffmpeg_path
-
-
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
@@ -81,8 +67,20 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
+html_extra_path = ["robots.txt"]
+
 exclude_patterns = []
 
+# -- Options for internationalization ----------------------------------------
+# Set the destination directory of the localized po files
+locale_dirs = ["../i18n/"]
+
+# Splits the text in more pot files.
+gettext_compact = False
+
+# Remove useless metadata from po files.
+gettext_last_translator = ""
+gettext_language_team = ""
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -154,7 +152,11 @@ inheritance_graph_attrs = dict(
 )
 
 inheritance_node_attrs = dict(
-    penwidth=0, shape="box", width=0.05, height=0.05, margin=0.05
+    penwidth=0,
+    shape="box",
+    width=0.05,
+    height=0.05,
+    margin=0.05,
 )
 
 inheritance_edge_attrs = dict(

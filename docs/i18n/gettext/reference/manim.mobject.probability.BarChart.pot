@@ -1,0 +1,105 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:2
+msgid "BarChart"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:4
+msgid "Qualified name: ``manim.mobject.probability.BarChart``"
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:1
+msgid "This is a class for Bar Charts."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:3
+msgid "The values for the bar chart."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:4
+msgid "The height of the axes."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:5
+msgid "The width of the axes."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:6
+msgid "Number of ticks."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:7
+msgid "Width of the ticks."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:8
+msgid "Y axis label"
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:9
+msgid "Height of the label."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:10
+msgid "Maximum value of the data."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:11
+msgid "The colors of the bars."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:12
+msgid "The opacity of the bars."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:13
+msgid "The stroke width of the bars."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:14
+msgid "The names of each bar."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:15
+msgid "The label size."
+msgstr ""
+
+#: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:18
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+
