@@ -27,7 +27,7 @@ def get_video_metadata(path_to_video: str) -> Dict[str, Any]:
         "stream=width,height,nb_frames,duration,avg_frame_rate,codec_name",
         "-print_format",
         "json",
-        path_to_video,
+        str(path_to_video),
     ]
     config, err, exitcode = capture(command)
     assert exitcode == 0, f"FFprobe error: {err}"
