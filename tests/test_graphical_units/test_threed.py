@@ -31,7 +31,10 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    scene.add(Line3D())
+    line = Line3D()
+    perp_line = Line3D.perpendicular_to(line, UP)
+    parallel_line = Line3D.parallel_to(line, UP)
+    scene.add(line, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)

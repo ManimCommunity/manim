@@ -1,0 +1,143 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:2
+msgid "Paragraph"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:4
+msgid "Qualified name: ``manim.mobject.svg.text\\_mobject.Paragraph``"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:1
+msgid "Display a paragraph of text."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:3
+msgid "For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a :class:`.VGroup` containing all the lines. In this context, every line is constructed as a :class:`.VGroup` of characters contained in the line."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:0
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:0
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:0
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments:0
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:0
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:8
+msgid "Represents the spacing between lines. Default to -1, which means auto."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:10
+msgid "Defines the alignment of paragraph. Default to \"left\". Possible values are \"left\", \"right\", \"center\""
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:14
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:15
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph:22
+msgid "Remove unwanted invisible characters::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1
+msgid "Function to change one line's alignment to a specific value."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+msgid "Function to convert plain string to 2d-VGroup of chars."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments:1
+msgid "Function to set all line's alignment to a specific value."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_all_lines_to_initial_positions:1
+msgid "Set all lines to their initial positions."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:1
+msgid "Function to set one line's alignment to a specific value."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position:1
+msgid "Function to set one line to initial positions."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:27
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:3
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments:3
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:3
+msgid "Defines the alignment of paragraph. Possible values are \"left\", \"right\", \"center\"."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:5
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:5
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position:3
+msgid "Defines the line number for which we want to set given alignment."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:1
+msgid "Function to convert plain string to 2d-VGroup of chars. 2d-VGroup mean \"VGroup of VGroup\"."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:3
+msgid "Plain text string."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:6
+msgid "The generated 2d-VGroup of chars."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.gen_chars:0
+msgid "Return type"
+msgstr ""
+
+

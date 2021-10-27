@@ -28,6 +28,8 @@ for i, arg in enumerate(sys.argv):
     elif arg == "--use_webgl_renderer":
         config.renderer = "webgl"
 
+# many scripts depend on this -> has to be loaded first
+from .utils.commands import *  # isort:skip
 
 from .animation.animation import *
 from .animation.composition import *
@@ -87,11 +89,11 @@ from .scene.reconfigurable_scene import *
 from .scene.sample_space_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
+from .scene.section import *
 from .scene.three_d_scene import *
 from .scene.vector_space_scene import *
 from .scene.zoomed_scene import *
-from .utils import color as color
-from .utils import rate_functions, unit
+from .utils import color, rate_functions, unit
 from .utils.bezier import *
 from .utils.color import *
 from .utils.config_ops import *
