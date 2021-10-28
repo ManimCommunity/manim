@@ -160,7 +160,13 @@ class SceneFileWriter:
 
         # images don't support sections
         section_video: Optional[str] = None
-        if not config.dry_run and write_to_movie() and config.save_sections:
+        # don't save when None
+        if (
+            not config.dry_run
+            and write_to_movie()
+            and config.save_sections
+            and not skip_animations
+        ):
             # relative to index file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
@@ -662,10 +668,10 @@ class SceneFileWriter:
                     os.path.join(self.sections_output_dir, section.video),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-            with open(
-                os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
-            ) as file:
-                json.dump(sections_index, file, indent=4)
+        with open(
+            os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
+        ) as file:
+            json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
