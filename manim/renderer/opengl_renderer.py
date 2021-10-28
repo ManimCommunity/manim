@@ -390,7 +390,8 @@ class OpenGLRenderer:
         raises an EndSceneEarlyException if they don't correspond.
         """
         # there is always at least one section -> no out of bounds here
-        self.skip_animations = self.file_writer.sections[-1].skip_animations
+        if self.file_writer.sections[-1].skip_animations:
+            self.skip_animations = True
         if (
             config["from_animation_number"]
             and self.num_plays < config["from_animation_number"]
