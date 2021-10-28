@@ -2476,7 +2476,7 @@ class PolarPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non faded lines and circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
-        center = self.get_center_point()
+        center = self.get_origin()
         ratio_faded_lines = self.faded_line_ratio
         offset = self.azimuth_offset
 
