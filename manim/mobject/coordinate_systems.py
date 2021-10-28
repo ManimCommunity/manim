@@ -1651,7 +1651,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # it would remove the "0" tick, which is actually 10^0,
         # not the lowest tick on the graph (which is 10^-2).
 
-        if self.y_axis_config.get("scaling") is None or isinstance(
+        if self.x_axis_config.get("scaling") is None or isinstance(
             self.x_axis_config.get("scaling"), LinearBase
         ):
             self.x_axis_config["exclude_origin_tick"] = True
