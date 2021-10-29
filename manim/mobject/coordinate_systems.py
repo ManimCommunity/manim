@@ -12,7 +12,6 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from re import X
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np

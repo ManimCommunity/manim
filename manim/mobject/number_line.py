@@ -301,13 +301,20 @@ class NumberLine(Line):
         return VGroup(self.ticks)
 
     def get_tick_range(self) -> np.ndarray:
+        """Generates the range of values on which labels are plotted.
+
+        Returns
+        -------
+        np.ndarray
+            A numpy array consisting of floats represnting values along the number line.
+        """
         x_min, x_max, x_step = self.x_range
         if not self.include_tip:
             x_max += 1e-6
 
         # Handle cases where min and max are both positive or both negative
         if x_min < x_max < 0 or x_max > x_min > 0:
-            val = np.arange(x_min, x_max, x_step)
+            tick_range = np.arange(x_min, x_max, x_step)
         else:
             start_point = 0
             if self.exclude_origin_tick:
@@ -316,18 +323,42 @@ class NumberLine(Line):
             x_min_segment = np.arange(start_point, np.abs(x_min) + 1e-6, x_step) * -1
             x_max_segment = np.arange(start_point, x_max, x_step)
 
-            val = np.unique(np.concatenate((x_min_segment, x_max_segment)))
+            tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
-        val = self.scaling.function(val)
-        return val
+        return self.scaling.function(tick_range)
 
     def number_to_point(self, number: float) -> np.ndarray:
+        """Accepts a value along the number line and returns a point in the scene.
+
+        Parameters
+        ----------
+        number
+            The value to be transformed into a coordinate.
+
+        Returns
+        -------
+        np.ndarray
+            A coordinate in the scene.
+        """
+
         number = self.scaling.inverse_function(number)
         alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
         val = interpolate(self.get_start(), self.get_end(), alpha)
         return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
+        """Accepts a point in the scene and returns a float along the number line.
+
+        Parameters
+        ----------
+        point
+            A sequence of values consisting of ``(x_coord, y_coord, z_coord)``.
+
+        Returns
+        -------
+        float
+            A float along the number line.
+        """
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
         proportion = fdiv(
@@ -425,7 +456,7 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-            label = self.create_label_tex(label)
+            label = self._create_label_tex(label)
             if hasattr(label, "font_size"):
                 label.font_size = font_size
             else:
@@ -438,7 +469,7 @@ class NumberLine(Line):
         return self
 
     @staticmethod
-    def create_label_tex(label_tex) -> "Mobject":
+    def _create_label_tex(label_tex) -> "Mobject":
         """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
 
         Parameters

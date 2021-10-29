@@ -89,10 +89,24 @@ class LinearBase(_ScaleBase):
         super().__init__()
         self.scale_factor = scale_factor
 
-    def function(self, value):
+    def function(self, value: float) -> float:
+        """Multiplies the value by the scale factor.
+
+        Parameters
+        ----------
+        value
+            Value to be multiplied by the scale factor.
+        """
         return self.scale_factor * value
 
-    def inverse_function(self, value):
+    def inverse_function(self, value: float) -> float:
+        """Inverse of function. Divides the value by the scale factor.
+
+        Parameters
+        ----------
+        value
+            value to be divided by the scale factor.
+        """
         return value / self.scale_factor
 
 
@@ -121,7 +135,7 @@ class LogBase(_ScaleBase):
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
-        """Scales the value to fit it to a logarithmic scale.``self.function(5) == 10**5``"""
+        """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
