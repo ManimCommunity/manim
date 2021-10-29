@@ -99,7 +99,7 @@ class NumberLine(Line):
                     include_numbers=True,
                     font_size=24,
                 )
-                num6 = l1.numbers[9]
+                num6 = l1.numbers[8]
                 num6.set_color(RED)
 
                 l2 = NumberLine(
