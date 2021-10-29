@@ -6,9 +6,14 @@ Quickstart
  Before proceeding, install manim and make sure it's running properly by
  following the steps in :doc:`../installation`. For
  information on using manim with Jupyterlab or Jupyter notebook, go to the
- :meth:``%%manim`` IPython magic command documentation <manim.utils.ipython_magic.ManimMagic.manim>`.
+ documentation for the
+ :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
+ %%manim.
 
-In this quickstart, you will create a sample project using manim: an animation
+Overview
+*************************************************
+
+This quickstart guide will lead you through creating a sample project using manim: an animation
 engine for precise programmatic animations.
 
 First, you will use a command line
@@ -18,7 +23,6 @@ a square transforming into a circle. This will be your introduction to manim's a
 Afterwards, you will position multiple manim objects (mobjects). Finally, you
 will learn the syntax of ``.animate``, a powerful feature that displays how
 mobjects change when you modify them with methods.
-
 
 
 Starting a new project
@@ -253,9 +257,6 @@ and animating those method calls with ``.animate``.
 1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` method:
 
 .. code-block:: python
-
-   from manim import *
-
 
    class AnimatedSquareToCircle(Scene):
        def construct(self):
