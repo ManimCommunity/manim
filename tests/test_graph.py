@@ -1,4 +1,4 @@
-from manim import Graph, Text, Scene, tempconfig
+from manim import Graph, Scene, Text, tempconfig
 
 
 def test_graph_creation():
@@ -89,7 +89,7 @@ def test_custom_animation_mobject_list():
     scene = Scene()
     scene.add(G)
     assert scene.mobjects == [G]
-    with tempconfig({'dry_run': True, 'quality': 'low_quality'}):
+    with tempconfig({"dry_run": True, "quality": "low_quality"}):
         scene.play(G.animate.add_vertices(4))
         assert str(G) == "Graph on 4 vertices and 2 edges"
         assert scene.mobjects == [G]
