@@ -99,7 +99,7 @@ class NumberLine(Line):
                     include_numbers=True,
                     font_size=24,
                 )
-                [num6] = [num for num in l1.numbers if num.number == 6]
+                num6 = [num for num in l1.numbers if num.number == 6]
                 num6.set_color(RED)
                 l1.add(num6)
 
@@ -126,12 +126,6 @@ class NumberLine(Line):
         Number ranges that include both negative and positive values will be generated
         from the 0 point, and may not include a tick at the min / max
         values as the tick locations are dependent on the step size.
-
-
-    Returns
-    -------
-    NumberLine
-        The constructed number line.
     """
 
     @deprecated_params(
@@ -392,11 +386,11 @@ class NumberLine(Line):
         return interpolate(self.x_min, self.x_max, proportion)
 
     def n2p(self, number: float) -> np.ndarray:
-        """Abbreviation for number_to_point"""
+        """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
     def p2n(self, point: Sequence[float]) -> float:
-        """Abbreviation for point_to_number"""
+        """Abbreviation for :meth:`~.NumberLine.point_to_number`."""
         return self.point_to_number(point)
 
     def get_unit_size(self) -> float:
@@ -413,7 +407,7 @@ class NumberLine(Line):
         font_size: Optional[float] = None,
         **number_config,
     ) -> DecimalNumber:
-        """Generates a positioned :class:`~DecimalNumber` mobject representing a number label.
+        """Generates a positioned :class:`~.DecimalNumber` mobject representing a number label.
 
         Parameters
         ----------
@@ -465,9 +459,9 @@ class NumberLine(Line):
         font_size: Optional[float] = None,
         **kwargs,
     ):
-        """Adds :class:`~.DecimnalNumber` mobjects representing their position
-         at each tick of the number line. Number can be accessed after creation
-         via ``self.numbers``.
+        """Adds :class:`~.DecimalNumber` mobjects representing their position
+        at each tick of the number line. The numbers can be accessed after creation
+        via ``self.numbers``.
 
         Parameters
         ----------
@@ -475,10 +469,10 @@ class NumberLine(Line):
             An iterable of the values used to position and create the labels.
             Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
         excluding
-            A list of values to exclude from the :attr:`x_values`.
+            A list of values to exclude from :attr:`x_values`.
         font_size
             The font size of the labels. Defaults to the ``font_size`` attribute
-             of the number line.
+            of the number line.
         """
         if x_values is None:
             x_values = self.get_tick_range()
@@ -519,7 +513,7 @@ class NumberLine(Line):
         buff
             The distance of the label from the line.
         font_size
-            The font_size of the mobject to be positioned.
+            The font size of the mobject to be positioned.
 
         Raises
         ------

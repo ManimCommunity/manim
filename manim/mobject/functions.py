@@ -3,7 +3,7 @@
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Optional, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
