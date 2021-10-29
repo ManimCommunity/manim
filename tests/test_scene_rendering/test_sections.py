@@ -94,6 +94,7 @@ def test_skip_animations(tmp_path, manim_cfg_file, simple_scenes_path):
         "-m",
         "manim",
         "-ql",
+        "--save_sections",
         "--media_dir",
         str(tmp_path),
         simple_scenes_path,
