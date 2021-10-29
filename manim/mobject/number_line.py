@@ -27,9 +27,7 @@ if TYPE_CHECKING:
 
 
 class NumberLine(Line):
-    """Creates a number line with tick marks. Number ranges that include both negative and
-    positive values will be generated from the 0 point, and may not include a tick at the min / max
-    values as the tick locations are dependent on the step size.
+    """Creates a number line with tick marks.
 
     Parameters
     ----------
@@ -122,6 +120,13 @@ class NumberLine(Line):
 
                 line_group = VGroup(l0, l1, l2, l3).arrange(DOWN, buff=1)
                 self.add(line_group)
+
+    .. note::
+
+        Number ranges that include both negative and positive values will be generated
+        from the 0 point, and may not include a tick at the min / max
+        values as the tick locations are dependent on the step size.
+
 
     Returns
     -------
@@ -278,6 +283,8 @@ class NumberLine(Line):
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
     def add_ticks(self):
+        """Adds ticks to the number line. Ticks can be accessed after creation
+        via ``self.ticks``."""
         ticks = VGroup()
         elongated_tick_size = self.tick_size * self.longer_tick_multiple
         for x in self.get_tick_range():
@@ -312,10 +319,11 @@ class NumberLine(Line):
         return result
 
     def get_tick_marks(self) -> VGroup:
-        return VGroup(self.ticks)
+        return self.ticks
 
     def get_tick_range(self) -> np.ndarray:
-        """Generates the range of values on which labels are plotted.
+        """Generates the range of values on which labels are plotted based on the
+        ``x_range`` attribute of the number line.
 
         Returns
         -------
