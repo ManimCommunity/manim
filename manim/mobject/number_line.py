@@ -99,9 +99,8 @@ class NumberLine(Line):
                     include_numbers=True,
                     font_size=24,
                 )
-                num6 = li.numbers[5]
+                num6 = l1.numbers[5]
                 num6.set_color(RED)
-                l1.add(num6)
 
                 l2 = NumberLine(
                     x_range=[-2.5, 2.5 + 0.5, 0.5],
