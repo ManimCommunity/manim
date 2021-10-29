@@ -12,7 +12,6 @@ def test_axes(scene):
         x_length=6,
         y_length=6,
         color=WHITE,
-        axis_config={"exclude_origin_tick": False},
     )
     labels = graph.get_axis_labels()
     scene.add(graph, labels)

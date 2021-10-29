@@ -1992,6 +1992,13 @@ class ThreeDAxes(Axes):
 
         self.dimension = 3
 
+        if self.z_axis_config.get("scaling") is None or isinstance(
+            self.z_axis_config.get("scaling"), LinearBase
+        ):
+            self.z_axis_config["exclude_origin_tick"] = True
+        else:
+            self.z_axis_config["exclude_origin_tick"] = False
+
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         z_axis.rotate_about_zero(-PI / 2, UP)
