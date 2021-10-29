@@ -307,7 +307,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        Line
+        :class:`~.Line`
             A positioned tick.
         """
         if size is None:
@@ -328,7 +328,7 @@ class NumberLine(Line):
         Returns
         -------
         np.ndarray
-            A numpy array consisting of floats represnting values along the number line.
+            A numpy array of floats represnting values along the number line.
         """
         x_min, x_max, x_step = self.x_range
         if not self.include_tip:
@@ -350,7 +350,8 @@ class NumberLine(Line):
         return self.scaling.function(tick_range)
 
     def number_to_point(self, number: float) -> np.ndarray:
-        """Accepts a value along the number line and returns a point in the scene.
+        """Accepts a value along the number line and returns a point with
+        respect to the scene.
 
         Parameters
         ----------
@@ -360,7 +361,7 @@ class NumberLine(Line):
         Returns
         -------
         np.ndarray
-            A coordinate in the scene.
+            A point with respect to the scene's coordinate system.
         """
 
         number = self.scaling.inverse_function(number)
@@ -369,7 +370,8 @@ class NumberLine(Line):
         return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
-        """Accepts a point in the scene and returns a float along the number line.
+        """Accepts a point with respect to the scene and returns
+        a float along the number line.
 
         Parameters
         ----------
