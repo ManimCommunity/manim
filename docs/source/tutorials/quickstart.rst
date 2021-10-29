@@ -7,8 +7,8 @@ Quickstart
  following the steps in :doc:`../installation`. For
  information on using manim with Jupyterlab or Jupyter notebook, go to the
  documentation for the
- :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
- %%manim.
+ `IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
+ :meth:%%manim.
 
 Overview
 *************************************************
