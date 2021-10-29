@@ -9,11 +9,11 @@
         "nb_frames": "105"
     },
     "section_dir_layout": [
+        "SceneWithSections.json",
         "SceneWithSections_0004.mp4",
         "SceneWithSections_0003.mp4",
         "SceneWithSections_0002.mp4",
         "SceneWithSections_0001.mp4",
-        "SceneWithSections.json",
         "SceneWithSections_0000.mp4",
         "."
     ],
