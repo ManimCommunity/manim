@@ -190,7 +190,7 @@ class NumberLine(Line):
 
         if decimal_number_config is None:
             decimal_number_config = {
-                "num_decimal_places": self.decimal_places_from_step(x_range[2]),
+                "num_decimal_places": self._decimal_places_from_step(x_range[2]),
             }
 
         # turn into into an np array to scale by just applying the function
@@ -289,6 +289,20 @@ class NumberLine(Line):
         self.ticks = ticks
 
     def get_tick(self, x: float, size: Optional[float] = None) -> Line:
+        """Generates a tick and positions it along the number line.
+
+        Parameters
+        ----------
+        x : float
+            The position of the tick.
+        size : Optional[float], optional
+            The factor by which the tick is scaled.
+
+        Returns
+        -------
+        Line
+            A positioned tick.
+        """
         if size is None:
             size = self.tick_size
         result = Line(size * DOWN, size * UP)
@@ -389,6 +403,24 @@ class NumberLine(Line):
         font_size: Optional[float] = None,
         **number_config,
     ) -> DecimalNumber:
+        """Generates a positioned :class:`~DecimalNumber` mobject representing a number label.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tick should be positioned.
+        direction
+            Determines the direction at which the label is positioned next to the line.
+        buff
+            The distance of the label from the line.
+        font_size
+            The font size of the :class:`~.DecimalNumber` mobject.
+
+        Returns
+        -------
+        :class:`~.DecimalNumber`
+            The positioned mobject.
+        """
         number_config = merge_dicts_recursively(
             self.decimal_number_config,
             number_config,
@@ -449,7 +481,25 @@ class NumberLine(Line):
         buff=None,
         font_size=None,
     ):
-        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."""
+        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
+
+        Parameters
+        ----------
+        dict_values
+            A dictionary consisting of the position along the number line and the mobject to be added:
+            ``{1: Tex("Monday"), 3: Tex("Tuesday")}``.
+        direction : [type], optional
+            Determines the direction at which the label is positioned next to the line.
+        buff : [type], optional
+            The distance of the label from the line.
+        font_size : [type], optional
+            The font_size of the mobject to be positioned.
+
+        Raises
+        ------
+        AttributeError
+            If the label does not have a font_size parameter, an AttributeError is raised.
+        """
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
@@ -489,7 +539,7 @@ class NumberLine(Line):
         return label_tex
 
     @staticmethod
-    def decimal_places_from_step(step) -> int:
+    def _decimal_places_from_step(step) -> int:
         step = str(step)
         if "." not in step:
             return 0
