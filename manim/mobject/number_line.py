@@ -99,7 +99,7 @@ class NumberLine(Line):
                     include_numbers=True,
                     font_size=24,
                 )
-                num6 = [num for num in l1.numbers if num.number == 6]
+                num6 = li.numbers[5]
                 num6.set_color(RED)
                 l1.add(num6)
 
@@ -473,6 +473,7 @@ class NumberLine(Line):
         font_size
             The font size of the labels. Defaults to the ``font_size`` attribute
             of the number line.
+
         """
         if x_values is None:
             x_values = self.get_tick_range()
