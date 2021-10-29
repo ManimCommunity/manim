@@ -293,9 +293,9 @@ class NumberLine(Line):
 
         Parameters
         ----------
-        x : float
+        x
             The position of the tick.
-        size : Optional[float], optional
+        size
             The factor by which the tick is scaled.
 
         Returns
@@ -371,7 +371,7 @@ class NumberLine(Line):
         Returns
         -------
         float
-            A float along the number line.
+            A float representing a value along the number line.
         """
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
@@ -454,7 +454,22 @@ class NumberLine(Line):
         excluding: Optional[Iterable[float]] = None,
         font_size: Optional[float] = None,
         **kwargs,
-    ) -> VGroup:
+    ):
+        """Adds :class:`~.DecimnalNumber` mobjects representing their position
+         at each tick of the number line. Number can be accessed after creation
+         via ``self.numbers``.
+
+        Parameters
+        ----------
+        x_values
+            An iterable of the values used to position and create the labels.
+            Defaults to the output produced by :meth:`~.NumberLine.get_tick_range`
+        excluding
+            A list of values to exclude from the :attr:`x_values`.
+        font_size
+            The font size of the labels. Defaults to the ``font_size`` attribute
+             of the number line.
+        """
         if x_values is None:
             x_values = self.get_tick_range()
 
@@ -477,28 +492,29 @@ class NumberLine(Line):
     def add_labels(
         self,
         dict_values: Dict[float, Union[str, float, "Mobject"]],
-        direction=None,
-        buff=None,
-        font_size=None,
+        direction: Sequence[float] = None,
+        buff: float = None,
+        font_size: float = None,
     ):
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
+        The labels can be accessed after creation via ``self.labels``.
 
         Parameters
         ----------
         dict_values
             A dictionary consisting of the position along the number line and the mobject to be added:
             ``{1: Tex("Monday"), 3: Tex("Tuesday")}``.
-        direction : [type], optional
+        direction
             Determines the direction at which the label is positioned next to the line.
-        buff : [type], optional
+        buff
             The distance of the label from the line.
-        font_size : [type], optional
+        font_size
             The font_size of the mobject to be positioned.
 
         Raises
         ------
         AttributeError
-            If the label does not have a font_size parameter, an AttributeError is raised.
+            If the label does not have a ``font_size`` attribute, an ``AttributeError`` is raised.
         """
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
