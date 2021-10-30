@@ -23,10 +23,6 @@ repos:
       - id: isort
         name: isort (pyi)
         types: [pyi]
-  - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.1.0
-    hooks:
-      - id: add-trailing-comma
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.28.0
     hooks:

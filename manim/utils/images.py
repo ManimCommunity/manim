@@ -3,6 +3,8 @@
 __all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
 
 
+from typing import List
+
 import numpy as np
 from PIL import Image
 
@@ -18,7 +20,7 @@ def get_full_raster_image_path(image_file_name: str) -> str:
     )
 
 
-def drag_pixels(frames):
+def drag_pixels(frames: List[np.array]) -> List[np.array]:
     curr = frames[0]
     new_frames = []
     for frame in frames:
@@ -27,7 +29,7 @@ def drag_pixels(frames):
     return new_frames
 
 
-def invert_image(image):
+def invert_image(image: np.array) -> Image:
     arr = np.array(image)
     arr = (255 * np.ones(arr.shape)).astype(arr.dtype) - arr
     return Image.fromarray(arr)

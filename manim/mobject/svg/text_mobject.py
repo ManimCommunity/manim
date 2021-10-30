@@ -423,8 +423,8 @@ class Text(SVGMobject):
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
-        height: int = None,
-        width: int = None,
+        height: float = None,
+        width: float = None,
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,

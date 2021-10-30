@@ -3,6 +3,7 @@
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",
+    "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
@@ -16,6 +17,7 @@ __all__ = [
 
 import os
 import platform
+import shutil
 import subprocess as sp
 import time
 from pathlib import Path
@@ -133,11 +135,15 @@ def guarantee_existence(path: Path) -> str:
     return os.path.abspath(path)
 
 
-def seek_full_path_from_defaults(
-    file_name: Union[str, Path],
-    default_dir: Path,
-    extensions: List[str],
-) -> Union[str, Path]:
+
+def guarantee_empty_existence(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+    return os.path.abspath(path)
+
+
+def seek_full_path_from_defaults(file_name, default_dir, extensions):
     possible_paths = [file_name]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
