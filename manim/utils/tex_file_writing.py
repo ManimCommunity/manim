@@ -163,7 +163,6 @@ def insight_inputenc_error(match) -> None:
     yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
 
 
-
 def compile_tex(tex_file, tex_compiler, output_format):
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 

@@ -135,7 +135,6 @@ def guarantee_existence(path: Path) -> str:
     return os.path.abspath(path)
 
 
-
 def guarantee_empty_existence(path):
     if os.path.exists(path):
         shutil.rmtree(path)
