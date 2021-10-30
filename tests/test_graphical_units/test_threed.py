@@ -49,7 +49,7 @@ def test_Torus(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Axes(scene):
-    scene.add(ThreeDAxes(axis_config={"exclude_origin_tick": False}))
+    scene.add(ThreeDAxes())
 
 
 @frames_comparison(base_scene=ThreeDScene)

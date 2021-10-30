@@ -1,3 +1,4 @@
+import itertools
 import os
 import sys
 
@@ -6,7 +7,7 @@ import pytest
 from click.testing import CliRunner
 from PIL import Image
 
-from manim import capture
+from manim import capture, get_video_metadata
 from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
 from tests.utils.video_tester import video_comparison
@@ -33,6 +34,44 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+@pytest.mark.slow()
+def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "NoAnimations"
+    resolutions = [
+        (720, 480),
+        (1280, 720),
+        (1920, 1080),
+        (2560, 1440),
+        (3840, 2160),
+        (640, 480),
+        (800, 600),
+    ]
+
+    separators = [";", ",", "-"]
+
+    for (width, height), separator in itertools.product(resolutions, separators):
+        command = [
+            sys.executable,
+            "-m",
+            "manim",
+            "--media_dir",
+            str(tmp_path),
+            "--resolution",
+            f"{width}{separator}{height}",
+            str(simple_scenes_path),
+            scene_name,
+        ]
+
+        _, err, exit_code = capture(command)
+        assert exit_code == 0, err
+
+        path = (
+            tmp_path / "videos" / "simple_scenes" / f"{height}p60" / f"{scene_name}.mp4"
+        )
+        meta = get_video_metadata(path)
+        assert (width, height) == (meta["width"], meta["height"])
 
 
 @pytest.mark.slow
