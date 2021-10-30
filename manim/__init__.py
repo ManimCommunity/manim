@@ -103,6 +103,7 @@ from .utils.images import *
 from .utils.iterables import *
 from .utils.paths import *
 from .utils.rate_functions import *
+from .utils.scale import *
 from .utils.simple_functions import *
 from .utils.sounds import *
 from .utils.space_ops import *

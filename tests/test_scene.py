@@ -1,6 +1,6 @@
 import pytest
 
-from manim import Mobject, Scene, tempconfig
+from manim import Circle, FadeIn, Mobject, Scene, Square, config, tempconfig
 
 
 def test_scene_add_remove():
@@ -33,3 +33,16 @@ def test_scene_add_remove():
 
         # Check that Scene.remove() returns the instance (for chained calls)
         assert scene.add(Mobject()) is scene
+
+
+def test_scene_time():
+    with tempconfig({"dry_run": True}):
+        scene = Scene()
+        assert scene.renderer.time == 0
+        scene.wait(2)
+        assert scene.renderer.time == 2
+        scene.play(FadeIn(Circle()), run_time=0.5)
+        assert pytest.approx(scene.renderer.time) == 2.5
+        scene.renderer._original_skipping_status = True
+        scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
+        assert pytest.approx(scene.renderer.time) == 7.5

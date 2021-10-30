@@ -32,7 +32,7 @@ class NoAnimations(Scene):
     def construct(self):
         dot = Dot().set_color(GREEN)
         self.add(dot)
-        self.wait(1)
+        self.wait(0.1)
 
 
 class SceneWithStaticWait(Scene):
