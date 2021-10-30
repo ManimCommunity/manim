@@ -40,3 +40,36 @@ def test_implicit_graph(scene):
     ax = Axes()
     graph = ax.get_implicit_curve(lambda x, y: x ** 2 + y ** 2 - 4)
     scene.add(ax, graph)
+
+
+@frames_comparison
+def test_number_plane_log(scene):
+    """Test that NumberPlane generates its lines properly with a LogBase"""
+    # y_axis log
+    plane1 = (
+        NumberPlane(
+            x_range=[0, 8, 1],
+            y_range=[-2, 5],
+            y_length=6,
+            x_length=10,
+            y_axis_config={"scaling": LogBase()},
+        )
+        .add_coordinates()
+        .scale(1 / 2)
+    )
+
+    # x_axis log
+    plane2 = (
+        NumberPlane(
+            x_range=[0, 8, 1],
+            y_range=[-2, 5],
+            y_length=6,
+            x_length=10,
+            x_axis_config={"scaling": LogBase()},
+            faded_line_ratio=4,
+        )
+        .add_coordinates()
+        .scale(1 / 2)
+    )
+
+    scene.add(VGroup(plane1, plane2).arrange())
