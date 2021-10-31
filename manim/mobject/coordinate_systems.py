@@ -1298,12 +1298,12 @@ class CoordinateSystem:
                 + [graph.function(b), self.c2p(b)]
             )
         else:
-            graph_points, bounded_graph_points = [
+            graph_points, bounded_graph_points = (
                 [g.function(a)]
                 + [p for p in g.points if a <= self.p2c(p)[0] <= b]
                 + [g.function(b)]
                 for g in (graph, bounded_graph)
-            ]
+            )
             points = graph_points + bounded_graph_points[::-1]
         return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 

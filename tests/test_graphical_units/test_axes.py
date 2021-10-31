@@ -198,6 +198,7 @@ def test_get_area(scene):
 
     scene.add(ax, curve1, curve2, area1, area2)
 
+
 @frames_comparison
 def test_get_area_with_boundary_and_few_plot_points(scene):
     ax = Axes(x_range=[-2, 2], y_range=[-2, 2], color=WHITE)
