@@ -2590,7 +2590,7 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-
+        self.azimuth_label_font_size = azimuth_label_font_size
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
