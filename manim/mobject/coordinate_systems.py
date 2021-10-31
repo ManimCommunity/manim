@@ -18,6 +18,7 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.utils.scale import LinearBase
 
 from .. import config
 from ..constants import *
@@ -443,6 +444,12 @@ class CoordinateSystem:
             if isinstance(values, dict):
                 axis.add_labels(values, **kwargs)
                 labels = axis.labels
+            elif values is None and axis.scaling.custom_labels:
+                tick_range = axis.get_tick_range()
+                axis.add_labels(
+                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
+                )
+                labels = axis.labels
             else:
                 axis.add_numbers(values, **kwargs)
                 labels = axis.numbers
@@ -692,8 +699,12 @@ class CoordinateSystem:
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
+
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+            lambda t: self.coords_to_point(t, function(t)),
+            t_range=t_range,
+            scaling=self.x_axis.scaling,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -1553,12 +1564,32 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
+    Examples
+    --------
+
+    .. manim:: LogScalingExample
+        :save_last_frame:
+
+        class LogScalingExample(Scene):
+            def construct(self):
+                ax = Axes(
+                    x_range=[0, 10, 1],
+                    y_range=[-2, 6, 1],
+                    tips=False,
+                    axis_config={"include_numbers": True},
+                    y_axis_config={"scaling": LogBase(custom_labels=True)},
+                )
+
+                # x_min must be > 0 because log is undefined at 0.
+                graph = ax.get_graph(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                self.add(ax, graph)
+
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``(x_min, x_max, x_step)`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``(y_min, y_max, y_step)`` values of the y-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1593,7 +1624,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.axis_config = {
             "include_tip": tips,
             "numbers_to_exclude": [0],
-            "exclude_origin_tick": True,
         }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
@@ -1612,6 +1642,28 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.y_axis_config,
         )
 
+        # excluding the origin tick removes a tick at the 0-point of the axis
+        # This is desired for LinearBase because the 0 point is always the x-axis
+        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
+
+        # i.e. with LogBase range [-2, 4]:
+        # it would remove the "0" tick, which is actually 10^0,
+        # not the lowest tick on the graph (which is 10^-2).
+
+        if self.x_axis_config.get("scaling") is None or isinstance(
+            self.x_axis_config.get("scaling"), LinearBase
+        ):
+            self.x_axis_config["exclude_origin_tick"] = True
+        else:
+            self.x_axis_config["exclude_origin_tick"] = False
+
+        if self.y_axis_config.get("scaling") is None or isinstance(
+            self.y_axis_config.get("scaling"), LinearBase
+        ):
+            self.y_axis_config["exclude_origin_tick"] = True
+        else:
+            self.y_axis_config["exclude_origin_tick"] = False
+
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
 
@@ -1622,7 +1674,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.add(*self.axes)
 
         # finds the middle-point on each axis
-        lines_center_point = [((axis.x_max + axis.x_min) / 2) for axis in self.axes]
+        lines_center_point = [
+            axis.scaling.function((axis.x_range[1] + axis.x_range[0]) / 2)
+            for axis in self.axes
+        ]
 
         self.shift(-self.coords_to_point(*lines_center_point))
 
@@ -1643,23 +1698,23 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         range_terms
-            The range of the the axis : `(x_min, x_max, x_step)`.
+            The range of the the axis : ``(x_min, x_max, x_step)``.
         axis_config
-            Additional parameters that are passed to :class:`NumberLine`.
+            Additional parameters that are passed to :class:`~.NumberLine`.
         length
             The length of the axis.
 
         Returns
         -------
         :class:`NumberLine`
-            Returns a number line with the provided x and y axis range.
+            Returns a number line based on ``range_terms``.
         """
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
 
         # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self._origin_shift(range_terms)))
+        axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -1696,8 +1751,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         np.ndarray
             A point with respect to the scene's coordinate system.
         """
-
-        origin = self.x_axis.number_to_point(self._origin_shift(self.x_range))
+        origin = self.x_axis.number_to_point(
+            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+        )
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -1850,8 +1906,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             The range of the axis : ``(x_min, x_max, x_step)``.
         """
         if axis_range[0] > 0:
+            # min greater than 0
             return axis_range[0]
         if axis_range[1] < 0:
+            # max less than 0
             return axis_range[1]
         else:
             return 0
@@ -1863,11 +1921,11 @@ class ThreeDAxes(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``[x_min, x_max, x_step]`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``[y_min, y_max, y_step]`` values of the y-axis.
     z_range
-        The :code:`[z_min, z_max, z_step]` values of the z-axis.
+        The ``[z_min, z_max, z_step]`` values of the z-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1933,11 +1991,22 @@ class ThreeDAxes(Axes):
 
         self.dimension = 3
 
+        if self.z_axis_config.get("scaling") is None or isinstance(
+            self.z_axis_config.get("scaling"), LinearBase
+        ):
+            self.z_axis_config["exclude_origin_tick"] = True
+        else:
+            self.z_axis_config["exclude_origin_tick"] = False
+
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.number_to_point(self._origin_shift(x_range)))
+        z_axis.shift(
+            self.x_axis.number_to_point(
+                self._origin_shift([z_axis.x_min, z_axis.x_max]),
+            ),
+        )
 
         self.axes.add(z_axis)
         self.add(z_axis)
@@ -2027,9 +2096,9 @@ class NumberPlane(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+        The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+        The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction.
     x_length
         The width of the plane.
     y_length
@@ -2044,7 +2113,6 @@ class NumberPlane(Axes):
         Currently non-functional.
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
-
 
     .. note::
 
@@ -2088,7 +2156,7 @@ class NumberPlane(Axes):
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
         faded_line_ratio: int = 1,
-        make_smooth_after_applying_functions=True,
+        make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
 
@@ -2161,7 +2229,8 @@ class NumberPlane(Axes):
         )
 
     def _get_lines(self) -> Tuple[VGroup, VGroup]:
-        """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+        """Generate all the lines, faded and not faded.
+         Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
         -------
@@ -2174,14 +2243,14 @@ class NumberPlane(Axes):
         x_lines1, x_lines2 = self._get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            self.y_axis.x_step,
+            self.y_axis.x_range[2],
             self.faded_line_ratio,
         )
 
         y_lines1, y_lines2 = self._get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            self.x_axis.x_step,
+            self.x_axis.x_range[2],
             self.faded_line_ratio,
         )
 
@@ -2220,7 +2289,8 @@ class NumberPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
+            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second
+             (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
 
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
@@ -2231,25 +2301,20 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
+        # need to unpack all three values
+        x_min, x_max, _ = axis_perpendicular_to.x_range
+
+        # account for different axis scalings (logarithmic), where
+        # negative values do not exist and [-2 , 4] should output lines
+        # similar to [0, 6]
+        if axis_perpendicular_to.x_min > 0 and x_min < 0:
+            x_min, x_max = (0, np.abs(x_min) + np.abs(x_max))
+
         # min/max used in case range does not include 0. i.e. if (2,6):
-        # the range becomes (0,4), not (0,6), to produce the correct number of lines
+        # the range becomes (0,4), not (0,6).
         ranges = (
-            np.arange(
-                0,
-                min(
-                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
-                    axis_perpendicular_to.x_max,
-                ),
-                step,
-            ),
-            np.arange(
-                0,
-                max(
-                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
-                    axis_perpendicular_to.x_min,
-                ),
-                -step,
-            ),
+            np.arange(0, min(x_max - x_min, x_max), step),
+            np.arange(0, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:
@@ -2493,14 +2558,14 @@ class PolarPlane(Axes):
 
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
-        rstep = (1 / ratio_faded_lines) * self.x_axis.x_step
+        rstep = (1 / ratio_faded_lines) * self.x_axis.x_range[2]
         astep = (1 / ratio_faded_lines) * (TAU * (1 / self.azimuth_step))
         rlines1 = VGroup()
         rlines2 = VGroup()
         alines1 = VGroup()
         alines2 = VGroup()
 
-        rinput = np.arange(0, self.x_axis.x_max + rstep, rstep)
+        rinput = np.arange(0, self.x_axis.x_range[1] + rstep, rstep)
         ainput = np.arange(0, TAU, astep)
 
         unit_vector = self.x_axis.get_unit_vector()[0]
