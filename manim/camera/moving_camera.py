@@ -16,7 +16,7 @@ from numpy import string_
 
 from .. import config
 from ..camera.camera import Camera
-from ..constants import *
+from ..constants import LEFT, RIGHT, UP, DOWN, ORIGIN
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import WHITE
