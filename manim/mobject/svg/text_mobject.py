@@ -425,9 +425,10 @@ class Text(SVGMobject):
         **kwargs,
     ):
 
-        self._font_size = float(font_size)
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
+        # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -1036,9 +1037,9 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        self._font_size = float(font_size)
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
