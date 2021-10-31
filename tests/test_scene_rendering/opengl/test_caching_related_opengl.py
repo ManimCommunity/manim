@@ -1,6 +1,10 @@
 import sys
 
-from ...utils.video_tester import *
+import pytest
+
+from manim import capture
+
+from ...utils.video_tester import video_comparison
 
 
 @pytest.mark.slow

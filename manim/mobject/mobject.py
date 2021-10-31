@@ -1846,7 +1846,6 @@ class Mobject:
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
-            submob.get_merged_array(array_attr)
         return result
 
     def get_all_points(self):

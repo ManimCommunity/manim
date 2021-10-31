@@ -64,6 +64,16 @@ class Animation:
         Whether updaters of the mobject should be suspended during the animation.
 
 
+    .. NOTE::
+
+        In the current implementation of this class, the specified rate function is applied
+        within :meth:`.Animation.interpolate_mobject` call as part of the call to
+        :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation`
+        that are implemented by overriding :meth:`interpolate_mobject`, the rate function
+        has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead
+        of just ``alpha``).
+
+
     Examples
     --------
 
