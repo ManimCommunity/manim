@@ -176,7 +176,7 @@ class Code(VGroup):
             stroke_width=stroke_width,
             **kwargs,
         )
-            self.font_size = font_size
+        self.font_size = font_size
         self.background_stroke_color = background_stroke_color
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
