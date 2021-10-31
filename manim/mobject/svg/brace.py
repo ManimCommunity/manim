@@ -159,7 +159,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         buff=0.2,
         **kwargs
     ):
-
+        self.font_size = font_size
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
