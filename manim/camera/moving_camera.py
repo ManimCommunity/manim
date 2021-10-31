@@ -178,6 +178,11 @@ class MovingCamera(Camera):
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
+        .. NOTE::
+
+            This method only works when 2D-objects in the XY-plane are considered, it
+            will not work correctly when the camera has been rotated.
+
         Parameters
         ----------
         mobjects
