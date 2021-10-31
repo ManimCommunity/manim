@@ -209,7 +209,7 @@ class MovingCamera(Camera):
 
         for m in mobjects:
             if (m == self.frame) or (
-                only_mobjects_in_frame and operator.not_(self.is_in_frame(m))
+                only_mobjects_in_frame and not self.is_in_frame(m)
             ):
                 # detected camera frame, should not be used to calculate final position of camera
                 continue
