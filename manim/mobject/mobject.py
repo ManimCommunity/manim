@@ -2607,8 +2607,9 @@ class Mobject:
         copy_submobjects: bool = True,
         match_height: bool = False,
         match_width: bool = False,
-        match_center: bool = False,
         match_depth: bool = False,
+        match_center: bool = False,
+        stretch: bool = False,
     ):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
@@ -2616,7 +2617,7 @@ class Mobject:
         .. note::
 
             If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
-            will stretch to match the height and width of the original
+            will match the height first and then the width
 
         Parameters
         ----------
@@ -2624,10 +2625,12 @@ class Mobject:
             If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
         match_width
             If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
-        match_center
-            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
         match_depth
             If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
+        match_center
+            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+        stretch
+            If ``True``, then the transformed :class:`~.Mobject` will stretch to fit the proportions of the original
 
         Examples
         --------
@@ -2643,17 +2646,18 @@ class Mobject:
                     self.wait(0.5)
         """
 
-        # changes the new mobject's height, width, center, or depth to the original's before transformation
-        # if both width and height are matched then the object is stretched to fit both
-        if match_height and match_width:
+        if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)
-        elif match_height:
-            mobject.match_height(self)
-        elif match_width:
-            mobject.match_width(self)
-        elif match_depth:
-            mobject.match_depth(self)
+            mobject.stretch_to_fit_depth(self.depth)
+        else:
+            if match_height:
+                mobject.match_height(self)
+            if match_width:
+                mobject.match_width(self)
+            if match_depth:
+                mobject.match_depth(self)
+
         if match_center:
             mobject.move_to(self.get_center())
 
