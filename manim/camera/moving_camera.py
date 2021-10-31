@@ -173,7 +173,6 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
-    # This method only works when 2D-objects in the XY-plane are considered.
     def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
