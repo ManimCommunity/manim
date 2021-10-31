@@ -2,7 +2,7 @@ import itertools as it
 import operator as op
 from enum import Enum
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Tuple
+from typing import Callable, Iterable, List, Optional, Tuple
 
 import moderngl
 import numpy as np
@@ -11,6 +11,7 @@ from colour import Color
 from ... import config
 from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ...renderer.shader_wrapper import ShaderWrapper
 from ...utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -1235,12 +1236,161 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_triangulation()
 
 
+class OrderStrategy(Enum):
+    MERGE = 1
+    PRIORITY = 2
+    REVERSE_PRIORITY = 3
+    CUSTOM = 4
+
+
 class OpenGLVGroup(OpenGLVMobject):
-    def __init__(self, *vmobjects, **kwargs):
+    """Create a group of :class:`OpenGLVMobject`
+
+        A container for objects that allows a rendering strategy to be set. When objects share
+    the same z-index value, the opengl renderer will render in the order objects are passed.
+    This class allows different strategies to be used for ordering mobjects.
+
+    MERGE - Merging shaders is prioritized so there will never be more than one instance of a
+    given shader type. For example if multiple mobjects use the surface shader, they will be merged
+    as one shader wrapper. Additionally fill shaders and stroke shaders will be merged into one
+    with fill shaders being rendered before strokes unless the object has the
+    `draw_stroke_behind_fill` flag set.
+
+    PRIORITY - Orders in the order objects are passed. This means that if more recently added
+    objects share pixels of previously added objects, then the more recent objects will overwrite
+    the previous objects. Shader wrappers will only be merged if it doesn't impact the ordering
+
+    REVERSE_PRIORITY - Same as PRIORITY but in reverse order, the last element in will be the first
+    rendered and the first will be last.
+
+    CUSTOM - Allows you to pass a function as a parameter ``order_func`` into :func:`__init__` that
+    customizes the render order strategy. the function should take in a list of `OpenGLVMobject` and
+    return a list of `ShaderWrapper` objects.
+
+    Examples
+    --------
+    .. manim:: SetFill
+        :save_last_frame:
+
+        class EvenThenOddOrdering(Scene):
+            def construct(self):
+                a = Circle().set_fill(RED, 1.0).shift(UP)
+                b = Circle().set_fill(GREEN, 1.0).shift(RIGHT)
+                c = Circle().set_fill(RED, 1.0).shift(DOWN)
+                d = Circle().set_fill(GREEN, 1.0).shift(LEFT)
+
+                def even_then_odd(objs):
+
+                    all_shader_wrappers = []
+                    for i, obj in enumerate(objs):
+                        if i % 2 == 0:
+                            if obj.has_fill():
+                                all_shader_wrappers.append(obj.get_fill_shader_wrapper())
+                            all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
+                    for i, obj in enumerate(objs):
+                        if i % 2 == 1:
+                            if obj.has_fill():
+                                all_shader_wrappers.append(obj.get_fill_shader_wrapper())
+                            all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
+                    return all_shader_wrappers
+
+                ordered_group = OpenGLVGroup(a, b, c, d, order_strategy=OrderStrategy.CUSTOM, order_func=even_then_odd)
+                self.add(ordered_group)
+                self.wait()
+    """
+
+    def __init__(
+        self,
+        *vmobjects,
+        order_strategy: OrderStrategy = OrderStrategy.MERGE,
+        order_func: Callable[[List[OpenGLVMobject]], List[ShaderWrapper]] = None,
+        **kwargs,
+    ):
         if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
             raise Exception("All submobjects must be of type VMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
+        self.order_strategy = order_strategy
+        self.order_func = order_func
+
+    def get_shader_wrapper_list(self):
+        if self.order_strategy == OrderStrategy.MERGE:
+            return self._get_shader_wrappers_by_fill_then_stroke()
+        if self.order_strategy == OrderStrategy.PRIORITY:
+            return self._get_shader_wrappers_by_priority()
+        if self.order_strategy == OrderStrategy.REVERSE_PRIORITY:
+            return self._get_shader_wrappers_by_reverse_priority()
+        if self.order_strategy == OrderStrategy.CUSTOM:
+            return self._get_shader_wrappers_in_custom_order()
+
+    def _get_shader_wrappers_by_priority(self):
+        all_shader_wrappers = []
+        for submob in self.family_members_with_points():
+            self._append_or_combine_fill_shader_wrapper(submob, all_shader_wrappers)
+            self._append_or_combine_stroke_shader_wrapper(submob, all_shader_wrappers)
+
+        return all_shader_wrappers
+
+    def _get_shader_wrappers_by_reverse_priority(self):
+        all_shader_wrappers = []
+        for submob in reversed(self.family_members_with_points()):
+            self._append_or_combine_fill_shader_wrapper(submob, all_shader_wrappers)
+            self._append_or_combine_stroke_shader_wrapper(submob, all_shader_wrappers)
+
+        return all_shader_wrappers
+
+    def _get_shader_wrappers_in_custom_order(self):
+        return self.order_func(self.family_members_with_points())
+
+    def _get_shader_wrappers_by_fill_then_stroke(self):
+        fill_shader_wrappers = []
+        stroke_shader_wrappers = []
+        back_stroke_shader_wrappers = []
+        for submob in self.family_members_with_points():
+            if submob.has_fill() and not config["use_projection_fill_shaders"]:
+                fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
+            if submob.has_stroke() and not config["use_projection_stroke_shaders"]:
+                ssw = submob.get_stroke_shader_wrapper()
+                if submob.draw_stroke_behind_fill:
+                    back_stroke_shader_wrappers.append(ssw)
+                else:
+                    stroke_shader_wrappers.append(ssw)
+
+        # Combine data lists
+        wrapper_lists = [
+            back_stroke_shader_wrappers,
+            fill_shader_wrappers,
+            stroke_shader_wrappers,
+        ]
+        result = []
+        for wlist in wrapper_lists:
+            if wlist:
+                wrapper = wlist[0]
+                wrapper.combine_with(*wlist[1:])
+                result.append(wrapper)
+        return result
+
+    def _append_or_combine_fill_shader_wrapper(self, mobject, wrappers: list):
+        if mobject.has_fill() and not config["use_projection_fill_shaders"]:
+            fill_shader = mobject.get_fill_shader_wrapper()
+            if (
+                len(wrappers) > 0
+                and fill_shader.shader_folder == wrappers[-1].shader_folder
+            ):
+                wrappers[-1].combine_with(fill_shader)
+            else:
+                wrappers.append(fill_shader)
+
+    def _append_or_combine_stroke_shader_wrapper(self, mobject, wrappers: list):
+        if mobject.has_stroke() and not config["use_projection_stroke_shaders"]:
+            stroke_shader = mobject.get_stroke_shader_wrapper()
+            if (
+                len(wrappers) > 0
+                and stroke_shader.shader_folder == wrappers[-1].shader_folder
+            ):
+                wrappers[-1].combine_with(stroke_shader)
+            else:
+                wrappers.append(stroke_shader)
 
 
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
@@ -1309,99 +1459,3 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         # Family is already taken care of by get_subcurve
         # implementation
         self.match_style(vmobject, recurse=False)
-
-
-class OrderStrategy(Enum):
-    PRIORITY = 1
-    MERGE = 2
-
-
-class OrderedVGroup(OpenGLVGroup):
-    """
-    A container for objects that allows a rendering strategy to be set. When objects share
-    the same z-index value, the opengl renderer will render in the order objects are passed.
-    This class allows different strategies to be used for ordering mobjects.
-
-    PRIORITY - Orders in the order objects are passed. This means that if more recently added
-    objects share pixels of previously added objects, then the more recent objects will overwrite
-    the previous objects. Shader wrappers will only be merged if it doesn't impact the ordering
-
-    MERGE - Merging shaders is prioritized so there will never be more than one instance of a
-    given shader type. For example if multiple mobjects use the surface shader, they will be merged
-    as one shader wrapper. Additionally fill shaders and stroke shaders will be merged into one
-    with fill shaders being rendered before strokes unless the object has the
-    `draw_stroke_behind_fill` flag set.
-    """
-
-    def __init__(
-        self,
-        *vmobjects,
-        order_strategy: OrderStrategy = OrderStrategy.PRIORITY,
-        **kwargs,
-    ):
-        super().__init__(*vmobjects, **kwargs)
-        self.order_strategy = order_strategy
-
-    def get_shader_wrapper_list(self):
-        if self.order_strategy == OrderStrategy.PRIORITY:
-            return self._get_shader_wrappers_by_priority()
-        if self.order_strategy == OrderStrategy.MERGE:
-            return self._get_shader_wrappers_by_fill_then_stroke()
-
-    def _get_shader_wrappers_by_priority(self):
-        all_shader_wrappers = []
-        for submob in self.family_members_with_points():
-            self._append_or_combine_fill_shader_wrapper(submob, all_shader_wrappers)
-            self._append_or_combine_stroke_shader_wrapper(submob, all_shader_wrappers)
-
-        return all_shader_wrappers
-
-    def _get_shader_wrappers_by_fill_then_stroke(self):
-        fill_shader_wrappers = []
-        stroke_shader_wrappers = []
-        back_stroke_shader_wrappers = []
-        for submob in self.family_members_with_points():
-            if submob.has_fill() and not config["use_projection_fill_shaders"]:
-                fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
-            if submob.has_stroke() and not config["use_projection_stroke_shaders"]:
-                ssw = submob.get_stroke_shader_wrapper()
-                if submob.draw_stroke_behind_fill:
-                    back_stroke_shader_wrappers.append(ssw)
-                else:
-                    stroke_shader_wrappers.append(ssw)
-
-        # Combine data lists
-        wrapper_lists = [
-            back_stroke_shader_wrappers,
-            fill_shader_wrappers,
-            stroke_shader_wrappers,
-        ]
-        result = []
-        for wlist in wrapper_lists:
-            if wlist:
-                wrapper = wlist[0]
-                wrapper.combine_with(*wlist[1:])
-                result.append(wrapper)
-        return result
-
-    def _append_or_combine_fill_shader_wrapper(self, mobject, wrappers: list):
-        if mobject.has_fill() and not config["use_projection_fill_shaders"]:
-            fill_shader = mobject.get_fill_shader_wrapper()
-            if (
-                len(wrappers) > 0
-                and fill_shader.shader_folder == wrappers[-1].shader_folder
-            ):
-                wrappers[-1].combine_with(fill_shader)
-            else:
-                wrappers.append(fill_shader)
-
-    def _append_or_combine_stroke_shader_wrapper(self, mobject, wrappers: list):
-        if mobject.has_stroke() and not config["use_projection_stroke_shaders"]:
-            stroke_shader = mobject.get_stroke_shader_wrapper()
-            if (
-                len(wrappers) > 0
-                and stroke_shader.shader_folder == wrappers[-1].shader_folder
-            ):
-                wrappers[-1].combine_with(stroke_shader)
-            else:
-                wrappers.append(stroke_shader)
