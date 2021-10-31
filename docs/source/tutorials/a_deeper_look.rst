@@ -254,7 +254,7 @@ The JSON file in here contains some useful information for each section:
 
 This data can be used by third party applications, like a presentation system or automated video editing tool.
 
-You can also skip all animations belonging to a section like this:
+You can also skip rendering all animations belonging to a section like this:
 
 .. code-block:: python
 

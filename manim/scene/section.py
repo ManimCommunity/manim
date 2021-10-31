@@ -44,7 +44,7 @@ class Section:
     name
         Human readable, non-unique name for this section.
     skip_animations
-        Skip the animations part of this section when True.
+        Skip rendering the animations in this section when ``True``.
     partial_movie_files
         Animations belonging to this section.
 

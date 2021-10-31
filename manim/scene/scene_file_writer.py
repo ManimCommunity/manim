@@ -74,7 +74,9 @@ class SceneFileWriter:
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
         # if you need the first section to be skipped, add a first section by hand, it will replace this one
-        self.next_section("autocreated", DefaultSectionType.NORMAL, False)
+        self.next_section(
+            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+        )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
