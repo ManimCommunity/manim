@@ -254,6 +254,6 @@ def test_log_scaling_graph(scene):
     )
     ax.add_coordinates()
 
-    gr = ax.get_graph(lambda x: x, use_smoothing=False, x_range=[0.01, 8])
+    gr = ax.plot(lambda x: x, use_smoothing=False, x_range=[0.01, 8])
 
     scene.add(ax, gr)
