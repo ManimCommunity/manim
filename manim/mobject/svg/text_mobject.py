@@ -425,6 +425,7 @@ class Text(SVGMobject):
         **kwargs,
     ):
 
+        self._font_size = float(font_size)
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -1035,6 +1036,7 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
+        self._font_size = float(font_size)
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
