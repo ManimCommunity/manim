@@ -166,6 +166,17 @@ class CoordinateSystem:
     def get_axis(self, index):
         return self.get_axes()[index]
 
+    @deprecated(since="v0.10.0", until="v0.11.0", message="Use get_origin instead.")
+    def get_center_point(self) -> np.ndarray:
+        """Gets the origin of :class:`~.Axes`.
+
+        Returns
+        -------
+        np.ndarray
+            The center point.
+        """
+        return self.coords_to_point(0, 0)
+
     def get_origin(self) -> np.ndarray:
         """Gets the origin of :class:`~.Axes`.
 
