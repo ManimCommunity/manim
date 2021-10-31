@@ -2645,7 +2645,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        self.azimuth_label_font_size = azimuth_label_font_size 
+        self.azimuth_label_font_size = azimuth_label_font_size
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
