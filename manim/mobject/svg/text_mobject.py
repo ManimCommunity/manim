@@ -398,12 +398,6 @@ class Text(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -430,13 +424,6 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
-            self._font_size = float(font_size)
 
         self.line_spacing = line_spacing
         self.font = font
@@ -1025,12 +1012,6 @@ class MarkupText(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -1054,13 +1035,6 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            self._font_size = float(font_size)
-
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
