@@ -91,8 +91,8 @@ class CoordinateSystem:
 
                 graphs = VGroup()
                 for n in np.arange(1, 20 + 0.5, 0.5):
-                    graphs += grid.get_graph(lambda x: x ** n, color=WHITE)
-                    graphs += grid.get_graph(
+                    graphs += grid.plot(lambda x: x ** n, color=WHITE)
+                    graphs += grid.plot(
                         lambda x: x ** (1 / n), color=WHITE, use_smoothing=False
                     )
 
@@ -612,7 +612,7 @@ class CoordinateSystem:
 
     # graphing
 
-    def get_graph(
+    def plot(
         self,
         function: Callable[[float], float],
         x_range: Optional[Sequence[float]] = None,
@@ -629,10 +629,10 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetGraphExample
+        .. manim:: PlotExample
             :save_last_frame:
 
-            class GetGraphExample(Scene):
+            class PlotExample(Scene):
                 def construct(self):
                     # construct the axes
                     ax_1 = Axes(
@@ -656,15 +656,15 @@ class CoordinateSystem:
                         return np.log(x)
 
                     # a curve without adjustments; poor interpolation.
-                    curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
+                    curve_1 = ax_1.plot(log_func, color=PURE_RED)
 
                     # disabling interpolation makes the graph look choppy as not enough
                     # inputs are available
-                    curve_2 = ax_2.get_graph(log_func, use_smoothing=False, color=ORANGE)
+                    curve_2 = ax_2.plot(log_func, use_smoothing=False, color=ORANGE)
 
                     # taking more inputs of the curve by specifying a step for the
                     # x_range yields expected results, but increases rendering time.
-                    curve_3 = ax_3.get_graph(
+                    curve_3 = ax_3.plot(
                         log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN
                     )
 
@@ -709,7 +709,20 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def get_implicit_curve(
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot",
+    )
+    def get_graph(
+        self,
+        function: Callable[[float], float],
+        x_range: Optional[Sequence[float]] = None,
+        **kwargs,
+    ) -> ParametricFunction:
+        return self.plot(function, x_range, **kwargs)
+
+    def plot_implicit_curve(
         self,
         func: Callable,
         min_depth: int = 5,
@@ -737,7 +750,7 @@ class CoordinateSystem:
             class ImplicitExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    a = ax.get_implicit_curve(
+                    a = ax.plot_implicit_curve(
                         lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
                     )
                     self.add(ax, a)
@@ -757,13 +770,35 @@ class CoordinateSystem:
         )
         return graph
 
-    def get_parametric_curve(self, function, **kwargs):
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_implicit_curve",
+    )
+    def get_implicit_curve(
+        self,
+        func: Callable,
+        min_depth: int = 5,
+        max_quads: int = 1500,
+        **kwargs,
+    ) -> ImplicitFunction:
+        return self.plot_implicit_curve(func, min_depth, max_quads, **kwargs)
+
+    def plot_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
             lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
         )
         graph.underlying_function = function
         return graph
+
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_parametric_curve",
+    )
+    def get_parametric_curve(self, function, **kwargs):
+        return self.plot_parametric_curve(function, **kwargs)
 
     def input_to_graph_point(
         self,
@@ -781,7 +816,7 @@ class CoordinateSystem:
             class InputToGraphPointExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    curve = ax.get_graph(lambda x : np.cos(x))
+                    curve = ax.plot(lambda x : np.cos(x))
 
                     # move a square to PI on the cosine curve.
                     position = ax.input_to_graph_point(x=PI, graph=curve)
@@ -853,7 +888,7 @@ class CoordinateSystem:
             class GetGraphLabelExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
+                    sin = ax.plot(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
                         label= MathTex(r"\\frac{\\pi}{2}"),
@@ -941,7 +976,7 @@ class CoordinateSystem:
             class GetRiemannRectanglesExample(Scene):
                 def construct(self):
                     ax = Axes(y_range=[-2, 10])
-                    quadratic = ax.get_graph(lambda x: 0.5 * x ** 2 - 0.5)
+                    quadratic = ax.plot(lambda x: 0.5 * x ** 2 - 0.5)
 
                     # the rectangles are constructed from their top right corner.
                     # passing an iterable to `color` produces a gradient
@@ -959,7 +994,7 @@ class CoordinateSystem:
                         quadratic, x_range=[-1.5, 1.5], dx=0.15, color=YELLOW
                     )
 
-                    bounding_line = ax.get_graph(
+                    bounding_line = ax.plot(
                         lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6]
                     )
                     bounded_rects = ax.get_riemann_rectangles(
@@ -1110,7 +1145,7 @@ class CoordinateSystem:
             class GetAreaExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
+                    curve = ax.plot(lambda x: 2 * np.sin(x), color=DARK_BLUE)
                     area = ax.get_area(
                         curve,
                         x_range=(PI / 2, 3 * PI / 2),
@@ -1189,7 +1224,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x ** 2)
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.3825747960950903
 
@@ -1225,7 +1260,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x ** 2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
 
@@ -1244,7 +1279,7 @@ class CoordinateSystem:
 
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
-    def get_derivative_graph(
+    def plot_derivative_graph(
         self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
@@ -1252,15 +1287,15 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetDerivativeGraphExample
+        .. manim:: DerivativeGraphExample
             :save_last_frame:
 
-            class GetDerivativeGraphExample(Scene):
+            class DerivativeGraphExample(Scene):
                 def construct(self):
                     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
-                    curve_1 = ax.get_graph(lambda x: x ** 2, color=PURPLE_B)
-                    curve_2 = ax.get_derivative_graph(curve_1)
+                    curve_1 = ax.plot(lambda x: x ** 2, color=PURPLE_B)
+                    curve_2 = ax.plot_derivative_graph(curve_1)
                     curves = VGroup(curve_1, curve_2)
 
                     label_1 = ax.get_graph_label(curve_1, "x^2", x_val=-2, direction=DL)
@@ -1289,7 +1324,17 @@ class CoordinateSystem:
         def deriv(x):
             return self.slope_of_tangent(x, graph)
 
-        return self.get_graph(deriv, color=color, **kwargs)
+        return self.plot(deriv, color=color, **kwargs)
+
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_derivative_graph",
+    )
+    def get_derivative_graph(
+        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
+    ) -> ParametricFunction:
+        return self.plot_derivative_graph(graph, color, **kwargs)
 
     def get_secant_slope_group(
         self,
@@ -1316,7 +1361,7 @@ class CoordinateSystem:
             class GetSecantSlopeGroupExample(Scene):
                 def construct(self):
                     ax = Axes(y_range=[-1, 7])
-                    graph = ax.get_graph(lambda x: 1 / 4 * x ** 2, color=BLUE)
+                    graph = ax.plot(lambda x: 1 / 4 * x ** 2, color=BLUE)
                     slopes = ax.get_secant_slope_group(
                         x=2.0,
                         graph=graph,
@@ -1449,7 +1494,7 @@ class CoordinateSystem:
                         axis_config={"number_scale_value": 0.5},
                     ).add_coordinates()
 
-                    curve = ax.get_graph(lambda x: np.sin(x) / np.e ** 2 * x)
+                    curve = ax.plot(lambda x: np.sin(x) / np.e ** 2 * x)
 
                     lines = ax.get_vertical_lines_to_graph(
                         curve, x_range=[0, 4], num_lines=30, color=BLUE
@@ -1526,7 +1571,7 @@ class CoordinateSystem:
                 def construct(self):
                     # defines the axes and linear function
                     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
-                    func = axes.get_graph(lambda x: x, color=BLUE)
+                    func = axes.plot(lambda x: x, color=BLUE)
                     # creates the T_label
                     t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
                     self.add(axes, func, t_label)
@@ -1804,7 +1849,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         """
         return self.axes
 
-    def get_line_graph(
+    def plot_line_graph(
         self,
         x_values: Iterable[float],
         y_values: Iterable[float],
@@ -1855,7 +1900,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                         axis_config={"include_numbers": True},
                     )
                     plane.center()
-                    line_graph = plane.get_line_graph(
+                    line_graph = plane.plot_line_graph(
                         x_values = [0, 1.5, 2, 2.8, 4, 6.25],
                         y_values = [1, 3, 2.25, 4, 2.5, 1.75],
                         line_color=GOLD_E,
@@ -1895,6 +1940,33 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             line_graph["vertex_dots"] = vertex_dots
 
         return line_graph
+
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_line_graph",
+    )
+    def get_line_graph(
+        self,
+        x_values: Iterable[float],
+        y_values: Iterable[float],
+        z_values: Optional[Iterable[float]] = None,
+        line_color: Color = YELLOW,
+        add_vertex_dots: bool = True,
+        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
+        vertex_dot_style: Optional[dict] = None,
+        **kwargs,
+    ) -> VDict:
+        return self.plot_line_graph(
+            x_values,
+            y_values,
+            z_values,
+            line_color,
+            add_vertex_dots,
+            vertex_dot_radius,
+            vertex_dot_style,
+            **kwargs,
+        )
 
     @staticmethod
     def _origin_shift(axis_range: Sequence[float]) -> float:

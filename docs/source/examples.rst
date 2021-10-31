@@ -313,7 +313,7 @@ Plotting with Manim
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
     :ref_classes: MathTex
-    :ref_methods: Axes.get_graph Axes.get_vertical_line_to_graph Axes.input_to_graph_point Axes.get_axis_labels
+    :ref_methods: Axes.plot Axes.get_vertical_line_to_graph Axes.input_to_graph_point Axes.get_axis_labels
 
     class SinAndCosFunctionPlot(Scene):
         def construct(self):
@@ -329,8 +329,8 @@ Plotting with Manim
                 tips=False,
             )
             axes_labels = axes.get_axis_labels()
-            sin_graph = axes.get_graph(lambda x: np.sin(x), color=BLUE)
-            cos_graph = axes.get_graph(lambda x: np.cos(x), color=RED)
+            sin_graph = axes.plot(lambda x: np.sin(x), color=BLUE)
+            cos_graph = axes.plot(lambda x: np.cos(x), color=RED)
 
             sin_label = axes.get_graph_label(
                 sin_graph, "\\sin(x)", x_val=-10, direction=UP / 2
@@ -363,7 +363,7 @@ Plotting with Manim
 
            def func(x):
                return 2 * (x - 5) ** 2
-           graph = ax.get_graph(func, color=MAROON)
+           graph = ax.plot(func, color=MAROON)
 
            initial_point = [ax.coords_to_point(t.get_value(), func(t.get_value()))]
            dot = Dot(point=initial_point)
@@ -379,7 +379,7 @@ Plotting with Manim
 .. manim:: GraphAreaPlot
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
-    :ref_methods: Axes.get_graph Axes.get_vertical_line_to_graph Axes.get_area Axes.get_axis_labels
+    :ref_methods: Axes.plot Axes.get_vertical_line_to_graph Axes.get_area Axes.get_axis_labels
 
     class GraphAreaPlot(Scene):
         def construct(self):
@@ -392,8 +392,8 @@ Plotting with Manim
 
             labels = ax.get_axis_labels()
 
-            curve_1 = ax.get_graph(lambda x: 4 * x - x ** 2, x_range=[0, 4], color=BLUE_C)
-            curve_2 = ax.get_graph(
+            curve_1 = ax.plot(lambda x: 4 * x - x ** 2, x_range=[0, 4], color=BLUE_C)
+            curve_2 = ax.plot(
                 lambda x: 0.8 * x ** 2 - 3 * x + 4,
                 x_range=[0, 4],
                 color=GREEN_B,
@@ -410,7 +410,7 @@ Plotting with Manim
 .. manim:: HeatDiagramPlot
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
-    :ref_methods: Axes.get_line_graph Axes.get_axis_labels
+    :ref_methods: Axes.plot_line_graph Axes.get_axis_labels
 
     class HeatDiagramPlot(Scene):
         def construct(self):
@@ -429,7 +429,7 @@ Plotting with Manim
 
             x_vals = [0, 8, 38, 39]
             y_vals = [20, 0, 0, -5]
-            graph = ax.get_line_graph(x_values=x_vals, y_values=y_vals)
+            graph = ax.plot_line_graph(x_values=x_vals, y_values=y_vals)
 
             self.add(ax, labels, graph)
 
@@ -440,7 +440,7 @@ Special Camera Settings
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: MovingCameraScene MoveAlongPath Restore
-    :ref_methods: Axes.get_graph Mobject.add_updater
+    :ref_methods: Axes.plot Mobject.add_updater
 
 
     class FollowingGraphCamera(MovingCameraScene):
@@ -449,7 +449,7 @@ Special Camera Settings
 
             # create the axes and the curve
             ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
-            graph = ax.get_graph(lambda x: np.sin(x), color=BLUE, x_range=[0, 3 * PI])
+            graph = ax.plot(lambda x: np.sin(x), color=BLUE, x_range=[0, 3 * PI])
 
             # create dots based on the graph
             moving_dot = Dot(ax.i2gp(graph.t_min, graph), color=ORANGE)
