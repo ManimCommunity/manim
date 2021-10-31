@@ -53,7 +53,7 @@ Examples
             self.camera.frame.save_state()
 
             ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
-            graph = ax.get_graph(lambda x: np.sin(x), color=WHITE, x_range=[0, 3 * PI])
+            graph = ax.plot(lambda x: np.sin(x), color=WHITE, x_range=[0, 3 * PI])
 
             dot_1 = Dot(ax.i2gp(graph.t_min, graph))
             dot_2 = Dot(ax.i2gp(graph.t_max, graph))

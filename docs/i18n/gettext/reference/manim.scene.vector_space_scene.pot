@@ -1,0 +1,25 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.vector_space_scene.rst:2
+msgid "vector\\_space\\_scene"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene:1
+msgid "A scene suitable for vector spaces."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.rst:22:<autosummary>:1
+msgid "This scene contains special methods that make it especially suitable for showing linear transformations."
+msgstr ""
+
+

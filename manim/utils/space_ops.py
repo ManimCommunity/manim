@@ -769,7 +769,7 @@ def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
     r = norm
     phi = np.arccos(vec[2] / r)
     theta = np.arctan2(vec[1], vec[0])
-    return np.array([r, phi, theta])
+    return np.array([r, theta, phi])
 
 
 def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:

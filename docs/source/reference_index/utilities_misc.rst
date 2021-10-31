@@ -12,6 +12,7 @@ Module Index
    constants
    ~utils.bezier
    ~utils.color
+   ~utils.commands
    ~utils.config_ops
    ~utils.deprecation
    ~utils.hashing
@@ -20,6 +21,7 @@ Module Index
    ~utils.iterables
    ~utils.paths
    ~utils.rate_functions
+   ~utils.scale
    ~utils.simple_functions
    ~utils.sounds
    ~utils.space_ops

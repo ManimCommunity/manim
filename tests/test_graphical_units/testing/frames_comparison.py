@@ -118,7 +118,7 @@ def frames_comparison(
                 size_frame=(config_tests["pixel_height"], config_tests["pixel_width"]),
             )
 
-            # Isolate the config used for the test, to avoid a modifying the global config during the test run.
+            # Isolate the config used for the test, to avoid modifying the global config during the test run.
             with tempconfig({**config_tests, **custom_config}):
                 real_test()
 

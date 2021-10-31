@@ -37,7 +37,7 @@ class UpdateFromFunc(Animation):
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
     def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject, alpha)
+        self.update_function(self.mobject, self.rate_func(alpha))
 
 
 class MaintainPositionRelativeTo(Animation):
