@@ -8,7 +8,7 @@ def test_zoom():
     s2 = Square()
     s2.set_x(10)
 
-    with tempconfig({"dry_run": True}):
+    with tempconfig({"dry_run": True, "quality": "low"}):
         scene = MovingCameraScene()
         scene.add(s1, s2)
         scene.play(scene.camera.auto_zoom([s1, s2]))
