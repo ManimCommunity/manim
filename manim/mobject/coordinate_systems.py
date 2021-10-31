@@ -1293,9 +1293,9 @@ class CoordinateSystem:
 
         if bounded_graph is None:
             points = (
-                [self.c2p(a)]
+                [self.c2p(a), graph.function(a)]
                 + [p for p in graph.points if a <= self.p2c(p)[0] <= b]
-                + [self.c2p(b)]
+                + [graph.function(b), self.c2p(b)]
             )
         else:
             points = [p for p in graph.points if a <= self.p2c(p)[0] <= b] + [
