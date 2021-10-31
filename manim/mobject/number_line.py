@@ -157,7 +157,7 @@ class NumberLine(Line):
         numbers_to_include: Optional[Iterable[float]] = None,
         **kwargs,
     ):
-
+        self.font_size = font_size
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
             numbers_to_exclude = []
