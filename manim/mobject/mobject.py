@@ -2652,10 +2652,10 @@ class Mobject:
             mobject.match_height(self)
         elif match_width:
             mobject.match_width(self)
+        elif match_depth:
+            mobject.match_depth(self)
         if match_center:
             mobject.move_to(self.get_center())
-        if match_depth:
-            mobject.match_depth(self)
 
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
