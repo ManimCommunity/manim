@@ -213,8 +213,8 @@ def string_to_numbers(num_string: str) -> List[float]:
             except ValueError:
                 # in this case, it's something like "2.4.3.14 which should be parsed as "2.4 0.3 0.14"
                 undotted_parts = s.split(".")
-                float_results.append(undotted_parts[0] + "." + undotted_parts[1])
-                float_results += ["." + u for u in undotted_parts[2:]]
+                float_results.append(float(undotted_parts[0] + "." + undotted_parts[1]))
+                float_results += [float("." + u) for u in undotted_parts[2:]]
     return float_results
 
 

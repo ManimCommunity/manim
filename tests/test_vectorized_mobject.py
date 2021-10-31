@@ -52,7 +52,7 @@ def test_vgroup_add():
         # If only one of the added object is not an instance of VMobject, none of them should be added
         obj.add(VMobject(), Mobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a Mobject cannot contain itself
         obj.add(obj)
 
@@ -72,7 +72,7 @@ def test_vgroup_add_dunder():
         # If only one of the added object is not an instance of VMobject, none of them should be added
         obj += (VMobject(), Mobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a Mobject cannot contain itself
         obj += obj
 

@@ -26,6 +26,7 @@ from ..utils.iterables import (
     resize_array,
     resize_preserving_order,
     resize_with_interpolation,
+    uniq_chain,
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -412,7 +413,7 @@ class OpenGLMobject:
 
     def assemble_family(self):
         sub_families = (sm.get_family() for sm in self.submobjects)
-        self.family = [self, *it.chain(*sub_families)]
+        self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
