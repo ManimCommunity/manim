@@ -153,6 +153,54 @@ class CoordinateSystem:
     def point_to_coords(self, point):
         raise NotImplementedError()
 
+    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
+        r"""Gets a point from polar coordinates.
+
+        Parameters
+        ----------
+        radius
+            The coordinate radius (:math:`r`).
+
+        azimuth
+            The coordinate azimuth (:math:`\theta`).
+
+        Returns
+        -------
+        numpy.ndarray
+            The point.
+
+        Examples
+        --------
+
+        .. manim:: PolarToPointExample
+            :ref_classes: PolarPlane Vector
+            :save_last_frame:
+
+            class PolarToPointExample(Scene):
+                def construct(self):
+                    polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
+                    polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
+                    self.add(polarplane_pi)
+                    self.add(polartopoint_vector)
+        """
+        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
+
+    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
+        r"""Gets polar coordinates from a point.
+
+        Parameters
+        ----------
+        point
+            The point.
+
+        Returns
+        -------
+        Tuple[:class:`float`, :class:`float`]
+            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
+        """
+        x, y = self.point_to_coords(point)
+        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
+
     def c2p(self, *coords):
         """Abbreviation for coords_to_point"""
         return self.coords_to_point(*coords)
@@ -160,6 +208,14 @@ class CoordinateSystem:
     def p2c(self, point):
         """Abbreviation for point_to_coords"""
         return self.point_to_coords(point)
+
+    def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
+        """Abbreviation for :meth:`polar_to_point`"""
+        return self.polar_to_point(radius, azimuth)
+
+    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
+        """Abbreviation for :meth:`point_to_polar`"""
+        return self.point_to_polar(point)
 
     def get_axes(self):
         raise NotImplementedError()
@@ -799,6 +855,44 @@ class CoordinateSystem:
     )
     def get_parametric_curve(self, function, **kwargs):
         return self.plot_parametric_curve(function, **kwargs)
+
+    def plot_polar_graph(
+        self,
+        r_func: Callable[[float], float],
+        theta_range: Sequence[float] = [0, 2 * PI],
+        **kwargs,
+    ) -> ParametricFunction:
+        """A polar graph.
+
+        Parameters
+        ----------
+        r_func
+            The function r of theta.
+        theta_range
+            The range of theta as ``theta_range = [theta_min, theta_max, theta_step]``.
+        kwargs
+            Additional parameters passed to :class:`~.ParametricFunction`.
+
+        Examples
+        --------
+        .. manim:: PolarGraphExample
+            :ref_classes: PolarPlane
+            :save_last_frame:
+
+            class PolarGraphExample(Scene):
+                def construct(self):
+                    plane = PolarPlane()
+                    r = lambda theta: 2 * np.sin(theta * 5)
+                    graph = plane.plot_polar_graph(r, [0, 2 * PI], color=ORANGE)
+                    self.add(plane, graph)
+        """
+        graph = ParametricFunction(
+            function=lambda th: self.pr2pt(r_func(th), th),
+            t_range=theta_range,
+            **kwargs,
+        )
+        graph.underlying_function = r_func
+        return graph
 
     def input_to_graph_point(
         self,
@@ -2624,7 +2718,7 @@ class PolarPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non faded lines and circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
-        center = self.get_center_point()
+        center = self.get_origin()
         ratio_faded_lines = self.faded_line_ratio
         offset = self.azimuth_offset
 
@@ -2684,62 +2778,6 @@ class PolarPlane(Axes):
             if num_inserted_curves > num_curves:
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
-
-    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
-        r"""Gets a point from polar coordinates.
-
-        Parameters
-        ----------
-        radius
-            The coordinate radius (:math:`r`).
-
-        azimuth
-            The coordinate azimuth (:math:`\theta`).
-
-        Returns
-        -------
-        numpy.ndarray
-            The point.
-
-        Examples
-        --------
-
-        .. manim:: PolarToPointExample
-            :ref_classes: PolarPlane Vector
-            :save_last_frame:
-
-            class PolarToPointExample(Scene):
-                def construct(self):
-                    polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
-                    polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
-                    self.add(polarplane_pi)
-                    self.add(polartopoint_vector)
-        """
-        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
-
-    def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
-        """Abbreviation for :meth:`polar_to_point`"""
-        return self.polar_to_point(radius, azimuth)
-
-    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
-        r"""Gets polar coordinates from a point.
-
-        Parameters
-        ----------
-        point
-            The point.
-
-        Returns
-        -------
-        Tuple[:class:`float`, :class:`float`]
-            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
-        """
-        x, y = self.point_to_coords(point)
-        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
-
-    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
-        """Abbreviation for :meth:`point_to_polar`"""
-        return self.point_to_polar(point)
 
     def get_coordinate_labels(
         self,
