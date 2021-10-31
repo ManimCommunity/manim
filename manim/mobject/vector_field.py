@@ -530,7 +530,10 @@ class ArrowVectorField(VectorField):
         vector_config: Optional[dict] = None,
         **kwargs
     ):
-        self.x_range = x_range
+        self.x_range = x_range or [
+            floor(-config["frame_width"] / 2),
+            ceil(config["frame_width"] / 2),
+        ]
         self.y_range = y_range
         self.ranges = [self.x_range, self.y_range]
 
