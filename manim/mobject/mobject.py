@@ -158,7 +158,7 @@ class Mobject:
         animation_class
             The animation type to be overridden
         override_func
-            The function returning an aniamtion replacing the default animation. It gets
+            The function returning an animation replacing the default animation. It gets
             passed the parameters given to the animnation constructor.
 
         Raises
@@ -1846,7 +1846,6 @@ class Mobject:
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
-            submob.get_merged_array(array_attr)
         return result
 
     def get_all_points(self):

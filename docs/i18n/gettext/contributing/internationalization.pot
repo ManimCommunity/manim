@@ -1,0 +1,61 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/contributing/internationalization.rst:3
+msgid "Internationalization"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:6
+msgid "The translation process is currently not yet ready. Please avoid translating pages for now."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:8
+msgid "If you want to help with translating the docs:"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:10
+msgid "Make sure you have a `Transifex <https://www.transifex.com/>`_ account. Transifex is a tool for colaborative translation and allows the Manim team to review translations."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:11
+msgid "Open the `Manim Transifex project page <https://www.transifex.com/manim-community/manim-community-documentation>`_ ."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:12
+msgid "Click on ``Join Team``."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:13
+msgid "Select the language you want to help with."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:15
+msgid "Congratulations! You are now a Translator for the Manim project!"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:18
+msgid "You'll see the projects you've joined just on the left of your profile picture on the top bar."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:25
+msgid "Now go to the `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_ and select a language you want to help with. You should see a blue button reading `Translate`; click on it to get started! You will see a list of resources in the project. You can click on any untranslated resource, then click on `Translate`. You will then see something like the following:"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:35
+msgid "The `A` panel is the list of all the strings in the resource. Click on any of them to translate it. It will appear in the `B` panel, and you will be able to work on your translation in the `C` panel. Once you're done, click `Save changes`. Your translation will have to be reviewed before being added to the docs. You can also get back to the resources list by clicking `d` or change the destination language in `e`."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:43
+msgid "If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_ and ping the role @Translation Admin."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:46
+msgid "If you want to add a new language, you can go to `the project page <https://www.transifex.com/manim-community/manim-community-documentation>`_ If you haven't joined the project yet, you will have a link which reads `Request language` which you can click. If you are already in the project, this button will be in the languages page."
+msgstr ""
+
+
