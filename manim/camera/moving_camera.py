@@ -8,12 +8,6 @@
 
 __all__ = ["CameraFrame", "MovingCamera"]
 
-
-import math
-import operator
-
-from numpy import string_
-
 from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, UP
@@ -239,11 +233,11 @@ class MovingCamera(Camera):
         y = (scene_critical_y_up + scene_critical_y_down) / 2
 
         # calculate proposed width and height of zoomed scene
-        new_Width = abs(scene_critical_x_left - scene_critical_x_right)
-        new_Height = abs(scene_critical_y_up - scene_critical_y_down)
+        new_width = abs(scene_critical_x_left - scene_critical_x_right)
+        new_height = abs(scene_critical_y_up - scene_critical_y_down)
 
         # zoom to fit all mobjects along the side that has the largest size
-        if new_Width / self.frame.width > new_Height / self.frame.height:
-            return self.frame.animate.set_x(x).set_y(y).set(width=new_Width + margin)
+        if new_width / self.frame.width > new_height / self.frame.height:
+            return self.frame.animate.set_x(x).set_y(y).set(width=new_width + margin)
         else:
-            return self.frame.animate.set_x(x).set_y(y).set(height=new_Height + margin)
+            return self.frame.animate.set_x(x).set_y(y).set(height=new_height + margin)
