@@ -2,12 +2,12 @@
 v0.12.0
 *******
 
-:Date: November 01, 2021
+:Date: November 02, 2021
 
 Contributors
 ============
 
-A total of 39 people contributed to this
+A total of 40 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -33,6 +33,7 @@ time.
 * Peeter Joot +
 * Ryan McCauley
 * Viicos +
+* heitor +
 * icedcoffeeee
 * kieran-pringle +
 * Виктор Виктор +
@@ -67,13 +68,15 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 49 pull requests were merged for this release.
+A total of 50 pull requests were merged for this release.
 
 Highlights
 ----------
 
-* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes`
-
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes` 
+   This implements scaling bases that can be passed to the ``scaling`` keyword
+   argument of :class:`.NumberLine`. See :class:`.LogBase` (for a logarithmic scale) and
+   :class:`.LinearBase` (for the default scale) for more details and examples.
 
 * `#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:`.Scene.next_section`
    Sections divide a scene into multiple parts, resulting in multiple output videos (when using the ``--save_sections`` flag).
@@ -96,6 +99,8 @@ Deprecated classes and functions
 New features
 ------------
 
+* `#2151 <https://github.com/ManimCommunity/manim/pull/2151>`__: Added option to set the input file from a config file
+
 * `#2128 <https://github.com/ManimCommunity/manim/pull/2128>`__: Added keyword arguments ``match_center``, ``match_width`` etc. to :meth:`.Mobject.become`
 
 
@@ -111,9 +116,12 @@ New features
 Enhancements
 ------------
 
-* `#2138 <https://github.com/ManimCommunity/manim/pull/2138>`__: Show example for :meth:`~.Vector.coordinate_label` and add more customization for :class:`~.Matrix`.
-   - Added `**kwargs` for :meth:`~.Vector.coordinate_label`
+* `#2138 <https://github.com/ManimCommunity/manim/pull/2138>`__: Fixed example for :meth:`~.Vector.coordinate_label` and added more customization for :class:`~.Matrix`
+   - Added `**kwargs` for :meth:`~.Vector.coordinate_label`.
    - :class:`~.Matrix` now accepts a `bracket_config` parameter.
+
+* `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Changed the color of :class:`~.NumberLine` from ``LIGHT_GREY`` to ``WHITE``
+
 
 * `#2157 <https://github.com/ManimCommunity/manim/pull/2157>`__: Added :meth:`.CoordinateSystem.plot_polar_graph`
 
@@ -250,7 +258,3 @@ New releases
 * `#2247 <https://github.com/ManimCommunity/manim/pull/2247>`__: Prepared new release ``v0.12.0``
 
 
-Unclassified changes
---------------------
-
-* `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Change the color of :class:`~.NumberLine` to WHITE from LIGHT_GREY.
