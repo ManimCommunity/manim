@@ -44,9 +44,6 @@ class DummySceneFileWriter(SceneFileWriter):
     def init_output_directories(self, scene_name):
         pass
 
-    def next_section(self, type, name=None):
-        pass
-
     def add_partial_movie_file(self, hash_animation):
         pass
 
