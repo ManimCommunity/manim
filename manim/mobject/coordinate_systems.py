@@ -2590,7 +2590,6 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-        self.azimuth_label_font_size = azimuth_label_font_size
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -2646,7 +2645,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
+        self.azimuth_label_font_size = azimuth_label_font_size
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init

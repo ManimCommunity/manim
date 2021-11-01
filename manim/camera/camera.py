@@ -454,10 +454,10 @@ class Camera:
         return not reduce(
             op.or_,
             [
-                mobject.get_right()[0] < fc[0] - fw,
-                mobject.get_bottom()[1] > fc[1] + fh,
-                mobject.get_left()[0] > fc[0] + fw,
-                mobject.get_top()[1] < fc[1] - fh,
+                mobject.get_right()[0] < fc[0] - fw / 2,
+                mobject.get_bottom()[1] > fc[1] + fh / 2,
+                mobject.get_left()[0] > fc[0] + fw / 2,
+                mobject.get_top()[1] < fc[1] - fh / 2,
             ],
         )
 
