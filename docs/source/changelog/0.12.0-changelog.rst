@@ -73,7 +73,7 @@ A total of 50 pull requests were merged for this release.
 Highlights
 ----------
 
-* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes` 
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes`
    This implements scaling bases that can be passed to the ``scaling`` keyword
    argument of :class:`.NumberLine`. See :class:`.LogBase` (for a logarithmic scale) and
    :class:`.LinearBase` (for the default scale) for more details and examples.
@@ -256,5 +256,3 @@ New releases
 ------------
 
 * `#2247 <https://github.com/ManimCommunity/manim/pull/2247>`__: Prepared new release ``v0.12.0``
-
-
