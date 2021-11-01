@@ -1568,6 +1568,7 @@ class Vector(Arrow):
 
         Parameters
         ----------
+
         integer_labels
             Whether or not to round the coordinates to integers.
         n_dim
