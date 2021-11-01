@@ -254,7 +254,7 @@ class BraceBetweenPoints(Brace):
         direction: Optional[Sequence[float]] = ORIGIN,
         **kwargs
     ):
-        if all(direction == ORIGIN):
+        if direction == ORIGIN:
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
         super().__init__(Line(point_1, point_2), direction=direction, **kwargs)
