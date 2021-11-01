@@ -7,7 +7,7 @@ v0.12.0
 Contributors
 ============
 
-A total of 38 people contributed to this
+A total of 39 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -53,6 +53,7 @@ the following contributors.
 * Gustav-Rixon
 * Hugues Devimeux
 * Jan-Hendrik Müller
+* Jason Villanueva
 * Laith Bahodi
 * Mysaa
 * Naveen M K
@@ -66,19 +67,25 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 44 pull requests were merged for this release.
+A total of 49 pull requests were merged for this release.
 
 Highlights
 ----------
 
-* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes`
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes` 
 
 
-* `#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:``.Scene.next_section``
-
+* `#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:`.Scene.next_section`
+   Sections divide a scene into multiple parts, resulting in multiple output videos (when using the ``--save_sections`` flag).
+   The cuts between two sections are defined by the user in the :meth:`~.Scene.construct` method.
+   Each section has an optional name and type, which can be used by a plugin (`see an example <https://github.com/ManimEditorProject/manim_editor>`__).
+   You can skip rendering specific sections with the ``skip_animations`` keyword argument.
 
 Deprecated classes and functions
 --------------------------------
+
+* `#2245 <https://github.com/ManimCommunity/manim/pull/2245>`__: Removed deprecated method ``get_center_point`` and parameters ``azimuth_label_scale``, ``number_scale_value``, ``label_scale``, ``scale_factor``, ``size``, ``x_min``, ``x_max``, ``delta_x``, ``y_min``, ``y_max``, ``delta_y``
+
 
 * `#2187 <https://github.com/ManimCommunity/manim/pull/2187>`__: Renamed ``get_graph`` and its variants to :meth:`~.CoordinateSystem.plot`
 
@@ -104,6 +111,10 @@ New features
 Enhancements
 ------------
 
+* `#2138 <https://github.com/ManimCommunity/manim/pull/2138>`__: Show example for :meth:`~.Vector.coordinate_label` and add more customization for :class:`~.Matrix`.
+   - Added `**kwargs` for :meth:`~.Vector.coordinate_label`
+   - :class:`~.Matrix` now accepts a `bracket_config` parameter.
+
 * `#2157 <https://github.com/ManimCommunity/manim/pull/2157>`__: Added :meth:`.CoordinateSystem.plot_polar_graph`
 
 
@@ -121,6 +132,12 @@ Enhancements
 
 Fixed bugs
 ----------
+
+* `#2244 <https://github.com/ManimCommunity/manim/pull/2244>`__: Fixed :meth:`.CoordinateSystem.get_area` when using few plot points and a boundary graph
+
+
+* `#2232 <https://github.com/ManimCommunity/manim/pull/2232>`__: Fixed :class:`.Graph` stopping to update after animating additions/deletions of vertices or edges
+
 
 * `#2142 <https://github.com/ManimCommunity/manim/pull/2142>`__: Fixed issue with duplicates in OpenGL family and added tests
 
@@ -231,3 +248,11 @@ New releases
 ------------
 
 * `#2247 <https://github.com/ManimCommunity/manim/pull/2247>`__: Prepared new release ``v0.12.0``
+
+
+Unclassified changes
+--------------------
+
+* `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Change the color of :class:`~.NumberLine` to WHITE from LIGHT_GREY. 
+
+
