@@ -1594,6 +1594,7 @@ class Vector(Arrow):
 
         Returns
         -------
+
         :class:`~.Matrix`
             The label.
         """
