@@ -38,24 +38,31 @@ class Section:
     ----------
     type
         Can be used by a third party applications to classify different types of sections.
-    name
-        Human readable, non-unique name for this section.
-    partial_movie_files
-        Animations belonging to this section.
     video
         Path to video file with animations belonging to section relative to sections directory.
         If ``None``, then the section will not be saved.
+    name
+        Human readable, non-unique name for this section.
+    skip_animations
+        Skip rendering the animations in this section when ``True``.
+    partial_movie_files
+        Animations belonging to this section.
 
     See Also
     --------
     :class:`.DefaultSectionType`
+    :meth:`.CairoRenderer.update_skipping_status`
+    :meth:`.OpenGLRenderer.update_skipping_status`
     """
 
-    def __init__(self, type: str, video: Optional[str], name: str):
+    def __init__(
+        self, type: str, video: Optional[str], name: str, skip_animations: bool
+    ):
         self.type = type
         # None when not to be saved -> still keeps section alive
         self.video: Optional[str] = video
         self.name = name
+        self.skip_animations = skip_animations
         self.partial_movie_files: List[Optional[str]] = []
 
     def is_empty(self) -> bool:
