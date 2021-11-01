@@ -1,4 +1,5 @@
 import itertools
+import os
 import sys
 from pathlib import Path
 
@@ -638,3 +639,32 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
         expected_mov_path,
     )
+
+
+@pytest.mark.slow
+@video_comparison(
+    "InputFileViaCfg.json",
+    "videos/simple_scenes/480p15/SquareToCircle.mp4",
+)
+def test_input_file_via_cfg(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    with open(os.path.join(tmp_path, "manim.cfg"), "w") as file:
+        file.write(
+            f"""
+[CLI]
+input_file = {simple_scenes_path}
+            """
+        )
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        ".",
+        str(tmp_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command, cwd=tmp_path)
+    assert exit_code == 0, err

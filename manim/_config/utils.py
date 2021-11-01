@@ -662,14 +662,24 @@ class ManimConfig(MutableMapping):
         digesting any other CLI arguments.
 
         """
+        # if the input file is a config file, parse it properly
+        if args.file.suffix == ".cfg":
+            args.config_file = args.file
+
+        # if args.file is `-`, the animation code has to be taken from STDIN, so the
+        # input file path shouldn't be absolute, since that file won't be read.
+        if str(args.file) == "-":
+            self.input_file = args.file
+
         # if a config file has been passed, digest it first so that other CLI
         # flags supersede it
         if args.config_file:
             self.digest_file(args.config_file)
 
-        # If args.file is `-`, the animation code has to be taken from STDIN, so the
-        # input file path shouldn't be absolute, since that file won't be read.
-        self.input_file = Path(args.file).absolute() if args.file != "-" else args.file
+        # read input_file from the args if it wasn't set by the config file
+        if not self.input_file:
+            self.input_file = Path(args.file).absolute()
+
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
