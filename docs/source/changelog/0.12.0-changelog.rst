@@ -1,0 +1,254 @@
+*******
+v0.12.0
+*******
+
+:Date: November 01, 2021
+
+Contributors
+============
+
+A total of 38 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Anima. +
+* Arcstur +
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* David Yang +
+* Dhananjay Goratela +
+* Ethan Rooke +
+* Eugene Chung +
+* GameDungeon
+* Gustav-Rixon +
+* Jan-Hendrik Müller
+* Josiah Winslow +
+* Laith Bahodi
+* Martmists +
+* Michael Hill +
+* Naveen M K
+* Nick +
+* NotWearingPants +
+* Peeter Joot +
+* Ryan McCauley
+* Viicos +
+* icedcoffeeee
+* kieran-pringle +
+* Виктор Виктор +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Anima.
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* David Yang
+* Dhananjay Goratela
+* Ethan Rooke
+* Eugene Chung
+* Gustav-Rixon
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Laith Bahodi
+* Mysaa
+* Naveen M K
+* Nick
+* Oliver
+* Ryan McCauley
+* Viicos
+* icedcoffeeee
+* kieran-pringle
+
+Pull requests merged
+====================
+
+A total of 44 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:`.Scene.next_section`
+
+
+Deprecated classes and functions
+--------------------------------
+
+* `#2065 <https://github.com/ManimCommunity/manim/pull/2065>`__: Deprecate :class:`~.FullScreenFadeRectangle` and :class:`~.PictureInPictureFrame`. 
+
+
+New features
+------------
+
+* `#2128 <https://github.com/ManimCommunity/manim/pull/2128>`__: Added keyword arguments ``match_center``, ``match_width`` etc. to :meth:`.Mobject.become`
+
+
+* `#2162 <https://github.com/ManimCommunity/manim/pull/2162>`__: Implemented :meth:`.MovingCamera.auto_zoom` for automatically zooming onto specified mobjects
+   Added auto_zoom to moving_camera.
+
+   Added a function to moving_camera called auto_zoom.
+
+   auto_zoom takes an array of Mobjects and calculates a new camera frame.
+
+   Fixed is_in_frame.
+
+   is_in_frame hade incorrect values it took the entire frame width/height from the center. It should be half of that.
+
+* `#2236 <https://github.com/ManimCommunity/manim/pull/2236>`__: Added ``skip_animations`` argument to :meth:``.Scene.next_section``
+
+
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implement logarithmic scaling for :class:`~.NumberLine`/:class:`~.Axes` 
+
+
+* `#2196 <https://github.com/ManimCommunity/manim/pull/2196>`__: Implemented :meth:`.Line3D.parallel_to` and :meth:`.Line3D.perpendicular_to`
+
+
+Enhancements
+------------
+
+* `#2157 <https://github.com/ManimCommunity/manim/pull/2157>`__: Added :meth:`.PolarPlane.plot_polar_graph`
+
+
+* `#2243 <https://github.com/ManimCommunity/manim/pull/2243>`__: Fixed wasteful recursion in :meth:`.Mobject.get_merged_array`
+
+
+* `#2205 <https://github.com/ManimCommunity/manim/pull/2205>`__: Improved last frame output handling for the OpenGL renderer
+
+
+* `#2172 <https://github.com/ManimCommunity/manim/pull/2172>`__: Added flag to disable rendering mobjects
+
+
+* `#2182 <https://github.com/ManimCommunity/manim/pull/2182>`__: Changed the default width of videos in Jupyter notebooks to ``60%``
+
+
+Fixed bugs
+----------
+
+* `#2142 <https://github.com/ManimCommunity/manim/pull/2142>`__: Fixed opengl family duplicates issue and add tests
+
+
+* `#2168 <https://github.com/ManimCommunity/manim/pull/2168>`__: Fixed  order in function `cartesian_to_spherical`
+   As mentioned in #2095, the returned array in [`cartesian_to_spherical`](../blob/8a3d1d8ff3aea50e88625e4514fb39230592c81c/manim/utils/space_ops.py#L772) is not in the correct order. [`spherical_to_cartesian`](../blob/8a3d1d8ff3aea50e88625e4514fb39230592c81c/manim/utils/space_ops.py#L775) is unpacking them correctly as `r, theta, phi` but `cartesian_to_spherical` returns the array in that order: `r, phi, theta`.
+
+   [`position_tip`](../blob/8a3d1d8ff3aea50e88625e4514fb39230592c81c/manim/mobject/geometry.py#L171) was also edited to be in accordance with the correct order.
+
+* `#2160 <https://github.com/ManimCommunity/manim/pull/2160>`__: Projection Shader compatibility with StreamLines
+
+
+* `#2140 <https://github.com/ManimCommunity/manim/pull/2140>`__: Fixed opengl `set_color` with gradients
+
+
+* `#2211 <https://github.com/ManimCommunity/manim/pull/2211>`__: Fixed animations not respecting the specified rate function
+
+
+* `#2192 <https://github.com/ManimCommunity/manim/pull/2192>`__: Fixed :func:`.svg_path.string_to_numbers` sometimes returning strings
+
+
+* `#2185 <https://github.com/ManimCommunity/manim/pull/2185>`__: Fixed type mismatch for height & width parameters of :class:`~.Text`
+
+
+* `#2176 <https://github.com/ManimCommunity/manim/pull/2176>`__: Modify ``set_default`` example to prevent leaking across the docs.
+
+
+Documentation-related changes
+-----------------------------
+
+* `#2228 <https://github.com/ManimCommunity/manim/pull/2228>`__: Added a new boolean operation example to the gallery
+
+
+* `#2239 <https://github.com/ManimCommunity/manim/pull/2239>`__: Removed erroneous raw string from text tutorial
+
+
+* `#2184 <https://github.com/ManimCommunity/manim/pull/2184>`__: Moved comments in :class:`~.VMobject` to documentation
+
+
+* `#2215 <https://github.com/ManimCommunity/manim/pull/2215>`__: Fixed typo on `get_z_axis_label` docstring
+   Just a typo fix on the `get_z_axis_label` method of the `ThreeDAxes` object.
+
+* `#2212 <https://github.com/ManimCommunity/manim/pull/2212>`__: Fixed Documentation for Sections
+
+
+* `#2194 <https://github.com/ManimCommunity/manim/pull/2194>`__: Type hinting images.py
+
+
+* `#2201 <https://github.com/ManimCommunity/manim/pull/2201>`__: Minor spell-check in docstrings
+   Fix aniamtion spelling error in some python docstring comments.
+
+* `#2171 <https://github.com/ManimCommunity/manim/pull/2171>`__: Type hinting ipython_magic.py
+
+
+* `#2130 <https://github.com/ManimCommunity/manim/pull/2130>`__:  Transferred troubleshooting installation related snippets from Discord to the documentation
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* `#2197 <https://github.com/ManimCommunity/manim/pull/2197>`__: Added tests for resolution flag
+   Added test cases to make sure the resolution flag does what its supposed
+   to. It queues up a handful of common 16:9 and a couple 4:3 resolutions
+   and tries to render all of them with all acceptable separators. Once
+   they render it checks to make sure that the rendered resolution matches
+   the requested resolution. To manage this last step the
+   `_get_config_from_video` method in `tests/utils/video_tester.py` was
+   made public to avoid repeating functionality.
+
+* `#2146 <https://github.com/ManimCommunity/manim/pull/2146>`__: Increased opengl testing
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* `#2191 <https://github.com/ManimCommunity/manim/pull/2191>`__: Removed ``add-trailing-comma`` pre-commit hook
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#2136 <https://github.com/ManimCommunity/manim/pull/2136>`__: Added type hints to all colors
+
+
+* `#2220 <https://github.com/ManimCommunity/manim/pull/2220>`__: Cleanup: ensure ``Scene.renderer.time`` returns something that makes sense
+
+
+* `#2222 <https://github.com/ManimCommunity/manim/pull/2222>`__: Updated Classifiers in ``pyproject.toml``
+
+
+* `#2213 <https://github.com/ManimCommunity/manim/pull/2213>`__: Removed redundant ``partial_movie_files`` parameter in :meth:`.SceneFileWriter.combine_to_movie`
+
+
+* `#2200 <https://github.com/ManimCommunity/manim/pull/2200>`__: Addressed some maintenance TODOs
+   - Changed `Exception` to `ValueError` now that #307 is merged.
+   - Fixed `MappingCamera.points_to_pixel_coords` by adding the `mobject` argument of the parent
+   - Round up width in `SplitScreenCamera`
+   - Add docstring to `Camera.capture_mobject` (it just links to `Camera.capture_mobjects` as duplicating the docstring seemed unnecessary)
+
+* `#2164 <https://github.com/ManimCommunity/manim/pull/2164>`__: Made regex more readable
+
+
+New releases
+------------
+
+* `#2114 <https://github.com/ManimCommunity/manim/pull/2114>`__: Prepared new release, ``v0.11.0``
+
+
+Unclassified changes
+--------------------
+
+* `#2187 <https://github.com/ManimCommunity/manim/pull/2187>`__: Renamed `get_graph` (and the like) to `plot`
+
+
+* `#2217 <https://github.com/ManimCommunity/manim/pull/2217>`__: Removed Extraneous Dots in :class:`.Section` Documentation
+
+
+* `#2161 <https://github.com/ManimCommunity/manim/pull/2161>`__: Fix `IndexOutOfBoundsError` in TeX logging
+   * Fixed bug where an `IndexOutOfBoundsError` could be thrown while trying to display a TeX compilation failure.
+
+* `#2148 <https://github.com/ManimCommunity/manim/pull/2148>`__: Fixed :class:`~.Arrow` tip disorientation with :meth:`.Line.put_start_and_end_on`
+
+
+* `#2165 <https://github.com/ManimCommunity/manim/pull/2165>`__: Added Crowdin configuration and changed source files to ``.pot`` format
+
+
