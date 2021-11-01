@@ -1,5 +1,6 @@
 import time
 import typing
+from typing import Any
 
 import numpy as np
 
@@ -30,7 +31,6 @@ class CairoRenderer:
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
-        self.file_writer = None
         self._file_writer_class = file_writer_class
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
@@ -42,7 +42,7 @@ class CairoRenderer:
         self.static_image = None
 
     def init_scene(self, scene):
-        self.file_writer = self._file_writer_class(
+        self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
@@ -232,6 +232,9 @@ class CairoRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
+        # there is always at least one section -> no out of bounds here
+        if self.file_writer.sections[-1].skip_animations:
+            self.skip_animations = True
         if config["save_last_frame"]:
             self.skip_animations = True
         if (

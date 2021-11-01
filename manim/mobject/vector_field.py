@@ -511,12 +511,6 @@ class ArrowVectorField(VectorField):
 
     """
 
-    @deprecated_params(
-        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Please use x_range and y_range instead.",
-    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -537,12 +531,12 @@ class ArrowVectorField(VectorField):
         **kwargs
     ):
         self.x_range = x_range or [
-            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
-            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
+            floor(-config["frame_width"] / 2),
+            ceil(config["frame_width"] / 2),
         ]
         self.y_range = y_range or [
-            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
-            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
+            floor(-config["frame_height"] / 2),
+            ceil(config["frame_height"] / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -556,13 +550,6 @@ class ArrowVectorField(VectorField):
             if len(self.ranges[i]) == 2:
                 self.ranges[i] += [0.5]
             self.ranges[i][1] += self.ranges[i][2]
-
-        if "delta_x" in kwargs:
-            self.ranges[0][2] = kwargs.pop("delta_x")
-            self.ranges[0][1] += self.ranges[0][2] - 0.5
-        if "delta_y" in kwargs:
-            self.ranges[1][2] = kwargs.pop("delta_y")
-            self.ranges[1][1] += self.ranges[1][2] - 0.5
 
         self.x_range, self.y_range, self.z_range = self.ranges
 
@@ -696,12 +683,6 @@ class StreamLines(VectorField):
 
     """
 
-    @deprecated_params(
-        params="x_min, x_max, delta_x, y_min, y_max, delta_y",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Please use x_range and y_range instead.",
-    )
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
@@ -728,12 +709,12 @@ class StreamLines(VectorField):
         **kwargs
     ):
         self.x_range = x_range or [
-            kwargs.pop("x_min", None) or floor(-config["frame_width"] / 2),
-            kwargs.pop("x_max", None) or ceil(config["frame_width"] / 2),
+            floor(-config["frame_width"] / 2),
+            ceil(config["frame_width"] / 2),
         ]
         self.y_range = y_range or [
-            kwargs.pop("y_min", None) or floor(-config["frame_height"] / 2),
-            kwargs.pop("y_max", None) or ceil(config["frame_height"] / 2),
+            floor(-config["frame_height"] / 2),
+            ceil(config["frame_height"] / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -747,13 +728,6 @@ class StreamLines(VectorField):
             if len(self.ranges[i]) == 2:
                 self.ranges[i] += [0.5]
             self.ranges[i][1] += self.ranges[i][2]
-
-        if "delta_x" in kwargs:
-            self.ranges[0][2] = kwargs.pop("delta_x")
-            self.ranges[0][1] += self.ranges[0][2] - 0.5
-        if "delta_y" in kwargs:
-            self.ranges[1][2] = kwargs.pop("delta_y")
-            self.ranges[1][1] += self.ranges[1][2] - 0.5
 
         self.x_range, self.y_range, self.z_range = self.ranges
 
