@@ -1568,7 +1568,6 @@ class Vector(Arrow):
 
         Parameters
         ----------
-
         integer_labels
             Whether or not to round the coordinates to integers.
         n_dim
@@ -1597,8 +1596,8 @@ class Vector(Arrow):
 
         Returns
         -------
-
         :class:`~.Matrix`
+
             The label.
         """
         # avoiding circular imports
