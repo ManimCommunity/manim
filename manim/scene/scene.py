@@ -963,9 +963,9 @@ class Scene:
                             * adj_time
                             + prev_node * run_time,
                         )
-                    # Check for floating point error
-                    if times[-1] == node * run_time:
-                        times = times[:-1]
+                        # Check for floating point error
+                        if times[-1] == node * run_time:
+                            times = times[:-1]
                     self.speed = speed
                     prev_node = node
                 self.speed = init_speed
