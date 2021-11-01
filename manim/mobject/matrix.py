@@ -38,7 +38,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Type
 
 import numpy as np
 
@@ -134,7 +134,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: "VMobject" = MathTex,
+        element_to_mobject: Type[MathTex] = MathTex,
         element_to_mobject_config: dict = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
@@ -161,7 +161,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         include_background_rectangle
             ``True`` if should include background rectangle, by default ``False``.
         element_to_mobject
-            The mobject used to construct the elements, by default :class:`~.MathTex`.
+            The mobject class used to construct the elements, by default :class:`~.MathTex`.
         element_to_mobject_config
             Additional arguments to be passed to the constructor in ``element_to_mobject``,
             by default ``{}``.
