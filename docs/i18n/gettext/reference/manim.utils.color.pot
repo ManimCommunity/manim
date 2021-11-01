@@ -1,0 +1,63 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.color.rst:2
+msgid "color"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color:1
+msgid "Colors and utility functions for conversion between different color models."
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.rst:26:<autosummary>:1
+msgid "A list of pre-defined colors."
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.rst:29
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.average_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_gradient:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_int_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_int_rgba:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_rgba:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.get_shaded_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.hex_to_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.interpolate_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.invert_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgb_to_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgb_to_hex:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgba_to_color:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.average_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_gradient:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_int_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_int_rgba:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.color_to_rgba:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.get_shaded_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.hex_to_rgb:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.interpolate_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.invert_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.random_bright_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.random_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgb_to_color:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgb_to_hex:0
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.rgba_to_color:0
+msgid "Return type"
+msgstr ""
+
+
