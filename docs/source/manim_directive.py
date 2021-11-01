@@ -146,7 +146,16 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
+        # Render is skipped if the tag skip-manim is present
+        should_skip = (
+            "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
+        )
+        # Or if we are making the pot-files
+        should_skip = (
+            should_skip
+            or self.state.document.settings.env.app.builder.name == "gettext"
+        )
+        if should_skip:
             node = skip_manim_node()
             self.state.nested_parse(
                 StringList(self.content[0]),

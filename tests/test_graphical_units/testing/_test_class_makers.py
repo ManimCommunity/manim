@@ -53,7 +53,10 @@ class DummySceneFileWriter(SceneFileWriter):
     def end_animation(self, allow_write):
         pass
 
-    def combine_movie_files(self, partial_movie_files):
+    def combine_to_movie(self):
+        pass
+
+    def combine_to_section_videos(self):
         pass
 
     def clean_cache(self):
