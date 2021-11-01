@@ -2603,9 +2603,36 @@ class Mobject:
     def interpolate_color(self, mobject1, mobject2, alpha):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject: "Mobject", copy_submobjects: bool = True):
+    def become(
+        self,
+        mobject: "Mobject",
+        copy_submobjects: bool = True,
+        match_height: bool = False,
+        match_width: bool = False,
+        match_depth: bool = False,
+        match_center: bool = False,
+        stretch: bool = False,
+    ):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
+
+        .. note::
+
+            If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
+            will match the height first and then the width
+
+        Parameters
+        ----------
+        match_height
+            If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
+        match_width
+            If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
+        match_depth
+            If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
+        match_center
+            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+        stretch
+            If ``True``, then the transformed :class:`~.Mobject` will stretch to fit the proportions of the original
 
         Examples
         --------
@@ -2620,6 +2647,22 @@ class Mobject:
                     circ.become(square)
                     self.wait(0.5)
         """
+
+        if stretch:
+            mobject.stretch_to_fit_height(self.height)
+            mobject.stretch_to_fit_width(self.width)
+            mobject.stretch_to_fit_depth(self.depth)
+        else:
+            if match_height:
+                mobject.match_height(self)
+            if match_width:
+                mobject.match_width(self)
+            if match_depth:
+                mobject.match_depth(self)
+
+        if match_center:
+            mobject.move_to(self.get_center())
+
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
