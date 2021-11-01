@@ -181,7 +181,7 @@ class NumberLine(Line):
         # turn into into an np array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
-
+        self.font_size = font_size
         self.length = length
         self.unit_size = unit_size
         # ticks
