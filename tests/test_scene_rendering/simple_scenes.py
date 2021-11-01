@@ -32,7 +32,7 @@ class NoAnimations(Scene):
     def construct(self):
         dot = Dot().set_color(GREEN)
         self.add(dot)
-        self.wait(1)
+        self.wait(0.1)
 
 
 class SceneWithStaticWait(Scene):
@@ -107,6 +107,12 @@ class ElaborateSceneWithSections(Scene):
         self.wait()
 
         self.next_section("transform to circle")
+        circle = Circle()
+        self.play(Transform(square, circle))
+        self.wait()
+
+        # this section will be entirely skipped
+        self.next_section("skipped animations section", skip_animations=True)
         circle = Circle()
         self.play(Transform(square, circle))
         self.wait()
