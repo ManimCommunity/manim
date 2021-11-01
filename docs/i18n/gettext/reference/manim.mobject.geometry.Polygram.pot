@@ -1,0 +1,123 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:2
+msgid "Polygram"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.Polygram``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
+msgid "A generalized :class:`Polygon`, allowing for disconnected sets of edges."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.round_corners:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:3
+msgid "The groups of vertices making up the :class:`Polygram`.  The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:3
+msgid "The groups of vertices making up the :class:`Polygram`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:5
+msgid "The first vertex in each group is repeated to close the shape. Each point must be 3-dimensional: ``[x,y,z]``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:7
+msgid "The color of the :class:`Polygram`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:8
+msgid "Forwarded to the parent constructor."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:11
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:7
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:7
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.round_corners:6
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1
+msgid "Gets the vertex groups of the :class:`Polygram`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:1
+msgid "Gets the vertices of the :class:`Polygram`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.round_corners:1
+msgid "Rounds off the corners of the :class:`Polygram`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:3
+msgid "The vertex groups of the :class:`Polygram`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:4
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:4
+msgid ":class:`numpy.ndarray`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:3
+msgid "The vertices of the :class:`Polygram`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.round_corners:3
+msgid "The curvature of the corners of the :class:`Polygram`."
+msgstr ""
+
+
