@@ -72,7 +72,7 @@ A total of 49 pull requests were merged for this release.
 Highlights
 ----------
 
-* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes` 
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes`
 
 
 * `#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:`.Scene.next_section`
@@ -253,6 +253,4 @@ New releases
 Unclassified changes
 --------------------
 
-* `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Change the color of :class:`~.NumberLine` to WHITE from LIGHT_GREY. 
-
-
+* `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Change the color of :class:`~.NumberLine` to WHITE from LIGHT_GREY.
