@@ -1574,7 +1574,7 @@ class CoordinateSystem:
                     ax = Axes(
                         x_range=[0, 8.0, 1],
                         y_range=[-1, 1, 0.2],
-                        axis_config={"number_scale_value": 0.5},
+                        axis_config={"font_size": 0.5},
                     ).add_coordinates()
 
                     curve = ax.plot(lambda x: np.sin(x) / np.e ** 2 * x)
