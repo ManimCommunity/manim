@@ -77,7 +77,7 @@ Highlights
 Deprecated classes and functions
 --------------------------------
 
-* `#2065 <https://github.com/ManimCommunity/manim/pull/2065>`__: Deprecate :class:`~.FullScreenFadeRectangle` and :class:`~.PictureInPictureFrame`. 
+* `#2065 <https://github.com/ManimCommunity/manim/pull/2065>`__: Deprecate :class:`~.FullScreenFadeRectangle` and :class:`~.PictureInPictureFrame`.
 
 
 New features
@@ -100,7 +100,7 @@ New features
 * `#2236 <https://github.com/ManimCommunity/manim/pull/2236>`__: Added ``skip_animations`` argument to :meth:``.Scene.next_section``
 
 
-* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implement logarithmic scaling for :class:`~.NumberLine`/:class:`~.Axes` 
+* `#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implement logarithmic scaling for :class:`~.NumberLine`/:class:`~.Axes`
 
 
 * `#2196 <https://github.com/ManimCommunity/manim/pull/2196>`__: Implemented :meth:`.Line3D.parallel_to` and :meth:`.Line3D.perpendicular_to`
@@ -250,5 +250,3 @@ Unclassified changes
 
 
 * `#2165 <https://github.com/ManimCommunity/manim/pull/2165>`__: Added Crowdin configuration and changed source files to ``.pot`` format
-
-
