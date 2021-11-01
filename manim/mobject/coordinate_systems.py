@@ -223,17 +223,6 @@ class CoordinateSystem:
     def get_axis(self, index):
         return self.get_axes()[index]
 
-    @deprecated(since="v0.10.0", until="v0.11.0", message="Use get_origin instead.")
-    def get_center_point(self) -> np.ndarray:
-        """Gets the origin of :class:`~.Axes`.
-
-        Returns
-        -------
-        np.ndarray
-            The center point.
-        """
-        return self.coords_to_point(0, 0)
-
     def get_origin(self) -> np.ndarray:
         """Gets the origin of :class:`~.Axes`.
 
@@ -1589,7 +1578,7 @@ class CoordinateSystem:
                     ax = Axes(
                         x_range=[0, 8.0, 1],
                         y_range=[-1, 1, 0.2],
-                        axis_config={"number_scale_value": 0.5},
+                        axis_config={"font_size": 24},
                     ).add_coordinates()
 
                     curve = ax.plot(lambda x: np.sin(x) / np.e ** 2 * x)
@@ -2586,12 +2575,6 @@ class PolarPlane(Axes):
                 self.add(polarplane_pi)
     """
 
-    @deprecated_params(
-        params="azimuth_label_scale",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use azimuth_label_font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -2611,15 +2594,6 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-        # deprecation
-        azimuth_label_scale = kwargs.pop("azimuth_label_scale", None)
-        if azimuth_label_scale:
-            self.azimuth_label_font_size = (
-                azimuth_label_scale * DEFAULT_FONT_SIZE * 0.75
-            )
-        else:
-            self.azimuth_label_font_size = azimuth_label_font_size
-
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -2675,7 +2649,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
+        self.azimuth_label_font_size = azimuth_label_font_size
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init

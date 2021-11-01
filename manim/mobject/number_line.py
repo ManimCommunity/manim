@@ -124,12 +124,6 @@ class NumberLine(Line):
         values as the tick locations are dependent on the step size.
     """
 
-    @deprecated_params(
-        params="number_scale_value",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead.  To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         x_range: Optional[Sequence[float]] = None,  # must be first
@@ -159,13 +153,6 @@ class NumberLine(Line):
         numbers_to_include: Optional[Iterable[float]] = None,
         **kwargs,
     ):
-        # deprecation
-        number_scale_value = kwargs.pop("number_scale_value", None)
-        if number_scale_value is not None:
-            self.font_size = number_scale_value * DEFAULT_FONT_SIZE * 0.75
-        else:
-            self.font_size = font_size
-
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
             numbers_to_exclude = []
@@ -190,7 +177,6 @@ class NumberLine(Line):
         # turn into into an np array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
-
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -206,6 +192,7 @@ class NumberLine(Line):
         self.tip_width = tip_width
         self.tip_height = tip_height
         # numbers
+        self.font_size = font_size
         self.include_numbers = include_numbers
         self.label_direction = label_direction
         self.line_to_number_buff = line_to_number_buff
