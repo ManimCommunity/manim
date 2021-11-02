@@ -259,7 +259,7 @@ class OpenGLSurface(OpenGLMobject):
         List
             A list of colors matching the vertex inputs.
         """
-        if type(self.color[0]) is tuple:
+        if type(self.color[0]) in (list, tuple):
             new_colors, pivots = [
                 [i for i, j in self.color],
                 [j for i, j in self.color],
