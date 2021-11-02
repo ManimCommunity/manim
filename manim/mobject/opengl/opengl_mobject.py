@@ -1922,7 +1922,7 @@ class OpenGLMobject:
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            if isinstance(color, (str, Color)):
+            if isinstance(color, (str, Color, None)):
                 self.color = Color(color)
             elif isinstance(color, Iterable):
                 self.color = []
