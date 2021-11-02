@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import moderngl
 import numpy as np
+from typing import Iterable
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -234,7 +235,7 @@ class OpenGLSurface(OpenGLMobject):
             shader_data["point"] = s_points
             shader_data["du_point"] = du_points
             shader_data["dv_point"] = dv_points
-            if isinstance(self.color, list):
+            if isinstance(self.color, Iterable):
                 shader_data["color"] = self._get_color_by_value(s_points)
             else:
                 shader_data["color"] = [
