@@ -951,7 +951,7 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import Axes
             >>> ax = Axes()
