@@ -117,8 +117,8 @@ Enhancements
 ------------
 
 * `#2138 <https://github.com/ManimCommunity/manim/pull/2138>`__: Fixed example for :meth:`~.Vector.coordinate_label` and added more customization for :class:`~.Matrix`
-   - Added `**kwargs` for :meth:`~.Vector.coordinate_label`.
-   - :class:`~.Matrix` now accepts a `bracket_config` parameter.
+   - Additional keyword arguments for :meth:`~.Vector.coordinate_label` are passed to the constructed matrix.
+   - :class:`~.Matrix` now accepts a ``bracket_config`` keyword argument.
 
 * `#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Changed the color of :class:`~.NumberLine` from ``LIGHT_GREY`` to ``WHITE``
 
