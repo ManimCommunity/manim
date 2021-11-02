@@ -482,10 +482,7 @@ class Text(SVGMobject):
         )
         self.text = text
         if self.disable_ligatures:
-            if config.renderer == "opengl":
-                self.set_submobjects(self.gen_chars())
-            else:
-                self.submobjects = [*self.gen_chars()]
+            self.submobjects = [*self.gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         if config.renderer == "opengl":

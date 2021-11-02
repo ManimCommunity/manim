@@ -101,7 +101,7 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events = listen_to_events
 
-        self.submobjects = []
+        self._submobjects = []
         self.parents = []
         self.parent = None
         self.family = [self]
@@ -471,6 +471,12 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
+    @deprecated(
+        since="v0.12.0",
+        until="v0.13.0",
+        replacement="self.submobjects",
+        message="Switching to using properties for submobjects",
+    )
     def set_submobjects(self, submobject_list):
         self.remove(*self.submobjects)
         self.add(*submobject_list)
@@ -1903,6 +1909,15 @@ class OpenGLMobject:
 
     def get_shader_vert_indices(self):
         return self.shader_indices
+
+    @property
+    def submobjects(self):
+        return self._submobjects
+
+    @submobjects.setter
+    def submobjects(self, submobject_list):
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
 
     # Event Handlers
     """
