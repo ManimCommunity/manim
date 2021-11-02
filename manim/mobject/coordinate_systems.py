@@ -943,6 +943,30 @@ class CoordinateSystem:
                     f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
+    def input_to_graph_coords(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Returns a tuple of the axis relative coordinates of the point
+        on the graph based on the x-value given.
+
+        Examples
+        --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes
+            >>> ax = Axes()
+            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> ax.input_to_graph_coords(x=3, graph=parabola)
+            (3, 9)
+        """
+        return x, graph.underlying_function(x)
+
+    def i2gc(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Alias for :meth:`input_to_graph_coords`.
+        """
+        return self.input_to_graph_coords(x, graph)
+
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
         Alias for :meth:`input_to_graph_point`.
@@ -1313,7 +1337,7 @@ class CoordinateSystem:
             ax = Axes()
             curve = ax.plot(lambda x: x ** 2)
             ax.angle_of_tangent(x=3, graph=curve)
-            # 1.3825747960950903
+            # 1.4056476493802699
 
 
         Parameters
@@ -1331,8 +1355,8 @@ class CoordinateSystem:
             The angle of the tangent to the curve.
         """
 
-        p0 = self.input_to_graph_point(x, graph)
-        p1 = self.input_to_graph_point(x + dx, graph)
+        p0 = np.array([*self.input_to_graph_coords(x, graph)])
+        p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
         return angle_of_vector(p1 - p0)
 
     def slope_of_tangent(
