@@ -8,6 +8,8 @@ __all__ = [
 ]
 
 
+from manim.utils.deprecation import deprecated
+
 from .. import config
 from ..constants import *
 from ..mobject.geometry import Rectangle
@@ -39,6 +41,12 @@ class FullScreenRectangle(ScreenRectangle):
         self.height = config["frame_height"]
 
 
+@deprecated(
+    since="v0.12.0",
+    until="v0.13.0",
+    message="This method is deprecated due to decluttering purpose.",
+    replacement="FullScreenRectangle(stroke_width=0, fill_color=BLACK, fill_opacity=0.7)",
+)
 class FullScreenFadeRectangle(FullScreenRectangle):
     def __init__(self, stroke_width=0, fill_color=BLACK, fill_opacity=0.7, **kwargs):
         super().__init__(
@@ -49,6 +57,11 @@ class FullScreenFadeRectangle(FullScreenRectangle):
         )
 
 
+@deprecated(
+    since="v0.12.0",
+    until="v0.13.0",
+    message="This method is deprecated due to decluttering purpose.",
+)
 class PictureInPictureFrame(Rectangle):
     def __init__(self, height=3, aspect_ratio=16.0 / 9.0, **kwargs):
         super().__init__(width=aspect_ratio * height, height=height, **kwargs)

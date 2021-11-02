@@ -26,6 +26,7 @@ from ..utils.iterables import (
     resize_array,
     resize_preserving_order,
     resize_with_interpolation,
+    uniq_chain,
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -75,6 +76,7 @@ class OpenGLMobject:
         # Event listener
         listen_to_events=False,
         model_matrix=None,
+        should_render=True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
@@ -120,6 +122,8 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+        self.should_render = should_render
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -409,7 +413,7 @@ class OpenGLMobject:
 
     def assemble_family(self):
         sub_families = (sm.get_family() for sm in self.submobjects)
-        self.family = [self, *it.chain(*sub_families)]
+        self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
