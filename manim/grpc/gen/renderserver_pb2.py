@@ -294,7 +294,7 @@ UpdateSceneDataRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _UPDATESCENEDATAREQUEST,
-        "__module__": "renderserver_pb2"
+        "__module__": "renderserver_pb2",
         # @@protoc_insertion_point(class_scope:renderserver.UpdateSceneDataRequest)
     },
 )
@@ -305,7 +305,7 @@ Scene = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _SCENE,
-        "__module__": "renderserver_pb2"
+        "__module__": "renderserver_pb2",
         # @@protoc_insertion_point(class_scope:renderserver.Scene)
     },
 )
@@ -316,7 +316,7 @@ Animation = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _ANIMATION,
-        "__module__": "renderserver_pb2"
+        "__module__": "renderserver_pb2",
         # @@protoc_insertion_point(class_scope:renderserver.Animation)
     },
 )
@@ -327,7 +327,7 @@ EmptyRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _EMPTYREQUEST,
-        "__module__": "renderserver_pb2"
+        "__module__": "renderserver_pb2",
         # @@protoc_insertion_point(class_scope:renderserver.EmptyRequest)
     },
 )
@@ -338,7 +338,7 @@ EmptyResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _EMPTYRESPONSE,
-        "__module__": "renderserver_pb2"
+        "__module__": "renderserver_pb2",
         # @@protoc_insertion_point(class_scope:renderserver.EmptyResponse)
     },
 )

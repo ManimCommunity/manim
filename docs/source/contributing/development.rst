@@ -40,22 +40,22 @@ For first-time contributors
    .. code-block:: shell
 
       git remote add upstream https://github.com/ManimCommunity/manim.git
- 
+
 #. Now, ``git remote -v`` should show two remote repositories named:
-   
+
    - ``origin``, your forked repository
    - ``upstream`` the ManimCommunity repository
 
 #. Install Manim:
 
-   - Follow the steps in our :doc:`installation instructions 
+   - Follow the steps in our :doc:`installation instructions
      <../installation>` to install **Manim's dependencies**,
      primarily ``ffmpeg`` and ``LaTeX``.
-   
+
    - We recommend using `Poetry <https://python-poetry.org>`__ to manage your
      developer installation of Manim. Poetry is a tool for dependency
      management and packaging in Python. It allows you to declare the libraries
-     your project depends on, and it will manage (install / update) them 
+     your project depends on, and it will manage (install / update) them
      for you. In addition, Poetry provides a simple interface for
      managing virtual environments.
 
@@ -65,7 +65,7 @@ For first-time contributors
      your cloned repository. Poetry will then install Manim, as well
      as create and enter a virtual environment. You can always re-enter
      that environment by running ``poetry shell``.
-   
+
    - In case you decided against Poetry, you can install Manim via pip
      by running ``python3 -m pip install .``. Note that due to our
      development infrastructure being based on Poetry, we currently
@@ -83,7 +83,7 @@ For first-time contributors
    .. code-block:: shell
 
       poetry run pre-commit install
-   
+
    This will ensure during development that each of your commits is properly
    formatted against our linter and formatters, ``black``, ``flake8``,
    ``isort`` and ``codespell``.
@@ -118,7 +118,7 @@ Develop your contribution
    ``git add .``, or add specific files with
 
    .. code-block:: shell
-   
+
       git add <file/directory>
 
    and commit these changes to your local history with ``git commit``. If you
@@ -126,7 +126,7 @@ Develop your contribution
    hooks fail.
 
    .. tip::
-   
+
       When crafting commit messages, it is highly recommended that
       you adhere to `these guidelines <https://www.conventionalcommits.org/en/v1.0.0/>`_.
 
@@ -226,7 +226,7 @@ sticks to our coding conventions.
   and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The GitHub pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
+  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``.
   To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems
   manually that were detected by ``flake8``.
 
@@ -267,7 +267,7 @@ Further useful guidelines
    to them in your new issue (even if the old ones are closed).
 
 #. When submitting a code review, it is highly recommended that you adhere to
-   `these general guidelines <https://conventionalcomments.org/>`_. 
+   `these general guidelines <https://conventionalcomments.org/>`_.
 
 #. If you find stale or inactive issues that seem to be irrelevant, please post
    a comment saying 'This issue should be closed', and a community developer

@@ -31,7 +31,10 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    scene.add(Line3D())
+    line = Line3D()
+    perp_line = Line3D.perpendicular_to(line, UP)
+    parallel_line = Line3D.parallel_to(line, UP)
+    scene.add(line, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -46,7 +49,7 @@ def test_Torus(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Axes(scene):
-    scene.add(ThreeDAxes(axis_config={"exclude_origin_tick": False}))
+    scene.add(ThreeDAxes())
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -117,10 +120,8 @@ def test_SurfaceColorscale(scene):
     trig_plane = Surface(
         lambda x, y: axes.c2p(x, y, param_trig(x, y)),
         resolution=(resolution_fa, resolution_fa),
-        v_min=-3,
-        v_max=+3,
-        u_min=-3,
-        u_max=+3,
+        v_range=[-3, 3],
+        u_range=[-3, 3],
     )
     trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
     scene.add(axes, trig_plane)

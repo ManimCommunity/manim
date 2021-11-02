@@ -39,7 +39,10 @@ def handle_caching_play(func):
         if not config["disable_caching"]:
             mobjects_on_scene = scene.mobjects
             hash_play = get_hash_from_play_call(
-                self, self.camera, animations, mobjects_on_scene
+                self,
+                self.camera,
+                animations,
+                mobjects_on_scene,
             )
             if self.file_writer.is_already_cached(hash_play):
                 logger.info(

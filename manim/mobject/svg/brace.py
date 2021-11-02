@@ -93,15 +93,16 @@ class Brace(SVGPathMobject):
         right = mobject.get_corner(DOWN + RIGHT)
         target_width = right[0] - left[0]
         linear_section_length = max(
-            0, (target_width * sharpness - default_min_width) / 2
+            0,
+            (target_width * sharpness - default_min_width) / 2,
         )
 
         path = path_string_template.format(
-            linear_section_length, -linear_section_length
+            linear_section_length,
+            -linear_section_length,
         )
 
-        SVGPathMobject.__init__(
-            self,
+        super().__init__(
             path_string=path,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
@@ -148,12 +149,6 @@ class Brace(SVGPathMobject):
 
 
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
-    @deprecated_params(
-        params="label_scale",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         obj,
@@ -164,12 +159,6 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         buff=0.2,
         **kwargs
     ):
-        label_scale = kwargs.pop("label_scale", None)
-        if label_scale:
-            self.font_size = label_scale * DEFAULT_FONT_SIZE
-        else:
-            self.font_size = font_size
-
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
@@ -179,7 +168,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, brace_direction, buff, **kwargs)
 
-        if isinstance(text, tuple) or isinstance(text, list):
+        if isinstance(text, (tuple, list)):
             self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
         else:
             self.label = self.label_constructor(str(text), font_size=font_size)
@@ -256,7 +245,7 @@ class BraceBetweenPoints(Brace):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
-        Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+        super().__init__(Line(point_1, point_2), direction=direction, **kwargs)
 
 
 class ArcBrace(Brace):
@@ -326,10 +315,10 @@ class ArcBrace(Brace):
 
         if arc.radius >= 1:
             line.scale(arc.radius, about_point=ORIGIN)
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
             self.scale(1 / (arc.radius), about_point=ORIGIN)
         else:
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
 
         if arc.radius >= 0.3:
             self.shift(scale_shift)

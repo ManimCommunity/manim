@@ -15,12 +15,12 @@ def get_module(file_name: Path):
     if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
-            "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):"
+            "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):",
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
             logger.warning(
-                "Didn't find an import statement for Manim. Importing automatically..."
+                "Didn't find an import statement for Manim. Importing automatically...",
             )
             code = "from manim import *\n" + code
         logger.info("Rendering animation from typed code...")
@@ -38,7 +38,9 @@ def get_module(file_name: Path):
             module_name = ext.replace(os.sep, ".").split(".")[-1]
 
             warnings.filterwarnings(
-                "default", category=DeprecationWarning, module=module_name
+                "default",
+                category=DeprecationWarning,
+                module=module_name,
             )
 
             spec = importlib.util.spec_from_file_location(module_name, file_name)
@@ -95,14 +97,13 @@ def get_scenes_to_render(scene_classes):
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
     SceneFileWriter.force_output_as_scene_name = True
-    for count, scene_class in enumerate(scene_classes):
-        count += 1  # start with 1 instead of 0
+    for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
         num_to_class[count] = scene_class
     try:
         user_input = console.input(
-            f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
+            f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]",
         )
         scene_classes = [
             num_to_class[int(num_str)]

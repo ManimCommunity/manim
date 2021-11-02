@@ -60,11 +60,13 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_array_attrs(self):
-        return Mobject.get_array_attrs(self) + ["rgbas"]
+        return super().get_array_attrs() + ["rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
-        """
-        Points must be a Nx3 numpy array, as must rgbas if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -74,7 +76,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             color = Color(color) if color else self.color
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
@@ -97,12 +99,16 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, len(self.points))))
+            list(map(color_to_rgba, color_gradient(*colors, len(self.points)))),
         )
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
         start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
@@ -112,7 +118,9 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
             alphas = np.linalg.norm(distances, axis=1) / radius
 
             mob.rgbas = np.array(
-                np.array([interpolate(start_rgba, end_rgba, alpha) for alpha in alphas])
+                np.array(
+                    [interpolate(start_rgba, end_rgba, alpha) for alpha in alphas],
+                ),
             )
         return self
 
@@ -135,7 +143,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr: arr[np.arange(0, num_points, factor)]
+                lambda arr: arr[np.arange(0, num_points, factor)],
             )
         return self
 
@@ -176,7 +184,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def align_points_with_larger(self, larger_mobject):
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
-            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points())
+            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
         )
 
     def get_point_mobject(self, center=None):
@@ -191,7 +199,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
                 mobject1.get_stroke_width(),
                 mobject2.get_stroke_width(),
                 alpha,
-            )
+            ),
         )
         return self
 
@@ -208,7 +216,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -225,7 +233,7 @@ class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
 
 class PGroup(PMobject):
@@ -251,12 +259,10 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all(
-            [isinstance(m, PMobject) or isinstance(m, OpenGLPMobject) for m in pmobs]
-        ):
+        if not all([isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs]):
             raise ValueError(
                 "All submobjects must be of type PMobject or OpenGLPMObject"
-                " if using the opengl renderer"
+                " if using the opengl renderer",
             )
         super().__init__(**kwargs)
         self.add(*pmobs)
@@ -325,9 +331,11 @@ class PointCloudDot(Mobject1D):
                 for r in np.arange(self.epsilon, self.radius, self.epsilon)
                 # Num is equal to int(stop - start)/ (step + 1) reformulated.
                 for theta in np.linspace(
-                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                    0,
+                    2 * np.pi,
+                    num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
                 )
-            ]
+            ],
         )
 
 

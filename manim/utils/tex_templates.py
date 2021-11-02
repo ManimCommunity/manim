@@ -68,7 +68,8 @@ class TexTemplateLibrary:
         tex_compiler="xelatex",
         output_format=".xdv",
         preamble=_3b1b_preamble.replace(
-            r"\DisableLigatures{encoding = *, family = * }", r"\usepackage[UTF8]{ctex}"
+            r"\DisableLigatures{encoding = *, family = * }",
+            r"\usepackage[UTF8]{ctex}",
         ),
     )
     """An instance of the TeX template used by 3b1b when using the use_ctex flag"""
@@ -170,7 +171,7 @@ lmtp.add_to_preamble(
 \MTgreekfont{lmtt} % no lgr lmvtt, so use lgr lmtt
 \Mathastext
 \let\varepsilon\epsilon % only \varsigma in LGR
-"""
+""",
 )
 
 
@@ -182,7 +183,7 @@ fufug.add_to_preamble(
 \usepackage[T1]{fontenc}
 \usepackage[upright]{fourier}
 \usepackage{mathastext}
-"""
+""",
 )
 
 
@@ -195,7 +196,7 @@ droidserif.add_to_preamble(
 \usepackage[default]{droidserif}
 \usepackage[LGRgreek]{mathastext}
 \let\varepsilon\epsilon
-"""
+""",
 )
 
 
@@ -208,7 +209,7 @@ droidsans.add_to_preamble(
 \usepackage[default]{droidsans}
 \usepackage[LGRgreek]{mathastext}
 \let\varepsilon\epsilon
-"""
+""",
 )
 
 
@@ -221,7 +222,7 @@ ncssg.add_to_preamble(
 \usepackage{newcent}
 \usepackage[symbolgreek]{mathastext}
 \linespread{1.1}
-"""
+""",
 )
 
 
@@ -234,7 +235,7 @@ fceg.add_to_preamble(
 \usepackage[default]{frcursive}
 \usepackage[eulergreek,noplusnominus,noequal,nohbar,%
 nolessnomore,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -247,7 +248,7 @@ aksg.add_to_preamble(
 \usepackage{aurical}
 \renewcommand{\rmdefault}{AuriocusKalligraphicus}
 \usepackage[symbolgreek]{mathastext}
-"""
+""",
 )
 
 
@@ -259,7 +260,7 @@ palatinosg.add_to_preamble(
 \usepackage[T1]{fontenc}
 \usepackage{palatino}
 \usepackage[symbolmax,defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -272,7 +273,7 @@ comfortaa.add_to_preamble(
 \usepackage[LGRgreek,defaultmathsizes,noasterisk]{mathastext}
 \let\varphi\phi
 \linespread{1.06}
-"""
+""",
 )
 
 
@@ -283,7 +284,7 @@ ecfaugieeg.add_to_preamble(
     r"""
 \renewcommand\familydefault{fau} % emerald package
 \usepackage[defaultmathsizes,eulergreek]{mathastext}
-"""
+""",
 )
 
 
@@ -297,7 +298,7 @@ electrumadfcm.add_to_preamble(
 \usepackage[lf]{electrum}
 \Mathastext
 \let\varphi\phi
-"""
+""",
 )
 
 
@@ -309,7 +310,7 @@ americantypewriter.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{American Typewriter}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 americantypewriter.tex_compiler = "xelatex"
 americantypewriter.output_format = ".xdv"
@@ -327,7 +328,7 @@ mpmptx.add_to_preamble(
 \renewcommand\familydefault\sfdefault
 \usepackage[defaultmathsizes]{mathastext}
 \renewcommand\familydefault\rmdefault
-"""
+""",
 )
 mpmptx.tex_compiler = "xelatex"
 mpmptx.output_format = ".xdv"
@@ -343,7 +344,7 @@ ncssgpxm.add_to_preamble(
 \usepackage{newcent}
 \usepackage[symbolgreek,defaultmathsizes]{mathastext}
 \linespread{1.06}
-"""
+""",
 )
 
 
@@ -357,7 +358,7 @@ vollkorntx.add_to_preamble(
 \usepackage[upright]{txgreeks}
 \usepackage{vollkorn}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -370,7 +371,7 @@ libertine.add_to_preamble(
 \usepackage{libertine}
 \usepackage[greek=n]{libgreek}
 \usepackage[noasterisk,defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -384,7 +385,7 @@ slitexeg.add_to_preamble(
 \usepackage[eulergreek,defaultmathsizes]{mathastext}
 \MTEulerScale{1.06}
 \linespread{1.2}
-"""
+""",
 )
 
 
@@ -399,12 +400,12 @@ ecfwebstertx.add_to_preamble(
 \usepackage{mathastext}
 \renewcommand{\int}{\intop\limits}
 \linespread{1.5}
-"""
+""",
 )
 ecfwebstertx.add_to_document(
     r"""
 \mathversion{bold}
-"""
+""",
 )
 
 
@@ -418,7 +419,7 @@ italicromandeadff.add_to_preamble(
 \usepackage{romande}
 \usepackage[italic,defaultmathsizes,noasterisk]{mathastext}
 \renewcommand{\itshape}{\swashstyle}
-"""
+""",
 )
 
 
@@ -430,7 +431,7 @@ applechancery.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Apple Chancery}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 applechancery.tex_compiler = "xelatex"
 applechancery.output_format = ".xdv"
@@ -449,7 +450,7 @@ zapfchancery.add_to_preamble(
 \renewcommand\bfdefault\mddefault
 \usepackage[defaultmathsizes]{mathastext}
 \linespread{1.05}
-"""
+""",
 )
 
 
@@ -461,7 +462,7 @@ italicverdana.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Verdana}
 \usepackage[defaultmathsizes,italic]{mathastext}
-"""
+""",
 )
 italicverdana.tex_compiler = "xelatex"
 italicverdana.output_format = ".xdv"
@@ -481,12 +482,12 @@ urwzccmg.add_to_preamble(
 \DeclareFontShape{T1}{pzc}{m}{n}{<->ssub * pzc/mb/it}{}
 \usepackage{chancery}
 \usepackage{mathastext}
-\linespread{1.05}"""
+\linespread{1.05}""",
 )
 urwzccmg.add_to_document(
     r"""
 \boldmath
-"""
+""",
 )
 
 
@@ -498,7 +499,7 @@ comicsansms.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Comic Sans MS}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 comicsansms.tex_compiler = "xelatex"
 comicsansms.output_format = ".xdv"
@@ -513,7 +514,7 @@ italicgfsdidot.add_to_preamble(
 \renewcommand\rmdefault{udidot}
 \usepackage[LGRgreek,defaultmathsizes,italic]{mathastext}
 \let\varphi\phi
-"""
+""",
 )
 
 
@@ -525,7 +526,7 @@ chalkduster.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Chalkduster}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 chalkduster.tex_compiler = "lualatex"
 chalkduster.output_format = ".pdf"
@@ -540,7 +541,7 @@ mptx.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Minion Pro}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 mptx.tex_compiler = "xelatex"
 mptx.output_format = ".xdv"
@@ -569,7 +570,7 @@ gnufsfs.add_to_preamble(
 \Mathastext
 \let\varphi\phi % no `var' phi in LGR encoding
 \renewcommand{\familydefault}{\rmdefault}
-"""
+""",
 )
 gnufsfs.tex_compiler = "xelatex"
 gnufsfs.output_format = ".xdv"
@@ -584,7 +585,7 @@ gfsneohellenic.add_to_preamble(
 \usepackage[LGRgreek]{mathastext}
 \let\varphi\phi
 \linespread{1.06}
-"""
+""",
 )
 
 
@@ -600,7 +601,7 @@ ecftallpaul.add_to_preamble(
 \renewcommand\familydefault{ftp} % emerald package
 \usepackage[symbol]{mathastext}
 \let\infty\inftypsy
-"""
+""",
 )
 
 
@@ -613,7 +614,7 @@ italicdroidsans.add_to_preamble(
 \usepackage[default]{droidsans}
 \usepackage[LGRgreek,defaultmathsizes,italic]{mathastext}
 \let\varphi\phi
-"""
+""",
 )
 
 
@@ -625,7 +626,7 @@ italicbaskerville.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Baskerville}
 \usepackage[defaultmathsizes,italic]{mathastext}
-"""
+""",
 )
 italicbaskerville.tex_compiler = "xelatex"
 italicbaskerville.output_format = ".xdv"
@@ -640,11 +641,11 @@ ecfjdtx.add_to_preamble(
 \usepackage[upright]{txgreeks}
 \renewcommand\familydefault{fjd} % emerald package
 \usepackage{mathastext}
-"""
+""",
 )
 ecfjdtx.add_to_document(
     r"""\mathversion{bold}
-"""
+""",
 )
 
 
@@ -658,7 +659,7 @@ aptxgm.add_to_preamble(
 \usepackage[upright]{txgreeks}
 \usepackage{antpolt}
 \usepackage[defaultmathsizes,nolessnomore]{mathastext}
-"""
+""",
 )
 
 
@@ -670,7 +671,7 @@ papyrus.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Papyrus}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 papyrus.tex_compiler = "xelatex"
 papyrus.output_format = ".xdv"
@@ -689,7 +690,7 @@ gnufstx.add_to_preamble(
                 ItalicFont=FreeSerifItalic,
                 BoldItalicFont=FreeSerifBoldItalic]{FreeSerif}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 gnufstx.tex_compiler = "xelatex"
 gnufstx.output_format = ".pdf"
@@ -706,7 +707,7 @@ ecfscmg.add_to_preamble(
 \DeclareFontShape{T1}{fsk}{m}{n}{<->s*[1.315] fskmw8t}{}
 \renewcommand\rmdefault{fsk}
 \usepackage[noendash,defaultmathsizes,nohbar,defaultimath]{mathastext}
-"""
+""",
 )
 
 
@@ -720,7 +721,7 @@ italiclmtpcm.add_to_preamble(
 \renewcommand{\familydefault}{\ttdefault}
 \usepackage[frenchmath]{mathastext}
 \linespread{1.08}
-"""
+""",
 )
 
 
@@ -732,7 +733,7 @@ baskervaldadff.add_to_preamble(
 \usepackage[upright]{fourier}
 \usepackage{baskervald}
 \usepackage[defaultmathsizes,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -746,7 +747,7 @@ italicdroidserifpx.add_to_preamble(
 \usepackage[default]{droidserif}
 \usepackage[LGRgreek,defaultmathsizes,italic,basic]{mathastext}
 \let\varphi\phi
-"""
+""",
 )
 
 
@@ -760,7 +761,7 @@ biolinum.add_to_preamble(
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[greek=n,biolinum]{libgreek}
 \usepackage[noasterisk,defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -772,7 +773,7 @@ italicvollkornf.add_to_preamble(
 \usepackage{fourier}
 \usepackage{vollkorn}
 \usepackage[italic,nohbar]{mathastext}
-"""
+""",
 )
 
 
@@ -784,7 +785,7 @@ chalkboardse.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Chalkboard SE}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 chalkboardse.tex_compiler = "xelatex"
 chalkboardse.output_format = ".xdv"
@@ -798,7 +799,7 @@ noteworthylight.add_to_preamble(
 \usepackage[no-math]{fontspec}
 \setmainfont[Mapping=tex-text]{Noteworthy Light}
 \usepackage[defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -812,7 +813,7 @@ epigrafica.add_to_preamble(
 \usepackage[basic,LGRgreek,defaultmathsizes]{mathastext}
 \let\varphi\phi
 \linespread{1.2}
-"""
+""",
 )
 
 
@@ -826,7 +827,7 @@ librisadff.add_to_preamble(
 \usepackage{libris}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -838,7 +839,7 @@ italicvanturisadff.add_to_preamble(
 \usepackage{fourier}
 \usepackage[lf]{venturis}
 \usepackage[italic,defaultmathsizes,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -852,7 +853,7 @@ gfsbodoni.add_to_preamble(
 \usepackage[LGRgreek]{mathastext}
 \let\varphi\phi
 \linespread{1.06}
-"""
+""",
 )
 
 
@@ -868,11 +869,11 @@ brushscriptxpx.add_to_preamble(
 \renewcommand{\mddefault}{xl}
 \renewcommand{\bfdefault}{xl}
 \usepackage[defaultmathsizes,noasterisk]{mathastext}
-"""
+""",
 )
 brushscriptxpx.add_to_document(
     r"""\boldmath
-"""
+""",
 )
 brushscriptxpx.tex_compiler = "xelatex"
 brushscriptxpx.output_format = ".xdv"
@@ -887,7 +888,7 @@ urwagsg.add_to_preamble(
 \usepackage{avant}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[symbolgreek,defaultmathsizes]{mathastext}
-"""
+""",
 )
 
 
@@ -899,7 +900,7 @@ italictimesf.add_to_preamble(
 \usepackage{fourier}
 \renewcommand{\rmdefault}{ptm}
 \usepackage[italic,defaultmathsizes,noasterisk]{mathastext}
-"""
+""",
 )
 
 
@@ -913,7 +914,7 @@ italichelveticaf.add_to_preamble(
 \usepackage{fourier}
 \renewcommand{\rmdefault}{phv}
 \usepackage[italic,defaultmathsizes,noasterisk]{mathastext}
-"""
+""",
 )
 
 

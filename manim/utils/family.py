@@ -5,7 +5,9 @@ from ..utils.iterables import remove_list_redundancies
 
 
 def extract_mobject_family_members(
-    mobjects, use_z_index=False, only_those_with_points=False
+    mobjects,
+    use_z_index=False,
+    only_those_with_points=False,
 ):
     """Returns a list of the types of mobjects and their family members present.
     A "family" in this context refers to a mobject, its submobjects, and their
@@ -29,7 +31,7 @@ def extract_mobject_family_members(
     else:
         method = Mobject.get_family
     extracted_mobjects = remove_list_redundancies(
-        list(it.chain(*(method(m) for m in mobjects)))
+        list(it.chain(*(method(m) for m in mobjects))),
     )
     if use_z_index:
         return sorted(extracted_mobjects, key=lambda m: m.z_index)

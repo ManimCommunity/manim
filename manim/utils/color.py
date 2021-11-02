@@ -178,107 +178,194 @@ class Colors(Enum):
 
     """
 
-    white = "#FFFFFF"
-    gray_a = "#DDDDDD"
-    gray_b = "#BBBBBB"
-    gray_c = "#888888"
-    gray_d = "#444444"
-    gray_e = "#222222"
-    black = "#000000"
-    lighter_gray = gray_a
-    light_gray = gray_b
-    gray = gray_c
-    dark_gray = gray_d
-    darker_gray = gray_e
+    white: str = "#FFFFFF"
+    gray_a: str = "#DDDDDD"
+    gray_b: str = "#BBBBBB"
+    gray_c: str = "#888888"
+    gray_d: str = "#444444"
+    gray_e: str = "#222222"
+    black: str = "#000000"
+    lighter_gray: str = gray_a
+    light_gray: str = gray_b
+    gray: str = gray_c
+    dark_gray: str = gray_d
+    darker_gray: str = gray_e
 
-    blue_a = "#C7E9F1"
-    blue_b = "#9CDCEB"
-    blue_c = "#58C4DD"
-    blue_d = "#29ABCA"
-    blue_e = "#236B8E"
-    pure_blue = "#0000FF"
-    blue = blue_c
-    dark_blue = blue_e
+    blue_a: str = "#C7E9F1"
+    blue_b: str = "#9CDCEB"
+    blue_c: str = "#58C4DD"
+    blue_d: str = "#29ABCA"
+    blue_e: str = "#236B8E"
+    pure_blue: str = "#0000FF"
+    blue: str = blue_c
+    dark_blue: str = blue_e
 
-    teal_a = "#ACEAD7"
-    teal_b = "#76DDC0"
-    teal_c = "#5CD0B3"
-    teal_d = "#55C1A7"
-    teal_e = "#49A88F"
-    teal = teal_c
+    teal_a: str = "#ACEAD7"
+    teal_b: str = "#76DDC0"
+    teal_c: str = "#5CD0B3"
+    teal_d: str = "#55C1A7"
+    teal_e: str = "#49A88F"
+    teal: str = teal_c
 
-    green_a = "#C9E2AE"
-    green_b = "#A6CF8C"
-    green_c = "#83C167"
-    green_d = "#77B05D"
-    green_e = "#699C52"
-    pure_green = "#00FF00"
-    green = green_c
+    green_a: str = "#C9E2AE"
+    green_b: str = "#A6CF8C"
+    green_c: str = "#83C167"
+    green_d: str = "#77B05D"
+    green_e: str = "#699C52"
+    pure_green: str = "#00FF00"
+    green: str = green_c
 
-    yellow_a = "#FFF1B6"
-    yellow_b = "#FFEA94"
-    yellow_c = "#FFFF00"
-    yellow_d = "#F4D345"
-    yellow_e = "#E8C11C"
-    yellow = yellow_c
+    yellow_a: str = "#FFF1B6"
+    yellow_b: str = "#FFEA94"
+    yellow_c: str = "#FFFF00"
+    yellow_d: str = "#F4D345"
+    yellow_e: str = "#E8C11C"
+    yellow: str = yellow_c
 
-    gold_a = "#F7C797"
-    gold_b = "#F9B775"
-    gold_c = "#F0AC5F"
-    gold_d = "#E1A158"
-    gold_e = "#C78D46"
-    gold = gold_c
+    gold_a: str = "#F7C797"
+    gold_b: str = "#F9B775"
+    gold_c: str = "#F0AC5F"
+    gold_d: str = "#E1A158"
+    gold_e: str = "#C78D46"
+    gold: str = gold_c
 
-    red_a = "#F7A1A3"
-    red_b = "#FF8080"
-    red_c = "#FC6255"
-    red_d = "#E65A4C"
-    red_e = "#CF5044"
-    pure_red = "#FF0000"
-    red = red_c
+    red_a: str = "#F7A1A3"
+    red_b: str = "#FF8080"
+    red_c: str = "#FC6255"
+    red_d: str = "#E65A4C"
+    red_e: str = "#CF5044"
+    pure_red: str = "#FF0000"
+    red: str = red_c
 
-    maroon_a = "#ECABC1"
-    maroon_b = "#EC92AB"
-    maroon_c = "#C55F73"
-    maroon_d = "#A24D61"
-    maroon_e = "#94424F"
-    maroon = maroon_c
+    maroon_a: str = "#ECABC1"
+    maroon_b: str = "#EC92AB"
+    maroon_c: str = "#C55F73"
+    maroon_d: str = "#A24D61"
+    maroon_e: str = "#94424F"
+    maroon: str = maroon_c
 
-    purple_a = "#CAA3E8"
-    purple_b = "#B189C6"
-    purple_c = "#9A72AC"
-    purple_d = "#715582"
-    purple_e = "#644172"
-    purple = purple_c
+    purple_a: str = "#CAA3E8"
+    purple_b: str = "#B189C6"
+    purple_c: str = "#9A72AC"
+    purple_d: str = "#715582"
+    purple_e: str = "#644172"
+    purple: str = purple_c
 
-    pink = "#D147BD"
-    light_pink = "#DC75CD"
+    pink: str = "#D147BD"
+    light_pink: str = "#DC75CD"
 
-    orange = "#FF862F"
-    light_brown = "#CD853F"
-    dark_brown = "#8B4513"
-    gray_brown = "#736357"
+    orange: str = "#FF862F"
+    light_brown: str = "#CD853F"
+    dark_brown: str = "#8B4513"
+    gray_brown: str = "#736357"
 
 
-# Create constants from Colors enum
-constants_names = []
-for name, value in Colors.__members__.items():
-    name = name.upper()
-    value = value.value
-    constants_names.append(name)
-    locals()[name] = value
-    if "GRAY" in name:
-        name = name.replace("GRAY", "GREY")
-        locals()[name] = value
-        constants_names.append(name)
+def print_constant_definitions():
+    """
+    A simple function used to generate the constant values below. To run it
+    paste this function and the Colors class into a file and run them.
+    """
+    constants_names: list[str] = []
+    for name in Colors.__members__.keys():
+        name_upper = name.upper()
 
-# Add constants to module exports. Simply adding constants_names would work fine, but
-# would make it hard for IDEs to understand that colors are exported. Therefore the
-# result of the following print statement is added instead.
+        constants_names.append(name_upper)
+        print(f"{name_upper} = Colors.{name}")
 
-# print(constants_names)
+        if "GRAY" in name_upper:
+            name_upper = name_upper.replace("GRAY", "GREY")
 
-__all__ += [  # noqa: F822 # used to stop flake8 from complaining about undefined vars
+            constants_names.append(name_upper)
+            print(f"{name_upper} = Colors.{name}")
+
+    constants_names_repr = '[\n    "' + '",\n    "'.join(constants_names) + '",\n]'
+
+    print(f"\n__all__ += {constants_names_repr}")
+
+
+WHITE: str = "#FFFFFF"
+GRAY_A: str = "#DDDDDD"
+GREY_A: str = "#DDDDDD"
+GRAY_B: str = "#BBBBBB"
+GREY_B: str = "#BBBBBB"
+GRAY_C: str = "#888888"
+GREY_C: str = "#888888"
+GRAY_D: str = "#444444"
+GREY_D: str = "#444444"
+GRAY_E: str = "#222222"
+GREY_E: str = "#222222"
+BLACK: str = "#000000"
+LIGHTER_GRAY: str = "#DDDDDD"
+LIGHTER_GREY: str = "#DDDDDD"
+LIGHT_GRAY: str = "#BBBBBB"
+LIGHT_GREY: str = "#BBBBBB"
+GRAY: str = "#888888"
+GREY: str = "#888888"
+DARK_GRAY: str = "#444444"
+DARK_GREY: str = "#444444"
+DARKER_GRAY: str = "#222222"
+DARKER_GREY: str = "#222222"
+BLUE_A: str = "#C7E9F1"
+BLUE_B: str = "#9CDCEB"
+BLUE_C: str = "#58C4DD"
+BLUE_D: str = "#29ABCA"
+BLUE_E: str = "#236B8E"
+PURE_BLUE: str = "#0000FF"
+BLUE: str = "#58C4DD"
+DARK_BLUE: str = "#236B8E"
+TEAL_A: str = "#ACEAD7"
+TEAL_B: str = "#76DDC0"
+TEAL_C: str = "#5CD0B3"
+TEAL_D: str = "#55C1A7"
+TEAL_E: str = "#49A88F"
+TEAL: str = "#5CD0B3"
+GREEN_A: str = "#C9E2AE"
+GREEN_B: str = "#A6CF8C"
+GREEN_C: str = "#83C167"
+GREEN_D: str = "#77B05D"
+GREEN_E: str = "#699C52"
+PURE_GREEN: str = "#00FF00"
+GREEN: str = "#83C167"
+YELLOW_A: str = "#FFF1B6"
+YELLOW_B: str = "#FFEA94"
+YELLOW_C: str = "#FFFF00"
+YELLOW_D: str = "#F4D345"
+YELLOW_E: str = "#E8C11C"
+YELLOW: str = "#FFFF00"
+GOLD_A: str = "#F7C797"
+GOLD_B: str = "#F9B775"
+GOLD_C: str = "#F0AC5F"
+GOLD_D: str = "#E1A158"
+GOLD_E: str = "#C78D46"
+GOLD: str = "#F0AC5F"
+RED_A: str = "#F7A1A3"
+RED_B: str = "#FF8080"
+RED_C: str = "#FC6255"
+RED_D: str = "#E65A4C"
+RED_E: str = "#CF5044"
+PURE_RED: str = "#FF0000"
+RED: str = "#FC6255"
+MAROON_A: str = "#ECABC1"
+MAROON_B: str = "#EC92AB"
+MAROON_C: str = "#C55F73"
+MAROON_D: str = "#A24D61"
+MAROON_E: str = "#94424F"
+MAROON: str = "#C55F73"
+PURPLE_A: str = "#CAA3E8"
+PURPLE_B: str = "#B189C6"
+PURPLE_C: str = "#9A72AC"
+PURPLE_D: str = "#715582"
+PURPLE_E: str = "#644172"
+PURPLE: str = "#9A72AC"
+PINK: str = "#D147BD"
+LIGHT_PINK: str = "#DC75CD"
+ORANGE: str = "#FF862F"
+LIGHT_BROWN: str = "#CD853F"
+DARK_BROWN: str = "#8B4513"
+GRAY_BROWN: str = "#736357"
+GREY_BROWN: str = "#736357"
+
+__all__ += [
     "WHITE",
     "GRAY_A",
     "GREY_A",
@@ -325,8 +412,8 @@ __all__ += [  # noqa: F822 # used to stop flake8 from complaining about undefine
     "YELLOW_A",
     "YELLOW_B",
     "YELLOW_C",
-    "YELLOW_E",
     "YELLOW_D",
+    "YELLOW_E",
     "YELLOW",
     "GOLD_A",
     "GOLD_B",
@@ -409,7 +496,8 @@ def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
 
 
 def color_gradient(
-    reference_colors: Iterable[Color], length_of_output: int
+    reference_colors: Iterable[Color],
+    length_of_output: int,
 ) -> List[Color]:
     if length_of_output == 0:
         return reference_colors[0]

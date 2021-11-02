@@ -60,7 +60,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
         self.tip_config = tip_config
-        OpenGLVMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def add_tip(self, at_start=False, **kwargs):
         """
@@ -182,13 +182,13 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         if self.has_tip():
             return self.tip.get_start()
         else:
-            return OpenGLVMobject.get_end(self)
+            return super().get_end()
 
     def get_start(self):
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
-            return OpenGLVMobject.get_start(self)
+            return super().get_start()
 
     def get_length(self):
         start, end = self.get_start_and_end()
@@ -219,7 +219,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.n_components,
-            )
+            ),
         )
         # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
@@ -235,7 +235,7 @@ class OpenGLArc(OpenGLTipableVMobject):
                     start_angle + angle,
                     2 * n_components + 1,
                 )
-            ]
+            ],
         )
         theta = angle / n_components
         samples[1::2] /= np.cos(theta / 2)
@@ -284,19 +284,19 @@ class OpenGLArcBetweenPoints(OpenGLArc):
 
 class OpenGLCurvedArrow(OpenGLArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
-        OpenGLArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
+        super().__init__(start_point, end_point, **kwargs)
         self.add_tip()
 
 
 class OpenGLCurvedDoubleArrow(OpenGLCurvedArrow):
     def __init__(self, start_point, end_point, **kwargs):
-        OpenGLCurvedArrow.__init__(self, start_point, end_point, **kwargs)
+        super().__init__(start_point, end_point, **kwargs)
         self.add_tip(at_start=True)
 
 
 class OpenGLCircle(OpenGLArc):
     def __init__(self, color=RED, **kwargs):
-        OpenGLArc.__init__(self, 0, TAU, color=color, **kwargs)
+        super().__init__(0, TAU, color=color, **kwargs)
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -352,8 +352,7 @@ class OpenGLAnnularSector(OpenGLArc):
     ):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
-        OpenGLArc.__init__(
-            self,
+        super().__init__(
             start_angle=start_angle,
             angle=angle,
             fill_opacity=fill_opacity,
@@ -381,9 +380,7 @@ class OpenGLAnnularSector(OpenGLArc):
 
 class OpenGLSector(OpenGLAnnularSector):
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
-        OpenGLAnnularSector.__init__(
-            self, inner_radius=inner_radius, outer_radius=outer_radius, **kwargs
-        )
+        super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
 
 class OpenGLAnnulus(OpenGLCircle):
@@ -400,12 +397,8 @@ class OpenGLAnnulus(OpenGLCircle):
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
-        OpenGLCircle.__init__(
-            self,
-            fill_opacity=fill_opacity,
-            stroke_width=stroke_width,
-            color=color,
-            **kwargs
+        super().__init__(
+            fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
         )
 
     def init_points(self):
@@ -541,27 +534,30 @@ class OpenGLDashedLine(OpenGLLine):
         dashed_ratio = self.dashed_ratio
         num_dashes = self.calculate_num_dashes(dashed_ratio)
         dashes = OpenGLDashedVMobject(
-            self, num_dashes=num_dashes, dashed_ratio=dashed_ratio
+            self,
+            num_dashes=num_dashes,
+            dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
     def calculate_num_dashes(self, dashed_ratio):
         return max(
-            2, int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio))
+            2,
+            int(np.ceil((self.get_length() / self.dash_length) * dashed_ratio)),
         )
 
     def get_start(self):
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
-            return OpenGLLine.get_start(self)
+            return super().get_start()
 
     def get_end(self):
         if len(self.submobjects) > 0:
             return self.submobjects[-1].get_end()
         else:
-            return OpenGLLine.get_end(self)
+            return super().get_end()
 
     def get_first_handle(self):
         return self.submobjects[0].points[1]
@@ -688,7 +684,9 @@ class OpenGLArrow(OpenGLLine):
 
     def reset_points_around_ends(self):
         self.set_points_by_ends(
-            self.get_start(), self.get_end(), path_arc=self.path_arc
+            self.get_start(),
+            self.get_end(),
+            path_arc=self.path_arc,
         )
         return self
 
@@ -730,13 +728,13 @@ class OpenGLVector(OpenGLArrow):
 
 class OpenGLDoubleArrow(OpenGLArrow):
     def __init__(self, *args, **kwargs):
-        OpenGLArrow.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.add_tip(at_start=True)
 
 
 class OpenGLCubicBezier(OpenGLVMobject):
     def __init__(self, a0, h0, h1, a1, **kwargs):
-        OpenGLVMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add_cubic_bezier_curve(a0, h0, h1, a1)
 
 
@@ -817,8 +815,7 @@ class OpenGLArrowTip(OpenGLTriangle):
         angle=0,
         **kwargs
     ):
-        OpenGLTriangle.__init__(
-            self,
+        super().__init__(
             start_angle=0,
             fill_opacity=fill_opacity,
             fill_color=fill_color,
@@ -846,7 +843,7 @@ class OpenGLArrowTip(OpenGLTriangle):
 
 class OpenGLRectangle(OpenGLPolygon):
     def __init__(self, color=WHITE, width=4.0, height=2.0, **kwargs):
-        OpenGLPolygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
+        super().__init__(UR, UL, DL, DR, color=color, **kwargs)
 
         self.set_width(width, stretch=True)
         self.set_height(height, stretch=True)
@@ -862,5 +859,5 @@ class OpenGLSquare(OpenGLRectangle):
 class OpenGLRoundedRectangle(OpenGLRectangle):
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
-        OpenGLRectangle.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.round_corners(self.corner_radius)

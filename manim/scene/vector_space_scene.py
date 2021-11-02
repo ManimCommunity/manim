@@ -42,7 +42,7 @@ Z_COLOR = BLUE_D
 # actually doing a lot of animating.
 class VectorScene(Scene):
     def __init__(self, basis_vector_stroke_width=6, **kwargs):
-        Scene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
     def add_plane(self, animate=False, **kwargs):
@@ -341,14 +341,20 @@ class VectorScene(Scene):
         return label
 
     def position_x_coordinate(
-        self, x_coord, x_line, vector
+        self,
+        x_coord,
+        x_line,
+        vector,
     ):  # TODO Write DocStrings for this.
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
         return x_coord
 
     def position_y_coordinate(
-        self, y_coord, y_line, vector
+        self,
+        y_coord,
+        y_line,
+        vector,
     ):  # TODO Write DocStrings for this.
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
@@ -391,13 +397,15 @@ class VectorScene(Scene):
         self.wait()
         self.play(
             ApplyFunction(
-                lambda x: self.position_x_coordinate(x, x_line, vector), x_coord
-            )
+                lambda x: self.position_x_coordinate(x, x_line, vector),
+                x_coord,
+            ),
         )
         self.play(Create(x_line))
         animations = [
             ApplyFunction(
-                lambda y: self.position_y_coordinate(y, y_line, vector), y_coord
+                lambda y: self.position_y_coordinate(y, y_line, vector),
+                y_coord,
             ),
             FadeOut(array.get_brackets()),
         ]
@@ -564,7 +572,7 @@ class LinearTransformationScene(VectorScene):
         **kwargs
     ):
 
-        VectorScene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.include_background_plane = include_background_plane
         self.include_foreground_plane = include_foreground_plane
@@ -761,7 +769,8 @@ class LinearTransformationScene(VectorScene):
         square = self.get_unit_square(**kwargs)
         if animate:
             self.play(
-                DrawBorderThenFill(square), Animation(Group(*self.moving_vectors))
+                DrawBorderThenFill(square),
+                Animation(Group(*self.moving_vectors)),
             )
         self.add_transformable_mobject(square)
         self.bring_to_front(*self.moving_vectors)
@@ -792,7 +801,7 @@ class LinearTransformationScene(VectorScene):
         Arrow
             The arrow representing the vector.
         """
-        vector = VectorScene.add_vector(self, vector, color=color, **kwargs)
+        vector = super().add_vector(vector, color=color, **kwargs)
         self.moving_vectors.append(vector)
         return vector
 
@@ -815,7 +824,7 @@ class LinearTransformationScene(VectorScene):
         Matrix
             The column matrix representing the vector.
         """
-        coords = VectorScene.write_vector_coordinates(self, vector, **kwargs)
+        coords = super().write_vector_coordinates(vector, **kwargs)
         self.add_foreground_mobject(coords)
         return coords
 
@@ -997,7 +1006,7 @@ class LinearTransformationScene(VectorScene):
             v.target = Vector(func(v.get_end()), color=v.get_color())
             norm = np.linalg.norm(v.target.get_end())
             if norm < 0.1:
-                v.target.get_tip().scale_in_place(norm)
+                v.target.get_tip().scale(norm)
         return self.get_piece_movement(self.moving_vectors)
 
     def get_transformable_label_movement(self):
@@ -1062,7 +1071,7 @@ class LinearTransformationScene(VectorScene):
         func = self.get_transposed_matrix_transformation(transposed_matrix)
         if "path_arc" not in kwargs:
             net_rotation = np.mean(
-                [angle_of_vector(func(RIGHT)), angle_of_vector(func(UP)) - np.pi / 2]
+                [angle_of_vector(func(RIGHT)), angle_of_vector(func(UP)) - np.pi / 2],
             )
             kwargs["path_arc"] = net_rotation
         self.apply_function(func, **kwargs)

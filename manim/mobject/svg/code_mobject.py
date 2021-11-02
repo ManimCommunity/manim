@@ -149,12 +149,6 @@ class Code(VGroup):
     styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
-    @deprecated_params(
-        params="scale_factor",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         file_name=None,
@@ -182,18 +176,12 @@ class Code(VGroup):
             stroke_width=stroke_width,
             **kwargs,
         )
-        # deprecation handling
-        scale_factor = kwargs.pop("scale_factor", None)
-        if scale_factor:
-            self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
-        else:
-            self.font_size = font_size
-
         self.background_stroke_color = background_stroke_color
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.font = font
+        self.font_size = font_size
         self.margin = margin
         self.indentation_chars = indentation_chars
         self.background = background
@@ -215,7 +203,7 @@ class Code(VGroup):
             self.code_string = code
         else:
             raise ValueError(
-                "Neither a code file nor a code string have been specified."
+                "Neither a code file nor a code string have been specified.",
             )
         if isinstance(self.style, str):
             self.style = self.style.lower()
@@ -269,7 +257,7 @@ class Code(VGroup):
             buttons = VGroup(red_button, yellow_button, green_button)
             buttons.shift(
                 UP * (height / 2 - 0.1 * 2 - 0.05)
-                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
+                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05),
             )
 
             self.background_mobject = VGroup(rect, buttons)
@@ -380,16 +368,19 @@ class Code(VGroup):
 
         if self.generate_html_file:
             os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
+                os.path.join("assets", "codes", "generated_html_files"),
+                exist_ok=True,
             )
-            file = open(
+            with open(
                 os.path.join(
-                    "assets", "codes", "generated_html_files", self.file_name + ".html"
+                    "assets",
+                    "codes",
+                    "generated_html_files",
+                    self.file_name + ".html",
                 ),
                 "w",
-            )
-            file.write(self.html_string)
-            file.close()
+            ) as file:
+                file.write(self.html_string)
 
     def gen_code_json(self):
         """Function to background_color, generate code_json and tab_spaces from html_string.
@@ -413,7 +404,8 @@ class Code(VGroup):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
-                "</span>" + " " * i, " " * i + "</span>"
+                "</span>" + " " * i,
+                " " * i + "</span>",
             )
         self.html_string = self.html_string.replace("background-color:", "background:")
 
@@ -440,7 +432,7 @@ class Code(VGroup):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
                 indentation_chars_count = lines[line_index][:start_point].count(
-                    self.indentation_chars
+                    self.indentation_chars,
                 )
                 if (
                     starting_string.__len__()
@@ -538,7 +530,13 @@ class Code(VGroup):
 
 
 def hilite_me(
-    code, language, style, insert_line_no, divstyles, file_path, line_no_from
+    code,
+    language,
+    style,
+    insert_line_no,
+    divstyles,
+    file_path,
+    line_no_from,
 ):
     """Function to highlight code from string to html.
 
@@ -575,7 +573,7 @@ def hilite_me(
         html = highlight(code, lexer, formatter)
     elif language is None:
         raise ValueError(
-            "The code language has to be specified when rendering a code string"
+            "The code language has to be specified when rendering a code string",
         )
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
@@ -612,6 +610,7 @@ def insert_line_numbers_in_html(html, line_no_from):
     format_lines = "%" + str(len(str(numbers[-1]))) + "i"
     lines = "\n".join(format_lines % i for i in numbers)
     html = html.replace(
-        pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
+        pre_open,
+        "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open,
     )
     return html

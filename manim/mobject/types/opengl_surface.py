@@ -140,11 +140,15 @@ class OpenGLSurface(OpenGLMobject):
             np.vstack(
                 [
                     self.get_partial_points_array(
-                        arr.copy(), a, b, (nu, nv, 3), axis=axis
+                        arr.copy(),
+                        a,
+                        b,
+                        (nu, nv, 3),
+                        axis=axis,
                     )
                     for arr in smobject.get_surface_points_and_nudged_points()
-                ]
-            )
+                ],
+            ),
         )
         return self
 
@@ -158,18 +162,26 @@ class OpenGLSurface(OpenGLMobject):
         upper_index, upper_residue = integer_interpolate(0, max_index, b)
         if axis == 0:
             points[:lower_index] = interpolate(
-                points[lower_index], points[lower_index + 1], lower_residue
+                points[lower_index],
+                points[lower_index + 1],
+                lower_residue,
             )
             points[upper_index + 1 :] = interpolate(
-                points[upper_index], points[upper_index + 1], upper_residue
+                points[upper_index],
+                points[upper_index + 1],
+                upper_residue,
             )
         else:
             shape = (nu, 1, resolution[2])
             points[:, :lower_index] = interpolate(
-                points[:, lower_index], points[:, lower_index + 1], lower_residue
+                points[:, lower_index],
+                points[:, lower_index + 1],
+                lower_residue,
             ).reshape(shape)
             points[:, upper_index + 1 :] = interpolate(
-                points[:, upper_index], points[:, upper_index + 1], upper_residue
+                points[:, upper_index],
+                points[:, upper_index + 1],
+                upper_residue,
             ).reshape(shape)
         return points.reshape((nu * nv, *resolution[2:]))
 
@@ -255,7 +267,9 @@ class OpenGLSurface(OpenGLMobject):
             pivot_max = axes.z_range[1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
-                start=pivot_min, stop=pivot_max + pivot_frequency, step=pivot_frequency
+                start=pivot_min,
+                stop=pivot_max + pivot_frequency,
+                step=pivot_frequency,
             )
 
         for mob in self.family_members_with_points():
@@ -273,7 +287,9 @@ class OpenGLSurface(OpenGLMobject):
                         )
                         color_index = min(color_index, 1)
                         mob_color = interpolate_color(
-                            new_colors[i - 1], new_colors[i], color_index
+                            new_colors[i - 1],
+                            new_colors[i],
+                            color_index,
                         )
                         mob.set_color(mob_color, recurse=False)
 
@@ -344,7 +360,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
                 [u, v]
                 for u in np.linspace(0, 1, nu)
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
-            ]
+            ],
         )
 
     def init_colors(self):

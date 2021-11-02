@@ -4,7 +4,8 @@ import sys
 
 import pytest
 
-from ..utils.commands import capture
+from manim import capture
+
 from ..utils.video_tester import *
 
 

@@ -6,7 +6,7 @@ system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
 - a reasonably recent version of Python 3 (3.7 or above),
-- with working Cairo bindings in the form of 
+- with working Cairo bindings in the form of
   `pycairo <https://cairographics.org/pycairo/>`__,
 - FFmpeg accessible from the command line as ``ffmpeg``,
 - and `Pango <https://pango.gnome.org>`__ headers.
@@ -20,10 +20,10 @@ Then, installing Manim is just a matter of running:
 .. note::
 
    In light of the current efforts of migrating to rendering via OpenGL,
-   this list might be incomplete. Please `let us know 
+   this list might be incomplete. Please `let us know
    <https://github.com/ManimCommunity/manim/issues/new/choose>` if you
    ran into missing dependencies while installing.
-   
+
 In any case, we have also compiled instructions for several common
 combinations of operating systems and package managers below.
 
@@ -38,13 +38,13 @@ simply run:
 
 .. code-block:: bash
 
-   sudo apt update 
+   sudo apt update
    sudo apt install libcairo2-dev libpango1.0-dev ffmpeg
 
 If you don't have python3-pip installed, install it via:
 
 .. code-block:: bash
-   
+
    sudo apt install python3-pip
 
 Then, to install Manim, run:
@@ -95,11 +95,11 @@ pacman – Arch / Manjaro
 
 .. tip::
 
-   Thanks to *groctel*, there is a `dedicated Manim package 
+   Thanks to *groctel*, there is a `dedicated Manim package
    on the AUR! <https://aur.archlinux.org/packages/manim/>`
 
 If you don't want to use the packaged version from AUR, here is what
-you need to do manually: Update your package sources, then install 
+you need to do manually: Update your package sources, then install
 Cairo, Pango, and FFmpeg:
 
 .. code-block:: bash
@@ -110,7 +110,7 @@ Cairo, Pango, and FFmpeg:
 If you don't have ``python-pip`` installed, get it by running:
 
 .. code-block:: bash
-   
+
    sudo pacman -S python-pip
 
 then simply install Manim via:
@@ -134,7 +134,7 @@ equations, LaTeX has to be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
 You can use whichever LaTeX distribution you like or whichever is easiest
-to install with your package manager. Usually, 
+to install with your package manager. Usually,
 `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't
 care too much about disk space.
 

@@ -24,7 +24,9 @@ class DotCloud(OpenGLPMobject):
                 for r in np.arange(self.epsilon, self.radius, self.epsilon)
                 # Num is equal to int(stop - start)/ (step + 1) reformulated.
                 for theta in np.linspace(
-                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                    0,
+                    2 * np.pi,
+                    num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
                 )
             ],
             dtype=np.float32,

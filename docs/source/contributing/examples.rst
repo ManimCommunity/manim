@@ -2,23 +2,23 @@
 Adding Examples
 ===============
 
-This is a page for adding examples to the documentation. 
+This is a page for adding examples to the documentation.
 Here are some guidelines you should follow before you publish your examples.
 
 Guidelines for examples
 -----------------------
 
-Everybody is welcome to contribute examples to the documentation. Since straightforward 
+Everybody is welcome to contribute examples to the documentation. Since straightforward
 examples are a great resource for quickly learning manim, here are some guidelines.
 
 What makes a great example
 --------------------------
 
-.. note:: 
+.. note::
 
-   As soon as a new version of manim is released, the documentation will be a snapshot of that 
+   As soon as a new version of manim is released, the documentation will be a snapshot of that
    version. Examples contributed after the release will only be shown in the latest documentation.
-   
+
 * Examples should be ready to copy and paste for use.
 
 * Examples should be brief yet still easy to understand.
@@ -47,7 +47,7 @@ How examples are structured
 Writing examples
 ~~~~~~~~~~~~~~~~
 
-When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in 
+When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in
 ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
 .. code:: rst
@@ -64,8 +64,8 @@ When you want to add/edit examples, they can be found in the ``docs/source/`` di
                 self.add(t)
                 self.wait(1)
 
-In the building process of the docs, all ``rst`` files are scanned, and the 
-manim directive (``.. manim::``) blocks are identified as scenes that will be run 
+In the building process of the docs, all ``rst`` files are scanned, and the
+manim directive (``.. manim::``) blocks are identified as scenes that will be run
 by the current version of manim.
 Here is the syntax:
 
@@ -84,7 +84,7 @@ has the same name: ``class Formula1(Scene)``.
    Sometimes, when you reload an example in your browser, it has still the old
    website somewhere in its cache. If this is the case, delete the website cache,
    or open a new incognito tab in your browser, then the latest docs
-   should be shown. 
+   should be shown.
    **Only for locally built documentation:** If this still doesn't work, you may need
    to delete the contents of ``docs/source/references`` before rebuilding
    the documentation.
