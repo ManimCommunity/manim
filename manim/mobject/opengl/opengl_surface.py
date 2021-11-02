@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import moderngl
 import numpy as np
-from typing import Iterable
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
