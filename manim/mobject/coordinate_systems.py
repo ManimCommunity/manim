@@ -824,10 +824,11 @@ class CoordinateSystem:
 
         .. code-block:: python
 
-            ax = Axes()
-            curve = ax.get_graph(lambda x: x ** 2)
-            ax.input_to_graph_coords(x=3, graph=curve)
-            # (3, 9)
+            >>> from manim import Axes
+            >>> ax = Axes()
+            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> ax.input_to_graph_coords(x=3, graph=parabola)
+            (3, 9)
         """
         return x, graph.underlying_function(x)
 
