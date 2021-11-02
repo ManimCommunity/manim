@@ -68,7 +68,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 50 pull requests were merged for this release.
+A total of 52 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -87,6 +87,9 @@ Highlights
 Deprecated classes and functions
 --------------------------------
 
+* `#1926 <https://github.com/ManimCommunity/manim/pull/1926>`__: OpenGL: changed ``submobjects`` to be a property
+
+
 * `#2245 <https://github.com/ManimCommunity/manim/pull/2245>`__: Removed deprecated method ``get_center_point`` and parameters ``azimuth_label_scale``, ``number_scale_value``, ``label_scale``, ``scale_factor``, ``size``, ``x_min``, ``x_max``, ``delta_x``, ``y_min``, ``y_max``, ``delta_y``
 
 
@@ -99,7 +102,11 @@ Deprecated classes and functions
 New features
 ------------
 
+* `#2025 <https://github.com/ManimCommunity/manim/pull/2025>`__: Implemented :meth:`.CoordinateSystem.input_to_graph_coords` and fixed :meth:`.CoordinateSystem.angle_of_tangent`
+
+
 * `#2151 <https://github.com/ManimCommunity/manim/pull/2151>`__: Added option to set the input file from a config file
+
 
 * `#2128 <https://github.com/ManimCommunity/manim/pull/2128>`__: Added keyword arguments ``match_center``, ``match_width`` etc. to :meth:`.Mobject.become`
 
