@@ -49,7 +49,7 @@ and copy the following code in it.
    from manim import *
 
 
-   class SquareToCircle(Scene):
+   class CircleCreation(Scene):
        def construct(self):
            circle = Circle()  # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
@@ -60,16 +60,16 @@ the following command:
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareToCircle
+   manim -pql scene.py CircleCreation
 
 After showing some output, manim should render the scene into a .mp4 file,
 and open that file with the default movie player application.  You should see a
 video playing the following animation.
 
-.. manim:: SquareToCircle
+.. manim:: CircleCreation
    :hide_source:
 
-   class SquareToCircle(Scene):
+   class CircleCreation(Scene):
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
@@ -104,7 +104,7 @@ Now let's look at the next two lines.
 
 .. code-block:: python
 
-   class SquareToCircle(Scene):
+   class CircleCreation(Scene):
        def construct(self):
            ...
 
@@ -142,7 +142,7 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
    from manim import *
 
 
-   class SquareToCircle(Scene):
+   class SquareToCircleAndRotate(Scene):
        def construct(self):
            circle = Circle()  # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set color and transparency
@@ -158,14 +158,14 @@ And render it using the following command:
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareToCircle
+   manim -pql scene.py SquareToCircleAndRotate
 
 The output should look as follows.
 
-.. manim:: SquareToCircle2
+.. manim:: SquareToCircleAndRotate
    :hide_source:
 
-   class SquareToCircle2(Scene):
+   class SquareToCircleAndRotate(Scene):
        def construct(self):
            circle = Circle()  # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set color and transparency
@@ -180,6 +180,53 @@ The output should look as follows.
 This example shows one of the most basic features of manim: the ability to
 implement complicated and mathematically intensive animations (such as cleanly
 interpolating between two geometric shapes) in very few lines of code.
+
+
+Animating Stuff
+***************
+
+Now, we are going to animate our ``square`` mobject, by using the function ``.animate``, within
+the ``self.play`` statement. So, you will need to update your code as below:
+
+.. code-block:: python
+
+   from manim import *
+
+
+   class AnimatedSquareToCircle(Scene):
+       def construct(self):
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
+
+           square = Square()  # create a square
+           square.rotate(PI / 4)  # rotate a certain amount
+
+           self.play(Create(square))  # animate the creation of the square
+           self.play(Transform(square, circle))  # interpolate the square into the circle
+           self.play(circle.animate.shift(UP))  # moves the circle up
+           self.play(FadeOut(square))  # fade out animation
+
+The output should look as follows.
+
+.. manim:: AnimatedSquareToCircle
+    :hide_source:
+
+    class AnimatedSquareToCircle(Scene):
+       def construct(self):
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
+
+           square = Square()  # create a square
+           square.rotate(PI / 4)  # rotate a certain amount
+
+           self.play(Create(square))  # animate the creation of the square
+           self.play(Transform(square, circle))  # interpolate the square into the circle
+           self.play(circle.animate.shift(UP))  # moves the circle up
+           self.play(FadeOut(square))  # fade out animation
+
+You can do a lot of things with ``.animate()``, you can use it to animate your mobject, making
+it bigger, smaller or just move it around. It's a powerful tool in Manim, that you will probably
+use in your every future Manim animation that you do.
 
 
 ************
