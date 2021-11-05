@@ -960,6 +960,12 @@ class Table(VGroup):
             ]
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
+    def scale(self, scale_factor: float, **kwargs):
+        self.h_buff *= scale_factor
+        self.v_buff *= scale_factor
+        super().scale(scale_factor, **kwargs)
+        return self
+
 
 class MathTable(Table):
     """A specialized :class:`~.Table` mobject for use with with LaTeX.
