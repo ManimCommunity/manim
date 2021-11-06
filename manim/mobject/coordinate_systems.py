@@ -18,6 +18,7 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.utils.scale import LinearBase
 
 from .. import config
 from ..constants import *
@@ -90,8 +91,8 @@ class CoordinateSystem:
 
                 graphs = VGroup()
                 for n in np.arange(1, 20 + 0.5, 0.5):
-                    graphs += grid.get_graph(lambda x: x ** n, color=WHITE)
-                    graphs += grid.get_graph(
+                    graphs += grid.plot(lambda x: x ** n, color=WHITE)
+                    graphs += grid.plot(
                         lambda x: x ** (1 / n), color=WHITE, use_smoothing=False
                     )
 
@@ -152,6 +153,54 @@ class CoordinateSystem:
     def point_to_coords(self, point):
         raise NotImplementedError()
 
+    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
+        r"""Gets a point from polar coordinates.
+
+        Parameters
+        ----------
+        radius
+            The coordinate radius (:math:`r`).
+
+        azimuth
+            The coordinate azimuth (:math:`\theta`).
+
+        Returns
+        -------
+        numpy.ndarray
+            The point.
+
+        Examples
+        --------
+
+        .. manim:: PolarToPointExample
+            :ref_classes: PolarPlane Vector
+            :save_last_frame:
+
+            class PolarToPointExample(Scene):
+                def construct(self):
+                    polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
+                    polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
+                    self.add(polarplane_pi)
+                    self.add(polartopoint_vector)
+        """
+        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
+
+    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
+        r"""Gets polar coordinates from a point.
+
+        Parameters
+        ----------
+        point
+            The point.
+
+        Returns
+        -------
+        Tuple[:class:`float`, :class:`float`]
+            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
+        """
+        x, y = self.point_to_coords(point)
+        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
+
     def c2p(self, *coords):
         """Abbreviation for coords_to_point"""
         return self.coords_to_point(*coords)
@@ -160,22 +209,19 @@ class CoordinateSystem:
         """Abbreviation for point_to_coords"""
         return self.point_to_coords(point)
 
+    def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
+        """Abbreviation for :meth:`polar_to_point`"""
+        return self.polar_to_point(radius, azimuth)
+
+    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
+        """Abbreviation for :meth:`point_to_polar`"""
+        return self.point_to_polar(point)
+
     def get_axes(self):
         raise NotImplementedError()
 
     def get_axis(self, index):
         return self.get_axes()[index]
-
-    @deprecated(since="v0.10.0", until="v0.11.0", message="Use get_origin instead.")
-    def get_center_point(self) -> np.ndarray:
-        """Gets the origin of :class:`~.Axes`.
-
-        Returns
-        -------
-        np.ndarray
-            The center point.
-        """
-        return self.coords_to_point(0, 0)
 
     def get_origin(self) -> np.ndarray:
         """Gets the origin of :class:`~.Axes`.
@@ -443,6 +489,12 @@ class CoordinateSystem:
             if isinstance(values, dict):
                 axis.add_labels(values, **kwargs)
                 labels = axis.labels
+            elif values is None and axis.scaling.custom_labels:
+                tick_range = axis.get_tick_range()
+                axis.add_labels(
+                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
+                )
+                labels = axis.labels
             else:
                 axis.add_numbers(values, **kwargs)
                 labels = axis.numbers
@@ -605,7 +657,7 @@ class CoordinateSystem:
 
     # graphing
 
-    def get_graph(
+    def plot(
         self,
         function: Callable[[float], float],
         x_range: Optional[Sequence[float]] = None,
@@ -622,10 +674,10 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetGraphExample
+        .. manim:: PlotExample
             :save_last_frame:
 
-            class GetGraphExample(Scene):
+            class PlotExample(Scene):
                 def construct(self):
                     # construct the axes
                     ax_1 = Axes(
@@ -649,15 +701,15 @@ class CoordinateSystem:
                         return np.log(x)
 
                     # a curve without adjustments; poor interpolation.
-                    curve_1 = ax_1.get_graph(log_func, color=PURE_RED)
+                    curve_1 = ax_1.plot(log_func, color=PURE_RED)
 
                     # disabling interpolation makes the graph look choppy as not enough
                     # inputs are available
-                    curve_2 = ax_2.get_graph(log_func, use_smoothing=False, color=ORANGE)
+                    curve_2 = ax_2.plot(log_func, use_smoothing=False, color=ORANGE)
 
                     # taking more inputs of the curve by specifying a step for the
                     # x_range yields expected results, but increases rendering time.
-                    curve_3 = ax_3.get_graph(
+                    curve_3 = ax_3.plot(
                         log_func, x_range=(0.001, 6, 0.001), color=PURE_GREEN
                     )
 
@@ -692,13 +744,30 @@ class CoordinateSystem:
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
+
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+            lambda t: self.coords_to_point(t, function(t)),
+            t_range=t_range,
+            scaling=self.x_axis.scaling,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
 
-    def get_implicit_curve(
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot",
+    )
+    def get_graph(
+        self,
+        function: Callable[[float], float],
+        x_range: Optional[Sequence[float]] = None,
+        **kwargs,
+    ) -> ParametricFunction:
+        return self.plot(function, x_range, **kwargs)
+
+    def plot_implicit_curve(
         self,
         func: Callable,
         min_depth: int = 5,
@@ -726,7 +795,7 @@ class CoordinateSystem:
             class ImplicitExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    a = ax.get_implicit_curve(
+                    a = ax.plot_implicit_curve(
                         lambda x, y: y * (x - y) ** 2 - 4 * x - 8, color=BLUE
                     )
                     self.add(ax, a)
@@ -746,12 +815,72 @@ class CoordinateSystem:
         )
         return graph
 
-    def get_parametric_curve(self, function, **kwargs):
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_implicit_curve",
+    )
+    def get_implicit_curve(
+        self,
+        func: Callable,
+        min_depth: int = 5,
+        max_quads: int = 1500,
+        **kwargs,
+    ) -> ImplicitFunction:
+        return self.plot_implicit_curve(func, min_depth, max_quads, **kwargs)
+
+    def plot_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
             lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
         )
         graph.underlying_function = function
+        return graph
+
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_parametric_curve",
+    )
+    def get_parametric_curve(self, function, **kwargs):
+        return self.plot_parametric_curve(function, **kwargs)
+
+    def plot_polar_graph(
+        self,
+        r_func: Callable[[float], float],
+        theta_range: Sequence[float] = [0, 2 * PI],
+        **kwargs,
+    ) -> ParametricFunction:
+        """A polar graph.
+
+        Parameters
+        ----------
+        r_func
+            The function r of theta.
+        theta_range
+            The range of theta as ``theta_range = [theta_min, theta_max, theta_step]``.
+        kwargs
+            Additional parameters passed to :class:`~.ParametricFunction`.
+
+        Examples
+        --------
+        .. manim:: PolarGraphExample
+            :ref_classes: PolarPlane
+            :save_last_frame:
+
+            class PolarGraphExample(Scene):
+                def construct(self):
+                    plane = PolarPlane()
+                    r = lambda theta: 2 * np.sin(theta * 5)
+                    graph = plane.plot_polar_graph(r, [0, 2 * PI], color=ORANGE)
+                    self.add(plane, graph)
+        """
+        graph = ParametricFunction(
+            function=lambda th: self.pr2pt(r_func(th), th),
+            t_range=theta_range,
+            **kwargs,
+        )
+        graph.underlying_function = r_func
         return graph
 
     def input_to_graph_point(
@@ -770,7 +899,7 @@ class CoordinateSystem:
             class InputToGraphPointExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    curve = ax.get_graph(lambda x : np.cos(x))
+                    curve = ax.plot(lambda x : np.cos(x))
 
                     # move a square to PI on the cosine curve.
                     position = ax.input_to_graph_point(x=PI, graph=curve)
@@ -814,6 +943,30 @@ class CoordinateSystem:
                     f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
+    def input_to_graph_coords(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Returns a tuple of the axis relative coordinates of the point
+        on the graph based on the x-value given.
+
+        Examples
+        --------
+
+        .. code-block:: pycon
+
+            >>> from manim import Axes
+            >>> ax = Axes()
+            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> ax.input_to_graph_coords(x=3, graph=parabola)
+            (3, 9)
+        """
+        return x, graph.underlying_function(x)
+
+    def i2gc(self, x: float, graph: "ParametricFunction") -> Tuple:
+        """
+        Alias for :meth:`input_to_graph_coords`.
+        """
+        return self.input_to_graph_coords(x, graph)
+
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
         """
         Alias for :meth:`input_to_graph_point`.
@@ -842,7 +995,7 @@ class CoordinateSystem:
             class GetGraphLabelExample(Scene):
                 def construct(self):
                     ax = Axes()
-                    sin = ax.get_graph(lambda x: np.sin(x), color=PURPLE_B)
+                    sin = ax.plot(lambda x: np.sin(x), color=PURPLE_B)
                     label = ax.get_graph_label(
                         graph=sin,
                         label= MathTex(r"\\frac{\\pi}{2}"),
@@ -930,7 +1083,7 @@ class CoordinateSystem:
             class GetRiemannRectanglesExample(Scene):
                 def construct(self):
                     ax = Axes(y_range=[-2, 10])
-                    quadratic = ax.get_graph(lambda x: 0.5 * x ** 2 - 0.5)
+                    quadratic = ax.plot(lambda x: 0.5 * x ** 2 - 0.5)
 
                     # the rectangles are constructed from their top right corner.
                     # passing an iterable to `color` produces a gradient
@@ -948,7 +1101,7 @@ class CoordinateSystem:
                         quadratic, x_range=[-1.5, 1.5], dx=0.15, color=YELLOW
                     )
 
-                    bounding_line = ax.get_graph(
+                    bounding_line = ax.plot(
                         lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6]
                     )
                     bounded_rects = ax.get_riemann_rectangles(
@@ -1099,7 +1252,7 @@ class CoordinateSystem:
             class GetAreaExample(Scene):
                 def construct(self):
                     ax = Axes().add_coordinates()
-                    curve = ax.get_graph(lambda x: 2 * np.sin(x), color=DARK_BLUE)
+                    curve = ax.plot(lambda x: 2 * np.sin(x), color=DARK_BLUE)
                     area = ax.get_area(
                         curve,
                         x_range=(PI / 2, 3 * PI / 2),
@@ -1153,14 +1306,18 @@ class CoordinateSystem:
 
         if bounded_graph is None:
             points = (
-                [self.c2p(a)]
+                [self.c2p(a), graph.function(a)]
                 + [p for p in graph.points if a <= self.p2c(p)[0] <= b]
-                + [self.c2p(b)]
+                + [graph.function(b), self.c2p(b)]
             )
         else:
-            points = [p for p in graph.points if a <= self.p2c(p)[0] <= b] + [
-                p for p in bounded_graph.points if a <= self.p2c(p)[0] <= b
-            ][::-1]
+            graph_points, bounded_graph_points = (
+                [g.function(a)]
+                + [p for p in g.points if a <= self.p2c(p)[0] <= b]
+                + [g.function(b)]
+                for g in (graph, bounded_graph)
+            )
+            points = graph_points + bounded_graph_points[::-1]
         return Polygon(*points, **kwargs).set_opacity(opacity).set_color(color)
 
     def angle_of_tangent(
@@ -1178,9 +1335,9 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x ** 2)
             ax.angle_of_tangent(x=3, graph=curve)
-            # 1.3825747960950903
+            # 1.4056476493802699
 
 
         Parameters
@@ -1198,8 +1355,8 @@ class CoordinateSystem:
             The angle of the tangent to the curve.
         """
 
-        p0 = self.input_to_graph_point(x, graph)
-        p1 = self.input_to_graph_point(x + dx, graph)
+        p0 = np.array([*self.input_to_graph_coords(x, graph)])
+        p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
         return angle_of_vector(p1 - p0)
 
     def slope_of_tangent(
@@ -1214,7 +1371,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.get_graph(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x ** 2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
 
@@ -1233,7 +1390,7 @@ class CoordinateSystem:
 
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
-    def get_derivative_graph(
+    def plot_derivative_graph(
         self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
@@ -1241,15 +1398,15 @@ class CoordinateSystem:
         Examples
         --------
 
-        .. manim:: GetDerivativeGraphExample
+        .. manim:: DerivativeGraphExample
             :save_last_frame:
 
-            class GetDerivativeGraphExample(Scene):
+            class DerivativeGraphExample(Scene):
                 def construct(self):
                     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
-                    curve_1 = ax.get_graph(lambda x: x ** 2, color=PURPLE_B)
-                    curve_2 = ax.get_derivative_graph(curve_1)
+                    curve_1 = ax.plot(lambda x: x ** 2, color=PURPLE_B)
+                    curve_2 = ax.plot_derivative_graph(curve_1)
                     curves = VGroup(curve_1, curve_2)
 
                     label_1 = ax.get_graph_label(curve_1, "x^2", x_val=-2, direction=DL)
@@ -1278,7 +1435,17 @@ class CoordinateSystem:
         def deriv(x):
             return self.slope_of_tangent(x, graph)
 
-        return self.get_graph(deriv, color=color, **kwargs)
+        return self.plot(deriv, color=color, **kwargs)
+
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_derivative_graph",
+    )
+    def get_derivative_graph(
+        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
+    ) -> ParametricFunction:
+        return self.plot_derivative_graph(graph, color, **kwargs)
 
     def get_secant_slope_group(
         self,
@@ -1305,7 +1472,7 @@ class CoordinateSystem:
             class GetSecantSlopeGroupExample(Scene):
                 def construct(self):
                     ax = Axes(y_range=[-1, 7])
-                    graph = ax.get_graph(lambda x: 1 / 4 * x ** 2, color=BLUE)
+                    graph = ax.plot(lambda x: 1 / 4 * x ** 2, color=BLUE)
                     slopes = ax.get_secant_slope_group(
                         x=2.0,
                         graph=graph,
@@ -1435,10 +1602,10 @@ class CoordinateSystem:
                     ax = Axes(
                         x_range=[0, 8.0, 1],
                         y_range=[-1, 1, 0.2],
-                        axis_config={"number_scale_value": 0.5},
+                        axis_config={"font_size": 24},
                     ).add_coordinates()
 
-                    curve = ax.get_graph(lambda x: np.sin(x) / np.e ** 2 * x)
+                    curve = ax.plot(lambda x: np.sin(x) / np.e ** 2 * x)
 
                     lines = ax.get_vertical_lines_to_graph(
                         curve, x_range=[0, 4], num_lines=30, color=BLUE
@@ -1515,7 +1682,7 @@ class CoordinateSystem:
                 def construct(self):
                     # defines the axes and linear function
                     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
-                    func = axes.get_graph(lambda x: x, color=BLUE)
+                    func = axes.plot(lambda x: x, color=BLUE)
                     # creates the T_label
                     t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
                     self.add(axes, func, t_label)
@@ -1553,12 +1720,32 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
+    Examples
+    --------
+
+    .. manim:: LogScalingExample
+        :save_last_frame:
+
+        class LogScalingExample(Scene):
+            def construct(self):
+                ax = Axes(
+                    x_range=[0, 10, 1],
+                    y_range=[-2, 6, 1],
+                    tips=False,
+                    axis_config={"include_numbers": True},
+                    y_axis_config={"scaling": LogBase(custom_labels=True)},
+                )
+
+                # x_min must be > 0 because log is undefined at 0.
+                graph = ax.get_graph(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                self.add(ax, graph)
+
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``(x_min, x_max, x_step)`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``(y_min, y_max, y_step)`` values of the y-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1593,7 +1780,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.axis_config = {
             "include_tip": tips,
             "numbers_to_exclude": [0],
-            "exclude_origin_tick": True,
         }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
@@ -1612,6 +1798,28 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.y_axis_config,
         )
 
+        # excluding the origin tick removes a tick at the 0-point of the axis
+        # This is desired for LinearBase because the 0 point is always the x-axis
+        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
+
+        # i.e. with LogBase range [-2, 4]:
+        # it would remove the "0" tick, which is actually 10^0,
+        # not the lowest tick on the graph (which is 10^-2).
+
+        if self.x_axis_config.get("scaling") is None or isinstance(
+            self.x_axis_config.get("scaling"), LinearBase
+        ):
+            self.x_axis_config["exclude_origin_tick"] = True
+        else:
+            self.x_axis_config["exclude_origin_tick"] = False
+
+        if self.y_axis_config.get("scaling") is None or isinstance(
+            self.y_axis_config.get("scaling"), LinearBase
+        ):
+            self.y_axis_config["exclude_origin_tick"] = True
+        else:
+            self.y_axis_config["exclude_origin_tick"] = False
+
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
 
@@ -1622,7 +1830,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.add(*self.axes)
 
         # finds the middle-point on each axis
-        lines_center_point = [((axis.x_max + axis.x_min) / 2) for axis in self.axes]
+        lines_center_point = [
+            axis.scaling.function((axis.x_range[1] + axis.x_range[0]) / 2)
+            for axis in self.axes
+        ]
 
         self.shift(-self.coords_to_point(*lines_center_point))
 
@@ -1643,23 +1854,23 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         range_terms
-            The range of the the axis : `(x_min, x_max, x_step)`.
+            The range of the the axis : ``(x_min, x_max, x_step)``.
         axis_config
-            Additional parameters that are passed to :class:`NumberLine`.
+            Additional parameters that are passed to :class:`~.NumberLine`.
         length
             The length of the axis.
 
         Returns
         -------
         :class:`NumberLine`
-            Returns a number line with the provided x and y axis range.
+            Returns a number line based on ``range_terms``.
         """
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
 
         # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self._origin_shift(range_terms)))
+        axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -1696,8 +1907,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         np.ndarray
             A point with respect to the scene's coordinate system.
         """
-
-        origin = self.x_axis.number_to_point(self._origin_shift(self.x_range))
+        origin = self.x_axis.number_to_point(
+            self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+        )
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -1748,7 +1960,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         """
         return self.axes
 
-    def get_line_graph(
+    def plot_line_graph(
         self,
         x_values: Iterable[float],
         y_values: Iterable[float],
@@ -1799,7 +2011,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                         axis_config={"include_numbers": True},
                     )
                     plane.center()
-                    line_graph = plane.get_line_graph(
+                    line_graph = plane.plot_line_graph(
                         x_values = [0, 1.5, 2, 2.8, 4, 6.25],
                         y_values = [1, 3, 2.25, 4, 2.5, 1.75],
                         line_color=GOLD_E,
@@ -1840,6 +2052,33 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         return line_graph
 
+    @deprecated(
+        since="v0.11.0",
+        until="v0.13.0",
+        replacement="plot_line_graph",
+    )
+    def get_line_graph(
+        self,
+        x_values: Iterable[float],
+        y_values: Iterable[float],
+        z_values: Optional[Iterable[float]] = None,
+        line_color: Color = YELLOW,
+        add_vertex_dots: bool = True,
+        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
+        vertex_dot_style: Optional[dict] = None,
+        **kwargs,
+    ) -> VDict:
+        return self.plot_line_graph(
+            x_values,
+            y_values,
+            z_values,
+            line_color,
+            add_vertex_dots,
+            vertex_dot_radius,
+            vertex_dot_style,
+            **kwargs,
+        )
+
     @staticmethod
     def _origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
@@ -1850,8 +2089,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             The range of the axis : ``(x_min, x_max, x_step)``.
         """
         if axis_range[0] > 0:
+            # min greater than 0
             return axis_range[0]
         if axis_range[1] < 0:
+            # max less than 0
             return axis_range[1]
         else:
             return 0
@@ -1863,11 +2104,11 @@ class ThreeDAxes(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+        The ``[x_min, x_max, x_step]`` values of the x-axis.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+        The ``[y_min, y_max, y_step]`` values of the y-axis.
     z_range
-        The :code:`[z_min, z_max, z_step]` values of the z-axis.
+        The ``[z_min, z_max, z_step]`` values of the z-axis.
     x_length
         The length of the x-axis.
     y_length
@@ -1933,11 +2174,22 @@ class ThreeDAxes(Axes):
 
         self.dimension = 3
 
+        if self.z_axis_config.get("scaling") is None or isinstance(
+            self.z_axis_config.get("scaling"), LinearBase
+        ):
+            self.z_axis_config["exclude_origin_tick"] = True
+        else:
+            self.z_axis_config["exclude_origin_tick"] = False
+
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.number_to_point(self._origin_shift(x_range)))
+        z_axis.shift(
+            self.x_axis.number_to_point(
+                self._origin_shift([z_axis.x_min, z_axis.x_max]),
+            ),
+        )
 
         self.axes.add(z_axis)
         self.add(z_axis)
@@ -2027,9 +2279,9 @@ class NumberPlane(Axes):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+        The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction.
     y_range
-        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+        The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction.
     x_length
         The width of the plane.
     y_length
@@ -2044,7 +2296,6 @@ class NumberPlane(Axes):
         Currently non-functional.
     kwargs : Any
         Additional arguments to be passed to :class:`Axes`.
-
 
     .. note::
 
@@ -2088,7 +2339,7 @@ class NumberPlane(Axes):
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
         faded_line_ratio: int = 1,
-        make_smooth_after_applying_functions=True,
+        make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
 
@@ -2161,7 +2412,8 @@ class NumberPlane(Axes):
         )
 
     def _get_lines(self) -> Tuple[VGroup, VGroup]:
-        """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+        """Generate all the lines, faded and not faded.
+         Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
         -------
@@ -2174,14 +2426,14 @@ class NumberPlane(Axes):
         x_lines1, x_lines2 = self._get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            self.y_axis.x_step,
+            self.y_axis.x_range[2],
             self.faded_line_ratio,
         )
 
         y_lines1, y_lines2 = self._get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            self.x_axis.x_step,
+            self.x_axis.x_range[2],
             self.faded_line_ratio,
         )
 
@@ -2220,7 +2472,8 @@ class NumberPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
+            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second
+             (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
 
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
@@ -2231,25 +2484,20 @@ class NumberPlane(Axes):
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
 
+        # need to unpack all three values
+        x_min, x_max, _ = axis_perpendicular_to.x_range
+
+        # account for different axis scalings (logarithmic), where
+        # negative values do not exist and [-2 , 4] should output lines
+        # similar to [0, 6]
+        if axis_perpendicular_to.x_min > 0 and x_min < 0:
+            x_min, x_max = (0, np.abs(x_min) + np.abs(x_max))
+
         # min/max used in case range does not include 0. i.e. if (2,6):
-        # the range becomes (0,4), not (0,6), to produce the correct number of lines
+        # the range becomes (0,4), not (0,6).
         ranges = (
-            np.arange(
-                0,
-                min(
-                    axis_perpendicular_to.x_max - axis_perpendicular_to.x_min,
-                    axis_perpendicular_to.x_max,
-                ),
-                step,
-            ),
-            np.arange(
-                0,
-                max(
-                    axis_perpendicular_to.x_min - axis_perpendicular_to.x_max,
-                    axis_perpendicular_to.x_min,
-                ),
-                -step,
-            ),
+            np.arange(0, min(x_max - x_min, x_max), step),
+            np.arange(0, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:
@@ -2351,12 +2599,6 @@ class PolarPlane(Axes):
                 self.add(polarplane_pi)
     """
 
-    @deprecated_params(
-        params="azimuth_label_scale",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use azimuth_label_font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
@@ -2376,15 +2618,6 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
-        # deprecation
-        azimuth_label_scale = kwargs.pop("azimuth_label_scale", None)
-        if azimuth_label_scale:
-            self.azimuth_label_font_size = (
-                azimuth_label_scale * DEFAULT_FONT_SIZE * 0.75
-            )
-        else:
-            self.azimuth_label_font_size = azimuth_label_font_size
-
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -2440,7 +2673,7 @@ class PolarPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
-        # self.azimuth_label_font_size = azimuth_label_font_size  <-uncomment when deprecation is done
+        self.azimuth_label_font_size = azimuth_label_font_size
         self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
@@ -2487,20 +2720,20 @@ class PolarPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non faded lines and circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
-        center = self.get_center_point()
+        center = self.get_origin()
         ratio_faded_lines = self.faded_line_ratio
         offset = self.azimuth_offset
 
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
-        rstep = (1 / ratio_faded_lines) * self.x_axis.x_step
+        rstep = (1 / ratio_faded_lines) * self.x_axis.x_range[2]
         astep = (1 / ratio_faded_lines) * (TAU * (1 / self.azimuth_step))
         rlines1 = VGroup()
         rlines2 = VGroup()
         alines1 = VGroup()
         alines2 = VGroup()
 
-        rinput = np.arange(0, self.x_axis.x_max + rstep, rstep)
+        rinput = np.arange(0, self.x_axis.x_range[1] + rstep, rstep)
         ainput = np.arange(0, TAU, astep)
 
         unit_vector = self.x_axis.get_unit_vector()[0]
@@ -2547,62 +2780,6 @@ class PolarPlane(Axes):
             if num_inserted_curves > num_curves:
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
-
-    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
-        r"""Gets a point from polar coordinates.
-
-        Parameters
-        ----------
-        radius
-            The coordinate radius (:math:`r`).
-
-        azimuth
-            The coordinate azimuth (:math:`\theta`).
-
-        Returns
-        -------
-        numpy.ndarray
-            The point.
-
-        Examples
-        --------
-
-        .. manim:: PolarToPointExample
-            :ref_classes: PolarPlane Vector
-            :save_last_frame:
-
-            class PolarToPointExample(Scene):
-                def construct(self):
-                    polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
-                    polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
-                    self.add(polarplane_pi)
-                    self.add(polartopoint_vector)
-        """
-        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
-
-    def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
-        """Abbreviation for :meth:`polar_to_point`"""
-        return self.polar_to_point(radius, azimuth)
-
-    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
-        r"""Gets polar coordinates from a point.
-
-        Parameters
-        ----------
-        point
-            The point.
-
-        Returns
-        -------
-        Tuple[:class:`float`, :class:`float`]
-            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
-        """
-        x, y = self.point_to_coords(point)
-        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
-
-    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
-        """Abbreviation for :meth:`point_to_polar`"""
-        return self.point_to_polar(point)
 
     def get_coordinate_labels(
         self,
