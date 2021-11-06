@@ -1447,6 +1447,25 @@ class CoordinateSystem:
     ) -> ParametricFunction:
         return self.plot_derivative_graph(graph, color, **kwargs)
 
+    def plot_antiderivative_graph(
+        self,
+        graph: ParametricFunction,
+        y_intercept: float = 0,
+        **kwargs,
+    ):
+        def antideriv(x):
+            from manim.utils.space_ops import shoelace
+
+            if x >= 0:
+                poly = self.get_area(graph, [0, x])
+            else:
+                poly = self.get_area(graph, [x, 0]).reverse_points()
+            res = np.array([[*self.p2c(point), 0] for point in poly.points])
+
+            return shoelace(res) + y_intercept
+
+        return self.plot(antideriv, **kwargs)
+
     def get_secant_slope_group(
         self,
         x: float,
