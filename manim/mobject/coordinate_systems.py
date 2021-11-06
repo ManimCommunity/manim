@@ -1453,6 +1453,24 @@ class CoordinateSystem:
         y_intercept: float = 0,
         **kwargs,
     ):
+        """Plots an antiderivative graph.
+
+        Examples
+        --------
+        .. manim:: AntiderivativeExample
+            :save_last_frame:
+
+            class AntiderivativeExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    graph1 = ax.plot(
+                        lambda x: (x ** 2 - 2) / 3,
+                        color=RED,
+                    )
+                    graph2 = ax.plot_antiderivative_graph(graph1, color=BLUE)
+                    self.add(ax, graph1, graph2)
+        """
+
         def antideriv(x):
             from manim.utils.space_ops import shoelace
 
