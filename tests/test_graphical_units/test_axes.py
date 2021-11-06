@@ -71,7 +71,8 @@ def test_plot_derivative_graph(scene):
 
     curve_1 = ax.plot(lambda x: x ** 2, color=PURPLE_B)
     curve_2 = ax.plot_derivative_graph(curve_1)
-    curves = VGroup(curve_1, curve_2)
+    curve_3 = ax.plot_antiderivative_graph(curve_1)
+    curves = VGroup(curve_1, curve_2, curve_3)
     scene.add(ax, curves)
 
 
