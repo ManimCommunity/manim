@@ -1472,7 +1472,7 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            from manim.utils.space_ops import shoelace
+            from ..utils.space_ops import shoelace
 
             if x >= 0:
                 poly = self.get_area(graph, [0, x])
