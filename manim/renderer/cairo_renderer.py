@@ -141,9 +141,9 @@ class CairoRenderer:
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def render(self, scene, time, moving_mobjects):
+    def render(self, scene, time, moving_mobjects, skip_animations=False):
         self.update_frame(scene, moving_mobjects)
-        self.add_frame(self.get_frame())
+        self.add_frame(self.get_frame(), skip_animations=skip_animations)
 
     def get_frame(self):
         """
@@ -157,7 +157,7 @@ class CairoRenderer:
         """
         return np.array(self.camera.pixel_array)
 
-    def add_frame(self, frame, num_frames=1):
+    def add_frame(self, frame, num_frames=1, skip_animations=False):
         """
         Adds a frame to the video_file_stream
 
@@ -169,7 +169,7 @@ class CairoRenderer:
             The number of times to add frame.
         """
         dt = 1 / self.camera.frame_rate
-        if self.skip_animations:
+        if skip_animations:
             return
         self.time += num_frames * dt
         for _ in range(num_frames):
@@ -224,38 +224,41 @@ class CairoRenderer:
         self.static_image = self.get_frame()
         return self.static_image
 
-    def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
-        animation needs to be skipped or not. It also checks if
-        the number of animations that were played correspond to
-        the number of animations that need to be played, and
-        raises an EndSceneEarlyException if they don't correspond.
-        """
-        if config["save_last_frame"]:
-            self.skip_animations = True
-        if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
-        ):
-            self.skip_animations = True
-        if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+    # def update_skipping_status(self):
+    #     """
+    #     This method is used internally to check if the current
+    #     animation needs to be skipped or not. It also checks if
+    #     the number of animations that were played correspond to
+    #     the number of animations that need to be played, and
+    #     raises an EndSceneEarlyException if they don't correspond.
+    #     """
+    #     if config["save_last_frame"]:
+    #         self.skip_animations = True
+    #     if (
+    #         config["from_animation_number"]
+    #         and self.num_plays < config["from_animation_number"]
+    #     ):
+    #         self.skip_animations = True
+    #     if (
+    #         config["upto_animation_number"]
+    #         and self.num_plays > config["upto_animation_number"]
+    #     ):
+    #         self.skip_animations = True
+    #         raise EndSceneEarlyException()
 
-    def scene_finished(self, scene):
-        # If no animations in scene, render an image instead
-        if self.num_plays:
-            self.file_writer.finish()
-        elif config.write_to_movie:
-            config.save_last_frame = True
-            config.write_to_movie = False
-        else:
-            self.update_frame(scene)
+    # def scene_finished(self, scene):
+    #     # If no animations in scene, render an image instead
+    #     if self.num_plays:
+    #         self.file_writer.finish()
+    #     elif config.write_to_movie:
+    #         config.save_last_frame = True
+    #         config.write_to_movie = False
+    #     else:
+    #         self.update_frame(scene)
+    #
+    #     if config["save_last_frame"]:
+    #         self.update_frame(scene)
+    #         self.file_writer.save_final_image(self.camera.get_image())
 
-        if config["save_last_frame"]:
-            self.update_frame(scene)
-            self.file_writer.save_final_image(self.camera.get_image())
+    def should_save_last_frame(self, num_plays):
+        return config["save_last_frame"] or num_plays == 0

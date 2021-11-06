@@ -9,6 +9,7 @@ from manim import config, logger
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
+from manim.utils.hashing import get_hash_from_play_call
 
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
@@ -400,28 +401,67 @@ class OpenGLRenderer:
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    @handle_caching_play
     def play(self, scene, *args, **kwargs):
-        # TODO: Handle data locking / unlocking.
-        self.animation_start_time = time.time()
+        # Reset skip_animations to the original state.
+        # Needed when rendering only some animations, and skipping others.
+        self.skip_animations = self._original_skipping_status
+        self.update_skipping_status()
+
+        scene.compile_animation_data(*args, **kwargs)
+
+        if self.skip_animations:
+            logger.debug(f"Skipping animation {self.num_plays}")
+            hash_current_animation = None
+            self.time += scene.duration
+        else:
+            if config["disable_caching"]:
+                logger.info("Caching disabled.")
+                hash_current_animation = f"uncached_{self.num_plays:05}"
+            else:
+                hash_current_animation = get_hash_from_play_call(
+                    scene,
+                    self.camera,
+                    scene.animations,
+                    scene.mobjects,
+                )
+                if self.file_writer.is_already_cached(hash_current_animation):
+                    logger.info(
+                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
+                        {"hash_current_animation": hash_current_animation},
+                    )
+                    self.skip_animations = True
+                    self.time += scene.duration
+        # adding None as a partial movie file will make file_writer ignore the latter.
+        self.file_writer.add_partial_movie_file(hash_current_animation)
+        self.animations_hashes.append(hash_current_animation)
+        logger.debug(
+            "List of the first few animation hashes of the scene: %(h)s",
+            {"h": str(self.animations_hashes[:5])},
+        )
+
+        # Save a static image, to avoid rendering non moving objects.
+        self.static_image = self.save_static_frame_data(scene, scene.static_mobjects)
+
         self.file_writer.begin_animation(not self.skip_animations)
-
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            self.update_frame(scene)
+            # self.duration stands for the total run time of all the animations.
+            # In this case, as there is only a wait, it will be the length of the wait.
+            self.freeze_current_frame(scene.duration)
+        else:
             scene.play_internal()
-
         self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
+
         self.num_plays += 1
 
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(self, scene, frame_offset, moving_mobjects):
+    def render(self, scene, frame_offset, moving_mobjects, skip_animations=False):
         self.update_frame(scene)
-
-        if self.skip_animations:
+        if skip_animations:
             return
 
         self.file_writer.write_frame(self)
@@ -448,25 +488,12 @@ class OpenGLRenderer:
 
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
-    def scene_finished(self, scene):
-        # When num_plays is 0, no images have been output, so output a single
-        # image in this case
-        if self.num_plays > 0:
-            self.file_writer.finish()
-        elif self.num_plays == 0 and config.write_to_movie:
-            config.write_to_movie = False
-
-        if self.should_save_last_frame():
-            config.save_last_frame = True
-            self.update_frame(scene)
-            self.file_writer.save_final_image(self.get_image())
-
-    def should_save_last_frame(self):
+    def should_save_last_frame(self, num_plays):
         if config["save_last_frame"]:
             return True
         if self.scene.interactive_mode:
             return False
-        return self.num_plays == 0
+        return num_plays == 0
 
     def get_image(self) -> Image.Image:
         """Returns an image from the current frame. The first argument passed to image represents

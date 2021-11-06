@@ -305,7 +305,7 @@ class SceneFileWriter:
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write=False, file_path=None):
+    def begin_animation(self, allow_write=False, file_path=None, num_plays=0):
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -316,7 +316,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.open_movie_pipe(file_path=file_path)
+            self.open_movie_pipe(file_path=file_path, num_plays=num_plays)
 
     def end_animation(self, allow_write=False):
         """
@@ -440,14 +440,14 @@ class SceneFileWriter:
             target_dir, _ = os.path.splitext(self.image_file_path)
             logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
 
-    def open_movie_pipe(self, file_path=None):
+    def open_movie_pipe(self, file_path=None, num_plays=0):
         """
         Used internally by Manim to initialise
         FFMPEG and begin writing to FFMPEG's input
         buffer.
         """
         if file_path is None:
-            file_path = self.partial_movie_files[self.renderer.num_plays]
+            file_path = self.partial_movie_files[num_plays]
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]

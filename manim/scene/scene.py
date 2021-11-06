@@ -39,6 +39,7 @@ from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
+from ..utils.hashing import get_hash_from_play_call
 from ..utils.iterables import list_difference_update, list_update
 
 
@@ -95,6 +96,7 @@ class Scene:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
 
         self.animations = None
@@ -116,6 +118,8 @@ class Scene:
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
         self.interactive_mode = False
+        self.num_plays = 0
+        self.animations_hashes = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -223,7 +227,7 @@ class Scene:
             return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
-        self.renderer.scene_finished(self)
+        self.scene_finished()
 
         # Show info only if animations are rendered or to get image
         if (
@@ -857,7 +861,7 @@ class Scene:
         time_progression
             The CommandLine Progress Bar.
         """
-        if self.renderer.skip_animations and not override_skip_animations:
+        if self.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
             step = 1 / config["frame_rate"]
@@ -897,8 +901,93 @@ class Scene:
         else:
             return np.max([animation.run_time for animation in animations])
 
+    def update_skipping_status(self):
+        """
+        This method is used internally to check if the current
+        animation needs to be skipped or not. It also checks if
+        the number of animations that were played correspond to
+        the number of animations that need to be played, and
+        raises an EndSceneEarlyException if they don't correspond.
+        """
+        if config["save_last_frame"]:
+            self.skip_animations = True
+        if (
+            config["from_animation_number"]
+            and self.num_plays < config["from_animation_number"]
+        ):
+            self.skip_animations = True
+        if (
+            config["upto_animation_number"]
+            and self.num_plays > config["upto_animation_number"]
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
+
     def play(self, *args, **kwargs):
-        self.renderer.play(self, *args, **kwargs)
+        # self.renderer.play(self, *args, **kwargs)
+        # return
+        self.skip_animations = self._original_skipping_status
+        self.update_skipping_status()
+
+        self.compile_animation_data(*args, **kwargs)  # todo check differences here
+
+        if self.skip_animations:
+            logger.debug(f"Skipping animation {self.num_plays}")
+            hash_current_animation = None
+        else:
+            if config["disable_caching"]:
+                logger.info("Caching disabled.")
+                hash_current_animation = f"uncached_{self.num_plays:05}"
+            else:
+                hash_current_animation = get_hash_from_play_call(
+                    self,
+                    self.camera,
+                    self.animations,
+                    self.mobjects,
+                )
+                if self.renderer.file_writer.is_already_cached(hash_current_animation):
+                    logger.info(
+                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
+                        {"hash_current_animation": hash_current_animation},
+                    )
+                    self.skip_animations = True
+        # adding None as a partial movie file will make file_writer ignore the latter.
+        self.renderer.file_writer.add_partial_movie_file(hash_current_animation)
+        self.animations_hashes.append(hash_current_animation)
+        logger.debug(
+            "List of the first few animation hashes of the scene: %(h)s",
+            {"h": str(self.animations_hashes[:5])},
+        )
+
+        # Save a static image, to avoid rendering non moving objects.
+        self.static_image = self.renderer.save_static_frame_data(
+            self, self.static_mobjects
+        )
+
+        self.begin_animations()
+        if self.is_current_animation_frozen_frame():
+            self.renderer.update_frame(self)
+            # self.duration stands for the total run time of all the animations.
+            # In this case, as there is only a wait, it will be the length of the wait.
+            self.renderer.freeze_current_frame(self.duration)
+        else:
+            self.play_internal()
+        self.renderer.file_writer.end_animation(not self.skip_animations)
+
+        self.num_plays += 1
+
+    def scene_finished(self):
+        # When num_plays is 0, no images have been output, so output a single
+        # image in this case
+        if self.num_plays > 0:
+            self.renderer.file_writer.finish()
+        elif self.num_plays == 0 and config.write_to_movie:
+            config.write_to_movie = False
+
+        if self.renderer.should_save_last_frame(self.num_plays):
+            config.save_last_frame = True
+            self.renderer.update_frame(self)
+            self.renderer.file_writer.save_final_image(self.renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.play(Wait(run_time=duration, stop_condition=stop_condition))
@@ -970,6 +1059,9 @@ class Scene:
 
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
+        self.renderer.file_writer.begin_animation(
+            not self.skip_animations, num_plays=self.num_plays
+        )
         for animation in self.animations:
             animation.begin()
 
@@ -1003,7 +1095,9 @@ class Scene:
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
-                self.renderer.render(self, t, self.moving_mobjects)
+                self.renderer.render(
+                    self, t, self.moving_mobjects, self.skip_animations
+                )
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
@@ -1011,7 +1105,7 @@ class Scene:
         for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
-        if not self.renderer.skip_animations:
+        if not self.skip_animations:
             self.update_mobjects(0)
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
@@ -1275,7 +1369,7 @@ class Scene:
 
         Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
-        if self.renderer.skip_animations:
+        if self.skip_animations:
             return
         time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
