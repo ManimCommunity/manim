@@ -2081,9 +2081,12 @@ class Mobject:
 
     def align_to(
         self,
-        mobject_or_point: Union["Mobject", np.ndarray, List],
+        mobject_or_point,
+        buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        aligned_edge=ORIGIN,
+        submobject_to_align=None,
+        index_of_submobject_to_align=None,
         direction=ORIGIN,
-        alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
 
@@ -2091,18 +2094,27 @@ class Mobject:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
 
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
+        mob1.align_to(mob2) moves mob1
         horizontally so that it's center is directly above/below
         the center of mob2
         """
         if isinstance(mobject_or_point, Mobject):
-            point = mobject_or_point.get_critical_point(direction)
+            mob = mobject_or_point
+            if index_of_submobject_to_align is not None:
+                target_aligner = mob[index_of_submobject_to_align]
+            else:
+                target_aligner = mob
+            target_point = target_aligner.get_critical_point(aligned_edge + direction)
         else:
-            point = mobject_or_point
-
-        for dim in range(self.dim):
-            if direction[dim] != 0:
-                self.set_coord(point[dim], dim, direction)
+            target_point = mobject_or_point
+        if submobject_to_align is not None:
+            aligner = submobject_to_align
+        elif index_of_submobject_to_align is not None:
+            aligner = self[index_of_submobject_to_align]
+        else:
+            aligner = self
+        point_to_align = aligner.get_critical_point(aligned_edge - direction)
+        self.shift((target_point - point_to_align + buff * direction) * coor_mask)
         return self
 
     # Family matters
