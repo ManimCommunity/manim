@@ -3,37 +3,24 @@
 __all__ = ["Scene"]
 
 import copy
-import inspect
 import platform
 import random
-import threading
-import time
 import types
-from queue import Queue
-from typing import List, Optional
 
-from manim.scene.section import DefaultSectionType
-
-try:
-    import dearpygui.dearpygui as dpg
-
-    dearpygui_imported = True
-except ImportError:
-    dearpygui_imported = False
 import numpy as np
 from tqdm import tqdm
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+
+from manim.scene.section import DefaultSectionType
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..gui.gui import configure_pygui
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
+from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -41,17 +28,6 @@ from ..utils.family_ops import restructure_list_to_exclude_certain_family_member
 from ..utils.file_ops import open_media_file
 from ..utils.hashing import get_hash_from_play_call
 from ..utils.iterables import list_difference_update, list_update
-
-
-class RerunSceneHandler(FileSystemEventHandler):
-    """A class to handle rerunning a Scene after the input file is modified."""
-
-    def __init__(self, queue):
-        super().__init__()
-        self.queue = queue
-
-    def on_modified(self, event):
-        self.queue.put(("rerun_file", [], {}))
 
 
 class Scene:
@@ -92,6 +68,7 @@ class Scene:
         always_update_mobjects=False,
         random_seed=None,
         skip_animations=False,
+        file_writer_class=SceneFileWriter,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
@@ -106,12 +83,9 @@ class Scene:
         self.time_progression = None
         self.duration = None
         self.last_t = None
-        self.queue = Queue()
         self.skip_animation_preview = False
         self.meshes = []
         self.camera_target = ORIGIN
-        self.widgets = []
-        self.dearpygui_imported = dearpygui_imported
         self.updaters = []
         self.point_lights = []
         self.ambient_light = None
@@ -120,6 +94,7 @@ class Scene:
         self.interactive_mode = False
         self.num_plays = 0
         self.animations_hashes = []
+        self._file_writer_class = file_writer_class
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -135,7 +110,13 @@ class Scene:
             )
         else:
             self.renderer = renderer
-        self.renderer.init_scene(self)
+
+        self.partial_movie_files = []
+        self.file_writer = self._file_writer_class(
+            self.renderer,
+            Scene.__name__,
+        )
+        self.renderer.init_scene()
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -144,7 +125,7 @@ class Scene:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-    @property
+    @property  # todo remove this
     def camera(self):
         return self.renderer.camera
 
@@ -244,7 +225,7 @@ class Scene:
             config["preview"] = True
 
         if config["preview"] or config["show_in_file_browser"]:
-            open_media_file(self.renderer.file_writer)
+            open_media_file(self.file_writer)
 
     def setup(self):
         """
@@ -303,7 +284,7 @@ class Scene:
         """Create separation here; the last section gets finished and a new one gets created.
         Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, type)
+        self.file_writer.next_section(name, type)
 
     def __str__(self):
         return self.__class__.__name__
@@ -924,12 +905,10 @@ class Scene:
             raise EndSceneEarlyException()
 
     def play(self, *args, **kwargs):
-        # self.renderer.play(self, *args, **kwargs)
-        # return
         self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
 
-        self.compile_animation_data(*args, **kwargs)  # todo check differences here
+        self.compile_animation_data(*args, **kwargs)
 
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
@@ -945,14 +924,14 @@ class Scene:
                     self.animations,
                     self.mobjects,
                 )
-                if self.renderer.file_writer.is_already_cached(hash_current_animation):
+                if self.file_writer.is_already_cached(hash_current_animation):
                     logger.info(
                         f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
                         {"hash_current_animation": hash_current_animation},
                     )
                     self.skip_animations = True
         # adding None as a partial movie file will make file_writer ignore the latter.
-        self.renderer.file_writer.add_partial_movie_file(hash_current_animation)
+        self.file_writer.add_partial_movie_file(hash_current_animation)
         self.animations_hashes.append(hash_current_animation)
         logger.debug(
             "List of the first few animation hashes of the scene: %(h)s",
@@ -961,7 +940,9 @@ class Scene:
 
         # Save a static image, to avoid rendering non moving objects.
         self.static_image = self.renderer.save_static_frame_data(
-            self, self.static_mobjects
+            self.static_mobjects,
+            mobjects=self.mobjects,
+            foreground_mobjects=self.foreground_mobjects,
         )
 
         self.begin_animations()
@@ -972,7 +953,7 @@ class Scene:
             self.renderer.freeze_current_frame(self.duration)
         else:
             self.play_internal()
-        self.renderer.file_writer.end_animation(not self.skip_animations)
+        self.file_writer.end_animation(not self.skip_animations)
 
         self.num_plays += 1
 
@@ -980,14 +961,14 @@ class Scene:
         # When num_plays is 0, no images have been output, so output a single
         # image in this case
         if self.num_plays > 0:
-            self.renderer.file_writer.finish()
+            self.file_writer.finish()
         elif self.num_plays == 0 and config.write_to_movie:
             config.write_to_movie = False
 
         if self.renderer.should_save_last_frame(self.num_plays):
             config.save_last_frame = True
             self.renderer.update_frame(self)
-            self.renderer.file_writer.save_final_image(self.renderer.get_image())
+            self.file_writer.save_final_image(self.renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.play(Wait(run_time=duration, stop_condition=stop_condition))
@@ -1059,7 +1040,7 @@ class Scene:
 
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
-        self.renderer.file_writer.begin_animation(
+        self.file_writer.begin_animation(
             not self.skip_animations, num_plays=self.num_plays
         )
         for animation in self.animations:
@@ -1096,7 +1077,13 @@ class Scene:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(
-                    self, t, self.moving_mobjects, self.skip_animations
+                    t,
+                    self.moving_mobjects,
+                    self.skip_animations,
+                    mobjects=self.mobjects,
+                    meshes=self.meshes,
+                    file_writer=self.file_writer,
+                    foreground_mobjects=self.foreground_mobjects,
                 )
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
@@ -1110,218 +1097,6 @@ class Scene:
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
-
-    def check_interactive_embed_is_valid(self):
-        if config["force_window"]:
-            return True
-        if self.skip_animation_preview:
-            logger.warning(
-                "Disabling interactive embed as 'skip_animation_preview' is enabled",
-            )
-            return False
-        elif config["write_to_movie"]:
-            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
-            return False
-        elif config["format"]:
-            logger.warning(
-                "Disabling interactive embed as '--format' is set as "
-                + config["format"],
-            )
-            return False
-        elif not self.renderer.window:
-            logger.warning("Disabling interactive embed as no window was created")
-            return False
-        elif config.dry_run:
-            logger.warning("Disabling interactive embed as dry_run is enabled")
-            return False
-        return True
-
-    def interactive_embed(self):
-        """
-        Like embed(), but allows for screen interaction.
-        """
-        if not self.check_interactive_embed_is_valid():
-            return
-        self.interactive_mode = True
-
-        def ipython(shell, namespace):
-            import manim
-            import manim.opengl
-
-            def load_module_into_namespace(module, namespace):
-                for name in dir(module):
-                    namespace[name] = getattr(module, name)
-
-            load_module_into_namespace(manim, namespace)
-            load_module_into_namespace(manim.opengl, namespace)
-
-            def embedded_rerun(*args, **kwargs):
-                self.queue.put(("rerun_keyboard", args, kwargs))
-                shell.exiter()
-
-            namespace["rerun"] = embedded_rerun
-
-            shell(local_ns=namespace)
-            self.queue.put(("exit_keyboard", [], {}))
-
-        def get_embedded_method(method_name):
-            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
-
-        local_namespace = inspect.currentframe().f_back.f_locals
-        for method in ("play", "wait", "add", "remove"):
-            embedded_method = get_embedded_method(method)
-            # Allow for calling scene methods without prepending 'self.'.
-            local_namespace[method] = embedded_method
-
-        from IPython.terminal.embed import InteractiveShellEmbed
-        from traitlets.config import Config
-
-        cfg = Config()
-        cfg.TerminalInteractiveShell.confirm_exit = False
-        shell = InteractiveShellEmbed(config=cfg)
-
-        keyboard_thread = threading.Thread(
-            target=ipython,
-            args=(shell, local_namespace),
-        )
-        # run as daemon to kill thread when main thread exits
-        if not shell.pt_app:
-            keyboard_thread.daemon = True
-        keyboard_thread.start()
-
-        if self.dearpygui_imported and config["enable_gui"]:
-            if not dpg.is_dearpygui_running():
-                gui_thread = threading.Thread(
-                    target=configure_pygui,
-                    args=(self.renderer, self.widgets),
-                    kwargs={"update": False},
-                )
-                gui_thread.start()
-            else:
-                configure_pygui(self.renderer, self.widgets, update=True)
-
-        self.camera.model_matrix = self.camera.default_model_matrix
-
-        self.interact(shell, keyboard_thread)
-
-    def interact(self, shell, keyboard_thread):
-        event_handler = RerunSceneHandler(self.queue)
-        file_observer = Observer()
-        file_observer.schedule(event_handler, config["input_file"], recursive=True)
-        file_observer.start()
-
-        self.quit_interaction = False
-        keyboard_thread_needs_join = shell.pt_app is not None
-        assert self.queue.qsize() == 0
-
-        last_time = time.time()
-        while not (self.renderer.window.is_closing or self.quit_interaction):
-            if not self.queue.empty():
-                tup = self.queue.get_nowait()
-                if tup[0].startswith("rerun"):
-                    # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard"):
-                        if shell.pt_app:
-                            shell.pt_app.app.exit(exception=EOFError)
-                        file_observer.unschedule_all()
-                        raise RerunSceneException
-                    keyboard_thread.join()
-
-                    kwargs = tup[2]
-                    if "from_animation_number" in kwargs:
-                        config["from_animation_number"] = kwargs[
-                            "from_animation_number"
-                        ]
-                    # # TODO: This option only makes sense if interactive_embed() is run at the
-                    # # end of a scene by default.
-                    # if "upto_animation_number" in kwargs:
-                    #     config["upto_animation_number"] = kwargs[
-                    #         "upto_animation_number"
-                    #     ]
-
-                    keyboard_thread.join()
-                    file_observer.unschedule_all()
-                    raise RerunSceneException
-                elif tup[0].startswith("exit"):
-                    # Intentionally skip calling join() on the file thread to save time.
-                    if not tup[0].endswith("keyboard") and shell.pt_app:
-                        shell.pt_app.app.exit(exception=EOFError)
-                    keyboard_thread.join()
-                    # Remove exit_keyboard from the queue if necessary.
-                    while self.queue.qsize() > 0:
-                        self.queue.get()
-                    keyboard_thread_needs_join = False
-                    break
-                else:
-                    method, args, kwargs = tup
-                    getattr(self, method)(*args, **kwargs)
-            else:
-                self.renderer.animation_start_time = 0
-                dt = time.time() - last_time
-                last_time = time.time()
-                self.renderer.render(self, dt, self.moving_mobjects)
-                self.update_mobjects(dt)
-                self.update_meshes(dt)
-                self.update_self(dt)
-
-        # Join the keyboard thread if necessary.
-        if shell is not None and keyboard_thread_needs_join:
-            shell.pt_app.app.exit(exception=EOFError)
-            keyboard_thread.join()
-            # Remove exit_keyboard from the queue if necessary.
-            while self.queue.qsize() > 0:
-                self.queue.get()
-
-        file_observer.stop()
-        file_observer.join()
-
-        if self.dearpygui_imported and config["enable_gui"]:
-            dpg.stop_dearpygui()
-
-        if self.renderer.window.is_closing:
-            self.renderer.window.destroy()
-
-    def embed(self):
-        if not config["preview"]:
-            logger.warning("Called embed() while no preview window is available.")
-            return
-        if config["write_to_movie"]:
-            logger.warning("embed() is skipped while writing to a file.")
-            return
-
-        self.renderer.animation_start_time = 0
-        self.renderer.render(self, -1, self.moving_mobjects)
-
-        # Configure IPython shell.
-        from IPython.terminal.embed import InteractiveShellEmbed
-
-        shell = InteractiveShellEmbed()
-
-        # Have the frame update after each command
-        shell.events.register(
-            "post_run_cell",
-            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
-        )
-
-        # Use the locals of the caller as the local namespace
-        # once embedded, and add a few custom shortcuts.
-        local_ns = inspect.currentframe().f_back.f_locals
-        # local_ns["touch"] = self.interact
-        for method in (
-            "play",
-            "wait",
-            "add",
-            "remove",
-            "interact",
-            # "clear",
-            # "save_state",
-            # "restore",
-        ):
-            local_ns[method] = getattr(self, method)
-        shell(local_ns=local_ns, stack_depth=2)
-
-        # End scene when exiting an embed.
-        raise Exception("Exiting scene.")
 
     def update_to_time(self, t):
         dt = t - self.last_t
@@ -1372,7 +1147,7 @@ class Scene:
         if self.skip_animations:
             return
         time = self.renderer.time + time_offset
-        self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+        self.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def on_mouse_motion(self, point, d_point):
         self.mouse_point.move_to(point)

@@ -1,20 +1,23 @@
+import inspect
 import itertools as it
+import threading
 import time
+from queue import Queue
 
 import moderngl
 import numpy as np
 from PIL import Image
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from manim import config, logger
-from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
-from manim.utils.exceptions import EndSceneEarlyException
-from manim.utils.hashing import get_hash_from_play_call
+from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
 from ..constants import *
+from ..gui.gui import configure_pygui
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.config_ops import _Data
 from ..utils.simple_functions import clip
@@ -30,6 +33,24 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+
+try:
+    import dearpygui.dearpygui as dpg
+
+    dearpygui_imported = True
+except ImportError:
+    dearpygui_imported = False
+
+
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -217,10 +238,11 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, file_writer_class=SceneFileWriter, skip_animations=False):
+    def __init__(self, skip_animations=False, widgets=None):
         # Measured in pixel widths, used for vector graphics
+        if widgets is None:
+            widgets = []
         self.anti_alias_width = 1.5
-        self._file_writer_class = file_writer_class
 
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
@@ -229,6 +251,9 @@ class OpenGLRenderer:
         self.time = 0
         self.animations_hashes = []
         self.num_plays = 0
+        self.interactive_mode = False
+        self.queue = Queue()
+        self.widgets = [] if not widgets else widgets
 
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
@@ -238,13 +263,7 @@ class OpenGLRenderer:
 
         self._background_color = color_to_rgba(config["background_color"], 1.0)
 
-    def init_scene(self, scene):
-        self.partial_movie_files = []
-        self.file_writer = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
-        )
-        self.scene = scene
+    def init_scene(self):
         if not hasattr(self, "window"):
             if self.should_create_window():
                 from .opengl_renderer_window import Window
@@ -342,10 +361,10 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
+                shader.set_uniform("u_view_matrix", self.camera.get_view_matrix())
                 shader.set_uniform(
                     "u_projection_matrix",
-                    self.scene.camera.projection_matrix,
+                    self.camera.projection_matrix,
                 )
             except KeyError:
                 pass
@@ -401,87 +420,42 @@ class OpenGLRenderer:
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    def play(self, scene, *args, **kwargs):
-        # Reset skip_animations to the original state.
-        # Needed when rendering only some animations, and skipping others.
-        self.skip_animations = self._original_skipping_status
-        self.update_skipping_status()
-
-        scene.compile_animation_data(*args, **kwargs)
-
-        if self.skip_animations:
-            logger.debug(f"Skipping animation {self.num_plays}")
-            hash_current_animation = None
-            self.time += scene.duration
-        else:
-            if config["disable_caching"]:
-                logger.info("Caching disabled.")
-                hash_current_animation = f"uncached_{self.num_plays:05}"
-            else:
-                hash_current_animation = get_hash_from_play_call(
-                    scene,
-                    self.camera,
-                    scene.animations,
-                    scene.mobjects,
-                )
-                if self.file_writer.is_already_cached(hash_current_animation):
-                    logger.info(
-                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
-                        {"hash_current_animation": hash_current_animation},
-                    )
-                    self.skip_animations = True
-                    self.time += scene.duration
-        # adding None as a partial movie file will make file_writer ignore the latter.
-        self.file_writer.add_partial_movie_file(hash_current_animation)
-        self.animations_hashes.append(hash_current_animation)
-        logger.debug(
-            "List of the first few animation hashes of the scene: %(h)s",
-            {"h": str(self.animations_hashes[:5])},
-        )
-
-        # Save a static image, to avoid rendering non moving objects.
-        self.static_image = self.save_static_frame_data(scene, scene.static_mobjects)
-
-        self.file_writer.begin_animation(not self.skip_animations)
-        scene.begin_animations()
-        if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene)
-            # self.duration stands for the total run time of all the animations.
-            # In this case, as there is only a wait, it will be the length of the wait.
-            self.freeze_current_frame(scene.duration)
-        else:
-            scene.play_internal()
-        self.file_writer.end_animation(not self.skip_animations)
-
-        self.num_plays += 1
-
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
-    def render(self, scene, frame_offset, moving_mobjects, skip_animations=False):
-        self.update_frame(scene)
+    def render(
+        self,
+        frame_offset,
+        moving_mobjects,
+        skip_animations=False,
+        mobjects=None,
+        meshes=None,
+        file_writer=None,
+        foreground_mobjects=None,
+    ):
+        self.update_frame(mobjects, meshes)
         if skip_animations:
             return
 
-        self.file_writer.write_frame(self)
+        file_writer.write_frame(self)
 
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
-                self.update_frame(scene)
+                self.update_frame(mobjects, meshes)
                 self.window.swap_buffers()
 
-    def update_frame(self, scene):
+    def update_frame(self, mobjects, meshes):
         self.frame_buffer_object.clear(*self.background_color)
-        self.refresh_perspective_uniforms(scene.camera)
+        self.refresh_perspective_uniforms(self.camera)
 
-        for mobject in scene.mobjects:
+        for mobject in mobjects:
             if not mobject.should_render:
                 continue
             self.render_mobject(mobject)
 
-        for obj in scene.meshes:
+        for obj in meshes:
             for mesh in obj.get_meshes():
                 mesh.set_uniforms(self)
                 mesh.render()
@@ -491,7 +465,7 @@ class OpenGLRenderer:
     def should_save_last_frame(self, num_plays):
         if config["save_last_frame"]:
             return True
-        if self.scene.interactive_mode:
+        if self.interactive_mode:
             return False
         return num_plays == 0
 
@@ -520,7 +494,9 @@ class OpenGLRenderer:
         )
         return image
 
-    def save_static_frame_data(self, scene, static_mobjects):
+    def save_static_frame_data(
+        self, static_mobjects, mobjects=None, foreground_mobjects=None
+    ):
         pass
 
     def get_frame_buffer_object(self, context, samples=0):
@@ -578,6 +554,175 @@ class OpenGLRenderer:
             # Only scale wrt one axis
             scale = fh / ph
             return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+
+    def interactive_embed(self):
+        """
+        Like embed(), but allows for screen interaction.
+        """
+        if not self.check_interactive_embed_is_valid():
+            return
+        self.interactive_mode = True
+
+        def ipython(shell, namespace):
+            import manim.opengl
+
+            def load_module_into_namespace(module, namespace):
+                for name in dir(module):
+                    namespace[name] = getattr(module, name)
+
+            load_module_into_namespace(manim, namespace)
+            load_module_into_namespace(manim.opengl, namespace)
+
+            def embedded_rerun(*args, **kwargs):
+                self.queue.put(("rerun_keyboard", args, kwargs))
+                shell.exiter()
+
+            namespace["rerun"] = embedded_rerun
+
+            shell(local_ns=namespace)
+            self.queue.put(("exit_keyboard", [], {}))
+
+        def get_embedded_method(method_name):
+            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+
+        local_namespace = inspect.currentframe().f_back.f_locals
+        for method in ("play", "wait", "add", "remove"):
+            embedded_method = get_embedded_method(method)
+            # Allow for calling scene methods without prepending 'self.'.
+            local_namespace[method] = embedded_method
+
+        from IPython.terminal.embed import InteractiveShellEmbed
+        from traitlets.config import Config
+
+        cfg = Config()
+        cfg.TerminalInteractiveShell.confirm_exit = False
+        shell = InteractiveShellEmbed(config=cfg)
+
+        keyboard_thread = threading.Thread(
+            target=ipython,
+            args=(shell, local_namespace),
+        )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
+        keyboard_thread.start()
+
+        if dearpygui_imported and config["enable_gui"]:
+            if not dpg.is_dearpygui_running():
+                gui_thread = threading.Thread(
+                    target=configure_pygui,
+                    args=(self, self.widgets),
+                    kwargs={"update": False},
+                )
+                gui_thread.start()
+            else:
+                configure_pygui(self, self.widgets, update=True)
+
+        self.camera.model_matrix = self.camera.default_model_matrix
+
+        self.interact(shell, keyboard_thread)
+
+    def interact(self, shell, keyboard_thread):
+        event_handler = RerunSceneHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.start()
+
+        self.quit_interaction = False
+        keyboard_thread_needs_join = shell.pt_app is not None
+        assert self.queue.qsize() == 0
+
+        last_time = time.time()
+        while not (self.window.is_closing or self.quit_interaction):
+            if not self.queue.empty():
+                tup = self.queue.get_nowait()
+                if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard"):
+                        if shell.pt_app:
+                            shell.pt_app.app.exit(exception=EOFError)
+                        file_observer.unschedule_all()
+                        raise RerunSceneException
+                    keyboard_thread.join()
+
+                    kwargs = tup[2]
+                    if "from_animation_number" in kwargs:
+                        config["from_animation_number"] = kwargs[
+                            "from_animation_number"
+                        ]
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
+                    # # end of a scene by default.
+                    # if "upto_animation_number" in kwargs:
+                    #     config["upto_animation_number"] = kwargs[
+                    #         "upto_animation_number"
+                    #     ]
+
+                    keyboard_thread.join()
+                    file_observer.unschedule_all()
+                    raise RerunSceneException
+                elif tup[0].startswith("exit"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+                    # Remove exit_keyboard from the queue if necessary.
+                    while self.queue.qsize() > 0:
+                        self.queue.get()
+                    keyboard_thread_needs_join = False
+                    break
+                else:
+                    method, args, kwargs = tup
+                    getattr(self, method)(*args, **kwargs)
+            else:
+                self.animation_start_time = 0
+                dt = time.time() - last_time
+                last_time = time.time()
+                self.render(self, dt, self.moving_mobjects)
+                self.update_mobjects(dt)
+                self.update_meshes(dt)
+                self.update_self(dt)
+
+        # Join the keyboard thread if necessary.
+        if shell is not None and keyboard_thread_needs_join:
+            shell.pt_app.app.exit(exception=EOFError)
+            keyboard_thread.join()
+            # Remove exit_keyboard from the queue if necessary.
+            while self.queue.qsize() > 0:
+                self.queue.get()
+
+        file_observer.stop()
+        file_observer.join()
+
+        if dearpygui_imported and config["enable_gui"]:
+            dpg.stop_dearpygui()
+
+        if self.window.is_closing:
+            self.window.destroy()
+
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
+            )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        elif config.dry_run:
+            logger.warning("Disabling interactive embed as dry_run is enabled")
+            return False
+        return True
 
     @property
     def background_color(self):
