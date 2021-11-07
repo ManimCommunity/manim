@@ -1150,6 +1150,7 @@ class Scene:
         self.renderer.interactive_embed(
             self.moving_mobjects,
             self.meshes,
+            self.file_writer,
             self.update_mobjects,
             self.update_meshes,
             self.update_self,

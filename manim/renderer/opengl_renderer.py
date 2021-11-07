@@ -564,6 +564,7 @@ class OpenGLRenderer:
         self,
         moving_mobjects,
         meshes,
+        file_writer,
         update_mobjects_hook,
         update_meshes_hook,
         update_scene_hook,
@@ -637,6 +638,7 @@ class OpenGLRenderer:
             keyboard_thread,
             moving_mobjects,
             meshes,
+            file_writer,
             update_mobjects_hook,
             update_meshes_hook,
             update_scene_hook,
@@ -648,6 +650,7 @@ class OpenGLRenderer:
         keyboard_thread,
         moving_mobjects,
         meshes,
+        file_writer,
         update_mobjects_hook,
         update_meshes_hook,
         update_scene_hook,
@@ -706,7 +709,13 @@ class OpenGLRenderer:
                 self.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.render(self, dt, mobjects=moving_mobjects, meshes=meshes)
+                self.render(
+                    dt,
+                    moving_mobjects,
+                    mobjects=moving_mobjects,
+                    meshes=meshes,
+                    file_writer=file_writer,
+                )
                 update_mobjects_hook(dt)
                 update_meshes_hook(dt)
                 update_scene_hook(dt)
