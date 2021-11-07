@@ -3,6 +3,7 @@
 __all__ = ["Scene"]
 
 import copy
+import inspect
 import platform
 import random
 import types
@@ -1148,7 +1149,7 @@ class Scene:
             )
             return
         self.renderer.interactive_embed(
-            self.moving_mobjects,
+            self.mobjects,
             self.meshes,
             self.file_writer,
             self.update_mobjects,
