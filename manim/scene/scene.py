@@ -16,12 +16,9 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..scene.scene_file_writer import SceneFileWriter
-from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
@@ -89,34 +86,25 @@ class Scene:
         self.updaters = []
         self.point_lights = []
         self.ambient_light = None
-        self.key_to_function_map = {}
-        self.mouse_press_callbacks = []
         self.interactive_mode = False
         self.num_plays = 0
         self.animations_hashes = []
         self._file_writer_class = file_writer_class
 
-        if config.renderer == "opengl":
-            # Items associated with interaction
-            self.mouse_point = OpenGLPoint()
-            self.mouse_drag_point = OpenGLPoint()
-            if renderer is None:
-                renderer = OpenGLRenderer()
-
         if renderer is None:
-            self.renderer = CairoRenderer(
+            self._renderer = CairoRenderer(
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
         else:
-            self.renderer = renderer
+            self._renderer = renderer
 
         self.partial_movie_files = []
         self.file_writer = self._file_writer_class(
-            self.renderer,
+            self._renderer,
             Scene.__name__,
         )
-        self.renderer.init_scene()
+        self._renderer.init_scene()
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -125,9 +113,13 @@ class Scene:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-    @property  # todo remove this
+    @property
     def camera(self):
-        return self.renderer.camera
+        return self._renderer.camera
+
+    @property
+    def renderer(self):
+        return self._renderer
 
     def __deepcopy__(self, clone_from_id):
         cls = self.__class__
@@ -203,8 +195,8 @@ class Scene:
             pass
         except RerunSceneException as e:
             self.remove(*self.mobjects)
-            self.renderer.clear_screen()
-            self.renderer.num_plays = 0
+            self._renderer.clear_screen()
+            self._renderer.num_plays = 0
             return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
@@ -212,12 +204,12 @@ class Scene:
 
         # Show info only if animations are rendered or to get image
         if (
-            self.renderer.num_plays
+            self._renderer.num_plays
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
+                f"Rendered {str(self)}\nPlayed {self._renderer.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
@@ -378,7 +370,7 @@ class Scene:
         else:
             return extract_mobject_family_members(
                 self.mobjects,
-                use_z_index=self.renderer.camera.use_z_index,
+                use_z_index=self._renderer.camera.use_z_index,
             )
 
     def add(self, *mobjects):
@@ -505,7 +497,7 @@ class Scene:
         if extract_families:
             to_remove = extract_mobject_family_members(
                 to_remove,
-                use_z_index=self.renderer.camera.use_z_index,
+                use_z_index=self._renderer.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -709,13 +701,13 @@ class Scene:
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
+            use_z_index=self._renderer.camera.use_z_index,
             only_those_with_points=True,
         )
         moving_mobjects = self.get_moving_mobjects(*animations)
         all_moving_mobject_families = extract_mobject_family_members(
             moving_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
+            use_z_index=self._renderer.camera.use_z_index,
         )
         static_mobjects = list_difference_update(
             all_mobject_families,
@@ -794,14 +786,14 @@ class Scene:
             else:
                 time_progression = self.get_time_progression(
                     duration,
-                    f"Waiting {self.renderer.num_plays}",
+                    f"Waiting {self._renderer.num_plays}",
                 )
         else:
             time_progression = self.get_time_progression(
                 duration,
                 "".join(
                     [
-                        f"Animation {self.renderer.num_plays}: ",
+                        f"Animation {self._renderer.num_plays}: ",
                         str(animations[0]),
                         (", etc." if len(animations) > 1 else ""),
                     ],
@@ -939,7 +931,7 @@ class Scene:
         )
 
         # Save a static image, to avoid rendering non moving objects.
-        self.static_image = self.renderer.save_static_frame_data(
+        self.static_image = self._renderer.save_static_frame_data(
             self.static_mobjects,
             mobjects=self.mobjects,
             foreground_mobjects=self.foreground_mobjects,
@@ -947,10 +939,10 @@ class Scene:
 
         self.begin_animations()
         if self.is_current_animation_frozen_frame():
-            self.renderer.update_frame(self)
+            self._renderer.update_frame(self)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
-            self.renderer.freeze_current_frame(self.duration)
+            self._renderer.freeze_current_frame(self.duration)
         else:
             self.play_internal()
         self.file_writer.end_animation(not self.skip_animations)
@@ -965,10 +957,10 @@ class Scene:
         elif self.num_plays == 0 and config.write_to_movie:
             config.write_to_movie = False
 
-        if self.renderer.should_save_last_frame(self.num_plays):
+        if self._renderer.should_save_last_frame(self.num_plays):
             config.save_last_frame = True
-            self.renderer.update_frame(self)
-            self.file_writer.save_final_image(self.renderer.get_image())
+            self._renderer.update_frame(self)
+            self.file_writer.save_final_image(self._renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.play(Wait(run_time=duration, stop_condition=stop_condition))
@@ -1076,7 +1068,7 @@ class Scene:
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
-                self.renderer.render(
+                self._renderer.render(
                     t,
                     self.moving_mobjects,
                     self.skip_animations,
@@ -1094,7 +1086,7 @@ class Scene:
             animation.clean_up_from_scene(self)
         if not self.skip_animations:
             self.update_mobjects(0)
-        self.renderer.static_image = None
+        self._renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
@@ -1146,142 +1138,8 @@ class Scene:
         """
         if self.skip_animations:
             return
-        time = self.renderer.time + time_offset
+        time = self._renderer.time + time_offset
         self.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
-    def on_mouse_motion(self, point, d_point):
-        self.mouse_point.move_to(point)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
-            shift = -d_point
-            shift[0] *= self.camera.get_width() / 2
-            shift[1] *= self.camera.get_height() / 2
-            transform = self.camera.inverse_rotation_matrix
-            shift = np.dot(np.transpose(transform), shift)
-            self.camera.shift(shift)
-
-    def on_mouse_scroll(self, point, offset):
-        if not config.use_projection_stroke_shaders:
-            factor = 1 + np.arctan(-2.1 * offset[1])
-            self.camera.scale(factor, about_point=self.camera_target)
-        self.mouse_scroll_orbit_controls(point, offset)
-
-    def on_key_press(self, symbol, modifiers):
-        try:
-            char = chr(symbol)
-        except OverflowError:
-            logger.warning("The value of the pressed key is too large.")
-            return
-
-        if char == "r":
-            self.camera.to_default_state()
-            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
-        elif char == "q":
-            self.quit_interaction = True
-        else:
-            if char in self.key_to_function_map:
-                self.key_to_function_map[char]()
-
-    def on_key_release(self, symbol, modifiers):
-        pass
-
-    def on_mouse_drag(self, point, d_point, buttons, modifiers):
-        self.mouse_drag_point.move_to(point)
-        if buttons == 1:
-            self.camera.increment_theta(-d_point[0])
-            self.camera.increment_phi(d_point[1])
-        elif buttons == 4:
-            camera_x_axis = self.camera.model_matrix[:3, 0]
-            horizontal_shift_vector = -d_point[0] * camera_x_axis
-            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
-            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
-            self.camera.shift(1.1 * total_shift_vector)
-
-        self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
-
-    def mouse_scroll_orbit_controls(self, point, offset):
-        camera_to_target = self.camera_target - self.camera.get_position()
-        camera_to_target *= np.sign(offset[1])
-        shift_vector = 0.01 * camera_to_target
-        self.camera.model_matrix = (
-            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
-        )
-
-    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
-        # Left click drag.
-        if buttons == 1:
-            # Translate to target the origin and rotate around the z axis.
-            self.camera.model_matrix = (
-                opengl.rotation_matrix(z=-d_point[0])
-                @ opengl.translation_matrix(*-self.camera_target)
-                @ self.camera.model_matrix
-            )
-
-            # Rotation off of the z axis.
-            camera_position = self.camera.get_position()
-            camera_y_axis = self.camera.model_matrix[:3, 1]
-            axis_of_rotation = space_ops.normalize(
-                np.cross(camera_y_axis, camera_position),
-            )
-            rotation_matrix = space_ops.rotation_matrix(
-                d_point[1],
-                axis_of_rotation,
-                homogeneous=True,
-            )
-
-            maximum_polar_angle = self.camera.maximum_polar_angle
-            minimum_polar_angle = self.camera.minimum_polar_angle
-
-            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
-            potential_camera_location = potential_camera_model_matrix[:3, 3]
-            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
-            sign = (
-                np.sign(potential_camera_y_axis[2])
-                if potential_camera_y_axis[2] != 0
-                else 1
-            )
-            potential_polar_angle = sign * np.arccos(
-                potential_camera_location[2]
-                / np.linalg.norm(potential_camera_location),
-            )
-            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
-                self.camera.model_matrix = potential_camera_model_matrix
-            else:
-                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
-                current_polar_angle = sign * np.arccos(
-                    camera_position[2] / np.linalg.norm(camera_position),
-                )
-                if potential_polar_angle > maximum_polar_angle:
-                    polar_angle_delta = maximum_polar_angle - current_polar_angle
-                else:
-                    polar_angle_delta = minimum_polar_angle - current_polar_angle
-                rotation_matrix = space_ops.rotation_matrix(
-                    polar_angle_delta,
-                    axis_of_rotation,
-                    homogeneous=True,
-                )
-                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
-
-            # Translate to target the original target.
-            self.camera.model_matrix = (
-                opengl.translation_matrix(*self.camera_target)
-                @ self.camera.model_matrix
-            )
-        # Right click drag.
-        elif buttons == 4:
-            camera_x_axis = self.camera.model_matrix[:3, 0]
-            horizontal_shift_vector = -d_point[0] * camera_x_axis
-            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
-            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
-
-            self.camera.model_matrix = (
-                opengl.translation_matrix(*total_shift_vector)
-                @ self.camera.model_matrix
-            )
-            self.camera_target += total_shift_vector
-
-    def set_key_function(self, char, func):
-        self.key_to_function_map[char] = func
-
-    def on_mouse_press(self, point, button, modifiers):
-        for func in self.mouse_press_callbacks:
-            func()
+    def interactive_embed(self):
+        self.renderer.interactive_embed()

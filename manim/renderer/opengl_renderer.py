@@ -254,6 +254,8 @@ class OpenGLRenderer:
         self.interactive_mode = False
         self.queue = Queue()
         self.widgets = [] if not widgets else widgets
+        self.key_to_function_map = {}
+        self.mouse_press_callbacks = []
 
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
@@ -267,6 +269,9 @@ class OpenGLRenderer:
         if not hasattr(self, "window"):
             if self.should_create_window():
                 from .opengl_renderer_window import Window
+
+                self.mouse_point = OpenGLPoint()
+                self.mouse_drag_point = OpenGLPoint()
 
                 self.window = Window(self)
                 self.context = self.window.ctx
@@ -723,6 +728,143 @@ class OpenGLRenderer:
             logger.warning("Disabling interactive embed as dry_run is enabled")
             return False
         return True
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
+        self.mouse_scroll_orbit_controls(point, offset)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
+        elif char == "q":
+            self.quit_interaction = True
+        else:
+            if char in self.key_to_function_map:
+                self.key_to_function_map[char]()
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
+        if buttons == 1:
+            self.camera.increment_theta(-d_point[0])
+            self.camera.increment_phi(d_point[1])
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+            self.camera.shift(1.1 * total_shift_vector)
+
+        self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
+
+    def mouse_scroll_orbit_controls(self, point, offset):
+        camera_to_target = self.camera_target - self.camera.get_position()
+        camera_to_target *= np.sign(offset[1])
+        shift_vector = 0.01 * camera_to_target
+        self.camera.model_matrix = (
+            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+        )
+
+    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
+        # Left click drag.
+        if buttons == 1:
+            # Translate to target the origin and rotate around the z axis.
+            self.camera.model_matrix = (
+                opengl.rotation_matrix(z=-d_point[0])
+                @ opengl.translation_matrix(*-self.camera_target)
+                @ self.camera.model_matrix
+            )
+
+            # Rotation off of the z axis.
+            camera_position = self.camera.get_position()
+            camera_y_axis = self.camera.model_matrix[:3, 1]
+            axis_of_rotation = space_ops.normalize(
+                np.cross(camera_y_axis, camera_position),
+            )
+            rotation_matrix = space_ops.rotation_matrix(
+                d_point[1],
+                axis_of_rotation,
+                homogeneous=True,
+            )
+
+            maximum_polar_angle = self.camera.maximum_polar_angle
+            minimum_polar_angle = self.camera.minimum_polar_angle
+
+            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
+            potential_camera_location = potential_camera_model_matrix[:3, 3]
+            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
+            sign = (
+                np.sign(potential_camera_y_axis[2])
+                if potential_camera_y_axis[2] != 0
+                else 1
+            )
+            potential_polar_angle = sign * np.arccos(
+                potential_camera_location[2]
+                / np.linalg.norm(potential_camera_location),
+            )
+            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
+                self.camera.model_matrix = potential_camera_model_matrix
+            else:
+                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
+                current_polar_angle = sign * np.arccos(
+                    camera_position[2] / np.linalg.norm(camera_position),
+                )
+                if potential_polar_angle > maximum_polar_angle:
+                    polar_angle_delta = maximum_polar_angle - current_polar_angle
+                else:
+                    polar_angle_delta = minimum_polar_angle - current_polar_angle
+                rotation_matrix = space_ops.rotation_matrix(
+                    polar_angle_delta,
+                    axis_of_rotation,
+                    homogeneous=True,
+                )
+                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
+
+            # Translate to target the original target.
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*self.camera_target)
+                @ self.camera.model_matrix
+            )
+        # Right click drag.
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*total_shift_vector)
+                @ self.camera.model_matrix
+            )
+            self.camera_target += total_shift_vector
+
+    def set_key_function(self, char, func):
+        self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()
 
     @property
     def background_color(self):

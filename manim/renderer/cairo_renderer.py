@@ -8,9 +8,10 @@ from .. import config, logger
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject
 from ..utils.iterables import list_update
+from .renderer import Renderer
 
 
-class CairoRenderer:
+class CairoRenderer(Renderer):
     """A renderer using Cairo.
 
     num_plays : Number of play() functions in the scene.
@@ -36,6 +37,12 @@ class CairoRenderer:
         self.static_image = None
 
     def init_scene(self):
+        pass
+
+    def before_render(self):
+        pass
+
+    def after_render(self):
         pass
 
     def update_frame(  # TODO Description in Docstring

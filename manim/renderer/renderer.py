@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from manim.utils.decorators import optionalmethod
+
 
 class Renderer(ABC):
     def __init__(self):
@@ -23,4 +25,8 @@ class Renderer(ABC):
 
     @abstractmethod
     def get_frame(self):
+        pass
+
+    @optionalmethod
+    def interactive_embed(self):
         pass

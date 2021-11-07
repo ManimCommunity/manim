@@ -14,7 +14,9 @@ import cloup
 import requests
 
 from ... import __version__, config, console, error_console, logger
+from ...camera.camera import Camera
 from ...constants import EPILOG
+from ...renderer.cairo_renderer import CairoRenderer
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -135,7 +137,11 @@ def render(
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
-                scene = SceneClass()
+                renderer = CairoRenderer(
+                    camera_class=Camera,
+                    skip_animations=False,
+                )
+                scene = SceneClass(renderer=renderer)
                 scene.render()
             except Exception:
                 error_console.print_exception()
