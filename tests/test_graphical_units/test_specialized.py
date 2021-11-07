@@ -5,6 +5,6 @@ __module_test__ = "specialized"
 
 
 @frames_comparison(last_frame=False)
-def test_broadcast(scene):
+def test_Broadcast(scene):
     circle = Circle()
     scene.play(Broadcast(circle))
