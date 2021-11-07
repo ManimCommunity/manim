@@ -1,0 +1,914 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.7, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
+rootdir: /home/chris/files/python/manim/manim, configfile: pyproject.toml
+plugins: xdist-2.4.0, forked-1.3.0, cov-2.12.1
+gw0 I / gw1 I / gw2 I / gw3 I / gw4 I / gw5 I
+gw0 [559] / gw1 [559] / gw2 [559] / gw3 [559] / gw4 [559] / gw5 [559]
+
+........................................................................ [ 12%]
+......................................................................... [ 25%]
+..............................s....................................xxxx. [ 38%]
+.......X................................................................ [ 51%]
+........................................................................ [ 64%]
+........................................................................ [ 77%]
+.................................................X.............s........ [ 90%]
+....x..xx.............................................                   [100%]
+=============================== warnings summary ===============================
+tests/test_copy.py: 1 warning
+tests/test_config.py: 6 warnings
+tests/test_numbers.py: 2 warnings
+tests/test_texmobject.py: 26 warnings
+tests/test_number_line.py: 6 warnings
+tests/test_coordinate_system.py: 8 warnings
+tests/test_graphical_units/test_axes.py: 21 warnings
+tests/opengl/test_number_line_opengl.py: 6 warnings
+tests/opengl/test_numbers_opengl.py: 1 warning
+tests/test_graphical_units/test_coordinate_systems.py: 2 warnings
+tests/test_graphical_units/test_numbers.py: 4 warnings
+tests/test_graphical_units/test_tables.py: 24 warnings
+tests/test_graphical_units/test_vector_scene.py: 5 warnings
+  /home/chris/files/python/manim/manim/manim/mobject/svg/tex_mobject.py:365: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+    sub_tex_mob.set_submobjects(self.submobjects[curr_index:new_index])
+
+tests/test_copy.py: 1 warning
+tests/test_config.py: 6 warnings
+tests/test_numbers.py: 2 warnings
+tests/test_texmobject.py: 13 warnings
+tests/test_number_line.py: 6 warnings
+tests/test_coordinate_system.py: 8 warnings
+tests/test_graphical_units/test_axes.py: 21 warnings
+tests/opengl/test_number_line_opengl.py: 6 warnings
+tests/opengl/test_numbers_opengl.py: 1 warning
+tests/test_graphical_units/test_coordinate_systems.py: 2 warnings
+tests/test_graphical_units/test_numbers.py: 4 warnings
+tests/test_graphical_units/test_tables.py: 24 warnings
+tests/test_graphical_units/test_vector_scene.py: 4 warnings
+  /home/chris/files/python/manim/manim/manim/mobject/svg/tex_mobject.py:368: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+    self.set_submobjects(new_submobjects)
+
+tests/test_value_tracker.py: 16 warnings
+tests/test_graphical_units/test_mobjects.py: 5 warnings
+tests/test_graphical_units/test_threed.py: 70 warnings
+tests/test_graphical_units/test_axes.py: 5 warnings
+tests/test_graphical_units/test_updaters.py: 1 warning
+  /home/chris/files/python/manim/manim/manim/mobject/value_tracker.py:72: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+    self.set_points(np.zeros((1, 3)))
+
+tests/test_value_tracker.py: 1 warning
+tests/test_graphical_units/test_threed.py: 24 warnings
+  /home/chris/files/python/manim/manim/manim/mobject/value_tracker.py:133: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+    self.set_points(path_func(mobject1.points, mobject2.points, alpha))
+
+tests/test_numbers.py: 7 warnings
+tests/test_number_line.py: 6 warnings
+tests/test_coordinate_system.py: 48 warnings
+tests/test_graphical_units/test_coordinate_systems.py: 49 warnings
+tests/opengl/test_number_line_opengl.py: 6 warnings
+tests/opengl/test_numbers_opengl.py: 7 warnings
+tests/test_graphical_units/test_axes.py: 45 warnings
+tests/test_graphical_units/test_numbers.py: 9 warnings
+tests/test_graphical_units/test_tables.py: 40 warnings
+tests/test_graphical_units/test_vector_scene.py: 22 warnings
+tests/test_scene_rendering/test_cairo_renderer.py: 1 warning
+tests/test_scene_rendering/test_play_logic.py: 1 warning
+  /home/chris/files/python/manim/manim/manim/mobject/numbers.py:118: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+    self.set_submobjects([])
+
+tests/opengl/test_axes_shift_opengl.py: 4 warnings
+tests/opengl/test_coordinate_system_opengl.py: 68 warnings
+tests/opengl/test_ticks_opengl.py: 12 warnings
+tests/opengl/test_opengl_vectorized_mobject.py: 1 warning
+  /home/chris/files/python/manim/manim/manim/mobject/types/opengl_vectorized_mobject.py:720: DeprecationWarning: Calling np.sum(generator) is deprecated, and in the future will give a different result. Use np.sum(np.fromiter(generator)) or the python sum builtin instead.
+    target_length = alpha * np.sum(length for _, length in curves_and_lengths)
+
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+tests/test_graphical_units/test_axes.py::test_get_area
+  /home/chris/files/python/manim/manim/manim/mobject/number_line.py:424: DeprecationWarning: This method is not guaranteed to stay around. Please prefer getting the attribute normally.
+    num_mob.shift(num_mob[0].get_width() * LEFT / 2)
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+
+----------- coverage: platform linux, python 3.9.7-final-0 -----------
+Name                                                Stmts   Miss  Cover
+-----------------------------------------------------------------------
+manim/__init__.py                                     103      7    93%
+manim/__main__.py                                      26      0   100%
+manim/_config/__init__.py                              20      0   100%
+manim/_config/logger_utils.py                          58      4    93%
+manim/_config/utils.py                                443     55    88%
+manim/animation/__init__.py                             0      0   100%
+manim/animation/animation.py                          136     13    90%
+manim/animation/composition.py                        117     16    86%
+manim/animation/creation.py                           136     38    72%
+manim/animation/fading.py                              46      6    87%
+manim/animation/growing.py                             43      4    91%
+manim/animation/indication.py                         159     18    89%
+manim/animation/movement.py                            44      7    84%
+manim/animation/numbers.py                             19      8    58%
+manim/animation/rotation.py                            37      8    78%
+manim/animation/specialized.py                         29     22    24%
+manim/animation/transform.py                          228     62    73%
+manim/animation/transform_matching_parts.py           107     75    30%
+manim/animation/update.py                              24     11    54%
+manim/camera/__init__.py                                0      0   100%
+manim/camera/camera.py                                396     96    76%
+manim/camera/mapping_camera.py                         51     33    35%
+manim/camera/moving_camera.py                          76      8    89%
+manim/camera/multi_camera.py                           35     25    29%
+manim/camera/three_d_camera.py                        164     34    79%
+manim/camera/webgl_camera.py                           19     19     0%
+manim/cli/__init__.py                                   0      0   100%
+manim/cli/cfg/__init__.py                               0      0   100%
+manim/cli/cfg/group.py                                129    100    22%
+manim/cli/init/__init__.py                              0      0   100%
+manim/cli/init/commands.py                             10      1    90%
+manim/cli/new/__init__.py                               0      0   100%
+manim/cli/new/group.py                                 78     56    28%
+manim/cli/plugins/__init__.py                           0      0   100%
+manim/cli/plugins/commands.py                           8      2    75%
+manim/cli/render/__init__.py                            0      0   100%
+manim/cli/render/commands.py                          116     43    63%
+manim/cli/render/ease_of_access_options.py              3      0   100%
+manim/cli/render/global_options.py                     13      6    54%
+manim/cli/render/output_options.py                      3      0   100%
+manim/cli/render/render_options.py                     26      6    77%
+manim/communitycolors.py                                5      5     0%
+manim/constants.py                                     72      0   100%
+manim/grpc/__init__.py                                  0      0   100%
+manim/grpc/gen/__init__.py                              3      3     0%
+manim/grpc/gen/frameserver_pb2.py                      91     91     0%
+manim/grpc/gen/frameserver_pb2_grpc.py                 35     35     0%
+manim/grpc/gen/renderserver_pb2.py                     33     33     0%
+manim/grpc/gen/renderserver_pb2_grpc.py                19     19     0%
+manim/grpc/impl/__init__.py                             0      0   100%
+manim/grpc/impl/frame_server_impl.py                  206    206     0%
+manim/gui/__init__.py                                   0      0   100%
+manim/gui/gui.py                                       47     38    19%
+manim/mobject/__init__.py                               0      0   100%
+manim/mobject/boolean_ops.py                          102     17    83%
+manim/mobject/changing.py                              70     52    26%
+manim/mobject/coordinate_systems.py                   619    160    74%
+manim/mobject/frame.py                                 33      8    76%
+manim/mobject/functions.py                             74      9    88%
+manim/mobject/geometry.py                             719    145    80%
+manim/mobject/graph.py                                272     75    72%
+manim/mobject/logo.py                                 107     89    17%
+manim/mobject/matrix.py                               118     48    59%
+manim/mobject/mobject.py                              917    191    79%
+manim/mobject/mobject_update_utils.py                  61     48    21%
+manim/mobject/number_line.py                          191     19    90%
+manim/mobject/numbers.py                              119     22    82%
+manim/mobject/opengl_compatibility.py                  16      0   100%
+manim/mobject/opengl_geometry.py                      480    480     0%
+manim/mobject/opengl_mobject.py                      1157    458    60%
+manim/mobject/opengl_three_dimensions.py               30     23    23%
+manim/mobject/polyhedra.py                             63      9    86%
+manim/mobject/probability.py                          163    129    21%
+manim/mobject/shape_matchers.py                        37     15    59%
+manim/mobject/svg/__init__.py                           0      0   100%
+manim/mobject/svg/brace.py                            109     31    72%
+manim/mobject/svg/code_mobject.py                     224    197    12%
+manim/mobject/svg/opengl_tex_mobject.py               204    204     0%
+manim/mobject/svg/opengl_text_mobject.py              402    402     0%
+manim/mobject/svg/style_utils.py                       57      1    98%
+manim/mobject/svg/svg_mobject.py                      206     27    87%
+manim/mobject/svg/svg_path.py                         244      4    98%
+manim/mobject/svg/tex_mobject.py                      226     84    63%
+manim/mobject/svg/text_mobject.py                     430    158    63%
+manim/mobject/table.py                                204     65    68%
+manim/mobject/three_d_utils.py                         33      2    94%
+manim/mobject/three_dimensions.py                     282     29    90%
+manim/mobject/types/__init__.py                         0      0   100%
+manim/mobject/types/dot_cloud.py                       21     10    52%
+manim/mobject/types/image_mobject.py                  110     40    64%
+manim/mobject/types/opengl_point_cloud_mobject.py     114     79    31%
+manim/mobject/types/opengl_surface.py                 188    145    23%
+manim/mobject/types/opengl_vectorized_mobject.py      707    137    81%
+manim/mobject/types/point_cloud_mobject.py            163     81    50%
+manim/mobject/types/vectorized_mobject.py             730    125    83%
+manim/mobject/value_tracker.py                         51      0   100%
+manim/mobject/vector_field.py                         271    226    17%
+manim/opengl/__init__.py                               10     10     0%
+manim/plugins/__init__.py                               1      0   100%
+manim/plugins/import_plugins.py                        27      0   100%
+manim/plugins/plugins_flags.py                         11      6    45%
+manim/renderer/__init__.py                              0      0   100%
+manim/renderer/cairo_renderer.py                      107      5    95%
+manim/renderer/opengl_renderer.py                     320     89    72%
+manim/renderer/opengl_renderer_window.py               79     29    63%
+manim/renderer/shader.py                              264    123    53%
+manim/renderer/shader_wrapper.py                      102     33    68%
+manim/renderer/vectorized_mobject_rendering.py        128    116     9%
+manim/renderer/webgl_renderer.py                       42     42     0%
+manim/scene/__init__.py                                 0      0   100%
+manim/scene/moving_camera_scene.py                     16      1    94%
+manim/scene/reconfigurable_scene.py                    37     24    35%
+manim/scene/sample_space_scene.py                      87     63    28%
+manim/scene/scene.py                                  577    277    52%
+manim/scene/scene_file_writer.py                      254     41    84%
+manim/scene/section.py                                 24      2    92%
+manim/scene/three_d_scene.py                          171     90    47%
+manim/scene/vector_space_scene.py                     327    211    35%
+manim/scene/zoomed_scene.py                            61     46    25%
+manim/utils/__init__.py                                 0      0   100%
+manim/utils/bezier.py                                 209     47    78%
+manim/utils/caching.py                                 26      2    92%
+manim/utils/color.py                                  232     22    91%
+manim/utils/commands.py                                20      0   100%
+manim/utils/config_ops.py                              32      2    94%
+manim/utils/debug.py                                   17     11    35%
+manim/utils/deprecation.py                             95      2    98%
+manim/utils/exceptions.py                               6      0   100%
+manim/utils/family.py                                  11      0   100%
+manim/utils/family_ops.py                              19      2    89%
+manim/utils/file_ops.py                               103     34    67%
+manim/utils/hashing.py                                135     10    93%
+manim/utils/images.py                                  19      9    53%
+manim/utils/ipython_magic.py                           71     56    21%
+manim/utils/iterables.py                               94     18    81%
+manim/utils/module_ops.py                              95     31    67%
+manim/utils/opengl.py                                  43     18    58%
+manim/utils/paths.py                                   28      3    89%
+manim/utils/rate_functions.py                         211     92    56%
+manim/utils/scale.py                                   38      5    87%
+manim/utils/simple_functions.py                        65     14    78%
+manim/utils/sounds.py                                   5      0   100%
+manim/utils/space_ops.py                              258     45    83%
+manim/utils/strings.py                                 22     12    45%
+manim/utils/tex.py                                     59     11    81%
+manim/utils/tex_file_writing.py                       103     22    79%
+manim/utils/tex_templates.py                          252      0   100%
+manim/utils/unit.py                                    23      2    91%
+-----------------------------------------------------------------------
+TOTAL                                               18673   6935    63%
+Coverage XML written to file coverage.xml
+
+============================== slowest durations ===============================
+35.33s call     tests/test_scene_rendering/test_cli_flags.py::test_resolution_flag
+32.43s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_resolution_flag
+16.85s call     tests/test_graphical_units/test_threed.py::test_SurfaceColorscale
+9.80s call     tests/test_plugins/test_plugins.py::test_plugin_no_all
+9.61s call     tests/test_plugins/test_plugins.py::test_plugin_function_like
+8.38s call     tests/test_plugins/test_plugins.py::test_plugin_with_all
+8.15s call     tests/test_graphical_units/test_coordinate_systems.py::test_number_plane_log
+7.97s call     tests/test_scene_rendering/test_cli_flags.py::test_n_flag
+7.76s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_n_flag
+6.01s call     tests/test_coordinate_system.py::test_NumberPlane
+5.93s call     tests/test_graphical_units/test_tables.py::test_IntegerTable
+5.76s call     tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[{{ a }} + {{ b }} = {{ c }}-5]
+5.35s call     tests/test_graphical_units/test_tables.py::test_Table
+5.04s call     tests/test_scene_rendering/opengl/test_caching_related_opengl.py::test_play_skip
+4.92s call     tests/opengl/test_texmobject_opengl.py::test_tex_white_space_and_non_whitespace_args
+4.86s call     tests/opengl/test_texmobject_opengl.py::test_tex_whitespace_arg
+4.73s call     tests/opengl/test_texmobject_opengl.py::test_tex_non_whitespace_arg
+4.61s call     tests/test_graphical_units/test_threed.py::test_Arrow3D
+4.61s call     tests/test_scene_rendering/test_caching_related.py::test_play_skip
+4.48s call     tests/test_graphical_units/test_vector_scene.py::test_vector_to_coords
+4.41s call     tests/opengl/test_number_line_opengl.py::test_add_labels
+4.34s call     tests/test_texmobject.py::test_double_braces_testing[{{ a }} + {{ b }} = {{ c }}-5]
+4.32s call     tests/test_number_line.py::test_add_labels
+4.27s call     tests/test_texmobject.py::test_tex_whitespace_arg
+4.17s call     tests/test_scene_rendering/test_sections.py::test_many_sections
+4.10s call     tests/test_texmobject.py::test_tex_white_space_and_non_whitespace_args
+3.98s call     tests/test_scene_rendering/test_sections.py::test_skip_animations
+3.86s call     tests/test_graphical_units/test_threed.py::test_Line3D
+3.61s call     tests/test_graphical_units/test_axes.py::test_log_scaling_graph
+3.60s call     tests/test_texmobject.py::test_tex_non_whitespace_arg
+3.52s call     tests/test_scene_rendering/opengl/test_caching_related_opengl.py::test_wait_skip
+3.50s call     tests/test_scene_rendering/test_cli_flags.py::test_basic_scene_with_default_values
+3.36s call     tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_force_window_opengl_render_with_format
+3.12s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_basic_scene_with_default_values
+3.01s call     tests/test_scene_rendering/test_caching_related.py::test_wait_skip
+2.99s call     tests/test_graphical_units/test_numbers.py::test_set_value_with_updaters
+2.67s call     tests/test_graphical_units/test_threed.py::test_Cone
+2.42s call     tests/test_graphical_units/test_tables.py::test_MathTable
+2.36s call     tests/test_scene_rendering/test_sections.py::test_sections
+2.33s call     tests/opengl/test_texmobject_opengl.py::test_tex
+2.27s call     tests/test_scene_rendering/test_cli_flags.py::test_images_are_created_when_png_format_set_for_opengl
+2.09s call     tests/test_scene_rendering/test_sections.py::test_no_sections
+2.09s call     tests/test_scene_rendering/test_cli_flags.py::test_images_are_zero_padded_when_zero_pad_set
+2.05s call     tests/test_graphical_units/test_functions.py::test_ImplicitFunction
+2.03s call     tests/test_scene_rendering/test_cli_flags.py::test_images_are_zero_padded_when_zero_pad_set_for_opengl
+2.01s call     tests/test_scene_rendering/test_cli_flags.py::test_webm_format_output
+1.92s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_a_flag
+1.86s call     tests/test_config.py::test_transparent
+1.86s call     tests/test_graphical_units/test_axes.py::test_plot
+1.85s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_webm_format_output
+1.85s call     tests/test_logging/test_logging.py::test_logging_when_scene_is_not_specified
+1.84s call     tests/test_graphical_units/test_polyhedra.py::test_Dodecahedron
+1.82s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_videos_not_created_when_png_format_set
+1.82s call     tests/test_scene_rendering/test_cli_flags.py::test_a_flag
+1.80s call     tests/test_plugins/test_plugins.py::test_plugin_warning
+1.77s call     tests/test_graphical_units/test_coordinate_systems.py::test_implicit_graph
+1.77s call     tests/test_logging/test_logging.py::test_logging_to_file
+1.76s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_images_are_zero_padded_when_zero_pad_set
+1.76s call     tests/test_config.py::test_custom_dirs
+1.75s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_images_are_created_when_png_format_set
+1.74s call     tests/test_scene_rendering/test_cli_flags.py::test_videos_not_created_when_png_format_set
+1.70s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_basic_scene_l_flag
+1.69s call     tests/test_graphical_units/test_axes.py::test_plot_line_graph
+1.68s call     tests/test_scene_rendering/test_cli_flags.py::test_images_are_created_when_png_format_set
+1.65s call     tests/test_numbers.py::test_font_size
+1.63s call     tests/test_graphical_units/test_axes.py::test_get_axis_labels
+1.63s call     tests/test_scene_rendering/test_cli_flags.py::test_input_file_via_cfg
+1.61s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_gif_format_output
+1.58s call     tests/test_scene_rendering/test_cli_flags.py::test_basic_scene_l_flag
+1.58s call     tests/test_scene_rendering/test_cli_flags.py::test_gif_format_output
+1.57s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_mov_can_be_set_as_output_format
+1.55s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_mp4_format_output
+1.51s call     tests/test_scene_rendering/test_cli_flags.py::test_mov_can_be_set_as_output_format
+1.50s call     tests/test_scene_rendering/test_cli_flags.py::test_mp4_format_output
+1.49s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_default_format_output_for_transparent_flag
+1.46s call     tests/test_scene_rendering/test_cli_flags.py::test_default_format_output_for_transparent_flag
+1.44s call     tests/test_commands.py::test_manim_version
+1.43s call     tests/test_graphical_units/test_axes.py::test_custom_coordinates
+1.42s call     tests/test_texmobject.py::test_tex
+1.41s call     tests/test_graphical_units/test_axes.py::test_get_z_axis_label
+1.38s call     tests/test_logging/test_logging.py::test_error_logging
+1.35s call     tests/test_graphical_units/test_axes.py::test_axes
+1.35s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_s_flag_no_animations
+1.33s call     tests/test_graphical_units/test_threed.py::test_Torus
+1.32s call     tests/test_scene_rendering/test_cli_flags.py::test_s_flag_opengl_renderer
+1.31s call     tests/test_graphical_units/test_threed.py::test_Cylinder
+1.28s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_image_output_for_static_scene_with_write_to_movie
+1.27s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_s_flag
+1.24s call     tests/opengl/test_texmobject_opengl.py::test_tex_size
+1.23s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_no_default_image_output_with_non_static_scene
+1.23s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_custom_folders
+1.23s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_r_flag
+1.23s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_no_image_output_with_interactive_embed
+1.22s call     tests/test_graphical_units/test_polyhedra.py::test_Icosahedron
+1.22s call     tests/test_scene_rendering/test_cli_flags.py::test_s_flag_no_animations
+1.22s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_image_output_for_static_scene
+1.20s call     tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[\\frac{1}{a+b\\sqrt{2}}-1]
+1.17s call     tests/test_scene_rendering/test_cli_flags.py::test_custom_folders
+1.16s call     tests/opengl/test_texmobject_opengl.py::test_MathTex
+1.14s call     tests/test_config.py::test_background_color
+1.13s call     tests/test_scene_rendering/test_cli_flags.py::test_s_flag
+1.10s call     tests/test_scene_rendering/test_cli_flags.py::test_r_flag
+1.09s call     tests/test_graphical_units/test_threed.py::test_CameraMoveAxes
+1.07s call     tests/opengl/test_numbers_opengl.py::test_font_size
+1.07s call     tests/opengl/test_copy_opengl.py::test_bracelabel_copy
+1.03s call     tests/test_scene_rendering/test_cairo_renderer.py::test_skipping_status_with_from_to_and_up_to
+1.02s call     tests/test_config.py::test_dry_run_with_png_format_skipped_animations
+1.01s teardown tests/test_plugins/test_plugins.py::test_plugin_function_like
+0.99s call     tests/test_config.py::test_dry_run_with_png_format
+0.96s call     tests/test_graphical_units/test_axes.py::test_polar_graph
+0.95s call     tests/test_copy.py::test_bracelabel_copy
+0.95s call     tests/test_graphical_units/test_tables.py::test_DecimalTable
+0.94s call     tests/test_texmobject.py::test_double_braces_testing[\\frac{1}{a+b\\sqrt{2}}-1]
+0.93s call     tests/opengl/test_texmobject_opengl.py::test_font_size_vs_scale
+0.92s call     tests/opengl/test_texmobject_opengl.py::test_SingleStringMathTex
+0.91s teardown tests/test_plugins/test_plugins.py::test_plugin_no_all
+0.89s call     tests/test_graphical_units/test_axes.py::test_get_x_axis_label
+0.84s call     tests/test_graphical_units/test_axes.py::test_get_y_axis_label
+0.83s call     tests/test_texmobject.py::test_MathTex
+0.83s call     tests/test_texmobject.py::test_tex_size
+0.81s call     tests/opengl/test_texmobject_opengl.py::test_font_size
+0.80s call     tests/test_graphical_units/test_img_and_svg.py::test_ContiguousUSMap
+0.80s call     tests/test_scene_rendering/test_cairo_renderer.py::test_when_animation_is_cached
+0.79s call     tests/test_texmobject.py::test_SingleStringMathTex
+0.79s call     tests/opengl/test_texmobject_opengl.py::test_changing_font_size
+0.77s call     tests/test_graphical_units/test_polyhedra.py::test_Octahedron
+0.77s call     tests/test_graphical_units/test_axes.py::test_t_label
+0.76s teardown tests/test_plugins/test_plugins.py::test_plugin_with_all
+0.72s call     tests/test_texmobject.py::test_font_size
+0.72s call     tests/test_texmobject.py::test_font_size_vs_scale
+0.72s call     tests/test_graphical_units/test_threed.py::test_Axes
+0.71s call     tests/test_graphical_units/test_axes.py::test_get_graph_label
+0.70s call     tests/test_texmobject.py::test_changing_font_size
+0.63s call     tests/test_coordinate_system.py::test_dimension
+0.62s call     tests/test_sound.py::test_add_sound
+0.62s call     tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_write_to_movie_disables_window
+0.59s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_static_wait_detection
+0.59s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[60]
+0.58s call     tests/test_graphical_units/test_threed.py::test_Sphere
+0.56s call     tests/test_graphical_units/test_axes.py::test_get_area
+0.55s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_non_static_wait_detection
+0.52s call     tests/opengl/test_sound_opengl.py::test_add_sound
+0.51s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[30]
+0.48s call     tests/test_scene_rendering/test_play_logic.py::test_t_values[60]
+0.47s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_save_last_frame
+0.42s call     tests/test_scene_rendering/test_play_logic.py::test_static_wait_detection
+0.41s call     tests/test_scene_rendering/test_cairo_renderer.py::test_hash_logic_is_called_when_caching_is_enabled
+0.41s call     tests/test_graphical_units/test_axes.py::test_get_riemann_rectangles
+0.39s call     tests/test_scene_rendering/test_play_logic.py::test_t_values_with_cached_data
+0.39s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[15]
+0.38s call     tests/test_scene_rendering/test_cairo_renderer.py::test_hash_logic_is_not_called_when_caching_is_disabled
+0.35s call     tests/test_texmobject.py::test_log_error_context
+0.35s call     tests/test_graphical_units/test_polyhedra.py::test_Tetrahedron
+0.35s call     tests/test_scene_rendering/test_play_logic.py::test_non_static_wait_detection
+0.34s call     tests/test_graph.py::test_custom_animation_mobject_list
+0.34s call     tests/test_texmobject.py::test_error_in_nested_context
+0.33s call     tests/test_scene_rendering/test_play_logic.py::test_t_values[30]
+0.31s call     tests/test_scene_rendering/test_play_logic.py::test_t_values[15]
+0.31s call     tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_dash_as_filename
+0.31s call     tests/test_scene_rendering/test_cairo_renderer.py::test_render
+0.29s call     tests/test_graphical_units/test_geometry.py::test_ZIndex
+0.28s call     tests/test_scene.py::test_scene_time
+0.27s call     tests/test_graphical_units/test_brace.py::test_braceTip
+0.27s call     tests/opengl/test_config_opengl.py::test_dry_run_with_png_format
+0.26s call     tests/opengl/test_config_opengl.py::test_dry_run_with_png_format_skipped_animations
+0.25s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_with_skip_animations
+0.25s call     tests/opengl/test_config_opengl.py::test_background_color
+0.25s call     tests/test_graphical_units/test_img_and_svg.py::test_MultipleTransform
+0.24s call     tests/opengl/test_coordinate_system_opengl.py::test_dimension
+0.22s call     tests/test_graphical_units/test_movements.py::test_Homotopy
+0.22s call     tests/test_graphical_units/test_img_and_svg.py::test_ImageMobject
+0.22s call     tests/test_graphical_units/test_axes.py::test_plot_derivative_graph
+0.21s call     tests/test_graphical_units/test_transform.py::test_ApplyPointwiseFunction
+0.21s call     tests/opengl/test_scene_opengl.py::test_scene_add_remove
+0.21s call     tests/test_graphical_units/test_brace.py::test_brace_sharpness
+0.20s call     tests/test_graphical_units/test_opengl.py::test_Circle
+0.20s call     tests/test_graphical_units/test_transform.py::test_Restore
+0.20s call     tests/test_graphical_units/test_transform.py::test_ApplyMatrix
+0.19s call     tests/test_graphical_units/test_indication.py::test_Wiggle
+0.19s call     tests/test_graphical_units/test_threed.py::test_Dot3D
+0.19s call     tests/test_graphical_units/test_axes.py::test_get_area_with_boundary_and_few_plot_points
+0.19s call     tests/test_graphical_units/test_creation.py::test_ShrinkToCenter
+0.18s call     tests/test_graphical_units/test_geometry.py::test_Coordinates
+0.18s call     tests/test_scene_rendering/test_play_logic.py::test_t_values_save_last_frame
+0.18s call     tests/test_graphical_units/test_creation.py::test_DrawBorderThenFill
+0.17s call     tests/test_graphical_units/test_functions.py::test_FunctionGraph
+0.17s call     tests/test_graphical_units/test_img_and_svg.py::test_DesmosGraph1
+0.17s call     tests/test_graphical_units/test_axes.py::test_get_lines_to_point
+0.17s call     tests/test_graphical_units/test_indication.py::test_FocusOn
+0.17s call     tests/test_graphical_units/test_axes.py::test_plot_functions
+0.17s call     tests/test_graphical_units/test_img_and_svg.py::test_UseTagInheritance
+0.17s call     tests/test_graphical_units/test_creation.py::test_GrowFromCenter
+0.16s call     tests/test_graphical_units/test_coordinate_systems.py::test_number_plane
+0.16s call     tests/test_graphical_units/test_img_and_svg.py::test_ScaleTransform
+0.16s call     tests/test_graphical_units/test_transform.py::test_FadeInAndOut
+0.16s call     tests/test_color.py::test_background_color
+0.16s call     tests/test_graphical_units/test_geometry.py::test_RoundedRectangle
+0.16s call     tests/opengl/test_color_opengl.py::test_background_color
+0.16s call     tests/opengl/test_markup_opengl.py::test_special_tags_markup
+0.15s call     tests/test_graphical_units/test_indication.py::test_ApplyWave
+0.15s call     tests/test_graphical_units/test_indication.py::test_Flash
+0.15s call     tests/test_graphical_units/test_indication.py::test_Circumscribe
+0.15s call     tests/test_scene_rendering/test_play_logic.py::test_t_values_with_skip_animations
+0.15s call     tests/test_texmobject.py::test_log_error_no_relevant_context
+0.15s call     tests/test_graphical_units/test_updaters.py::test_LastFrameWhenCleared
+0.15s call     tests/test_graphical_units/test_threed.py::test_CameraMove
+0.15s call     tests/test_graphical_units/test_creation.py::test_GrowFromEdge
+0.15s call     tests/test_scene_rendering/test_cli_flags.py::test_dash_as_filename
+0.15s call     tests/test_graphical_units/test_threed.py::test_MovingVertices
+0.15s call     tests/test_graphical_units/test_img_and_svg.py::test_Arcs01
+0.15s call     tests/test_graphical_units/test_img_and_svg.py::test_UKFlag
+0.15s call     tests/test_graphical_units/test_creation.py::test_SpinInFromNothing
+0.15s call     tests/test_graphical_units/test_img_and_svg.py::test_Heart
+0.14s call     tests/test_graphical_units/test_img_and_svg.py::test_ManimLogo
+0.14s call     tests/test_graphical_units/test_updaters.py::test_UpdateSceneDuringAnimation
+0.14s call     tests/opengl/test_markup_opengl.py::test_good_markup
+0.14s call     tests/test_markup.py::test_good_markup
+0.14s call     tests/test_graphical_units/test_img_and_svg.py::test_ImageInterpolation
+0.14s call     tests/test_graphical_units/test_indication.py::test_ShowCreationThenFadeOut
+0.14s call     tests/test_graphical_units/test_img_and_svg.py::test_QuadraticPath
+0.13s call     tests/test_graphical_units/test_geometry.py::test_CustomDoubleArrow
+0.13s call     tests/test_graphical_units/test_img_and_svg.py::test_Arcs02
+0.13s call     tests/test_boolops/test_boolops.py::test_union
+0.13s call     tests/test_graphical_units/test_creation.py::test_create
+0.13s call     tests/test_graphical_units/test_creation.py::test_uncreate
+0.13s call     tests/test_coordinate_system.py::test_input_to_graph_point
+0.12s call     tests/test_graphical_units/test_movements.py::test_MoveAlongPath
+0.12s call     tests/opengl/test_coordinate_system_opengl.py::test_input_to_graph_point
+0.12s call     tests/test_graphical_units/test_geometry.py::test_DoubleArrow
+0.12s call     tests/test_graphical_units/test_img_and_svg.py::test_Line
+0.12s call     tests/test_graphical_units/test_img_and_svg.py::test_MultiPartPath
+0.12s call     tests/test_graphical_units/test_img_and_svg.py::test_BrachistochroneCurve
+0.12s call     tests/test_graphical_units/test_transform.py::test_ScaleInPlace
+0.12s call     tests/test_graphical_units/test_img_and_svg.py::test_Penrose
+0.12s call     tests/test_graphical_units/test_geometry.py::test_Vector
+0.12s call     tests/test_graphical_units/test_creation.py::test_FadeIn
+0.12s call     tests/test_graphical_units/test_movements.py::test_Shift
+0.12s call     tests/test_graphical_units/test_creation.py::test_GrowFromPoint
+0.12s call     tests/test_graphical_units/test_transform.py::test_Transform
+0.11s call     tests/test_graphical_units/test_img_and_svg.py::test_PixelizedText
+0.11s call     tests/test_graphical_units/test_img_and_svg.py::test_SmoothCurves
+0.11s call     tests/test_graphical_units/test_transform.py::test_MatchPointsScene
+0.11s call     tests/test_boolops/test_boolops.py::test_difference
+0.11s call     tests/test_graphical_units/test_transform.py::test_CounterclockwiseTransform
+0.11s call     tests/test_graphical_units/test_coordinate_systems.py::test_line_graph
+0.11s call     tests/test_graphical_units/test_img_and_svg.py::test_WeightSVG
+0.11s call     tests/test_graphical_units/test_img_and_svg.py::test_RotateTransform
+0.11s call     tests/test_graphical_units/test_img_and_svg.py::test_CubicPath
+0.11s call     tests/test_graphical_units/test_brace.py::test_arcBrace
+0.11s call     tests/test_graphical_units/test_movements.py::test_PhaseFlow
+0.11s call     tests/test_graphical_units/test_indication.py::test_Indicate
+0.11s call     tests/test_graphical_units/test_geometry.py::test_Angle
+0.11s call     tests/test_graphical_units/test_tables.py::test_MobjectTable
+0.11s call     tests/test_graphical_units/test_threed.py::test_AmbientCameraMove
+0.11s call     tests/test_graphical_units/test_geometry.py::test_Sector
+0.11s call     tests/test_graphical_units/test_geometry.py::test_AnnularSector
+0.11s call     tests/test_graphical_units/test_transform.py::test_AnimationBuilder
+0.11s call     tests/test_graphical_units/test_geometry.py::test_Circle
+0.11s call     tests/test_graphical_units/test_geometry.py::test_CurvedArrowCustomTip
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Ellipse
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Elbow
+0.10s call     tests/test_graphical_units/test_transform.py::test_ShrinkToCenter
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_SingleUSState
+0.10s call     tests/test_graphical_units/test_movements.py::test_MoveTo
+0.10s call     tests/test_graphical_units/test_transform.py::test_ApplyComplexFunction
+0.10s call     tests/test_boolops/test_boolops.py::test_intersection
+0.10s call     tests/test_graphical_units/test_updaters.py::test_ValueTracker
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Rectangle
+0.10s call     tests/test_graphical_units/test_geometry.py::test_AnnotationDot
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Annulus
+0.10s call     tests/test_graphical_units/test_transform.py::test_FullRotation
+0.10s call     tests/test_graphical_units/test_transform.py::test_TransformFromCopy
+0.10s call     tests/test_graphical_units/test_geometry.py::test_RightAngle
+0.10s call     tests/test_graphical_units/test_geometry.py::test_AngledArrowTip
+0.10s call     tests/test_graphical_units/test_transform.py::test_ClockwiseTransform
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_CubicAndLineto
+0.10s call     tests/test_graphical_units/test_mobjects.py::test_become
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Arrange
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_Inheritance
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_SkewXTransform
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_MatrixTransform
+0.10s call     tests/test_graphical_units/test_movements.py::test_Rotate
+0.10s call     tests/test_graphical_units/test_geometry.py::test_CurvedArrow
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Polygon
+0.10s call     tests/test_graphical_units/test_geometry.py::test_Polygram
+0.10s call     tests/test_graphical_units/test_transform.py::test_CyclicReplace
+0.10s call     tests/test_graphical_units/test_img_and_svg.py::test_HalfEllipse
+0.10s call     tests/test_graphical_units/test_geometry.py::test_ArcBetweenPoints
+0.09s call     tests/test_graphical_units/test_updaters.py::test_Updater
+0.09s call     tests/test_graphical_units/test_mobjects.py::test_PointCloudDot
+0.09s call     tests/test_graphical_units/test_img_and_svg.py::test_SkewYTransform
+0.09s call     tests/test_graphical_units/test_transform.py::test_MoveToTarget
+0.09s call     tests/test_axes_shift.py::test_axes_origin_shift
+0.09s call     tests/test_graphical_units/test_geometry.py::test_Star
+0.09s call     tests/test_graphical_units/test_creation.py::test_FadeOut
+0.09s call     tests/test_auto_zoom.py::test_zoom
+0.09s call     tests/opengl/test_ticks_opengl.py::test_ticks_not_generated_on_origin_for_axes
+0.09s call     tests/test_graphical_units/test_img_and_svg.py::test_Rhomboid
+0.09s call     tests/test_graphical_units/test_transform.py::test_FadeToColort
+0.09s call     tests/test_graphical_units/test_indication.py::test_ShowPassingFlash
+0.09s call     tests/test_graphical_units/test_geometry.py::test_DashedVMobject
+0.09s call     tests/test_graphical_units/test_geometry.py::test_CirclePoints
+0.09s call     tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_get_frame_with_preview_disabled[False]
+0.09s call     tests/test_graphical_units/test_transform.py::test_ApplyFunction
+0.09s call     tests/test_graphical_units/test_modifier_methods.py::test_GradientRotation
+0.09s call     tests/test_graphical_units/test_img_and_svg.py::test_TranslateTransform
+0.09s call     tests/test_graphical_units/test_geometry.py::test_Dot
+0.09s call     tests/test_graphical_units/test_threed.py::test_Cube
+0.09s call     tests/test_graphical_units/test_img_and_svg.py::test_VideoIcon
+0.09s call     tests/test_graphical_units/test_geometry.py::test_Arc
+0.09s call     tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_with_cached_data
+0.08s call     tests/test_graphical_units/test_img_and_svg.py::test_WatchTheDecimals
+0.08s call     tests/test_boolops/test_boolops.py::test_intersection_3_mobjects
+0.08s call     tests/test_graphical_units/test_modifier_methods.py::test_Gradient
+0.08s call     tests/test_graphical_units/test_geometry.py::test_RegularPolygram
+0.08s call     tests/test_boolops/test_boolops.py::test_exclusion
+0.08s call     tests/opengl/test_text_mobject_opengl.py::test_font_size
+0.08s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[30]
+0.07s call     tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_get_frame_with_preview_enabled[True]
+0.07s call     tests/test_number_line.py::test_decimal_determined_by_step
+0.07s call     tests/test_ticks.py::test_ticks_not_generated_on_origin_for_axes
+0.07s call     tests/test_graphical_units/test_geometry.py::test_Line
+0.07s call     tests/test_graph.py::test_graph_add_vertices
+0.07s setup    tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_write_to_movie_disables_window
+0.07s call     tests/opengl/test_coordinate_system_opengl.py::test_point_to_coords
+0.06s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values[60]
+0.06s call     tests/test_markup.py::test_special_tags_markup
+0.06s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[15]
+0.06s call     tests/opengl/test_axes_shift_opengl.py::test_axes_origin_shift
+0.06s call     tests/opengl/test_coordinate_system_opengl.py::test_initial_config
+0.06s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values_with_skip_animations
+0.06s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_static_wait_detection
+0.05s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values[60]
+0.05s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_with_skip_animations
+0.05s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_non_static_wait_detection
+0.05s call     tests/test_text_mobject.py::test_font_size
+0.05s call     tests/opengl/test_graph_opengl.py::test_graph_add_vertices
+0.05s call     tests/test_scene.py::test_scene_add_remove
+0.05s call     tests/test_coordinate_system.py::test_coords_to_point
+0.05s call     tests/opengl/test_coordinate_system_opengl.py::test_coords_to_point
+0.05s setup    tests/test_scene_rendering/test_play_logic.py::test_non_static_wait_detection
+0.05s call     tests/test_config.py::test_digest_file
+0.05s call     tests/test_opengl_metaclass.py::test_metaclass_registry
+0.04s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values_with_cached_data
+0.04s call     tests/test_config.py::test_frame_size
+0.04s call     tests/test_coordinate_system.py::test_initial_config
+0.04s call     tests/test_set_attr.py::test_Data
+0.04s call     tests/test_graph.py::test_graph_remove_vertices
+0.04s setup    tests/test_scene_rendering/test_cairo_renderer.py::test_hash_logic_is_called_when_caching_is_enabled
+0.04s setup    tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_force_window_opengl_render_with_format
+0.04s setup    tests/test_scene_rendering/test_cairo_renderer.py::test_when_animation_is_cached
+0.04s call     tests/test_number_line.py::test_unit_vector
+0.04s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_with_cached_data
+0.04s call     tests/opengl/test_number_line_opengl.py::test_unit_vector
+0.04s setup    tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_save_last_frame
+0.04s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values[30]
+0.04s call     tests/test_coordinate_system.py::test_point_to_coords
+0.03s call     tests/opengl/test_ticks_opengl.py::test_duplicate_ticks_removed_for_axes
+0.03s setup    tests/test_scene_rendering/test_cairo_renderer.py::test_skipping_status_with_from_to_and_up_to
+0.03s call     tests/opengl/test_ticks_opengl.py::test_ticks_generated_from_origin_for_axes
+0.03s setup    tests/test_scene_rendering/test_play_logic.py::test_static_wait_detection
+0.03s call     tests/opengl/test_config_opengl.py::test_frame_size
+0.03s call     tests/opengl/test_ipython_magic_opengl.py::test_jupyter_file_naming
+0.03s call     tests/test_ticks.py::test_duplicate_ticks_removed_for_axes
+0.03s call     tests/opengl/test_ipython_magic_opengl.py::test_jupyter_file_output
+0.03s call     tests/opengl/test_numbers_opengl.py::test_set_value_size
+0.03s call     tests/test_ticks.py::test_ticks_generated_from_origin_for_axes
+0.03s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values_save_last_frame
+0.03s setup    tests/opengl/test_color_opengl.py::test_set_color_handles_lists_of_strs
+0.03s call     tests/opengl/test_number_line_opengl.py::test_decimal_determined_by_step
+0.03s setup    tests/test_scene_rendering/test_cairo_renderer.py::test_hash_logic_is_not_called_when_caching_is_disabled
+0.03s call     tests/test_ticks.py::test_expected_ticks_generated
+0.03s setup    tests/test_scene_rendering/test_cairo_renderer.py::test_render
+0.03s setup    tests/test_scene_rendering/test_play_logic.py::test_t_values[15]
+0.03s teardown tests/opengl/test_stroke_opengl.py::test_set_stroke
+0.03s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_iadd
+0.03s call     tests/opengl/test_ticks_opengl.py::test_expected_ticks_generated
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_set_color_sets_fill_and_stroke
+0.02s call     tests/test_numbers.py::test_set_value_size
+0.02s call     tests/opengl/test_numbers_opengl.py::test_changing_font_size
+0.02s call     tests/opengl/test_config_opengl.py::test_digest_file
+0.02s setup    tests/opengl/test_config_opengl.py::test_digest_file
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_item_assignment_at_correct_position
+0.02s call     tests/opengl/test_opengl_vectorized_mobject.py::test_vmob_add_to_back
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_tex_size
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_tex_non_whitespace_arg
+0.02s call     tests/opengl/test_graph_opengl.py::test_graph_creation
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_fill_color
+0.02s setup    tests/opengl/test_stroke_opengl.py::test_stroke_props_in_ctor
+0.02s setup    tests/opengl/test_stroke_opengl.py::test_set_stroke
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_imul
+0.02s call     tests/opengl/test_family_opengl.py::test_family
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_tex_white_space_and_non_whitespace_args
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_color
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_font_size_vs_scale
+0.02s call     tests/opengl/test_number_line_opengl.py::test_decimal_config_overrides_defaults
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_iadd
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[\\frac{1}{a+b\\sqrt{2}}-1]
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_fill_handles_lists_of_strs
+0.02s call     tests/test_graph.py::test_graph_add_edges
+0.02s call     tests/opengl/test_graph_opengl.py::test_graph_add_edges
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_imod
+0.02s call     tests/opengl/test_numbers_opengl.py::test_font_size_vs_scale
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_fill_overrides_color
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_supports_item_assigment
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_tex_whitespace_arg
+0.02s call     tests/test_numbers.py::test_font_size_vs_scale
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_stroke_opacity
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_MathTex
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_bool
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_set_stroke_color
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_complex_value_tracker_get_value
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_stroke_overrides_color
+0.02s setup    tests/opengl/test_coordinate_system_opengl.py::test_point_to_coords
+0.02s setup    tests/opengl/test_text_mobject_opengl.py::test_font_size
+0.02s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_init
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_tex_white_space_and_non_whitespace_args
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_fill
+0.02s setup    tests/opengl/test_coordinate_system_opengl.py::test_abstract_base_class
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_SingleStringMathTex
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_set_stroke_color
+0.02s setup    tests/opengl/test_opengl_mobject.py::test_opengl_mobject_remove
+0.02s call     tests/test_graph.py::test_graph_creation
+0.02s setup    tests/opengl/test_family_opengl.py::test_family
+0.02s call     tests/test_numbers.py::test_changing_font_size
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_complex_value_tracker_get_value
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_stroke_handles_lists_of_strs
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[{{ a }} + {{ b }} = {{ c }}-5]
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[{{ a }} + {{ b }} = {{ c }}-5]
+0.02s setup    tests/opengl/test_svg_mobject_opengl.py::test_set_fill_color
+0.02s setup    tests/opengl/test_coordinate_system_opengl.py::test_dimension
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_increment_value
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_tex_non_whitespace_arg
+0.02s teardown tests/opengl/test_markup_opengl.py::test_unbalanced_tag_markup
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_stroke_opacity
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_fill_handles_lists_of_color_objects
+0.02s setup    tests/opengl/test_config_opengl.py::test_dry_run_with_png_format_skipped_animations
+0.02s teardown tests/opengl/test_coordinate_system_opengl.py::test_point_to_coords
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_stroke_color
+0.02s teardown tests/opengl/test_color_opengl.py::test_background_color
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_font_size
+0.02s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_item_assignment_only_allows_vmobjects
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_item_assignment_only_allows_vmobjects
+0.02s setup    tests/opengl/test_config_opengl.py::test_dry_run_with_png_format
+0.02s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_supports_item_assigment
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_color
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_color_handles_lists_of_strs
+0.02s setup    tests/opengl/test_ticks_opengl.py::test_ticks_not_generated_on_origin_for_axes
+0.02s setup    tests/opengl/test_ticks_opengl.py::test_duplicate_ticks_removed_for_axes
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_stroke_overrides_color
+0.02s teardown tests/opengl/test_opengl_mobject.py::test_opengl_mobject_remove
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_fill_overrides_color
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_opengl_vmobject_point_from_propotion
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_imod
+0.02s teardown tests/opengl/test_animate_opengl.py::test_animate_with_args
+0.02s teardown tests/opengl/test_config_opengl.py::test_dry_run_with_png_format
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_stroke_color
+0.02s call     tests/opengl/test_graph_opengl.py::test_graph_remove_edges
+0.02s setup    tests/opengl/test_color_opengl.py::test_set_color_handles_lists_of_color_objects
+0.02s teardown tests/opengl/test_config_opengl.py::test_background_color
+0.02s setup    tests/opengl/test_color_opengl.py::test_import_color
+0.02s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_opengl_vmobject_point_from_propotion
+0.02s setup    tests/opengl/test_coordinate_system_opengl.py::test_coords_to_point
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_ifloordiv
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_font_size
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_imul
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_increment_value
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_color_handles_lists_of_color_objects
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_set_fill_color
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_bool
+0.02s teardown tests/opengl/test_stroke_opengl.py::test_stroke_props_in_ctor
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_ifloordiv
+0.02s setup    tests/opengl/test_animate_opengl.py::test_chained_animate_with_args
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_fill
+0.02s setup    tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_get_frame_with_preview_disabled[False]
+0.02s teardown tests/opengl/test_sound_opengl.py::test_add_sound
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_add
+0.02s teardown tests/opengl/test_coordinate_system_opengl.py::test_input_to_graph_point
+0.02s teardown tests/opengl/test_opengl_mobject.py::test_opengl_mobject_add
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_set_color_sets_fill_and_stroke
+0.02s teardown tests/opengl/test_coordinate_system_opengl.py::test_dimension
+0.02s call     tests/test_number_line.py::test_decimal_config_overrides_defaults
+0.02s teardown tests/opengl/test_axes_shift_opengl.py::test_axes_origin_shift
+0.02s setup    tests/opengl/test_copy_opengl.py::test_bracelabel_copy
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_stroke_handles_lists_of_strs
+0.02s teardown tests/opengl/test_coordinate_system_opengl.py::test_initial_config
+0.02s teardown tests/opengl/test_color_opengl.py::test_set_fill_handles_lists_of_color_objects
+0.02s teardown tests/opengl/test_coordinate_system_opengl.py::test_abstract_base_class
+0.02s teardown tests/opengl/test_ticks_opengl.py::test_duplicate_ticks_removed_for_axes
+0.02s teardown tests/opengl/test_family_opengl.py::test_family
+0.02s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_init
+0.02s teardown tests/opengl/test_config_opengl.py::test_temporary_dry_run
+0.02s teardown tests/opengl/test_text_mobject_opengl.py::test_font_size
+0.02s teardown tests/opengl/test_svg_mobject_opengl.py::test_set_fill_opacity
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_changing_font_size
+0.02s teardown tests/opengl/test_config_opengl.py::test_digest_file
+0.02s setup    tests/opengl/test_config_opengl.py::test_temporary_dry_run
+0.02s setup    tests/opengl/test_markup_opengl.py::test_unbalanced_tag_markup
+0.02s setup    tests/opengl/test_markup_opengl.py::test_good_markup
+0.02s setup    tests/opengl/test_sound_opengl.py::test_add_sound
+0.02s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_ipow
+0.02s teardown tests/opengl/test_texmobject_opengl.py::test_tex_size
+0.02s setup    tests/opengl/test_axes_shift_opengl.py::test_axes_origin_shift
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_ipow
+0.02s call     tests/test_svg_mobject.py::test_set_fill_color
+0.02s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_interpolate
+0.02s setup    tests/opengl/test_animate_opengl.py::test_animate_with_args_misplaced
+0.02s setup    tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_get_frame_with_preview_enabled[True]
+0.02s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_item_assignment_at_correct_position
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_SingleStringMathTex
+0.02s setup    tests/opengl/test_texmobject_opengl.py::test_changing_font_size
+0.01s teardown tests/opengl/test_color_opengl.py::test_set_fill_handles_lists_of_strs
+0.01s setup    tests/opengl/test_animate_opengl.py::test_chaining_overridden_animate
+0.01s setup    tests/opengl/test_svg_mobject_opengl.py::test_set_fill_opacity
+0.01s setup    tests/opengl/test_ticks_opengl.py::test_ticks_generated_from_origin_for_axes
+0.01s setup    tests/opengl/test_color_opengl.py::test_background_color
+0.01s setup    tests/opengl/test_scene_opengl.py::test_scene_add_remove
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_init
+0.01s teardown tests/opengl/test_texmobject_opengl.py::test_MathTex
+0.01s call     tests/opengl/test_graph_opengl.py::test_graph_remove_vertices
+0.01s setup    tests/opengl/test_opengl_mobject.py::test_opengl_mobject_add
+0.01s setup    tests/opengl/test_copy_opengl.py::test_opengl_mobject_copy
+0.01s setup    tests/opengl/test_markup_opengl.py::test_invalid_tag_markup
+0.01s setup    tests/opengl/test_markup_opengl.py::test_special_tags_markup
+0.01s setup    tests/opengl/test_family_opengl.py::test_overlapping_family
+0.01s teardown tests/opengl/test_value_tracker_opengl.py::test_complex_value_tracker_set_value
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_get_value
+0.01s setup    tests/opengl/test_graph_opengl.py::test_graph_add_edges
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_add
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_add
+0.01s call     tests/test_graph.py::test_graph_remove_edges
+0.01s setup    tests/opengl/test_texmobject_opengl.py::test_tex
+0.01s setup    tests/opengl/test_config_opengl.py::test_frame_size
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_add_dunder
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_init
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_remove
+0.01s setup    tests/opengl/test_graph_opengl.py::test_graph_remove_vertices
+0.01s setup    tests/opengl/test_graph_opengl.py::test_graph_remove_edges
+0.01s setup    tests/opengl/test_animate_opengl.py::test_overridden_animate
+0.01s call     tests/test_hashing.py::test_hash_consistency
+0.01s teardown tests/opengl/test_config_opengl.py::test_tempconfig
+0.01s setup    tests/opengl/test_composition_opengl.py::test_succession_timing
+0.01s setup    tests/opengl/test_config_opengl.py::test_tempconfig
+0.01s setup    tests/opengl/test_graph_opengl.py::test_graph_add_vertices
+0.01s setup    tests/opengl/test_family_opengl.py::test_shift_family
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_remove
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_remove
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_isub
+0.01s setup    tests/opengl/test_composition_opengl.py::test_animationgroup_with_wait
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_interpolate
+0.01s setup    tests/opengl/test_graph_opengl.py::test_graph_creation
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_remove_dunder
+0.01s teardown tests/opengl/test_scene_opengl.py::test_scene_add_remove
+0.01s setup    tests/opengl/test_coordinate_system_opengl.py::test_input_to_graph_point
+0.01s teardown tests/opengl/test_family_opengl.py::test_shift_family
+0.01s teardown tests/opengl/test_animate_opengl.py::test_simple_animate
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_itruediv
+0.01s teardown tests/opengl/test_graph_opengl.py::test_graph_remove_edges
+0.01s teardown tests/opengl/test_config_opengl.py::test_dry_run_with_png_format_skipped_animations
+0.01s setup    tests/opengl/test_config_opengl.py::test_background_color
+0.01s setup    tests/opengl/test_animate_opengl.py::test_simple_animate
+0.01s teardown tests/opengl/test_color_opengl.py::test_import_color
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_value_tracker_set_value
+0.01s setup    tests/opengl/test_texmobject_opengl.py::test_tex_whitespace_arg
+0.01s setup    tests/opengl/test_color_opengl.py::test_set_stroke_handles_lists_of_color_objects
+0.01s teardown tests/opengl/test_animate_opengl.py::test_animate_with_args_misplaced
+0.01s teardown tests/opengl/test_copy_opengl.py::test_bracelabel_copy
+0.01s teardown tests/opengl/test_graph_opengl.py::test_graph_add_edges
+0.01s teardown tests/opengl/test_graph_opengl.py::test_graph_add_vertices
+0.01s teardown tests/opengl/test_texmobject_opengl.py::test_tex
+0.01s setup    tests/test_config.py::test_digest_file
+0.01s teardown tests/opengl/test_graph_opengl.py::test_graph_remove_vertices
+0.01s setup    tests/opengl/test_ticks_opengl.py::test_expected_ticks_generated
+0.01s setup    tests/opengl/test_coordinate_system_opengl.py::test_initial_config
+0.01s setup    tests/opengl/test_animate_opengl.py::test_chained_animate
+0.01s teardown tests/opengl/test_graph_opengl.py::test_graph_creation
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_add_dunder
+0.01s setup    tests/opengl/test_animate_opengl.py::test_animate_with_args
+0.01s teardown tests/opengl/test_texmobject_opengl.py::test_double_braces_testing[\\frac{1}{a+b\\sqrt{2}}-1]
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vdict_add
+0.01s setup    tests/opengl/test_value_tracker_opengl.py::test_complex_value_tracker_set_value
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_remove_dunder
+0.01s teardown tests/opengl/test_animate_opengl.py::test_chained_animate_with_args
+0.01s teardown tests/opengl/test_color_opengl.py::test_set_fill_color
+0.01s teardown tests/opengl/test_copy_opengl.py::test_opengl_mobject_copy
+0.01s teardown tests/opengl/test_composition_opengl.py::test_succession_timing
+0.01s setup    tests/test_override_animation.py::test_multi_animation_override_exception
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vgroup_remove
+0.01s teardown tests/opengl/test_ticks_opengl.py::test_ticks_generated_from_origin_for_axes
+0.01s setup    tests/opengl/test_composition_opengl.py::test_succession_in_succession_timing
+0.01s setup    tests/opengl/test_unit_geometry_opengl.py::test_get_arc_center
+0.01s teardown tests/opengl/test_markup_opengl.py::test_special_tags_markup
+0.01s setup    tests/opengl/test_composition_opengl.py::test_animationbuilder_in_group
+0.01s teardown tests/opengl/test_markup_opengl.py::test_invalid_tag_markup
+0.01s teardown tests/opengl/test_unit_geometry_opengl.py::test_get_arc_center
+0.01s setup    tests/opengl/test_opengl_vectorized_mobject.py::test_vmob_add_to_back
+0.01s teardown tests/opengl/test_coordinate_system_opengl.py::test_coords_to_point
+0.01s teardown tests/opengl/test_ticks_opengl.py::test_ticks_not_generated_on_origin_for_axes
+0.01s teardown tests/opengl/test_composition_opengl.py::test_succession_in_succession_timing
+0.01s teardown tests/opengl/test_animate_opengl.py::test_overridden_animate
+0.01s teardown tests/opengl/test_animate_opengl.py::test_chaining_overridden_animate
+0.01s teardown tests/opengl/test_composition_opengl.py::test_animationgroup_with_wait
+0.01s teardown tests/opengl/test_markup_opengl.py::test_good_markup
+0.01s call     tests/test_hashing.py::test_JSON_with_function
+0.01s teardown tests/opengl/test_family_opengl.py::test_overlapping_family
+0.01s teardown tests/opengl/test_config_opengl.py::test_frame_size
+0.01s teardown tests/opengl/test_color_opengl.py::test_set_stroke_handles_lists_of_color_objects
+0.01s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_isub
+0.01s teardown tests/opengl/test_texmobject_opengl.py::test_font_size_vs_scale
+0.01s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_get_value
+0.01s teardown tests/opengl/test_animate_opengl.py::test_chained_animate
+0.01s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_itruediv
+0.01s teardown tests/opengl/test_ticks_opengl.py::test_expected_ticks_generated
+0.01s teardown tests/opengl/test_opengl_vectorized_mobject.py::test_vmob_add_to_back
+0.01s teardown tests/opengl/test_value_tracker_opengl.py::test_value_tracker_set_value
+0.01s teardown tests/opengl/test_composition_opengl.py::test_animationbuilder_in_group
+0.01s teardown tests/test_scene_rendering/test_cli_flags.py::test_input_file_via_cfg
+0.01s call     tests/test_number_line.py::test_whole_numbers_step_size_default_to_0_decimal_places
+0.01s call     tests/opengl/test_number_line_opengl.py::test_whole_numbers_step_size_default_to_0_decimal_places
+0.01s call     tests/opengl/test_animate_opengl.py::test_chaining_overridden_animate
+0.01s call     tests/opengl/test_composition_opengl.py::test_succession_in_succession_timing
+0.01s teardown tests/test_scene_rendering/opengl/test_cli_flags_opengl.py::test_mov_can_be_set_as_output_format
+0.01s call     tests/test_svg_mobject.py::test_set_color_sets_fill_and_stroke
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_set_fill_color
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_stroke_overrides_color
+0.01s teardown tests/test_scene_rendering/opengl/test_play_logic_opengl.py::test_t_values_save_last_frame
+0.01s call     tests/test_deprecation.py::test_deprecate_func_param_redirect_tuple
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_set_stroke_color
+0.01s call     tests/test_family.py::test_shift_family
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_s_flag_opengl_renderer
+0.01s call     tests/test_animate.py::test_chaining_overridden_animate
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_fill_overrides_color
+0.01s call     tests/test_commands.py::test_manim_init_subcommand
+0.01s call     tests/opengl/test_composition_opengl.py::test_succession_timing
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_mov_can_be_set_as_output_format
+0.01s setup    tests/test_axes_shift.py::test_axes_origin_shift
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_set_color_sets_fill_and_stroke
+0.01s teardown tests/test_scene_rendering/opengl/test_opengl_renderer.py::test_get_frame_with_preview_enabled[True]
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_stroke_opacity
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_videos_not_created_when_png_format_set
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_basic_scene_l_flag
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_images_are_created_when_png_format_set_for_opengl
+0.01s call     tests/opengl/test_family_opengl.py::test_shift_family
+0.01s call     tests/test_svg_mobject.py::test_set_fill_opacity
+0.01s call     tests/opengl/test_svg_mobject_opengl.py::test_set_fill_opacity
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_s_flag_no_animations
+0.01s setup    tests/test_scene_rendering/opengl/test_caching_related_opengl.py::test_wait_skip
+0.01s call     tests/test_deprecation.py::test_deprecate_func_param_redirect_one_to_many
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_dash_as_filename
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_input_file_via_cfg
+0.01s call     tests/test_deprecation.py::test_deprecate_class_no_args
+0.01s setup    tests/test_logging/test_logging.py::test_logging_when_scene_is_not_specified
+0.01s call     tests/test_svg_mobject.py::test_stroke_opacity
+0.01s setup    tests/test_scene_rendering/test_cli_flags.py::test_n_flag
+0.01s teardown tests/test_scene_rendering/test_sections.py::test_skip_animations
+0.01s call     tests/test_deprecation.py::test_deprecate_func_single_param_since_and_until
+0.01s call     tests/test_family.py::test_family
+0.01s setup    tests/test_graphical_units/test_axes.py::test_axes
+0.01s call     tests/test_hashing.py::test_JSON_with_big_np_array
+0.01s call     tests/test_composition.py::test_succession_in_succession_timing
+
+(1015 durations < 0.005s hidden.  Use -vv to show these durations.)
+= 548 passed, 2 skipped, 7 xfailed, 2 xpassed, 665 warnings in 133.52s (0:02:13) =
