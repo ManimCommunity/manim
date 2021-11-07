@@ -6,5 +6,5 @@ __module_test__ = "specialized"
 
 @frames_comparison(last_frame=False)
 def test_broadcast(scene):
-    square = Square()
-    scene.play(Broadcast(square))
+    circle = Circle()
+    scene.play(Broadcast(circle))
