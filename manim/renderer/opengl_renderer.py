@@ -18,7 +18,7 @@ from ..constants import *
 from ..gui.gui import configure_pygui
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..utils import opengl
+from ..utils import opengl, space_ops
 from ..utils.config_ops import _Data
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
@@ -560,7 +560,14 @@ class OpenGLRenderer:
             scale = fh / ph
             return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
 
-    def interactive_embed(self):
+    def interactive_embed(
+        self,
+        moving_mobjects,
+        meshes,
+        update_mobjects_hook,
+        update_meshes_hook,
+        update_scene_hook,
+    ):
         """
         Like embed(), but allows for screen interaction.
         """
@@ -625,9 +632,26 @@ class OpenGLRenderer:
 
         self.camera.model_matrix = self.camera.default_model_matrix
 
-        self.interact(shell, keyboard_thread)
+        self.interact(
+            shell,
+            keyboard_thread,
+            moving_mobjects,
+            meshes,
+            update_mobjects_hook,
+            update_meshes_hook,
+            update_scene_hook,
+        )
 
-    def interact(self, shell, keyboard_thread):
+    def interact(
+        self,
+        shell,
+        keyboard_thread,
+        moving_mobjects,
+        meshes,
+        update_mobjects_hook,
+        update_meshes_hook,
+        update_scene_hook,
+    ):
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
         file_observer.schedule(event_handler, config["input_file"], recursive=True)
@@ -682,10 +706,10 @@ class OpenGLRenderer:
                 self.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.render(self, dt, self.moving_mobjects)
-                self.update_mobjects(dt)
-                self.update_meshes(dt)
-                self.update_self(dt)
+                self.render(self, dt, mobjects=moving_mobjects, meshes=meshes)
+                update_mobjects_hook(dt)
+                update_meshes_hook(dt)
+                update_scene_hook(dt)
 
         # Join the keyboard thread if necessary.
         if shell is not None and keyboard_thread_needs_join:
@@ -707,12 +731,7 @@ class OpenGLRenderer:
     def check_interactive_embed_is_valid(self):
         if config["force_window"]:
             return True
-        if self.skip_animation_preview:
-            logger.warning(
-                "Disabling interactive embed as 'skip_animation_preview' is enabled",
-            )
-            return False
-        elif config["write_to_movie"]:
+        if config["write_to_movie"]:
             logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
             return False
         elif config["format"]:
@@ -731,7 +750,7 @@ class OpenGLRenderer:
 
     def on_mouse_motion(self, point, d_point):
         self.mouse_point.move_to(point)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
+        if SHIFT_VALUE in self.pressed_keys:
             shift = -d_point
             shift[0] *= self.camera.get_width() / 2
             shift[1] *= self.camera.get_height() / 2

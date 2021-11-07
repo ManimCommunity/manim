@@ -1142,4 +1142,15 @@ class Scene:
         self.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def interactive_embed(self):
-        self.renderer.interactive_embed()
+        if self.skip_animation_preview:
+            logger.warn(
+                "Interactive embed will not be launched when skip_animation_preview is set"
+            )
+            return
+        self.renderer.interactive_embed(
+            self.moving_mobjects,
+            self.meshes,
+            self.update_mobjects,
+            self.update_meshes,
+            self.update_self,
+        )
