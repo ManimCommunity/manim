@@ -20,7 +20,7 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
-from ... import config
+from ... import config, logger
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
@@ -1711,6 +1711,8 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def add(self, *vmobjects):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
+        Logs a warning message if the same Mobject was added to a Group more than once.
+
         Parameters
         ----------
         vmobjects : :class:`~.VMobject`
@@ -1758,6 +1760,10 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
+        if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
+            logger.warning(
+                f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.",
+            )
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
