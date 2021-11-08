@@ -20,7 +20,7 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
-from ... import config
+from ... import config, logger
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
@@ -51,7 +51,25 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
-    """A vectorized mobject."""
+    """A vectorized mobject.
+
+    Parameters
+    ----------
+    background_stroke_color
+        The purpose of background stroke is to have something
+        that won't overlap fill, e.g.  For text against some
+        textured background.
+    sheen_factor
+        When a color c is set, there will be a second color
+        computed based on interpolating c to WHITE by with
+        sheen_factor, and the display will gradient to this
+        secondary color in the direction of sheen_direction.
+    close_new_points
+        Indicates that it will not be displayed, but
+        that it should count in parent mobject's path
+    tolerance_point_for_equality
+        This is within a pixel
+    """
 
     def __init__(
         self,
@@ -60,28 +78,17 @@ class VMobject(Mobject):
         stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        # The purpose of background stroke is to have
-        # something that won't overlap the fill, e.g.
-        # For text against some textured background
         background_stroke_color=BLACK,
         background_stroke_opacity=1.0,
         background_stroke_width=0,
-        # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
-        # sheen_factor, and the display will gradient to this
-        # secondary color in the direction of sheen_direction.
         sheen_factor=0.0,
         sheen_direction=UL,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
         make_smooth_after_applying_functions=False,
         background_image=None,
         shade_in_3d=False,
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
+        # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
         **kwargs,
@@ -1704,6 +1711,8 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def add(self, *vmobjects):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
+        Logs a warning message if the same Mobject was added to a Group more than once.
+
         Parameters
         ----------
         vmobjects : :class:`~.VMobject`
@@ -1751,6 +1760,10 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
+        if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
+            logger.warning(
+                f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.",
+            )
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
