@@ -1761,9 +1761,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
-            logger.warning(
-                f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.",
-            )
+            logger.warning(f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.", )
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
