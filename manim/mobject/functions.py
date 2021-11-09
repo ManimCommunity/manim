@@ -70,7 +70,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         t_range: Optional[Sequence[float]] = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: bool = None,
+        discontinuities: Optional[Sequence[float]] = None,
         use_smoothing: bool = True,
         **kwargs
     ):
@@ -82,7 +82,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self.scaling = scaling
 
         self.dt = dt
-        self.discontinuities = [] if discontinuities is None else discontinuities
+        self.discontinuities = discontinuities
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
@@ -96,7 +96,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_points(self):
 
-        if self.discontinuities:
+        if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
                 self.discontinuities,
