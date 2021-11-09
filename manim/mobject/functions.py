@@ -66,6 +66,28 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.add(axes, curve1)
                 self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
+
+    .. attention::
+        In case your function contains discontinuous points, observe
+        the following example.
+
+    .. manim:: DiscontinuousExample
+        :save_last_frame:
+
+        class DiscontinousExample(Scene):
+            def construct(self):
+                ax1 = NumberPlane((-3, 3), (-4, 4))
+                ax2 = NumberPlane((-3, 3), (-4, 4))
+                VGroup(ax1, ax2).arrange()
+                discontinuous_function = lambda x: (x ** 2 - 2) / (x ** 2 - 4)
+                before = ax1.plot(discontinuous_function, color=RED)
+                after = ax2.plot(
+                    discontinuous_function,
+                    discontinuities=[-2, 2],  # discontinuous points
+                    dt=0.1,  # left and right tolerance of discontinuity
+                    color=GREEN,
+                )
+                self.add(ax1, ax2, before, after)
     """
 
     def __init__(
