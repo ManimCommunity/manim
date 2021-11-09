@@ -250,7 +250,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 # for compatibility with updaters to not leave first number in place while updating,
                 # not needed with opengl renderer
                 mob.points[:] = 0
-        
+
         self.init_colors()
         return self
 
