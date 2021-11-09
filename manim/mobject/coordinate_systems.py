@@ -1469,6 +1469,25 @@ class CoordinateSystem:
                     )
                     graph2 = ax.plot_antiderivative_graph(graph1, color=BLUE)
                     self.add(ax, graph1, graph2)
+
+        .. note::
+            This graph is plotted from the values of area under the reference graph.
+            The result might not be ideal if the reference graph contains uncalculatable
+            areas from x=0.
+
+        Parameters
+        ----------
+        graph
+            The graph for which the antiderivative will be found.
+        y_intercept
+            The y-value at which the graph intercepts the y-axis.
+        **kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the antiderivative.
         """
 
         def antideriv(x):
