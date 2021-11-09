@@ -30,6 +30,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     use_smoothing
         Whether to interpolate between the points of the function after they have been created.
         (Will have odd behaviour with a low number of points)
+    discontinuities
+        Values of t at which the function experiences discontinuity.
+    dt
+        The left and right tolerance for the discontinuities.
 
 
     Examples
