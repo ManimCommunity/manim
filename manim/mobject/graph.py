@@ -414,6 +414,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         }
         self.default_vertex_config = default_vertex_config
         for v, label in self._labels.items():
+            # update the color if the label is latex text
+            if type(label) == MathTex and "color" in self._vertex_config[v].keys():
+                label = label.set_color(self._vertex_config[v]["color"])
             self._vertex_config[v]["label"] = label
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
