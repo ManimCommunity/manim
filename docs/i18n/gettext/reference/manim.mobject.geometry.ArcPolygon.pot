@@ -1,0 +1,105 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:2
+msgid "ArcPolygon"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.ArcPolygon``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:1
+msgid "A generalized polygon allowing for points to be connected with arcs."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:3
+msgid "This version tries to stick close to the way :class:`Polygon` is used. Points can be passed to it directly which are used to generate the according arcs (using :class:`ArcBetweenPoints`). An angle or radius can be passed to it to use across all arcs, but to configure arcs individually an ``arc_config`` list has to be passed with the syntax explained below."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:11
+msgid "Two instances of :class:`ArcPolygon` can be transformed properly into one another as well. Be advised that any arc initialized with ``angle=0`` will actually be a straight line, so if a straight section should seamlessly transform into an arced section or vice versa, initialize the straight section with a negligible angle instead (such as ``angle=0.0001``)."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:17
+msgid "There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated with pre-defined arcs."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:20
+msgid ":class:`ArcPolygonFromArcs`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:22
+msgid "A list of vertices, start and end points for the arc segments."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:24
+msgid "The angle used for constructing the arcs. If no other parameters are set, this angle is used to construct all arcs."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:27
+msgid "The circle radius used to construct the arcs. If specified, overrides the specified ``angle``."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:30
+msgid "When passing a ``dict``, its content will be passed as keyword arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list of dictionaries containing values that are passed as keyword arguments for every individual arc can be passed."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:35
+msgid "Further keyword arguments that are passed to the constructor of :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:42
+msgid "The arcs created from the input parameters::"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:0
+msgid "type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:49
+msgid ":class:`list`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:52
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygon:71
+msgid "For further examples see :class:`ArcPolygonFromArcs`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:28:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcPolygon.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

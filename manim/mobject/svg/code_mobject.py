@@ -149,12 +149,6 @@ class Code(VGroup):
     styles_list = list(get_all_styles())
     # For more information about pygments.styles visit https://pygments.org/docs/styles/
 
-    @deprecated_params(
-        params="scale_factor",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         file_name=None,
@@ -182,18 +176,12 @@ class Code(VGroup):
             stroke_width=stroke_width,
             **kwargs,
         )
-        # deprecation handling
-        scale_factor = kwargs.pop("scale_factor", None)
-        if scale_factor:
-            self.font_size = DEFAULT_FONT_SIZE / 2 * scale_factor
-        else:
-            self.font_size = font_size
-
         self.background_stroke_color = background_stroke_color
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
         self.font = font
+        self.font_size = font_size
         self.margin = margin
         self.indentation_chars = indentation_chars
         self.background = background

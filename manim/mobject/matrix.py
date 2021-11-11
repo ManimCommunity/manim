@@ -38,6 +38,7 @@ __all__ = [
 
 
 import itertools as it
+from typing import Iterable, Sequence, Type
 
 import numpy as np
 
@@ -126,48 +127,53 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        matrix,
-        v_buff=0.8,
-        h_buff=1.3,
-        bracket_h_buff=MED_SMALL_BUFF,
-        bracket_v_buff=MED_SMALL_BUFF,
-        add_background_rectangles_to_entries=False,
-        include_background_rectangle=False,
-        element_to_mobject=MathTex,
-        element_to_mobject_config={},
-        element_alignment_corner=DR,
-        left_bracket="[",
-        right_bracket="]",
+        matrix: Iterable,
+        v_buff: float = 0.8,
+        h_buff: float = 1.3,
+        bracket_h_buff: float = MED_SMALL_BUFF,
+        bracket_v_buff: float = MED_SMALL_BUFF,
+        add_background_rectangles_to_entries: bool = False,
+        include_background_rectangle: bool = False,
+        element_to_mobject: Type[MathTex] = MathTex,
+        element_to_mobject_config: dict = {},
+        element_alignment_corner: Sequence[float] = DR,
+        left_bracket: str = "[",
+        right_bracket: str = "]",
+        bracket_config: dict = {},
         **kwargs,
     ):
         """
 
         Parameters
         ----------
-        matrix : :class:`typing.Iterable`
-            A numpy 2d array or list of lists
-        v_buff : :class:`float`, optional
-            vertical buffer, by default 0.8
-        h_buff : :class:`float`, optional
-            horizontal buffer, by default 1.3
-        bracket_h_buff : :class:`float`, optional
-            bracket horizontal buffer, by default MED_SMALL_BUFF
-        bracket_v_buff : :class:`float`, optional
-            bracket vertical buffer, by default MED_SMALL_BUFF
-        add_background_rectangles_to_entries : :class:`bool`, optional
-            `True` if should add backgraound rectangles to entries, by default False
-        include_background_rectangle : :class:`bool`, optional
-            `True` if should include background rectangle, by default False
-        element_to_mobject : :class:`~.Mobject`, optional
-            element to mobject, by default MathTex
-        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
-            element to mobject config, by default {}
-        element_alignment_corner : :class:`np.ndarray`, optional
-            the element alignment corner, by default DR
-        left_bracket : :class:`str`, optional
-            the left bracket type, by default "["
-        right_bracket : :class:`str`, optional
-            the right bracket type, by default "]"
+        matrix
+            A numpy 2d array or list of lists.
+        v_buff
+            Vertical distance between elements, by default 0.8.
+        h_buff
+            Horizontal distance between elements, by default 1.3.
+        bracket_h_buff
+            Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``.
+        bracket_v_buff
+            Height of the brackets, by default ``MED_SMALL_BUFF``.
+        add_background_rectangles_to_entries
+            ``True`` if should add backgraound rectangles to entries, by default ``False``.
+        include_background_rectangle
+            ``True`` if should include background rectangle, by default ``False``.
+        element_to_mobject
+            The mobject class used to construct the elements, by default :class:`~.MathTex`.
+        element_to_mobject_config
+            Additional arguments to be passed to the constructor in ``element_to_mobject``,
+            by default ``{}``.
+        element_alignment_corner
+            The corner to which elements are aligned, by default ``DR``.
+        left_bracket
+            The left bracket type, by default ``"["``.
+        right_bracket
+            The right bracket type, by default ``"]"``.
+        bracket_config
+            Additional arguments to be passed to :class:`~.MathTex` when constructing
+            the brackets.
 
         """
 
@@ -187,7 +193,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*it.chain(*mob_matrix))
         self.add(self.elements)
-        self.add_brackets(self.left_bracket, self.right_bracket)
+        self.add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
         self.center()
         self.mob_matrix = mob_matrix
         if self.add_background_rectangles_to_entries:
@@ -217,7 +223,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def add_brackets(self, left="[", right="]"):
+    def add_brackets(self, left="[", right="]", **kwargs):
         """Used internally. Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
@@ -235,7 +241,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The current matrix object (self).
         """
 
-        bracket_pair = MathTex(left, right)
+        bracket_pair = MathTex(left, right, **kwargs)
         bracket_pair.scale(2)
         bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
         l_bracket, r_bracket = bracket_pair.split()
