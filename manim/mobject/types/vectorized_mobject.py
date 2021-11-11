@@ -1711,8 +1711,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def add(self, *vmobjects):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
-        Logs a warning message if the same Mobject was added to a Group more than once.
-
         Parameters
         ----------
         vmobjects : :class:`~.VMobject`
@@ -1757,11 +1755,18 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
+
+        Notes
+        -----
+        When adding same mobject more than once, the repeated mobject is ignored.
+        Use .copy() to avoid omission of the repeated mobject.
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
-            logger.warning(f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.", )
+            logger.warning(
+                f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.",
+            )
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
