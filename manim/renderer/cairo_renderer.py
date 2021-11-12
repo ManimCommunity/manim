@@ -36,7 +36,10 @@ class CairoRenderer(Renderer):
         self.time = 0
         self.static_image = None
 
-    def init_scene(self):
+    def init_scene(self, scene=None): # todo remove
+        pass
+
+    def before_animation(self):
         pass
 
     def before_render(self):

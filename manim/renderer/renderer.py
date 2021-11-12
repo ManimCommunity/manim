@@ -12,6 +12,10 @@ class Renderer(ABC):
         pass
 
     @abstractmethod
+    def before_animation(self):
+        pass
+
+    @abstractmethod
     def before_render(self):
         pass
 

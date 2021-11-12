@@ -1105,6 +1105,7 @@ class Scene:
             self.animations,
             self.duration,
         )
+        self.renderer.before_animation()
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:

@@ -404,6 +404,9 @@ class OpenGLRenderer:
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
 
+    def before_animation(self):
+        self.animation_start_time = time.time()
+
     def render(
         self,
         frame_offset,
