@@ -232,8 +232,6 @@ class OpenGLRenderer:
         self.num_plays = 0
         self.interactive_mode = False
         self.widgets = [] if not widgets else widgets
-        self.key_to_function_map = {}
-        self.mouse_press_callbacks = []
 
         self.camera = OpenGLCamera()
 

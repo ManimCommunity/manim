@@ -114,6 +114,7 @@ class Scene:
         self.widgets = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters = []
+        self.mouse_press_callbacks = []
         self.point_lights = []
         self.ambient_light = None
         self.interactive_mode = False
@@ -123,6 +124,7 @@ class Scene:
         self.pressed_keys = set()
         self.interactive_mode = False
         self.queue = Queue()
+        self.key_to_function_map = {}
 
         if config.renderer == "opengl":
             # Items associated with interaction

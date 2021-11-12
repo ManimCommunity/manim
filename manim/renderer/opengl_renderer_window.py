@@ -68,13 +68,13 @@ class Window(PygletWindow):
         self.renderer.scene.on_mouse_scroll(point, offset)
 
     def on_key_press(self, symbol, modifiers):
-        self.renderer.pressed_keys.add(symbol)
+        self.renderer.scene.pressed_keys.add(symbol)
         super().on_key_press(symbol, modifiers)
         self.renderer.scene.on_key_press(symbol, modifiers)
 
     def on_key_release(self, symbol, modifiers):
-        if symbol in self.renderer.pressed_keys:
-            self.renderer.pressed_keys.remove(symbol)
+        if symbol in self.renderer.scene.pressed_keys:
+            self.renderer.scene.pressed_keys.remove(symbol)
         super().on_key_release(symbol, modifiers)
         self.renderer.scene.on_key_release(symbol, modifiers)
 
