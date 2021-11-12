@@ -39,7 +39,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
-[in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
+[in our online Jupyter environment](https://try.manim.community/).
 
 For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
