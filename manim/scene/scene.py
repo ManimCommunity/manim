@@ -6,27 +6,54 @@ import copy
 import inspect
 import platform
 import random
+import threading
+import time
 import types
+from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from manim.scene.section import DefaultSectionType
 
-from .. import config, logger
+from .. import config, logger, opengl
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
+from ..gui.gui import configure_pygui
 from ..renderer.cairo_renderer import CairoRenderer
+from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..scene.scene_file_writer import SceneFileWriter
+from ..utils import space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.hashing import get_hash_from_play_call
 from ..utils.iterables import list_difference_update, list_update
+from ..mobject.opengl_mobject import OpenGLPoint
 
+
+try:
+    import dearpygui.dearpygui as dpg
+
+    dearpygui_imported = True
+except ImportError:
+    dearpygui_imported = False
+
+
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 class Scene:
     """A Scene is the canvas of your animation.
@@ -84,6 +111,8 @@ class Scene:
         self.skip_animation_preview = False
         self.meshes = []
         self.camera_target = ORIGIN
+        self.widgets = []
+        self.dearpygui_imported = dearpygui_imported
         self.updaters = []
         self.point_lights = []
         self.ambient_light = None
@@ -91,6 +120,16 @@ class Scene:
         self.num_plays = 0
         self.animations_hashes = []
         self._file_writer_class = file_writer_class
+        self.pressed_keys = set()
+        self.interactive_mode = False
+        self.queue = Queue()
+
+        if config.renderer == "opengl":
+            # Items associated with interaction
+            self.mouse_point = OpenGLPoint()
+            self.mouse_drag_point = OpenGLPoint()
+            if renderer is None:
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self._renderer = CairoRenderer(
@@ -105,7 +144,7 @@ class Scene:
             self._renderer,
             Scene.__name__,
         )
-        self._renderer.init_scene()
+        self._renderer.init_scene(self)
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -1142,17 +1181,309 @@ class Scene:
         time = self._renderer.time + time_offset
         self.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
-    def interactive_embed(self):
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
         if self.skip_animation_preview:
-            logger.warn(
-                "Interactive embed will not be launched when skip_animation_preview is set"
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
             )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        elif config.dry_run:
+            logger.warning("Disabling interactive embed as dry_run is enabled")
+            return False
+        return True
+
+    def interactive_embed(self):
+        """
+        Like embed(), but allows for screen interaction.
+        """
+        if not self.check_interactive_embed_is_valid():
             return
-        self.renderer.interactive_embed(
-            self.mobjects,
-            self.meshes,
-            self.file_writer,
-            self.update_mobjects,
-            self.update_meshes,
-            self.update_self,
+        self.interactive_mode = True
+
+        def ipython(shell, namespace):
+            import manim
+            import manim.opengl
+
+            def load_module_into_namespace(module, namespace):
+                for name in dir(module):
+                    namespace[name] = getattr(module, name)
+
+            load_module_into_namespace(manim, namespace)
+            load_module_into_namespace(manim.opengl, namespace)
+
+            def embedded_rerun(*args, **kwargs):
+                self.queue.put(("rerun_keyboard", args, kwargs))
+                shell.exiter()
+
+            namespace["rerun"] = embedded_rerun
+
+            shell(local_ns=namespace)
+            self.queue.put(("exit_keyboard", [], {}))
+
+        def get_embedded_method(method_name):
+            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+
+        local_namespace = inspect.currentframe().f_back.f_locals
+        for method in ("play", "wait", "add", "remove"):
+            embedded_method = get_embedded_method(method)
+            # Allow for calling scene methods without prepending 'self.'.
+            local_namespace[method] = embedded_method
+
+        from IPython.terminal.embed import InteractiveShellEmbed
+        from traitlets.config import Config
+
+        cfg = Config()
+        cfg.TerminalInteractiveShell.confirm_exit = False
+        shell = InteractiveShellEmbed(config=cfg)
+
+        keyboard_thread = threading.Thread(
+            target=ipython,
+            args=(shell, local_namespace),
         )
+        # run as daemon to kill thread when main thread exits
+        if not shell.pt_app:
+            keyboard_thread.daemon = True
+        keyboard_thread.start()
+
+        if dearpygui_imported and config["enable_gui"]:
+            if not dpg.is_dearpygui_running():
+                gui_thread = threading.Thread(
+                    target=configure_pygui,
+                    args=(self.renderer, self.widgets),
+                    kwargs={"update": False},
+                )
+                gui_thread.start()
+            else:
+                configure_pygui(self.renderer, self.widgets, update=True)
+
+        self.camera.model_matrix = self.camera.default_model_matrix
+
+        self.interact(shell, keyboard_thread)
+
+    def interact(self, shell, keyboard_thread):
+        event_handler = RerunSceneHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.start()
+
+        self.quit_interaction = False
+        keyboard_thread_needs_join = shell.pt_app is not None
+        assert self.queue.qsize() == 0
+
+        last_time = time.time()
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            if not self.queue.empty():
+                tup = self.queue.get_nowait()
+                if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard"):
+                        if shell.pt_app:
+                            shell.pt_app.app.exit(exception=EOFError)
+                        file_observer.unschedule_all()
+                        raise RerunSceneException
+                    keyboard_thread.join()
+
+                    kwargs = tup[2]
+                    if "from_animation_number" in kwargs:
+                        config["from_animation_number"] = kwargs[
+                            "from_animation_number"
+                        ]
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
+                    # # end of a scene by default.
+                    # if "upto_animation_number" in kwargs:
+                    #     config["upto_animation_number"] = kwargs[
+                    #         "upto_animation_number"
+                    #     ]
+
+                    keyboard_thread.join()
+                    file_observer.unschedule_all()
+                    raise RerunSceneException
+                elif tup[0].startswith("exit"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard") and shell.pt_app:
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+                    # Remove exit_keyboard from the queue if necessary.
+                    while self.queue.qsize() > 0:
+                        self.queue.get()
+                    keyboard_thread_needs_join = False
+                    break
+                else:
+                    method, args, kwargs = tup
+                    getattr(self, method)(*args, **kwargs)
+            else:
+                self.renderer.animation_start_time = 0
+                dt = time.time() - last_time
+                last_time = time.time()
+                self.renderer.render(dt, self.moving_mobjects, mobjects=self.mobjects, meshes=self.meshes, file_writer=self.file_writer)
+                self.update_mobjects(dt)
+                self.update_meshes(dt)
+                self.update_self(dt)
+
+        # Join the keyboard thread if necessary.
+        if shell is not None and keyboard_thread_needs_join:
+            shell.pt_app.app.exit(exception=EOFError)
+            keyboard_thread.join()
+            # Remove exit_keyboard from the queue if necessary.
+            while self.queue.qsize() > 0:
+                self.queue.get()
+
+        file_observer.stop()
+        file_observer.join()
+
+        if self.dearpygui_imported and config["enable_gui"]:
+            dpg.stop_dearpygui()
+
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if not config.use_projection_stroke_shaders:
+            factor = 1 + np.arctan(-2.1 * offset[1])
+            self.camera.scale(factor, about_point=self.camera_target)
+        self.mouse_scroll_orbit_controls(point, offset)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
+        elif char == "q":
+            self.quit_interaction = True
+        else:
+            if char in self.key_to_function_map:
+                self.key_to_function_map[char]()
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
+        if buttons == 1:
+            self.camera.increment_theta(-d_point[0])
+            self.camera.increment_phi(d_point[1])
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+            self.camera.shift(1.1 * total_shift_vector)
+
+        self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
+
+    def mouse_scroll_orbit_controls(self, point, offset):
+        camera_to_target = self.camera_target - self.camera.get_position()
+        camera_to_target *= np.sign(offset[1])
+        shift_vector = 0.01 * camera_to_target
+        self.camera.model_matrix = (
+            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+        )
+
+    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
+        # Left click drag.
+        if buttons == 1:
+            # Translate to target the origin and rotate around the z axis.
+            self.camera.model_matrix = (
+                opengl.rotation_matrix(z=-d_point[0])
+                @ opengl.translation_matrix(*-self.camera_target)
+                @ self.camera.model_matrix
+            )
+
+            # Rotation off of the z axis.
+            camera_position = self.camera.get_position()
+            camera_y_axis = self.camera.model_matrix[:3, 1]
+            axis_of_rotation = space_ops.normalize(
+                np.cross(camera_y_axis, camera_position),
+            )
+            rotation_matrix = space_ops.rotation_matrix(
+                d_point[1],
+                axis_of_rotation,
+                homogeneous=True,
+            )
+
+            maximum_polar_angle = self.camera.maximum_polar_angle
+            minimum_polar_angle = self.camera.minimum_polar_angle
+
+            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
+            potential_camera_location = potential_camera_model_matrix[:3, 3]
+            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
+            sign = (
+                np.sign(potential_camera_y_axis[2])
+                if potential_camera_y_axis[2] != 0
+                else 1
+            )
+            potential_polar_angle = sign * np.arccos(
+                potential_camera_location[2]
+                / np.linalg.norm(potential_camera_location),
+            )
+            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
+                self.camera.model_matrix = potential_camera_model_matrix
+            else:
+                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
+                current_polar_angle = sign * np.arccos(
+                    camera_position[2] / np.linalg.norm(camera_position),
+                )
+                if potential_polar_angle > maximum_polar_angle:
+                    polar_angle_delta = maximum_polar_angle - current_polar_angle
+                else:
+                    polar_angle_delta = minimum_polar_angle - current_polar_angle
+                rotation_matrix = space_ops.rotation_matrix(
+                    polar_angle_delta,
+                    axis_of_rotation,
+                    homogeneous=True,
+                )
+                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
+
+            # Translate to target the original target.
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*self.camera_target)
+                @ self.camera.model_matrix
+            )
+        # Right click drag.
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*total_shift_vector)
+                @ self.camera.model_matrix
+            )
+            self.camera_target += total_shift_vector
+
+    def set_key_function(self, char, func):
+        self.key_to_function_map[char] = func
+
+    def on_mouse_press(self, point, button, modifiers):
+        for func in self.mouse_press_callbacks:
+            func()
