@@ -118,6 +118,7 @@ class OpenGLMobject:
         self.init_colors()
 
         self.shader_indices = None
+        self.z_index = 1 # for compatibility - not currently used
 
         if self.depth_test:
             self.apply_depth_test()

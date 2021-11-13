@@ -8,3 +8,7 @@ class RerunSceneException(Exception):
 
 class MultiAnimationOverrideException(Exception):
     pass
+
+
+class UnsupportedOperationException(Exception):
+    pass

@@ -2,9 +2,7 @@ import typing
 
 import numpy as np
 
-from manim.utils.hashing import get_hash_from_play_call
-
-from .. import config, logger
+from .. import config
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject
 from ..utils.iterables import list_update
@@ -36,10 +34,13 @@ class CairoRenderer(Renderer):
         self.time = 0
         self.static_image = None
 
-    def init_scene(self, scene=None): # todo remove
+    def init_scene(self):
         pass
 
     def before_animation(self):
+        pass
+
+    def after_animation(self):
         pass
 
     def before_render(self):
@@ -47,6 +48,9 @@ class CairoRenderer(Renderer):
 
     def after_render(self):
         pass
+
+    def has_interaction(self):
+        return False
 
     def update_frame(  # TODO Description in Docstring
         self,
