@@ -1,7 +1,7 @@
-from colour import Color
 import pytest
+from colour import Color
 
-from manim import DecimalNumber, Integer, RED
+from manim import RED, DecimalNumber, Integer
 
 
 def test_font_size():
