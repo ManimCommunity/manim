@@ -245,13 +245,12 @@ class Flash(AnimationGroup):
     def create_lines(self) -> VGroup:
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
-            line = Line(ORIGIN, self.line_length * RIGHT)
+            line = Line(self.point, self.point + self.line_length * RIGHT)
             line.shift((self.flash_radius) * RIGHT)
-            line.rotate(angle, about_point=ORIGIN)
+            line.rotate(angle, about_point=self.point)
             lines.add(line)
         lines.set_color(self.color)
         lines.set_stroke(width=self.line_stroke_width)
-        lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
     def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
