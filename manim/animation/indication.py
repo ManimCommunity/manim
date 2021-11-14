@@ -41,7 +41,6 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
-from numpy.lib.arraysetops import isin
 
 from .. import config
 from ..animation.animation import Animation
