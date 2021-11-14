@@ -57,7 +57,7 @@ class CairoRenderer(Renderer):
         moving_mobjects,
         skip_animations=False,
         include_submobjects=True,
-        ignore_skipping=True,
+        ignore_skipping=False,
         mobjects=None,
         meshes=None,
         file_writer=None,
@@ -144,7 +144,7 @@ class CairoRenderer(Renderer):
         for _ in range(num_frames):
             file_writer.write_frame(frame)
 
-    def freeze_current_frame(self, duration: float):
+    def freeze_current_frame(self, duration: float, file_writer):
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
 
         Parameters
@@ -155,6 +155,7 @@ class CairoRenderer(Renderer):
         dt = 1 / self.camera.frame_rate
         self.add_frame(
             self.get_frame(),
+            file_writer,
             num_frames=int(duration / dt),
         )
 
