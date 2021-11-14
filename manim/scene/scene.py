@@ -970,7 +970,7 @@ class Scene:
             self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
-            self._renderer.freeze_current_frame(self.duration, self.file_writer)
+            self._renderer.freeze_current_frame(self.duration, self.file_writer, skip_animations=self.skip_animations)
         else:
             self.play_internal()
         self.file_writer.end_animation(not self.skip_animations)
