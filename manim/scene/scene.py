@@ -967,7 +967,7 @@ class Scene:
 
         self.begin_animations()
         if self.is_current_animation_frozen_frame():
-            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer)
+            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer, meshes=self.meshes)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
             self._renderer.freeze_current_frame(self.duration, self.file_writer, skip_animations=self.skip_animations)
@@ -1038,23 +1038,16 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
-        if config.renderer != "opengl":
-            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-                self.update_mobjects(dt=0)  # Any problems with this?
-                if self.should_update_mobjects():
-                    self.stop_condition = self.animations[0].stop_condition
-                else:
-                    self.duration = self.animations[0].duration
-                    # Static image logic when the wait is static is done by the renderer, not here.
-                    self.animations[0].is_static_wait = True
-                    return None
-            # else:
-        # Paint all non-moving objects onto the screen, so they don't
-        # have to be rendered every frame
-        # (
-        #     self.moving_mobjects,
-        #     self.static_mobjects,
-        # ) = self.get_moving_and_static_mobjects(self.animations)
+        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+            self.update_mobjects(dt=0)  # Any problems with this?
+            if self.should_update_mobjects():
+                self.stop_condition = self.animations[0].stop_condition
+            else:
+                self.duration = self.animations[0].duration
+                # Static image logic when the wait is static is done by the renderer, not here.
+                self.animations[0].is_static_wait = True
+                return None
+
         self.duration = self.get_run_time(self.animations)
         return self
 

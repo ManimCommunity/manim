@@ -421,7 +421,7 @@ class OpenGLRenderer:
         file_writer=None,
         foreground_mobjects=None,
     ):
-        self.update_frame(mobjects, meshes)
+        self.update_frame(moving_mobjects, meshes=meshes, mobjects=mobjects)
         if skip_animations:
             return
 
@@ -430,10 +430,19 @@ class OpenGLRenderer:
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
-                self.update_frame(mobjects, meshes)
+                self.update_frame(moving_mobjects, meshes=meshes, mobjects=mobjects)
                 self.window.swap_buffers()
 
-    def update_frame(self, mobjects, meshes):
+    def update_frame(self,
+        moving_mobjects,
+        skip_animations=False,
+        include_submobjects=True,
+        ignore_skipping=False,
+        mobjects=None,
+        meshes=None,
+        file_writer=None,
+        foreground_mobjects=None,
+        **kwargs):
         self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(self.camera)
 
@@ -501,6 +510,9 @@ class OpenGLRenderer:
                 samples=samples,
             ),
         )
+
+    def freeze_current_frame(self, duration: float, file_writer, skip_animations=False):
+        pass
 
     def get_raw_frame_buffer_object_data(self, dtype="f1"):
         # Copy blocks from the fbo_msaa to the drawn fbo using Blit
