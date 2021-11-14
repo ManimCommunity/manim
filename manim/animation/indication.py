@@ -41,6 +41,7 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
+from numpy.lib.arraysetops import isin
 
 from .. import config
 from ..animation.animation import Animation
@@ -218,7 +219,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: np.ndarray,
+        point: Union[np.ndarray, Mobject],
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -228,7 +229,10 @@ class Flash(AnimationGroup):
         run_time: float = 1.0,
         **kwargs
     ) -> None:
-        self.point = point
+        if isinstance(point, Mobject):
+            self.point = point.get_center()
+        else:
+            self.point = point
         self.color = color
         self.line_length = line_length
         self.num_lines = num_lines
