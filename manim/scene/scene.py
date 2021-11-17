@@ -130,7 +130,7 @@ class Scene:
         self.partial_movie_files = []
         self.file_writer = self._file_writer_class(
             self._renderer,
-            Scene.__name__,
+            self.__class__.__name__,
         )
         self._renderer.init_scene()
 
