@@ -297,7 +297,7 @@ The following animation should be rendered:
 The first ``self.play`` creates the square. The second animates rotating it 45 degrees.
 The third transforms the square into a circle, and the last colors the circle pink.
 Although the end result is the same as that of ``SquareToCircle``, ``.animate`` shows
-``rotate`` and ``set_fill`` applying to the mobject dynamically, instead of creating them
+``rotate`` and ``set_fill`` being applied to the Mobject dynamically, instead of creating them
 with the changes already applied.
 
 Try other methods, like ``flip`` or ``shift``, and see what happens.
