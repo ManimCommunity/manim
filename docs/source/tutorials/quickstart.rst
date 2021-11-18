@@ -119,7 +119,7 @@ Most of the time, the code for scripting an animation is entirely contained with
 the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
 Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
 
-The next two lines create a circle, and set its color and opacity:
+The next two lines create a circle and set its color and opacity:
 
 .. code-block:: python
 
