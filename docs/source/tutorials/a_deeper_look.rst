@@ -254,6 +254,16 @@ The JSON file in here contains some useful information for each section:
 
 This data can be used by third party applications, like a presentation system or automated video editing tool.
 
+You can also skip rendering all animations belonging to a section like this:
+
+.. code-block:: python
+
+    def construct(self):
+        self.next_section(skip_animations=True)
+        # play some animations that shall be skipped...
+        self.next_section()
+        # play some animations that won't get skipped...
+
 
 
 
