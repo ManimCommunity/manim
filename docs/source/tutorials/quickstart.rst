@@ -229,8 +229,8 @@ The following animation displays:
            square.next_to(circle, RIGHT, buff=0.5) # set the position
            self.play(Create(circle), Create(square))  # show the shapes on screen
 
-``next_to`` is a mobject method for positioning mobjects. Its first argument,
-``circle``, specified the pink circle as the square's reference point.
+``next_to`` is a mobject method for positioning mobjects. We first specified
+the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
 The second argument, ``RIGHT``, positioned the square to the right of the circle.
 Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
 
