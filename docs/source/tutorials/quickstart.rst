@@ -278,7 +278,7 @@ and animating those method calls with ``.animate``.
 
    manim -pql scene.py AnimatedSquareToCircle
 
-The following animation displays:
+The following animation should be rendered:
 
 .. manim:: AnimatedSquareToCircle2
    :hide_source:
