@@ -70,7 +70,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         t_range: Optional[Sequence[float]] = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: bool = None,
+        discontinuities: Optional[Iterable[float]] = None,
         use_smoothing: bool = True,
         **kwargs
     ):
