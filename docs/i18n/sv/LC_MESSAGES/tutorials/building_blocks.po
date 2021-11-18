@@ -8,11 +8,11 @@ msgstr ""
 "X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
 "X-Crowdin-Project-ID: 1\n"
 "X-Crowdin-Language: sv\n"
-"X-Crowdin-File: /main/docs/i18n/gettext/tutorials/building_blocks.pot\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/tutorials/building_blocks.pot\n"
 "X-Crowdin-File-ID: 5839\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
-"PO-Revision-Date: 2021-11-06 01:02\n"
+"PO-Revision-Date: 2021-11-06 12:29\n"
 
 #: ../../source/tutorials/building_blocks.rst:3
 msgid "Manim's building blocks"
