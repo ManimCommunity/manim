@@ -231,7 +231,8 @@ The following animation displays:
 
 ``next_to`` is a mobject method for positioning mobjects. We first specified
 the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
-The second argument, ``RIGHT``, positioned the square to the right of the circle.
+The second argument is used to specify the direction the Mobject is placed relative to the reference point.
+In this case, we've set the direction to ``RIGHT``, telling manim to position the square to the right of the circle.
 Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
 
 Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square.
