@@ -143,7 +143,7 @@ Transforming a square into a circle
 
 With our circle animation complete, let's move on to something a little more complicated.
 
-1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` method:
+1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:
 
 .. code-block:: python
 
