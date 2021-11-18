@@ -115,7 +115,7 @@ Now let's look at the next two lines:
        def construct(self):
            ...
 
-Most of the time, the code for scripting an animation with manim goes inside
+Most of the time, the code for scripting an animation is entirely contained within the
 the :meth:`~.Scene.construct` method of a class, which derives from :class:`.Scene`.
 Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
 
