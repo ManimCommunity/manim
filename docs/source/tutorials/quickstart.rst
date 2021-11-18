@@ -184,7 +184,7 @@ The following animation displays:
 
 This example shows one of the primary features of manim: the ability to
 implement complicated and mathematically intensive animations (such as cleanly
-interpolating between two geometric shapes) in just a few lines of code.
+interpolating between two geometric shapes) with just a few lines of code.
 
 
 Positioning manim objects
