@@ -3,7 +3,7 @@
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Iterable, Optional, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
@@ -70,7 +70,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         t_range: Optional[Sequence[float]] = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: bool = None,
+        discontinuities: Optional[Iterable[float]] = None,
         use_smoothing: bool = True,
         **kwargs
     ):
