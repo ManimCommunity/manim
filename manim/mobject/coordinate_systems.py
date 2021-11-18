@@ -2187,7 +2187,7 @@ class ThreeDAxes(Axes):
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
         z_axis.shift(
             self.x_axis.number_to_point(
-                self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
+                self._origin_shift(self.x_axis.x_range),
             ),
         )
 
