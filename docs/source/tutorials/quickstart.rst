@@ -255,7 +255,7 @@ can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the
 differences between using methods when creating a mobject,
 and animating those method calls with ``.animate``.
 
-1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` method:
+1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:
 
 .. code-block:: python
 
