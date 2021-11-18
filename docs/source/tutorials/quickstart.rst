@@ -313,8 +313,8 @@ You're done!
 ************
 
 With a working installation of manim and this sample project under your belt,
-you're ready to start creating animations of your own.  For more
-under the hood at what manim is doing when rendering the ``SquareToCircle``
+you're ready to start creating animations of your own.  To learn
+more about what Manim is doing under the hood
 go to the next tutorial :doc:`a_deeper_look`.  For an overview of
 manim's features, as well as its configuration and other settings, go to the
 other :doc:`../tutorials`.  For a list of all available features, go to the
