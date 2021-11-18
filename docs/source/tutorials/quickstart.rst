@@ -159,7 +159,7 @@ With our circle animation complete, let's move on to something a little more com
            self.play(Transform(square, circle))  # interpolate the square into the circle
            self.play(FadeOut(square))  # fade out animation
 
-2. Render ``SquareToCircle`` using the following command:
+2. Render ``SquareToCircle`` by running the following command in the command line:
 
 .. code-block:: bash
 
