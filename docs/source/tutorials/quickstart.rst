@@ -20,7 +20,7 @@ First, you will use a command line
 interface to create a ``Scene``, the class through which manim generates videos.
 In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing
 a square transforming into a circle. This will be your introduction to manim's animation ability.
-Afterwards, you will position multiple manim objects (mobjects). Finally, you
+Afterwards, you will position multiple mathematical objects (mobjects). Finally, you
 will learn the syntax of ``.animate``, a powerful feature that displays how
 mobjects change when you modify them with methods.
 
