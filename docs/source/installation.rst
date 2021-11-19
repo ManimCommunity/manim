@@ -46,6 +46,11 @@ operating system specific instructions for you to follow.
    Discussion `directly on GitHub
    <https://github.com/ManimCommunity/manim/discussions>`__.
 
+.. warning::
+
+   Manim does not support Python 3.10 yet, this will be fixed soon,
+   for now use a Python version equal or less 3.9!
+
 .. toctree::
    :maxdepth: 2
 
