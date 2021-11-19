@@ -9,6 +9,7 @@ from manim import config, logger
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
+from .renderer import Renderer
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
@@ -214,7 +215,8 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLRenderer:
+class OpenGLRenderer(Renderer):
+
     def __init__(self, skip_animations=False, widgets=None):
         # Measured in pixel widths, used for vector graphics
         if widgets is None:
@@ -410,6 +412,18 @@ class OpenGLRenderer:
 
     def has_interaction(self):
         return True
+
+    def can_handle_static_wait(self):
+        return False
+
+    def after_animation(self):
+        pass
+
+    def before_render(self):
+        pass
+
+    def after_render(self):
+        pass
 
     def render(
         self,

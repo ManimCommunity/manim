@@ -18,6 +18,7 @@ from watchdog.observers import Observer
 
 from manim.scene.section import DefaultSectionType
 
+from ..renderer.renderer import Renderer
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
@@ -85,7 +86,7 @@ class Scene:
 
     def __init__(
         self,
-        renderer=None,
+        renderer: Renderer=None,
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
@@ -125,7 +126,7 @@ class Scene:
                 skip_animations=self.skip_animations,
             )
         else:
-            self._renderer = renderer
+            self._renderer: Renderer = renderer
 
         self.partial_movie_files = []
         self.file_writer = self._file_writer_class(
@@ -966,7 +967,7 @@ class Scene:
         )
 
         self.begin_animations()
-        if self.is_current_animation_frozen_frame():
+        if self._renderer.can_handle_static_wait() and self.is_current_animation_frozen_frame():
             self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer, meshes=self.meshes)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.

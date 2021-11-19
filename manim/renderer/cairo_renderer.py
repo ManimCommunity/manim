@@ -16,15 +16,11 @@ class CairoRenderer(Renderer):
     time: time elapsed since initialisation of scene.
     """
 
-    def __init__(
-        self,
-        camera_class=None,
-        skip_animations=False,
-        **kwargs,
-    ):
+    def __init__(self, camera_class=None, skip_animations=False, **kwargs):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
+        super().__init__()
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
@@ -51,6 +47,9 @@ class CairoRenderer(Renderer):
 
     def has_interaction(self):
         return False
+
+    def can_handle_static_wait(self):
+        return True
 
     def update_frame(  # TODO Description in Docstring
         self,

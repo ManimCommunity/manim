@@ -39,6 +39,10 @@ class Renderer(ABC):
     def has_interaction(self):
         pass
 
+    @abstractmethod
+    def can_handle_static_wait(self):
+        pass
+
     @optionalmethod
     def interactive_embed(self):
         pass
