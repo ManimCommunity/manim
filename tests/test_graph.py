@@ -1,4 +1,4 @@
-from manim import Graph, Text
+from manim import Graph, Scene, Text, tempconfig
 
 
 def test_graph_creation():
@@ -82,3 +82,17 @@ def test_graph_remove_edges():
     assert str(G) == "Graph on 5 vertices and 0 edges"
     assert set(G._graph.edges()) == set()
     assert set(G.edges.keys()) == set()
+
+
+def test_custom_animation_mobject_list():
+    G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+    scene = Scene()
+    scene.add(G)
+    assert scene.mobjects == [G]
+    with tempconfig({"dry_run": True, "quality": "low_quality"}):
+        scene.play(G.animate.add_vertices(4))
+        assert str(G) == "Graph on 4 vertices and 2 edges"
+        assert scene.mobjects == [G]
+        scene.play(G.animate.remove_vertices(2))
+        assert str(G) == "Graph on 3 vertices and 0 edges"
+        assert scene.mobjects == [G]

@@ -1,6 +1,7 @@
 import pytest
+from colour import Color
 
-from manim.mobject.numbers import DecimalNumber
+from manim import RED, DecimalNumber, Integer
 
 
 def test_font_size():
@@ -35,3 +36,11 @@ def test_set_value_size():
 
     # round because the height is off by 1e-17
     assert round(num.height, 12) == round(test_num.height, 12)
+
+
+def test_color_when_number_of_digits_changes():
+    """Test that all digits of an Integer are colored correctly when
+    the number of digits changes."""
+    mob = Integer(color=RED)
+    mob.set_value(42)
+    assert all([submob.stroke_color == Color(RED) for submob in mob.submobjects])

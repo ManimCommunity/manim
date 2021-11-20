@@ -21,12 +21,12 @@ def test_number_plane(scene):
 @frames_comparison
 def test_line_graph(scene):
     plane = NumberPlane()
-    first_line = plane.get_line_graph(
+    first_line = plane.plot_line_graph(
         x_values=[-3, 1],
         y_values=[-2, 2],
         line_color=YELLOW,
     )
-    second_line = plane.get_line_graph(
+    second_line = plane.plot_line_graph(
         x_values=[0, 2, 2, 4],
         y_values=[0, 0, 2, 4],
         line_color=RED,
@@ -38,7 +38,7 @@ def test_line_graph(scene):
 @frames_comparison
 def test_implicit_graph(scene):
     ax = Axes()
-    graph = ax.get_implicit_curve(lambda x, y: x ** 2 + y ** 2 - 4)
+    graph = ax.plot_implicit_curve(lambda x, y: x ** 2 + y ** 2 - 4)
     scene.add(ax, graph)
 
 

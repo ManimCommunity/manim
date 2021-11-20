@@ -73,7 +73,10 @@ class SceneFileWriter:
         self.partial_movie_files: List[str] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
-        self.next_section("autocreated", DefaultSectionType.NORMAL)
+        # if you need the first section to be skipped, add a first section by hand, it will replace this one
+        self.next_section(
+            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+        )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -153,13 +156,19 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str) -> None:
+    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
         """Create segmentation cut here."""
         self.finish_last_section()
 
         # images don't support sections
         section_video: Optional[str] = None
-        if not config.dry_run and write_to_movie() and config.save_sections:
+        # don't save when None
+        if (
+            not config.dry_run
+            and write_to_movie()
+            and config.save_sections
+            and not skip_animations
+        ):
             # relative to index file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
@@ -168,6 +177,7 @@ class SceneFileWriter:
                 type,
                 section_video,
                 name,
+                skip_animations,
             ),
         )
 
@@ -660,10 +670,10 @@ class SceneFileWriter:
                     os.path.join(self.sections_output_dir, section.video),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-            with open(
-                os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
-            ) as file:
-                json.dump(sections_index, file, indent=4)
+        with open(
+            os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
+        ) as file:
+            json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""

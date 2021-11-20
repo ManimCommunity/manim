@@ -36,22 +36,21 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     assert exit_code == 0, err
 
 
-@pytest.mark.slow()
+@pytest.mark.slow
 def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "NoAnimations"
+    # test different separators
     resolutions = [
-        (720, 480),
-        (1280, 720),
-        (1920, 1080),
-        (2560, 1440),
-        (3840, 2160),
-        (640, 480),
-        (800, 600),
+        (720, 480, ";"),
+        (1280, 720, ","),
+        (1920, 1080, "-"),
+        (2560, 1440, ";"),
+        # (3840, 2160, ","),
+        # (640, 480, "-"),
+        # (800, 600, ";"),
     ]
 
-    separators = [";", ",", "-"]
-
-    for (width, height), separator in itertools.product(resolutions, separators):
+    for (width, height, separator) in resolutions:
         command = [
             sys.executable,
             "-m",
@@ -101,7 +100,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 @pytest.mark.slow
 @video_comparison(
     "SceneWithMultipleCallsWithNFlag.json",
-    "videos/simple_scenes/1080p60/SceneWithMultipleCalls.mp4",
+    "videos/simple_scenes/480p15/SceneWithMultipleCalls.mp4",
 )
 def test_n_flag(tmp_path, simple_scenes_path):
     scene_name = "SceneWithMultipleCalls"
@@ -109,6 +108,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
+        "-ql",
         "--renderer",
         "opengl",
         "--write_to_movie",
