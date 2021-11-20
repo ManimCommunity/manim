@@ -45,13 +45,14 @@ def test_color_when_number_of_digits_changes():
     mob.set_value(42)
     assert all([submob.stroke_color == Color(RED) for submob in mob.submobjects])
 
+
 def test_in_place_modification_operators():
     """Test that the in-place modification operators (num += 2) work correctly."""
-    # += 
+    # +=
     num = DecimalNumber(6)
     num += 2
     assert num.get_value() == 8
-    # -= 
+    # -=
     num -= 2
     assert num.get_value() == 6
     # *=
@@ -70,7 +71,7 @@ def test_in_place_modification_operators():
     # **=
     num **= 3
     assert num.get_value() == 8
-    # >>= 
+    # >>=
     num >>= 1
     assert num.get_value() == 4
     # <<=
@@ -83,6 +84,6 @@ def test_in_place_modification_operators():
     # |=
     num |= 4
     assert num.get_value() == 7
-    # ^= 
+    # ^=
     num ^= 2
     assert num.get_value() == 5
