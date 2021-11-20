@@ -224,21 +224,22 @@ class Scene:
             pass
         except RerunSceneException as e:
             self.remove(*self.mobjects)
-            self._renderer.clear_screen()
-            self._renderer.num_plays = 0
+            self._renderer.after_scene()
+            self.num_plays = 0
             return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.scene_finished()
+        self._renderer.after_scene()
 
         # Show info only if animations are rendered or to get image
         if (
-            self._renderer.num_plays
+            self.num_plays
             or config["format"] == "png"
             or config["save_last_frame"]
         ):
             logger.info(
-                f"Rendered {str(self)}\nPlayed {self._renderer.num_plays} animations",
+                f"Rendered {str(self)}\nPlayed {self.num_plays} animations",
             )
 
         # If preview open up the render after rendering.
@@ -393,16 +394,10 @@ class Scene:
         list
             List of mobject family members.
         """
-        if config.renderer == "opengl":
-            family_members = []
-            for mob in self.mobjects:
-                family_members.extend(mob.get_family())
-            return family_members
-        else:
-            return extract_mobject_family_members(
-                self.mobjects,
-                use_z_index=self._renderer.use_z_index(),
-            )
+        return extract_mobject_family_members(
+            self.mobjects,
+            use_z_index=self._renderer.use_z_index(),
+        )
 
     def add(self, *mobjects):
         """
@@ -463,26 +458,19 @@ class Scene:
         *mobjects : Mobject
             The mobjects to remove.
         """
-        if config.renderer == "opengl":
-            mobjects_to_remove = []
-            meshes_to_remove = set()
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    meshes_to_remove.add(mobject_or_mesh)
-                else:
-                    mobjects_to_remove.append(mobject_or_mesh)
-            self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects,
-                mobjects_to_remove,
-            )
-            self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
-            )
-            return self
-        else:
-            for list_name in "mobjects", "foreground_mobjects":
-                self.restructure_mobjects(mobjects, list_name, False)
-            return self
+        mobjects_to_remove = []
+        meshes_to_remove = set()
+        for mobject_or_mesh in mobjects:
+            if isinstance(mobject_or_mesh, Object3D):
+                meshes_to_remove.add(mobject_or_mesh)
+            else:
+                mobjects_to_remove.append(mobject_or_mesh)
+        for list_name in "mobjects", "foreground_mobjects":
+            self.restructure_mobjects(mobjects_to_remove, list_name, False)
+        self.meshes = list(
+            filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
+        )
+        return self
 
     def add_updater(self, func):
         self.updaters.append(func)
@@ -815,14 +803,14 @@ class Scene:
             else:
                 time_progression = self.get_time_progression(
                     duration,
-                    f"Waiting {self._renderer.num_plays}",
+                    f"Waiting {self.num_plays}",
                 )
         else:
             time_progression = self.get_time_progression(
                 duration,
                 "".join(
                     [
-                        f"Animation {self._renderer.num_plays}: ",
+                        f"Animation {self.num_plays}: ",
                         str(animations[0]),
                         (", etc." if len(animations) > 1 else ""),
                     ],
@@ -1161,7 +1149,7 @@ class Scene:
         """
         if self.skip_animations:
             return
-        time = self._renderer.time + time_offset
+        time = self._renderer.get_current_time() + time_offset
         self.file_writer.add_sound(sound_file, time, gain, **kwargs)
 
     def check_interactive_embed_is_valid(self):

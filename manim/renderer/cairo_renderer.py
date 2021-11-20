@@ -21,7 +21,8 @@ class CairoRenderer(Renderer):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.
-        super().__init__()
+        camera_cls = camera_class if camera_class is not None else Camera
+        super().__init__(camera=camera_cls())
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
@@ -48,6 +49,9 @@ class CairoRenderer(Renderer):
 
     def has_interaction(self):
         return False
+
+    def after_scene(self):
+        pass
 
     def can_handle_static_wait(self):
         return True
@@ -206,3 +210,8 @@ class CairoRenderer(Renderer):
 
     def should_save_last_frame(self, num_plays):
         return config["save_last_frame"] or num_plays == 0
+
+    def get_current_time(self):
+        return self.time
+
+

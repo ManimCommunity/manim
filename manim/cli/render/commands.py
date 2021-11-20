@@ -137,11 +137,7 @@ def render(
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
-                renderer = CairoRenderer(
-                    camera_class=Camera,
-                    skip_animations=False,
-                )
-                scene = SceneClass(renderer=renderer)
+                scene = SceneClass()
                 scene.render()
             except Exception:
                 error_console.print_exception()

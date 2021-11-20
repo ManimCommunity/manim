@@ -220,17 +220,16 @@ class OpenGLRenderer(Renderer):
 
     def __init__(self, skip_animations=False, widgets=None):
         # Measured in pixel widths, used for vector graphics
+        super().__init__(camera=OpenGLCamera())
         if widgets is None:
             widgets = []
         self.anti_alias_width = 1.5
-
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animation_start_time = 0
         self.animation_elapsed_time = 0
         self.time = 0
         self.animations_hashes = []
-        self.num_plays = 0
         self.interactive_mode = False
         self.widgets = [] if not widgets else widgets
         self.mouse_press_callbacks = []
@@ -238,8 +237,6 @@ class OpenGLRenderer(Renderer):
         self.key_to_function_map = {}
 
         self.camera_target = ORIGIN
-        self.camera = OpenGLCamera()
-
         # Initialize texture map.
         self.path_to_texture_id = {}
 
@@ -384,29 +381,6 @@ class OpenGLRenderer(Renderer):
             self.path_to_texture_id[path] = tid
         return self.path_to_texture_id[path]
 
-    def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
-        animation needs to be skipped or not. It also checks if
-        the number of animations that were played correspond to
-        the number of animations that need to be played, and
-        raises an EndSceneEarlyException if they don't correspond.
-        """
-        # there is always at least one section -> no out of bounds here
-        if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
-        if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
-        ):
-            self.skip_animations = True
-        if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
-
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
         self.window.swap_buffers()
@@ -416,6 +390,9 @@ class OpenGLRenderer(Renderer):
 
     def has_interaction(self):
         return True
+
+    def get_current_time(self):
+        return 0 # todo not currently tracked
 
     def can_handle_static_wait(self):
         return False
@@ -428,6 +405,9 @@ class OpenGLRenderer(Renderer):
 
     def after_render(self):
         pass
+
+    def after_scene(self):
+        self.clear_screen()
 
     def use_z_index(self):
         return False
