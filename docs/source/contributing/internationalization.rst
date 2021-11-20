@@ -2,52 +2,27 @@
 Internationalization
 ====================
 
-.. note::
-   The translation process is currently not yet ready. Please avoid translating pages for now.
-
 If you want to help with translating the docs:
 
-#. Make sure you have a `Transifex <https://www.transifex.com/>`_ account. Transifex is a tool for colaborative translation and allows the Manim team to review translations.
-#. Open the `Manim Transifex project page <https://www.transifex.com/manim-community/manim-community-documentation>`_ .
-#. Click on ``Join Team``.
-#. Select the language you want to help with.
 
-Congratulations! You are now a Translator for the Manim project!
+#. You will first have to create an account. Go to `this page <https://accounts.crowdin.com/register?domain=manim>` and fill up your informations. You can also log in using one of the proposed websites.
+#. You should have received a confirmation email. It is not mandatory to verify you email address, but we advise you to do so, in case you lose your password or anything.
+#. Go to `https://translate.manim.community/ <https://translate.manim.community/>`
+#. Click the `translate` button on the manim project.
+#. Select the language you want to help with by clicking on it.
+#. Then you can either click on any file to help translating it, or you can click on *Translate all* to help with translating any file.
+#. If it is your first time translating on *Crowdin*, you should have some tutorial slides explaining how to translate using their interface.
+#. Now you can translate ! The source text appears above a text field that you can fill. Below, you have automatic translations that can be used as a basis.
 
+Thanks a lot for helping Manim with getting broader !
 
-You'll see the projects you've joined just on the left of your profile picture
-on the top bar.
+You can also upvote or downvote translations given by other. To that extend, go to the translation editor for any language (like you did to translate). When you click on an already translated string, You can see translations that have been proposed below it (between the translation input text field and the machine translation) and there you can upvote or downvote the translation.
 
-.. image:: /_static/select_transifex_repo.png
-   :align: center
-   :width: 200
-
-Now go to the
-`languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
-and select a language you want to help with. You should see a blue button reading
-`Translate`; click on it to get started! You will see a list of
-resources in the project. You can click on any untranslated resource, then
-click on `Translate`. You will then see something like the following:
-
-.. image:: /_static/transifex_explanation.png
-    :align: center
-
-The `A` panel is the list of all the strings in the resource. Click on any of
-them to translate it. It will appear in the `B` panel, and you will be able to
-work on your translation in the `C` panel. Once you're done, click `Save changes`.
-Your translation will have to be reviewed before being added to the docs.
-You can also get back to the resources list by clicking `d` or change the
-destination language in `e`.
-
+.. note::
+	This is disabled for some languages for which we use trusted reviewers. For now, these languages are *Chinese Simplified*, *Chinese Traditional*, *French*, *Hindi* , and *Spanish*.
 
 If you want to become a reviewer, please join `Manim's Discord server <https://www.manim.community/discord/>`_
-and ping the role @Translation Admin.
+and ping the role @Translation Admin. We will then study your case.
 
-If you want to add a new language, you can go to
-`the project page <https://www.transifex.com/manim-community/manim-community-documentation>`_
-If you haven't joined the project yet, you will have a link which reads
-`Request language` which you can click.
-If you are already in the project, this button will be in the languages page.
+We can't add new languages as we are limited by ReadTheDocs available languages. If you want to complain, go to them ^^.
 
-We will have to manually accept the new language, so you will not be able to
-translate instantaneously (for new languages).
