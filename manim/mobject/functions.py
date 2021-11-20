@@ -68,8 +68,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
 
     .. attention::
-        In case your function contains discontinuous points, observe
-        the following example.
+        If your function has discontinuities, you'll have to specify the location
+        of the discontinuities manually. See the following example for guidance.
 
     .. manim:: DiscontinuousExample
         :save_last_frame:
