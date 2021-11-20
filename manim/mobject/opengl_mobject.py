@@ -460,7 +460,7 @@ class OpenGLMobject:
         return self
 
     def add_to_back(self, *mobjects):
-        self.set_submobjects(list_update(mobjects, self.submobjects))
+        self.submobjects = list_update(mobjects, self.submobjects)
         return self
 
     def replace_submobject(self, index, new_submob):
@@ -517,7 +517,7 @@ class OpenGLMobject:
         mobject_attrs = [
             x for x in list(self.__dict__.values()) if isinstance(x, OpenGLMobject)
         ]
-        self.set_submobjects(list_update(self.submobjects, mobject_attrs))
+        self.submobjects = list_update(self.submobjects, mobject_attrs)
         return self
 
     # Submobject organization
@@ -1527,7 +1527,7 @@ class OpenGLMobject:
 
     def get_pieces(self, n_pieces):
         template = self.copy()
-        template.set_submobjects([])
+        template.submobjects = []
         alphas = np.linspace(0, 1, n_pieces + 1)
         return OpenGLGroup(
             *(
@@ -1641,7 +1641,7 @@ class OpenGLMobject:
 
     def push_self_into_submobjects(self):
         copy = self.deepcopy()
-        copy.set_submobjects([])
+        copy.submobjects = []
         self.resize_points(0)
         self.add(copy)
         return self
@@ -1655,7 +1655,7 @@ class OpenGLMobject:
             # If empty, simply add n point mobjects
             null_mob = self.copy()
             null_mob.set_points([self.get_center()])
-            self.set_submobjects([null_mob.copy() for k in range(n)])
+            self.submobjects = [null_mob.copy() for k in range(n)]
             return self
         target = curr + n
         repeat_indices = (np.arange(target) * curr) // target
@@ -1670,7 +1670,7 @@ class OpenGLMobject:
                 if submob.get_opacity() < 1:
                     new_submob.set_opacity(0)
                 new_submobs.append(new_submob)
-        self.set_submobjects(new_submobs)
+        self.submobjects = new_submobs
         return self
 
     # Interpolate
