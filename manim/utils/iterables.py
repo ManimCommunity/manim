@@ -171,3 +171,12 @@ def remove_nones(sequence):
 
 def concatenate_lists(*list_of_lists):
     return [item for lst in list_of_lists for item in lst]
+
+
+def uniq_chain(*args):
+    unique_items = set()
+    for x in it.chain(*args):
+        if x in unique_items:
+            continue
+        unique_items.add(x)
+        yield x

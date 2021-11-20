@@ -26,6 +26,7 @@ from ..utils.iterables import (
     resize_array,
     resize_preserving_order,
     resize_with_interpolation,
+    uniq_chain,
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -100,7 +101,7 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events = listen_to_events
 
-        self.submobjects = []
+        self._submobjects = []
         self.parents = []
         self.parent = None
         self.family = [self]
@@ -412,7 +413,7 @@ class OpenGLMobject:
 
     def assemble_family(self):
         sub_families = (sm.get_family() for sm in self.submobjects)
-        self.family = [self, *it.chain(*sub_families)]
+        self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
@@ -470,6 +471,12 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
+    @deprecated(
+        since="v0.12.0",
+        until="v0.13.0",
+        replacement="self.submobjects",
+        message="Switching to using properties for submobjects",
+    )
     def set_submobjects(self, submobject_list):
         self.remove(*self.submobjects)
         self.add(*submobject_list)
@@ -1902,6 +1909,15 @@ class OpenGLMobject:
 
     def get_shader_vert_indices(self):
         return self.shader_indices
+
+    @property
+    def submobjects(self):
+        return self._submobjects
+
+    @submobjects.setter
+    def submobjects(self, submobject_list):
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
 
     # Event Handlers
     """
