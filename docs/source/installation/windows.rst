@@ -19,7 +19,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.7-3.9) and ``ffmpeg``
+Manim requires a recent version of Python (3.7–3.9) and ``ffmpeg``
 in order to work.
 
 Chocolatey
@@ -58,10 +58,10 @@ Manual Installation
 *******************
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.7-3.9) and FFmpeg.
+Python 3 (3.7–3.9) and FFmpeg.
 
 **Python:** Head over to https://www.python.org, download an installer
-for Python (3.7-3.9), and follow its instructions to get Python
+for Python (3.7–3.9), and follow its instructions to get Python
 installed on your system.
 
 .. note::
