@@ -259,6 +259,56 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
     def increment_value(self, delta_t=1):
         self.set_value(self.get_value() + delta_t)
+        
+    #in place modification operator overloading
+    def __iadd__(self, num): 
+        self.set_value(self.get_value() + num)
+        return self
+        
+    def __isub__(self, num): 
+        self.set_value(self.get_value() - num)
+        return self
+        
+    def __imul__(self, num): 
+        self.set_value(self.get_value() * num)
+        return self
+        
+    def __itruediv__(self, num): 
+        self.set_value(self.get_value() / num)
+        return self
+        
+    def __ifloordiv__(self, num):
+        self.set_value(self.get_value() // num)
+        return self
+        
+    def __imod__(self, num): 
+        self.set_value(self.get_value() % num)
+        return self
+        
+    def __ipow__(self, num): 
+        self.set_value(self.get_value() ** num)
+        return self
+    
+    #not sure why you'd need these but they can't hurt, right?
+    def __irshift__(self, num):
+        self.set_value(self.get_value() >> num)
+        return self
+        
+    def __ilshift__(self, num): 
+        self.set_value(self.get_value() << num)
+        return self
+    
+    def __iand__(self, num): 
+        self.set_value(self.get_value() & num)
+        return self
+
+    def __ior__(self, num): 
+        self.set_value(self.get_value() | num)
+        return self
+
+    def __ixor__(self, num): 
+        self.set_value(self.get_value() ^ num)
+        return self
 
 
 class Integer(DecimalNumber):
