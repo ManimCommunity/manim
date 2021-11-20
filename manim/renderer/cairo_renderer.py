@@ -56,7 +56,7 @@ class CairoRenderer(Renderer):
         moving_mobjects,
         skip_animations=False,
         include_submobjects=True,
-        ignore_skipping=False,
+        ignore_skipping=True,
         mobjects=None,
         meshes=None,
         file_writer=None,
@@ -159,13 +159,16 @@ class CairoRenderer(Renderer):
             num_frames=int(duration / dt),
         )
 
-    def show_frame(self):
+    def show_frame(self, mobjects):
         """
         Opens the current frame in the Default Image Viewer
         of your system.
         """
-        self.update_frame(ignore_skipping=True)
+        self.update_frame(mobjects, ignore_skipping=True)
         self.camera.get_image().show()
+
+    def get_image(self):
+        return self.camera.get_image()
 
     def save_static_frame_data(
         self,
