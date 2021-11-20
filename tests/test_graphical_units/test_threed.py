@@ -5,6 +5,13 @@ __module_test__ = "threed"
 
 
 @frames_comparison(base_scene=ThreeDScene)
+def test_AddFixedInFrameMobjects(scene):
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+    text = Tex("This is a 3D tex")
+    scene.add_fixed_in_frame_mobjects(text)
+
+
+@frames_comparison(base_scene=ThreeDScene)
 def test_Cube(scene):
     scene.add(Cube())
 
@@ -31,7 +38,10 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    scene.add(Line3D())
+    line = Line3D()
+    perp_line = Line3D.perpendicular_to(line, UP)
+    parallel_line = Line3D.parallel_to(line, UP)
+    scene.add(line, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -46,7 +56,7 @@ def test_Torus(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Axes(scene):
-    scene.add(ThreeDAxes(axis_config={"exclude_origin_tick": False}))
+    scene.add(ThreeDAxes())
 
 
 @frames_comparison(base_scene=ThreeDScene)

@@ -251,6 +251,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 # not needed with opengl renderer
                 mob.points[:] = 0
 
+        self.init_colors()
         return self
 
     def get_value(self):

@@ -15,7 +15,7 @@ def validate_scene_range(ctx, param, value):
 
     if value:
         try:
-            start, end = map(int, re.split(";|,|-", value))
+            start, end = map(int, re.split(r"[;,\-]", value))
             return start, end
         except Exception:
             logger.error("Couldn't determine a range for -n option.")
@@ -25,7 +25,7 @@ def validate_scene_range(ctx, param, value):
 def validate_resolution(ctx, param, value):
     if value:
         try:
-            start, end = map(int, re.split(";|,|-", value))
+            start, end = map(int, re.split(r"[;,\-]", value))
             return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
@@ -121,6 +121,12 @@ render_options = option_group(
         default=None,
         is_flag=True,
         help="Save as a gif (Deprecated).",
+    ),
+    option(
+        "--save_sections",
+        default=None,
+        is_flag=True,
+        help="Save section videos in addition to movie file.",
     ),
     option(
         "-s",
