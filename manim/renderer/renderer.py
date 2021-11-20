@@ -40,6 +40,10 @@ class Renderer(ABC):
         pass
 
     @abstractmethod
+    def use_z_index(self):
+        pass
+
+    @abstractmethod
     def can_handle_static_wait(self):
         pass
 

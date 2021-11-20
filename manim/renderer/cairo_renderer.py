@@ -51,6 +51,9 @@ class CairoRenderer(Renderer):
     def can_handle_static_wait(self):
         return True
 
+    def use_z_index(self):
+        return self.camera.use_z_index
+
     def update_frame(  # TODO Description in Docstring
         self,
         moving_mobjects,

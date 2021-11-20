@@ -399,7 +399,7 @@ class Scene:
         else:
             return extract_mobject_family_members(
                 self.mobjects,
-                use_z_index=self._renderer.camera.use_z_index,
+                use_z_index=self._renderer.use_z_index(),
             )
 
     def add(self, *mobjects):
@@ -418,28 +418,26 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        if config.renderer == "opengl":
-            new_mobjects = []
-            new_meshes = []
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    new_meshes.append(mobject_or_mesh)
-                else:
-                    new_mobjects.append(mobject_or_mesh)
-            self.remove(*new_mobjects)
-            self.mobjects += new_mobjects
-            self.remove(*new_meshes)
-            self.meshes += new_meshes
-        else:
-            mobjects = [*mobjects, *self.foreground_mobjects]
-            self.restructure_mobjects(to_remove=mobjects)
-            self.mobjects += mobjects
-            if self.moving_mobjects:
-                self.restructure_mobjects(
-                    to_remove=mobjects,
-                    mobject_list_name="moving_mobjects",
-                )
-                self.moving_mobjects += mobjects
+        new_mobjects = []
+        new_meshes = []
+        for mobject_or_mesh in mobjects:
+            if isinstance(mobject_or_mesh, Object3D):
+                new_meshes.append(mobject_or_mesh)
+            else:
+                new_mobjects.append(mobject_or_mesh)
+        new_mobjects = [*new_mobjects, *self.foreground_mobjects]
+
+        self.restructure_mobjects(to_remove=mobjects)
+        self.remove(*new_meshes)
+
+        self.mobjects += new_mobjects
+        self.meshes += new_meshes
+        if self.moving_mobjects:
+            self.restructure_mobjects(
+                to_remove=mobjects,
+                mobject_list_name="moving_mobjects",
+            )
+            self.moving_mobjects += mobjects
         return self
 
     def add_mobjects_from_animations(self, animations):
@@ -526,7 +524,7 @@ class Scene:
         if extract_families:
             to_remove = extract_mobject_family_members(
                 to_remove,
-                use_z_index=self._renderer.camera.use_z_index,
+                use_z_index=self._renderer.use_z_index(),
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -730,13 +728,13 @@ class Scene:
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
-            use_z_index=self._renderer.camera.use_z_index,
+            use_z_index=self._renderer.use_z_index(),
             only_those_with_points=True,
         )
         moving_mobjects = self.get_moving_mobjects(*animations)
         all_moving_mobject_families = extract_mobject_family_members(
             moving_mobjects,
-            use_z_index=self._renderer.camera.use_z_index,
+            use_z_index=self._renderer.use_z_index(),
         )
         static_mobjects = list_difference_update(
             all_mobject_families,

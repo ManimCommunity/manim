@@ -425,6 +425,9 @@ class OpenGLRenderer(Renderer):
     def after_render(self):
         pass
 
+    def use_z_index(self):
+        return False
+
     def render(
         self,
         frame_offset,
