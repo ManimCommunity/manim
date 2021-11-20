@@ -1,8 +1,6 @@
 """Basic canvas for animations."""
 
-
 __all__ = ["Scene"]
-
 
 import copy
 import inspect
@@ -12,6 +10,9 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import List, Optional
+
+from manim.scene.section import DefaultSectionType
 
 try:
     import dearpygui.dearpygui as dpg
@@ -71,7 +72,6 @@ class Scene:
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
 
-
     Examples
     --------
     Override the :meth:`Scene.construct` method with your code.
@@ -115,6 +115,7 @@ class Scene:
         self.ambient_light = None
         self.key_to_function_map = {}
         self.mouse_press_callbacks = []
+        self.interactive_mode = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -290,6 +291,18 @@ class Scene:
         """
         pass  # To be implemented in subclasses
 
+    def next_section(
+        self,
+        name: str = "unnamed",
+        type: str = DefaultSectionType.NORMAL,
+        skip_animations: bool = False,
+    ) -> None:
+        """Create separation here; the last section gets finished and a new one gets created.
+        ``skip_animations`` skips the rendering of all animations in this section.
+        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        """
+        self.renderer.file_writer.next_section(name, type, skip_animations)
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -423,7 +436,7 @@ class Scene:
                     mobject_list_name="moving_mobjects",
                 )
                 self.moving_mobjects += mobjects
-            return self
+        return self
 
     def add_mobjects_from_animations(self, animations):
         curr_mobjects = self.get_mobject_family_members()
@@ -1006,12 +1019,38 @@ class Scene:
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def check_interactive_embed_is_valid(self):
+        if config["force_window"]:
+            return True
+        if self.skip_animation_preview:
+            logger.warning(
+                "Disabling interactive embed as 'skip_animation_preview' is enabled",
+            )
+            return False
+        elif config["write_to_movie"]:
+            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
+            return False
+        elif config["format"]:
+            logger.warning(
+                "Disabling interactive embed as '--format' is set as "
+                + config["format"],
+            )
+            return False
+        elif not self.renderer.window:
+            logger.warning("Disabling interactive embed as no window was created")
+            return False
+        elif config.dry_run:
+            logger.warning("Disabling interactive embed as dry_run is enabled")
+            return False
+        return True
+
     def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
         """
-        if self.skip_animation_preview or config["write_to_movie"]:
+        if not self.check_interactive_embed_is_valid():
             return
+        self.interactive_mode = True
 
         def ipython(shell, namespace):
             import manim

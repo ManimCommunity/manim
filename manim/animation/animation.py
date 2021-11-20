@@ -1,7 +1,7 @@
 """Animate mobjects."""
 
 
-from .. import logger
+from .. import config, logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
@@ -62,6 +62,16 @@ class Animation:
         Whether the given mobject should be removed from the scene after this animation.
     suspend_mobject_updating
         Whether updaters of the mobject should be suspended during the animation.
+
+
+    .. NOTE::
+
+        In the current implementation of this class, the specified rate function is applied
+        within :meth:`.Animation.interpolate_mobject` call as part of the call to
+        :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation`
+        that are implemented by overriding :meth:`interpolate_mobject`, the rate function
+        has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead
+        of just ``alpha``).
 
 
     Examples
@@ -131,8 +141,14 @@ class Animation:
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self.starting_mobject: Mobject = Mobject()
-        self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        if config["renderer"] == "opengl":
+            self.starting_mobject: OpenGLMobject = OpenGLMobject()
+            self.mobject: OpenGLMobject = (
+                mobject if mobject is not None else OpenGLMobject()
+            )
+        else:
+            self.starting_mobject: Mobject = Mobject()
+            self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -221,6 +237,8 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
             *(mob.family_members_with_points() for mob in self.get_all_mobjects())
         )
@@ -270,7 +288,7 @@ class Animation:
         Parameters
         ----------
         alpha
-            The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
+            The relative time to set the animation to, 0 meaning the start, 1 meaning
             the end.
         """
         self.interpolate_mobject(alpha)

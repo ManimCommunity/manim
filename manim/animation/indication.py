@@ -160,7 +160,7 @@ class Indicate(Transform):
 
     def create_target(self) -> "Mobject":
         target = self.mobject.copy()
-        target.scale_in_place(self.scale_factor)
+        target.scale(self.scale_factor)
         target.set_color(self.color)
         return target
 
@@ -218,7 +218,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: np.ndarray,
+        point: Union[np.ndarray, Mobject],
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -228,7 +228,10 @@ class Flash(AnimationGroup):
         run_time: float = 1.0,
         **kwargs
     ) -> None:
-        self.point = point
+        if isinstance(point, Mobject):
+            self.point = point.get_center()
+        else:
+            self.point = point
         self.color = color
         self.line_length = line_length
         self.num_lines = num_lines
@@ -245,13 +248,12 @@ class Flash(AnimationGroup):
     def create_lines(self) -> VGroup:
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
-            line = Line(ORIGIN, self.line_length * RIGHT)
+            line = Line(self.point, self.point + self.line_length * RIGHT)
             line.shift((self.flash_radius) * RIGHT)
-            line.rotate(angle, about_point=ORIGIN)
+            line.rotate(angle, about_point=self.point)
             lines.add(line)
         lines.set_color(self.color)
         lines.set_stroke(width=self.line_stroke_width)
-        lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
     def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
@@ -325,8 +327,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         self.remover = remover
         max_stroke_width = vmobject.get_stroke_width()
         max_time_width = kwargs.pop("time_width", self.time_width)
-        AnimationGroup.__init__(
-            self,
+        super().__init__(
             *(
                 ShowPassingFlash(
                     vmobject.deepcopy().set_stroke(width=stroke_width),

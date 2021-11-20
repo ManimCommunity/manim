@@ -138,6 +138,8 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in mobs))
         return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
@@ -463,7 +465,7 @@ class TransformAnimations(Transform):
     def interpolate(self, alpha: float) -> None:
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
-        Transform.interpolate(self, alpha)
+        super().interpolate(alpha)
 
 
 class FadeTransform(Transform):

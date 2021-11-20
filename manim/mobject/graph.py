@@ -545,7 +545,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_vertices(
         self: "Graph",
-        *vertices: List[Hashable],
+        *vertices: Hashable,
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
@@ -559,7 +559,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of hashable vertex identifiers.
+            Hashable vertex identifiers.
         positions
             A dictionary specifying the coordinates where the new vertices should be added.
             If ``None``, all vertices are created at the center of the graph.
@@ -633,7 +633,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         vertex_mobjects = self.add_vertices(*args, **kwargs)
-        return AnimationGroup(*(animation(v, **anim_args) for v in vertex_mobjects))
+        return AnimationGroup(
+            *(animation(v, **anim_args) for v in vertex_mobjects), group=self
+        )
 
     def _remove_vertex(self, vertex):
         """Remove a vertex (as well as all incident edges) from the graph.
@@ -678,7 +680,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         vertices
-            A list of vertices to be removed from the graph.
+            Vertices to be removed from the graph.
 
         Examples
         --------
@@ -704,7 +706,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertices(*vertices)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        return AnimationGroup(
+            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+        )
 
     def _add_edge(
         self,
@@ -759,7 +763,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: List[Tuple[Hashable, Hashable]],
+        *edges: Tuple[Hashable, Hashable],
         edge_type: Type["Mobject"] = Line,
         edge_config: Optional[dict] = None,
     ):
@@ -769,7 +773,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         ----------
 
         edges
-            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
             new vertices yourself beforehand to customize them.
         edge_type
@@ -817,7 +821,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         mobjects = self.add_edges(*args, **kwargs)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        return AnimationGroup(
+            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+        )
 
     def _remove_edge(self, edge: Tuple[Hashable]):
         """Remove an edge from the graph.
@@ -848,13 +854,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+    def remove_edges(self, *edges: Tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
         ----------
         edges
-            A list of edges to be removed from the graph.
+            Edges to be removed from the graph.
 
         Returns
         -------
@@ -873,7 +879,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_edges(*edges)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        return AnimationGroup(
+            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+        )
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":

@@ -1,3 +1,5 @@
+import itertools
+import os
 import sys
 from pathlib import Path
 
@@ -6,10 +8,11 @@ import pytest
 from click.testing import CliRunner
 from PIL import Image
 
+from manim import capture, get_video_metadata
 from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
 
-from ..utils.video_tester import *
+from ..utils.video_tester import video_comparison
 
 
 @pytest.mark.slow
@@ -30,6 +33,43 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+@pytest.mark.slow
+def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "NoAnimations"
+    # test different separators
+    resolutions = [
+        (720, 480, ";"),
+        (1280, 720, ","),
+        (1920, 1080, "-"),
+        (2560, 1440, ";"),
+        # (3840, 2160, ","),
+        # (640, 480, "-"),
+        # (800, 600, ";"),
+    ]
+
+    for (width, height, separator) in resolutions:
+        command = [
+            sys.executable,
+            "-m",
+            "manim",
+            "--media_dir",
+            str(tmp_path),
+            "--resolution",
+            f"{width}{separator}{height}",
+            str(simple_scenes_path),
+            scene_name,
+        ]
+
+        _, err, exit_code = capture(command)
+        assert exit_code == 0, err
+
+        path = (
+            tmp_path / "videos" / "simple_scenes" / f"{height}p60" / f"{scene_name}.mp4"
+        )
+        meta = get_video_metadata(path)
+        assert (width, height) == (meta["width"], meta["height"])
 
 
 @pytest.mark.slow
@@ -56,7 +96,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 @pytest.mark.slow
 @video_comparison(
     "SceneWithMultipleCallsWithNFlag.json",
-    "videos/simple_scenes/1080p60/SceneWithMultipleCalls.mp4",
+    "videos/simple_scenes/480p15/SceneWithMultipleCalls.mp4",
 )
 def test_n_flag(tmp_path, simple_scenes_path):
     scene_name = "SceneWithMultipleCalls"
@@ -64,6 +104,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
+        "-ql",
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
@@ -107,6 +148,32 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "manim",
         "-ql",
         "-s",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    exists = (tmp_path / "videos").exists()
+    assert not exists, "running manim with -s flag rendered a video"
+
+    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
+    assert not is_empty, "running manim with -s flag did not render an image"
+
+
+@pytest.mark.slow
+def test_s_flag_opengl_renderer(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "-s",
+        "--renderer",
+        "opengl",
         "--media_dir",
         str(tmp_path),
         simple_scenes_path,
@@ -371,6 +438,35 @@ def test_images_are_created_when_png_format_set(
 
 
 @pytest.mark.slow
+def test_images_are_created_when_png_format_set_for_opengl(
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
+):
+    """Test images are created in media directory when --format png is set for opengl"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--renderer",
+        "opengl",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
+
+
+@pytest.mark.slow
 def test_images_are_zero_padded_when_zero_pad_set(
     tmp_path,
     manim_cfg_file,
@@ -383,6 +479,42 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "-m",
         "manim",
         "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        "--zero_pad",
+        "3",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
+        unexpected_png_path,
+    )
+
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
+
+
+@pytest.mark.slow
+def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
+    tmp_path,
+    manim_cfg_file,
+    simple_scenes_path,
+):
+    """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--renderer",
+        "opengl",
         "--media_dir",
         str(tmp_path),
         "--format",
@@ -507,3 +639,32 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
         expected_mov_path,
     )
+
+
+@pytest.mark.slow
+@video_comparison(
+    "InputFileViaCfg.json",
+    "videos/simple_scenes/480p15/SquareToCircle.mp4",
+)
+def test_input_file_via_cfg(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    with open(os.path.join(tmp_path, "manim.cfg"), "w") as file:
+        file.write(
+            f"""
+[CLI]
+input_file = {simple_scenes_path}
+            """
+        )
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        ".",
+        str(tmp_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command, cwd=tmp_path)
+    assert exit_code == 0, err

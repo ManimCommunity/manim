@@ -200,8 +200,8 @@ modify write_cfg_subcmd_input to account for it.""",
                             end="",
                         )
                         temp = input()
-                    else:
-                        default[key] = temp
+
+                    default[key] = temp
 
             default = replace_keys(default) if category == "logger" else default
 

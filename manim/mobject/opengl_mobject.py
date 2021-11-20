@@ -2,7 +2,7 @@ import copy
 import itertools as it
 import random
 import sys
-from functools import wraps
+from functools import partialmethod, wraps
 from math import ceil
 from typing import Iterable, Optional, Tuple, Union
 
@@ -26,6 +26,7 @@ from ..utils.iterables import (
     resize_array,
     resize_preserving_order,
     resize_with_interpolation,
+    uniq_chain,
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -75,13 +76,14 @@ class OpenGLMobject:
         # Event listener
         listen_to_events=False,
         model_matrix=None,
+        should_render=True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.color = Color(color)
+        self.color = Color(color) if color else None
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
@@ -99,7 +101,7 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events = listen_to_events
 
-        self.submobjects = []
+        self._submobjects = []
         self.parents = []
         self.parent = None
         self.family = [self]
@@ -120,6 +122,20 @@ class OpenGLMobject:
 
         if self.depth_test:
             self.apply_depth_test()
+
+        self.should_render = should_render
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._original__init__ = cls.__init__
+
+    @classmethod
+    def set_default(cls, **kwargs):
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     def __str__(self):
         return self.__class__.__name__
@@ -397,7 +413,7 @@ class OpenGLMobject:
 
     def assemble_family(self):
         sub_families = (sm.get_family() for sm in self.submobjects)
-        self.family = [self, *it.chain(*sub_families)]
+        self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
         self.refresh_bounding_box()
         for parent in self.parents:
@@ -419,8 +435,10 @@ class OpenGLMobject:
             mobjects[0].parent = self
 
         if self in mobjects:
-            raise Exception("Mobject cannot contain self")
+            raise ValueError("OpenGLMobject cannot contain self")
         for mobject in mobjects:
+            if not isinstance(mobject, OpenGLMobject):
+                raise TypeError("All submobjects must be of type OpenGLMobject")
             if mobject not in self.submobjects:
                 self.submobjects.append(mobject)
             if self not in mobject.parents:
@@ -453,6 +471,12 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
+    @deprecated(
+        since="v0.12.0",
+        until="v0.13.0",
+        replacement="self.submobjects",
+        message="Switching to using properties for submobjects",
+    )
     def set_submobjects(self, submobject_list):
         self.remove(*self.submobjects)
         self.add(*submobject_list)
@@ -1312,6 +1336,10 @@ class OpenGLMobject:
         self.set_rgba_array(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
+        if color is not None:
+            self.color = Color(color)
+        if opacity is not None:
+            self.opacity = opacity
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
@@ -1882,6 +1910,15 @@ class OpenGLMobject:
     def get_shader_vert_indices(self):
         return self.shader_indices
 
+    @property
+    def submobjects(self):
+        return self._submobjects
+
+    @submobjects.setter
+    def submobjects(self, submobject_list):
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
+
     # Event Handlers
     """
         Event handling follows the Event Bubbling model of DOM in javascript.
@@ -1980,7 +2017,7 @@ class OpenGLGroup(OpenGLMobject):
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, OpenGLMobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
@@ -1990,7 +2027,7 @@ class OpenGLPoint(OpenGLMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        OpenGLMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_location(location)
 
     def get_width(self):

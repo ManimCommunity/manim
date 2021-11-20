@@ -29,7 +29,7 @@ Examples
     class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
+            title.scale(0.75)
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
@@ -40,7 +40,7 @@ Examples
 
             t4 = Text("4. Prediction").set_color(WHITE)
 
-            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -120,7 +120,7 @@ class Paragraph(VGroup):
 
     Parameters
     ----------
-    line_spacing : :class:`int`, optional
+    line_spacing : :class:`float`, optional
         Represents the spacing between lines. Default to -1, which means auto.
     alignment : :class:`str`, optional
         Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
@@ -352,7 +352,7 @@ class Text(SVGMobject):
                         'Google',
                         t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
                              '[2:3]': '#fbb003', '[3:4]': '#3174f0',
-                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3)
+                             '[4:5]': '#269a43', '[5:]': '#e53125'}, font_size=58).scale(3)
                     self.add(text1)
 
     As :class:`Text` uses Pango to render text, rendering non-English
@@ -398,12 +398,6 @@ class Text(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -411,7 +405,7 @@ class Text(SVGMobject):
         stroke_width: float = 0,
         color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
-        line_spacing: int = -1,
+        line_spacing: float = -1,
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
@@ -423,23 +417,18 @@ class Text(SVGMobject):
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
-        height: int = None,
-        width: int = None,
+        height: float = None,
+        width: float = None,
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
-            self._font_size = float(font_size)
 
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
+        # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -493,10 +482,7 @@ class Text(SVGMobject):
         )
         self.text = text
         if self.disable_ligatures:
-            if config.renderer == "opengl":
-                self.set_submobjects(self.gen_chars())
-            else:
-                self.submobjects = [*self.gen_chars()]
+            self.submobjects = [*self.gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         if config.renderer == "opengl":
@@ -1025,12 +1011,6 @@ class MarkupText(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -1054,15 +1034,9 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            self._font_size = float(font_size)
-
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient

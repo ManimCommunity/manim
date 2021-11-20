@@ -1,19 +1,36 @@
 """Mobjects representing function graphs."""
 
-__all__ = ["ParametricFunction", "FunctionGraph"]
+__all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
+
+from typing import Callable, Iterable, Optional, Sequence
 
 import numpy as np
+from isosurfaces import plot_isoline
 
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from ..utils.scale import LinearBase, _ScaleBase
 from .opengl_compatibility import ConvertToOpenGL
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
+
+    Parameters
+    ----------
+    function
+        The function to be plotted in the form of ``(lambda x: x**2)``
+    t_range
+        Determines the length that the function spans. By default ``[0, 1]``
+    scaling
+        Scaling class applied to the points of the function. Default of :class:`~.LinearBase`.
+    use_smoothing
+        Whether to interpolate between the points of the function after they have been created.
+        (Will have odd behaviour with a low number of points)
+
 
     Examples
     --------
@@ -49,17 +66,20 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        function=None,
-        t_range=None,
-        dt=1e-8,
-        discontinuities=None,
-        use_smoothing=True,
+        function: Callable[[float, float], float],
+        t_range: Optional[Sequence[float]] = None,
+        scaling: _ScaleBase = LinearBase(),
+        dt: float = 1e-8,
+        discontinuities: Optional[Iterable[float]] = None,
+        use_smoothing: bool = True,
         **kwargs
     ):
         self.function = function
         t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:
             t_range = np.array([*t_range, 0.01])
+
+        self.scaling = scaling
 
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
@@ -76,22 +96,28 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_points(self):
 
-        discontinuities = filter(
-            lambda t: self.t_min <= t <= self.t_max,
-            self.discontinuities,
-        )
-        discontinuities = np.array(list(discontinuities))
-        boundary_times = np.array(
-            [
-                self.t_min,
-                self.t_max,
-                *(discontinuities - self.dt),
-                *(discontinuities + self.dt),
-            ],
-        )
-        boundary_times.sort()
+        if self.discontinuities:
+            discontinuities = filter(
+                lambda t: self.t_min <= t <= self.t_max,
+                self.discontinuities,
+            )
+            discontinuities = np.array(list(discontinuities))
+            boundary_times = np.array(
+                [
+                    self.t_min,
+                    self.t_max,
+                    *(discontinuities - self.dt),
+                    *(discontinuities + self.dt),
+                ],
+            )
+            boundary_times.sort()
+        else:
+            boundary_times = [self.t_min, self.t_max]
+
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
+            t_range = np.array(
+                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
+            )
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])
@@ -147,3 +173,96 @@ class FunctionGraph(ParametricFunction):
 
     def get_point_from_function(self, x):
         return self.parametric_function(x)
+
+
+class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        func: Callable[[float, float], float],
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
+        min_depth: int = 5,
+        max_quads: int = 1500,
+        use_smoothing: bool = True,
+        **kwargs
+    ):
+        """An implicit function.
+
+        Parameters
+        ----------
+        func
+            The implicit function in the form ``f(x, y) = 0``.
+        x_range
+            The x min and max of the function.
+        y_range
+            The y min and max of the function.
+        min_depth
+            The minimum depth of the function to calculate.
+        max_quads
+            The maximum number of quads to use.
+        use_smoothing
+            Whether or not to smoothen the curves.
+        kwargs
+            Additional parameters to pass into :class:`VMobject`
+
+
+        .. note::
+            A small ``min_depth`` :math:`d` means that some small details might
+            be ignored if they don't cross an edge of one of the
+            :math:`4^d` uniform quads.
+
+            The value of ``max_quads`` strongly corresponds to the
+            quality of the curve, but a higher number of quads
+            may take longer to render.
+
+        Examples
+        --------
+        .. manim:: ImplicitFunctionExample
+            :save_last_frame:
+
+            class ImplicitFunctionExample(Scene):
+                def construct(self):
+                    graph = ImplicitFunction(
+                        lambda x, y: x * y ** 2 - x ** 2 * y - 2,
+                        color=YELLOW
+                    )
+                    self.add(NumberPlane(), graph)
+        """
+        self.function = func
+        self.min_depth = min_depth
+        self.max_quads = max_quads
+        self.use_smoothing = use_smoothing
+        self.x_range = x_range or [
+            -config.frame_width / 2,
+            config.frame_width / 2,
+        ]
+        self.y_range = y_range or [
+            -config.frame_height / 2,
+            config.frame_height / 2,
+        ]
+
+        super().__init__(**kwargs)
+
+    def generate_points(self):
+        p_min, p_max = (
+            np.array([self.x_range[0], self.y_range[0]]),
+            np.array([self.x_range[1], self.y_range[1]]),
+        )
+        curves = plot_isoline(
+            fn=lambda u: self.function(u[0], u[1]),
+            pmin=p_min,
+            pmax=p_max,
+            min_depth=self.min_depth,
+            max_quads=self.max_quads,
+        )  # returns a list of lists of 2D points
+        curves = [
+            np.pad(curve, [(0, 0), (0, 1)]) for curve in curves if curve != []
+        ]  # add z coord as 0
+        for curve in curves:
+            self.start_new_path(curve[0])
+            self.add_points_as_corners(curve[1:])
+        if self.use_smoothing:
+            self.make_smooth()
+        return self
+
+    init_points = generate_points

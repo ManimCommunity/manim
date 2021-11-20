@@ -1,26 +1,6 @@
 Scenes
 ======
 
-
-Inheritance Graph
------------------
-
-.. inheritance-diagram::
-   manim.scene.moving_camera_scene
-   manim.scene.reconfigurable_scene
-   manim.scene.sample_space_scene
-   manim.scene.scene
-   manim.scene.scene_file_writer
-   manim.scene.three_d_scene
-   manim.scene.vector_space_scene
-   manim.scene.zoomed_scene
-   :parts: 1
-   :top-classes: manim.scene.scene.Scene, manim.scene.scene.RerunSceneHandler
-
-
-Module Index
-------------
-
 .. currentmodule:: manim
 
 .. autosummary::
@@ -29,6 +9,7 @@ Module Index
    ~scene.moving_camera_scene
    ~scene.reconfigurable_scene
    ~scene.sample_space_scene
+   ~scene.section
    ~scene.scene
    ~scene.scene_file_writer
    ~scene.three_d_scene
