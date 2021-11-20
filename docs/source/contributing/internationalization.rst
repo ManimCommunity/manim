@@ -25,4 +25,3 @@ If you want to become a reviewer, please join `Manim's Discord server <https://w
 and ping the role @Translation Admin. We will then study your case.
 
 We can't add new languages as we are limited by ReadTheDocs available languages. If you want to complain, go to them ^^.
-
