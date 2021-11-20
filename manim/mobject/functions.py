@@ -74,7 +74,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: DiscontinuousExample
         :save_last_frame:
 
-        class DiscontinousExample(Scene):
+        class DiscontinuousExample(Scene):
             def construct(self):
                 ax1 = NumberPlane((-3, 3), (-4, 4))
                 ax2 = NumberPlane((-3, 3), (-4, 4))
