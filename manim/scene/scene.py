@@ -988,7 +988,7 @@ class Scene:
 
         if self._renderer.should_save_last_frame(self.num_plays):
             config.save_last_frame = True
-            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer)
+            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, meshes=self.meshes, file_writer=self.file_writer)
             self.file_writer.save_final_image(self._renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
