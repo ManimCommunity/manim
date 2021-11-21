@@ -6,13 +6,13 @@ import datetime
 import json
 import os
 import shutil
-import srt
 import subprocess
 from pathlib import Path
 from time import sleep
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+import srt
 from PIL import Image
 from pydub import AudioSegment
 
@@ -715,14 +715,13 @@ class SceneFileWriter:
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},
         )
-    
+
     def write_subcaption_file(self):
         """Writes the subcaption file."""
         subcaption_file = Path(config.output_file).with_suffix(".srt")
-        with open(subcaption_file, 'w') as f:
+        with open(subcaption_file, "w") as f:
             f.write(srt.compose(self.subcaptions))
         logger.info(f"Subcaption file has been written as {subcaption_file}")
-
 
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""

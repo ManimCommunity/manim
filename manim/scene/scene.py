@@ -7,12 +7,13 @@ import datetime
 import inspect
 import platform
 import random
-import srt
 import threading
 import time
 import types
 from queue import Queue
 from typing import List, Optional
+
+import srt
 
 from manim.scene.section import DefaultSectionType
 

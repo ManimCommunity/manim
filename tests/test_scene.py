@@ -1,4 +1,5 @@
 import datetime
+
 import pytest
 
 from manim import Circle, FadeIn, Mobject, Scene, Square, config, tempconfig
@@ -60,7 +61,7 @@ def test_subcaption():
             run_time=2,
             subcaption="Testing Scene.play subcaption interface",
             subcaption_duration=1.5,
-            subcaption_offset=0.5
+            subcaption_offset=0.5,
         )
         subcaptions = scene.renderer.file_writer.subcaptions
         assert len(subcaptions) == 2
