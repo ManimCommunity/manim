@@ -5,6 +5,13 @@ __module_test__ = "threed"
 
 
 @frames_comparison(base_scene=ThreeDScene)
+def test_AddFixedInFrameMobjects(scene):
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+    text = Tex("This is a 3D tex")
+    scene.add_fixed_in_frame_mobjects(text)
+
+
+@frames_comparison(base_scene=ThreeDScene)
 def test_Cube(scene):
     scene.add(Cube())
 
