@@ -27,7 +27,7 @@ class Renderer(ABC):
         pass
 
     @abstractmethod
-    def render(self):
+    def render(self, mobjects, skip_animations=False, **kwargs):
         pass
 
     @abstractmethod
@@ -39,7 +39,7 @@ class Renderer(ABC):
         pass
 
     @abstractmethod
-    def update_frame(self, moving_mobjects, skip_animations, mobjects, foreground_mobjects, file_writer, meshes):
+    def update_frame(self, mobjects, **kwargs):
         pass
 
     @abstractmethod
@@ -80,6 +80,10 @@ class Renderer(ABC):
 
     @abstractmethod
     def get_current_time(self):
+        pass
+
+    @optionalmethod
+    def get_window(self):
         pass
 
     @optionalmethod

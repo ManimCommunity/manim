@@ -29,7 +29,6 @@ from ..renderer.shader import Object3D
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException, UnsupportedOperationException
 from ..utils.family import extract_mobject_family_members
-from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.hashing import get_hash_from_play_call
 from ..utils.iterables import list_difference_update, list_update
@@ -39,7 +38,7 @@ try:
     import dearpygui.dearpygui as dpg
 
     dearpygui_imported = True
-except ImportError:
+except ImportError as dpg:
     dearpygui_imported = False
 
 
@@ -93,6 +92,7 @@ class Scene:
         skip_animations=False,
         file_writer_class=SceneFileWriter,
     ):
+        self.quit_interaction = False
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
@@ -308,7 +308,7 @@ class Scene:
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, type, skip_animations)
+        self.file_writer.next_section(name, type, skip_animations)
 
     def __str__(self):
         return self.__class__.__name__
@@ -956,7 +956,7 @@ class Scene:
 
         self.begin_animations()
         if self._renderer.can_handle_static_wait() and self.is_current_animation_frozen_frame():
-            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer, meshes=self.meshes)
+            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations, moving_mobjects=self.moving_mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer, meshes=self.meshes)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
             self._renderer.freeze_current_frame(self.duration, self.file_writer, skip_animations=self.skip_animations)
@@ -976,7 +976,7 @@ class Scene:
 
         if self._renderer.should_save_last_frame(self.num_plays):
             config.save_last_frame = True
-            self._renderer.update_frame(self.moving_mobjects, skip_animations=self.skip_animations, mobjects=self.mobjects, foreground_mobjects=self.foreground_mobjects, meshes=self.meshes, file_writer=self.file_writer)
+            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations, moving_mobjects=self.moving_mobjects, foreground_mobjects=self.foreground_mobjects, meshes=self.meshes, file_writer=self.file_writer)
             self.file_writer.save_final_image(self._renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
@@ -1075,15 +1075,15 @@ class Scene:
             self.animations,
             self.duration,
         )
-        self.renderer.before_animation()
+        self._renderer.before_animation()
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
                 self._renderer.render(
-                    t,
-                    self.moving_mobjects,
-                    self.skip_animations,
-                    mobjects=self.mobjects,
+                    self.mobjects,
+                    skip_animations=self.skip_animations,
+                    frame_offset=t,
+                    moving_mobjects=self.moving_mobjects,
                     meshes=self.meshes,
                     file_writer=self.file_writer,
                     foreground_mobjects=self.foreground_mobjects,
@@ -1169,7 +1169,7 @@ class Scene:
                 + config["format"],
             )
             return False
-        elif not self.renderer.window:
+        elif not self._renderer.get_window():
             logger.warning("Disabling interactive embed as no window was created")
             return False
         elif config.dry_run:
@@ -1181,8 +1181,8 @@ class Scene:
         """
         Like embed(), but allows for screen interaction.
         """
-        if not self.renderer.has_interaction():
-            raise UnsupportedOperationException("Interactive mode not supported for renderer {}" .format(self.renderer))
+        if not self._renderer.has_interaction():
+            raise UnsupportedOperationException("Interactive mode not supported for renderer {}" .format(self._renderer))
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1236,12 +1236,12 @@ class Scene:
             if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
                     target=configure_pygui,
-                    args=(self.renderer, self.widgets),
+                    args=(self._renderer, self.widgets),
                     kwargs={"update": False},
                 )
                 gui_thread.start()
             else:
-                configure_pygui(self.renderer, self.widgets, update=True)
+                configure_pygui(self._renderer, self.widgets, update=True)
 
         self.camera.model_matrix = self.camera.default_model_matrix
 
@@ -1253,12 +1253,12 @@ class Scene:
         file_observer.schedule(event_handler, config["input_file"], recursive=True)
         file_observer.start()
 
-        self.quit_interaction = False
         keyboard_thread_needs_join = shell.pt_app is not None
         assert self.queue.qsize() == 0
 
         last_time = time.time()
-        while not (self.renderer.window.is_closing or self.quit_interaction):
+        self.quit_interaction = False
+        while not (self._renderer.get_window().is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
@@ -1299,10 +1299,10 @@ class Scene:
                     method, args, kwargs = tup
                     getattr(self, method)(*args, **kwargs)
             else:
-                self.renderer.animation_start_time = 0
+                self._renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.renderer.render(dt, self.moving_mobjects, mobjects=self.mobjects, meshes=self.meshes, file_writer=self.file_writer)
+                self._renderer.render(self.mobjects, frame_offset=dt, moving_mobjects=self.moving_mobjects, meshes=self.meshes, file_writer=self.file_writer)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
                 self.update_self(dt)
@@ -1321,5 +1321,5 @@ class Scene:
         if self.dearpygui_imported and config["enable_gui"]:
             dpg.stop_dearpygui()
 
-        if self.renderer.window.is_closing:
-            self.renderer.window.destroy()
+        if self._renderer.get_window().is_closing:
+            self._renderer.get_window().destroy()

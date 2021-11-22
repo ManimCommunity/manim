@@ -402,6 +402,7 @@ class Camera:
         mobjects,
         include_submobjects=True,
         excluded_mobjects=None,
+        **kwargs,
     ):
         """Used to get the list of mobjects to display
         with the camera.

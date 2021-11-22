@@ -61,14 +61,12 @@ class CairoRenderer(Renderer):
 
     def update_frame(  # TODO Description in Docstring
         self,
-        moving_mobjects,
+        mobjects,
         skip_animations=False,
         include_submobjects=True,
         ignore_skipping=True,
-        mobjects=None,
-        meshes=None,
-        file_writer=None,
-        foreground_mobjects=None,
+        moving_mobjects=[],
+        foreground_mobjects=[],
         **kwargs,
     ):
         """Update the frame.
@@ -90,33 +88,31 @@ class CairoRenderer(Renderer):
         """
         if skip_animations and not ignore_skipping:
             return
-        if not moving_mobjects:
-            moving_mobjects = list_update(
-                mobjects,
-                foreground_mobjects,
-            )
+        mobjects = list_update(
+            moving_mobjects,
+            foreground_mobjects,
+        )
         if self.static_image is not None:
             self.camera.set_frame_to_background(self.static_image)
         else:
             self.camera.reset()
 
         kwargs["include_submobjects"] = include_submobjects
-        self.camera.capture_mobjects(moving_mobjects, **kwargs)
+        self.camera.capture_mobjects(mobjects, **kwargs)
 
     def render(
         self,
-        time,
-        moving_mobjects,
+        mobjects,
         skip_animations=False,
-        mobjects=None,
-        meshes=None,
+        moving_mobjects=None,
         file_writer=None,
         foreground_mobjects=None,
+        **kwargs
     ):
         self.update_frame(
-            moving_mobjects,
+            mobjects,
             skip_animations == skip_animations,
-            mobjects=mobjects,
+            moving_mobjects=moving_mobjects,
             foreground_mobjects=foreground_mobjects,
         )
         self.add_frame(self.get_frame(), file_writer, skip_animations=skip_animations)
@@ -203,7 +199,7 @@ class CairoRenderer(Renderer):
             self.static_image = None
             return
         self.update_frame(
-            static_mobjects, mobjects=mobjects, foreground_mobjects=foreground_mobjects
+            static_mobjects, moving_mobjects=mobjects, foreground_mobjects=foreground_mobjects
         )
         self.static_image = self.get_frame()
         return self.static_image

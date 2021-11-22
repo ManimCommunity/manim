@@ -8,7 +8,7 @@ from PIL import Image
 
 from manim import config, logger
 from manim.utils.color import color_to_rgba
-from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
+from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException, UnsupportedOperationException
 
 from .renderer import Renderer
 from ..constants import *
@@ -383,7 +383,8 @@ class OpenGLRenderer(Renderer):
 
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)
-        self.window.swap_buffers()
+        if self.window and not self.window.is_closing:
+            self.window.swap_buffers()
 
     def before_animation(self):
         self.animation_start_time = time.time()
@@ -414,15 +415,18 @@ class OpenGLRenderer(Renderer):
 
     def render(
         self,
-        frame_offset,
-        moving_mobjects,
+        mobjects,
+        frame_offset=-1,
         skip_animations=False,
-        mobjects=None,
+        moving_mobjects=None,
         meshes=None,
         file_writer=None,
-        foreground_mobjects=None,
+        **kwargs
     ):
-        self.update_frame(moving_mobjects, meshes=meshes, mobjects=mobjects)
+        if frame_offset < 0:
+            raise UnsupportedOperationException("Invalid frame offset for OpenGLRenderer - frame offset is required "
+                                                "and must be >= 0")
+        self.update_frame(mobjects, meshes=meshes)
         if skip_animations:
             return
 
@@ -431,18 +435,12 @@ class OpenGLRenderer(Renderer):
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
-                self.update_frame(moving_mobjects, meshes=meshes, mobjects=mobjects)
+                self.update_frame(mobjects, meshes=meshes)
                 self.window.swap_buffers()
 
     def update_frame(self,
-        moving_mobjects,
-        skip_animations=False,
-        include_submobjects=True,
-        ignore_skipping=False,
-        mobjects=None,
+        mobjects,
         meshes=None,
-        file_writer=None,
-        foreground_mobjects=None,
         **kwargs):
         self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(self.camera)
@@ -511,6 +509,9 @@ class OpenGLRenderer(Renderer):
                 samples=samples,
             ),
         )
+
+    def get_window(self):
+        return self.window
 
     def freeze_current_frame(self, duration: float, file_writer, skip_animations=False):
         pass
