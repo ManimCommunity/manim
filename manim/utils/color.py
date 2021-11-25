@@ -491,8 +491,9 @@ def color_to_int_rgb(color: Color) -> np.ndarray:
 
 
 def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
-    alpha = int(255 * opacity)
-    return np.append(color_to_int_rgb(color), alpha)
+    alpha_multiplier = np.vectorize(lambda x: int(x * opacity))
+
+    return alpha_multiplier(np.append(color_to_int_rgb(color), 255))
 
 
 def color_gradient(
