@@ -2188,7 +2188,7 @@ class ThreeDAxes(Axes):
         z_axis.shift(-z_axis.number_to_point(self._origin_shift(z_axis.x_range)))
         z_axis.shift(
             self.x_axis.number_to_point(
-                self._origin_shift(self.x_axis.x_range),
+                self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
             ),
         )
 
