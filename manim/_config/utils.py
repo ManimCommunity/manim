@@ -117,18 +117,12 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
 
 def _determine_quality(args: argparse.Namespace) -> str:
-    for quality in constants.QUALITIES:
-        if quality == constants.DEFAULT_QUALITY:
-            # Skip so we prioritize anything that overwrites the default quality.
-            pass
-        elif getattr(args, quality, None) or (
-            hasattr(args, "quality")
-            and args.quality is not None
-            and args.quality == constants.QUALITIES[quality]["flag"]
-        ):
+    chosen_quality = getattr(args, "quality", None)
+    for quality, values in constants.QUALITIES.items():
+        if values["flag"] is not None and values["flag"] == chosen_quality:
             return quality
 
-    return constants.DEFAULT_QUALITY
+    return chosen_quality
 
 
 class ManimConfig(MutableMapping):
@@ -1134,6 +1128,8 @@ class ManimConfig(MutableMapping):
 
     @quality.setter
     def quality(self, qual: str) -> None:
+        if qual is None:
+            return
         if qual not in constants.QUALITIES:
             raise KeyError(f"quality must be one of {list(constants.QUALITIES.keys())}")
         q = constants.QUALITIES[qual]
