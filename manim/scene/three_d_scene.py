@@ -8,8 +8,9 @@ from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 
+
 from .. import config
-from ..animation.animation import Animation
+from ..animation.animation import DEFAULT_ANIMATION_RUN_TIME, Animation
 from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
@@ -22,6 +23,7 @@ from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
 from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
+from ..utils.rate_functions import smooth
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.deprecation import deprecated_params
 
@@ -244,6 +246,10 @@ class ThreeDScene(Scene):
         """
         anims = []
         focal_distance = kwargs.pop("distance", focal_distance)
+        anims_kwargs = {
+            "rate_func": kwargs.pop("rate_func", smooth),
+            "run_time": kwargs.pop("run_time", DEFAULT_ANIMATION_RUN_TIME)
+        }
 
         if config.renderer != "opengl":
             self.camera: ThreeDCamera
@@ -256,9 +262,9 @@ class ThreeDScene(Scene):
             ]
             for value, tracker in value_tracker_pairs:
                 if value is not None:
-                    anims.append(tracker.animate.set_value(value))
+                    anims.append(tracker.animate(**anims_kwargs).set_value(value))
             if frame_center is not None:
-                anims.append(self.camera._frame_center.animate.move_to(frame_center))
+                anims.append(self.camera._frame_center.animate(**anims_kwargs).move_to(frame_center))
         else:
             cam: OpenGLCamera = self.camera
             cam2 = cam.copy()
@@ -295,7 +301,7 @@ class ThreeDScene(Scene):
                     stacklevel=2,
                 )
 
-            anims += [Transform(cam, cam2)]
+            anims += [Transform(cam, cam2, **anims_kwargs)]
 
         self.play(*anims + added_anims, **kwargs)
 
