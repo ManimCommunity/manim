@@ -8,7 +8,6 @@ from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 
-
 from .. import config
 from ..animation.animation import DEFAULT_ANIMATION_RUN_TIME, Animation
 from ..animation.transform import Transform
