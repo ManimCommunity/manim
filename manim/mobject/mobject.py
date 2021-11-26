@@ -1311,7 +1311,6 @@ class Mobject:
             mob.points += about_point
         return self
 
-
     def pose_at_angle(self, **kwargs):
         self.rotate(TAU / 14, RIGHT + UP, **kwargs)
         return self
@@ -1416,7 +1415,6 @@ class Mobject:
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
-
 
     def rescale_to_fit(self, length, dim, stretch=False, **kwargs):
         old_length = self.length_over_dim(dim)

@@ -214,7 +214,6 @@ class ThreeDCamera(Camera):
         """
         self.theta_tracker.set_value(value)
 
-
     def set_focal_distance(self, value):
         """Sets the focal_distance of the Camera.
 
