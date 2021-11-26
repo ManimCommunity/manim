@@ -238,9 +238,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.color:
             style["fill"] = style["stroke"] = self.color.get_hex_l()
         if self.fill_color:
-            style["fill"] = self.fill_color
+            style["fill"] = self.fill_color.hex_l
         if self.stroke_color:
-            style["stroke"] = self.stroke_color
+            style["stroke"] = self.stroke_color.hex_l
         return style
 
     def _path_string_to_mobject(self, path_string: str, style: dict):

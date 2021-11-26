@@ -95,9 +95,9 @@ class OpenGLVMobject(OpenGLMobject):
         **kwargs,
     ):
         self.data = {}
-        self.fill_color = fill_color
+        self.fill_color = Color(fill_color) if fill_color else None
         self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
+        self.stroke_color = Color(stroke_color) if stroke_color else None
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.draw_stroke_behind_fill = draw_stroke_behind_fill

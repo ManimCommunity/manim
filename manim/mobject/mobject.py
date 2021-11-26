@@ -78,6 +78,7 @@ class Mobject:
     """
 
     animation_overrides = {}
+    submobjects = []
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -100,8 +101,7 @@ class Mobject:
         self.updaters = []
         self.updating_suspended = False
 
-        if color:
-            self.color = Color(color)
+        self.color = Color(color) if color else None
 
         self.reset_points()
         self.generate_points()

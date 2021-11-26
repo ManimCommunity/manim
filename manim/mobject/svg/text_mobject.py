@@ -1100,7 +1100,7 @@ class MarkupText(SVGMobject):
         **kwargs,
     ):
         self.text = text
-        self.color = color
+        self.color = Color(color) if color else None
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -1215,7 +1215,7 @@ class MarkupText(SVGMobject):
     def _text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
+            "MARKUPPANGO" + self.font + self.slant + self.weight + self.color.hex_l
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)

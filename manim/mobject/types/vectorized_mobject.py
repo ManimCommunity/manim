@@ -70,6 +70,8 @@ class VMobject(Mobject):
         This is within a pixel
     """
 
+    sheen_factor = 0.0
+
     def __init__(
         self,
         fill_color=None,
@@ -399,7 +401,10 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     def get_fill_colors(self):
-        return [colour.Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
+        return [
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_fill_rgbas()
+        ]
 
     def get_fill_opacities(self):
         return self.get_fill_rgbas()[:, 3]
@@ -433,7 +438,8 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            colour.Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_stroke_rgbas(background)
         ]
 
     def get_stroke_opacities(self, background=False):
