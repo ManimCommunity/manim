@@ -10,6 +10,7 @@ on:
 
 jobs:
   run:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -43,7 +44,6 @@ jobs:
         id: setup-ffmpeg
 
       - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
         run: |
           sudo apt update
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
