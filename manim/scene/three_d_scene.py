@@ -23,7 +23,6 @@ from ..mobject.value_tracker import ValueTracker
 from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.deprecation import deprecated_params
 
 
 class ThreeDScene(Scene):
@@ -50,12 +49,6 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
-    @deprecated_params(
-        params="distance",
-        since="v0.11.0",
-        until="v0.12.0",
-        message="Use focal_distance instead.",
-    )
     def set_camera_orientation(
         self,
         phi: Optional[float] = None,
@@ -90,7 +83,7 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
-        focal_distance = kwargs.pop("distance", focal_distance)
+
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
@@ -197,12 +190,6 @@ class ThreeDScene(Scene):
         self.renderer.camera.phi_tracker.clear_updaters()
         self.remove(self.renderer.camera.phi_tracker)
 
-    @deprecated_params(
-        params="distance",
-        since="v0.11.0",
-        until="v0.12.0",
-        message="Use focal_distance instead.",
-    )
     def move_camera(
         self,
         phi: Optional[float] = None,
@@ -243,7 +230,6 @@ class ThreeDScene(Scene):
 
         """
         anims = []
-        focal_distance = kwargs.pop("distance", focal_distance)
 
         if config.renderer != "opengl":
             self.camera: ThreeDCamera
