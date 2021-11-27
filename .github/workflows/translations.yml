@@ -57,12 +57,7 @@ jobs:
           poetry install -E webgl_renderer
 
       - name: Update translations
-        run: cd docs && pip install -r requirements.txt && poetry run make i18n && cd ..
+        run: cd docs && pip install -r requirements.txt && poetry run make i18n
 
       - name: Add & Commit
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add *
-          git commit -m "generated"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v4
