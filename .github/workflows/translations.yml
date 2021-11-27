@@ -1,8 +1,4 @@
-name: CI
-
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+name: i18n
 
 on:
   push:
