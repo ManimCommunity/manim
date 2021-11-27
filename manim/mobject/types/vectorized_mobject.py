@@ -34,7 +34,7 @@ from ...utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
-from ...utils.deprecation import deprecated, deprecated_params
+from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
@@ -2228,17 +2228,11 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    @deprecated_params(
-        params="positive_space_ratio dash_spacing",
-        since="v0.9.0",
-        message="Use dashed_ratio instead of positive_space_ratio.",
-    )
     def __init__(
         self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
     ):
-        # Simplify with removal of deprecation warning
-        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
-        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
+
+        self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
         r = self.dashed_ratio
