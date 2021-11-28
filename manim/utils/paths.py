@@ -60,15 +60,15 @@ def counterclockwise_path():
     return path_along_arc(np.pi)
 
 
-def spiral_path(angle, spiral_center, axis=OUT):
+def spiral_path(angle, axis=OUT):
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path
     if np.linalg.norm(axis) == 0:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
 
-    def path(_, end_points, alpha):
+    def path(start_points, end_points, alpha):
         rot_matrix = rotation_matrix((alpha - 1) * angle, unit_axis)
-        return spiral_center + alpha * np.dot(end_points - spiral_center, rot_matrix.T)
+        return start_points + alpha * np.dot(end_points - start_points, rot_matrix.T)
 
     return path
