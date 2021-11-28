@@ -47,15 +47,17 @@ class GrowFromCenter(GrowFromPoint):
 
 
 class GrowFromEdge(GrowFromPoint):
-    def __init__(self, mobject: "Mobject", edge: np.ndarray, **kwargs) -> None:
+    def __init__(
+        self, mobject: "Mobject", edge: np.ndarray, point_color: str = None, **kwargs
+    ) -> None:
         point = mobject.get_critical_point(edge)
-        super().__init__(mobject, point, **kwargs)
+        super().__init__(mobject, point, point_color=point_color, **kwargs)
 
 
 class GrowArrow(GrowFromPoint):
-    def __init__(self, arrow: "Arrow", **kwargs) -> None:
+    def __init__(self, arrow: "Arrow", point_color: str = None, **kwargs) -> None:
         point = arrow.get_start()
-        super().__init__(arrow, point, **kwargs)
+        super().__init__(arrow, point, point_color=point_color, **kwargs)
 
     def create_starting_mobject(self) -> "Mobject":
         start_arrow = self.mobject.copy()
@@ -66,5 +68,11 @@ class GrowArrow(GrowFromPoint):
 
 
 class SpinInFromNothing(GrowFromCenter):
-    def __init__(self, mobject: "Mobject", path_arc: float = PI, **kwargs) -> None:
-        super().__init__(mobject, path_arc=path_arc, **kwargs)
+    def __init__(
+        self,
+        mobject: "Mobject",
+        path_arc: float = PI,
+        point_color: str = None,
+        **kwargs
+    ) -> None:
+        super().__init__(mobject, path_arc=path_arc, point_color=point_color, **kwargs)
