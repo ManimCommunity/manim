@@ -14,6 +14,8 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import PI
+from ..utils.deprecation import deprecated_params
+from ..utils.paths import spiral_path
 
 if typing.TYPE_CHECKING:
     from ..mobject.geometry import Arrow
@@ -68,11 +70,24 @@ class GrowArrow(GrowFromPoint):
 
 
 class SpinInFromNothing(GrowFromCenter):
+    @deprecated_params(
+        params="path_arc",
+        message="Parameter angle is more robust, supporting angles greater than PI.",
+    )
     def __init__(
         self,
         mobject: "Mobject",
-        path_arc: float = PI,
+        angle: float = PI / 2,
         point_color: str = None,
         **kwargs
     ) -> None:
-        super().__init__(mobject, path_arc=path_arc, point_color=point_color, **kwargs)
+        if "path_arc" in kwargs:
+            super().__init__(mobject, point_color=point_color, **kwargs)
+        else:
+            self.angle = angle
+            super().__init__(
+                mobject,
+                path_func=spiral_path(angle, mobject.get_center()),
+                point_color=point_color,
+                **kwargs
+            )
