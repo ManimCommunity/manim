@@ -1759,13 +1759,14 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         Notes
         -----
         When adding same mobject more than once, the repeated mobject is ignored.
-        Use .copy() to avoid omission of the repeated mobject.
+        Use :meth:`.Mobject.copy` to create a separate copy which can then
+        be added to the group.
         """
         if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         if any(vmobjects.count(elem) > 1 for elem in list(vmobjects)):
             logger.warning(
-                f"Warning: The same Mobject was added to a Group more than once. Repeated adds are ignored.",
+                f"Attempted adding some Mobject to a group more than once, this is not possible. Repetitions are ignored.",
             )
         return super().add(*vmobjects)
 
