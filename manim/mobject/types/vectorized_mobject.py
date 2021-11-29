@@ -1758,7 +1758,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
         Notes
         -----
-        When adding same mobject more than once, the repeated mobject is ignored.
+        When adding the same mobject more than once, repetitions are ignored.
         Use :meth:`.Mobject.copy` to create a separate copy which can then
         be added to the group.
         """
