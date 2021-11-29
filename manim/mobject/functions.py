@@ -80,14 +80,14 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 ax2 = NumberPlane((-3, 3), (-4, 4))
                 VGroup(ax1, ax2).arrange()
                 discontinuous_function = lambda x: (x ** 2 - 2) / (x ** 2 - 4)
-                before = ax1.plot(discontinuous_function, color=RED)
-                after = ax2.plot(
+                incorrect = ax1.plot(discontinuous_function, color=RED)
+                correct = ax2.plot(
                     discontinuous_function,
                     discontinuities=[-2, 2],  # discontinuous points
                     dt=0.1,  # left and right tolerance of discontinuity
                     color=GREEN,
                 )
-                self.add(ax1, ax2, before, after)
+                self.add(ax1, ax2, incorrect, correct)
     """
 
     def __init__(
