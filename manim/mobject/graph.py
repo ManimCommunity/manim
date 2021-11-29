@@ -356,7 +356,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self,
         vertices: List[Hashable],
         edges: List[Tuple[Hashable, Hashable]],
-        labels: bool = False,
+        labels: Union[bool, dict] = False,
         label_fill_color: str = BLACK,
         layout: Union[str, dict] = "spring",
         layout_scale: float = 2,
