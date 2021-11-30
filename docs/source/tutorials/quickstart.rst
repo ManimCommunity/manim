@@ -11,7 +11,7 @@ Quickstart
  ``%%manim``.
 
 Overview
-*************************************************
+********
 
 This quickstart guide will lead you through creating a sample project using Manim: an animation
 engine for precise programmatic animations.
@@ -26,7 +26,7 @@ use to modify ``Mobject``s.
 
 
 Starting a new project
-*************************************************
+**********************
 
 Start by creating a new folder. For the purposes of this guide, name the folder ``project``:
 
@@ -39,7 +39,7 @@ as well as any output that your project produces.
 
 
 Animating a circle
-*************************************************
+******************
 
 1. Open a text editor, such as Notepad. Copy the following code snippet into the window:
 
@@ -139,7 +139,7 @@ circle on your screen:
 
 
 Transforming a square into a circle
-*************************************************
+***********************************
 
 With our circle animation complete, let's move on to something a little more complicated.
 
@@ -188,7 +188,7 @@ interpolating between two geometric shapes) with just a few lines of code.
 
 
 Positioning ``Mobject``s
-*************************************************
+************************
 
 Next, let's go over some basic techniques for positioning ``Mobject``s.
 
@@ -248,7 +248,7 @@ list of :class:`.Mobject` methods in our reference manual.
 
 
 Using ``.animate`` syntax to animate methods
-*************************************************
+********************************************
 
 The final lesson in this tutorial is using ``.animate``, a ``Mobject`` method which
 animates changes you make to a ``Mobject``. When you prepend ``.animate`` to any
