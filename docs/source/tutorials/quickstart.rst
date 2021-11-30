@@ -20,9 +20,9 @@ First, you will use a command line
 interface to create a ``Scene``, the class through which Manim generates videos.
 In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing
 a square transforming into a circle. This will be your introduction to Manim's animation ability.
-Afterwards, you will position multiple mathematical objects (``Mobject``s). Finally, you
+Afterwards, you will position multiple mathematical objects (\``Mobject``\s). Finally, you
 will learn the ``.animate`` syntax, a powerful feature that animates the methods you
-use to modify ``Mobject``s.
+use to modify ``Mobject``\s.
 
 
 Starting a new project
@@ -187,10 +187,10 @@ implement complicated and mathematically intensive animations (such as cleanly
 interpolating between two geometric shapes) with just a few lines of code.
 
 
-Positioning ``Mobject``s
-************************
+Positioning ``Mobject``\s
+*************************
 
-Next, let's go over some basic techniques for positioning ``Mobject``s.
+Next, let's go over some basic techniques for positioning ``Mobject``\s.
 
 1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` method:
 
@@ -229,7 +229,7 @@ The following animation will render:
            square.next_to(circle, RIGHT, buff=0.5) # set the position
            self.play(Create(circle), Create(square))  # show the shapes on screen
 
-``next_to`` is a ``Mobject`` method for positioning ``Mobject``s.
+``next_to`` is a ``Mobject`` method for positioning ``Mobject``\s.
 
 We first specified
 the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
@@ -239,7 +239,7 @@ Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
 
 Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square.
 
-Using positioning methods, you can render a scene with multiple ``Mobject``s,
+Using positioning methods, you can render a scene with multiple ``Mobject``\s,
 setting their locations in the scene using coordinates or positioning them
 relative to each other.
 
