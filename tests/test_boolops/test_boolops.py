@@ -5,7 +5,7 @@ from manim import *
 
 # not exported by default, so directly import
 from manim.mobject.boolean_ops import _BooleanOps
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 
 @pytest.mark.parametrize(
