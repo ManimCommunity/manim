@@ -101,7 +101,7 @@ def _tree_layout(
     T: nx.classes.graph.Graph,
     root_vertex: Union[Hashable, None],
     scale: Union[float, tuple] = 2,
-    orientation: str = 'down',
+    orientation: str = "down",
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
 
@@ -119,7 +119,7 @@ def _tree_layout(
     parent = {u: root_vertex for u in children[root_vertex]}
     pos = {}
     obstruction = [0.0] * len(T)
-    if orientation == 'down':
+    if orientation == "down":
         o = -1
     else:
         o = 1
@@ -152,13 +152,13 @@ def _tree_layout(
                 x = obstruction[y]
                 pos[p] = x, y
             else:
-                x = sum([pos[c][0] for c in cp]) / float(len(cp))
-                pos[p] = x,y
+                x = sum(pos[c][0] for c in cp) / float(len(cp))
+                pos[p] = x, y
                 ox = obstruction[y]
                 if x < ox:
                     slide(p, ox - x)
                     x = ox
-            obstruction[y] = x+1
+            obstruction[y] = x + 1
             continue
 
         t = C.pop()
@@ -178,14 +178,15 @@ def _tree_layout(
     x_max = max(pos.values(), key=lambda t: t[0])[0]
     y_min = min(pos.values(), key=lambda t: t[1])[1]
     y_max = max(pos.values(), key=lambda t: t[1])[1]
-    center = np.array([x_min + x_max, y_min + y_max, 0])/2
+    center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
     height = y_max - y_min
     width = x_max - x_min
     if isinstance(scale, (float, int)):
         sf = 2 * scale / max(width, height)
     else:
-        sf = np.array([2*scale[0]/width, 2*scale[1]/height, 0])
-    return {v: (np.array([x, y, 0]) - center)*sf for v, (x,y) in pos.items()}
+        sf = np.array([2 * scale[0] / width, 2 * scale[1] / height, 0])
+    return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
+
 
 class Graph(VMobject, metaclass=ConvertToOpenGL):
     """An undirected graph (that is, a collection of vertices connected with edges).
