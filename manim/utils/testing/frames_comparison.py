@@ -58,7 +58,7 @@ def frames_comparison(
         By default, last_frame is True, which means that only the last frame is tested.
         If the scene has a moving animation, then the test must set last_frame to False.
     """
-    
+
     def decorator_maker(tested_scene_construct):
         if (
             SCENE_PARAMETER_NAME
@@ -104,7 +104,7 @@ def frames_comparison(
 
             setting_test = request.config.getoption("--set_test")
             try:
-                test_file_path = tested_scene_construct.__globals__['__file__']
+                test_file_path = tested_scene_construct.__globals__["__file__"]
             except:
                 test_file_path = None
             real_test = _make_test_comparing_frames(
@@ -220,14 +220,16 @@ def _make_test_comparing_frames(
     return real_test
 
 
-def _control_data_path(test_file_path: Optional[str], module_name: str, test_name: str, setting_test: bool) -> Path:
+def _control_data_path(
+    test_file_path: Optional[str], module_name: str, test_name: str, setting_test: bool
+) -> Path:
     if test_file_path is None:
         # For some reason, path to test file containing @frames_comparison could not
         # be determined. Use local directory instead.
         test_file_path = __file__
 
     path = Path(test_file_path).absolute().parent / "control_data" / module_name
-    
+
     if setting_test:
         # Create the directory if not existing.
         path.mkdir(exist_ok=True)
