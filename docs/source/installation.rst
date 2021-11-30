@@ -36,6 +36,8 @@ in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.
 
+Manim is **only** compatible with Python versions `3.7–3.9`, but not `3.10` for now.
+
 .. hint::
 
    Depending on your particular setup, the installation process
