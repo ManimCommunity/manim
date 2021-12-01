@@ -1,11 +1,18 @@
-from manim import BLUE, Circle, Difference, Exclusion, Intersection, Square, Rectangle, Triangle, Union
+from manim import (
+    BLUE,
+    Circle,
+    Difference,
+    Exclusion,
+    Intersection,
+    Rectangle,
+    Square,
+    Triangle,
+    Union,
+)
 
 # not exported by default, so directly import
 from manim.mobject.boolean_ops import _BooleanOps
 from manim.utils.testing.frames_comparison import frames_comparison
-
-
-
 
 __module_test__ = "boolean_ops"
 

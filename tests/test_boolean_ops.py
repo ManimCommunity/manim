@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from manim import Circle, Square
 from manim.mobject.boolean_ops import _BooleanOps
