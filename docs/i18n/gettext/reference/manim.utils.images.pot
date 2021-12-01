@@ -14,4 +14,14 @@ msgstr ""
 msgid "Image manipulation utilities."
 msgstr ""
 
+#: ../../source/reference/manim.utils.images.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/images.py:docstring of manim.utils.images.drag_pixels:0
+#: ../../../manim/utils/images.py:docstring of manim.utils.images.get_full_raster_image_path:0
+#: ../../../manim/utils/images.py:docstring of manim.utils.images.invert_image:0
+msgid "Parameters"
+msgstr ""
+
 

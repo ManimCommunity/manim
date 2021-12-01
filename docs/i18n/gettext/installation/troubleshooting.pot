@@ -202,4 +202,104 @@ msgstr ""
 msgid "If you do not have the necessary library on your system, please refer to your operating system's documentation to find out where you can get it and how you have to install it."
 msgstr ""
 
+#: ../../source/installation/troubleshooting.rst:184
+msgid "If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:187
+msgid "(Windows) ``Python is not recognized as an internal or external command, operable program or batch file.``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:189
+msgid "To fix this, you need to add the Python executable to your ``PATH`` environment variable. Follow the steps in `this StackExchange answer <https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121>`__."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:193
+msgid "``choco install manimce`` failed"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:195
+msgid "If ``choco install manimce`` failed, it is likely being caused by Python not being added to your ``PATH`` variable properly. Try running the following commands in your terminal:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:199
+msgid "``py --version``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:200
+msgid "``python --version``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:201
+msgid "``py3 --version``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:202
+msgid "``python3 --version``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:204
+msgid "Minimally, ``py --version`` and ``python --version`` should return a version. If none of these commands are recognized, this means that Python was installed on your system, but was not added to PATH. See above for directions to add it to your PATH variable."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:209
+msgid "If any of these commands opens up the Windows store, this is likely interfering with the process. This is because Chocolatey runs a command that calls python or python3, and opening up the Windows store is not the expected behavior. See below to fix aliases."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:216
+msgid "(Windows) Fix Aliases"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:218
+msgid "Go to the Windows Settings."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:219
+msgid "Under Apps and Features, there are an application execution aliases."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:220
+msgid "Within this menu disable the alias(es) that is causing the issue (``python`` and/or ``python3``)."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:223
+msgid "``IndexError: List index out of range``"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:225
+msgid "Did you install LaTeX using MiKTeX? If so, open the MiKTeX console, install the ``cm-super`` package, then delete the ``media`` directory and try to render the scene again."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:230
+msgid "Config"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:232
+msgid "We've dropped the use of CONFIG in the Community Version :doc:`version 0.2.0<../changelog/0.2.0-changelog>`, released in January 2021. This means parameters that were previously specified in the CONFIG dictionary should now be passed directly into the constructor. Practically, this means that old constructions like:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:249
+msgid "should now be defined like:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:269
+msgid "For scenes, this is even easier:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:276
+msgid "becomes:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:286
+msgid "A python command does not work"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:288
+msgid "If a python command does not work, try adding ``python -m``  in front of it. For example, if ``pip install manim`` does not work, you can try ``python -m pip install manim``."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:293
+msgid "undefined symbol"
+msgstr ""
+
 

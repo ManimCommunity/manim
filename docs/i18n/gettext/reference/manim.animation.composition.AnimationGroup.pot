@@ -105,7 +105,7 @@ msgid "This method gets called for every frame during an animation."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:5
-msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 
