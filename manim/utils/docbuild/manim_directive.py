@@ -23,7 +23,7 @@ render scenes that are defined within doctests, for example::
     .. manim:: DirectiveDoctestExample
         :ref_classes: Dot
 
-        >>> from manim import Dot, Scene, Create
+        >>> from manim import Create, Dot, RED, Scene
         >>> dot = Dot(color=RED)
         >>> dot.color
         <Color #fc6255>
