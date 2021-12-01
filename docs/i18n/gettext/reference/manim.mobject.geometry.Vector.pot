@@ -24,6 +24,7 @@ msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:0
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
 msgid "Parameters"
 msgstr ""
 
@@ -40,7 +41,7 @@ msgid "Additional arguments to be passed to :class:`Arrow`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:11
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:8
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:9
 msgid "Examples"
 msgstr ""
 
@@ -79,6 +80,26 @@ msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:4
 msgid "The number of dimensions of the vector."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:5
+msgid "Sets the color of label, optional."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:6
+msgid "Additional arguments to be passed to :class:`~.Matrix`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:24
+msgid "The label."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
+msgid "Return type"
 msgstr ""
 
 

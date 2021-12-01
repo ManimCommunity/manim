@@ -18,6 +18,14 @@ msgstr ""
 msgid "Bases: :class:`manim.mobject.frame.FullScreenRectangle`"
 msgstr ""
 
+#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.FullScreenFadeRectangle:1
+msgid "Deprecated"
+msgstr ""
+
+#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.FullScreenFadeRectangle:4
+msgid "The class FullScreenFadeRectangle has been deprecated since v0.12.0 and is expected to be removed after v0.13.0. Use :class:`~.FullScreenRectangle(stroke_width=0, fill_color=BLACK, fill_opacity=0.7)` instead. This method is deprecated due to decluttering purpose."
+msgstr ""
+
 #: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:14
 msgid "Methods"
 msgstr ""
