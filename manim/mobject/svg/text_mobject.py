@@ -55,8 +55,9 @@ import hashlib
 import os
 import re
 from contextlib import contextmanager
+from itertools import chain
 from pathlib import Path
-from typing import Dict, Sequence, Union
+from typing import Callable, Dict, Iterable, Sequence, Tuple, Union
 
 import manimpango
 import numpy as np
@@ -68,7 +69,8 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE, Colors
+from ...utils.color import WHITE, Colors, color_gradient
+from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -503,10 +505,6 @@ class Text(SVGMobject):
                     each.add_line_to(last)
                     last = points[index + 1]
             each.add_line_to(last)
-        if self.gradient:
-            self.set_color_by_gradient(*self.gradient)
-        if self.t2g:
-            self.set_color_by_t2g()
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -640,22 +638,11 @@ class Text(SVGMobject):
             setattr(right_setting, arg, left if left != default else right)
         return new_setting
 
-    def text2settings(self):
-        """Internally used function. Converts the texts and styles
-        to a setting for parsing."""
+    def _get_settings_from_t2xs(
+        self, t2xs: Sequence[Tuple[Dict[str, str], str]]
+    ) -> Sequence[TextSetting]:
         settings = []
-        t2xs = [
-            (self.t2f, "font"),
-            (self.t2s, "slant"),
-            (self.t2w, "weight"),
-            (self.t2c, "color"),
-        ]
-        t2xwords = {
-            *self.t2f.keys(),
-            *self.t2s.keys(),
-            *self.t2w.keys(),
-            *self.t2c.keys(),
-        }
+        t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
                 arg: t2x[word] if word in t2x else getattr(self, arg)
@@ -664,9 +651,49 @@ class Text(SVGMobject):
 
             for start, end in self.find_indexes(word, self.text):
                 settings.append(TextSetting(start, end, **setting_args))
+        return settings
+
+    def _get_settings_from_gradient(
+        self, setting_args: Dict[str, Iterable[str]]
+    ) -> Sequence[TextSetting]:
+        settings = []
+        args = copy.copy(setting_args)
+        if self.gradient:
+            colors = color_gradient(self.gradient, len(self.text))
+            for i in range(len(self.text)):
+                args["color"] = colors[i].hex
+                settings.append(TextSetting(i, i + 1, **args))
+
+        for word, gradient in self.t2g.items():
+            if isinstance(gradient, str) or len(gradient) == 1:
+                color = gradient if isinstance(gradient, str) else gradient[0]
+                gradient = [Color(color)]
+            colors = (
+                color_gradient(gradient, len(word))
+                if len(gradient) != 1
+                else len(word) * gradient
+            )
+            for start, end in self.find_indexes(word, self.text):
+                for i in range(start, end):
+                    args["color"] = colors[i - start].hex
+                    settings.append(TextSetting(i, i + 1, **args))
+        return settings
+
+    def text2settings(self):
+        """Internally used function. Converts the texts and styles
+        to a setting for parsing."""
+        t2xs = [
+            (self.t2f, "font"),
+            (self.t2s, "slant"),
+            (self.t2w, "weight"),
+            (self.t2c, "color"),
+        ]
+        setting_args = {arg: getattr(self, arg) for _, arg in t2xs}
+
+        settings = self._get_settings_from_t2xs(t2xs)
+        settings.extend(self._get_settings_from_gradient(setting_args))
 
         # Handle overlaps
-        setting_args = {arg: getattr(self, arg) for _, arg in t2xs}
 
         settings.sort(key=lambda setting: setting.start)
         new_settings = []
