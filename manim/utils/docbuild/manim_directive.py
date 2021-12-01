@@ -115,9 +115,9 @@ def process_name_list(option_input: str, reference_type: str) -> List[str]:
     ::
 
         >>> process_name_list("Tex TexTemplate", "class")
-        [":class:`~.Tex`", ":class:`~.TexTemplate`"]
+        [':class:`~.Tex`', ':class:`~.TexTemplate`']
         >>> process_name_list("Scene.play Mobject.rotate", "func")
-        [":func:`~.Scene.play`", ":func:`~.Mobject.rotate`"]
+        [':func:`~.Scene.play`', ':func:`~.Mobject.rotate`']
     """
     return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
 
