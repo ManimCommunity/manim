@@ -15,7 +15,7 @@ msgid "The installation instructions depend on your particular operating system 
 msgstr ""
 
 #: ../../source/installation/linux.rst:8
-msgid "a reasonably recent version of Python 3 (3.7 or above),"
+msgid "a reasonably recent version of Python 3 (3.7–3.9),"
 msgstr ""
 
 #: ../../source/installation/linux.rst:9
