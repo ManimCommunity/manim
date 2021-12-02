@@ -158,10 +158,13 @@ def get_pr_nums(lst, cur):
 
 def get_summary(body):
     pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
-    has_changelog_pattern = re.search(pattern, body)
-    if has_changelog_pattern:
+    try:
+        has_changelog_pattern = re.search(pattern, body)
+        if has_changelog_pattern:
 
-        return has_changelog_pattern.group()[22:-21].strip()
+            return has_changelog_pattern.group()[22:-21].strip()
+    except:
+        print(f"Error parsing body for changelog: {body}")
 
 
 @click.command(
