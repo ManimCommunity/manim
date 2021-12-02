@@ -437,6 +437,22 @@ class OpenGLMobject:
     # Others related to points
 
     def match_points(self, mobject):
+        """Edit points, positions, and submobjects to be identical
+        to another :class:`~.Mobject`, while keeping the style unchanged.
+
+        Examples
+        --------
+        .. manim:: MatchPointsScene
+
+            class MatchPointsScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    self.play(circ.animate.match_points(square))
+                    self.wait(0.5)
+        """
         self.set_points(mobject.points)
 
     def clear_points(self):
@@ -901,8 +917,9 @@ class OpenGLMobject:
             grid.set_height(height)
         return grid
 
-    def duplicate(self, n_times:int):
-        return self.get_group_class()(*[self.copy() for _ in range(n_times)])
+    def duplicate(self, n:int):
+        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
+        return self.get_group_class()(*[self.copy() for _ in range(n)])
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         if submob_func is not None:
@@ -912,12 +929,53 @@ class OpenGLMobject:
         return self
 
     def shuffle(self, recurse=False):
+        """Shuffles the order of :attr:`submobjects`
+
+        Examples
+        --------
+
+        .. manim:: ShuffleSubmobjectsExample
+
+            class ShuffleSubmobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2= s.copy()
+                    s2.shuffle_submobjects()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
         if recurse:
             for submob in self.submobjects:
                 submob.shuffle(recurse=True)
         random.shuffle(self.submobjects)
         self.assemble_family()
         return self
+
+    def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Parameters
+        ----------
+        recursive
+            If ``True``, all submobject lists of this mobject's family are inverted.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2 = s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
 
     # Copying
 
@@ -1917,6 +1975,26 @@ class OpenGLMobject:
     # Interpolate
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
+        """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
+        and ``mobject2``.
+
+        Examples
+        --------
+
+        .. manim:: DotInterpolation
+            :save_last_frame:
+
+            class DotInterpolation(Scene):
+                def construct(self):
+                    dotR = Dot(color=DARK_GREY)
+                    dotR.shift(2 * RIGHT)
+                    dotL = Dot(color=WHITE)
+                    dotL.shift(2 * LEFT)
+
+                    dotMiddle = OpenGLVMobject().interpolate(dotL, dotR, alpha=0.3)
+
+                    self.add(dotL, dotR, dotMiddle)
+        """
         for key in self.data:
             if key in self.locked_data_keys:
                 continue
@@ -1948,11 +2026,65 @@ class OpenGLMobject:
         """
         pass  # To implement in subclass
 
-    def become(self, mobject):
+    def become(
+        self,
+        mobject: "OpenGLMobject",
+        match_height: bool = False,
+        match_width: bool = False,
+        match_depth: bool = False,
+        match_center: bool = False,
+        stretch: bool = False,
+    ):
+        """Edit points, colors and submobjects to be identical
+        to another :class:`~.Mobject`
+
+        .. note::
+
+            If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
+            will match the height first and then the width
+
+        Parameters
+        ----------
+        match_height
+            If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
+        match_width
+            If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
+        match_depth
+            If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
+        match_center
+            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+        stretch
+            If ``True``, then the transformed :class:`~.Mobject` will stretch to fit the proportions of the original
+
+        Examples
+        --------
+        .. manim:: BecomeScene
+
+            class BecomeScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    circ.become(square)
+                    self.wait(0.5)
         """
-        Edit all data and submobjects to be identical
-        to another mobject
-        """
+
+        if stretch:
+            mobject.stretch_to_fit_height(self.height)
+            mobject.stretch_to_fit_width(self.width)
+            mobject.stretch_to_fit_depth(self.depth)
+        else:
+            if match_height:
+                mobject.match_height(self)
+            if match_width:
+                mobject.match_width(self)
+            if match_depth:
+                mobject.match_depth(self)
+
+        if match_center:
+            mobject.move_to(self.get_center())
+
         self.align_family(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.set_data(sm2.data)
@@ -2269,6 +2401,57 @@ class _AnimationBuilder:
 
 
 def override_animate(method):
+    r"""Decorator for overriding method animations.
+
+    This allows to specify a method (returning an :class:`~.Animation`)
+    which is called when the decorated method is used with the ``.animate`` syntax
+    for animating the application of a method.
+
+    .. seealso::
+
+        :attr:`Mobject.animate`
+
+    .. note::
+
+        Overridden methods cannot be combined with normal or other overridden
+        methods using method chaining with the ``.animate`` syntax.
+
+
+    Examples
+    --------
+
+    .. manim:: AnimationOverrideExample
+
+        class CircleWithContent(VGroup):
+            def __init__(self, content):
+                super().__init__()
+                self.circle = Circle()
+                self.content = content
+                self.add(self.circle, content)
+                content.move_to(self.circle.get_center())
+
+            def clear_content(self):
+                self.remove(self.content)
+                self.content = None
+
+            @override_animate(clear_content)
+            def _clear_content_animation(self, anim_args=None):
+                if anim_args is None:
+                    anim_args = {}
+                anim = Uncreate(self.content, **anim_args)
+                self.clear_content()
+                return anim
+
+        class AnimationOverrideExample(Scene):
+            def construct(self):
+                t = Text("hello!")
+                my_mobject = CircleWithContent(t)
+                self.play(Create(my_mobject))
+                self.play(my_mobject.animate.clear_content())
+                self.wait()
+
+    """
+
     def decorator(animation_method):
         method._override_animate = animation_method
         return animation_method
