@@ -197,5 +197,3 @@ Unclassified changes
 
 
 * `#2264 <https://github.com/ManimCommunity/manim/pull/2264>`__: New Crowdin updates
-
-
