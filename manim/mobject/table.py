@@ -884,7 +884,7 @@ class Table(VGroup):
                     table.add_highlighted_cell((2,2), color=GREEN)
                     self.add(table)
         """
-        bg_cell = self.get_highlighted_cell(pos, color=color)
+        bg_cell = self.get_highlighted_cell(pos, color=color, **kwargs)
         self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
         entry.background_rectangle = bg_cell

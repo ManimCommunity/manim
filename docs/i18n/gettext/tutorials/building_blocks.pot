@@ -15,7 +15,7 @@ msgid "This document explains the building blocks of manim and will give you all
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:8
-msgid "Essentially, manim puts at your disposal three different concepts that you can orchestrate together to produce mathematical animations: the **mathematical object** (or **mobject** for short) the **animation**, and the **scene**.  As we will see in the following sections, each of these three concepts is implemented in manim as a separate class: the :class:`.Mobject`, :class:`.Animation`, and :class:`.Scene` classes."
+msgid "Essentially, manim puts at your disposal three different concepts that you can orchestrate together to produce mathematical animations: the **mathematical object** (or **mobject** for short), the **animation**, and the **scene**.  As we will see in the following sections, each of these three concepts is implemented in manim as a separate class: the :class:`.Mobject`, :class:`.Animation`, and :class:`.Scene` classes."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:15
@@ -27,7 +27,7 @@ msgid "Mobjects"
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:23
-msgid "Mobjects are the basic building block for all manim animations.  Each class that derives from :class:`.Mobject` represents an object that can be displayed on the screen.  For example, simple shapes such as :class:`.Circle`, :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or :class:`.BarChart` are mobjects as well."
+msgid "Mobjects are the basic building blocks for all manim animations.  Each class that derives from :class:`.Mobject` represents an object that can be displayed on the screen.  For example, simple shapes such as :class:`.Circle`, :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or :class:`.BarChart` are mobjects as well."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:30
@@ -187,7 +187,7 @@ msgid "If alpha is 1, you want the value to be 100."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:327
-msgid "Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value. So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50). Once you set the calculated value for the :class:`~.DecimalNumber`, you are done."
+msgid "Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value. So, the logic of calculating the number to display at each step will be ``50 + alpha * (100 - 50)``. Once you set the calculated value for the :class:`~.DecimalNumber`, you are done."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:331

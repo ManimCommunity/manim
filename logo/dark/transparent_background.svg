@@ -7,13 +7,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="78.56897mm"
+   height="52.263462mm"
+   viewBox="0 0 78.56897 52.263462"
    version="1.1"
    id="svg208"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   sodipodi:docname="dark_t.svg">
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
+   sodipodi:docname="transparent_background.svg">
   <defs
      id="defs202" />
   <sodipodi:namedview
@@ -24,16 +24,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="271.30385"
-     inkscape:cy="461.23026"
+     inkscape:cx="35.827907"
+     inkscape:cy="176.04219"
      inkscape:document-units="mm"
      inkscape:current-layer="g184"
      inkscape:document-rotation="0"
      showgrid="false"
-     inkscape:window-width="1915"
-     inkscape:window-height="1018"
-     inkscape:window-x="48"
-     inkscape:window-y="93"
+     inkscape:window-width="2560"
+     inkscape:window-height="1338"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata205">
@@ -43,14 +43,15 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-62.30301,-75.45601)">
     <g
        id="g184"
        transform="translate(674.78338,-185.34168)"
