@@ -1,0 +1,201 @@
+*******
+v0.13.0
+*******
+
+:Date: December 02, 2021
+
+Contributors
+============
+
+A total of 25 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip +
+* Laith Bahodi
+* Lucas Ricci +
+* ManimBot +
+* Marcin Serwin +
+* Mysaa
+* Naveen M K
+* Viicos
+* ask09ok +
+* citrusmunch +
+* icedcoffeeee
+* mostlyaman +
+* vmiezys +
+* zhujisheng +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Laith Bahodi
+* Lucas Ricci
+* Naveen M K
+* Oliver
+* Ryan McCauley
+* Viicos
+* ask09ok
+* icedcoffeeee
+* mostlyaman
+
+Pull requests merged
+====================
+
+A total of 34 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#2313 <https://github.com/ManimCommunity/manim/pull/2313>`__: Finalized translation process and documentation
+
+
+Deprecated classes and functions
+--------------------------------
+
+* `#2331 <https://github.com/ManimCommunity/manim/pull/2331>`__: Remove deprecations up to `v0.12.0`
+   - Removed `focal_distance` parameters from :class:`~.ThreeDCamera`
+   - Removed `min_distance_to_new_point` parameter from :class:`~.TracedPath`
+   - Removed `positive_space_ratio` and `dash_spacing` parameters from :class:`~.DashedVMobject`
+   - Removed `<method>_in_place` methods from `mobject.py`
+   - Removed `ReconfigurableScene`
+   - Removed `SampleSpaceScene`
+   - Removed `distance` parameter from :class:`~.ThreeDScene`
+
+Enhancements
+------------
+
+* `#2347 <https://github.com/ManimCommunity/manim/pull/2347>`__: Moved ``manim_directive.py`` to ``manim.utils.docbuild``
+
+
+* `#2343 <https://github.com/ManimCommunity/manim/pull/2343>`__: Replaced current tree layout algorithm with SageMath's for improved layout of large trees.
+
+
+* `#2351 <https://github.com/ManimCommunity/manim/pull/2351>`__: Add missing `**kwargs` parameter to meth:`Table.add_highlighted_cell`.
+
+
+* `#2344 <https://github.com/ManimCommunity/manim/pull/2344>`__: Resized SVG logos, fit content to canvas
+
+
+* `#2300 <https://github.com/ManimCommunity/manim/pull/2300>`__: Add contact email for PyPi
+
+
+* `#2272 <https://github.com/ManimCommunity/manim/pull/2272>`__: Added test for :class:`~.Broadcast`
+   - This PR add a test for the class Broadcast
+
+Fixed bugs
+----------
+
+* `#2325 <https://github.com/ManimCommunity/manim/pull/2325>`__: `quality` argument improvements
+   * Updated the `quality` option values and help string to be automatically generated from `constants` (there was a mismatch between these before)
+   * Not passing `quality` argument will now use the `pixel_height`, `pixel_width` and `frame_rate` from config instead of overwriting them with `DEFAULT_QUANTITY` settings
+   * `quality` now can be set inside `manim.cfg` files
+   * Removed trailing zeros from frame rates in video directories names
+
+* `#2328 <https://github.com/ManimCommunity/manim/pull/2328>`__: Provide alpha multiplied RGBA values to cairo
+   `Format.ARGB32` in pycairo uses pre-multiplied alpha as per [documentation](https://pycairo.readthedocs.io/en/latest/reference/enums.html#cairo.Format.ARGB32). Manim incorrectly passed non-multiplied alpha, which was fixed.
+
+* `#2292 <https://github.com/ManimCommunity/manim/pull/2292>`__: Fixed positioning of :class:`~.Flash`
+   Fixes #2257. See the modified file as it is pretty straightforward.
+
+   EDIT: Oops, a commit from #2280 has been pushed with this one. Any idea how to fix this?
+
+Documentation-related changes
+-----------------------------
+
+* `#2216 <https://github.com/ManimCommunity/manim/pull/2216>`__: Edited and added new sections to the quickstart tutorial
+
+
+* `#2279 <https://github.com/ManimCommunity/manim/pull/2279>`__: Added documentation for discontinuous functions
+
+
+* `#2319 <https://github.com/ManimCommunity/manim/pull/2319>`__: Swapped `dotL` and `dotR` in :meth:`Mobject.interpolate` example
+   The name of the variables `dotL` and `dotR` are swapped in the example in the method `Mobject.interpolate()`
+
+* `#2230 <https://github.com/ManimCommunity/manim/pull/2230>`__: Fixed mistakes in building_blocks
+   Checked `building_blocks.rst`. Also pushing changes for other files, if I find any mistakes.
+
+* `#2310 <https://github.com/ManimCommunity/manim/pull/2310>`__: Clarified that Manim does not support Python 3.10 yet in the documentation
+   This PR simply add a warning in the installation page saying Manim does not support Python 3.10 yet, and you should use a version that is <= 3.9
+   - This PR also closes issue #2308
+
+* `#2294 <https://github.com/ManimCommunity/manim/pull/2294>`__: Made `index.html` more concise and rearranged order of tutorials
+
+
+* `#2268 <https://github.com/ManimCommunity/manim/pull/2268>`__: New Crowdin updates
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* `#2318 <https://github.com/ManimCommunity/manim/pull/2318>`__: Add missing tests for AnimationGroup 'remover' field #1846
+   - Adding tests for this issue - ManimCommunity/manim/pull/1722
+   - PR for this issue - ManimCommunity/manim/issues/1846
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#2327 <https://github.com/ManimCommunity/manim/pull/2327>`__: Correct type hint for `labels` parameter of :class:`~.Graph`
+
+
+* `#2305 <https://github.com/ManimCommunity/manim/pull/2305>`__: Corrected type hint ``discontinuities`` argument for :class:`~.ParametricFunction`
+
+
+New releases
+------------
+
+* `#2247 <https://github.com/ManimCommunity/manim/pull/2247>`__: Prepared new release ``v0.12.0``
+
+
+Unclassified changes
+--------------------
+
+* `#2335 <https://github.com/ManimCommunity/manim/pull/2335>`__: remove bug iwhich show PointCloud's point smaller in zoomed camera
+
+
+* `#2340 <https://github.com/ManimCommunity/manim/pull/2340>`__: Add documentation for growing animations
+   - Added documentation to the growing animations
+   - Animation `SpinInFromNothing` now uses new path for the `mobject` points. Changed the argument name from `path_arc` to angle to match `Rotate` animation
+   - All growing animations now receive `point_color` as positional argument for standardization's sake
+   - Fixed warning reported by sphinx
+
+* `#2348 <https://github.com/ManimCommunity/manim/pull/2348>`__: Updated translation source files
+
+
+* `#2342 <https://github.com/ManimCommunity/manim/pull/2342>`__: Remove :meth:`~.CoordinateSystem.get_graph` usage from :class:`~.Axes` example.
+
+
+* `#2329 <https://github.com/ManimCommunity/manim/pull/2329>`__: Remove unintended line break in README
+
+
+* `#2312 <https://github.com/ManimCommunity/manim/pull/2312>`__: Rename instances of `set_submobjects`
+
+
+* `#2301 <https://github.com/ManimCommunity/manim/pull/2301>`__: creation of a test for add_fixed_in_frame_mobjects
+
+
+* `#2262 <https://github.com/ManimCommunity/manim/pull/2262>`__: Fixed wrong cell coordinates with `:meth:~.Table.get_cell` after scaling.
+
+
+* `#2280 <https://github.com/ManimCommunity/manim/pull/2280>`__: Fixed :class:`~.DecimalNumber` color when number of displayed digits changes
+   When using `set_value` on a `DecimalNumber`, the color does not fully update if the number of digits changes. Fixed by calling `init_colors` after each call to `set_value` (there's maybe a better way to fix it).
+
+* `#2274 <https://github.com/ManimCommunity/manim/pull/2274>`__: Optimized Tests
+
+
+* `#2287 <https://github.com/ManimCommunity/manim/pull/2287>`__: Replace link to old notebook
+
+
+* `#2264 <https://github.com/ManimCommunity/manim/pull/2264>`__: New Crowdin updates
+
+
