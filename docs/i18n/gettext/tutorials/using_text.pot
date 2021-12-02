@@ -183,7 +183,7 @@ msgid "For example,"
 msgstr ""
 
 #: ../../source/tutorials/using_text.rst:304
-msgid "Note that we are using a raw string (``r'...'``) instead of a regular string (``r'...'``). This is because TeX code uses a lot of special characters - like ``\\`` for example - that have special meaning within a regular python string. An alternative would have been to write ``\\\\`` to escape the backslash: ``Tex('\\\\LaTeX')``."
+msgid "Note that we are using a raw string (``r'...'``) instead of a regular string (``'...'``). This is because TeX code uses a lot of special characters - like ``\\`` for example - that have special meaning within a regular python string. An alternative would have been to write ``\\\\`` to escape the backslash: ``Tex('\\\\LaTeX')``."
 msgstr ""
 
 #: ../../source/tutorials/using_text.rst:310

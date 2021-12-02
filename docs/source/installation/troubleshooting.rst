@@ -220,7 +220,7 @@ See below to fix aliases.
 3. Within this menu disable the alias(es) that is causing the issue (``python`` and/or ``python3``).
 
 ``IndexError: List index out of range``
---------
+---------------------------------------
 
 Did you install LaTeX using MiKTeX? If so, open the MiKTeX console,
 install the ``cm-super`` package, then delete the ``media`` directory and
