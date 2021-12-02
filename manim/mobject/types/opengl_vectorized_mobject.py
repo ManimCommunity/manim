@@ -1245,11 +1245,167 @@ class OpenGLVMobject(OpenGLMobject):
 
 
 class OpenGLVGroup(OpenGLVMobject):
+    """A group of vectorized mobjects.
+
+    This can be used to group multiple :class:`~.VMobject` instances together
+    in order to scale, move, ... them together.
+
+    Examples
+    --------
+
+    To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
+    :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
+    can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
+    `-` and `-=` operators:
+
+        >>> from manim import Triangle, Square, OpenGLVGroup
+        >>> vg = OpenGLVGroup()
+        >>> triangle, square = Triangle(), Square()
+        >>> vg.add(triangle)
+        OpenGLVGroup(Triangle)
+        >>> vg + square   # a new OpenGLVGroup is constructed
+        OpenGLVGroup(Triangle, Square)
+        >>> vg            # not modified
+        OpenGLVGroup(Triangle)
+        >>> vg += square; vg  # modifies vg
+        OpenGLVGroup(Triangle, Square)
+        >>> vg.remove(triangle)
+        OpenGLVGroup(Square)
+        >>> vg - square; # a new OpenGLVGroup is constructed
+        OpenGLVGroup()
+        >>> vg   # not modified
+        OpenGLVGroup(Square)
+        >>> vg -= square; vg # modifies vg
+        OpenGLVGroup()
+
+    .. manim:: ArcShapeIris
+        :save_last_frame:
+
+        class ArcShapeIris(Scene):
+            def construct(self):
+                colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                radius = [1 + rad * 0.1 for rad in range(len(colors))]
+
+                circles_group = OpenGLVGroup()
+
+                # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
+                circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
+                                    for rad, col in zip(radius, colors)])
+                self.add(circles_group)
+    """
+
     def __init__(self, *vmobjects, **kwargs):
         if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
-            raise Exception("All submobjects must be of type VMobject")
+            raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
+    
+    def __repr__(self):
+        return (
+            self.__class__.__name__
+            + "("
+            + ", ".join(str(mob) for mob in self.submobjects)
+            + ")"
+        )
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__} of {len(self.submobjects)} "
+            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
+        )
+
+    def add(self, *vmobjects):
+        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
+
+        Parameters
+        ----------
+        vmobjects : :class:`~.OpenGLVMobject`
+            List of OpenGLVMobject to add
+
+        Returns
+        -------
+        :class:`OpenGLVGroup`
+
+        Raises
+        ------
+        TypeError
+            If one element of the list is not an instance of OpenGLVMobject
+
+        Examples
+        --------
+        .. manim:: AddToOpenGLVGroup
+
+            class AddToOpenGLVGroup(Scene):
+                def construct(self):
+                    circle_red = Circle(color=RED)
+                    circle_green = Circle(color=GREEN)
+                    circle_blue = Circle(color=BLUE)
+                    circle_red.shift(LEFT)
+                    circle_blue.shift(RIGHT)
+                    gr = OpenGLVGroup(circle_red, circle_green)
+                    gr2 = OpenGLVGroup(circle_blue) # Constructor uses add directly
+                    self.add(gr,gr2)
+                    self.wait()
+                    gr += gr2 # Add group to another
+                    self.play(
+                        gr.animate.shift(DOWN),
+                    )
+                    gr -= gr2 # Remove group
+                    self.play( # Animate groups separately
+                        gr.animate.shift(LEFT),
+                        gr2.animate.shift(UP),
+                    )
+                    self.play( #Animate groups without modification
+                        (gr+gr2).animate.shift(RIGHT)
+                    )
+                    self.play( # Animate group without component
+                        (gr-circle_red).animate.shift(RIGHT)
+                    )
+        """
+        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
+            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        return super().add(*vmobjects)
+
+    def __add__(self, vmobject):
+        return OpenGLVGroup(*self.submobjects, vmobject)
+
+    def __iadd__(self, vmobject):
+        return self.add(vmobject)
+
+    def __sub__(self, vmobject):
+        copy = OpenGLVGroup(*self.submobjects)
+        copy.remove(vmobject)
+        return copy
+
+    def __isub__(self, vmobject):
+        return self.remove(vmobject)
+
+    def __setitem__(self, key: int, value: Union[OpenGLVMobject, Sequence[OpenGLVMobject]]):
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key
+            The index of the submobject to be assigned
+        value
+            The vmobject value to assign to the key
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            >>> vgroup = OpenGLVGroup(OpenGLVMobject())
+            >>> new_obj = VMobject()
+            >>> vgroup[0] = new_obj
+        """
+        if not all(isinstance(m, OpenGLVMobject) for m in value):
+            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        self.submobjects[key] = value
+
 
 
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
