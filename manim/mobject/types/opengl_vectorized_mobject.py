@@ -17,6 +17,7 @@ from ...utils.bezier import (
     integer_interpolate,
     interpolate,
     partial_quadratic_bezier_points,
+    proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import *
 from ...utils.config_ops import _Data
@@ -153,7 +154,47 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_flat_stroke(self.flat_stroke)
         return self
 
-    def set_fill(self, color=None, opacity=None, recurse=True):
+    def set_fill(
+        self,
+        color: Optional[Color] = None,
+        opacity: Optional[float] = None,
+        recurse: bool = True,
+    ) -> "OpenGLVMobject":
+        """Set the fill color and fill opacity of a :class:`VMobject`.
+
+        Parameters
+        ----------
+        color
+            Fill color of the :class:`VMobject`.
+        opacity
+            Fill opacity of the :class:`VMobject`.
+        family
+            If ``True``, the fill color of all submobjects is also set.
+
+        Returns
+        -------
+        VMobject
+            self. For chaining purposes.
+
+        Examples
+        --------
+        .. manim:: SetFill
+            :save_last_frame:
+
+            class SetFill(Scene):
+                def construct(self):
+                    square = Square().scale(2).set_fill(WHITE,1)
+                    circle1 = Circle().set_fill(GREEN,0.8)
+                    circle2 = Circle().set_fill(YELLOW) # No fill_opacity
+                    circle3 = Circle().set_fill(color = '#FF2135', opacity = 0.2)
+                    group = Group(circle1,circle2,circle3).arrange()
+                    self.add(square)
+                    self.add(group)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_style`
+        """
         if color is not None:
             if isinstance(color, str):
                 self.fill_color = Color(color)
@@ -407,7 +448,15 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point):
+    def add_line_to(self, point: Sequence[float]) -> "OpenGLVMobject":
+        """Add a straight line from the last point of VMobject to the given point.
+
+        Parameters
+        ----------
+
+        point : Sequence[float]
+            end of the straight line.
+        """
         end = self.points[-1]
         alphas = np.linspace(0, 1, self.n_points_per_curve)
         if self.long_lines:
@@ -478,7 +527,22 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points):
+    def set_points_as_corners(self, points: Iterable[float]) -> "OpenGLVMobject":
+        """Given an array of points, set them as corner of the vmobject.
+
+        To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
+        between the two anchors.
+
+        Parameters
+        ----------
+        points : Iterable[float]
+            Array of points that will be set as corners.
+
+        Returns
+        -------
+        VMobject
+            self. For chaining purposes.
+        """
         nppc = self.n_points_per_curve
         points = np.array(points)
         self.set_anchors_and_handles(
@@ -492,6 +556,15 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def change_anchor_mode(self, mode):
+        """Changes the anchor mode of the bezier curves. This will modify the handles.
+
+        There can be only three modes, "jagged", "approx_smooth"  and "true_smooth".
+
+        Returns
+        -------
+        VMobject
+            For chaining purposes.
+        """
         assert mode in ("jagged", "approx_smooth", "true_smooth")
         nppc = self.n_points_per_curve
         for submob in self.family_members_with_points():
@@ -501,6 +574,7 @@ class OpenGLVMobject(OpenGLMobject):
                 anchors = np.vstack([subpath[::nppc], subpath[-1:]])
                 new_subpath = np.array(subpath)
                 if mode == "approx_smooth":
+                    #TODO: get_smooth_quadratic_bezier_handle_points is not defined
                     new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
                         anchors,
                     )
@@ -603,14 +677,47 @@ class OpenGLVMobject(OpenGLMobject):
         ]
 
     def get_subpaths(self):
+        """Returns subpaths formed by the curves of the VMobject.
+
+        We define a subpath between two curve if one of their extreminities are coincidents.
+
+        Returns
+        -------
+        typing.Tuple
+            subpaths.
+        """
         return self.get_subpaths_from_points(self.points)
 
-    def get_nth_curve_points(self, n):
+    def get_nth_curve_points(self, n:int) -> np.ndarray:
+        """Returns the points defining the nth curve of the vmobject.
+
+        Parameters
+        ----------
+        n : int
+            index of the desired bezier curve.
+
+        Returns
+        -------
+        np.ndarray
+            points defininf the nth bezier curve (anchors, handles)
+        """
         assert n < self.get_num_curves()
         nppc = self.n_points_per_curve
         return self.points[nppc * n : nppc * (n + 1)]
 
-    def get_nth_curve_function(self, n):
+    def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
+        """Returns the expression of the nth curve.
+
+        Parameters
+        ----------
+        n : int
+            index of the desired curve.
+
+        Returns
+        -------
+        typing.Callable[float]
+            expression of the nth bezier curve.
+        """
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_function_with_length(
@@ -648,7 +755,14 @@ class OpenGLVMobject(OpenGLMobject):
 
         return curve, length
 
-    def get_num_curves(self):
+    def get_num_curves(self) -> int:
+        """Returns the number of curves of the vmobject.
+
+        Returns
+        -------
+        int
+            number of curves. of the vmobject.
+        """
         return self.get_num_points() // self.n_points_per_curve
 
     def get_curve_functions(
@@ -731,6 +845,62 @@ class OpenGLVMobject(OpenGLMobject):
                 return curve(residue)
 
             current_length += length
+
+    def proportion_from_point(
+        self,
+        point: Iterable[Union[float, int]],
+    ) -> float:
+        """Returns the proportion along the path of the :class:`VMobject`
+        a particular given point is at.
+
+        Parameters
+        ----------
+        point
+            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
+
+        Returns
+        -------
+        float
+            The proportion along the path of the :class:`VMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``point`` does not lie on the curve.
+        :exc:`Exception`
+            If the :class:`VMobject` has no points.
+        """
+        self.throw_error_if_no_points()
+
+        # Iterate over each bezier curve that the ``VMobject`` is composed of, checking
+        # if the point lies on that curve. If it does not lie on that curve, add
+        # the whole length of the curve to ``target_length`` and move onto the next
+        # curve. If the point does lie on the curve, add how far along the curve
+        # the point is to ``target_length``.
+        # Then, divide ``target_length`` by the total arc length of the shape to get
+        # the proportion along the ``VMobject`` the point is at.
+
+        num_curves = self.get_num_curves()
+        total_length = self.get_arc_length()
+        target_length = 0
+        for n in range(num_curves):
+            control_points = self.get_nth_curve_points(n)
+            length = self.get_nth_curve_length(n)
+            proportions_along_bezier = proportions_along_bezier_curve_for_point(
+                point,
+                control_points,
+            )
+            if len(proportions_along_bezier) > 0:
+                proportion_along_nth_curve = max(proportions_along_bezier)
+                target_length += length * proportion_along_nth_curve
+                break
+            target_length += length
+        else:
+            raise ValueError(f"Point {point} does not lie on this curve.")
+
+        alpha = target_length / total_length
+
+        return alpha
 
     def get_anchors_and_handles(self):
         """
