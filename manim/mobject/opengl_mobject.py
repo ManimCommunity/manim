@@ -4,7 +4,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Type, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Type, Union, TYPE_CHECKING
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 import moderngl
