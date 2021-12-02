@@ -64,8 +64,6 @@ class OpenGLMobject:
 
     """
 
-    animation_overrides = {}
-
     shader_dtype = [
         ("point", np.float32, (3,)),
     ]
@@ -1430,10 +1428,22 @@ class OpenGLMobject:
         )
         return self
 
-    def scale(self, scale_factor: float, **kwargs) -> "OpenGLMobject":
+    def scale(
+        self,
+        scale_factor: float,
+        about_point: Optional[Sequence[float]] = None,
+        about_edge: Sequence[float] = ORIGIN,
+        **kwargs,
+    ) -> "OpenGLMobject":
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
+        The argument about_edge can be a vector, indicating which side of
+        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
+        scales about mob.get_right().
+
+        Otherwise, if about_point is given a value, scaling is done with
+        respect to that point.
 
         Parameters
         ----------
@@ -1472,7 +1482,11 @@ class OpenGLMobject:
 
         """
         self.apply_points_function(
-            lambda points: scale_factor * points, works_on_bounding_box=True, **kwargs
+            lambda points: scale_factor * points,
+            about_point=about_point,
+            about_edge=about_edge,
+            works_on_bounding_box=True,
+            **kwargs,
         )
         return self
 
@@ -1615,7 +1629,7 @@ class OpenGLMobject:
     # Positioning methods
 
     def center(self):
-        """Moves the mobject in the center of the Scene."""
+        """Moves the mobject to the center of the Scene."""
         self.shift(-self.get_center())
         return self
 
@@ -1754,7 +1768,6 @@ class OpenGLMobject:
 
     def stretch_to_fit_height(self, height, **kwargs):
         """Stretches the :class:`~.OpenGLMobject` to fit a height, not keeping width/height proportional."""
-
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def stretch_to_fit_depth(self, depth, **kwargs):
@@ -2003,6 +2016,8 @@ class OpenGLMobject:
     def add_background_rectangle(
         self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
     ):
+        # TODO, this does not behave well when the mobject has points,
+        # since it gets displayed on top
         """Add a BackgroundRectangle as submobject.
 
         The BackgroundRectangle is added behind other submobjects.
@@ -2064,7 +2079,7 @@ class OpenGLMobject:
         return self.get_bounding_box_point(direction)
 
     def get_center(self) -> np.ndarray:
-        """Get center coordinates"""
+        """Get center coordinates."""
         return self.get_bounding_box()[1]
 
     def get_center_of_mass(self):
@@ -2132,7 +2147,7 @@ class OpenGLMobject:
         """Returns the depth of the mobject."""
         return self.length_over_dim(2)
 
-    def get_coord(self, dim, direction=ORIGIN):
+    def get_coord(self, dim:int, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_bounding_box_point(direction)[dim]
 
