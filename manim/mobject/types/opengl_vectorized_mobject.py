@@ -1,7 +1,7 @@
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Tuple
+from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 
 import moderngl
 import numpy as np
@@ -123,14 +123,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.orientation = 1
         super().__init__(**kwargs)
         self.refresh_unit_normal()
-
-    def __repr__(self):
-        return (
-            self.__class__.__name__
-            + "("
-            + ", ".join(str(mob) for mob in self.submobjects)
-            + ")"
-        )
 
 
     def get_group_class(self):
