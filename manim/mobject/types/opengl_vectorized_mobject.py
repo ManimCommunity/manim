@@ -39,6 +39,7 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLVMobject(OpenGLMobject):
+    """A vectorized mobject."""
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
@@ -63,30 +64,30 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        fill_color=None,
-        fill_opacity=0.0,
-        stroke_color=None,
-        stroke_opacity=1.0,
-        stroke_width=DEFAULT_STROKE_WIDTH,
-        draw_stroke_behind_fill=False,
+        fill_color: Optional[Color]=None,
+        fill_opacity: float=0.0,
+        stroke_color: Optional[Color]=None,
+        stroke_opacity: float=1.0,
+        stroke_width: float=DEFAULT_STROKE_WIDTH,
+        draw_stroke_behind_fill: bool=False,
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
-        pre_function_handle_to_anchor_scale_factor=0.01,
-        make_smooth_after_applying_functions=False,
-        background_image_file=None,
+        pre_function_handle_to_anchor_scale_factor: float=0.01,
+        make_smooth_after_applying_functions: float=False,
+        background_image_file:Optional[str]=None,
         # This is within a pixel
         # TODO, do we care about accounting for
         # varying zoom levels?
-        tolerance_for_point_equality=1e-8,
-        n_points_per_curve=3,
-        long_lines=False,
-        should_subdivide_sharp_curves=False,
-        should_remove_null_curves=False,
+        tolerance_for_point_equality:float =1e-8,
+        n_points_per_curve:int=3,
+        long_lines:bool=False,
+        should_subdivide_sharp_curves:bool=False,
+        should_remove_null_curves:bool=False,
         # Could also be "bevel", "miter", "round"
-        joint_type="auto",
-        flat_stroke=True,
+        joint_type:str="auto",
+        flat_stroke:bool=True,
         render_primitive=moderngl.TRIANGLES,
-        triangulation_locked=False,
+        triangulation_locked:bool=False,
         **kwargs,
     ):
         self.data = {}
