@@ -4,7 +4,17 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Type, Union, TYPE_CHECKING
+from typing import (
+    Callable,
+    Dict,
+    Iterable,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+    TYPE_CHECKING,
+)
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 import moderngl
@@ -61,8 +71,8 @@ class OpenGLMobject:
             :class:`~.OpenGLVMobject`
 
     """
-    animation_overrides = {}
 
+    animation_overrides = {}
 
     shader_dtype = [
         ("point", np.float32, (3,)),
@@ -154,7 +164,7 @@ class OpenGLMobject:
 
     def __str__(self):
         return self.__class__.__name__
-    
+
     def __repr__(self):
         return self.__class__.__name__
 
@@ -217,7 +227,6 @@ class OpenGLMobject:
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
         else:
             cls.__init__ = cls._original__init__
-
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
@@ -685,7 +694,9 @@ class OpenGLMobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(self, *mobjects: "OpenGLMobject", update_parent:bool=False) -> "OpenGLMobject":
+    def add(
+        self, *mobjects: "OpenGLMobject", update_parent: bool = False
+    ) -> "OpenGLMobject":
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -760,7 +771,9 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def remove(self, *mobjects:"OpenGLMobject", update_parent:bool=False) -> "OpenGLMobject":
+    def remove(
+        self, *mobjects: "OpenGLMobject", update_parent: bool = False
+    ) -> "OpenGLMobject":
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -794,8 +807,8 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def add_to_back(self, *mobjects:"OpenGLMobject") -> "OpenGLMobject":
-        #NOTE: is the note true OpenGLMobjects?
+    def add_to_back(self, *mobjects: "OpenGLMobject") -> "OpenGLMobject":
+        # NOTE: is the note true OpenGLMobjects?
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved
@@ -812,12 +825,12 @@ class OpenGLMobject:
             ``self``
 
 
-        .. note::  
+        .. note::
 
             Technically, this is done by adding (or moving) the mobjects to
             the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
-            subsequent list members. 
+            subsequent list members.
 
         Raises
         ------
@@ -1163,13 +1176,13 @@ class OpenGLMobject:
         Returns a new mobject containing multiple copies of this one
         arranged in a grid
         """
-        grid = self.duplicate(n_rows*n_cols)
+        grid = self.duplicate(n_rows * n_cols)
         grid.arrange_in_grid(n_rows, n_cols, **kwargs)
         if height is not None:
             grid.set_height(height)
         return grid
 
-    def duplicate(self, n:int):
+    def duplicate(self, n: int):
         """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
         return self.get_group_class()(*[self.copy() for _ in range(n)])
 
@@ -1297,7 +1310,7 @@ class OpenGLMobject:
         self.parents = parents
         return result
 
-    def generate_target(self, use_deepcopy:bool=False):
+    def generate_target(self, use_deepcopy: bool = False):
         self.target = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()
@@ -1305,7 +1318,7 @@ class OpenGLMobject:
             self.target = self.copy()
         return self.target
 
-    def save_state(self, use_deepcopy:bool=False):
+    def save_state(self, use_deepcopy: bool = False):
         """Save the current state (position, color & size). Can be restored with :meth:`~.OpenGLMobject.restore`."""
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
@@ -1492,7 +1505,9 @@ class OpenGLMobject:
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
-            lambda points: np.dot(points, rot_matrix_T), about_point=about_point, **kwargs
+            lambda points: np.dot(points, rot_matrix_T),
+            about_point=about_point,
+            **kwargs,
         )
         return self
 
@@ -1571,6 +1586,7 @@ class OpenGLMobject:
                     self.play(TransformFromCopy(circ_ref, circ))
                     self.play(t.animate.set_value(TAU), run_time=3)
         """
+
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -1753,7 +1769,7 @@ class OpenGLMobject:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
 
-    def set_width(self, width, stretch=False, **kwargs): 
+    def set_width(self, width, stretch=False, **kwargs):
         """Scales the :class:`~.OpenGLMobject` to fit a width while keeping height/depth proportional.
 
         Returns
@@ -1789,7 +1805,7 @@ class OpenGLMobject:
     def set_depth(self, depth, stretch=False, **kwargs):
         """Scales the :class:`~.OpenGLMobject` to fit a depth while keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
-    
+
     scale_to_fit_depth = set_depth
 
     def set_coord(self, value, dim, direction=ORIGIN):
@@ -1848,7 +1864,13 @@ class OpenGLMobject:
         self.shift(mobject.get_center() - self.get_center())
         return self
 
-    def surround(self, mobject:"OpenGLMobject", dim_to_match:int=0, stretch:bool=False, buff:float=MED_SMALL_BUFF):
+    def surround(
+        self,
+        mobject: "OpenGLMobject",
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buff: float = MED_SMALL_BUFF,
+    ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
         self.scale((length + buff) / length)
@@ -2122,7 +2144,7 @@ class OpenGLMobject:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_bounding_box_point(direction)[dim]
 
-    def get_x(self, direction=ORIGIN)-> np.float64:
+    def get_x(self, direction=ORIGIN) -> np.float64:
         """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(0, direction)
 
@@ -2130,7 +2152,7 @@ class OpenGLMobject:
         """Returns y coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(1, direction)
 
-    def get_z(self, direction=ORIGIN)-> np.float64:
+    def get_z(self, direction=ORIGIN) -> np.float64:
         """Returns z coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(2, direction)
 
@@ -2139,7 +2161,7 @@ class OpenGLMobject:
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self) :
+    def get_end(self):
         """Returns the point, where the stroke that surrounds the :class:`~.OpenGLMobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
@@ -2215,7 +2237,11 @@ class OpenGLMobject:
         """Match z coord. to the x coord. of another :class:`~.OpenGLMobject`."""
         return self.match_coord(mobject, 2, direction)
 
-    def align_to(self, mobject_or_point: Union["OpenGLMobject", Sequence[float]], direction=ORIGIN):
+    def align_to(
+        self,
+        mobject_or_point: Union["OpenGLMobject", Sequence[float]],
+        direction=ORIGIN,
+    ):
         """
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
@@ -2638,7 +2664,9 @@ class OpenGLMobject:
 
     def throw_error_if_no_points(self):
         if not self.has_points():
-            message = "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
+            message = (
+                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
+            )
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 

@@ -41,6 +41,7 @@ JOINT_TYPE_MAP = {
 
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
+
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
@@ -65,30 +66,30 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        fill_color: Optional[Color]=None,
-        fill_opacity: float=0.0,
-        stroke_color: Optional[Color]=None,
-        stroke_opacity: float=1.0,
-        stroke_width: float=DEFAULT_STROKE_WIDTH,
-        draw_stroke_behind_fill: bool=False,
+        fill_color: Optional[Color] = None,
+        fill_opacity: float = 0.0,
+        stroke_color: Optional[Color] = None,
+        stroke_opacity: float = 1.0,
+        stroke_width: float = DEFAULT_STROKE_WIDTH,
+        draw_stroke_behind_fill: bool = False,
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
-        pre_function_handle_to_anchor_scale_factor: float=0.01,
-        make_smooth_after_applying_functions: float=False,
-        background_image_file:Optional[str]=None,
+        pre_function_handle_to_anchor_scale_factor: float = 0.01,
+        make_smooth_after_applying_functions: float = False,
+        background_image_file: Optional[str] = None,
         # This is within a pixel
         # TODO, do we care about accounting for
         # varying zoom levels?
-        tolerance_for_point_equality:float =1e-8,
-        n_points_per_curve:int=3,
-        long_lines:bool=False,
-        should_subdivide_sharp_curves:bool=False,
-        should_remove_null_curves:bool=False,
+        tolerance_for_point_equality: float = 1e-8,
+        n_points_per_curve: int = 3,
+        long_lines: bool = False,
+        should_subdivide_sharp_curves: bool = False,
+        should_remove_null_curves: bool = False,
         # Could also be "bevel", "miter", "round"
-        joint_type:str="auto",
-        flat_stroke:bool=True,
+        joint_type: str = "auto",
+        flat_stroke: bool = True,
         render_primitive=moderngl.TRIANGLES,
-        triangulation_locked:bool=False,
+        triangulation_locked: bool = False,
         **kwargs,
     ):
         self.data = {}
@@ -125,7 +126,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.orientation = 1
         super().__init__(**kwargs)
         self.refresh_unit_normal()
-
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -574,7 +574,7 @@ class OpenGLVMobject(OpenGLMobject):
                 anchors = np.vstack([subpath[::nppc], subpath[-1:]])
                 new_subpath = np.array(subpath)
                 if mode == "approx_smooth":
-                    #TODO: get_smooth_quadratic_bezier_handle_points is not defined
+                    # TODO: get_smooth_quadratic_bezier_handle_points is not defined
                     new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(
                         anchors,
                     )
@@ -717,7 +717,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_subpaths_from_points(self.points)
 
-    def get_nth_curve_points(self, n:int) -> np.ndarray:
+    def get_nth_curve_points(self, n: int) -> np.ndarray:
         """Returns the points defining the nth curve of the vmobject.
 
         Parameters
@@ -1192,7 +1192,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject.set_points(np.vstack(new_subpaths2))
         return self
 
-    def insert_n_curves(self, n:int, recurse=True) -> "OpenGLVMobject":
+    def insert_n_curves(self, n: int, recurse=True) -> "OpenGLVMobject":
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1657,7 +1657,7 @@ class OpenGLVGroup(OpenGLVMobject):
             raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
-    
+
     def __repr__(self):
         return (
             self.__class__.__name__
@@ -1738,7 +1738,9 @@ class OpenGLVGroup(OpenGLVMobject):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: Union[OpenGLVMobject, Sequence[OpenGLVMobject]]):
+    def __setitem__(
+        self, key: int, value: Union[OpenGLVMobject, Sequence[OpenGLVMobject]]
+    ):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -1763,7 +1765,6 @@ class OpenGLVGroup(OpenGLVMobject):
         if not all(isinstance(m, OpenGLVMobject) for m in value):
             raise TypeError("All submobjects must be of type OpenGLVMobject")
         self.submobjects[key] = value
-
 
 
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
@@ -1802,6 +1803,7 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
                 self.add(new_curve.shift(UP), curve)
 
     """
+
     def __init__(self, vmobject, **kwargs):
         super().__init__(**kwargs)
         for tup in vmobject.get_bezier_tuples():
@@ -1845,8 +1847,14 @@ class OpenGLDashedVMobject(OpenGLVMobject):
                 everything = OpenGLVGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
                 self.add(everything)
     """
+
     def __init__(
-        self, vmobject: "OpenGLVMobject", num_dashes:int=15, dashed_ratio:float=0.5, color: Color =WHITE, **kwargs
+        self,
+        vmobject: "OpenGLVMobject",
+        num_dashes: int = 15,
+        dashed_ratio: float = 0.5,
+        color: Color = WHITE,
+        **kwargs,
     ):
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
