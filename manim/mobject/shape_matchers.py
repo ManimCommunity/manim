@@ -6,12 +6,12 @@ from typing import Optional
 
 from manim.utils.color import Color
 
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import BLACK, RED, YELLOW, Colors
-from .. import config
 
 
 class SurroundingRectangle(RoundedRectangle):

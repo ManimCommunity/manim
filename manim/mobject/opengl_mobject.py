@@ -5,17 +5,12 @@ import sys
 from functools import partialmethod, wraps
 from math import ceil
 from typing import (
-    Callable,
-    Dict,
     Iterable,
     Optional,
     Sequence,
     Tuple,
-    Type,
     Union,
-    TYPE_CHECKING,
 )
-from manim.utils.exceptions import MultiAnimationOverrideException
 
 import moderngl
 import numpy as np
@@ -47,9 +42,6 @@ from ..utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
-
-if TYPE_CHECKING:
-    from ..animation.animation import Animation
 
 
 class OpenGLMobject:
