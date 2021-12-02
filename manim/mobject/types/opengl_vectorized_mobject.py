@@ -160,20 +160,20 @@ class OpenGLVMobject(OpenGLMobject):
         opacity: Optional[float] = None,
         recurse: bool = True,
     ) -> "OpenGLVMobject":
-        """Set the fill color and fill opacity of a :class:`VMobject`.
+        """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
 
         Parameters
         ----------
         color
-            Fill color of the :class:`VMobject`.
+            Fill color of the :class:`OpenGLVMobject`.
         opacity
-            Fill opacity of the :class:`VMobject`.
+            Fill opacity of the :class:`OpenGLVMobject`.
         family
             If ``True``, the fill color of all submobjects is also set.
 
         Returns
         -------
-        VMobject
+        OpenGLVMobject
             self. For chaining purposes.
 
         Examples
@@ -193,7 +193,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         See Also
         --------
-        :meth:`~.VMobject.set_style`
+        :meth:`~.OpenGLVMobject.set_style`
         """
         if color is not None:
             if isinstance(color, str):
@@ -449,7 +449,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.append_points([self.get_last_point(), handle, anchor])
 
     def add_line_to(self, point: Sequence[float]) -> "OpenGLVMobject":
-        """Add a straight line from the last point of VMobject to the given point.
+        """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
         ----------
@@ -540,7 +540,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        VMobject
+        OpenGLVMobject
             self. For chaining purposes.
         """
         nppc = self.n_points_per_curve
@@ -562,7 +562,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        VMobject
+        OpenGLVMobject
             For chaining purposes.
         """
         assert mode in ("jagged", "approx_smooth", "true_smooth")
@@ -706,7 +706,7 @@ class OpenGLVMobject(OpenGLMobject):
         ]
 
     def get_subpaths(self):
-        """Returns subpaths formed by the curves of the VMobject.
+        """Returns subpaths formed by the curves of the OpenGLVMobject.
 
         We define a subpath between two curve if one of their extreminities are coincidents.
 
@@ -938,25 +938,25 @@ class OpenGLVMobject(OpenGLMobject):
         self,
         point: Iterable[Union[float, int]],
     ) -> float:
-        """Returns the proportion along the path of the :class:`VMobject`
+        """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
 
         Parameters
         ----------
         point
-            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
+            The Cartesian coordinates of the point which may or may not lie on the :class:`OpenGLVMobject`
 
         Returns
         -------
         float
-            The proportion along the path of the :class:`VMobject`.
+            The proportion along the path of the :class:`OpenGLVMobject`.
 
         Raises
         ------
         :exc:`ValueError`
             If ``point`` does not lie on the curve.
         :exc:`Exception`
-            If the :class:`VMobject` has no points.
+            If the :class:`OpenGLVMobject` has no points.
         """
         self.throw_error_if_no_points()
 
@@ -1023,7 +1023,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.points[nppc - 1 :: nppc]
 
     def get_anchors(self) -> np.ndarray:
-        """Returns the anchors of the curves forming the VMobject.
+        """Returns the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
@@ -1202,7 +1202,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        VMobject
+        OpenGLVMobject
             for chaining.
         """
         for mob in self.get_family(recurse):
@@ -1283,7 +1283,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-        vmobject : VMobject
+        vmobject : OpenGLVMobject
             The vmobject that will serve as a model.
         a : float
             upper-bound.
@@ -1344,8 +1344,8 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
-        """Returns the subcurve of the VMobject between the interval [a, b].
-        The curve is a VMobject itself.
+        """Returns the subcurve of the OpenGLVMobject between the interval [a, b].
+        The curve is a OpenGLVMobject itself.
 
         Parameters
         ----------
@@ -1605,7 +1605,7 @@ class OpenGLVMobject(OpenGLMobject):
 class OpenGLVGroup(OpenGLVMobject):
     """A group of vectorized mobjects.
 
-    This can be used to group multiple :class:`~.VMobject` instances together
+    This can be used to group multiple :class:`~.OpenGLVMobject` instances together
     in order to scale, move, ... them together.
 
     Examples
@@ -1757,7 +1757,7 @@ class OpenGLVGroup(OpenGLVMobject):
         Normal usage::
 
             >>> vgroup = OpenGLVGroup(OpenGLVMobject())
-            >>> new_obj = VMobject()
+            >>> new_obj = OpenGLVMobject()
             >>> vgroup[0] = new_obj
         """
         if not all(isinstance(m, OpenGLVMobject) for m in value):
@@ -1812,7 +1812,7 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
 
 
 class OpenGLDashedVMobject(OpenGLVMobject):
-    """A :class:`VMobject` composed of dashes instead of lines.
+    """A :class:`OpenGLVMobject` composed of dashes instead of lines.
 
     Examples
     --------
@@ -1823,12 +1823,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
             def construct(self):
                 r = 0.5
 
-                top_row = VGroup()  # Increasing num_dashes
+                top_row = OpenGLVGroup()  # Increasing num_dashes
                 for dashes in range(2, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = VGroup()  # Increasing dashed_ratio
+                middle_row = OpenGLVGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
                         Circle(radius=r, color=WHITE), dashed_ratio=ratio
@@ -1837,12 +1837,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
 
                 sq = DashedVMobject(Square(1.5, color=RED))
                 penta = DashedVMobject(RegularPolygon(5, color=BLUE))
-                bottom_row = VGroup(sq, penta)
+                bottom_row = OpenGLVGroup(sq, penta)
 
                 top_row.arrange(buff=0.4)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
-                everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
+                everything = OpenGLVGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
                 self.add(everything)
     """
     def __init__(
