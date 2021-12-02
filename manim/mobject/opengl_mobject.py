@@ -4,7 +4,8 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Type, Union
+from manim.utils.exceptions import MultiAnimationOverrideException
 
 import moderngl
 import numpy as np
@@ -37,11 +38,31 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
 )
 
+if TYPE_CHECKING:
+    from ..animation.animation import Animation
+
 
 class OpenGLMobject:
+    """Mathematical Object: base class for objects that can be displayed on screen.
+
+    There is a compatibility layer that allows for
+    getting and setting generic attributes with ``get_*``
+    and ``set_*`` methods. See :meth:`set` for more details.
+
+    Attributes
+    ----------
+    submobjects : List[:class:`OpenGLMobject`]
+        The contained objects.
+    points : :class:`numpy.ndarray`
+        The points of the objects.
+
+        .. seealso::
+
+            :class:`~.OpenGLVMobject`
+
     """
-    Mathematical Object
-    """
+    animation_overrides = {}
+
 
     shader_dtype = [
         ("point", np.float32, (3,)),
@@ -129,14 +150,14 @@ class OpenGLMobject:
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls._original__init__ = cls.__init__
 
-    @classmethod
-    def set_default(cls, **kwargs):
-        if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
-        else:
-            cls.__init__ = cls._original__init__
+        cls.animation_overrides: Dict[
+            Type["Animation"],
+            Callable[["OpenGLMobject"], "Animation"],
+        ] = {}
+        cls._add_intrinsic_animation_overrides()
+
+        cls._original__init__ = cls.__init__
 
     def __str__(self):
         return self.__class__.__name__
@@ -156,6 +177,124 @@ class OpenGLMobject:
     def __iadd__(self, mobject):
         raise NotImplementedError
 
+    @classmethod
+    def set_default(cls, **kwargs):
+        """Sets the default values of keyword arguments.
+
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+
+        Examples
+        --------
+
+        ::
+
+            >>> from manim import Square, GREEN
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color #83c167>, 0.25)
+            >>> Square.set_default()
+            >>> s = Square(); s.color, s.fill_opacity
+            (<Color white>, 0.0)
+
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
+
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.set_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
+
+                    # we revert the colour back to the default to prevent a bug in the docs.
+                    Text.set_default(color=WHITE)
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
+
+    @classmethod
+    def animation_override_for(
+        cls,
+        animation_class: Type["Animation"],
+    ) -> "Optional[Callable[[OpenGLMobject, ...], Animation]]":
+        """Returns the function defining a specific animation override for this class.
+
+        Parameters
+        ----------
+        animation_class
+            The animation class for which the override function should be returned.
+
+        Returns
+        -------
+        Optional[Callable[[Mobject, ...], Animation]]
+            The function returning the override animation or ``None`` if no such animation
+            override is defined.
+        """
+        if animation_class in cls.animation_overrides:
+            return cls.animation_overrides[animation_class]
+
+        return None
+
+    @classmethod
+    def _add_intrinsic_animation_overrides(cls):
+        """Initializes animation overrides marked with the :func:`~.override_animation`
+        decorator.
+        """
+        for method_name in dir(cls):
+            # Ignore dunder methods
+            if method_name.startswith("__"):
+                continue
+
+            method = getattr(cls, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+                cls.add_animation_override(animation_class, method)
+
+    @classmethod
+    def add_animation_override(
+        cls,
+        animation_class: Type["Animation"],
+        override_func: "Callable[[OpenGLMobject, ...], Animation]",
+    ):
+        """Add an animation override.
+
+        This does not apply to subclasses.
+
+        Parameters
+        ----------
+        animation_class
+            The animation type to be overridden
+        override_func
+            The function returning an animation replacing the default animation. It gets
+            passed the parameters given to the animnation constructor.
+
+        Raises
+        ------
+        MultiAnimationOverrideException
+            If the overridden animation was already overridden.
+        """
+        if animation_class not in cls.animation_overrides:
+            cls.animation_overrides[animation_class] = override_func
+        else:
+            raise MultiAnimationOverrideException(
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}.",
+            )
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
