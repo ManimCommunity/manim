@@ -8,7 +8,8 @@ from ..constants import *
 from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import BLACK, RED, YELLOW, Color
+from ..utils.color import BLACK, RED, YELLOW, Colors
+from .. import config
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -79,13 +80,16 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color=BLACK,
+        color:Optional[Colors]=None,
         stroke_width=0,
         stroke_opacity=0,
         fill_opacity=0.75,
         buff=0,
         **kwargs
     ):
+        if color is None:
+            color = config.background_color
+
         super().__init__(
             mobject,
             color=color,

@@ -4,7 +4,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Optional, Tuple, Union
+from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import moderngl
 import numpy as np
@@ -14,6 +14,7 @@ from .. import config
 from ..constants import *
 from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
+from ..utils.color import Colors
 from ..utils.config_ops import _Data, _Uniforms
 from ..utils.deprecation import deprecated
 
@@ -166,7 +167,90 @@ class OpenGLMobject:
 
     @property
     def animate(self):
-        # Borrowed from https://github.com/ManimCommunity/manim/
+        """Used to animate the application of a method.
+
+        .. warning::
+
+            Passing multiple animations for the same :class:`Mobject` in one
+            call to :meth:`~.Scene.play` is discouraged and will most likely
+            not work properly. Instead of writing an animation like
+
+            ::
+
+                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+
+            make use of method chaining for ``animate``, meaning::
+
+                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
+
+        Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
+        directly after accessing ``.animate``, like so::
+
+            self.play(my_mobject.animate(rate_func=linear).shift(RIGHT))
+
+        This is especially useful when animating simultaneous ``.animate`` calls that
+        you want to behave differently::
+
+            self.play(
+                mobject1.animate(run_time=2).rotate(PI),
+                mobject2.animate(rate_func=there_and_back).shift(RIGHT),
+            )
+
+        .. seealso::
+
+            :func:`override_animate`
+
+
+        Examples
+        --------
+
+        .. manim:: AnimateExample
+
+            class AnimateExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(Create(s))
+                    self.play(s.animate.shift(RIGHT))
+                    self.play(s.animate.scale(2))
+                    self.play(s.animate.rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+
+        .. manim:: AnimateChainExample
+
+            class AnimateChainExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(Create(s))
+                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+        .. manim:: AnimateWithArgsExample
+
+            class AnimateWithArgsExample(Scene):
+                def construct(self):
+                    s = Square()
+                    c = Circle()
+
+                    VGroup(s, c).arrange(RIGHT, buff=2)
+                    self.add(s, c)
+
+                    self.play(
+                        s.animate(run_time=2).rotate(PI / 2),
+                        c.animate(rate_func=there_and_back).shift(RIGHT),
+                    )
+
+        .. warning::
+
+            ``.animate``
+             will interpolate the :class:`~.Mobject` between its points prior to
+             ``.animate`` and its points after applying ``.animate`` to it. This may
+             result in unexpected behavior when attempting to interpolate along paths,
+             or rotations.
+             If you want animations to consider the points between, consider using
+             :class:`~.ValueTracker` with updaters instead.
+
+        """
         return _AnimationBuilder(self)
 
     @property
@@ -297,7 +381,27 @@ class OpenGLMobject:
                 mob.data[key] = mob.data[key][::-1]
         return self
 
-    def get_midpoint(self):
+    def get_midpoint(self) -> np.ndarray:
+        """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`.
+
+        Examples
+        --------
+
+        .. manim:: AngleMidPoint
+            :save_last_frame:
+
+            class AngleMidPoint(Scene):
+                def construct(self):
+                    line1 = Line(ORIGIN, 2*RIGHT)
+                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
+
+                    a = Angle(line1, line2, radius=1.5, other_angle=False)
+                    d = Dot(a.get_midpoint()).set_color(RED)
+
+                    self.add(line1, line2, a, d)
+                    self.wait()
+
+        """
         return self.point_from_proportion(0.5)
 
     def apply_points_function(
@@ -519,6 +623,23 @@ class OpenGLMobject:
     # Submobject organization
 
     def arrange(self, direction=RIGHT, center=True, **kwargs):
+        """Sorts :class:`~.OpenGLMobject` next to each other on screen.
+
+        Examples
+        --------
+
+        .. manim:: Example
+            :save_last_frame:
+
+            class Example(Scene):
+                def construct(self):
+                    s1 = Square()
+                    s2 = Square()
+                    s3 = Square()
+                    s4 = Square()
+                    x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    self.add(x)
+        """
         for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
             m2.next_to(m1, direction, **kwargs)
         if center:
@@ -978,15 +1099,46 @@ class OpenGLMobject:
         )
         return self
 
-    def scale(self, scale_factor, **kwargs):
-        """
-        Default behavior is to scale about the center of the mobject.
-        The argument about_edge can be a vector, indicating which side of
-        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
-        scales about mob.get_right().
+    def scale(self, scale_factor: float, **kwargs) -> "OpenGLMobject":
+        r"""Scale the size by a factor.
 
-        Otherwise, if about_point is given a value, scaling is done with
-        respect to that point.
+        Default behavior is to scale about the center of the mobject.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
+        kwargs
+            Additional keyword arguments passed to
+            :meth:`apply_points_function_about_point`.
+
+        Returns
+        -------
+        Mobject
+            The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
+
+        See also
+        --------
+        :meth:`move_to`
+
         """
         self.apply_points_function(
             lambda points: scale_factor * points, works_on_bounding_box=True, **kwargs
@@ -1008,15 +1160,33 @@ class OpenGLMobject:
         self,
         angle,
         axis=OUT,
+        about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
+        """Rotates the :class:`~.Mobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
-            lambda points: np.dot(points, rot_matrix_T), **kwargs
+            lambda points: np.dot(points, rot_matrix_T), about_point=about_point, **kwargs
         )
         return self
 
     def flip(self, axis=UP, **kwargs):
+        """Flips/Mirrors an mobject about its center.
+
+        Examples
+        --------
+
+        .. manim:: FlipExample
+            :save_last_frame:
+
+            class FlipExample(Scene):
+                def construct(self):
+                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                    self.add(s)
+                    s2= s.copy().flip()
+                    self.add(s2)
+
+        """
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def apply_function(self, function, **kwargs):
@@ -1050,6 +1220,31 @@ class OpenGLMobject:
         return self
 
     def apply_complex_function(self, function, **kwargs):
+        """Applies a complex function to a :class:`Mobject`.
+        The x and y coordinates correspond to the real and imaginary parts respectively.
+
+        Example
+        -------
+
+        .. manim:: ApplyFuncExample
+
+            class ApplyFuncExample(Scene):
+                def construct(self):
+                    circ = Circle().scale(1.5)
+                    circ_ref = circ.copy()
+                    circ.apply_complex_function(
+                        lambda x: np.exp(x*1j)
+                    )
+                    t = ValueTracker(0)
+                    circ.add_updater(
+                        lambda x: x.become(circ_ref.copy().apply_complex_function(
+                            lambda x: np.exp(x+t.get_value()*1j)
+                        )).set_color(BLUE)
+                    )
+                    self.add(circ_ref)
+                    self.play(TransformFromCopy(circ_ref, circ))
+                    self.play(t.animate.set_value(TAU), run_time=3)
+        """
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -1121,6 +1316,26 @@ class OpenGLMobject:
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
+        """Move this :class:`~.OpenGLMobject` next to another's :class:`~.OpenGLMobject` or coordinate.
+
+        Examples
+        --------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+            class GeometricShapes(Scene):
+                def construct(self):
+                    d = Dot()
+                    c = Circle()
+                    s = Square()
+                    t = Triangle()
+                    d.next_to(c, RIGHT)
+                    s.next_to(c, LEFT)
+                    t.next_to(c, DOWN)
+                    self.add(d, c, s, t)
+
+        """
         if isinstance(mobject_or_point, OpenGLMobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -1393,9 +1608,36 @@ class OpenGLMobject:
 
     # Background rectangle
 
-    def add_background_rectangle(self, color=None, opacity=0.75, **kwargs):
-        # TODO, this does not behave well when the mobject has points,
-        # since it gets displayed on top
+    def add_background_rectangle(
+        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
+    ):
+        """Add a BackgroundRectangle as submobject.
+
+        The BackgroundRectangle is added behind other submobjects.
+
+        This can be used to increase the mobjects visibility in front of a noisy background.
+
+        Parameters
+        ----------
+        color
+            The color of the BackgroundRectangle
+        opacity
+            The opacity of the BackgroundRectangle
+        kwargs
+            Additional keyword arguments passed to the BackgroundRectangle constructor
+
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See Also
+        --------
+        :meth:`add_to_back`
+        :class:`~.BackgroundRectangle`
+
+        """
         from ..mobject.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
