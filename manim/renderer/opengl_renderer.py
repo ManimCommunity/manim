@@ -1,6 +1,5 @@
 import itertools as it
 import time
-from typing import Any
 
 import moderngl
 import numpy as np
@@ -35,18 +34,18 @@ class OpenGLCamera(OpenGLMobject):
     euler_angles = _Data()
 
     def __init__(
-        self,
-        frame_shape=None,
-        center_point=None,
-        # Theta, phi, gamma
-        euler_angles=[0, 0, 0],
-        focal_distance=2,
-        light_source_position=[-10, 10, 10],
-        orthographic=False,
-        minimum_polar_angle=-PI / 2,
-        maximum_polar_angle=PI / 2,
-        model_matrix=None,
-        **kwargs,
+            self,
+            frame_shape=None,
+            center_point=None,
+            # Theta, phi, gamma
+            euler_angles=[0, 0, 0],
+            focal_distance=2,
+            light_source_position=[-10, 10, 10],
+            orthographic=False,
+            minimum_polar_angle=-PI / 2,
+            maximum_polar_angle=PI / 2,
+            model_matrix=None,
+            **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
@@ -280,11 +279,11 @@ class OpenGLRenderer(Renderer):
             )
             return True
         return (
-            config["preview"]
-            and not config["save_last_frame"]
-            and not config["format"]
-            and not config["write_to_movie"]
-            and not config["dry_run"]
+                config["preview"]
+                and not config["save_last_frame"]
+                and not config["format"]
+                and not config["write_to_movie"]
+                and not config["dry_run"]
         )
 
     def get_pixel_shape(self):
@@ -334,8 +333,8 @@ class OpenGLRenderer(Renderer):
 
             # Set uniforms.
             for name, value in it.chain(
-                shader_wrapper.uniforms.items(),
-                self.perspective_uniforms.items(),
+                    shader_wrapper.uniforms.items(),
+                    self.perspective_uniforms.items(),
             ):
                 try:
                     shader.set_uniform(name, value)
@@ -393,19 +392,10 @@ class OpenGLRenderer(Renderer):
         return True
 
     def get_current_time(self):
-        return 0 # todo not currently tracked
+        return 0  # todo not currently tracked
 
     def can_handle_static_wait(self):
         return False
-
-    def after_animation(self):
-        pass
-
-    def before_render(self):
-        pass
-
-    def after_render(self):
-        pass
 
     def after_scene(self):
         self.clear_screen()
@@ -414,14 +404,14 @@ class OpenGLRenderer(Renderer):
         return False
 
     def render(
-        self,
-        mobjects,
-        frame_offset=-1,
-        skip_animations=False,
-        moving_mobjects=None,
-        meshes=None,
-        file_writer=None,
-        **kwargs
+            self,
+            mobjects,
+            frame_offset=-1,
+            skip_animations=False,
+            moving_mobjects=None,
+            meshes=None,
+            file_writer=None,
+            **kwargs
     ):
         if frame_offset < 0:
             raise UnsupportedOperationException("Invalid frame offset for OpenGLRenderer - frame offset is required "
@@ -439,9 +429,9 @@ class OpenGLRenderer(Renderer):
                 self.window.swap_buffers()
 
     def update_frame(self,
-        mobjects,
-        meshes=None,
-        **kwargs):
+                     mobjects,
+                     meshes=None,
+                     **kwargs):
         self.frame_buffer_object.clear(*self.background_color)
         self.refresh_perspective_uniforms(self.camera)
 
@@ -490,7 +480,7 @@ class OpenGLRenderer(Renderer):
         return image
 
     def save_static_frame_data(
-        self, static_mobjects, mobjects=None, foreground_mobjects=None
+            self, static_mobjects, mobjects=None, foreground_mobjects=None
     ):
         pass
 
@@ -618,7 +608,7 @@ class OpenGLRenderer(Renderer):
         camera_to_target *= np.sign(offset[1])
         shift_vector = 0.01 * camera_to_target
         self.camera.model_matrix = (
-            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+                opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
         )
 
     def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
@@ -626,9 +616,9 @@ class OpenGLRenderer(Renderer):
         if buttons == 1:
             # Translate to target the origin and rotate around the z axis.
             self.camera.model_matrix = (
-                opengl.rotation_matrix(z=-d_point[0])
-                @ opengl.translation_matrix(*-self.camera_target)
-                @ self.camera.model_matrix
+                    opengl.rotation_matrix(z=-d_point[0])
+                    @ opengl.translation_matrix(*-self.camera_target)
+                    @ self.camera.model_matrix
             )
 
             # Rotation off of the z axis.
@@ -678,8 +668,8 @@ class OpenGLRenderer(Renderer):
 
             # Translate to target the original target.
             self.camera.model_matrix = (
-                opengl.translation_matrix(*self.camera_target)
-                @ self.camera.model_matrix
+                    opengl.translation_matrix(*self.camera_target)
+                    @ self.camera.model_matrix
             )
         # Right click drag.
         elif buttons == 4:
@@ -689,8 +679,8 @@ class OpenGLRenderer(Renderer):
             total_shift_vector = horizontal_shift_vector + vertical_shift_vector
 
             self.camera.model_matrix = (
-                opengl.translation_matrix(*total_shift_vector)
-                @ self.camera.model_matrix
+                    opengl.translation_matrix(*total_shift_vector)
+                    @ self.camera.model_matrix
             )
             self.camera_target += total_shift_vector
 

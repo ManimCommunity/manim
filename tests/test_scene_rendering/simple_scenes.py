@@ -60,7 +60,7 @@ class InteractiveStaticScene(Scene):
     def construct(self):
         dot = Dot().set_color(GREEN)
         self.add(dot)
-        self.interactive_mode = True
+        self.renderer.interactive_mode = True
 
 
 class SceneWithSections(Scene):

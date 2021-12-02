@@ -9,6 +9,7 @@ from manim.utils.decorators import optionalmethod
 class Renderer(ABC):
     def __init__(self, camera=None):
         self.camera = camera
+        self.interactive_mode = False
 
     @abstractmethod
     def init_scene(self):
@@ -19,19 +20,7 @@ class Renderer(ABC):
         pass
 
     @abstractmethod
-    def after_animation(self):
-        pass
-
-    @abstractmethod
-    def before_render(self):
-        pass
-
-    @abstractmethod
     def render(self, mobjects, skip_animations=False, **kwargs):
-        pass
-
-    @abstractmethod
-    def after_render(self):
         pass
 
     @abstractmethod
@@ -84,44 +73,4 @@ class Renderer(ABC):
 
     @optionalmethod
     def get_window(self):
-        pass
-
-    @optionalmethod
-    def interactive_embed(self):
-        pass
-
-    @optionalmethod
-    def on_mouse_motion(self, point, d_point):
-        pass
-
-    @optionalmethod
-    def on_mouse_scroll(self, point, offset):
-        pass
-
-    @optionalmethod
-    def on_key_press(self, symbol, modifiers):
-        pass
-
-    @optionalmethod
-    def on_key_release(self, symbol, modifiers):
-        pass
-
-    @optionalmethod
-    def on_mouse_drag(self, point, d_point, buttons, modifiers):
-        pass
-
-    @optionalmethod
-    def mouse_scroll_orbit_controls(self, point, offset):
-        pass
-
-    @optionalmethod
-    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
-        pass
-
-    @optionalmethod
-    def set_key_function(self, char, func):
-        pass
-
-    @optionalmethod
-    def on_mouse_press(self, point, button, modifiers):
         pass

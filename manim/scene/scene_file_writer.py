@@ -328,7 +328,7 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.open_movie_pipe(file_path=file_path, num_plays=num_plays)
 
-    def end_animation(self, allow_write=False):
+    def end_animation(self, num_plays, allow_write=False):
         """
         Internally used by Manim to stop streaming to
         FFMPEG gracefully.
@@ -339,7 +339,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.close_movie_pipe()
+            self.close_movie_pipe(num_plays)
 
     def write_frame(self, frame_or_renderer):
         """
@@ -500,7 +500,7 @@ class SceneFileWriter:
         command += [file_path]
         self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
 
-    def close_movie_pipe(self):
+    def close_movie_pipe(self, num_plays):
         """
         Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
         """
@@ -508,7 +508,7 @@ class SceneFileWriter:
         self.writing_process.wait()
 
         logger.info(
-            f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
+            f"Animation {num_plays} : Partial movie file written in %(path)s",
             {"path": f"'{self.partial_movie_file_path}'"},
         )
 

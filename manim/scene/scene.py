@@ -33,7 +33,6 @@ from ..utils.file_ops import open_media_file
 from ..utils.hashing import get_hash_from_play_call
 from ..utils.iterables import list_difference_update, list_update
 
-
 try:
     import dearpygui.dearpygui as dpg
 
@@ -51,6 +50,7 @@ class RerunSceneHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         self.queue.put(("rerun_file", [], {}))
+
 
 class Scene:
     """A Scene is the canvas of your animation.
@@ -84,13 +84,13 @@ class Scene:
     """
 
     def __init__(
-        self,
-        renderer: Renderer=None,
-        camera_class=Camera,
-        always_update_mobjects=False,
-        random_seed=None,
-        skip_animations=False,
-        file_writer_class=SceneFileWriter,
+            self,
+            renderer: Renderer = None,
+            camera_class=Camera,
+            always_update_mobjects=False,
+            random_seed=None,
+            skip_animations=False,
+            file_writer_class=SceneFileWriter,
     ):
         self.quit_interaction = False
         self.camera_class = camera_class
@@ -113,11 +113,9 @@ class Scene:
         self.updaters = []
         self.point_lights = []
         self.ambient_light = None
-        self.interactive_mode = False
         self.num_plays = 0
         self.animations_hashes = []
         self._file_writer_class = file_writer_class
-        self.interactive_mode = False
         self.queue = Queue()
 
         if renderer is None:
@@ -234,9 +232,9 @@ class Scene:
 
         # Show info only if animations are rendered or to get image
         if (
-            self.num_plays
-            or config["format"] == "png"
-            or config["save_last_frame"]
+                self.num_plays
+                or config["format"] == "png"
+                or config["save_last_frame"]
         ):
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.num_plays} animations",
@@ -299,10 +297,10 @@ class Scene:
         pass  # To be implemented in subclasses
 
     def next_section(
-        self,
-        name: str = "unnamed",
-        type: str = DefaultSectionType.NORMAL,
-        skip_animations: bool = False,
+            self,
+            name: str = "unnamed",
+            type: str = DefaultSectionType.NORMAL,
+            skip_animations: bool = False,
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
@@ -424,7 +422,7 @@ class Scene:
                 new_mobjects.append(mobject_or_mesh)
         new_mobjects = [*new_mobjects, *self.foreground_mobjects]
 
-        self.restructure_mobjects(to_remove=mobjects)
+        self.restructure_mobjects(to_remove=new_mobjects)
         self.remove(*new_meshes)
 
         self.mobjects += new_mobjects
@@ -479,10 +477,10 @@ class Scene:
         self.updaters = [f for f in self.updaters if f is not func]
 
     def restructure_mobjects(
-        self,
-        to_remove,
-        mobject_list_name="mobjects",
-        extract_families=True,
+            self,
+            to_remove,
+            mobject_list_name="mobjects",
+            extract_families=True,
     ):
         """
         tl:wr
@@ -819,11 +817,11 @@ class Scene:
         return time_progression
 
     def get_time_progression(
-        self,
-        run_time,
-        description,
-        n_iterations=None,
-        override_skip_animations=False,
+            self,
+            run_time,
+            description,
+            n_iterations=None,
+            override_skip_animations=False,
     ):
         """
         You will hardly use this when making your own animations.
@@ -902,13 +900,13 @@ class Scene:
         if config["save_last_frame"]:
             self.skip_animations = True
         if (
-            config["from_animation_number"]
-            and self.num_plays < config["from_animation_number"]
+                config["from_animation_number"]
+                and self.num_plays < config["from_animation_number"]
         ):
             self.skip_animations = True
         if (
-            config["upto_animation_number"]
-            and self.num_plays > config["upto_animation_number"]
+                config["upto_animation_number"]
+                and self.num_plays > config["upto_animation_number"]
         ):
             self.skip_animations = True
             raise EndSceneEarlyException()
@@ -956,13 +954,16 @@ class Scene:
 
         self.begin_animations()
         if self._renderer.can_handle_static_wait() and self.is_current_animation_frozen_frame():
-            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations, moving_mobjects=self.moving_mobjects, foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer, meshes=self.meshes)
+            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations,
+                                        moving_mobjects=self.moving_mobjects,
+                                        foreground_mobjects=self.foreground_mobjects, file_writer=self.file_writer,
+                                        meshes=self.meshes)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
             self._renderer.freeze_current_frame(self.duration, self.file_writer, skip_animations=self.skip_animations)
         else:
             self.play_internal()
-        self.file_writer.end_animation(not self.skip_animations)
+        self.file_writer.end_animation(self.num_plays, not self.skip_animations)
 
         self.num_plays += 1
 
@@ -976,7 +977,10 @@ class Scene:
 
         if self._renderer.should_save_last_frame(self.num_plays):
             config.save_last_frame = True
-            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations, moving_mobjects=self.moving_mobjects, foreground_mobjects=self.foreground_mobjects, meshes=self.meshes, file_writer=self.file_writer)
+            self._renderer.update_frame(self.mobjects, skip_animations=self.skip_animations,
+                                        moving_mobjects=self.moving_mobjects,
+                                        foreground_mobjects=self.foreground_mobjects, meshes=self.meshes,
+                                        file_writer=self.file_writer)
             self.file_writer.save_final_image(self._renderer.get_image())
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
@@ -1051,9 +1055,9 @@ class Scene:
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
         return (
-            isinstance(self.animations[0], Wait)
-            and len(self.animations) == 1
-            and self.animations[0].is_static_wait
+                isinstance(self.animations[0], Wait)
+                and len(self.animations) == 1
+                and self.animations[0].is_static_wait
         )
 
     def play_internal(self, skip_rendering=False):
@@ -1182,10 +1186,10 @@ class Scene:
         Like embed(), but allows for screen interaction.
         """
         if not self._renderer.has_interaction():
-            raise UnsupportedOperationException("Interactive mode not supported for renderer {}" .format(self._renderer))
+            raise UnsupportedOperationException("Interactive mode not supported for renderer {}".format(self._renderer))
         if not self.check_interactive_embed_is_valid():
             return
-        self.interactive_mode = True
+        self._renderer.interactive_mode = True
 
         def ipython(shell, namespace):
             import manim
@@ -1302,7 +1306,8 @@ class Scene:
                 self._renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self._renderer.render(self.mobjects, frame_offset=dt, moving_mobjects=self.moving_mobjects, meshes=self.meshes, file_writer=self.file_writer)
+                self._renderer.render(self.mobjects, frame_offset=dt, moving_mobjects=self.moving_mobjects,
+                                      meshes=self.meshes, file_writer=self.file_writer)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
                 self.update_self(dt)

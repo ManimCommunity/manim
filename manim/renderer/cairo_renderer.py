@@ -1,5 +1,4 @@
 import typing
-from typing import Any
 
 import numpy as np
 
@@ -38,15 +37,6 @@ class CairoRenderer(Renderer):
     def before_animation(self):
         pass
 
-    def after_animation(self):
-        pass
-
-    def before_render(self):
-        pass
-
-    def after_render(self):
-        pass
-
     def has_interaction(self):
         return False
 
@@ -65,8 +55,8 @@ class CairoRenderer(Renderer):
         skip_animations=False,
         include_submobjects=True,
         ignore_skipping=True,
-        moving_mobjects=[],
-        foreground_mobjects=[],
+        moving_mobjects=None,
+        foreground_mobjects=None,
         **kwargs,
     ):
         """Update the frame.
@@ -88,10 +78,17 @@ class CairoRenderer(Renderer):
         """
         if skip_animations and not ignore_skipping:
             return
-        mobjects = list_update(
-            moving_mobjects,
-            foreground_mobjects,
-        )
+
+        if moving_mobjects:
+            mobjects = list_update(
+                mobjects,
+                moving_mobjects
+            )
+        if foreground_mobjects:
+            mobjects = list_update(
+                mobjects,
+                foreground_mobjects
+            )
         if self.static_image is not None:
             self.camera.set_frame_to_background(self.static_image)
         else:
@@ -209,5 +206,3 @@ class CairoRenderer(Renderer):
 
     def get_current_time(self):
         return self.time
-
-

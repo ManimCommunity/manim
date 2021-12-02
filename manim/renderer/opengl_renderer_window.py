@@ -50,7 +50,6 @@ class Window(PygletWindow):
         initial_position = self.find_initial_position(size, monitor)
         self.position = initial_position
 
-    # Delegate event handling to scene.
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
         point = self.renderer.pixel_coords_to_space_coords(x, y)
