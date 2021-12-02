@@ -4,13 +4,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import (
-    Iterable,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import moderngl
 import numpy as np
@@ -2147,7 +2141,7 @@ class OpenGLMobject:
         """Returns the depth of the mobject."""
         return self.length_over_dim(2)
 
-    def get_coord(self, dim:int, direction=ORIGIN):
+    def get_coord(self, dim: int, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_bounding_box_point(direction)[dim]
 
