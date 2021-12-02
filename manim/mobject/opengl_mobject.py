@@ -895,11 +895,14 @@ class OpenGLMobject:
         Returns a new mobject containing multiple copies of this one
         arranged in a grid
         """
-        grid = self.get_group_class()(*(self.copy() for n in range(n_rows * n_cols)))
+        grid = self.duplicate(n_rows*n_cols)
         grid.arrange_in_grid(n_rows, n_cols, **kwargs)
         if height is not None:
             grid.set_height(height)
         return grid
+
+    def duplicate(self, n_times:int):
+        return self.get_group_class()(*[self.copy() for _ in range(n_times)])
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         if submob_func is not None:
