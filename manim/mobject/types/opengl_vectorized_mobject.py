@@ -124,6 +124,15 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
+    def __repr__(self):
+        return (
+            self.__class__.__name__
+            + "("
+            + ", ".join(str(mob) for mob in self.submobjects)
+            + ")"
+        )
+
+
     def get_group_class(self):
         return OpenGLVGroup
 

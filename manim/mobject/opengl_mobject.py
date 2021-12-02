@@ -140,6 +140,22 @@ class OpenGLMobject:
 
     def __str__(self):
         return self.__class__.__name__
+    
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __sub__(self, other):
+        raise NotImplementedError
+
+    def __isub__(self, other):
+        raise NotImplementedError
+
+    def __add__(self, mobject):
+        raise NotImplementedError
+
+    def __iadd__(self, mobject):
+        raise NotImplementedError
+
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
@@ -161,6 +177,61 @@ class OpenGLMobject:
         subclasses."""
         # Typically implemented in subclass, unless purposefully left blank
         pass
+
+    def set(self, **kwargs) -> "OpenGLMobject":
+        """Sets attributes.
+
+        Mainly to be used along with :attr:`animate` to
+        animate setting attributes.
+
+        In addition to this method, there is a compatibility
+        layer that allows ``get_*`` and ``set_*`` methods to
+        get and set generic attributes. For instance::
+
+            >>> mob = Mobject()
+            >>> mob.set_foo(0)
+            Mobject
+            >>> mob.get_foo()
+            0
+            >>> mob.foo
+            0
+
+        This compatibility layer does not interfere with any
+        ``get_*`` or ``set_*`` methods that are explicitly
+        defined.
+
+        .. warning::
+
+            This compatibility layer is for backwards compatibility
+            and is not guaranteed to stay around. Where applicable,
+            please prefer getting/setting attributes normally or with
+            the :meth:`set` method.
+
+        Parameters
+        ----------
+        **kwargs
+            The attributes and corresponding values to set.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> mob = Mobject()
+            >>> mob.set(foo=0)
+            Mobject
+            >>> mob.foo
+            0
+        """
+
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+        return self
 
     def set_data(self, data):
         for key in data:
