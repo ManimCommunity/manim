@@ -150,13 +150,6 @@ class OpenGLMobject:
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-
-        cls.animation_overrides: Dict[
-            Type["Animation"],
-            Callable[["OpenGLMobject"], "Animation"],
-        ] = {}
-        cls._add_intrinsic_animation_overrides()
-
         cls._original__init__ = cls.__init__
 
     def __str__(self):
@@ -225,76 +218,6 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    @classmethod
-    def animation_override_for(
-        cls,
-        animation_class: Type["Animation"],
-    ) -> "Optional[Callable[[OpenGLMobject, ...], Animation]]":
-        """Returns the function defining a specific animation override for this class.
-
-        Parameters
-        ----------
-        animation_class
-            The animation class for which the override function should be returned.
-
-        Returns
-        -------
-        Optional[Callable[[Mobject, ...], Animation]]
-            The function returning the override animation or ``None`` if no such animation
-            override is defined.
-        """
-        if animation_class in cls.animation_overrides:
-            return cls.animation_overrides[animation_class]
-
-        return None
-
-    @classmethod
-    def _add_intrinsic_animation_overrides(cls):
-        """Initializes animation overrides marked with the :func:`~.override_animation`
-        decorator.
-        """
-        for method_name in dir(cls):
-            # Ignore dunder methods
-            if method_name.startswith("__"):
-                continue
-
-            method = getattr(cls, method_name)
-            if hasattr(method, "_override_animation"):
-                animation_class = method._override_animation
-                cls.add_animation_override(animation_class, method)
-
-    @classmethod
-    def add_animation_override(
-        cls,
-        animation_class: Type["Animation"],
-        override_func: "Callable[[OpenGLMobject, ...], Animation]",
-    ):
-        """Add an animation override.
-
-        This does not apply to subclasses.
-
-        Parameters
-        ----------
-        animation_class
-            The animation type to be overridden
-        override_func
-            The function returning an animation replacing the default animation. It gets
-            passed the parameters given to the animnation constructor.
-
-        Raises
-        ------
-        MultiAnimationOverrideException
-            If the overridden animation was already overridden.
-        """
-        if animation_class not in cls.animation_overrides:
-            cls.animation_overrides[animation_class] = override_func
-        else:
-            raise MultiAnimationOverrideException(
-                f"The animation {animation_class.__name__} for "
-                f"{cls.__name__} is overridden by more than one method: "
-                f"{cls.animation_overrides[animation_class].__qualname__} and "
-                f"{override_func.__qualname__}.",
-            )
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.

@@ -683,7 +683,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        typing.Tuple
+        Tuple
             subpaths.
         """
         return self.get_subpaths_from_points(self.points)
@@ -705,7 +705,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc * n : nppc * (n + 1)]
 
-    def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
+    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
         """Returns the expression of the nth curve.
 
         Parameters
@@ -764,6 +764,65 @@ class OpenGLVMobject(OpenGLMobject):
             number of curves. of the vmobject.
         """
         return self.get_num_points() // self.n_points_per_curve
+
+    def get_nth_curve_length(
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
+    ) -> float:
+        """Returns the (approximate) length of the nth curve.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        _, length = self.get_nth_curve_function_with_length(n, sample_points)
+
+        return length
+
+    def get_nth_curve_function_with_length(
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
+    ) -> Tuple[Callable[[float], np.ndarray], float]:
+        """Returns the expression of the nth curve along with its (approximate) length.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        curve : typing.Callable[[float], np.ndarray]
+            The function for the nth curve.
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        length = np.sum(norms)
+
+        return curve, length
 
     def get_curve_functions(
         self,
