@@ -638,6 +638,14 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Information about the curve
     def force_direction(self, target_direction):
+        """Makes sure that points are either directed clockwise or
+        counterclockwise.
+
+        Parameters
+        ----------
+        target_direction : :class:`str`
+            Either ``"CW"`` or ``"CCW"``.
+        """
         if target_direction not in ("CW", "CCW"):
             raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
 
@@ -647,6 +655,27 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def reverse_direction(self):
+        """Reverts the point direction by inverting the point order.
+
+        Returns
+        -------
+        :class:`OpenGLVMobject`
+            Returns self.
+
+        Examples
+        --------
+        .. manim:: ChangeOfDirection
+
+            class ChangeOfDirection(Scene):
+                def construct(self):
+                    ccw = RegularPolygon(5)
+                    ccw.shift(LEFT).rotate
+                    cw = RegularPolygon(5)
+                    cw.shift(RIGHT).reverse_direction()
+
+                    self.play(Create(ccw), Create(cw),
+                    run_time=4)
+        """
         self.set_points(self.points[::-1])
         return self
 
@@ -972,14 +1001,35 @@ class OpenGLVMobject(OpenGLMobject):
         points = self.points
         return [points[i::nppc] for i in range(nppc)]
 
-    def get_start_anchors(self):
+    def get_start_anchors(self) -> np.ndarray:
+        """Returns the start anchors of the bezier curves.
+
+        Returns
+        -------
+        np.ndarray
+            Starting anchors
+        """
         return self.points[0 :: self.n_points_per_curve]
 
-    def get_end_anchors(self):
+    def get_end_anchors(self) -> np.ndarray:
+        """Return the starting anchors of the bezier curves.
+
+        Returns
+        -------
+        np.ndarray
+            Starting anchors
+        """
         nppc = self.n_points_per_curve
         return self.points[nppc - 1 :: nppc]
 
-    def get_anchors(self):
+    def get_anchors(self) -> np.ndarray:
+        """Returns the anchors of the curves forming the VMobject.
+
+        Returns
+        -------
+        np.ndarray
+            The anchors.
+        """
         points = self.points
         if len(points) == 1:
             return points
@@ -1056,6 +1106,23 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_direction(self):
+        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction.
+        The direction of points determines in which direction the
+        object is drawn, clockwise or counterclockwise.
+
+        Examples
+        --------
+        The default direction of a :class:`~.Circle` is counterclockwise::
+
+            >>> from manim import Circle
+            >>> Circle().get_direction()
+            'CCW'
+
+        Returns
+        -------
+        :class:`str`
+            Either ``"CW"`` or ``"CCW"``.
+        """
         return shoelace_direction(self.get_start_anchors())
 
     def get_unit_normal(self, recompute=False):
@@ -1125,7 +1192,19 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject.set_points(np.vstack(new_subpaths2))
         return self
 
-    def insert_n_curves(self, n, recurse=True):
+    def insert_n_curves(self, n:int, recurse=True) -> "OpenGLVMobject":
+        """Inserts n curves to the bezier curves of the vmobject.
+
+        Parameters
+        ----------
+        n
+            Number of curves to insert.
+
+        Returns
+        -------
+        VMobject
+            for chaining.
+        """
         for mob in self.get_family(recurse):
             if mob.get_num_curves() > 0:
                 new_points = mob.insert_n_curves_to_point_list(n, mob.points)
@@ -1135,7 +1214,23 @@ class OpenGLVMobject(OpenGLMobject):
                 mob.set_points(new_points)
         return self
 
-    def insert_n_curves_to_point_list(self, n, points):
+    def insert_n_curves_to_point_list(self, n: int, points: np.ndarray) -> np.ndarray:
+        """Given an array of k points defining a bezier curves
+         (anchors and handles), returns points defining exactly
+        k + n bezier curves.
+
+        Parameters
+        ----------
+        n : int
+            Number of desired curves.
+        points : np.ndarray
+            Starting points.
+
+        Returns
+        -------
+        np.ndarray
+            Points generated.
+        """
         nppc = self.n_points_per_curve
         if len(points) == 1:
             return np.repeat(points, nppc * n, 0)
@@ -1177,7 +1272,24 @@ class OpenGLVMobject(OpenGLMobject):
                     self.refresh_triangulation()
         return self
 
-    def pointwise_become_partial(self, vmobject, a, b):
+    def pointwise_become_partial(
+        self,
+        vmobject: "OpenGLVMobject",
+        a: float,
+        b: float,
+    ) -> "OpenGLVMobject":
+        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
+        passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
+
+        Parameters
+        ----------
+        vmobject : VMobject
+            The vmobject that will serve as a model.
+        a : float
+            upper-bound.
+        b : float
+            lower-bound
+        """
         assert isinstance(vmobject, OpenGLVMobject)
         if a <= 0 and b >= 1:
             self.become(vmobject)
@@ -1231,7 +1343,23 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_points(new_points)
         return self
 
-    def get_subcurve(self, a, b):
+    def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
+        """Returns the subcurve of the VMobject between the interval [a, b].
+        The curve is a VMobject itself.
+
+        Parameters
+        ----------
+
+        a
+            The lower bound.
+        b
+            The upper bound.
+
+        Returns
+        -------
+        OpenGLVMobject
+            The subcurve between of [a, b]
+        """
         vmob = self.copy()
         vmob.pointwise_become_partial(self, a, b)
         return vmob
