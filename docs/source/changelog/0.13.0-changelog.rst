@@ -165,7 +165,7 @@ New releases
 Unclassified changes
 --------------------
 
-* `#2350 <https://github.com/ManimCommunity/manim/pull/2350>`__: Mention installation of manim sideview extension 
+* `#2350 <https://github.com/ManimCommunity/manim/pull/2350>`__: Mention installation of manim sideview extension
 
 
 * `#2335 <https://github.com/ManimCommunity/manim/pull/2335>`__: remove bug iwhich show PointCloud's point smaller in zoomed camera
@@ -205,5 +205,3 @@ Unclassified changes
 
 
 * `#2353 <https://github.com/ManimCommunity/manim/pull/2353>`__: Prepare new release: ``v0.13.0``
-
-

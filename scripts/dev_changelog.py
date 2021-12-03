@@ -146,8 +146,12 @@ def get_pr_nums(lst, cur):
         f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: not any(["pre-commit autoupdate" in x, "New Crowdin updates" in x]),
-        commits.split("\n")),
+        filter(
+            lambda x: not any(
+                ["pre-commit autoupdate" in x, "New Crowdin updates" in x]
+            ),
+            commits.split("\n"),
+        ),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
