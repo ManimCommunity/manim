@@ -84,10 +84,10 @@ class BackgroundRectangle(SurroundingRectangle):
         self,
         mobject,
         color: Optional[Colors] = None,
-        stroke_width:float=0,
-        stroke_opacity:float=0,
-        fill_opacity:float=0.75,
-        buff:float=0,
+        stroke_width: float = 0,
+        stroke_opacity: float = 0,
+        fill_opacity: float = 0.75,
+        buff: float = 0,
         **kwargs
     ):
         if color is None:
