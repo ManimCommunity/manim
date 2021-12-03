@@ -1737,7 +1737,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
 
                 # x_min must be > 0 because log is undefined at 0.
-                graph = ax.get_graph(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
 
     Parameters

@@ -42,7 +42,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.viewcode",
     "sphinxext.opengraph",
-    "manim_directive",
+    "manim.utils.docbuild.manim_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
 ]
