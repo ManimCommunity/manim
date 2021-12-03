@@ -116,19 +116,12 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     return parser
 
 
-def _determine_quality(args: argparse.Namespace) -> str:
-    for quality in constants.QUALITIES:
-        if quality == constants.DEFAULT_QUALITY:
-            # Skip so we prioritize anything that overwrites the default quality.
-            pass
-        elif getattr(args, quality, None) or (
-            hasattr(args, "quality")
-            and args.quality is not None
-            and args.quality == constants.QUALITIES[quality]["flag"]
-        ):
+def _determine_quality(qual: str) -> str:
+    for quality, values in constants.QUALITIES.items():
+        if values["flag"] is not None and values["flag"] == qual:
             return quality
 
-    return constants.DEFAULT_QUALITY
+    return qual
 
 
 class ManimConfig(MutableMapping):
@@ -273,6 +266,7 @@ class ManimConfig(MutableMapping):
         "plugins",
         "preview",
         "progress_bar",
+        "quality",
         "save_as_gif",
         "save_sections",
         "save_last_frame",
@@ -635,6 +629,10 @@ class ManimConfig(MutableMapping):
         if val:
             setattr(self, "media_width", val)
 
+        val = parser["CLI"].get("quality", fallback="", raw=True)
+        if val:
+            self.quality = _determine_quality(val)
+
         return self
 
     def digest_args(self, args: argparse.Namespace) -> "ManimConfig":
@@ -747,7 +745,7 @@ class ManimConfig(MutableMapping):
                 )
 
         # Handle the quality flags
-        self.quality = _determine_quality(args)
+        self.quality = _determine_quality(getattr(args, "quality", None))
 
         # Handle the -r flag.
         rflag = args.resolution
@@ -1134,6 +1132,8 @@ class ManimConfig(MutableMapping):
 
     @quality.setter
     def quality(self, qual: str) -> None:
+        if qual is None:
+            return
         if qual not in constants.QUALITIES:
             raise KeyError(f"quality must be one of {list(constants.QUALITIES.keys())}")
         q = constants.QUALITIES[qual]
@@ -1383,7 +1383,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
             >>> config.get_dir("video_dir", module_name="myfile").as_posix()
-            'my_media_dir/videos/myfile/1080p60.0'
+            'my_media_dir/videos/myfile/1080p60'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1402,7 +1402,7 @@ class ManimConfig(MutableMapping):
             >>> config.get_dir(
             ...     "partial_movie_dir", module_name="myfile", scene_name="myscene"
             ... ).as_posix()
-            'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
+            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
@@ -1445,7 +1445,7 @@ class ManimConfig(MutableMapping):
 
         all_args = {k: self._d[k] for k in dirs}
         all_args.update(kwargs)
-        all_args["quality"] = f"{self.pixel_height}p{self.frame_rate}"
+        all_args["quality"] = f"{self.pixel_height}p{self.frame_rate:g}"
 
         path = self._d[key]
         while "{" in path:

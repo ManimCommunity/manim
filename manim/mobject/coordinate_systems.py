@@ -2183,11 +2183,16 @@ class ThreeDAxes(Axes):
 
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
-        z_axis.rotate_about_zero(-PI / 2, UP)
-        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
+        # [ax.x_min, ax.x_max] used to account for LogBase() scaling
+        # where ax.x_range[0] != ax.x_min
+        z_origin = self._origin_shift([z_axis.x_min, z_axis.x_max])
+
+        z_axis.rotate_about_number(z_origin, -PI / 2, UP)
+        z_axis.rotate_about_number(z_origin, angle_of_vector(self.z_normal))
+        z_axis.shift(-z_axis.number_to_point(z_origin))
         z_axis.shift(
             self.x_axis.number_to_point(
-                self._origin_shift([z_axis.x_min, z_axis.x_max]),
+                self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
             ),
         )
 
