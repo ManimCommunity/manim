@@ -55,7 +55,8 @@ class SurroundingRectangle(RoundedRectangle):
 
 
 class BackgroundRectangle(SurroundingRectangle):
-    """A background rectangle
+    """A background rectangle. Its default color is the background color
+    of the scene.
 
     Examples
     --------
@@ -83,10 +84,10 @@ class BackgroundRectangle(SurroundingRectangle):
         self,
         mobject,
         color: Optional[Colors] = None,
-        stroke_width=0,
-        stroke_opacity=0,
-        fill_opacity=0.75,
-        buff=0,
+        stroke_width:float=0,
+        stroke_opacity:float=0,
+        fill_opacity:float=0.75,
+        buff:float=0,
         **kwargs
     ):
         if color is None:

@@ -1632,7 +1632,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Colors = BLACK, opacity: float = 0.75, **kwargs
+        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
