@@ -114,7 +114,7 @@ of the animation inside the editor.
 The extension can be installed through the marketplace or by pressing install `here
 <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
 
-Further instructions and guides regarding the extension can be found in its 
+Further instruction and support regarding the extension can be found in its 
 `repository <https://github.com/Rickaym/Manim-Sideview>`__ or the marketplace webpage.
 
 
