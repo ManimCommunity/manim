@@ -2,25 +2,26 @@
 v0.13.0
 *******
 
-:Date: December 02, 2021
+:Date: December 03, 2021
 
 Contributors
 ============
 
-A total of 25 people contributed to this
+A total of 26 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
+* Alex Lembcke
 * Benjamin Hackl
 * Christopher Besch
 * Darylgolden
 * Filip +
 * Laith Bahodi
 * Lucas Ricci +
-* ManimBot +
 * Marcin Serwin +
 * Mysaa
 * Naveen M K
+* Ricky +
 * Viicos
 * ask09ok +
 * citrusmunch +
@@ -33,6 +34,7 @@ time.
 The patches included in this release have been reviewed by
 the following contributors.
 
+* Alex Lembcke
 * Benjamin Hackl
 * Christopher Besch
 * Darylgolden
@@ -52,7 +54,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 34 pull requests were merged for this release.
+A total of 36 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -96,6 +98,9 @@ Enhancements
 Fixed bugs
 ----------
 
+* `#2276 <https://github.com/ManimCommunity/manim/pull/2276>`__: Fixed :class:`~.ThreeDAxes` axis shift bug.
+   Fixed axes shift problem in `ThreeDAxes` and added test to ensure problem does not resurface again.
+
 * `#2325 <https://github.com/ManimCommunity/manim/pull/2325>`__: `quality` argument improvements
    * Updated the `quality` option values and help string to be automatically generated from `constants` (there was a mismatch between these before)
    * Not passing `quality` argument will now use the `pixel_height`, `pixel_width` and `frame_rate` from config instead of overwriting them with `DEFAULT_QUANTITY` settings
@@ -132,11 +137,11 @@ Documentation-related changes
 * `#2294 <https://github.com/ManimCommunity/manim/pull/2294>`__: Made `index.html` more concise and rearranged order of tutorials
 
 
-* `#2268 <https://github.com/ManimCommunity/manim/pull/2268>`__: New Crowdin updates
-
-
 Changes concerning the testing system
 -------------------------------------
+
+* `#2346 <https://github.com/ManimCommunity/manim/pull/2346>`__: Made `frames_comparsion` testing utility a proper module of the library
+
 
 * `#2318 <https://github.com/ManimCommunity/manim/pull/2318>`__: Add missing tests for AnimationGroup 'remover' field #1846
    - Adding tests for this issue - ManimCommunity/manim/pull/1722
@@ -159,6 +164,9 @@ New releases
 
 Unclassified changes
 --------------------
+
+* `#2350 <https://github.com/ManimCommunity/manim/pull/2350>`__: Mention installation of manim sideview extension 
+
 
 * `#2335 <https://github.com/ManimCommunity/manim/pull/2335>`__: remove bug iwhich show PointCloud's point smaller in zoomed camera
 
@@ -196,4 +204,6 @@ Unclassified changes
 * `#2287 <https://github.com/ManimCommunity/manim/pull/2287>`__: Replace link to old notebook
 
 
-* `#2264 <https://github.com/ManimCommunity/manim/pull/2264>`__: New Crowdin updates
+* `#2353 <https://github.com/ManimCommunity/manim/pull/2353>`__: Prepare new release: ``v0.13.0``
+
+
