@@ -7,9 +7,9 @@ from ._frames_testers import _FramesTester
 
 
 def _make_test_scene_class(
-    base_scene: Type[Scene],
-    construct_test: Callable[[Scene], None],
-    test_renderer,
+        base_scene: Type[Scene],
+        construct_test: Callable[[Scene], None],
+        test_renderer,
 ) -> Type[Scene]:
     class _TestedScene(base_scene):
         def __init__(self, *args, **kwargs):
@@ -21,7 +21,13 @@ def _make_test_scene_class(
             # Manim hack to render the very last frame (normally the last frame is not the very end of the animation)
             if self.animations is not None:
                 self.update_to_time(self.get_run_time(self.animations))
-                self.renderer.render(self, 1, self.moving_mobjects)
+                self.renderer.render(self.mobjects,
+                                     skip_animations=False,
+                                     frame_offset=1,
+                                     moving_mobjects=self.moving_mobjects,
+                                     meshes=self.meshes,
+                                     file_writer=self.file_writer,
+                                     foreground_mobjects=self.foreground_mobjects)
 
     return _TestedScene
 

@@ -17,6 +17,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from manim.scene.section import DefaultSectionType
+from ..renderer.opengl_renderer import OpenGLRenderer
 
 from ..renderer.renderer import Renderer
 from .. import config, logger
@@ -119,10 +120,13 @@ class Scene:
         self.queue = Queue()
 
         if renderer is None:
-            self._renderer = CairoRenderer(
-                camera_class=self.camera_class,
-                skip_animations=self.skip_animations,
-            )
+            if config.renderer == 'opengl':
+                self._renderer = OpenGLRenderer()
+            else:
+                self._renderer = CairoRenderer(
+                    camera_class=self.camera_class,
+                    skip_animations=self.skip_animations,
+                )
         else:
             self._renderer: Renderer = renderer
 
@@ -1090,7 +1094,7 @@ class Scene:
                     moving_mobjects=self.moving_mobjects,
                     meshes=self.meshes,
                     file_writer=self.file_writer,
-                    foreground_mobjects=self.foreground_mobjects,
+                    foreground_mobjects=self.foreground_mobjects
                 )
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()

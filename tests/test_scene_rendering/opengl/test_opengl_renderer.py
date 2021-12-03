@@ -55,7 +55,8 @@ def test_get_frame_with_preview_disabled(use_opengl_renderer):
     assert not config.preview
 
     renderer = scene.renderer
-    renderer.update_frame(scene)
+    renderer.update_frame(scene.mobjects,
+                          meshes=scene.meshes)
     frame = renderer.get_frame()
 
     # height and width are flipped
@@ -72,7 +73,8 @@ def test_get_frame_with_preview_enabled(use_opengl_renderer):
     assert config.preview is True
 
     renderer = scene.renderer
-    renderer.update_frame(scene)
+    renderer.update_frame(scene.mobjects,
+                          meshes=scene.meshes)
     frame = renderer.get_frame()
 
     # height and width are flipped
