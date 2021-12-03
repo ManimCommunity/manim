@@ -1,7 +1,7 @@
 import functools
 import inspect
 from pathlib import Path
-from typing import Callable, Tuple, Type
+from typing import Callable, Optional, Tuple, Type
 
 from _pytest.fixtures import FixtureRequest
 
@@ -103,8 +103,13 @@ def frames_comparison(
                 config_tests["dry_run"] = True
 
             setting_test = request.config.getoption("--set_test")
+            try:
+                test_file_path = tested_scene_construct.__globals__["__file__"]
+            except:
+                test_file_path = None
             real_test = _make_test_comparing_frames(
                 file_path=_control_data_path(
+                    test_file_path,
                     module_name,
                     test_name_with_param,
                     setting_test,
@@ -215,8 +220,16 @@ def _make_test_comparing_frames(
     return real_test
 
 
-def _control_data_path(module_name: str, test_name: str, setting_test: bool) -> Path:
-    path = PATH_CONTROL_DATA / module_name
+def _control_data_path(
+    test_file_path: Optional[str], module_name: str, test_name: str, setting_test: bool
+) -> Path:
+    if test_file_path is None:
+        # For some reason, path to test file containing @frames_comparison could not
+        # be determined. Use local directory instead.
+        test_file_path = __file__
+
+    path = Path(test_file_path).absolute().parent / "control_data" / module_name
+
     if setting_test:
         # Create the directory if not existing.
         path.mkdir(exist_ok=True)
