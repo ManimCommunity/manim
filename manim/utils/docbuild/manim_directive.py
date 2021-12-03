@@ -23,6 +23,7 @@ render scenes that are defined within doctests, for example::
     .. manim:: DirectiveDoctestExample
         :ref_classes: Dot
 
+        >>> from manim import Create, Dot, RED, Scene
         >>> dot = Dot(color=RED)
         >>> dot.color
         <Color #fc6255>
@@ -114,9 +115,9 @@ def process_name_list(option_input: str, reference_type: str) -> List[str]:
     ::
 
         >>> process_name_list("Tex TexTemplate", "class")
-        [":class:`~.Tex`", ":class:`~.TexTemplate`"]
+        [':class:`~.Tex`', ':class:`~.TexTemplate`']
         >>> process_name_list("Scene.play Mobject.rotate", "func")
-        [":func:`~.Scene.play`", ":func:`~.Mobject.rotate`"]
+        [':func:`~.Scene.play`', ':func:`~.Mobject.rotate`']
     """
     return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
 

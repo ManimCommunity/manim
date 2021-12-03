@@ -1106,7 +1106,7 @@ class Camera:
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
         this_sum = op.add(self.pixel_height, self.pixel_width)
         factor = fdiv(big_sum, this_sum)
-        return 1 + (thickness - 1) / factor
+        return 1 + (thickness - 1) * factor
 
     def get_thickening_nudges(self, thickness):
         """
