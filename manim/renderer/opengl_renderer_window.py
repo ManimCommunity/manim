@@ -1,7 +1,9 @@
+import platform
+
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
-from screeninfo import get_monitors
+from screeninfo import Enumerator, get_monitors
 
 from .. import __version__, config
 
@@ -14,7 +16,10 @@ class Window(PygletWindow):
     cursor = True
 
     def __init__(self, renderer, size=config.window_size, **kwargs):
-        monitors = get_monitors()
+        if platform.system() == "Darwin":
+            monitors = get_monitors(Enumerator.OSX)
+        else:
+            monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
