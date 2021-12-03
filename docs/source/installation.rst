@@ -109,12 +109,12 @@ Editors
 
 If you're using Visual Studio Code you can install an extension called
 `Manim Sideview` which provides automated rendering and an integrated preview
-of the animation inside the editor. 
+of the animation inside the editor.
 
 The extension can be installed through the marketplace or by pressing install `here
 <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
 
-Further instruction and support regarding the extension can be found in its 
+Further instruction and support regarding the extension can be found in its
 `repository <https://github.com/Rickaym/Manim-Sideview>`__ or the marketplace webpage.
 
 
