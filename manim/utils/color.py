@@ -473,7 +473,7 @@ def rgba_to_color(rgba: Iterable[float]) -> Color:
 
 
 def rgb_to_hex(rgb: Iterable[float]) -> str:
-    return "#" + "".join("%02x" % int(255 * x) for x in rgb)
+    return "#" + "".join("%02x" % round(255 * x) for x in rgb)
 
 
 def hex_to_rgb(hex_code: str) -> np.ndarray:
