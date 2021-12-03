@@ -48,7 +48,7 @@ Writing examples
 ~~~~~~~~~~~~~~~~
 
 When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in
-``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
+``rst`` format and use the manim directive (see :mod:`manim.utils.docbuild.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
 .. code:: rst
 
@@ -73,7 +73,7 @@ Here is the syntax:
 
 * The flags are followed in the next line (no blank line here!), with the indentation level of one tab.
 
-All possible flags can be found at :mod:`~.manim_directive`.
+All possible flags can be found at :mod:`manim.utils.docbuild.manim_directive`.
 
 In the example above, the ``Formula1`` following ``.. manim::`` is the scene
 that the directive expects to render; thus, in the python code, the class

@@ -884,7 +884,7 @@ class Table(VGroup):
                     table.add_highlighted_cell((2,2), color=GREEN)
                     self.add(table)
         """
-        bg_cell = self.get_highlighted_cell(pos, color=color)
+        bg_cell = self.get_highlighted_cell(pos, color=color, **kwargs)
         self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
         entry.background_rectangle = bg_cell
@@ -959,6 +959,14 @@ class Table(VGroup):
                 element_animation(self.elements, run_time=run_time, **kwargs),
             ]
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
+
+    def scale(self, scale_factor: float, **kwargs):
+        # h_buff and v_buff must be adjusted so that Table.get_cell
+        # can construct an accurate polygon for a cell.
+        self.h_buff *= scale_factor
+        self.v_buff *= scale_factor
+        super().scale(scale_factor, **kwargs)
+        return self
 
 
 class MathTable(Table):
