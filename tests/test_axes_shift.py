@@ -15,8 +15,8 @@ def test_axes_origin_shift_logbase():
     ax = Axes(
         x_range=(5, 10, 1),
         y_range=(3, 8, 1),
-        x_axis_config={"scaling": LogBase(custom_labels=True)},
-        y_axis_config={"scaling": LogBase(custom_labels=True)},
+        x_axis_config={"scaling": LogBase()},
+        y_axis_config={"scaling": LogBase()},
     )
     assert np.allclose(
         ax.coords_to_point(10 ** 5, 10 ** 3), ax.x_axis.number_to_point(10 ** 5)
