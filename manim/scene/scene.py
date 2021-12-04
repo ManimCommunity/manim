@@ -937,6 +937,10 @@ class Scene:
         if subcaption:
             if subcaption_duration is None:
                 subcaption_duration = run_time
+            # The start of the subcaption needs to be offset by the
+            # run_time of the animation because it is added after 
+            # the animation has already been played (and Scene.renderer.time
+            # has already been updated).
             self.add_subcaption(
                 content=subcaption,
                 duration=subcaption_duration,
