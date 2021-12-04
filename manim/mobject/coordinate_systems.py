@@ -1451,6 +1451,7 @@ class CoordinateSystem:
         self,
         graph: ParametricFunction,
         y_intercept: float = 0,
+        samples: int = 50,
         **kwargs,
     ):
         """Plots an antiderivative graph.
@@ -1481,6 +1482,8 @@ class CoordinateSystem:
             The graph for which the antiderivative will be found.
         y_intercept
             The y-value at which the graph intercepts the y-axis.
+        samples
+            The number of points to take the area under the graph.
         **kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`
 
@@ -1491,10 +1494,10 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            x_vals = np.linspace(0, x, 10)
+            x_vals = np.linspace(0, x, samples)
             f_vec = np.vectorize(graph.underlying_function)
             y_vals = f_vec(x_vals)
-            return np.trapz(y_vals, x_vals)
+            return np.trapz(y_vals, x_vals) + y_intercept
 
         return self.plot(antideriv, **kwargs)
 
