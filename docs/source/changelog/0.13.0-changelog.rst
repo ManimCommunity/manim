@@ -55,7 +55,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 37 pull requests were merged for this release.
+A total of 39 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -80,6 +80,10 @@ Deprecated classes and functions
 New features
 ------------
 
+* `#2314 <https://github.com/ManimCommunity/manim/pull/2314>`__: Added basic support for adding subcaptions via :meth:`.Scene.add_subcaption`
+   - New method :meth:`.Scene.add_subcaption`
+   - New keyword arguments ``subcaption``, ``subcaption_duration``, ``subcaption_offset`` for :meth:`.Scene.play`
+
 * `#2267 <https://github.com/ManimCommunity/manim/pull/2267>`__: Implemented :meth:`.CoordinateSystem.plot_antiderivative_graph`
 
 
@@ -95,7 +99,7 @@ Enhancements
 * `#2343 <https://github.com/ManimCommunity/manim/pull/2343>`__: Replaced current tree layout algorithm with SageMath's for improved layout of large trees
 
 
-* `#2351 <https://github.com/ManimCommunity/manim/pull/2351>`__: Added missing ``**kwargs`` parameter to meth:`.Table.add_highlighted_cell`
+* `#2351 <https://github.com/ManimCommunity/manim/pull/2351>`__: Added missing ``**kwargs`` parameter to :meth:`.Table.add_highlighted_cell`
 
 
 * `#2344 <https://github.com/ManimCommunity/manim/pull/2344>`__: Resized SVG logos, fit content to canvas
@@ -122,7 +126,7 @@ Fixed bugs
 * `#2292 <https://github.com/ManimCommunity/manim/pull/2292>`__: Fixed positioning of :class:`~.Flash`
 
 
-* `#2262 <https://github.com/ManimCommunity/manim/pull/2262>`__: Fixed wrong cell coordinates with `:meth:~.Table.get_cell` after scaling
+* `#2262 <https://github.com/ManimCommunity/manim/pull/2262>`__: Fixed wrong cell coordinates with :meth:`.Table.get_cell` after scaling
 
 
 * `#2280 <https://github.com/ManimCommunity/manim/pull/2280>`__: Fixed :class:`~.DecimalNumber` color when number of displayed digits changes
@@ -130,6 +134,9 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#2354 <https://github.com/ManimCommunity/manim/pull/2354>`__: Port over docs and typings from ``mobject.py`` and ``vectorized_mobject.py`` to their OpenGL counterparts
+
 
 * `#2350 <https://github.com/ManimCommunity/manim/pull/2350>`__: Added mention of Manim sideview extension for VS Code
 
