@@ -1978,6 +1978,14 @@ python-versions = ">=3.6"
 sphinx = ">=2.0"
 
 [[package]]
+name = "srt"
+version = "3.5.0"
+description = "A tiny library for parsing, modifying, and composing SRT files."
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[[package]]
 name = "terminado"
 version = "0.12.1"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
@@ -2163,7 +2171,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "9edc33b7502b40d0b2bcd06d48e40ec743d468d45d4f38178bd009a4aa596d10"
+content-hash = "4c12c12b7be3fb2cb13d5b511fe613a92b53b458ad58ed3505766019be3d93ef"
 
 [metadata.files]
 alabaster = [
@@ -3588,6 +3596,9 @@ sphinxcontrib-serializinghtml = [
 sphinxext-opengraph = [
     {file = "sphinxext-opengraph-0.4.2.tar.gz", hash = "sha256:5da1a6eaab25e377b841f506ef7d7c44b539428f3d6094ccc16d1dfd3ef65501"},
     {file = "sphinxext_opengraph-0.4.2-py3-none-any.whl", hash = "sha256:a51f2604f9a5b6c0d25d3a88e694d5c02e20812dc0e482adf96c8628f9109357"},
+]
+srt = [
+    {file = "srt-3.5.0.tar.gz", hash = "sha256:9378e67fcc7c110eca7ec12bdb17a174085f67e3b371f7e586a4c68a0dda245b"},
 ]
 terminado = [
     {file = "terminado-0.12.1-py3-none-any.whl", hash = "sha256:09fdde344324a1c9c6e610ee4ca165c4bb7f5bbf982fceeeb38998a988ef8452"},
