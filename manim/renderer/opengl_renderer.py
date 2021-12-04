@@ -224,7 +224,6 @@ class OpenGLRenderer(Renderer):
             widgets = []
         self.anti_alias_width = 1.5
         self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
         self.animation_start_time = 0
         self.animation_elapsed_time = 0
         self.time = 0

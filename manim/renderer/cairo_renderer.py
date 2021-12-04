@@ -25,7 +25,6 @@ class CairoRenderer(Renderer):
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
         self.time = 0
@@ -108,7 +107,7 @@ class CairoRenderer(Renderer):
     ):
         self.update_frame(
             mobjects,
-            skip_animations == skip_animations,
+            skip_animations=skip_animations,
             moving_mobjects=moving_mobjects,
             foreground_mobjects=foreground_mobjects,
         )

@@ -207,7 +207,7 @@ def _make_test_comparing_frames(
                 ),  # testRenderer(file_writer_class=file_writer_class),
                 file_writer_class=file_writer_class
             )
-            scene_tested = sceneTested(skip_animations=True)
+            scene_tested = sceneTested(skip_animations=False)
             scene_tested.render()
             if last_frame:
                 frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
