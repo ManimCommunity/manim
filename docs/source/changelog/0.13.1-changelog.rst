@@ -34,5 +34,3 @@ New releases
 ------------
 
 * `#2364 <https://github.com/ManimCommunity/manim/pull/2364>`__: Prepared bugfix release ``v0.13.1``
-
-
