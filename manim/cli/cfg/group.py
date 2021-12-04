@@ -201,11 +201,13 @@ modify write_cfg_subcmd_input to account for it.""",
                         )
                         temp = input()
 
-                    default[key] = temp
+                    default[key] = temp.replace("%", "%%")
 
             default = replace_keys(default) if category == "logger" else default
 
-            parser[category] = dict(default)
+            parser[category] = {
+                i: v.replace("%", "%%") for i, v in dict(default).items()
+            }
 
     else:
         action = "open"
