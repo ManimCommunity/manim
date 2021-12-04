@@ -102,6 +102,16 @@ like that yourself:
 
    installation/jupyter
 
+.. _editor-addons:
+
+Editors
+********
+
+If you're using Visual Studio Code you can install an extension called
+*Manim Sideview* which provides automated rendering and an integrated preview
+of the animation inside the editor. The extension can be installed through the
+`marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
+
 
 Installation for developers
 ***************************
