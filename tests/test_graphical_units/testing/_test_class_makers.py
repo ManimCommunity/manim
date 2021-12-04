@@ -10,10 +10,11 @@ def _make_test_scene_class(
         base_scene: Type[Scene],
         construct_test: Callable[[Scene], None],
         test_renderer,
+        file_writer_class
 ) -> Type[Scene]:
     class _TestedScene(base_scene):
         def __init__(self, *args, **kwargs):
-            super().__init__(renderer=test_renderer, *args, **kwargs)
+            super().__init__(renderer=test_renderer, file_writer_class=file_writer_class, *args, **kwargs)
 
         def construct(self):
             construct_test(self)
@@ -53,10 +54,10 @@ class DummySceneFileWriter(SceneFileWriter):
     def add_partial_movie_file(self, hash_animation):
         pass
 
-    def begin_animation(self, allow_write=True):
+    def begin_animation(self, allow_write=True, file_path=None, num_plays=0):
         pass
 
-    def end_animation(self, allow_write):
+    def end_animation(self, num_plays, allow_write=False):
         pass
 
     def combine_to_movie(self):
