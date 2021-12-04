@@ -1290,10 +1290,10 @@ class Scene:
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
     ) -> None:
-        r"""Adds an entry in the corresponding subcaption file.
+        r"""Adds an entry in the corresponding subcaption file
+        at the current time stamp.
 
-        The start time of the subcaption is the current 
-        ``Scene.renderer.time``.
+        The current time stamp is obtained from ``Scene.renderer.time``.
 
         Parameters
         ----------
