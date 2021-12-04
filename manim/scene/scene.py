@@ -1292,6 +1292,9 @@ class Scene:
     ) -> None:
         r"""Adds an entry in the corresponding subcaption file.
 
+        The start time of the subcaption is the current 
+        ``Scene.renderer.time``.
+
         Parameters
         ----------
 
