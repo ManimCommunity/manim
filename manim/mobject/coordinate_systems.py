@@ -1447,6 +1447,60 @@ class CoordinateSystem:
     ) -> ParametricFunction:
         return self.plot_derivative_graph(graph, color, **kwargs)
 
+    def plot_antiderivative_graph(
+        self,
+        graph: ParametricFunction,
+        y_intercept: float = 0,
+        samples: int = 50,
+        **kwargs,
+    ):
+        """Plots an antiderivative graph.
+
+        Examples
+        --------
+        .. manim:: AntiderivativeExample
+            :save_last_frame:
+
+            class AntiderivativeExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    graph1 = ax.plot(
+                        lambda x: (x ** 2 - 2) / 3,
+                        color=RED,
+                    )
+                    graph2 = ax.plot_antiderivative_graph(graph1, color=BLUE)
+                    self.add(ax, graph1, graph2)
+
+        .. note::
+            This graph is plotted from the values of area under the reference graph.
+            The result might not be ideal if the reference graph contains uncalculatable
+            areas from x=0.
+
+        Parameters
+        ----------
+        graph
+            The graph for which the antiderivative will be found.
+        y_intercept
+            The y-value at which the graph intercepts the y-axis.
+        samples
+            The number of points to take the area under the graph.
+        **kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the antiderivative.
+        """
+
+        def antideriv(x):
+            x_vals = np.linspace(0, x, samples)
+            f_vec = np.vectorize(graph.underlying_function)
+            y_vals = f_vec(x_vals)
+            return np.trapz(y_vals, x_vals) + y_intercept
+
+        return self.plot(antideriv, **kwargs)
+
     def get_secant_slope_group(
         self,
         x: float,
