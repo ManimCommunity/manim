@@ -1491,15 +1491,10 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            from ..utils.space_ops import shoelace
-
-            if x >= 0:
-                poly = self.get_area(graph, [0, x])
-            else:
-                poly = self.get_area(graph, [x, 0]).reverse_points()
-            res = np.array([[*self.p2c(point), 0] for point in poly.points])
-
-            return shoelace(res) + y_intercept
+            x_vals = np.linspace(0, x, 10)
+            f_vec = np.vectorize(graph.underlying_function)
+            y_vals = f_vec(x_vals)
+            return np.trapz(y_vals, x_vals)
 
         return self.plot(antideriv, **kwargs)
 
