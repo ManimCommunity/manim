@@ -22,11 +22,17 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 1 pull requests were merged for this release.
+A total of 2 pull requests were merged for this release.
 
 Fixed bugs
 ----------
 
 * `#2363 <https://github.com/ManimCommunity/manim/pull/2363>`__: Fixed broken IPython magic command
+
+
+New releases
+------------
+
+* `#2364 <https://github.com/ManimCommunity/manim/pull/2364>`__: Prepared bugfix release ``v0.13.1``
 
 
