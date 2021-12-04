@@ -55,7 +55,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 36 pull requests were merged for this release.
+A total of 37 pull requests were merged for this release.
 
 Highlights
 ----------
@@ -75,6 +75,12 @@ Deprecated classes and functions
    - Removed ``SampleSpaceScene``
 
 * `#2312 <https://github.com/ManimCommunity/manim/pull/2312>`__: Replaced all occurrences of ``set_submobjects``
+
+
+New features
+------------
+
+* `#2267 <https://github.com/ManimCommunity/manim/pull/2267>`__: Implemented :meth:`.CoordinateSystem.plot_antiderivative_graph`
 
 
 Enhancements
@@ -195,5 +201,3 @@ Unclassified changes
 --------------------
 
 * `#2348 <https://github.com/ManimCommunity/manim/pull/2348>`__: Updated translation source files
-
-
