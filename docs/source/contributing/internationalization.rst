@@ -21,7 +21,7 @@ Contributing
 ============
 
 .. important::
-   Keep in mind that manim is still work in progress. Tutorials and Documentation will still change in the future. When a developer changes things in the manim repository, he/she will not check for translations. This means, that a part of the translations will become obsolete and lost over time. Indeed, improving and changing the English tutorials and documentation is still very much encouraged. 
+   Keep in mind that manim is still work in progress. Tutorials and Documentation will still change in the future. When a developer changes things in the manim repository, he/she will not check for translations. This means, that a part of the translations will become obsolete and lost over time. Indeed, improving and changing the English tutorials and documentation is still very much encouraged.
 
 
 Voting
