@@ -2205,7 +2205,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 r = 0.5
 
                 top_row = VGroup()  # Increasing num_dashes
-                for dashes in range(2, 12):
+                for dashes in range(1, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
@@ -2216,11 +2216,13 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     )
                     middle_row.add(circ)
 
-                sq = DashedVMobject(Square(1.5, color=RED))
-                penta = DashedVMobject(RegularPolygon(5, color=BLUE))
-                bottom_row = VGroup(sq, penta)
+                func1 = FunctionGraph(lambda t: t**5,[-1,1],color=WHITE)
+                func_even = DashedVMobject(func1,num_dashes=6,even_lengths=True)
+                func_stretched = DashedVMobject(func1, num_dashes=6, even_lengths=False)
+                bottom_row = VGroup(func_even,func_stretched)
 
-                top_row.arrange(buff=0.4)
+
+                top_row.arrange(buff=0.3)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
                 everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
@@ -2229,7 +2231,13 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
+        self,
+        vmobject,
+        num_dashes=15,
+        dashed_ratio=0.5,
+        color=WHITE,
+        even_lengths=True,
+        **kwargs,
     ):
 
         self.dashed_ratio = dashed_ratio
@@ -2237,23 +2245,61 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=color, **kwargs)
         r = self.dashed_ratio
         n = self.num_dashes
-        if num_dashes > 0:
+        if n > 0:
             # Assuming total length is 1
             dash_len = r / n
             if vmobject.is_closed():
                 void_len = (1 - r) / n
             else:
-                void_len = (1 - r) / (n - 1)
+                if n == 1:
+                    void_len = 1 - r
+                else:
+                    void_len = (1 - r) / (n - 1)
 
-            self.add(
-                *(
-                    vmobject.get_subcurve(
-                        i * (dash_len + void_len),
-                        i * (dash_len + void_len) + dash_len,
+            if even_lengths:
+                # calculate the entire length by adding up short line-pieces
+                norms = np.array(0)
+                for k in range(vmobject.get_num_curves()):
+                    sample_points = 10
+                    curve = vmobject.get_nth_curve_function(k)
+                    points = np.array(
+                        [curve(a) for a in np.linspace(0, 1, sample_points)]
                     )
-                    for i in range(n)
+                    diffs = points[1:] - points[:-1]
+                    norms = np.append(
+                        norms, np.apply_along_axis(np.linalg.norm, 1, diffs)
+                    )
+
+                length_vals = np.cumsum(norms)
+                ref_points = np.linspace(0, 1, length_vals.size)
+                curve_length = length_vals[-1]
+                self.add(
+                    *(
+                        vmobject.get_subcurve(
+                            np.interp(
+                                (i * (dash_len + void_len)) * curve_length,
+                                length_vals,
+                                ref_points,
+                            ),
+                            np.interp(
+                                (i * (dash_len + void_len) + dash_len) * curve_length,
+                                length_vals,
+                                ref_points,
+                            ),
+                        )
+                        for i in range(n)
+                    )
                 )
-            )
+            else:
+                self.add(
+                    *(
+                        vmobject.get_subcurve(
+                            i * (dash_len + void_len),
+                            i * (dash_len + void_len) + dash_len,
+                        )
+                        for i in range(n)
+                    )
+                )
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == "opengl":
