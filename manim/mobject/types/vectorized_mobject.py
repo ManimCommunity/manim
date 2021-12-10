@@ -1059,6 +1059,35 @@ class VMobject(Mobject):
         """
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_length_pieces(
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
+    ) -> np.ndarray:
+        """Returns the array of short line lengths used for length approximation.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        np.ndarray
+            The short length-pieces of the nth curve.
+        """
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        return norms
+
     def get_nth_curve_length(
         self,
         n: int,
@@ -1109,11 +1138,7 @@ class VMobject(Mobject):
             sample_points = 10
 
         curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
+        norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
         length = np.sum(norms)
 
         return curve, length
@@ -1572,8 +1597,15 @@ class VMobject(Mobject):
         VMobject
             The subcurve between of [a, b]
         """
-        vmob = self.copy()
-        vmob.pointwise_become_partial(self, a, b)
+        if self.is_closed() and a > b:
+            vmob = self.copy()
+            vmob.pointwise_become_partial(self, a, 1)
+            vmob2 = self.copy()
+            vmob2.pointwise_become_partial(self, 0, b)
+            vmob.append_vectorized_mobject(vmob2)
+        else:
+            vmob = self.copy()
+            vmob.pointwise_become_partial(self, a, b)
         return vmob
 
     def get_direction(self):
@@ -2195,6 +2227,15 @@ class CurvesAsSubmobjects(VGroup):
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """A :class:`VMobject` composed of dashes instead of lines.
 
+    Parameters
+    ----------
+        vmobject: The object that will get dashed
+        num_dashes: Number of dashes to add.
+        dashed_ratio: Ratio of dash : empty space.
+        dash_offset: Shifts the starting point of dashes along the path. Value 1 shifts 1 dash over to the next.
+        even_lengths: If true, dashes will be visually even length. If false, dashes will be split evenly in the curve's
+            input t variable (legacy behavior).
+
     Examples
     --------
     .. manim:: DashedVMobjectExample
@@ -2235,6 +2276,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         vmobject,
         num_dashes=15,
         dashed_ratio=0.5,
+        dash_offset=0,
         color=WHITE,
         even_lengths=True,
         **kwargs,
@@ -2256,20 +2298,50 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 else:
                     void_len = (1 - r) / (n - 1)
 
+            period = dash_len + void_len
+            phase_shift = (dash_offset % 1) * period
+
+            # closed shapes can handle overflow at the 0-point
+            if vmobject.is_closed():
+                dash_starts = [((i * period + phase_shift) % 1) for i in range(n)]
+                dash_ends = [
+                    ((i * period + dash_len + phase_shift) % 1) for i in range(n)
+                ]
+            else:
+                dash_starts = [
+                    ((i * period + phase_shift) % (1 + void_len)) for i in range(n)
+                ]
+                dash_ends = [
+                    ((i * period + dash_len + phase_shift) % (1 + void_len))
+                    for i in range(n)
+                ]
+
+                # due to phase shift being [0...1] range, always the last dash element needs attention for overflow
+                # if an entire dash moves out of the shape end:
+                if dash_ends[-1] > 1 and dash_starts[-1] > 1:
+                    # remove the last element since it is out-of-bounds
+                    dash_ends.pop()
+                    dash_starts.pop()
+                else:
+                    # if it overflowed:
+                    if dash_ends[-1] < dash_len:
+                        # if the beginning of the piece is still in range
+                        if dash_starts[-1] < 1:
+                            dash_starts.append(0)
+                            dash_ends.append(dash_ends[-1])
+                            dash_ends[-2] = 1
+                        else:
+                            dash_starts[-1] = 0
+                    else:
+                        if dash_starts[-1] > (1 - dash_len):
+                            dash_ends[-1] = 1
+
             if even_lengths:
                 # calculate the entire length by adding up short line-pieces
                 norms = np.array(0)
                 for k in range(vmobject.get_num_curves()):
-                    sample_points = 10
-                    curve = vmobject.get_nth_curve_function(k)
-                    points = np.array(
-                        [curve(a) for a in np.linspace(0, 1, sample_points)]
-                    )
-                    diffs = points[1:] - points[:-1]
-                    norms = np.append(
-                        norms, np.apply_along_axis(np.linalg.norm, 1, diffs)
-                    )
-
+                    norms = np.append(vmobject.get_nth_curve_length_pieces(k))
+                # add up length-pieces in array form
                 length_vals = np.cumsum(norms)
                 ref_points = np.linspace(0, 1, length_vals.size)
                 curve_length = length_vals[-1]
@@ -2277,27 +2349,27 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     *(
                         vmobject.get_subcurve(
                             np.interp(
-                                (i * (dash_len + void_len)) * curve_length,
+                                dash_starts[i] * curve_length,
                                 length_vals,
                                 ref_points,
                             ),
                             np.interp(
-                                (i * (dash_len + void_len) + dash_len) * curve_length,
+                                dash_ends[i] * curve_length,
                                 length_vals,
                                 ref_points,
                             ),
                         )
-                        for i in range(n)
+                        for i in range(len(dash_starts))
                     )
                 )
             else:
                 self.add(
                     *(
                         vmobject.get_subcurve(
-                            i * (dash_len + void_len),
-                            i * (dash_len + void_len) + dash_len,
+                            dash_starts[i],
+                            dash_ends[i],
                         )
-                        for i in range(n)
+                        for i in range(len(dash_starts))
                     )
                 )
         # Family is already taken care of by get_subcurve
