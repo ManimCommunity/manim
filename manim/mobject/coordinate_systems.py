@@ -48,7 +48,6 @@ from ..utils.color import (
     BLUE_D,
     GREEN,
     LIGHT_GREY,
-    WHITE,
     YELLOW,
     color_gradient,
     invert_color,
@@ -2403,7 +2402,6 @@ class NumberPlane(Axes):
 
         # configs
         self.axis_config = {
-            "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
@@ -2691,7 +2689,6 @@ class PolarPlane(Axes):
 
         # configs
         self.radius_config = {
-            "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
