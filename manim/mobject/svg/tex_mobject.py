@@ -67,14 +67,14 @@ class SingleStringMathTex(SVGMobject):
         stroke_width=0,
         fill_opacity=1.0,
         background_stroke_width=0,
-        background_stroke_color=BLACK,
+        # background_stroke_color=BLACK,
         should_center=True,
         height=None,
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
         font_size=DEFAULT_FONT_SIZE,
-        color=Color(WHITE),
+        # color=Color(WHITE),
         **kwargs,
     ):
 
@@ -99,10 +99,10 @@ class SingleStringMathTex(SVGMobject):
             height=height,
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
-            background_stroke_color=background_stroke_color,
+            # background_stroke_color=background_stroke_color,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
-            color=color,
+            # color=color,
             **kwargs,
         )
         # used for scaling via font_size.setter
