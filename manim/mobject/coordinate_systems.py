@@ -47,7 +47,6 @@ from ..utils.color import (
     BLUE,
     BLUE_D,
     GREEN,
-    LIGHT_GREY,
     YELLOW,
     color_gradient,
     invert_color,
@@ -507,7 +506,7 @@ class CoordinateSystem:
         point: Sequence[float],
         line_func: Line = DashedLine,
         line_config: Optional[Dict] = None,
-        color: Color = LIGHT_GREY,
+        color: Optional[Color] = None,
         stroke_width: float = 2,
     ) -> "Line":
         """Returns a straight line from a given axis to a point in the scene.
