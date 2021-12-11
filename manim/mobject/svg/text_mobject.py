@@ -68,7 +68,7 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import Colors
+from ...utils.color import Colors, WHITE
 from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -1014,7 +1014,7 @@ class MarkupText(SVGMobject):
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        # color: Color = WHITE,
+        color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1031,7 +1031,7 @@ class MarkupText(SVGMobject):
         **kwargs,
     ):
         self.text = text
-        # self.color = color
+        self.color = color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
