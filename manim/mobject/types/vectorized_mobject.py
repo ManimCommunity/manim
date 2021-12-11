@@ -2340,7 +2340,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 # calculate the entire length by adding up short line-pieces
                 norms = np.array(0)
                 for k in range(vmobject.get_num_curves()):
-                    norms = np.append(vmobject.get_nth_curve_length_pieces(k))
+                    norms = np.append(norms, vmobject.get_nth_curve_length_pieces(k))
                 # add up length-pieces in array form
                 length_vals = np.cumsum(norms)
                 ref_points = np.linspace(0, 1, length_vals.size)
