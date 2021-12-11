@@ -342,7 +342,7 @@ class CoordinateSystem:
 
     # move to a util_file, or Mobject()??
     @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
+    def _create_label_tex(label_tex, color=None) -> "Mobject":
         """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
 
         Parameters
@@ -351,12 +351,12 @@ class CoordinateSystem:
 
         Returns
         -------
-        :class:`~.Mobject`
+        :class:`~.Mobject`p
             The label.
         """
 
         if isinstance(label_tex, (float, int, str)):
-            label_tex = MathTex(label_tex)
+            label_tex = MathTex(label_tex, color=color)
         return label_tex
 
     def _get_axis_label(
@@ -1033,9 +1033,8 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        label = self._create_label_tex(label)
         color = color or graph.get_color()
-        label.set_color(color)
+        label = self._create_label_tex(label, color)
 
         if x_val is None:
             # Search from right to left
@@ -1698,9 +1697,9 @@ class CoordinateSystem:
         x_val: float,
         graph: "ParametricFunction",
         label: Optional[Union[float, str, "Mobject"]] = None,
-        label_color: Color = WHITE,
+        label_color: Optional[Color] = None,
         triangle_size: float = MED_SMALL_BUFF,
-        triangle_color: Color = WHITE,
+        triangle_color: Optional[Color] = None,
         line_func: "Line" = Line,
         line_color: Color = YELLOW,
     ) -> VGroup:
@@ -1756,7 +1755,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self._create_label_tex(label).set_color(label_color)
+            t_label = self._create_label_tex(label, label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
