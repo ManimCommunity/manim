@@ -68,7 +68,7 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE, Colors
+from ...utils.color import Colors
 from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -403,7 +403,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color = WHITE,
+        # color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -471,7 +471,7 @@ class Text(SVGMobject):
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
-            color=color,
+            # color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             height=height,
@@ -823,8 +823,6 @@ class MarkupText(SVGMobject):
         The fill opacity with 1 meaning opaque and 0 meaning transparent.
     stroke_width : :class:`int`
         Stroke width.
-    color : :class:`str`
-        Global color setting for the entire text. Local overrides are possible.
     font_size : :class:`float`
         Font size.
     line_spacing : :class:`int`
@@ -1016,7 +1014,7 @@ class MarkupText(SVGMobject):
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        color: Color = WHITE,
+        # color: Color = WHITE,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1033,7 +1031,7 @@ class MarkupText(SVGMobject):
         **kwargs,
     ):
         self.text = text
-        self.color = color
+        # self.color = color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)

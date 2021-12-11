@@ -15,6 +15,8 @@ from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
 
+from manim.mobject.mobject import Mobject
+
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
@@ -78,6 +80,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         color=None,
         **kwargs,
     ):
+        tex_mobs = ["SingleStringMathTex", "MathTex", "Tex", "Text", "MarkupText"]
+        if color is None and self.__class__.__name__ in tex_mobs:
+            # makes it so that color isn't explictly passed for these mobs,
+            # and can instead inherit from the parent
+            color = Mobject().color
+
         self.def_map = {}
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
