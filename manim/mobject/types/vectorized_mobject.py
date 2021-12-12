@@ -2329,19 +2329,15 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     # remove the last element since it is out-of-bounds
                     dash_ends.pop()
                     dash_starts.pop()
-                else:
-                    # if it overflowed:
-                    if dash_ends[-1] < dash_len:
-                        # if the beginning of the piece is still in range
-                        if dash_starts[-1] < 1:
-                            dash_starts.append(0)
-                            dash_ends.append(dash_ends[-1])
-                            dash_ends[-2] = 1
-                        else:
-                            dash_starts[-1] = 0
+                elif dash_ends[-1] < dash_len:  # if it overflowed
+                    if dash_starts[-1] < 1:  # if the beginning of the piece is still in range
+                        dash_starts.append(0)
+                        dash_ends.append(dash_ends[-1])
+                        dash_ends[-2] = 1
                     else:
-                        if dash_starts[-1] > (1 - dash_len):
-                            dash_ends[-1] = 1
+                        dash_starts[-1] = 0
+                elif dash_starts[-1] > (1 - dash_len):
+                    dash_ends[-1] = 1
 
             if even_lengths:
                 # calculate the entire length by adding up short line-pieces
