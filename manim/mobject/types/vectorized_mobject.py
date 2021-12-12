@@ -1134,9 +1134,6 @@ class VMobject(Mobject):
             The length of the nth curve.
         """
 
-        if sample_points is None:
-            sample_points = 10
-
         curve = self.get_nth_curve_function(n)
         norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
         length = np.sum(norms)
@@ -2301,21 +2298,21 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
             period = dash_len + void_len
             phase_shift = (dash_offset % 1) * period
 
-            # closed shapes can handle overflow at the 0-point
             if vmobject.is_closed():
-                dash_starts = [((i * period + phase_shift) % 1) for i in range(n)]
-                dash_ends = [
-                    ((i * period + dash_len + phase_shift) % 1) for i in range(n)
-                ]
+                # closed curves have equal amount of dashes and voids
+                pattern_len = 1
             else:
-                dash_starts = [
-                    ((i * period + phase_shift) % (1 + void_len)) for i in range(n)
-                ]
-                dash_ends = [
-                    ((i * period + dash_len + phase_shift) % (1 + void_len))
-                    for i in range(n)
-                ]
+                # open curves start and end with a dash, so the whole dash pattern with the last void is longer
+                pattern_len = 1 + void_len
 
+            dash_starts = [((i * period + phase_shift) % pattern_len) for i in range(n)]
+            dash_ends = [
+                ((i * period + dash_len + phase_shift) % pattern_len) for i in range(n)
+            ]
+
+            # closed shapes can handle overflow at the 0-point
+            # open shapes need special treatment for it
+            if not vmobject.is_closed():
                 # due to phase shift being [0...1] range, always the last dash element needs attention for overflow
                 # if an entire dash moves out of the shape end:
                 if dash_ends[-1] > 1 and dash_starts[-1] > 1:
