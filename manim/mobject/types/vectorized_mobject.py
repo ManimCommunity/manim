@@ -2229,11 +2229,18 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-        vmobject: The object that will get dashed
-        num_dashes: Number of dashes to add.
-        dashed_ratio: Ratio of dash : empty space.
-        dash_offset: Shifts the starting point of dashes along the path. Value 1 shifts 1 dash over to the next.
-        even_lengths: If true, dashes will be visually even length. If false, dashes will be split evenly in the curve's
+        vmobject
+            The object that will get dashed
+        num_dashes
+            Number of dashes to add.
+        dashed_ratio
+            Ratio of dash to empty space.
+        dash_offset
+            Shifts the starting point of dashes along the
+            path. Value 1 shifts by one full dash length.
+        even_lengths
+            If ``True``, dashes will be (approximately) equally long.
+            If ``False``, dashes will be split evenly in the curve's
             input t variable (legacy behavior).
 
     Examples
