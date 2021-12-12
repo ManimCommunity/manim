@@ -2226,11 +2226,18 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-        vmobject: The object that will get dashed
-        num_dashes: Number of dashes to add.
-        dashed_ratio: Ratio of dash : empty space.
-        dash_offset: Shifts the starting point of dashes along the path. Value 1 shifts 1 dash over to the next.
-        even_lengths: If true, dashes will be visually even length. If false, dashes will be split evenly in the curve's
+        vmobject
+            The object that will get dashed
+        num_dashes
+            Number of dashes to add.
+        dashed_ratio
+            Ratio of dash to empty space.
+        dash_offset
+            Shifts the starting point of dashes along the
+            path. Value 1 shifts by one full dash length.
+        even_lengths
+            If ``True``, dashes will be (approximately) equally long.
+            If ``False``, dashes will be split evenly in the curve's
             input t variable (legacy behavior).
 
     Examples
@@ -2319,19 +2326,17 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     # remove the last element since it is out-of-bounds
                     dash_ends.pop()
                     dash_starts.pop()
-                else:
-                    # if it overflowed:
-                    if dash_ends[-1] < dash_len:
-                        # if the beginning of the piece is still in range
-                        if dash_starts[-1] < 1:
-                            dash_starts.append(0)
-                            dash_ends.append(dash_ends[-1])
-                            dash_ends[-2] = 1
-                        else:
-                            dash_starts[-1] = 0
+                elif dash_ends[-1] < dash_len:  # if it overflowed
+                    if (
+                        dash_starts[-1] < 1
+                    ):  # if the beginning of the piece is still in range
+                        dash_starts.append(0)
+                        dash_ends.append(dash_ends[-1])
+                        dash_ends[-2] = 1
                     else:
-                        if dash_starts[-1] > (1 - dash_len):
-                            dash_ends[-1] = 1
+                        dash_starts[-1] = 0
+                elif dash_starts[-1] > (1 - dash_len):
+                    dash_ends[-1] = 1
 
             if even_lengths:
                 # calculate the entire length by adding up short line-pieces
