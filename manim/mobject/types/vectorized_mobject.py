@@ -2262,8 +2262,8 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     middle_row.add(circ)
 
                 func1 = FunctionGraph(lambda t: t**5,[-1,1],color=WHITE)
-                func_even = DashedVMobject(func1,num_dashes=6,even_lengths=True)
-                func_stretched = DashedVMobject(func1, num_dashes=6, even_lengths=False)
+                func_even = DashedVMobject(func1,num_dashes=6,equal_lengths=True)
+                func_stretched = DashedVMobject(func1, num_dashes=6, equal_lengths=False)
                 bottom_row = VGroup(func_even,func_stretched)
 
 
