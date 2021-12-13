@@ -2235,7 +2235,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         dash_offset
             Shifts the starting point of dashes along the
             path. Value 1 shifts by one full dash length.
-        even_lengths
+        equal_lengths
             If ``True``, dashes will be (approximately) equally long.
             If ``False``, dashes will be split evenly in the curve's
             input t variable (legacy behavior).
@@ -2282,7 +2282,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         dashed_ratio=0.5,
         dash_offset=0,
         color=WHITE,
-        even_lengths=True,
+        equal_lengths=True,
         **kwargs,
     ):
 
@@ -2338,7 +2338,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 elif dash_starts[-1] > (1 - dash_len):
                     dash_ends[-1] = 1
 
-            if even_lengths:
+            if equal_lengths:
                 # calculate the entire length by adding up short line-pieces
                 norms = np.array(0)
                 for k in range(vmobject.get_num_curves()):
