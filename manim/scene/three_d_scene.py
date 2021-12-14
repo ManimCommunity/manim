@@ -162,7 +162,8 @@ class ThreeDScene(Scene):
         origin_theta: Optional[float] = None,
     ):
         """
-        This method creates a 3D camera rotation illusion around the current camera orientation.
+        This method creates a 3D camera rotation illusion around
+        the current camera orientation.
 
         Parameters
         ----------
