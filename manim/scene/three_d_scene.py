@@ -166,12 +166,14 @@ class ThreeDScene(Scene):
 
         Parameters
         ----------
-        rate : int or float, optional
+        rate
             The rate at which the camera rotation illusion should operate.
-        origin_phi : int or float, optional
-            The polar angle the camera should move around. Defaults to the current phi angle.
-        origin_theta : int or float, optional
-            The azimutal angle the camera should move around. Defaults to the current theta angle.
+        origin_phi
+            The polar angle the camera should move around. Defaults
+            to the current phi angle.
+        origin_theta
+            The azimutal angle the camera should move around. Defaults
+            to the current theta angle.
         """
         if origin_theta is None:
             origin_theta = self.renderer.camera.theta_tracker.get_value()
