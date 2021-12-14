@@ -765,22 +765,18 @@ class Text(SVGMobject):
             width = config["pixel_width"]
             height = config["pixel_height"]
 
-            try:
-                svg_file = manimpango.text2svg(
-                    settings,
-                    size,
-                    line_spacing,
-                    self.disable_ligatures,
-                    file_name,
-                    START_X,
-                    START_Y,
-                    width,
-                    height,
-                    self.text,
-                )
-            except Exception as e:
-                os.remove(file_name)
-                raise e
+            svg_file = manimpango.text2svg(
+                settings,
+                size,
+                line_spacing,
+                self.disable_ligatures,
+                file_name,
+                START_X,
+                START_Y,
+                width,
+                height,
+                self.text,
+            )
 
         return svg_file
 
