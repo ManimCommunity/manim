@@ -157,7 +157,7 @@ class ThreeDScene(Scene):
 
     def begin_3dillusion_camera_rotation(
         self,
-        rate: Optional[float] = 1,
+        rate: float = 1,
         origin_phi: Optional[float] = None,
         origin_theta: Optional[float] = None,
     ):
