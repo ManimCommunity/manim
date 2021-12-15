@@ -22,7 +22,7 @@ Contributing
 
 .. important::
    Keep in mind that Manim is still a work in progress.
-   Tutorials and Documentation are always subject to change.
+   Tutorials and documentation are always subject to change.
    When a developer implements a new feature, they are not forced to respect any translations.
    This means that parts of the translation might become outdated over time.
 
