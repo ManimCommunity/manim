@@ -131,7 +131,7 @@ class MoveAlongPath(Animation):
     def __init__(
         self,
         mobject: "Mobject",
-        path: VMobject,
+        path: "VMobject",
         suspend_mobject_updating: Optional[bool] = False,
         **kwargs
     ) -> None:
