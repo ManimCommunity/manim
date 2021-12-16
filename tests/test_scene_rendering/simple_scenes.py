@@ -111,6 +111,12 @@ class ElaborateSceneWithSections(Scene):
         self.play(Transform(square, circle))
         self.wait()
 
+        # this section will be entirely skipped
+        self.next_section("skipped animations section", skip_animations=True)
+        circle = Circle()
+        self.play(Transform(square, circle))
+        self.wait()
+
         self.next_section("fade out")
         self.play(FadeOut(square))
         self.wait()

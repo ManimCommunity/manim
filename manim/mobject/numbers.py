@@ -115,7 +115,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
     def set_submobjects_from_number(self, number):
         self.number = number
-        self.set_submobjects([])
+        self.submobjects = []
 
         num_string = self.get_num_string(number)
         self.add(*(map(self.string_to_mob, num_string)))
@@ -251,6 +251,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 # not needed with opengl renderer
                 mob.points[:] = 0
 
+        self.init_colors()
         return self
 
     def get_value(self):

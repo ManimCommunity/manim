@@ -41,7 +41,6 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.deprecation import deprecated
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
@@ -1312,33 +1311,6 @@ class Mobject:
             mob.points += about_point
         return self
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        replacement="rotate",
-    )
-    def rotate_in_place(self, angle, axis=OUT):
-        # redundant with default behavior of rotate now.
-        return self.rotate(angle, axis=axis)
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        replacement="scale",
-    )
-    def scale_in_place(self, scale_factor, **kwargs):
-        # Redundant with default behavior of scale now.
-        return self.scale(scale_factor, **kwargs)
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        replacement="scale",
-    )
-    def scale_about_point(self, scale_factor, point):
-        # Redundant with default behavior of scale now.
-        return self.scale(scale_factor, about_point=point)
-
     def pose_at_angle(self, **kwargs):
         self.rotate(TAU / 14, RIGHT + UP, **kwargs)
         return self
@@ -1443,15 +1415,6 @@ class Mobject:
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        replacement="stretch",
-    )
-    def stretch_in_place(self, factor, dim):
-        # Now redundant with stretch
-        return self.stretch(factor, dim)
 
     def rescale_to_fit(self, length, dim, stretch=False, **kwargs):
         old_length = self.length_over_dim(dim)
@@ -1669,7 +1632,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Colors = BLACK, opacity: float = 0.75, **kwargs
+        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1846,7 +1809,6 @@ class Mobject:
         result = getattr(self, array_attr)
         for submob in self.submobjects:
             result = np.append(result, submob.get_merged_array(array_attr), axis=0)
-            submob.get_merged_array(array_attr)
         return result
 
     def get_all_points(self):
@@ -2588,10 +2550,10 @@ class Mobject:
 
             class DotInterpolation(Scene):
                 def construct(self):
-                    dotL = Dot(color=DARK_GREY)
-                    dotL.shift(2 * RIGHT)
-                    dotR = Dot(color=WHITE)
-                    dotR.shift(2 * LEFT)
+                    dotR = Dot(color=DARK_GREY)
+                    dotR.shift(2 * RIGHT)
+                    dotL = Dot(color=WHITE)
+                    dotL.shift(2 * LEFT)
 
                     dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
 
@@ -2604,9 +2566,36 @@ class Mobject:
     def interpolate_color(self, mobject1, mobject2, alpha):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject: "Mobject", copy_submobjects: bool = True):
+    def become(
+        self,
+        mobject: "Mobject",
+        copy_submobjects: bool = True,
+        match_height: bool = False,
+        match_width: bool = False,
+        match_depth: bool = False,
+        match_center: bool = False,
+        stretch: bool = False,
+    ):
         """Edit points, colors and submobjects to be identical
         to another :class:`~.Mobject`
+
+        .. note::
+
+            If both match_height and match_width are ``True`` then the transformed :class:`~.Mobject`
+            will match the height first and then the width
+
+        Parameters
+        ----------
+        match_height
+            If ``True``, then the transformed :class:`~.Mobject` will match the height of the original
+        match_width
+            If ``True``, then the transformed :class:`~.Mobject` will match the width of the original
+        match_depth
+            If ``True``, then the transformed :class:`~.Mobject` will match the depth of the original
+        match_center
+            If ``True``, then the transformed :class:`~.Mobject` will match the center of the original
+        stretch
+            If ``True``, then the transformed :class:`~.Mobject` will stretch to fit the proportions of the original
 
         Examples
         --------
@@ -2621,6 +2610,22 @@ class Mobject:
                     circ.become(square)
                     self.wait(0.5)
         """
+
+        if stretch:
+            mobject.stretch_to_fit_height(self.height)
+            mobject.stretch_to_fit_width(self.width)
+            mobject.stretch_to_fit_depth(self.depth)
+        else:
+            if match_height:
+                mobject.match_height(self)
+            if match_width:
+                mobject.match_width(self)
+            if match_depth:
+                mobject.match_depth(self)
+
+        if match_center:
+            mobject.move_to(self.get_center())
+
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
