@@ -8,6 +8,7 @@ __all__ = [
 
 
 import itertools as it
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -23,7 +24,7 @@ def merge_dicts_recursively(*dicts):
     When values are dictionaries, it is applied recursively
     """
     result = {}
-    all_items = it.chain(*[d.items() for d in dicts])
+    all_items = it.chain(*(d.items() for d in dicts))
     for key, value in all_items:
         if key in result and isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = merge_dicts_recursively(result[key], value)
@@ -41,7 +42,7 @@ def update_dict_recursively(current_dict, *others):
 # (and less in keeping with all other attr accesses) dict["x"]
 
 
-class DictAsObject(object):
+class DictAsObject:
     def __init__(self, dictin):
         self.__dict__ = dictin
 

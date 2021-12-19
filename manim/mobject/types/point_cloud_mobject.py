@@ -2,8 +2,8 @@
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
-
 import numpy as np
+from colour import Color
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -12,15 +12,16 @@ from ...utils.color import (
     BLACK,
     WHITE,
     YELLOW,
-    YELLOW_C,
     color_gradient,
     color_to_rgba,
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.opengl_point_cloud_mobject import OpenGLPMobject
 
 
-class PMobject(Mobject):
+class PMobject(Mobject, metaclass=ConvertToOpenGL):
     """A disc made of a cloud of Dots
 
     Examples
@@ -59,11 +60,13 @@ class PMobject(Mobject):
         return self
 
     def get_array_attrs(self):
-        return Mobject.get_array_attrs(self) + ["rgbas"]
+        return super().get_array_attrs() + ["rgbas"]
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
-        """
-        Points must be a Nx3 numpy array, as must rgbas if it is not None
+        """Add points.
+
+        Points must be a Nx3 numpy array.
+        Rgbas must be a Nx4 numpy array if it is not None.
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -73,11 +76,11 @@ class PMobject(Mobject):
             color = Color(color) if color else self.color
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
-            raise ValueError("points and rgbas must have same shape")
+            raise ValueError("points and rgbas must have same length")
         self.rgbas = np.append(self.rgbas, rgbas, axis=0)
         return self
 
-    def set_color(self, color=YELLOW_C, family=True):
+    def set_color(self, color=YELLOW, family=True):
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:
@@ -94,24 +97,31 @@ class PMobject(Mobject):
             mob.stroke_width = width
         return self
 
-    # def set_color_by_gradient(self, start_color, end_color):
     def set_color_by_gradient(self, *colors):
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(colors, len(self.points))))
+            list(map(color_to_rgba, color_gradient(*colors, len(self.points)))),
         )
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
+        self,
+        center=None,
+        radius=1,
+        inner_color=WHITE,
+        outer_color=BLACK,
     ):
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
+        start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
             center = self.get_center()
         for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            t = min(1, np.abs(mob.get_center() - center) / radius)
+            distances = np.abs(self.points - center)
+            alphas = np.linalg.norm(distances, axis=1) / radius
 
-            mob.rgbas = np.array([interpolate(start_rgba, end_rgba, t)] * num_points)
+            mob.rgbas = np.array(
+                np.array(
+                    [interpolate(start_rgba, end_rgba, alpha) for alpha in alphas],
+                ),
+            )
         return self
 
     def match_colors(self, mobject):
@@ -133,7 +143,7 @@ class PMobject(Mobject):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr: arr[np.arange(0, num_points, factor)]
+                lambda arr: arr[np.arange(0, num_points, factor)],
             )
         return self
 
@@ -146,10 +156,10 @@ class PMobject(Mobject):
             mob.apply_over_attr_arrays(lambda arr: arr[indices])
         return self
 
-    def fade_to(self, color, alpha):
+    def fade_to(self, color, alpha, family=True):
         self.rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
-            mob.fade_to(color, alpha)
+            mob.fade_to(color, alpha, family)
         return self
 
     def get_all_rgbas(self):
@@ -174,7 +184,7 @@ class PMobject(Mobject):
     def align_points_with_larger(self, larger_mobject):
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
-            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points())
+            lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
         )
 
     def get_point_mobject(self, center=None):
@@ -189,12 +199,12 @@ class PMobject(Mobject):
                 mobject1.get_stroke_width(),
                 mobject2.get_stroke_width(),
                 alpha,
-            )
+            ),
         )
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
-        lower_index, upper_index = [int(x * mobject.get_num_points()) for x in (a, b)]
+        lower_index, upper_index = (int(x * mobject.get_num_points()) for x in (a, b))
         for attr in self.get_array_attrs():
             full_array = getattr(mobject, attr)
             partial_array = full_array[lower_index:upper_index]
@@ -202,11 +212,11 @@ class PMobject(Mobject):
 
 
 # TODO, Make the two implementations below non-redundant
-class Mobject1D(PMobject):
+class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -219,11 +229,11 @@ class Mobject1D(PMobject):
         self.add_points(points, color=color)
 
 
-class Mobject2D(PMobject):
+class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
     def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
         self.density = density
         self.epsilon = 1.0 / self.density
-        PMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
 
 class PGroup(PMobject):
@@ -249,10 +259,18 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, PMobject) for m in pmobs]):
-            raise ValueError("All submobjects must be of type PMobject")
+        if not all([isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs]):
+            raise ValueError(
+                "All submobjects must be of type PMobject or OpenGLPMObject"
+                " if using the opengl renderer",
+            )
         super().__init__(**kwargs)
         self.add(*pmobs)
+
+    def fade_to(self, color, alpha, family=True):
+        if family:
+            for mob in self.submobjects:
+                mob.fade_to(color, alpha, family)
 
 
 class PointCloudDot(Mobject1D):
@@ -296,10 +314,15 @@ class PointCloudDot(Mobject1D):
         **kwargs
     ):
         self.radius = radius
-        Mobject1D.__init__(
-            self, stroke_width=stroke_width, density=density, color=color, **kwargs
+        self.epsilon = 1.0 / density
+        super().__init__(
+            stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
+
+    def init_points(self):
+        self.reset_points()
+        self.generate_points()
 
     def generate_points(self):
         self.add_points(
@@ -308,9 +331,11 @@ class PointCloudDot(Mobject1D):
                 for r in np.arange(self.epsilon, self.radius, self.epsilon)
                 # Num is equal to int(stop - start)/ (step + 1) reformulated.
                 for theta in np.linspace(
-                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                    0,
+                    2 * np.pi,
+                    num=int(2 * np.pi * (r + self.epsilon) / self.epsilon),
                 )
-            ]
+            ],
         )
 
 
@@ -336,5 +361,13 @@ class Point(PMobject):
     """
 
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
-        PMobject.__init__(self, color=color, **kwargs)
-        self.add_points([location])
+        self.location = location
+        super().__init__(color=color, **kwargs)
+
+    def init_points(self):
+        self.reset_points()
+        self.generate_points()
+        self.set_points([self.location])
+
+    def generate_points(self):
+        self.add_points([self.location])

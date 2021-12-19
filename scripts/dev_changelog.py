@@ -44,6 +44,7 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
 import datetime
+import os
 import re
 from collections import defaultdict
 from pathlib import Path
@@ -73,6 +74,19 @@ PR_LABELS = {
     "release": "New releases",
     "unlabeled": "Unclassified changes",
 }
+
+
+def update_citation(version, date):
+    current_directory = os.path.dirname(__file__)
+    parent_directory = os.path.split(current_directory)[0]
+    with open(os.path.join(current_directory, "TEMPLATE.cff")) as a, open(
+        os.path.join(parent_directory, "CITATION.cff"),
+        "w",
+    ) as b:
+        contents = a.read()
+        contents = contents.replace("<version>", version)
+        contents = contents.replace("<date_released>", date)
+        b.write(contents)
 
 
 def process_pullrequests(lst, cur, github_repo, pr_nums):
@@ -105,7 +119,7 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     reviewer_names = []
     for reviewer in reviewers:
         reviewer_names.append(
-            reviewer.name if reviewer.name is not None else reviewer.login
+            reviewer.name if reviewer.name is not None else reviewer.login,
         )
 
     return {
@@ -126,10 +140,18 @@ def get_pr_nums(lst, cur):
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
-        "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
+        "--oneline",
+        "--no-merges",
+        "--first-parent",
+        f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n"))
+        filter(
+            lambda x: not any(
+                ["pre-commit autoupdate" in x, "New Crowdin updates" in x]
+            ),
+            commits.split("\n"),
+        ),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
@@ -141,10 +163,13 @@ def get_pr_nums(lst, cur):
 
 def get_summary(body):
     pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
-    has_changelog_pattern = re.search(pattern, body)
-    if has_changelog_pattern:
+    try:
+        has_changelog_pattern = re.search(pattern, body)
+        if has_changelog_pattern:
 
-        return has_changelog_pattern.group()[22:-21].strip()
+            return has_changelog_pattern.group()[22:-21].strip()
+    except:
+        print(f"Error parsing body for changelog: {body}")
 
 
 @click.command(
@@ -161,7 +186,10 @@ def get_summary(body):
     type=int,
 )
 @click.option(
-    "-o", "--outfile", type=str, help="Path and file name of the changelog output."
+    "-o",
+    "--outfile",
+    type=str,
+    help="Path and file name of the changelog output.",
 )
 def main(token, prior, tag, additional, outfile):
     """Generate Changelog/List of contributors/PRs for release.
@@ -190,6 +218,10 @@ def main(token, prior, tag, additional, outfile):
     authors = contributions["authors"]
     reviewers = contributions["reviewers"]
 
+    # update citation file
+    today = datetime.date.today()
+    update_citation(tag, str(today))
+
     if not outfile:
         outfile = (
             Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
@@ -203,7 +235,6 @@ def main(token, prior, tag, additional, outfile):
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
 
-        today = datetime.date.today()
         f.write(f":Date: {today.strftime('%B %d, %Y')}\n\n")
 
         heading = "Contributors"
@@ -215,8 +246,8 @@ def main(token, prior, tag, additional, outfile):
                 A total of {len(set(authors).union(set(reviewers)))} people contributed to this
                 release. People with a '+' by their names authored a patch for the first
                 time.\n
-                """
-            )
+                """,
+            ),
         )
 
         for author in authors:
@@ -228,8 +259,8 @@ def main(token, prior, tag, additional, outfile):
                 """
                 The patches included in this release have been reviewed by
                 the following contributors.\n
-                """
-            )
+                """,
+            ),
         )
 
         for reviewer in reviewers:
@@ -241,7 +272,7 @@ def main(token, prior, tag, additional, outfile):
         f.write(heading + "\n")
         f.write("=" * len(heading) + "\n\n")
         f.write(
-            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
+            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n",
         )
 
         pr_by_labels = contributions["PRs"]

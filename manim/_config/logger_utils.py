@@ -49,7 +49,8 @@ Loading the default color configuration.[/logging.level.error]
 
 
 def make_logger(
-    parser: configparser.ConfigParser, verbosity: str
+    parser: configparser.ConfigParser,
+    verbosity: str,
 ) -> typing.Tuple[logging.Logger, Console]:
     """Make the manim logger and console.
 
@@ -88,7 +89,8 @@ def make_logger(
     # set the rich handler
     RichHandler.KEYWORDS = HIGHLIGHTED_KEYWORDS
     rich_handler = RichHandler(
-        console=console, show_time=parser.getboolean("log_timestamps")
+        console=console,
+        show_time=parser.getboolean("log_timestamps"),
     )
 
     # finally, the logger
@@ -130,7 +132,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
                 k: v
                 for k, v in theme.items()
                 if k not in ["log.width", "log.height", "log.timestamps"]
-            }
+            },
         )
     except (color.ColorParseError, errors.StyleSyntaxError):
         printf(WRONG_COLOR_CONFIG_MSG)
@@ -201,5 +203,5 @@ class JSONFormatter(logging.Formatter):
                 "levelname": record_c.levelname,
                 "module": record_c.module,
                 "message": super().format(record_c),
-            }
+            },
         )

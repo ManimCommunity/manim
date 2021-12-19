@@ -4,11 +4,14 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 from typing import Optional
 
+from manim.utils.color import Color
+
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import BLACK, RED, YELLOW, Color
+from ..utils.color import BLACK, RED, YELLOW, Colors
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -41,8 +44,7 @@ class SurroundingRectangle(RoundedRectangle):
     ):
         self.color = color
         self.buff = buff
-        RoundedRectangle.__init__(
-            self,
+        super().__init__(
             color=color,
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
@@ -53,7 +55,8 @@ class SurroundingRectangle(RoundedRectangle):
 
 
 class BackgroundRectangle(SurroundingRectangle):
-    """A background rectangle
+    """A background rectangle. Its default color is the background color
+    of the scene.
 
     Examples
     --------
@@ -80,15 +83,17 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color=BLACK,
-        stroke_width=0,
-        stroke_opacity=0,
-        fill_opacity=0.75,
-        buff=0,
+        color: Optional[Colors] = None,
+        stroke_width: float = 0,
+        stroke_opacity: float = 0,
+        fill_opacity: float = 0.75,
+        buff: float = 0,
         **kwargs
     ):
-        SurroundingRectangle.__init__(
-            self,
+        if color is None:
+            color = config.background_color
+
+        super().__init__(
             mobject,
             color=color,
             stroke_width=stroke_width,

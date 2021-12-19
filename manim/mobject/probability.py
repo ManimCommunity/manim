@@ -63,8 +63,7 @@ class SampleSpace(Rectangle):
         stroke_color=LIGHT_GREY,
         default_label_scale_val=1,
     ):
-        Rectangle.__init__(
-            self,
+        super().__init__(
             height=height,
             width=width,
             fill_color=fill_color,
@@ -124,7 +123,12 @@ class SampleSpace(Rectangle):
         self.add(self.vertical_parts)
 
     def get_subdivision_braces_and_labels(
-        self, parts, labels, direction, buff=SMALL_BUFF, min_num_quads=1
+        self,
+        parts,
+        labels,
+        direction,
+        buff=SMALL_BUFF,
+        min_num_quads=1,
     ):
         label_mobs = VGroup()
         braces = VGroup()

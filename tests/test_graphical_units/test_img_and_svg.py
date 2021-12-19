@@ -1,5 +1,5 @@
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 from ..helpers.path_utils import get_svg_resource
 
@@ -253,7 +253,7 @@ def test_ImageMobject(scene):
 @frames_comparison
 def test_ImageInterpolation(scene):
     img = ImageMobject(
-        np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]])
+        np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]]),
     )
     img.height = 2
     img1 = img.copy()

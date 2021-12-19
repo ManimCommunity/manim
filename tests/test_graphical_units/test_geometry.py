@@ -1,5 +1,5 @@
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "geometry"
 
@@ -59,7 +59,7 @@ def test_Dot(scene):
 
 @frames_comparison
 def test_DashedVMobject(scene):
-    circle = DashedVMobject(Circle(), 12, 0.9)
+    circle = DashedVMobject(Circle(), 12, 0.9, dash_offset=0.1)
     line = DashedLine(dash_length=0.5)
     scene.add(circle, line)
 
@@ -200,3 +200,19 @@ def test_Star(scene):
 def test_AngledArrowTip(scene):
     arrow = Arrow(start=ORIGIN, end=UP + RIGHT + OUT)
     scene.add(arrow)
+
+
+@frames_comparison
+def test_CurvedArrowCustomTip(scene):
+    arrow = CurvedArrow(
+        LEFT,
+        RIGHT,
+        tip_shape=ArrowCircleTip,
+    )
+    double_arrow = CurvedDoubleArrow(
+        LEFT,
+        RIGHT,
+        tip_shape_start=ArrowCircleTip,
+        tip_shape_end=ArrowSquareFilledTip,
+    )
+    scene.add(arrow, double_arrow)

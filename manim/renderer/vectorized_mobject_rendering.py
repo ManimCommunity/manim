@@ -24,7 +24,7 @@ def build_matrix_lists(mob):
             mobject_to_hierarchical_matrix[child] = child_hierarchical_matrix
             if child.has_points():
                 matrix_to_mobject_list[tuple(child_hierarchical_matrix.ravel())].append(
-                    child
+                    child,
                 )
             dfs.append(child)
     return matrix_to_mobject_list
@@ -63,7 +63,9 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
         end_offset = write_offset + mobject_triangulation.shape[0]
         attributes[write_offset:end_offset] = mobject_triangulation
         attributes["in_color"][write_offset:end_offset] = np.repeat(
-            submob.fill_rgba, mobject_triangulation.shape[0], axis=0
+            submob.fill_rgba,
+            mobject_triangulation.shape[0],
+            axis=0,
         )
         write_offset = end_offset
 
@@ -71,7 +73,7 @@ def render_mobject_fills_with_matrix(renderer, model_matrix, mobjects):
     fill_shader.set_uniform(
         "u_model_view_matrix",
         opengl.matrix_to_shader_input(
-            renderer.camera.get_view_matrix(format=False) @ model_matrix
+            renderer.camera.get_view_matrix(format=False) @ model_matrix,
         ),
     )
     fill_shader.set_uniform(
@@ -98,7 +100,7 @@ def triangulate_mobject(mob):
     # how to send the points as to the vertex shader.
     # First triangles come directly from the points
     # normal_vector = mob.get_unit_normal()
-    points = mob.get_points()
+    points = mob.points
 
     b0s = points[0::3]
     b1s = points[1::3]
@@ -127,7 +129,7 @@ def triangulate_mobject(mob):
             indices[0::3],
             indices[1::3][concave_parts],
             indices[2::3][end_of_loop],
-        ]
+        ],
     )
     inner_vert_indices.sort()
     rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
@@ -146,7 +148,7 @@ def triangulate_mobject(mob):
                 concave_triangle_indices,
                 convex_triangle_indices,
                 inner_tri_indices,
-            ]
+            ],
         )
     ]
     texture_coords = np.tile(
@@ -159,9 +161,9 @@ def triangulate_mobject(mob):
     )
     texture_mode = np.hstack(
         (
-            np.ones((concave_triangle_indices.shape[0])),
-            -1 * np.ones((convex_triangle_indices.shape[0])),
-            np.zeros((inner_tri_indices.shape[0])),
+            np.ones(concave_triangle_indices.shape[0]),
+            -1 * np.ones(convex_triangle_indices.shape[0]),
+            np.zeros(inner_tri_indices.shape[0]),
         ),
     )
 
@@ -199,7 +201,7 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
 
     points = np.empty((total_size, 3))
     colors = np.empty((total_size, 4))
-    widths = np.empty((total_size))
+    widths = np.empty(total_size)
 
     write_offset = 0
     for submob in mobjects:
@@ -208,11 +210,17 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
         end_offset = write_offset + submob.points.shape[0]
 
         points[write_offset:end_offset] = submob.points
-        colors[write_offset:end_offset] = np.repeat(
-            submob.stroke_rgba, submob.points.shape[0], axis=0
-        )
+        if submob.stroke_rgba.shape[0] == points[write_offset:end_offset].shape[0]:
+            colors[write_offset:end_offset] = submob.stroke_rgba
+        else:
+            colors[write_offset:end_offset] = np.repeat(
+                submob.stroke_rgba,
+                submob.points.shape[0],
+                axis=0,
+            )
         widths[write_offset:end_offset] = np.repeat(
-            submob.stroke_width, submob.points.shape[0]
+            submob.stroke_width,
+            submob.points.shape[0],
         )
         write_offset = end_offset
 
@@ -255,14 +263,14 @@ def render_mobject_strokes_with_matrix(renderer, model_matrix, mobjects):
                 ],
                 (len(points) // 3, 1),
             ),
-        )
+        ),
     )
 
     shader = Shader(renderer.context, "vectorized_mobject_stroke")
     shader.set_uniform(
         "u_model_view_matrix",
         opengl.matrix_to_shader_input(
-            renderer.camera.get_view_matrix(format=False) @ model_matrix
+            renderer.camera.get_view_matrix(format=False) @ model_matrix,
         ),
     )
     shader.set_uniform("u_projection_matrix", renderer.scene.camera.projection_matrix)

@@ -37,7 +37,7 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations]
+                [anim.mobject for anim in self.animations],
             )
             if config["renderer"] == "opengl":
                 self.group = OpenGLGroup(*mobjects)
@@ -50,12 +50,16 @@ class AnimationGroup(Animation):
         return list(self.group)
 
     def begin(self) -> None:
+        if self.suspend_mobject_updating:
+            self.group.suspend_updating()
         for anim in self.animations:
             anim.begin()
 
     def finish(self) -> None:
         for anim in self.animations:
             anim.finish()
+        if self.suspend_mobject_updating:
+            self.group.resume_updating()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:

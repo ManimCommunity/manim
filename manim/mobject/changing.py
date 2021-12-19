@@ -2,7 +2,9 @@
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-import numpy as np
+from typing import Callable, Optional
+
+from colour import Color
 
 from .._config import config
 from ..constants import *
@@ -94,6 +96,18 @@ class AnimatedBoundary(VGroup):
 class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     """Traces the path of a point returned by a function call.
 
+    Parameters
+    ----------
+    traced_point_func
+        The function to be traced.
+    stroke_width
+        The width of the trace.
+    stroke_color
+        The color of the trace.
+    dissipating_time
+        The time taken for the path to dissipate. Default set to ``None``
+        which disables dissipation.
+
     Examples
     --------
     .. manim:: TracedPathExample
@@ -108,35 +122,43 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                 self.add(trace, rolling_circle)
                 self.play(rolling_circle.animate.shift(8*RIGHT), run_time=4, rate_func=linear)
 
+    .. manim:: DissipatingPathExample
+
+        class DissipatingPathExample(Scene):
+            def construct(self):
+                a = Dot(RIGHT * 2)
+                b = TracedPath(a.get_center, dissipating_time=0.5, stroke_opacity=[0, 1])
+                self.add(a, b)
+                self.play(a.animate(path_arc=PI / 4).shift(LEFT * 2))
+                self.play(a.animate(path_arc=-PI / 4).shift(LEFT * 2))
+                self.wait()
+
     """
 
     def __init__(
         self,
-        traced_point_func,
-        stroke_width=2,
-        stroke_color=WHITE,
-        min_distance_to_new_point=0.1,
+        traced_point_func: Callable,
+        stroke_width: float = 2,
+        stroke_color: Color = WHITE,
+        dissipating_time: Optional[float] = None,
         **kwargs
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
-        self.min_distance_to_new_point = min_distance_to_new_point
         self.traced_point_func = traced_point_func
-        self.add_updater(lambda m: m.update_path())
+        self.dissipating_time = dissipating_time
+        self.time = 1 if self.dissipating_time else None
+        self.add_updater(self.update_path)
 
-    def update_path(self):
+    def update_path(self, mob, dt):
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)
-            self.add_line_to(new_point)
-        else:
-            # Set the end to be the new point
-            self.get_points()[-1] = new_point
-
-            # Second to last point
-            if config["renderer"] == "opengl":
-                nppcc = self.n_points_per_curve
-            else:
-                nppcc = self.n_points_per_cubic_curve
-            dist = np.linalg.norm(new_point - self.get_points()[-nppcc])
-            if dist >= self.min_distance_to_new_point:
-                self.add_line_to(new_point)
+        self.add_line_to(new_point)
+        if self.dissipating_time:
+            self.time += dt
+            if self.time - 1 > self.dissipating_time:
+                if config["renderer"] == "opengl":
+                    nppcc = self.n_points_per_curve
+                else:
+                    nppcc = self.n_points_per_cubic_curve
+                self.set_points(self.points[nppcc:])

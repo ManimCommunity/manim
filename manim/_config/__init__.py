@@ -23,7 +23,8 @@ parser = make_config_parser()
 # Throughout the codebase, use manim.console.print() instead of print().
 # Use error_console to print errors so that it outputs to stderr.
 logger, console, error_console = make_logger(
-    parser["logger"], parser["CLI"]["verbosity"]
+    parser["logger"],
+    parser["CLI"]["verbosity"],
 )
 # TODO: temporary to have a clean terminal output when working with PIL or matplotlib
 logging.getLogger("PIL").setLevel(logging.INFO)

@@ -30,7 +30,10 @@ output_options = option_group(
         help="Path to store rendered videos and latex.",
     ),
     option(
-        "--log_dir", type=click.Path(), help="Path to store render logs.", default=None
+        "--log_dir",
+        type=click.Path(),
+        help="Path to store render logs.",
+        default=None,
     ),
     option(
         "--log_to_file",

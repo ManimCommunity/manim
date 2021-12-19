@@ -105,7 +105,7 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
-    ## Out of range parameters
+    # Out of range parameters
     # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
     # If rx or ry are 0 then this arc is treated as a
     # straight line segment (a "lineto") joining the endpoints.
@@ -121,7 +121,15 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     # Convert from endpoint to center parameterization.
     cx, cy, theta1, dtheta = get_elliptical_arc_center_parameters(
-        x1, y1, rx, ry, phi, fA, fS, x2, y2
+        x1,
+        y1,
+        rx,
+        ry,
+        phi,
+        fA,
+        fS,
+        x2,
+        y2,
     )
 
     # For a given arc we should "chop" it up into segments if it is too big
@@ -205,8 +213,8 @@ def string_to_numbers(num_string: str) -> List[float]:
             except ValueError:
                 # in this case, it's something like "2.4.3.14 which should be parsed as "2.4 0.3 0.14"
                 undotted_parts = s.split(".")
-                float_results.append(undotted_parts[0] + "." + undotted_parts[1])
-                float_results += ["." + u for u in undotted_parts[2:]]
+                float_results.append(float(undotted_parts[0] + "." + undotted_parts[1]))
+                float_results += [float("." + u) for u in undotted_parts[2:]]
     return float_results
 
 
@@ -257,7 +265,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
             zip(
                 re.findall(pattern, self.path_string),
                 re.split(pattern, self.path_string)[1:],
-            )
+            ),
         )
         # Which mobject should new points be added to
         prev_command = None
@@ -291,7 +299,10 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
-            command, is_relative, coord_string, start_point
+            command,
+            is_relative,
+            coord_string,
+            start_point,
         )
 
         if command == "M":  # moveto
@@ -322,7 +333,9 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
                 self.add_cubic_bezier_curve_to(
-                    new_handle, new_points[i], new_points[i + 1]
+                    new_handle,
+                    new_points[i],
+                    new_points[i + 1],
                 )
                 start_point = new_points[i + 1]
                 prev_handle = new_points[i]

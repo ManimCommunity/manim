@@ -39,7 +39,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
-[in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
+[in our online Jupyter environment](https://try.manim.community/).
 
 For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
@@ -75,7 +75,6 @@ You should see your native video player program pop up and play a simple scene i
 [GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-
 [corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and
 [try it out online](https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb).
 
@@ -161,32 +160,18 @@ Server](https://www.manim.community/discord/) or [Reddit Community](https://www.
 
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
 
-Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more about `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
+Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
+Learn more about `poetry` at its [documentation](https://python-poetry.org/docs/) and find out how to install manim with poetry at the [manim dev-installation guide](https://docs.manim.community/en/stable/contributing/development.html) in the manim documentation.
 
 ## How to Cite Manim
 
 We acknowledge the importance of good software to support research, and we note
 that research becomes more valuable when it is communicated effectively. To
 demonstrate the value of Manim, we ask that you cite Manim in your work.
-Currently, the best way to cite Manim is to reference the
-[Manim home page](https://www.manim.community) using this BibTeX entry (the
-entry is for release `v0.9.0`, but can be adapted easily):
-
-```BibTeX
-@Manual{Manim:v0.9.0,
-  key =          {Manim},
-  author =       {{The Manim Community Developers}},
-  title =        {{Manim} -- {M}athematical {A}nimation {F}ramework ({V}ersion v0.9.0)},
-  note =         {\url{https://www.manim.community}},
-  year =         2021,
-}
-```
-
-This should render a reference that looks more or less like this:
-
-42. The Manim Community Developers,
-    [Manim – Mathematical Animation Framework (Version v0.9.0)](https://www.manim.community).
-    2021.
+Currently, the best way to cite Manim is to go to our
+[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and
+click the "cite this repository" button on the right sidebar. This will generate
+a citation in your preferred format, and will also integrate well with citation managers.
 
 ## Code of Conduct
 

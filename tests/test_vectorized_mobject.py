@@ -13,7 +13,7 @@ def test_vmobject_point_from_propotion():
             np.array([0, 0, 0]),
             np.array([4, 0, 0]),
             np.array([4, 2, 0]),
-        ]
+        ],
     )
 
     # Total length of 6, so halfway along the object
@@ -52,7 +52,7 @@ def test_vgroup_add():
         # If only one of the added object is not an instance of VMobject, none of them should be added
         obj.add(VMobject(), Mobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a Mobject cannot contain itself
         obj.add(obj)
 
@@ -72,7 +72,7 @@ def test_vgroup_add_dunder():
         # If only one of the added object is not an instance of VMobject, none of them should be added
         obj += (VMobject(), Mobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a Mobject cannot contain itself
         obj += obj
 
@@ -101,7 +101,7 @@ def test_vgroup_remove_dunder():
     obj = VGroup(a, b)
     assert len(obj.submobjects) == 2
     assert len(b.submobjects) == 1
-    assert len((obj - a)) == 1
+    assert len(obj - a) == 1
     assert len(obj.submobjects) == 2
     obj -= a
     b -= c
@@ -191,7 +191,7 @@ def test_vgroup_item_assignment_at_correct_position():
     """Test VGroup item-assignment adds to correct position for VMObjects"""
     n_items = 10
     vgroup = VGroup()
-    for i in range(n_items):
+    for _i in range(n_items):
         vgroup.add(VMobject())
     new_obj = VMobject()
     vgroup[6] = new_obj
