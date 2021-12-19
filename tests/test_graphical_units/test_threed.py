@@ -130,5 +130,82 @@ def test_SurfaceColorscale(scene):
         v_range=[-3, 3],
         u_range=[-3, 3],
     )
-    trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
+    trig_plane.set_fill_by_value(
+        axis="z", axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED]
+    )
     scene.add(axes, trig_plane)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_Z_Direction(scene):
+    resolution_fa = 42
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+
+    def param_surface(u, v):
+        x = u
+        y = v
+        z = np.sin(x) * np.cos(y)
+        return z
+
+    surface_plane = Surface(
+        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+        resolution=(resolution_fa, resolution_fa),
+        v_range=[0, 5],
+        u_range=[0, 5],
+    )
+    surface_plane.set_style(fill_opacity=1)
+    surface_plane.set_fill_by_value(
+        axis="z", axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)]
+    )
+    scene.add(axes, surface_plane)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_Y_Direction(scene):
+    resolution_fa = 42
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+
+    def param_surface(u, v):
+        x = u
+        y = v
+        z = np.sin(x) * np.cos(y)
+        return z
+
+    surface_plane = Surface(
+        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+        resolution=(resolution_fa, resolution_fa),
+        v_range=[0, 5],
+        u_range=[0, 5],
+    )
+    surface_plane.set_style(fill_opacity=1)
+    surface_plane.set_fill_by_value(
+        axis="y", axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)]
+    )
+    scene.add(axes, surface_plane)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_X_Direction(scene):
+    resolution_fa = 42
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+
+    def param_surface(u, v):
+        x = u
+        y = v
+        z = np.sin(x) * np.cos(y)
+        return z
+
+    surface_plane = Surface(
+        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+        resolution=(resolution_fa, resolution_fa),
+        v_range=[0, 5],
+        u_range=[0, 5],
+    )
+    surface_plane.set_style(fill_opacity=1)
+    surface_plane.set_fill_by_value(
+        axis="x", axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)]
+    )
+    scene.add(axes, surface_plane)

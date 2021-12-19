@@ -165,15 +165,19 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.set_fill(colors[c_index], opacity=opacity)
         return self
 
-    def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
+    def set_fill_by_value(
+        self, axis: str, axes: "Mobject", colors: Union[Iterable[Color], Color]
+    ):
         """Sets the color of each mobject of a parametric surface to a color relative to its z-value
 
         Parameters
         ----------
+        axis :
+            The chosen axis to use for the color mapping.
         axes :
-            The axes for the parametric surface, which will be used to map z-values to colors.
+            The axes for the parametric surface, which will be used to map axis-values to colors.
         colors :
-            A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
+            A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
 
         Returns
@@ -203,16 +207,19 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    surface_plane.set_fill_by_value(axis = "z" ,axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
                     self.add(axes, surface_plane)
         """
+        indices = {"x": 0, "y": 1, "z": 2}
+        ranges = {"x": axes.x_range, "y": axes.y_range, "z": axes.z_range}
+
         if type(colors[0]) is tuple:
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
             new_colors = colors
 
-            pivot_min = axes.z_range[0]
-            pivot_max = axes.z_range[1]
+            pivot_min = ranges[axis][0]
+            pivot_max = ranges[axis][1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
                 start=pivot_min,
@@ -221,15 +228,15 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
 
         for mob in self.family_members_with_points():
-            z_value = axes.point_to_coords(mob.get_midpoint())[2]
-            if z_value <= pivots[0]:
+            axis_value = axes.point_to_coords(mob.get_midpoint())[indices[axis]]
+            if axis_value <= pivots[0]:
                 mob.set_color(new_colors[0])
-            elif z_value >= pivots[-1]:
+            elif axis_value >= pivots[-1]:
                 mob.set_color(new_colors[-1])
             else:
                 for i, pivot in enumerate(pivots):
-                    if pivot > z_value:
-                        color_index = (z_value - pivots[i - 1]) / (
+                    if pivot > axis_value:
+                        color_index = (axis_value - pivots[i - 1]) / (
                             pivots[i] - pivots[i - 1]
                         )
                         color_index = min(color_index, 1)
