@@ -135,7 +135,7 @@ def test_SurfaceColorscale(scene):
 
 
 @frames_comparison(base_scene=ThreeDScene)
-def test_Z_Direction(scene):
+def test_Y_Direction(scene):
     resolution_fa = 42
     scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
@@ -154,6 +154,6 @@ def test_Z_Direction(scene):
     )
     surface_plane.set_style(fill_opacity=1)
     surface_plane.set_fill_by_value(
-        axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)]
+        axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
     )
     scene.add(axes, surface_plane)
