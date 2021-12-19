@@ -130,9 +130,7 @@ def test_SurfaceColorscale(scene):
         v_range=[-3, 3],
         u_range=[-3, 3],
     )
-    trig_plane.set_fill_by_value(
-        axis="z", axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED]
-    )
+    trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
     scene.add(axes, trig_plane)
 
 
