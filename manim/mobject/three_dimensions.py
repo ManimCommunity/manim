@@ -166,14 +166,17 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self
 
     def set_fill_by_value(
-        self, axis: str, axes: "Mobject", colors: Union[Iterable[Color], Color]
+        self,
+        axes: "Mobject",
+        colors: Union[Iterable[Color], Color],
+        axis: int = 2,
     ):
-        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+        """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
 
         Parameters
         ----------
         axis :
-            The chosen axis to use for the color mapping.
+            The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
         axes :
             The axes for the parametric surface, which will be used to map axis-values to colors.
         colors :
@@ -207,11 +210,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axis = "z" ,axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis = 1)
                     self.add(axes, surface_plane)
         """
-        indices = {"x": 0, "y": 1, "z": 2}
-        ranges = {"x": axes.x_range, "y": axes.y_range, "z": axes.z_range}
+
+        ranges = [axes.x_range, axes.y_range, axes.z_range]
 
         if type(colors[0]) is tuple:
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
@@ -228,7 +231,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
 
         for mob in self.family_members_with_points():
-            axis_value = axes.point_to_coords(mob.get_midpoint())[indices[axis]]
+            axis_value = axes.point_to_coords(mob.get_midpoint())[axis]
             if axis_value <= pivots[0]:
                 mob.set_color(new_colors[0])
             elif axis_value >= pivots[-1]:
