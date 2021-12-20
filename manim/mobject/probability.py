@@ -199,14 +199,13 @@ class BarChart(Axes):
     bar_names
         An iterable of names for each `bar`. Does not have to match the length of ``values``.
     y_range
-        The y_axis range of values. If ``None``, the range will be adjusted based on the
+        The y_axis range of values. If ``None``, the range will be calculated based on the
         min/max of ``values`` and the step will be calculated based on ``y_length``.
     x_length
-        The length of the x-axis. If ``None``, it is automatically adjusted based on
+        The length of the x-axis. If ``None``, it is automatically calculated based on
         the number of values and the width of the screen.
     y_length
-        The y_axis length. If ``None``, it is automatically adjusted based on the
-        number of values and the height of the screen.
+        The length of the y-axis.
     bar_colors
         The color for the bars. Accepts a single color or an iterable of colors.
         If the length of``bar_colors`` does not match that of ``values``,
@@ -259,7 +258,7 @@ class BarChart(Axes):
             "#ff6361",
             "#ffa600",
         ],
-        bar_width: float = MED_LARGE_BUFF,
+        bar_width: float = 0.6,
         bar_fill_opacity: Optional[float] = 0.7,
         bar_stroke_width: Optional[float] = 3,
         **kwargs,
