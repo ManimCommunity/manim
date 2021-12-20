@@ -289,6 +289,9 @@ class BarChart(Axes):
         if x_length is None:
             x_length = min(len(self.values), config.frame_width - 2)
 
+        x_axis_config = {"font_size":24}
+        self._update_default_configs(x_axis_config, kwargs.pop("x_axis_config", {}))
+
         self.bars = None
         self.x_labels = None
         self.bar_labels = None
@@ -298,6 +301,7 @@ class BarChart(Axes):
             y_range=y_range,
             x_length=x_length,
             y_length=y_length,
+            x_axis_config=x_axis_config,
             tips=kwargs.pop("tips", False),
             **kwargs,
         )
@@ -366,39 +370,3 @@ class BarChart(Axes):
             self.bars.set_color_by_gradient(*self.bar_colors)
 
         self.add_to_back(self.bars)
-
-    # def add_x_labels(self):
-    #     if self.x_labels is not None or self.bar_names is None:
-    #         return
-    #     self.x_labels = VGroup()
-
-    #     max_lbl_width = 0
-    #     max_lbl_height = 0
-    #     for i, name in enumerate(self.bar_names):
-    #         if i == len(self.values):
-    #             self.bar_names = self.bar_names[:i]
-    #             break
-    #         label = self.x_label_constructor(name)
-    #         if max_lbl_width < label.width:
-    #             max_lbl_width = label.width
-    #         if max_lbl_height < label.height:
-    #             max_lbl_height = label.height
-    #         self.x_labels.add(label)
-
-    #     if self.x_label_scale_value is None:
-    #         unit_width = self.c2p(1, 0)[0] - self.c2p(0, 0)[0]
-    #         self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.75)
-
-    #     if self.x_label_buff is None:
-    #         self.x_label_buff = max_lbl_height * self.x_label_scale_value * 0.75
-
-    #     for i, label in enumerate(self.x_labels):
-    #         label.scale(self.x_label_scale_value)
-    #         pos = DOWN if (self.values[i] >= 0) else UP
-    #         label.move_to(
-    #             self.c2p(i + 0.5, 0)
-    #             + pos * max_lbl_height * self.x_label_scale_value / 2
-    #             + pos * self.x_label_buff
-    #         )
-
-    #     self.add(self.x_labels)
