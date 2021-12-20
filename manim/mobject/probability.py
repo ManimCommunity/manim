@@ -4,8 +4,10 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 # import typing
-from typing import Iterable, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
+
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
@@ -15,10 +17,6 @@ from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
-
-from colour import Color
-
-# from ..mobject.svg.text_mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
     BLUE,
@@ -36,6 +34,8 @@ from ..utils.iterables import tuplify
 
 EPSILON = 0.0001
 
+if TYPE_CHECKING:
+    from ..mobject.types.vectorized_mobject import VMobject
 
 class SampleSpace(Rectangle):
     """
@@ -190,7 +190,9 @@ class SampleSpace(Rectangle):
 
 
 class BarChart(Axes):
-    """Creates a bar chart. (mention something about inheriting from Axes, and sharingits methods)
+    """Creates a bar chart. Inherits from :class:`~.Axes`, so it shares its methods
+    and attributes. Each axis inherits from :class:`~.NumberLine`, so pass in ``x_axis_config``/``y_axis_config``
+    to control their attributes.
 
     Parameters
     ----------
@@ -224,6 +226,7 @@ class BarChart(Axes):
 
         class BarChartExample(Scene):
             def construct(self):
+                title = Title("Number of pull requests").to_edge(UP)
                 pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
                 versions = [
                     "v0.1.0",
@@ -236,12 +239,17 @@ class BarChart(Axes):
                     "v0.7.0",
                 ]
                 colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
-                bar = BarChart(
-                    values = pull_req,
-                    bar_names = versions,
-                    bar_colors = colors
+
+                chart = BarChart(
+                    values=pull_req,
+                    bar_names=versions,
+                    bar_colors=colors,
+                    y_axis_config={
+                        "font_size": 30,
+                        "include_tip": True,
+                    },
                 )
-                self.add(bar)
+                self.add(chart)
     """
 
     def __init__(
@@ -302,7 +310,7 @@ class BarChart(Axes):
             **kwargs,
         )
 
-        self.add_bars()
+        self._add_bars()
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
@@ -312,9 +320,55 @@ class BarChart(Axes):
     def get_bars(self):
         return self.bars
 
-    def get_bar_labels(
-        self, color:Optional[Color]=None, font_size:Optional[float]=None, buff:float=MED_SMALL_BUFF, label_constructor=Tex
+    def add_bar_labels(
+        self,
+        color: Optional[Color] = None,
+        font_size: Optional[float] = None,
+        buff: float = MED_SMALL_BUFF,
+        label_constructor: "VMobject" = Tex,
     ):
+        """Annotates each bar with its corresponding value. Use `self.bar_labels` to access the
+        labels after creation.
+
+        Parameters
+        ----------
+        color
+            The color of each label. By default ``None`` and is based on the parent's bar color.
+        font_size
+            The font size of each label. By default ``None`` and scales to the width of the bar.
+        buff
+            The distance from each label to its bar. By default 0.4.
+        label_constructor
+            The Mobject class to construct the labels, by default :class:`~.Tex`.
+
+        Examples
+        --------
+        .. manim:: AddBarLabelsExample
+            :save_last_frame:
+
+            class AddBarLabelsExample(Scene):
+                def construct(self):
+                    title = Title("Number of pull requests").to_edge(UP)
+                    pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
+                    versions = [
+                        "v0.1.0",
+                        "v0.1.1",
+                        "v0.2.0",
+                        "v0.3.0",
+                        "v0.4.0",
+                        "v0.5.0",
+                        "v0.6.0",
+                        "v0.7.0",
+                    ]
+
+                    chart = BarChart(pull_req,versions).add_bar_labels()
+                    self.add(chart)
+
+        Returns
+        -------
+        self
+            For chaining purposes.
+        """
 
         self.bar_labels = VGroup()
 
@@ -333,7 +387,9 @@ class BarChart(Axes):
             pos = UP if (value >= 0) else DOWN
             bar_lbl.next_to(bar, pos, buff=buff)
             self.bar_labels.add(bar_lbl)
-        return self.bar_labels
+        self.add(self.bar_labels)
+        return self
+        # return self.bar_labels
 
     def get_values(self):
         return self.values
@@ -341,7 +397,7 @@ class BarChart(Axes):
     def get_bar_names(self):
         return self.bar_names
 
-    def add_bars(self):
+    def _add_bars(self):
         if self.bars is not None:
             return
         self.bars = VGroup()
