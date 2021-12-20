@@ -3,9 +3,9 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-import typing
+# import typing
 from typing import Iterable, Optional, Sequence, Union
-
+import numpy as np
 
 from .. import config
 from ..constants import *
@@ -15,6 +15,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
+
 # from ..mobject.svg.text_mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
@@ -274,27 +275,22 @@ class BarChart(Axes):
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
 
-        if len(y_range) == 2:
-            y_range = [*y_range,y_range[1]/len(self.values)]  
-
         x_range = [0, len(self.values), 1]
 
         if y_range is None:
             y_range = [
                 min(0, min(self.values)),
                 max(0, max(self.values)),
-                self.y_step,
+                round(max(self.values) / y_length, 2),
             ]
         elif len(y_range) == 2:
-            self.y_step = round(max(self.values) / y_length, 2)
+            y_range = [*y_range, round(max(self.values) / y_length, 2)]
 
         if x_length is None:
             x_length = min(len(self.values), config.frame_width - 2)
 
-
         self.bars = None
         self.x_labels = None
-        self.y_labels = None
         self.bar_labels = None
 
         super().__init__(
@@ -302,14 +298,15 @@ class BarChart(Axes):
             y_range=y_range,
             x_length=x_length,
             y_length=y_length,
-            axis_config=self.axis_config,
             tips=kwargs.pop("tips", False),
             **kwargs,
         )
 
-        self.add_bars()
-        self.add_x_labels()
-        self.center()
+        # self.add_bars()
+        # print(f"{self.x_axis.font_size=}")
+        val_range = np.arange(0.5, len(self.bar_names), 1) # 0.5 shifted so that labels are centered, not on ticks
+        self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
+        # self.center()
 
     def get_bars(self):
         return self.bars
@@ -370,38 +367,38 @@ class BarChart(Axes):
 
         self.add_to_back(self.bars)
 
-    def add_x_labels(self):
-        if self.x_labels is not None or self.bar_names is None:
-            return
-        self.x_labels = VGroup()
+    # def add_x_labels(self):
+    #     if self.x_labels is not None or self.bar_names is None:
+    #         return
+    #     self.x_labels = VGroup()
 
-        max_lbl_width = 0
-        max_lbl_height = 0
-        for i, name in enumerate(self.bar_names):
-            if i == len(self.values):
-                self.bar_names = self.bar_names[:i]
-                break
-            label = self.x_label_constructor(name)
-            if max_lbl_width < label.width:
-                max_lbl_width = label.width
-            if max_lbl_height < label.height:
-                max_lbl_height = label.height
-            self.x_labels.add(label)
+    #     max_lbl_width = 0
+    #     max_lbl_height = 0
+    #     for i, name in enumerate(self.bar_names):
+    #         if i == len(self.values):
+    #             self.bar_names = self.bar_names[:i]
+    #             break
+    #         label = self.x_label_constructor(name)
+    #         if max_lbl_width < label.width:
+    #             max_lbl_width = label.width
+    #         if max_lbl_height < label.height:
+    #             max_lbl_height = label.height
+    #         self.x_labels.add(label)
 
-        if self.x_label_scale_value is None:
-            unit_width = self.c2p(1, 0)[0] - self.c2p(0, 0)[0]
-            self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.75)
+    #     if self.x_label_scale_value is None:
+    #         unit_width = self.c2p(1, 0)[0] - self.c2p(0, 0)[0]
+    #         self.x_label_scale_value = min(unit_width * 0.75 / max_lbl_width, 0.75)
 
-        if self.x_label_buff is None:
-            self.x_label_buff = max_lbl_height * self.x_label_scale_value * 0.75
+    #     if self.x_label_buff is None:
+    #         self.x_label_buff = max_lbl_height * self.x_label_scale_value * 0.75
 
-        for i, label in enumerate(self.x_labels):
-            label.scale(self.x_label_scale_value)
-            pos = DOWN if (self.values[i] >= 0) else UP
-            label.move_to(
-                self.c2p(i + 0.5, 0)
-                + pos * max_lbl_height * self.x_label_scale_value / 2
-                + pos * self.x_label_buff
-            )
+    #     for i, label in enumerate(self.x_labels):
+    #         label.scale(self.x_label_scale_value)
+    #         pos = DOWN if (self.values[i] >= 0) else UP
+    #         label.move_to(
+    #             self.c2p(i + 0.5, 0)
+    #             + pos * max_lbl_height * self.x_label_scale_value / 2
+    #             + pos * self.x_label_buff
+    #         )
 
-        self.add(self.x_labels)
+    #     self.add(self.x_labels)
