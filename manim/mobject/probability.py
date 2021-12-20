@@ -188,36 +188,33 @@ class SampleSpace(Rectangle):
 
 
 class BarChart(Axes):
-    """This is a class for easily creating a Bar Chart. The only required parameter is a list of `values`. Everything else is automatically calculated to have a good looking on screen.
+    """Creates a bar chart. (mention something about inheriting from Axes, and sharingits methods)
 
     Parameters
     ----------
     values
-        A list of values for each `bar`. It also accepts negative values.
+        An iterable of values for each bar. Accepts negative values.
     bar_names
-        A list of names for each `bar`. It is optional to match the `values` list length.
-    x_length
-        The x_axis length. If `None` it is automatically adjusted depending on the number of values and the screen frame width.
-    x_label_scale_value
-        The scale value for `x_labels`. If `None` it is automatically calculated depending on the bar's width.
-    y_length
-        The y_axis length. If `None` it is automatically adjusted depending on the number of values and the screen frame height.
+        An iterable of names for each `bar`. Does not have to match the length of ``values``.
     y_range
-        The y_axis range of values. If `None` it is automatically calculated caring about negative values.
-    y_step
-        The step value between `y_labels`. If `None` it is calculated to have one label each `y_length` unit, using two decimal places.
-    y_include_numbers
-        Whether or not to include 'y_labels'. Setting this parameter to `False` won't disappear the `y_axis` ticks, only the numbers.
-    y_number_scale_value
-        The scale value for 'y_axis' numbers. This parameter is automatically passed to 'y_axis_config' parameter of 'y_axis'.
+        The y_axis range of values. If ``None``, the range will be adjusted based on the
+        min/max of ``values`` and the step will be calculated based on ``y_length``. 
+    x_length
+        The length of the x-axis. If ``None``, it is automatically adjusted based on
+        the number of values and the width of the screen.
+    y_length
+        The y_axis length. If ``None``, it is automatically adjusted based on the
+        number of values and the height of the screen.
     bar_colors
-        The color for the bars. It is possible to give a single color as well as a list of colors. If the 'bar_colors' list length doesn't match the 'values' list length intermediate colors will be automatically calculated.
+        The color for the bars. Accepts a single color or an iterable of colors.
+        If the length of``bar_colors`` does not match that of ``values``,
+        intermediate colors will be automatically determined.
     bar_buff
         The space between a bar an the next one. This value is set in terms of 'x_axis' scale.
     bar_fill_opacity
-        The fill opacity for the bars.
+        The fill opacity of the bars.
     bar_stroke_width
-        The stroke width for the bars.
+        The stroke width of the bars.
 
     Examples
     --------
