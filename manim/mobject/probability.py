@@ -4,19 +4,18 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 import typing
-from typing import Iterable, List, Optional, Sequence, Union
+from typing import Iterable, Optional, Sequence, Union
 
-import numpy as np
 
 from .. import config
 from ..constants import *
 from ..mobject.coordinate_systems import Axes
-from ..mobject.geometry import Line, Rectangle
+from ..mobject.geometry import Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import *
-from ..mobject.svg.text_mobject import *
+from ..mobject.svg.tex_mobject import MathTex, Tex
+# from ..mobject.svg.text_mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
     BLUE,
@@ -251,14 +250,10 @@ class BarChart(Axes):
         values: Iterable[float],
         bar_names: Optional[Iterable[str]] = None,
         x_length: Optional[float] = None,
-        x_label_constructor=Text,
         x_label_buff=None,
-        x_label_scale_value: Optional[float] = None,
         y_length: Optional[float] = config["frame_height"] - 4,
         y_range: Optional[Sequence[float]] = None,
-        y_step: Optional[float] = None,
         y_include_numbers: Optional[bool] = True,
-        y_number_scale_value: Optional[float] = 0.75,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -275,14 +270,10 @@ class BarChart(Axes):
         self.values = values
         self.bar_names = bar_names
         self.x_length = x_length
-        self.x_label_constructor = x_label_constructor
         self.x_label_buff = x_label_buff
-        self.x_label_scale_value = x_label_scale_value
         self.y_length = y_length
         self.y_range = y_range
-        self.y_step = y_step
         self.y_include_numbers = y_include_numbers
-        self.y_number_scale_value = y_number_scale_value
         self.bar_colors = bar_colors
         self.bar_buff = bar_buff
         self.bar_fill_opacity = bar_fill_opacity
