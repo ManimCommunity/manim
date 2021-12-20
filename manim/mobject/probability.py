@@ -249,10 +249,10 @@ class BarChart(Axes):
         self,
         values: Iterable[float],
         bar_names: Optional[Iterable[str]] = None,
+        y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
         x_label_buff=None,
         y_length: Optional[float] = config.frame_height - 4,
-        y_range: Optional[Sequence[float]] = None,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -274,8 +274,8 @@ class BarChart(Axes):
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
 
-        if self.y_step is None:
-            self.y_step = round(max(self.values) / self.y_length, 2)
+        if len(y_range) == 2:
+            y_range = [*y_range,y_range[1]/len(self.values)]  
 
         x_range = [0, len(self.values), 1]
 
@@ -285,40 +285,17 @@ class BarChart(Axes):
                 max(0, max(self.values)),
                 self.y_step,
             ]
-        else:
-            y_range = self.y_range[:2]
-            y_range.append(self.y_step)
+        elif len(y_range) == 2:
+            self.y_step = round(max(self.values) / y_length, 2)
 
         if x_length is None:
-            x_length = min(len(self.values), config["frame_width"] - 2)
+            x_length = min(len(self.values), config.frame_width - 2)
 
-        self.axis_config = {
-            "stroke_color": WHITE,
-            "include_tip": False,
-        }
-        self.x_axis_config = {}
-        self.y_axis_config = {
-            "include_numbers": self.y_include_numbers,
-            "number_scale_value": self.y_number_scale_value,
-        }
-
-        if min(self.y_range) < 0:
-            self.y_axis_config["exclude_origin_tick"] = False
-            self.y_axis_config["numbers_to_exclude"] = None
 
         self.bars = None
         self.x_labels = None
         self.y_labels = None
         self.bar_labels = None
-
-        self.update_default_configs(
-            (self.axis_config, self.x_axis_config, self.y_axis_config),
-            (
-                kwargs.pop("axis_config", None),
-                kwargs.pop("x_axis_config", None),
-                kwargs.pop("y_axis_config", None),
-            ),
-        )
 
         super().__init__(
             x_range=x_range,
@@ -326,13 +303,9 @@ class BarChart(Axes):
             x_length=x_length,
             y_length=y_length,
             axis_config=self.axis_config,
-            x_axis_config=self.x_axis_config,
-            y_axis_config=self.y_axis_config,
+            tips=kwargs.pop("tips", False),
             **kwargs,
         )
-
-        if self.y_include_numbers:
-            self.y_labels = self.get_y_axis().numbers
 
         self.add_bars()
         self.add_x_labels()
@@ -340,12 +313,6 @@ class BarChart(Axes):
 
     def get_bars(self):
         return self.bars
-
-    def get_x_labels(self):
-        return self.x_labels
-
-    def get_y_labels(self):
-        return self.y_labels
 
     def get_bar_labels(
         self, color=None, scale=None, buff=MED_SMALL_BUFF, label_constructor=Tex
