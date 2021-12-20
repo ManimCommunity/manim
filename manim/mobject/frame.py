@@ -8,7 +8,6 @@ __all__ = [
 ]
 
 
-from manim.utils.deprecation import deprecated
 
 from .. import config
 from ..constants import *
@@ -39,4 +38,3 @@ class FullScreenRectangle(ScreenRectangle):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.height = config["frame_height"]
-

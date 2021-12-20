@@ -801,7 +801,6 @@ class CoordinateSystem:
         )
         return graph
 
-
     def plot_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(

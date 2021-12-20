@@ -18,7 +18,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
-from ...utils.deprecation import deprecated_params
 
 
 class Brace(SVGPathMobject):

@@ -16,7 +16,6 @@ from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.color import Colors
 from ..utils.config_ops import _Data, _Uniforms
-from ..utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -821,7 +820,6 @@ class OpenGLMobject:
         self.submobjects[index] = new_submob
         self.assemble_family()
         return self
-
 
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
