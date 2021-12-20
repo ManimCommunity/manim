@@ -313,9 +313,6 @@ class BarChart(Axes):
         self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
         self.y_axis.add_numbers()
 
-    def get_bars(self):
-        return self.bars
-
     def add_bar_labels(
         self,
         color: Optional[Color] = None,
@@ -385,13 +382,6 @@ class BarChart(Axes):
             self.bar_labels.add(bar_lbl)
         self.add(self.bar_labels)
         return self
-        # return self.bar_labels
-
-    def get_values(self):
-        return self.values
-
-    def get_bar_names(self):
-        return self.bar_names
 
     def _add_bars(self):
         if self.bars is not None:
