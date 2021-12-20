@@ -3,7 +3,6 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-# import typing
 from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
 
 import numpy as np
@@ -19,14 +18,11 @@ from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
-    BLUE,
     BLUE_E,
     DARK_GREY,
-    GREEN,
     GREEN_E,
     LIGHT_GREY,
     MAROON_B,
-    WHITE,
     YELLOW,
     color_gradient,
 )
