@@ -175,13 +175,13 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        axis :
-            The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
         axes :
             The axes for the parametric surface, which will be used to map axis-values to colors.
         colors :
             A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
+        axis :
+            The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
 
         Returns
         -------
