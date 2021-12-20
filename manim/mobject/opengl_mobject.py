@@ -822,16 +822,6 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    @deprecated(
-        since="v0.12.0",
-        until="v0.13.0",
-        replacement="self.submobjects",
-        message="Switching to using properties for submobjects",
-    )
-    def set_submobjects(self, submobject_list):
-        self.remove(*self.submobjects)
-        self.add(*submobject_list)
-        return self
 
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
