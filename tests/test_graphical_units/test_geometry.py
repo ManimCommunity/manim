@@ -59,7 +59,7 @@ def test_Dot(scene):
 
 @frames_comparison
 def test_DashedVMobject(scene):
-    circle = DashedVMobject(Circle(), 12, 0.9)
+    circle = DashedVMobject(Circle(), 12, 0.9, dash_offset=0.1)
     line = DashedLine(dash_length=0.5)
     scene.add(circle, line)
 
