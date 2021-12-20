@@ -33,6 +33,7 @@ EPSILON = 0.0001
 if TYPE_CHECKING:
     from ..mobject.types.vectorized_mobject import VMobject
 
+
 class SampleSpace(Rectangle):
     """
 
