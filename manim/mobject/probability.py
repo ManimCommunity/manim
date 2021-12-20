@@ -251,9 +251,8 @@ class BarChart(Axes):
         bar_names: Optional[Iterable[str]] = None,
         x_length: Optional[float] = None,
         x_label_buff=None,
-        y_length: Optional[float] = config["frame_height"] - 4,
+        y_length: Optional[float] = config.frame_height - 4,
         y_range: Optional[Sequence[float]] = None,
-        y_include_numbers: Optional[bool] = True,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -269,11 +268,7 @@ class BarChart(Axes):
 
         self.values = values
         self.bar_names = bar_names
-        self.x_length = x_length
         self.x_label_buff = x_label_buff
-        self.y_length = y_length
-        self.y_range = y_range
-        self.y_include_numbers = y_include_numbers
         self.bar_colors = bar_colors
         self.bar_buff = bar_buff
         self.bar_fill_opacity = bar_fill_opacity
@@ -282,20 +277,20 @@ class BarChart(Axes):
         if self.y_step is None:
             self.y_step = round(max(self.values) / self.y_length, 2)
 
-        self.x_range = [0, len(self.values), 1]
+        x_range = [0, len(self.values), 1]
 
-        if self.y_range is None:
-            self.y_range = [
+        if y_range is None:
+            y_range = [
                 min(0, min(self.values)),
                 max(0, max(self.values)),
                 self.y_step,
             ]
         else:
-            self.y_range = self.y_range[:2]
-            self.y_range.append(self.y_step)
+            y_range = self.y_range[:2]
+            y_range.append(self.y_step)
 
-        if self.x_length is None:
-            self.x_length = min(len(self.values), config["frame_width"] - 2)
+        if x_length is None:
+            x_length = min(len(self.values), config["frame_width"] - 2)
 
         self.axis_config = {
             "stroke_color": WHITE,
@@ -326,10 +321,10 @@ class BarChart(Axes):
         )
 
         super().__init__(
-            x_range=self.x_range,
-            y_range=self.y_range,
-            x_length=self.x_length,
-            y_length=self.y_length,
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
             axis_config=self.axis_config,
             x_axis_config=self.x_axis_config,
             y_axis_config=self.y_axis_config,
