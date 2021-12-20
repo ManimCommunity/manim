@@ -16,6 +16,8 @@ from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
 
+from colour import Color
+
 # from ..mobject.svg.text_mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
@@ -198,7 +200,7 @@ class BarChart(Axes):
         An iterable of names for each `bar`. Does not have to match the length of ``values``.
     y_range
         The y_axis range of values. If ``None``, the range will be adjusted based on the
-        min/max of ``values`` and the step will be calculated based on ``y_length``. 
+        min/max of ``values`` and the step will be calculated based on ``y_length``.
     x_length
         The length of the x-axis. If ``None``, it is automatically adjusted based on
         the number of values and the width of the screen.
@@ -209,8 +211,8 @@ class BarChart(Axes):
         The color for the bars. Accepts a single color or an iterable of colors.
         If the length of``bar_colors`` does not match that of ``values``,
         intermediate colors will be automatically determined.
-    bar_buff
-        The space between a bar an the next one. This value is set in terms of 'x_axis' scale.
+    bar_width
+        The length of a bar. Must be between 0 and 1.
     bar_fill_opacity
         The fill opacity of the bars.
     bar_stroke_width
@@ -249,7 +251,6 @@ class BarChart(Axes):
         bar_names: Optional[Iterable[str]] = None,
         y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
-        x_label_buff=None,
         y_length: Optional[float] = config.frame_height - 4,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
@@ -258,7 +259,7 @@ class BarChart(Axes):
             "#ff6361",
             "#ffa600",
         ],
-        bar_buff: Optional[float] = MED_LARGE_BUFF,
+        bar_width: float = MED_LARGE_BUFF,
         bar_fill_opacity: Optional[float] = 0.7,
         bar_stroke_width: Optional[float] = 3,
         **kwargs,
@@ -266,9 +267,8 @@ class BarChart(Axes):
 
         self.values = values
         self.bar_names = bar_names
-        self.x_label_buff = x_label_buff
         self.bar_colors = bar_colors
-        self.bar_buff = bar_buff
+        self.bar_width = bar_width
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
 
@@ -286,7 +286,7 @@ class BarChart(Axes):
         if x_length is None:
             x_length = min(len(self.values), config.frame_width - 2)
 
-        x_axis_config = {"font_size":24}
+        x_axis_config = {"font_size": 24}
         self._update_default_configs(x_axis_config, kwargs.pop("x_axis_config", {}))
 
         self.bars = None
@@ -303,20 +303,20 @@ class BarChart(Axes):
             **kwargs,
         )
 
-        # self.add_bars()
-        # print(f"{self.x_axis.font_size=}")
-        val_range = np.arange(0.5, len(self.bar_names), 1) # 0.5 shifted so that labels are centered, not on ticks
+        self.add_bars()
+        val_range = np.arange(
+            0.5, len(self.bar_names), 1
+        )  # 0.5 shifted so that labels are centered, not on ticks
         self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
-        # self.center()
+        self.y_axis.add_numbers()
 
     def get_bars(self):
         return self.bars
 
     def get_bar_labels(
-        self, color=None, scale=None, buff=MED_SMALL_BUFF, label_constructor=Tex
+        self, color:Optional[Color]=None, font_size:Optional[float]=None, buff:float=MED_SMALL_BUFF, label_constructor=Tex
     ):
-        if self.bar_labels is not None:
-            return self.bar_labels
+
         self.bar_labels = VGroup()
 
         for bar, value in zip(self.bars, self.values):
@@ -327,11 +327,10 @@ class BarChart(Axes):
             else:
                 bar_lbl.set_color(color)
 
-            if scale is None:
+            if font_size is None:
                 bar_lbl.scale_to_fit_width(min(bar.width * 0.6, 0.5))
-                bar_lbl.height = min(bar_lbl.height, 0.25)
             else:
-                bar_lbl.scale(scale)
+                bar_lbl.font_size = font_size
             pos = UP if (value >= 0) else DOWN
             bar_lbl.next_to(bar, pos, buff=buff)
             self.bar_labels.add(bar_lbl)
@@ -350,7 +349,7 @@ class BarChart(Axes):
 
         for i, value in enumerate(self.values):
             bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
-            bar_w = self.c2p(1 - self.bar_buff, 0)[0] - self.c2p(0, 0)[0]
+            bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
             bar = Rectangle(
                 height=bar_h,
                 width=bar_w,
