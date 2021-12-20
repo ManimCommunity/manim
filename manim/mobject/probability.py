@@ -266,7 +266,7 @@ class BarChart(Axes):
         bar_fill_opacity: Optional[float] = 0.7,
         bar_stroke_width: Optional[float] = 3,
         **kwargs,
-    ) -> "VGroup":
+    ):
 
         self.values = values
         self.bar_names = bar_names
@@ -356,11 +356,6 @@ class BarChart(Axes):
 
                     chart = BarChart(pull_req,versions).add_bar_labels()
                     self.add(chart)
-
-        Returns
-        -------
-        self
-            For chaining purposes.
         """
 
         self.bar_labels = VGroup()
