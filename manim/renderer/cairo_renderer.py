@@ -24,7 +24,6 @@ class CairoRenderer(Renderer):
         super().__init__(camera=camera_cls())
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
-        self._original_skipping_status = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
         self.time = 0

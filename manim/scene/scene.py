@@ -137,7 +137,7 @@ class Scene:
         )
         self._renderer.init_scene()
         if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
+            self._original_skipping_status = True
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -903,6 +903,8 @@ class Scene:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
+        if self.file_writer.sections[-1].skip_animations:
+            self.skip_animations = True
         if config["save_last_frame"]:
             self.skip_animations = True
         if (
@@ -926,6 +928,7 @@ class Scene:
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
+            # self.time += self.duration todo ?
         else:
             if config["disable_caching"]:
                 logger.info("Caching disabled.")
