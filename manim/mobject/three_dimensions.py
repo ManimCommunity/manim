@@ -516,9 +516,9 @@ class Cone(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-        try:
+        if r > 0:
             theta = np.arccos(z / r)
-        except ZeroDivisionError:
+        else:
             theta = 0
 
         if x == 0:
@@ -647,9 +647,9 @@ class Cylinder(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-        try:
+        if r > 0:
             theta = np.arccos(z / r)
-        except ZeroDivisionError:
+        else:
             theta = 0
 
         if x == 0:
