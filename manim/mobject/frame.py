@@ -6,7 +6,6 @@ __all__ = [
 ]
 
 
-
 from .. import config
 from ..constants import *
 from ..mobject.geometry import Rectangle
