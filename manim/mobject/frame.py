@@ -3,8 +3,6 @@
 __all__ = [
     "ScreenRectangle",
     "FullScreenRectangle",
-    "FullScreenFadeRectangle",
-    "PictureInPictureFrame",
 ]
 
 
