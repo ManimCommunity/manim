@@ -20,6 +20,17 @@ main library.
 Contributing
 ============
 
+.. important::
+   Keep in mind that Manim is still a work in progress.
+   Tutorials and documentation are always subject to change.
+   When a developer implements a new feature, they are not forced to respect any translations.
+   This means that parts of the translation might become outdated over time.
+
+   That being said, improving the documentation and making it more accessible is still highly encouraged.
+   And even if your work gets outdated and requires change, you or someone else can simply adjust the translation.
+   Your efforts are not in vail!
+
+
 Voting
 ------
 
