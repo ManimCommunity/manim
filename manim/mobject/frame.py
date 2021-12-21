@@ -10,6 +10,7 @@ from .. import config
 from ..constants import *
 from ..mobject.geometry import Rectangle
 
+
 class ScreenRectangle(Rectangle):
     def __init__(self, aspect_ratio=16.0 / 9.0, height=4, **kwargs):
         super().__init__(width=aspect_ratio * height, height=height, **kwargs)
