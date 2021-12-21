@@ -15,15 +15,24 @@ def test_import_color(using_opengl_renderer):
 def test_background_color(using_opengl_renderer):
     S = Scene()
     S.renderer.background_color = "#ff0000"
-    S.renderer.update_frame(S)
+    S.renderer.update_frame(S.mobjects, skip_animations=S.skip_animations,
+                                        moving_mobjects=S.moving_mobjects,
+                                        foreground_mobjects=S.foreground_mobjects, file_writer=S.file_writer,
+                                        meshes=S.meshes)
     assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 0, 0, 255]))
 
     S.renderer.background_color = "#436f80"
-    S.renderer.update_frame(S)
+    S.renderer.update_frame(S.mobjects, skip_animations=S.skip_animations,
+                                        moving_mobjects=S.moving_mobjects,
+                                        foreground_mobjects=S.foreground_mobjects, file_writer=S.file_writer,
+                                        meshes=S.meshes)
     assert np.all(S.renderer.get_frame()[0, 0] == np.array([67, 111, 128, 255]))
 
     S.renderer.background_color = "#fff"
-    S.renderer.update_frame(S)
+    S.renderer.update_frame(S.mobjects, skip_animations=S.skip_animations,
+                                        moving_mobjects=S.moving_mobjects,
+                                        foreground_mobjects=S.foreground_mobjects, file_writer=S.file_writer,
+                                        meshes=S.meshes)
     assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 255, 255, 255]))
 
 

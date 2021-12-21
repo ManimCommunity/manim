@@ -136,6 +136,8 @@ class Scene:
             self.__class__.__name__,
         )
         self._renderer.init_scene()
+        if self.file_writer.sections[-1].skip_animations:
+            self.skip_animations = True
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects

@@ -144,6 +144,7 @@ def test_Arrange(scene):
     scene.add(x)
 
 
+# TODO failing - expects the square to disappear, not sure if this is correct
 @frames_comparison(last_frame=False)
 def test_ZIndex(scene):
     circle = Circle().set_fill(RED, opacity=1)
