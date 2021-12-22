@@ -1100,7 +1100,6 @@ class MarkupText(SVGMobject):
         **kwargs,
     ):
         self.text = text
-        self.color = Color(color) if color else None
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -1133,7 +1132,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        file_name = self._text2svg()
+        file_name = self._text2svg(Color(color) if color else None)
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -1212,10 +1211,10 @@ class MarkupText(SVGMobject):
         else:
             self.scale(font_val / self.font_size)
 
-    def _text2hash(self):
+    def _text2hash(self, color: Color):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + self.color.hex_l
+            "MARKUPPANGO" + self.font + self.slant + self.weight + color.hex_l
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
@@ -1225,7 +1224,7 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self):
+    def _text2svg(self, color: Color):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -1235,14 +1234,14 @@ class MarkupText(SVGMobject):
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        hash_name = self._text2hash()
+        hash_name = self._text2hash(color)
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             svg_file = file_name
         else:
             logger.debug(f"Setting Text {self.text}")
             svg_file = MarkupUtils.text2svg(
-                f'<span foreground="{self.color}">{self.text}</span>',
+                f'<span foreground="{color}">{self.text}</span>',
                 self.font,
                 self.slant,
                 self.weight,

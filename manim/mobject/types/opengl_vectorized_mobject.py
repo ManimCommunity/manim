@@ -65,7 +65,6 @@ class OpenGLVMobject(OpenGLMobject):
     stroke_rgba = _Data()
     stroke_width = _Data()
     unit_normal = _Data()
-    data = {}
 
     def __init__(
         self,
@@ -95,8 +94,7 @@ class OpenGLVMobject(OpenGLMobject):
         triangulation_locked: bool = False,
         **kwargs,
     ):
-        self.data = OpenGLVMobject.data
-        OpenGLVMobject.data = {}
+        self.data = {}
         self.fill_opacity = fill_opacity
         self.stroke_opacity = stroke_opacity
         self.stroke_width = [stroke_width]
