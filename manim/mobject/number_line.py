@@ -58,7 +58,7 @@ class NumberLine(Line):
         by the step size, this default can be overridden by ``decimal_number_config``.
     scaling
         The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
-    font size
+    font_size
         The size of the label mobjects. Defaults to 36.
     label_direction
         The specific position to which label mobjects are added on the line.
