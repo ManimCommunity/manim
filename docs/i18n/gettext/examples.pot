@@ -30,19 +30,19 @@ msgstr ""
 msgid "Basic Concepts"
 msgstr ""
 
-#: ../../source/examples.rst:98
+#: ../../source/examples.rst:134
 msgid "Animations"
 msgstr ""
 
-#: ../../source/examples.rst:180
+#: ../../source/examples.rst:216
 msgid "You can use multiple ValueTrackers simultaneously."
 msgstr ""
 
-#: ../../source/examples.rst:274
+#: ../../source/examples.rst:310
 msgid "Plotting with Manim"
 msgstr ""
 
-#: ../../source/examples.rst:402
+#: ../../source/examples.rst:438
 msgid "Special Camera Settings"
 msgstr ""
 

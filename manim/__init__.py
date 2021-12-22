@@ -85,8 +85,6 @@ from .mobject.value_tracker import *
 from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
 from .scene.moving_camera_scene import *
-from .scene.reconfigurable_scene import *
-from .scene.sample_space_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
 from .scene.section import *
