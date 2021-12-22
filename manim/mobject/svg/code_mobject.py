@@ -20,7 +20,6 @@ from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE
-from ...utils.deprecation import deprecated_params
 
 
 class Code(VGroup):
