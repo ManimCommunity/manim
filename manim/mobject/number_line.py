@@ -17,7 +17,6 @@ from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
