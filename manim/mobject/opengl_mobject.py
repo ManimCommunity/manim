@@ -16,7 +16,6 @@ from ..utils.bezier import integer_interpolate, interpolate
 from ..utils.color import *
 from ..utils.color import Colors
 from ..utils.config_ops import _Data, _Uniforms
-from ..utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import (
@@ -820,17 +819,6 @@ class OpenGLMobject:
             old_submob.parents.remove(self)
         self.submobjects[index] = new_submob
         self.assemble_family()
-        return self
-
-    @deprecated(
-        since="v0.12.0",
-        until="v0.13.0",
-        replacement="self.submobjects",
-        message="Switching to using properties for submobjects",
-    )
-    def set_submobjects(self, submobject_list):
-        self.remove(*self.submobjects)
-        self.add(*submobject_list)
         return self
 
     def invert(self, recursive=False):

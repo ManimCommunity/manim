@@ -30,7 +30,7 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
-from ..utils.deprecation import deprecated, deprecated_params
+from ..utils.deprecation import deprecated
 from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 

@@ -35,7 +35,6 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK, WHITE
-from ...utils.deprecation import deprecated_params
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 

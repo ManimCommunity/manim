@@ -35,7 +35,6 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import PI
-from ..utils.deprecation import deprecated_params
 from ..utils.paths import spiral_path
 
 if typing.TYPE_CHECKING:
@@ -221,10 +220,6 @@ class SpinInFromNothing(GrowFromCenter):
 
     """
 
-    @deprecated_params(
-        params="path_arc",
-        message="Parameter angle is more robust, supporting angles greater than PI.",
-    )
     def __init__(
         self,
         mobject: "Mobject",
@@ -232,10 +227,7 @@ class SpinInFromNothing(GrowFromCenter):
         point_color: str = None,
         **kwargs
     ) -> None:
-        if "path_arc" in kwargs:
-            super().__init__(mobject, point_color=point_color, **kwargs)
-        else:
-            self.angle = angle
-            super().__init__(
-                mobject, path_func=spiral_path(angle), point_color=point_color, **kwargs
-            )
+        self.angle = angle
+        super().__init__(
+            mobject, path_func=spiral_path(angle), point_color=point_color, **kwargs
+        )
