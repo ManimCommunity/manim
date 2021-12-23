@@ -27,6 +27,25 @@ def straight_path(start_points, end_points, alpha):
     return interpolate(start_points, end_points, alpha)
 
 
+def path_along_circles(arc_angle, circles_centers, axis=OUT):
+    if np.linalg.norm(axis) == 0:
+        axis = OUT
+    unit_axis = axis / np.linalg.norm(axis)
+
+    def path(start_points, end_points, alpha):
+        detransformed_end_points = circles_centers + np.dot(
+            end_points - circles_centers, rotation_matrix(-arc_angle, unit_axis).T
+        )
+        rot_matrix = rotation_matrix(alpha * arc_angle, unit_axis)
+        return circles_centers + np.dot(
+            interpolate(start_points, detransformed_end_points, alpha)
+            - circles_centers,
+            rot_matrix.T,
+        )
+
+    return path
+
+
 def path_along_arc(arc_angle, axis=OUT, arc_centers=None):
     """
     If vect is vector from start to end, [vect[:,1], -vect[:,0]] is
@@ -39,13 +58,10 @@ def path_along_arc(arc_angle, axis=OUT, arc_centers=None):
     unit_axis = axis / np.linalg.norm(axis)
 
     def path(start_points, end_points, alpha):
-        if arc_centers is None:
-            vects = end_points - start_points
-            centers = start_points + 0.5 * vects
-            if arc_angle != np.pi:
-                centers += np.cross(unit_axis, vects / 2.0) / np.tan(arc_angle / 2)
-        else:
-            centers = arc_centers
+        vects = end_points - start_points
+        centers = start_points + 0.5 * vects
+        if arc_angle != np.pi:
+            centers += np.cross(unit_axis, vects / 2.0) / np.tan(arc_angle / 2)
         rot_matrix = rotation_matrix(alpha * arc_angle, unit_axis)
         return centers + np.dot(start_points - centers, rot_matrix.T)
 
