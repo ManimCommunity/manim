@@ -124,7 +124,7 @@ def path_along_circles(
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
 
-    def path(start_points, end_points, alpha):
+    def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         detransformed_end_points = circles_centers + np.dot(
             end_points - circles_centers, rotation_matrix(-arc_angle, unit_axis).T
         )
@@ -185,7 +185,7 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
 
-    def path(start_points, end_points, alpha):
+    def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         vects = end_points - start_points
         centers = start_points + 0.5 * vects
         if arc_angle != np.pi:
@@ -310,7 +310,7 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
 
-    def path(start_points, end_points, alpha):
+    def path(start_points: np.ndarray, end_points: np.ndarray, alpha: float):
         rot_matrix = rotation_matrix((alpha - 1) * angle, unit_axis)
         return start_points + alpha * np.dot(end_points - start_points, rot_matrix.T)
 
