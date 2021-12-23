@@ -24,11 +24,47 @@ PATH_FUNC_TYPE = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 def straight_path(
     start_points: np.ndarray, end_points: np.ndarray, alpha: float
 ) -> np.ndarray:
-    """
-    Same function as interpolate, but renamed to reflect
-    intent of being used to determine how a set of points move
-    to another set.  For instance, it should be a specific case
-    of path_along_arc
+    """Simplest path function. Each point in a set goes in a straight path toward its destination.
+
+    Parameters
+    ----------
+    start_points
+        Starting position of each point.
+    end_points
+        Destination of each point.
+    alpha
+        Progress of transformation, `0.0` is the start, `1.0` is the end.
+
+    Examples
+    --------
+
+    .. manim :: StraightPathExample
+
+        class StraightPathExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.straight_path,
+                        run_time=2,
+                    )
+                )
+                self.wait()
+
     """
     return interpolate(start_points, end_points, alpha)
 
@@ -36,6 +72,54 @@ def straight_path(
 def path_along_circles(
     arc_angle: float, circles_centers: np.ndarray, axis: np.ndarray = OUT
 ) -> PATH_FUNC_TYPE:
+    """This function transforms each point by moving it roughly along a circle, each with its own specified center.
+
+    The path may be seen as each point smoothly changing its orbit from its starting position to its destination.
+
+    Parameters
+    ----------
+    arc_angle
+        The angle each point traverses around the quasicircle.
+    circles_centers
+        The centers of each point's quasicircle to ratate around.
+    axis
+        The axis of rotation.
+
+    Examples
+    --------
+
+    .. manim :: PathAlongCirclesExample
+
+        class PathAlongCirclesExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                circle_center = Dot(3 * LEFT)
+                self.add(circle_center)
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.path_along_circles(
+                            2 * PI, circle_center.get_center()),
+                        run_time=3,
+                    )
+                )
+                self.wait()
+
+    """
     if np.linalg.norm(axis) == 0:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
@@ -54,12 +138,46 @@ def path_along_circles(
     return path
 
 
-def path_along_arc(
-    arc_angle: float, axis: np.ndarray = OUT, arc_centers=None
-) -> PATH_FUNC_TYPE:
-    """
-    If vect is vector from start to end, [vect[:,1], -vect[:,0]] is
-    perpendicular to vect in the left direction.
+def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
+    """This function transforms each point by moving it along a circular arc.
+
+    Parameters
+    ----------
+    arc_angle
+        The angle each point traverses around a circular arc.
+    axis
+        The axis of rotation.
+
+    Examples
+    --------
+
+    .. manim :: PathAlongArcExample
+
+        class PathAlongArcExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.path_along_arc(TAU * 2 / 3),
+                        run_time=3,
+                    )
+                )
+                self.wait()
+
     """
     if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path
@@ -79,14 +197,113 @@ def path_along_arc(
 
 
 def clockwise_path() -> PATH_FUNC_TYPE:
+    """This function transforms each point by moving clockwise around a half circle.
+
+    Examples
+    --------
+
+    .. manim :: ClockwisePathExample
+
+        class ClockwisePathExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.clockwise_path(),
+                        run_time=2,
+                    )
+                )
+                self.wait()
+
+    """
     return path_along_arc(-np.pi)
 
 
 def counterclockwise_path() -> PATH_FUNC_TYPE:
+    """This function transforms each point by moving counterclockwise around a half circle.
+
+    Examples
+    --------
+
+    .. manim :: CounterclockwisePathExample
+
+        class CounterclockwisePathExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.counterclockwise_path(),
+                        run_time=2,
+                    )
+                )
+                self.wait()
+
+    """
     return path_along_arc(np.pi)
 
 
 def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
+    """This function transforms each point by moving along a spiral to its destination.
+
+    Examples
+    --------
+
+    .. manim :: SpiralPathExample
+
+        class SpiralPathExample(Scene):
+            def construct(self):
+                colors = [RED, GREEN, BLUE]
+
+                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
+                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+
+                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
+                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+
+                self.add(starting_points)
+                self.add(finish_points)
+                for dot in starting_points:
+                    self.add(TracedPath(dot.get_center, stroke_color=dot.get_color()))
+
+                self.wait()
+                self.play(
+                    Transform(
+                        starting_points, finish_points,
+                        path_func=utils.paths.spiral_path(2 * TAU),
+                        run_time=5,
+                    )
+                )
+                self.wait()
+
+    """
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path
     if np.linalg.norm(axis) == 0:
