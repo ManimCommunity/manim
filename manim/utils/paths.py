@@ -8,6 +8,8 @@ __all__ = [
 ]
 
 
+from typing import Callable
+
 import numpy as np
 
 from ..constants import OUT
@@ -16,8 +18,12 @@ from ..utils.space_ops import rotation_matrix
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
+PATH_FUNC_TYPE = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
-def straight_path(start_points, end_points, alpha):
+
+def straight_path(
+    start_points: np.ndarray, end_points: np.ndarray, alpha: float
+) -> np.ndarray:
     """
     Same function as interpolate, but renamed to reflect
     intent of being used to determine how a set of points move
@@ -27,7 +33,9 @@ def straight_path(start_points, end_points, alpha):
     return interpolate(start_points, end_points, alpha)
 
 
-def path_along_circles(arc_angle, circles_centers, axis=OUT):
+def path_along_circles(
+    arc_angle: float, circles_centers: np.ndarray, axis: np.ndarray = OUT
+) -> PATH_FUNC_TYPE:
     if np.linalg.norm(axis) == 0:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
@@ -46,7 +54,9 @@ def path_along_circles(arc_angle, circles_centers, axis=OUT):
     return path
 
 
-def path_along_arc(arc_angle, axis=OUT, arc_centers=None):
+def path_along_arc(
+    arc_angle: float, axis: np.ndarray = OUT, arc_centers=None
+) -> PATH_FUNC_TYPE:
     """
     If vect is vector from start to end, [vect[:,1], -vect[:,0]] is
     perpendicular to vect in the left direction.
@@ -68,15 +78,15 @@ def path_along_arc(arc_angle, axis=OUT, arc_centers=None):
     return path
 
 
-def clockwise_path():
+def clockwise_path() -> PATH_FUNC_TYPE:
     return path_along_arc(-np.pi)
 
 
-def counterclockwise_path():
+def counterclockwise_path() -> PATH_FUNC_TYPE:
     return path_along_arc(np.pi)
 
 
-def spiral_path(angle, axis=OUT):
+def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path
     if np.linalg.norm(axis) == 0:
