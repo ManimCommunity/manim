@@ -19,7 +19,8 @@ def test_paragraph_singleline():
     # going to hold off for the `Text` api rework
     # e.g. `assert par[0] == Text("first")`
 
-    par = Paragraph("first")
+    # disable ligatures until we decide on a common font for all platforms
+    par = Paragraph("first", disable_ligatures=True)
 
     # flatten
     assert par.lines_text.text == "first"
@@ -32,14 +33,15 @@ def test_paragraph_singleline():
 
     # shape
     assert len(par) == 1
-    assert list(map(len, par)) == [4]  # ligature "fi"
+    assert list(map(len, par)) == [5]
 
 
 def test_paragraph_multiline():
     """Test a Paragraph with multiple lines."""
     # see note under `test_paragraph_singleline` about better tests
 
-    par = Paragraph("first", "second", "third")
+    # disable ligatures until we decide on a common font for all platforms
+    par = Paragraph("first", "second", "third", disable_ligatures=True)
 
     # flatten
     assert par.lines_text.text == "firstsecondthird"
@@ -54,4 +56,4 @@ def test_paragraph_multiline():
 
     # shape
     assert len(par) == 3
-    assert list(map(len, par)) == [4, 6, 5]  # ligature "fi"
+    assert list(map(len, par)) == [5, 6, 5]
