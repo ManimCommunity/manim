@@ -319,6 +319,13 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
 def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
     """This function transforms each point by moving along a spiral to its destination.
 
+    Parameters
+    ----------
+    angle
+        The angle each point traverses around a spiral.
+    axis
+        The axis of rotation.
+
     Examples
     --------
 
