@@ -310,8 +310,8 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def finish(self) -> None:
-        super().finish()
+    def clean_up_from_scene(self, scene: "Scene") -> None:
+        super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
