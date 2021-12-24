@@ -44,11 +44,19 @@ def straight_path(
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -58,7 +66,8 @@ def straight_path(
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.straight_path,
                         run_time=2,
                     )
@@ -94,11 +103,19 @@ def path_along_circles(
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -111,9 +128,11 @@ def path_along_circles(
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.path_along_circles(
-                            2 * PI, circle_center.get_center()),
+                            2 * PI, circle_center.get_center()
+                        ),
                         run_time=3,
                     )
                 )
@@ -157,11 +176,19 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -171,7 +198,8 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.path_along_arc(TAU * 2 / 3),
                         run_time=3,
                     )
@@ -208,11 +236,19 @@ def clockwise_path() -> PATH_FUNC_TYPE:
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -222,7 +258,8 @@ def clockwise_path() -> PATH_FUNC_TYPE:
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.clockwise_path(),
                         run_time=2,
                     )
@@ -245,11 +282,19 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -259,7 +304,8 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.counterclockwise_path(),
                         run_time=2,
                     )
@@ -282,11 +328,19 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
             def construct(self):
                 colors = [RED, GREEN, BLUE]
 
-                starting_points = VGroup(*[Dot(LEFT + pos, color=color)
-                                        for pos, color in zip([UP, DOWN, LEFT], colors)])
+                starting_points = VGroup(
+                    *[
+                        Dot(LEFT + pos, color=color)
+                        for pos, color in zip([UP, DOWN, LEFT], colors)
+                    ]
+                )
 
-                finish_points = VGroup(*[Dot(RIGHT + pos, color=color)
-                                        for pos, color in zip([ORIGIN, UP, DOWN], colors)])
+                finish_points = VGroup(
+                    *[
+                        Dot(RIGHT + pos, color=color)
+                        for pos, color in zip([ORIGIN, UP, DOWN], colors)
+                    ]
+                )
 
                 self.add(starting_points)
                 self.add(finish_points)
@@ -296,7 +350,8 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
                 self.wait()
                 self.play(
                     Transform(
-                        starting_points, finish_points,
+                        starting_points,
+                        finish_points,
                         path_func=utils.paths.spiral_path(2 * TAU),
                         run_time=5,
                     )
