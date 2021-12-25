@@ -1907,8 +1907,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         .. code-block:: python
 
             self._update_default_configs(
-                (dict_1,)
-                (dict_2,)
+                (dict_1,)(
+                    dict_2,
+                )
             )
 
         Parameters
