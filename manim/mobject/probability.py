@@ -290,7 +290,9 @@ class BarChart(Axes):
             x_length = min(len(self.values), config.frame_width - 2)
 
         x_axis_config = {"font_size": 24}
-        self._update_default_configs(x_axis_config, kwargs.pop("x_axis_config", {}))
+        self._update_default_configs(
+            (x_axis_config,), (kwargs.pop("x_axis_config", None),)
+        )
 
         self.bars = None
         self.x_labels = None
