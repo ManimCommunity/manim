@@ -17,4 +17,4 @@ def test_apply_matrix_about_point():
     ApplyMatrix(matrix, square_1, about_point=about_point)
     square_2.rotate(90 * DEGREES, about_point=about_point)
 
-    np.testing.assert_array_equal(square_1.points.all() == square_2.points.all())
+    np.testing.assert_array_equal(square_1.points, square_2.points)
