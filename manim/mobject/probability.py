@@ -255,7 +255,7 @@ class BarChart(Axes):
         y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
         y_length: Optional[float] = config.frame_height - 4,
-        x_label_constructor:VMobject = Tex,
+        x_label_constructor: VMobject = Tex,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -311,24 +311,26 @@ class BarChart(Axes):
         )
 
         self._add_bars()
-        self._add_x_axis_labels()
+
+        if self.bar_names is not None:
+            self._add_x_axis_labels()
 
         self.y_axis.add_numbers()
 
     def _add_x_axis_labels(self):
-        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that 
+        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
         the direction of the label with respect to the x_axis changes to UP or DOWN
         depending on the value.
 
         UP for negative values and DOWN for positive values.
         """
-        
+
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
 
         labels = VGroup()
-        
+
         for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
             # to accomodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
@@ -339,11 +341,15 @@ class BarChart(Axes):
             bar_name_label = self.x_label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
-            bar_name_label.next_to(self.x_axis.number_to_point(value), direction=direction, buff=self.x_axis.line_to_number_buff)
+            bar_name_label.next_to(
+                self.x_axis.number_to_point(value),
+                direction=direction,
+                buff=self.x_axis.line_to_number_buff,
+            )
 
             labels.add(bar_name_label)
 
-        self.x_axis.labels = labels 
+        self.x_axis.labels = labels
         self.x_axis.add(labels)
 
     def _add_bars(self):
@@ -445,8 +451,34 @@ class BarChart(Axes):
         """
 
         for i, (bar, value) in enumerate(zip(self.bars, values)):
-            bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height(value / self.values[i] * bar.height)
-            bar.move_to(bar_bottom, DOWN)
+            chart_val = self.values[i]
+
+            if chart_val > 0:
+                bar_lim = bar.get_bottom()
+                aligned_edge = DOWN
+            else: 
+                bar_lim = bar.get_top()
+                aligned_edge = UP
+
+            try: 
+                quotient = value/ chart_val
+                if quotient < 0:
+
+                    aligned_edge = UP if chart_val > 0 else DOWN
+
+                    # if the bar is already positive, then we now want to move it
+                    # so that it is negative. So, we move the top edge of the bar
+                    # to the location of the previous bottom
+
+                    # if already negative, then we move the bottom edge of the bar
+                    # to the location of the previous top
+
+
+                bar.stretch_to_fit_height(quotient * bar.height)
+
+            except ZeroDivisionError:
+                bar.height = 0
+
+            bar.move_to(bar_lim, aligned_edge)
 
         self.values[: len(values)] = values

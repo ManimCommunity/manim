@@ -1892,16 +1892,18 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.shift(-self.coords_to_point(*lines_center_point))
 
     @staticmethod
-    def _update_default_configs(default_configs:Tuple[Dict[Any, Any]], passed_configs:Tuple[Dict[Any, Any]]):
+    def _update_default_configs(
+        default_configs: Tuple[Dict[Any, Any]], passed_configs: Tuple[Dict[Any, Any]]
+    ):
         """Takes in two tuples of dicts and return modifies the first such that values from
         ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist
         in default_configs, it is added to the dict.
-        
+
         This method is useful for having defaultsin a class and being able to overwrite
         them with user-defined input.
 
         To create a tuple with one dictionary, add a comma after the element:
-        
+
         .. code-block:: python
 
             self._update_default_configs(
