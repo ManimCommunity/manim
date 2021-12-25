@@ -404,14 +404,19 @@ class BarChart(Axes):
 
 
     def change_bar_values(self, values: Iterable[float]):
-        """[summary]
+        """Updates the height of the bars of the chart.
 
         Parameters
         ----------
-        values : Iterable[float]
-            [description]
+        values
+            The values that will be used to update the height of the bars.
+            Does not have to match the number of bars.
         """
 
-        for bar, value in zip(self.bars, values):
+        for i, (bar, value) in enumerate(zip(self.bars, values)):
             bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / ))
+            bar.stretch_to_fit_height((value / self.values[i] *  bar.height))
+            bar.move_to(bar_bottom, DOWN)
+        
+        self.values[:len(values)] = values
+
