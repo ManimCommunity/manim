@@ -446,6 +446,8 @@ class Scene:
     def add_mobjects_from_animations(self, animations):
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
+            if animation.is_introducer():
+                continue
             # Anything animated that's not already in the
             # scene gets added to the scene
             mob = animation.mobject
@@ -1022,6 +1024,7 @@ class Scene:
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
         for animation in self.animations:
+            animation.setup_scene(self)
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:

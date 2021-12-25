@@ -300,7 +300,7 @@ class ShowPassingFlash(ShowPartial):
 
     def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
-        super().__init__(mobject, remover=True, **kwargs)
+        super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
     def _get_bounds(self, alpha: float) -> Tuple[float]:
         tw = self.time_width

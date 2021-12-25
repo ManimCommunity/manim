@@ -134,6 +134,7 @@ class Animation:
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
+        introducer: bool = False,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
@@ -141,6 +142,7 @@ class Animation:
         self.rate_func: Callable[[float], float] = rate_func
         self.name: str | None = name
         self.remover: bool = remover
+        self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         if config["renderer"] == "opengl":
@@ -221,6 +223,20 @@ class Animation:
         """
         if self.is_remover():
             scene.remove(self.mobject)
+
+    def setup_scene(self, scene: "Scene") -> None:
+        """Setup up the :class:`~.Scene` before starting the animation.
+
+        This includes to :meth:`~.Scene.add` the Animation's
+        :class:`~.Mobject` if the animation is an introducer.
+
+        Parameters
+        ----------
+        scene
+            The scene the animation should be cleaned up from.
+        """
+        if self.is_introducer():
+            scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
@@ -435,6 +451,16 @@ class Animation:
             ``True`` if the animation is a remover, ``False`` otherwise.
         """
         return self.remover
+
+    def is_introducer(self) -> bool:
+        """Test if a the animation is a remover.
+
+        Returns
+        -------
+        bool
+            ``True`` if the animation is a remover, ``False`` otherwise.
+        """
+        return self.introducer
 
 
 def prepare_animation(

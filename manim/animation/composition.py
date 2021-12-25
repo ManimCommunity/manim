@@ -57,6 +57,18 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.begin()
 
+    def setup_scene(self, scene) -> None:
+        if self.is_introducer():
+            for anim in self.animations:
+                if not anim.is_introducer() and anim.mobject is not None:
+                    scene.add(anim.mobject)
+
+        for anim in self.animations:
+            anim.setup_scene(scene)
+
+    def is_introducer(self) -> bool:
+        return any(anim.is_introducer() for anim in self.animations)
+
     def finish(self) -> None:
         for anim in self.animations:
             anim.finish()
@@ -127,6 +139,14 @@ class Succession(AnimationGroup):
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 
+    def setup_scene(self, scene) -> None:
+        if self.is_introducer():
+            for anim in self.animations:
+                if not anim.is_introducer() and anim.mobject is not None:
+                    scene.add(anim.mobject)
+
+        self.scene = scene
+
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
         if index >= len(self.animations):
@@ -135,6 +155,7 @@ class Succession(AnimationGroup):
             self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
+            self.active_animation.setup_scene(self.scene)
             self.active_animation.begin()
             self.active_start_time = self.anims_with_timings[index][1]
             self.active_end_time = self.anims_with_timings[index][2]
