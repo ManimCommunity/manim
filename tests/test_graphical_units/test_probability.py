@@ -60,8 +60,7 @@ def test_negative_values(scene):
     chart = BarChart(
         values=[-5, 40, -10, 20, -3],
         bar_names=["one", "two", "three", "four", "five"],
-        y_range=[-20, 50],
-        y_step=10,
+        y_range=[-20, 50, 10],
     )
 
     c_bar_lbls = chart.get_bar_labels()
