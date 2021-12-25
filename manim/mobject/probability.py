@@ -16,7 +16,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import (
     BLUE_E,
     DARK_GREY,
@@ -255,6 +255,7 @@ class BarChart(Axes):
         y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
         y_length: Optional[float] = config.frame_height - 4,
+        x_label_constructor:VMobject = Tex,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -263,13 +264,14 @@ class BarChart(Axes):
             "#ffa600",
         ],
         bar_width: float = 0.6,
-        bar_fill_opacity: Optional[float] = 0.7,
-        bar_stroke_width: Optional[float] = 3,
+        bar_fill_opacity: float = 0.7,
+        bar_stroke_width: float = 3,
         **kwargs,
     ):
 
         self.values = values
         self.bar_names = bar_names
+        self.x_label_constructor = x_label_constructor
         self.bar_colors = bar_colors
         self.bar_width = bar_width
         self.bar_fill_opacity = bar_fill_opacity
@@ -309,11 +311,40 @@ class BarChart(Axes):
         )
 
         self._add_bars()
+        self._add_x_axis_labels()
+
+        self.y_axis.add_numbers()
+
+    def _add_x_axis_labels(self):
+        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that 
+        the direction of the label with respect to the x_axis changes to UP or DOWN
+        depending on the value.
+
+        UP for negative values and DOWN for positive values.
+        """
+        
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
-        self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
-        self.y_axis.add_numbers()
+
+        labels = VGroup()
+        
+        for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
+            # to accomodate negative bars, the label may need to be
+            # below or above the x_axis depending on the value of the bar
+            if self.values[i] < 0:
+                direction = UP
+            else:
+                direction = DOWN
+            bar_name_label = self.x_label_constructor(bar_name)
+
+            bar_name_label.font_size = self.x_axis.font_size
+            bar_name_label.next_to(self.x_axis.number_to_point(value), direction=direction, buff=self.x_axis.line_to_number_buff)
+
+            labels.add(bar_name_label)
+
+        self.x_axis.labels = labels 
+        self.x_axis.add(labels)
 
     def _add_bars(self):
         self.bars = VGroup()
