@@ -39,7 +39,7 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations],
+                [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
             if config["renderer"] == "opengl":
                 self.group = OpenGLGroup(*mobjects)
@@ -58,16 +58,8 @@ class AnimationGroup(Animation):
             anim.begin()
 
     def setup_scene(self, scene) -> None:
-        if self.is_introducer():
-            for anim in self.animations:
-                if not anim.is_introducer() and anim.mobject is not None:
-                    scene.add(anim.mobject)
-
         for anim in self.animations:
             anim.setup_scene(scene)
-
-    def is_introducer(self) -> bool:
-        return any(anim.is_introducer() for anim in self.animations)
 
     def finish(self) -> None:
         for anim in self.animations:
@@ -76,6 +68,7 @@ class AnimationGroup(Animation):
             self.group.resume_updating()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
+        self._on_finish(scene)
         for anim in self.animations:
             if self.remover:
                 anim.remover = self.remover
@@ -126,6 +119,7 @@ class AnimationGroup(Animation):
 class Succession(AnimationGroup):
     def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
+        self.scene = None
 
     def begin(self) -> None:
         assert len(self.animations) > 0
@@ -140,6 +134,8 @@ class Succession(AnimationGroup):
             self.active_animation.update_mobjects(dt)
 
     def setup_scene(self, scene) -> None:
+        if scene is None:
+            return
         if self.is_introducer():
             for anim in self.animations:
                 if not anim.is_introducer() and anim.mobject is not None:

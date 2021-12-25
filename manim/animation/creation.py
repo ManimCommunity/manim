@@ -207,7 +207,11 @@ class Uncreate(Create):
         **kwargs,
     ) -> None:
         super().__init__(
-            mobject, rate_func=rate_func, remover=remover, **kwargs
+            mobject,
+            rate_func=rate_func,
+            introducer=False,
+            remover=remover,
+            **kwargs,
         )
 
 
@@ -328,13 +332,14 @@ class Write(DrawBorderThenFill):
             lag_ratio,
         )
         self.reverse = reverse
+        if "remover" not in kwargs:
+            kwargs["remover"] = reverse
         super().__init__(
             vmobject,
             rate_func=rate_func,
             run_time=run_time,
             lag_ratio=lag_ratio,
             introducer=not reverse,
-            remover=reverse,
             **kwargs,
         )
 

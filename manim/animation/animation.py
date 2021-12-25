@@ -135,6 +135,8 @@ class Animation:
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
+        *,
+        _on_finish: Callable[[], None] = lambda _: None,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
@@ -145,6 +147,7 @@ class Animation:
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
+        self._on_finish: Callable[["Scene"], None] = _on_finish
         if config["renderer"] == "opengl":
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
@@ -221,6 +224,7 @@ class Animation:
         scene
             The scene the animation should be cleaned up from.
         """
+        self._on_finish(scene)
         if self.is_remover():
             scene.remove(self.mobject)
 
@@ -235,6 +239,8 @@ class Animation:
         scene
             The scene the animation should be cleaned up from.
         """
+        if scene is None:
+            return
         if self.is_introducer():
             scene.add(self.mobject)
 
