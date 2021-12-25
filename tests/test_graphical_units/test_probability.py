@@ -1,12 +1,10 @@
-from manim.utils.color import RED, BLUE, WHITE, GREEN, YELLOW
 import pytest
 
+from manim.constants import LEFT
 from manim.mobject.probability import BarChart
 from manim.mobject.svg.tex_mobject import MathTex
-
+from manim.utils.color import BLUE, GREEN, RED, WHITE, YELLOW
 from manim.utils.testing.frames_comparison import frames_comparison
-
-from manim.constants import LEFT
 
 __module_test__ = "probability"
 
@@ -86,6 +84,7 @@ def test_advanced_customization(scene):
 
     scene.add(chart, c_bar_lbls)
 
+
 @frames_comparison
 def test_change_bar_values_some_vals(scene):
     chart = BarChart(
@@ -96,9 +95,8 @@ def test_change_bar_values_some_vals(scene):
     scene.add(chart)
 
     chart.change_bar_values([-6, -4, -2])
-    
-    scene.add(chart.get_bar_labels(font_size=24))
 
+    scene.add(chart.get_bar_labels(font_size=24))
 
 
 @frames_comparison
@@ -113,6 +111,3 @@ def test_change_bar_values_negative(scene):
     chart.change_bar_values(list(reversed([-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10])))
 
     scene.add(chart.get_bar_labels(font_size=24))
-
-
-
