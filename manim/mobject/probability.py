@@ -255,7 +255,7 @@ class BarChart(Axes):
         y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
         y_length: Optional[float] = config.frame_height - 4,
-        x_label_constructor:VMobject = Tex,
+        x_label_constructor: VMobject = Tex,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -316,19 +316,19 @@ class BarChart(Axes):
         self.y_axis.add_numbers()
 
     def _add_x_axis_labels(self):
-        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that 
+        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
         the direction of the label with respect to the x_axis changes to UP or DOWN
         depending on the value.
 
         UP for negative values and DOWN for positive values.
         """
-        
+
         val_range = np.arange(
             0.5, len(self.bar_names), 1
         )  # 0.5 shifted so that labels are centered, not on ticks
 
         labels = VGroup()
-        
+
         for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
             # to accomodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
@@ -339,11 +339,15 @@ class BarChart(Axes):
             bar_name_label = self.x_label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
-            bar_name_label.next_to(self.x_axis.number_to_point(value), direction=direction, buff=self.x_axis.line_to_number_buff)
+            bar_name_label.next_to(
+                self.x_axis.number_to_point(value),
+                direction=direction,
+                buff=self.x_axis.line_to_number_buff,
+            )
 
             labels.add(bar_name_label)
 
-        self.x_axis.labels = labels 
+        self.x_axis.labels = labels
         self.x_axis.add(labels)
 
     def _add_bars(self):
