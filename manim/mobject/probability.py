@@ -413,7 +413,7 @@ class BarChart(Axes):
 
         for i, (bar, value) in enumerate(zip(self.bars, values)):
             bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.values[i] * bar.height))
+            bar.stretch_to_fit_height(value / self.values[i] * bar.height)
             bar.move_to(bar_bottom, DOWN)
 
         self.values[: len(values)] = values
