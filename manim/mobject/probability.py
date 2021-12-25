@@ -313,7 +313,6 @@ class BarChart(Axes):
         self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
         self.y_axis.add_numbers()
 
-
     def _add_bars(self):
         self.bars = VGroup()
 
@@ -337,7 +336,7 @@ class BarChart(Axes):
 
         self.add_to_back(self.bars)
 
-    def add_bar_labels(
+    def get_bar_labels(
         self,
         color: Optional[Color] = None,
         font_size: Optional[float] = None,
@@ -378,12 +377,12 @@ class BarChart(Axes):
                         "v0.7.0",
                     ]
 
-                    chart = BarChart(pull_req,versions).add_bar_labels()
-                    self.add(chart)
+                    chart = BarChart(pull_req,versions)
+                    labls = chart.get_bar_labels()
+                    self.add(chart, labls)
         """
 
-        self.bar_labels = VGroup()
-
+        bar_labels = VGroup()
         for bar, value in zip(self.bars, self.values):
             bar_lbl = label_constructor(str(value))
 
@@ -398,10 +397,9 @@ class BarChart(Axes):
                 bar_lbl.font_size = font_size
             pos = UP if (value >= 0) else DOWN
             bar_lbl.next_to(bar, pos, buff=buff)
-            self.bar_labels.add(bar_lbl)
-        self.add(self.bar_labels)
-        return self
+            bar_labels.add(bar_lbl)
 
+        return bar_labels
 
     def change_bar_values(self, values: Iterable[float]):
         """Updates the height of the bars of the chart.
@@ -415,8 +413,7 @@ class BarChart(Axes):
 
         for i, (bar, value) in enumerate(zip(self.bars, values)):
             bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.values[i] *  bar.height))
+            bar.stretch_to_fit_height((value / self.values[i] * bar.height))
             bar.move_to(bar_bottom, DOWN)
-        
-        self.values[:len(values)] = values
 
+        self.values[: len(values)] = values
