@@ -456,12 +456,12 @@ class BarChart(Axes):
             if chart_val > 0:
                 bar_lim = bar.get_bottom()
                 aligned_edge = DOWN
-            else: 
+            else:
                 bar_lim = bar.get_top()
                 aligned_edge = UP
 
-            try: 
-                quotient = value/ chart_val
+            try:
+                quotient = value / chart_val
                 if quotient < 0:
 
                     aligned_edge = UP if chart_val > 0 else DOWN
@@ -472,7 +472,6 @@ class BarChart(Axes):
 
                     # if already negative, then we move the bottom edge of the bar
                     # to the location of the previous top
-
 
                 bar.stretch_to_fit_height(quotient * bar.height)
 
