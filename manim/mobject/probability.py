@@ -313,6 +313,30 @@ class BarChart(Axes):
         self.x_axis.add_labels(dict(zip(val_range, self.bar_names)))
         self.y_axis.add_numbers()
 
+
+    def _add_bars(self):
+        self.bars = VGroup()
+
+        for i, value in enumerate(self.values):
+            bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
+            bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
+            bar = Rectangle(
+                height=bar_h,
+                width=bar_w,
+                stroke_width=self.bar_stroke_width,
+                fill_opacity=self.bar_fill_opacity,
+            )
+
+            pos = UP if (value >= 0) else DOWN
+            bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
+            self.bars.add(bar)
+        if isinstance(self.bar_colors, str):
+            self.bars.set_color_by_gradient(self.bar_colors)
+        else:
+            self.bars.set_color_by_gradient(*self.bar_colors)
+
+        self.add_to_back(self.bars)
+
     def add_bar_labels(
         self,
         color: Optional[Color] = None,
@@ -378,27 +402,16 @@ class BarChart(Axes):
         self.add(self.bar_labels)
         return self
 
-    def _add_bars(self):
-        if self.bars is not None:
-            return
-        self.bars = VGroup()
 
-        for i, value in enumerate(self.values):
-            bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
-            bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
-            bar = Rectangle(
-                height=bar_h,
-                width=bar_w,
-                stroke_width=self.bar_stroke_width,
-                fill_opacity=self.bar_fill_opacity,
-            )
+    def change_bar_values(self, values: Iterable[float]):
+        """[summary]
 
-            pos = UP if (value >= 0) else DOWN
-            bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
-            self.bars.add(bar)
-        if isinstance(self.bar_colors, str):
-            self.bars.set_color_by_gradient(self.bar_colors)
-        else:
-            self.bars.set_color_by_gradient(*self.bar_colors)
+        Parameters
+        ----------
+        values : Iterable[float]
+            [description]
+        """
 
-        self.add_to_back(self.bars)
+        for bar, value in zip(self.bars, values):
+            bar_bottom = bar.get_bottom()
+            bar.stretch_to_fit_height((value / ))
