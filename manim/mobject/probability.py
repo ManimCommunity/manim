@@ -242,11 +242,10 @@ class BarChart(Axes):
                     bar_names=versions,
                     bar_colors=colors,
                     y_axis_config={
-                        "font_size": 30,
-                        "include_tip": True,
+                        "font_size": 24,
                     },
                 )
-                self.add(chart)
+                self.add(chart, title)
     """
 
     def __init__(
