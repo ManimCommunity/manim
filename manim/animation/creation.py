@@ -115,11 +115,15 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: VMobject | OpenGLVMobject | OpenGLSurface | None, **kwargs
+        self,
+        mobject: VMobject | OpenGLVMobject | OpenGLSurface | None,
+        **kwargs,
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
-            raise NotImplementedError("This animation is not defined for this Mobject.")
+            raise NotImplementedError(
+                "This animation is not defined for this Mobject."
+            )
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -167,9 +171,12 @@ class Create(ShowPartial):
         self,
         mobject: VMobject | OpenGLVMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
+        introducer: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(
+            mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs
+        )
 
     def _get_bounds(self, alpha: float) -> tuple[int, float]:
         return (0, alpha)
@@ -199,7 +206,9 @@ class Uncreate(Create):
         remover: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
+        super().__init__(
+            mobject, rate_func=rate_func, remover=remover, **kwargs
+        )
 
 
 class DrawBorderThenFill(Animation):
@@ -223,10 +232,17 @@ class DrawBorderThenFill(Animation):
         stroke_color: str = None,
         draw_border_animation_config: dict = {},  # what does this dict accept?
         fill_animation_config: dict = {},
+        introducer: bool = True,
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
-        super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
+        super().__init__(
+            vmobject,
+            run_time=run_time,
+            introducer=introducer,
+            rate_func=rate_func,
+            **kwargs,
+        )
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
         self.draw_border_animation_config = draw_border_animation_config
@@ -235,7 +251,9 @@ class DrawBorderThenFill(Animation):
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+            raise TypeError(
+                "DrawBorderThenFill only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -245,7 +263,9 @@ class DrawBorderThenFill(Animation):
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
         for sm in outline.family_members_with_points():
-            sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
+            sm.set_stroke(
+                color=self.get_stroke_color(sm), width=self.stroke_width
+            )
         return outline
 
     def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
@@ -313,6 +333,8 @@ class Write(DrawBorderThenFill):
             rate_func=rate_func,
             run_time=run_time,
             lag_ratio=lag_ratio,
+            introducer=not reverse,
+            remover=reverse,
             **kwargs,
         )
 
