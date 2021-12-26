@@ -3,7 +3,7 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -29,9 +29,6 @@ from ..utils.color import (
 from ..utils.iterables import tuplify
 
 EPSILON = 0.0001
-
-if TYPE_CHECKING:
-    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class SampleSpace(Rectangle):
@@ -193,10 +190,10 @@ class BarChart(Axes):
 
     Parameters
     ----------
-    values
-        An iterable of values for each bar. Accepts negative values.
+        values
+        An iterable of values that determines the height of each bar. Accepts negative values.
     bar_names
-        An iterable of names for each `bar`. Does not have to match the length of ``values``.
+        An iterable of names for each bar. Does not have to match the length of ``values``.
     y_range
         The y_axis range of values. If ``None``, the range will be calculated based on the
         min/max of ``values`` and the step will be calculated based on ``y_length``.

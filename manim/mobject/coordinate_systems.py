@@ -1853,7 +1853,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist
         in default_configs, it is added to the dict.
 
-        This method is useful for having defaultsin a class and being able to overwrite
+        This method is useful for having defaults in a class and being able to overwrite
         them with user-defined input.
 
         To create a tuple with one dictionary, add a comma after the element:
@@ -1869,9 +1869,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         default_configs
-            The dict that will be updated
-        passed_configs : Tuple[Dict[Any, Any]]
-            The dict that will be used to update
+            The dict that will be updated.
+        passed_configs
+            The dict that will be used to update.
         """
 
         for default_config, passed_config in zip(default_configs, passed_configs):
