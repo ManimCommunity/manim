@@ -14,7 +14,7 @@ from .. import config
 from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
@@ -62,6 +62,8 @@ class NumberLine(Line):
         The size of the label mobjects. Defaults to 36.
     label_direction
         The specific position to which label mobjects are added on the line.
+    label_constructor
+        Determines the mobject class that will be used to construct the labels of the number line.
     line_to_number_buff
         The distance between the line and the label mobject.
     decimal_number_config
@@ -141,10 +143,11 @@ class NumberLine(Line):
         include_tip: bool = False,
         tip_width: float = 0.25,
         tip_height: float = 0.25,
-        # numbers
+        # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
+        label_constructor: VMobject = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
@@ -194,6 +197,7 @@ class NumberLine(Line):
         self.font_size = font_size
         self.include_numbers = include_numbers
         self.label_direction = label_direction
+        self.label_constructor = label_constructor
         self.line_to_number_buff = line_to_number_buff
         self.decimal_number_config = decimal_number_config
         self.numbers_to_exclude = numbers_to_exclude
