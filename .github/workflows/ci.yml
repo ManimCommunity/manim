@@ -34,15 +34,22 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install Poetry
+      - name: Install Poetry (*NIX)
+        if: runner.os != 'Windows'
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+      
+      - name: Install Poetry (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+          $env:Path += ";%APPDATA%\Python\Scripts"
 
       - name: Setup cache variables
         shell: bash
         id: cache-vars
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
