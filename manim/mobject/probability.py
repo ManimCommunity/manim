@@ -223,29 +223,18 @@ class BarChart(Axes):
 
         class BarChartExample(Scene):
             def construct(self):
-                title = Title("Number of pull requests").to_edge(UP)
-                pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
-                versions = [
-                    "v0.1.0",
-                    "v0.1.1",
-                    "v0.2.0",
-                    "v0.3.0",
-                    "v0.4.0",
-                    "v0.5.0",
-                    "v0.6.0",
-                    "v0.7.0",
-                ]
-                colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
-
                 chart = BarChart(
-                    values=pull_req,
-                    bar_names=versions,
-                    bar_colors=colors,
-                    y_axis_config={
-                        "font_size": 24,
-                    },
+                    values=[-5, 40, -10, 20, -3],
+                    bar_names=["one", "two", "three", "four", "five"],
+                    y_range=[-20, 50, 10],
+                    y_length=6,
+                    x_length=10,
+                    x_axis_config={"font_size": 36},
                 )
-                self.add(chart, title)
+
+                c_bar_lbls = chart.get_bar_labels(font_size=48)
+
+                self.add(chart, c_bar_lbls)
     """
 
     def __init__(
@@ -378,7 +367,7 @@ class BarChart(Axes):
     def get_bar_labels(
         self,
         color: Optional[Color] = None,
-        font_size: Optional[float] = None,
+        font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
         label_constructor: "VMobject" = Tex,
     ):
@@ -390,7 +379,7 @@ class BarChart(Axes):
         color
             The color of each label. By default ``None`` and is based on the parent's bar color.
         font_size
-            The font size of each label. By default ``None`` and scales to the width of the bar.
+            The font size of each label.
         buff
             The distance from each label to its bar. By default 0.4.
         label_constructor
@@ -430,10 +419,8 @@ class BarChart(Axes):
             else:
                 bar_lbl.set_color(color)
 
-            if font_size is None:
-                bar_lbl.scale_to_fit_width(min(bar.width * 0.6, 0.5))
-            else:
-                bar_lbl.font_size = font_size
+            bar_lbl.font_size = font_size
+
             pos = UP if (value >= 0) else DOWN
             bar_lbl.next_to(bar, pos, buff=buff)
             bar_labels.add(bar_lbl)
