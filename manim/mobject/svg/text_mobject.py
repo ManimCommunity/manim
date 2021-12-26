@@ -1224,7 +1224,7 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self, color: Color):
+    def _text2svg(self, color: Optional[Color]):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -1239,9 +1239,14 @@ class MarkupText(SVGMobject):
         if os.path.exists(file_name):
             svg_file = file_name
         else:
+            final_text = (
+                f'<span foreground="{color}">{self.text}</span>'
+                if color is not None
+                else self.text
+            )
             logger.debug(f"Setting Text {self.text}")
             svg_file = MarkupUtils.text2svg(
-                f'<span foreground="{color}">{self.text}</span>',
+                final_text,
                 self.font,
                 self.slant,
                 self.weight,
