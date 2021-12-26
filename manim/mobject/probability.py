@@ -436,7 +436,7 @@ class BarChart(Axes):
 
             class ChangeBarValuesExample(Scene):
                 def construct(self):
-                    values=[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10],
+                    values=[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
 
                     chart = BarChart(
                         values,
