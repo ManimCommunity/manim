@@ -147,7 +147,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = MathTex,
+        label_constructor: VMobject = DecimalNumber,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
@@ -388,6 +388,7 @@ class NumberLine(Line):
         direction: Optional[Sequence[float]] = None,
         buff: Optional[float] = None,
         font_size: Optional[float] = None,
+        label_constructor: Optional[VMobject] = None,
         **number_config,
     ) -> DecimalNumber:
         """Generates a positioned :class:`~.DecimalNumber` mobject representing a number label.
@@ -418,8 +419,10 @@ class NumberLine(Line):
             buff = self.line_to_number_buff
         if font_size is None:
             font_size = self.font_size
-
-        num_mob = DecimalNumber(x, font_size=font_size, **number_config)
+        if label_constructor is None:
+            label_constructor = self.label_constructor
+        
+        num_mob = label_constructor(x, font_size=font_size, **number_config)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -440,6 +443,7 @@ class NumberLine(Line):
         x_values: Optional[Iterable[float]] = None,
         excluding: Optional[Iterable[float]] = None,
         font_size: Optional[float] = None,
+        label_constructor: Optional[VMobject] = None,
         **kwargs,
     ):
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -466,13 +470,15 @@ class NumberLine(Line):
 
         if font_size is None:
             font_size = self.font_size
-        kwargs["font_size"] = font_size
+
+        if label_constructor is None:
+            label_constructor = self.label_constructor
 
         numbers = VGroup()
         for x in x_values:
             if x in excluding:
                 continue
-            numbers.add(self.get_number_mobject(x, **kwargs))
+            numbers.add(self.get_number_mobject(x, font_size=font_size, **kwargs))
         self.add(numbers)
         self.numbers = numbers
         return self
@@ -481,8 +487,9 @@ class NumberLine(Line):
         self,
         dict_values: Dict[float, Union[str, float, "Mobject"]],
         direction: Sequence[float] = None,
-        buff: float = None,
-        font_size: float = None,
+        buff: Optional[float] = None,
+        font_size: Optional[float] = None,
+        label_constructor: Optional[VMobject] = None
     ):
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -507,10 +514,11 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
+        label_constructor = self.label_constructor if label_constructor is None else label_constructor
 
         labels = VGroup()
         for x, label in dict_values.items():
-            label = self._create_label_tex(label)
+            label = self._create_label_tex(label, label_constructor)
             if hasattr(label, "font_size"):
                 label.font_size = font_size
             else:
@@ -523,12 +531,13 @@ class NumberLine(Line):
         return self
 
     @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
+    def _create_label_tex(label_tex:Union[str, float, VMobject], label_constructor: VMobject) -> VMobject:
+        """Checks if the label is a ``Mobject``, otherwise, creates a label according to the label_constructor.
 
         Parameters
         ----------
         label_tex : The label to be compared against the above types.
+        label_constructor : The VMobject class used to construct the label. 
 
         Returns
         -------
@@ -536,11 +545,10 @@ class NumberLine(Line):
             The label.
         """
 
-        if isinstance(label_tex, (float, int)):
-            label_tex = MathTex(label_tex)
-        elif isinstance(label_tex, str):
-            label_tex = Tex(label_tex)
-        return label_tex
+        if isinstance(label_tex, Mobject):
+            return label_tex
+        else:
+            return label_constructor(label_tex)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:
