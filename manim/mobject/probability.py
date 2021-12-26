@@ -387,27 +387,19 @@ class BarChart(Axes):
 
         Examples
         --------
-        .. manim:: AddBarLabelsExample
+        .. manim:: GetBarLabelsExample
             :save_last_frame:
 
-            class AddBarLabelsExample(Scene):
+            class GetBarLabelsExample(Scene):
                 def construct(self):
-                    title = Title("Number of pull requests").to_edge(UP)
-                    pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
-                    versions = [
-                        "v0.1.0",
-                        "v0.1.1",
-                        "v0.2.0",
-                        "v0.3.0",
-                        "v0.4.0",
-                        "v0.5.0",
-                        "v0.6.0",
-                        "v0.7.0",
-                    ]
+                    chart = BarChart(values=[10, 9, 8, 7, 6, 5, 4, 3, 2, 1], y_range=[0, 10, 1])
 
-                    chart = BarChart(pull_req,versions)
-                    labls = chart.get_bar_labels()
-                    self.add(chart, labls)
+                    c_bar_lbls = chart.get_bar_labels(
+                        color=WHITE, label_constructor=MathTex, font_size=36
+                    )
+
+                    self.add(chart, c_bar_lbls)
+
         """
 
         bar_labels = VGroup()
@@ -435,6 +427,26 @@ class BarChart(Axes):
         values
             The values that will be used to update the height of the bars.
             Does not have to match the number of bars.
+
+        Examples
+        --------
+
+        .. manim:: ChangeBarValuesExample
+            :save_last_frame:
+
+            class ChangeBarValuesExample(Scene):
+                def construct(self):
+                    values=[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10],
+
+                    chart = BarChart(
+                        values,
+                        y_range=[-10, 10, 2],
+                        y_axis_config={"font_size": 24},
+                    )
+                    self.add(chart)
+
+                    chart.change_bar_values(list(reversed(values)))
+                    self.add(chart.get_bar_labels(font_size=24))
         """
 
         for i, (bar, value) in enumerate(zip(self.bars, values)):
