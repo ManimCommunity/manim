@@ -157,10 +157,30 @@ class ThreeDScene(Scene):
 
     def begin_3dillusion_camera_rotation(
         self,
-        rate=1,
-        origin_theta=-60 * DEGREES,
-        origin_phi=75 * DEGREES,
+        rate: float = 1,
+        origin_phi: Optional[float] = None,
+        origin_theta: Optional[float] = None,
     ):
+        """
+        This method creates a 3D camera rotation illusion around
+        the current camera orientation.
+
+        Parameters
+        ----------
+        rate
+            The rate at which the camera rotation illusion should operate.
+        origin_phi
+            The polar angle the camera should move around. Defaults
+            to the current phi angle.
+        origin_theta
+            The azimutal angle the camera should move around. Defaults
+            to the current theta angle.
+        """
+        if origin_theta is None:
+            origin_theta = self.renderer.camera.theta_tracker.get_value()
+        if origin_phi is None:
+            origin_phi = self.renderer.camera.phi_tracker.get_value()
+
         val_tracker_theta = ValueTracker(0)
 
         def update_theta(m, dt):
@@ -175,7 +195,7 @@ class ThreeDScene(Scene):
 
         def update_phi(m, dt):
             val_tracker_phi.increment_value(dt * rate)
-            val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value())
+            val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value()) - 0.1
             return m.set_value(origin_phi + val_for_up_down)
 
         self.renderer.camera.phi_tracker.add_updater(update_phi)
