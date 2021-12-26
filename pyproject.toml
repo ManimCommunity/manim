@@ -42,7 +42,7 @@ manimpango = "^0.3.0"
 networkx = "^2.5"
 decorator = "^5.0.7"
 setuptools = "^60.1.0"
-importlib-metadata = "^4.10.0"
+importlib-metadata = { version = "^4.10.0", python = "<3.8" }
 grpcio =  { version = "^1.43.0", optional = true }
 grpcio-tools = { version = "^1.43.0", optional = true }
 watchdog = "^2.1.6"
