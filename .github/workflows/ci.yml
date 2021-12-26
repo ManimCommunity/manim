@@ -41,8 +41,7 @@ jobs:
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
         run: |
-          export PATH=\"$HOME/.local/bin:$PATH\"
-          echo $PATH
+          echo "::set-output name=core.addPath::$HOME/.local/bin:$PATH"
 
       - name: Setup cache variables
         shell: bash
