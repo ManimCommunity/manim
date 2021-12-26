@@ -1414,7 +1414,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "psutil-wheels"
-version = "5.8.1"
+version = "5.8.0"
 description = "Cross-platform lib for process and system monitoring in Python."
 category = "dev"
 optional = false
@@ -2245,7 +2245,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "6e9e8d51e76f2bef8cca3f820a896e5ecfac2673cedc58139807e0014b37968d"
+content-hash = "c4e2875b8432521caef05118bf9451f79d7c599683f7e04381b7d8ab6b9d4dcc"
 
 [metadata.files]
 alabaster = [
@@ -3316,7 +3316,19 @@ protobuf = [
     {file = "protobuf-3.19.1.tar.gz", hash = "sha256:62a8e4baa9cb9e064eb62d1002eca820857ab2138440cb4b3ea4243830f94ca7"},
 ]
 psutil-wheels = [
-    {file = "psutil-wheels-5.8.1.tar.gz", hash = "sha256:f76858396e28c275d127311d61a8b2be17490f51938105a7789052868e4fa911"},
+    {file = "psutil-wheels-5.8.0.tar.gz", hash = "sha256:9fb80725195402a66e5db947f239d032500cde75ca5d8625326d797a65341d6f"},
+    {file = "psutil_wheels-5.8.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2cfbb317f3ee0c8ac9dd5d82e6913b0216222d2b22ea65cbc2f8072dabb167d4"},
+    {file = "psutil_wheels-5.8.0-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:ea1f7f6bcc536669a22c07429dde993bc707f45339137b085394faada25fc813"},
+    {file = "psutil_wheels-5.8.0-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:d13d705fb5026d3ae476c7988601430dfaa6143e695058a3182146adc0457b7f"},
+    {file = "psutil_wheels-5.8.0-cp310-cp310-win_amd64.whl", hash = "sha256:3f0ca7c4c9031e04b18e52cd4c6f17e196bb7896071dd1eacaeb352948b47517"},
+    {file = "psutil_wheels-5.8.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:902ab2a221529cd7c0d9fa2f865fdd22bc45df87db825437aeee0dcaeed9b787"},
+    {file = "psutil_wheels-5.8.0-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:96838ad949609621e369d327834ade3b3e1b0fa3f450e0a7460855a3cf41a6d6"},
+    {file = "psutil_wheels-5.8.0-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:933c4079c8121f8f0d3d1525671e3b6182d804d54c7819b6a7dddeac5605ba69"},
+    {file = "psutil_wheels-5.8.0-cp38-cp38-win_amd64.whl", hash = "sha256:5dd57fb06b081bf2e3cebe89ca92f6ef606ecc5e50ac7ecb2dc7a68262d6cd91"},
+    {file = "psutil_wheels-5.8.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:05a4b136c395273066ecd63d64200868fc57561c65f6dda988b28d08f4a60f69"},
+    {file = "psutil_wheels-5.8.0-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:c7c13e8264fa26f0bde4ddc15f2959d04c2a8f7537c41541d1503dd159b01a86"},
+    {file = "psutil_wheels-5.8.0-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:b07890d22db82a135b8d5149ba1736e0fde998605cfa73c4d030bbfc77e890b6"},
+    {file = "psutil_wheels-5.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:84bb63b669aa918b4a62226276b1c1f952e57a461debfb7b9eed848c41e7cbda"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
