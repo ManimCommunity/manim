@@ -261,7 +261,6 @@ class VMobject(Mobject):
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
             opacity_name = "background_stroke_opacity"
-            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
@@ -271,8 +270,8 @@ class VMobject(Mobject):
             setattr(self, width_name, width)
         if opacity is not None:
             setattr(self, opacity_name, opacity)
-        if background:
-            setattr(self, color_name, color)
+        if color is not None and background:
+            self.background_stroke_color = color
         return self
 
     def set_background_stroke(self, **kwargs):
