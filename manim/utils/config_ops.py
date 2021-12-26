@@ -58,7 +58,7 @@ class _Data:
         self.name = name
 
     def __get__(self, obj, owner):
-        return obj.data[self.name] if self.name in obj.data else []
+        return obj.data[self.name]
 
     def __set__(self, obj, array: np.ndarray):
         obj.data[self.name] = array
