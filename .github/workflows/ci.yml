@@ -41,7 +41,7 @@ jobs:
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
+          echo 'export PATH=\"$HOME/.local/bin:$PATH\"' > ~/.bashrc
 
       - name: Setup cache variables
         shell: bash
