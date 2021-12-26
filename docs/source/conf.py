@@ -69,7 +69,7 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # This pattern also affects html_static_path and html_extra_path.
 html_extra_path = ["robots.txt"]
 
-exclude_patterns = []
+exclude_patterns: list = []
 
 # -- Options for internationalization ----------------------------------------
 # Set the destination directory of the localized po files

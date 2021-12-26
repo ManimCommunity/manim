@@ -3,7 +3,7 @@ fail_fast: false
 exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: check-ast
         name: Validate Python
@@ -59,7 +59,8 @@ repos:
     rev: 'v0.930'
     hooks:
       - id: mypy
-        args: []
+        additional_dependencies: [types-decorator, types-docutils, types-requests, types-setuptools]
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
     hooks:
