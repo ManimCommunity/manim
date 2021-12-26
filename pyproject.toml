@@ -86,7 +86,7 @@ flake8-rst-docstrings = "^0.2.3"
 flake8-pytest-style = "^1.5.0"
 flake8-simplify = "^0.14.1"
 flake8-comprehensions = "^3.7.0"
-psutil-wheels = "^5.8.1"
+psutil-wheels = "5.8.0"
 
 
 [tool.poetry.urls]
