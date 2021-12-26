@@ -41,7 +41,7 @@ jobs:
       - name: Setup macOS PATH
         if: runner.os == 'macOS'
         run: |
-          echo "::set-output name=core.addPath::$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Setup cache variables
         shell: bash
@@ -67,7 +67,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
