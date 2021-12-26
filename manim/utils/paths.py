@@ -33,7 +33,7 @@ def straight_path(
     end_points
         Destination of each point.
     alpha
-        Progress of transformation, `0.0` is the start, `1.0` is the end.
+        Progress of transformation, ``0.0`` is the start, ``1.0`` is the end.
 
     Examples
     --------
