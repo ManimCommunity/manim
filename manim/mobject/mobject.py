@@ -78,7 +78,6 @@ class Mobject:
     """
 
     animation_overrides = {}
-    submobjects = []
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
