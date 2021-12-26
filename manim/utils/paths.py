@@ -14,26 +14,22 @@ import numpy as np
 
 from ..constants import OUT
 from ..utils.bezier import interpolate
+from ..utils.deprecation import deprecated_params
 from ..utils.space_ops import rotation_matrix
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
 PATH_FUNC_TYPE = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
-
-def straight_path(
-    start_points: np.ndarray, end_points: np.ndarray, alpha: float
-) -> np.ndarray:
+# Remove `*args` and the `if` inside the functions when removing deprecation
+@deprecated_params(
+    params="start_points, end_points, alpha",
+    since="v0.14",
+    until="v0.15",
+    message="Straight path is now returning interpolating function to make it consistent with other path functions. Use straight_path()(a,b,c) instead of straight_path(a,b,c).",
+)
+def straight_path(*args) -> PATH_FUNC_TYPE:
     """Simplest path function. Each point in a set goes in a straight path toward its destination.
-
-    Parameters
-    ----------
-    start_points
-        Starting position of each point.
-    end_points
-        Destination of each point.
-    alpha
-        Progress of transformation, ``0.0`` is the start, ``1.0`` is the end.
 
     Examples
     --------
@@ -68,14 +64,16 @@ def straight_path(
                     Transform(
                         starting_points,
                         finish_points,
-                        path_func=utils.paths.straight_path,
+                        path_func=utils.paths.straight_path(),
                         run_time=2,
                     )
                 )
                 self.wait()
 
     """
-    return interpolate(start_points, end_points, alpha)
+    if len(args) > 0:
+        return interpolate(*args)
+    return interpolate
 
 
 def path_along_circles(
@@ -208,7 +206,7 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
 
     """
     if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
-        return straight_path
+        return straight_path()
     if np.linalg.norm(axis) == 0:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
@@ -367,7 +365,7 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
 
     """
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
-        return straight_path
+        return straight_path()
     if np.linalg.norm(axis) == 0:
         axis = OUT
     unit_axis = axis / np.linalg.norm(axis)
