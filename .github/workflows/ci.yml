@@ -42,7 +42,7 @@ jobs:
         shell: bash
         id: cache-vars
         run: |
-          export PATH="$HOME/.poetry/bin:$PATH"
+          export PATH="$HOME/.local/bin:$PATH"
           echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
