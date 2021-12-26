@@ -390,8 +390,8 @@ class NumberLine(Line):
         font_size: Optional[float] = None,
         label_constructor: Optional[VMobject] = None,
         **number_config,
-    ) -> DecimalNumber:
-        """Generates a positioned :class:`~.DecimalNumber` mobject representing a number label.
+    ) -> VMobject:
+        """Generates a positioned mobject representing a number label according to ``label_constructor``.
 
         Parameters
         ----------
@@ -402,11 +402,15 @@ class NumberLine(Line):
         buff
             The distance of the label from the line.
         font_size
-            The font size of the :class:`~.DecimalNumber` mobject.
+            The font size of the label mobject.
+        label_constructor
+            The :class:`~.VMobject` class that will be used to construct the label.
+            Defaults to the ``label_constructor`` attribute of the number line
+            if not specified.
 
         Returns
         -------
-        :class:`~.DecimalNumber`
+        :class:`~.VMobject`
             The positioned mobject.
         """
         number_config = merge_dicts_recursively(
@@ -421,7 +425,7 @@ class NumberLine(Line):
             font_size = self.font_size
         if label_constructor is None:
             label_constructor = self.label_constructor
-        
+
         num_mob = label_constructor(x, font_size=font_size, **number_config)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
@@ -460,6 +464,10 @@ class NumberLine(Line):
         font_size
             The font size of the labels. Defaults to the ``font_size`` attribute
             of the number line.
+        label_constructor
+            The :class:`~.VMobject` class that will be used to construct the label.
+            Defaults to the ``label_constructor`` attribute of the number line
+            if not specified.
 
         """
         if x_values is None:
@@ -489,7 +497,7 @@ class NumberLine(Line):
         direction: Sequence[float] = None,
         buff: Optional[float] = None,
         font_size: Optional[float] = None,
-        label_constructor: Optional[VMobject] = None
+        label_constructor: Optional[VMobject] = None,
     ):
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -498,13 +506,18 @@ class NumberLine(Line):
         ----------
         dict_values
             A dictionary consisting of the position along the number line and the mobject to be added:
-            ``{1: Tex("Monday"), 3: Tex("Tuesday")}``.
+            ``{1: Tex("Monday"), 3: Tex("Tuesday")}``. :attr:`label_constructor` will be used
+            to construct the labels if the value is not a mobject (``str`` or ``float``). 
         direction
             Determines the direction at which the label is positioned next to the line.
         buff
             The distance of the label from the line.
         font_size
             The font size of the mobject to be positioned.
+        label_constructor
+            The :class:`~.VMobject` class that will be used to construct the label.
+            Defaults to the ``label_constructor`` attribute of the number line
+            if not specified.
 
         Raises
         ------
@@ -514,7 +527,9 @@ class NumberLine(Line):
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
-        label_constructor = self.label_constructor if label_constructor is None else label_constructor
+        label_constructor = (
+            self.label_constructor if label_constructor is None else label_constructor
+        )
 
         labels = VGroup()
         for x, label in dict_values.items():
@@ -531,17 +546,19 @@ class NumberLine(Line):
         return self
 
     @staticmethod
-    def _create_label_tex(label_tex:Union[str, float, VMobject], label_constructor: VMobject) -> VMobject:
+    def _create_label_tex(
+        label_tex: Union[str, float, VMobject], label_constructor: VMobject
+    ) -> VMobject:
         """Checks if the label is a ``Mobject``, otherwise, creates a label according to the label_constructor.
 
         Parameters
         ----------
         label_tex : The label to be compared against the above types.
-        label_constructor : The VMobject class used to construct the label. 
+        label_constructor : The VMobject class used to construct the label.
 
         Returns
         -------
-        :class:`~.Mobject`
+        :class:`~.VMobject`
             The label.
         """
 
