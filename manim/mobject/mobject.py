@@ -99,7 +99,6 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
-
         self.color = Color(color) if color else None
 
         self.reset_points()
