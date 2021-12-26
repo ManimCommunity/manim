@@ -1,12 +1,10 @@
-from manim.utils.color import RED, BLUE, WHITE, GREEN, YELLOW
 import pytest
 
+from manim.constants import LEFT
 from manim.mobject.probability import BarChart
 from manim.mobject.svg.tex_mobject import MathTex
-
+from manim.utils.color import BLUE, GREEN, RED, WHITE, YELLOW
 from manim.utils.testing.frames_comparison import frames_comparison
-
-from manim.constants import LEFT
 
 __module_test__ = "probability"
 
