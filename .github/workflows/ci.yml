@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install wheel
+          pip install wheel cleo
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
       - name: Setup cache variables
