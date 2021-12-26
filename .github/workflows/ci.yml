@@ -37,6 +37,7 @@ jobs:
       - name: Install Poetry
         run: |
           pip install --user poetry
+          export PATH="$HOME/.poetry/bin:$PATH"
 
       - name: Setup cache variables
         shell: bash
