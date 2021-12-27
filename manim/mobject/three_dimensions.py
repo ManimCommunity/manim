@@ -83,14 +83,14 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: "Color" = BLUE_D,
+        fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
-        stroke_color: "Color" = LIGHT_GREY,
+        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
@@ -165,7 +165,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.set_fill(colors[c_index], opacity=opacity)
         return self
 
-    def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
+    def set_fill_by_value(self, axes: Mobject, colors: Union[Iterable[Color], Color]):
         """Sets the color of each mobject of a parametric surface to a color relative to its z-value
 
         Parameters
@@ -292,7 +292,7 @@ class Sphere(Surface):
         resolution=None,
         u_range=(0, TAU),
         v_range=(0, PI),
-        **kwargs
+        **kwargs,
     ):
         if config.renderer == "opengl":
             res_value = (101, 51)
@@ -354,7 +354,7 @@ class Dot3D(Sphere):
         radius=DEFAULT_DOT_RADIUS,
         color=WHITE,
         resolution=(8, 8),
-        **kwargs
+        **kwargs,
     ):
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
@@ -367,7 +367,7 @@ class Cube(VGroup):
         fill_opacity=0.75,
         fill_color=BLUE,
         stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         self.side_length = side_length
         super().__init__(
@@ -465,7 +465,7 @@ class Cone(Surface):
         v_range=[0, TAU],
         u_min=0,
         checkerboard_colors=False,
-        **kwargs
+        **kwargs,
     ):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
@@ -587,7 +587,7 @@ class Cylinder(Surface):
         v_range=[0, TAU],
         show_ends=True,
         resolution=(24, 24),
-        **kwargs
+        **kwargs,
     ):
         self._height = height
         self.radius = radius
@@ -755,7 +755,7 @@ class Line3D(Cylinder):
         line: "Line3D",
         point: Sequence[float] = ORIGIN,
         length: float = 5,
-        **kwargs
+        **kwargs,
     ):
         """Returns a line parallel to another line going through
         a given point.
@@ -796,7 +796,7 @@ class Line3D(Cylinder):
         line: "Line3D",
         point: Sequence[float] = ORIGIN,
         length: float = 5,
-        **kwargs
+        **kwargs,
     ):
         """Returns a line perpendicular to another line going through
         a given point.
@@ -875,7 +875,7 @@ class Arrow3D(Line3D):
         height=0.3,
         base_radius=0.08,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             start=start, end=end, thickness=thickness, color=color, **kwargs
@@ -926,7 +926,7 @@ class Torus(Surface):
         u_range=(0, TAU),
         v_range=(0, TAU),
         resolution=None,
-        **kwargs
+        **kwargs,
     ):
         if config.renderer == "opengl":
             res_value = (101, 101)
