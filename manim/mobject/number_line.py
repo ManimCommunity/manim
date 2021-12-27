@@ -5,7 +5,7 @@ __all__ = ["NumberLine", "UnitInterval"]
 from typing import TYPE_CHECKING, Dict, Iterable, Optional, Sequence, Union
 
 import numpy as np
-from manim.mobject.svg.tex_mobject import MathTex
+from manim.mobject.svg.tex_mobject import Tex
 
 from manim.utils.scale import LinearBase, _ScaleBase
 
@@ -146,7 +146,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = MathTex,
+        label_constructor: VMobject = Tex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
