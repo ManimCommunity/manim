@@ -533,7 +533,7 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-            label = self._create_label_tex(label, label_constructor)
+            label = self._create_label_tex(label)
             if hasattr(label, "font_size"):
                 label.font_size = font_size
             else:
@@ -545,11 +545,11 @@ class NumberLine(Line):
         self.add(labels)
         return self
 
-    @staticmethod
+    
     def _create_label_tex(
-        label_tex: Union[str, float, VMobject], label_constructor: VMobject
+        self, label_tex: Union[str, float, VMobject]
     ) -> VMobject:
-        """Checks if the label is a ``Mobject``, otherwise, creates a label according to the label_constructor.
+        """Checks if the label is a :class:`~.VMobject`, otherwise, creates a label according to the label_constructor.
 
         Parameters
         ----------
@@ -565,7 +565,7 @@ class NumberLine(Line):
         if isinstance(label_tex, Mobject):
             return label_tex
         else:
-            return label_constructor(label_tex)
+            return self.label_constructor(label_tex)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:
