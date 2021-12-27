@@ -3,7 +3,7 @@ fail_fast: false
 exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: check-ast
         name: Validate Python
