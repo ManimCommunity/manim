@@ -339,25 +339,6 @@ class CoordinateSystem:
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
 
-    # move to a util_file, or Mobject()??
-    @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
-
-        Parameters
-        ----------
-        label_tex : The label to be compared against the above types.
-
-        Returns
-        -------
-        :class:`~.Mobject`
-            The label.
-        """
-
-        if isinstance(label_tex, (float, int, str)):
-            label_tex = MathTex(label_tex)
-        return label_tex
-
     def _get_axis_label(
         self,
         label: Union[float, str, "Mobject"],

@@ -2,10 +2,10 @@
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-from typing import TYPE_CHECKING, Dict, Iterable, Optional, Sequence, Union
+from typing import Dict, Iterable, Optional, Sequence, Union
 
 import numpy as np
-from manim.mobject.svg.tex_mobject import Tex
+from manim.mobject.svg.tex_mobject import MathTex, Tex
 
 from manim.utils.scale import LinearBase, _ScaleBase
 
@@ -18,9 +18,6 @@ from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
-
-if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
 
 
 class NumberLine(Line):
@@ -146,7 +143,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = Tex,
+        label_constructor: VMobject = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
@@ -493,7 +490,7 @@ class NumberLine(Line):
 
     def add_labels(
         self,
-        dict_values: Dict[float, Union[str, float, "Mobject"]],
+        dict_values: Dict[float, Union[str, float, VMobject]],
         direction: Sequence[float] = None,
         buff: Optional[float] = None,
         font_size: Optional[float] = None,
@@ -524,6 +521,7 @@ class NumberLine(Line):
         AttributeError
             If the label does not have a ``font_size`` attribute, an ``AttributeError`` is raised.
         """
+
         direction = self.label_direction if direction is None else direction
         buff = self.line_to_number_buff if buff is None else buff
         font_size = self.font_size if font_size is None else font_size
@@ -533,7 +531,11 @@ class NumberLine(Line):
 
         labels = VGroup()
         for x, label in dict_values.items():
-            label = self._create_label_tex(label)
+            if isinstance(label, str) and self.label_constructor is MathTex:
+                label = Tex(label)
+            else: 
+                label = self._create_label_tex(label)
+
             if hasattr(label, "font_size"):
                 label.font_size = font_size
             else:
@@ -562,7 +564,7 @@ class NumberLine(Line):
             The label.
         """
 
-        if isinstance(label_tex, Mobject):
+        if isinstance(label_tex, VMobject):
             return label_tex
         else:
             return self.label_constructor(label_tex)
