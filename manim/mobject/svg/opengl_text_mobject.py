@@ -59,7 +59,7 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 from ... import config, logger
 from ...constants import *
 from ...mobject.opengl_geometry import OpenGLDot
-from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
+from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 from ...utils.color import WHITE, Colors
 
@@ -279,7 +279,7 @@ class OpenGLParagraph(OpenGLVGroup):
             )
 
 
-class OpenGLText(OpenGLSVGMobject):
+class OpenGLText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
@@ -663,7 +663,7 @@ class OpenGLText(OpenGLSVGMobject):
         )
 
     def init_colors(self, propagate_colors=True):
-        OpenGLSVGMobject.set_style(
+        SVGMobject.set_style(
             self,
             fill_color=self.fill_color or self.color,
             fill_opacity=self.fill_opacity,
@@ -674,7 +674,7 @@ class OpenGLText(OpenGLSVGMobject):
         )
 
 
-class OpenGLMarkupText(OpenGLSVGMobject):
+class OpenGLMarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters

@@ -172,8 +172,8 @@ from functools import reduce
 from ... import config
 from ...constants import *
 from ...mobject.opengl_geometry import OpenGLLine
-from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
-from ...mobject.svg.opengl_svg_path import OpenGLSVGPathMobject
+from ...mobject.svg.svg_mobject import SVGMobject
+from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.opengl_vectorized_mobject import (
     OpenGLVectorizedPoint,
@@ -189,13 +189,13 @@ from .style_utils import parse_style
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
-class OpenGLTexSymbol(OpenGLSVGPathMobject):
+class OpenGLTexSymbol(SVGPathMobject):
     """Purely a renaming of SVGPathMobject."""
 
     pass
 
 
-class OpenGLSingleStringMathTex(OpenGLSVGMobject):
+class OpenGLSingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
 
     Tests
@@ -344,7 +344,7 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
         return self
 
     def init_colors(self, propagate_colors=True):
-        OpenGLSVGMobject.set_style(
+        SVGMobject.set_style(
             self,
             fill_color=self.fill_color or self.color,
             fill_opacity=self.fill_opacity,
