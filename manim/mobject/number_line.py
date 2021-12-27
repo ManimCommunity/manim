@@ -5,9 +5,8 @@ __all__ = ["NumberLine", "UnitInterval"]
 from typing import TYPE_CHECKING, Dict, Iterable, Optional, Sequence, Union
 
 import numpy as np
-from colour import Color
+from manim.mobject.svg.tex_mobject import MathTex
 
-from manim.mobject.svg.tex_mobject import MathTex, Tex
 from manim.utils.scale import LinearBase, _ScaleBase
 
 from .. import config
@@ -147,7 +146,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Sequence[float] = DOWN,
-        label_constructor: VMobject = DecimalNumber,
+        label_constructor: VMobject = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: Optional[Dict] = None,
@@ -391,12 +390,13 @@ class NumberLine(Line):
         label_constructor: Optional[VMobject] = None,
         **number_config,
     ) -> VMobject:
-        """Generates a positioned mobject representing a number label according to ``label_constructor``.
+        """Generates a positioned :class:`~.DecimalNumber` mobject
+        generated according to ``label_constructor``.
 
         Parameters
         ----------
         x
-            The x-value at which the tick should be positioned.
+            The x-value at which the mobject should be positioned.
         direction
             Determines the direction at which the label is positioned next to the line.
         buff
@@ -410,7 +410,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        :class:`~.VMobject`
+        :class:`~.DecimalNumber`
             The positioned mobject.
         """
         number_config = merge_dicts_recursively(
@@ -426,7 +426,7 @@ class NumberLine(Line):
         if label_constructor is None:
             label_constructor = self.label_constructor
 
-        num_mob = label_constructor(x, font_size=font_size, **number_config)
+        num_mob = DecimalNumber(x, font_size=font_size, mob_class=label_constructor, **number_config)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -486,7 +486,7 @@ class NumberLine(Line):
         for x in x_values:
             if x in excluding:
                 continue
-            numbers.add(self.get_number_mobject(x, font_size=font_size, **kwargs))
+            numbers.add(self.get_number_mobject(x, font_size=font_size, label_constructor=label_constructor, **kwargs))
         self.add(numbers)
         self.numbers = numbers
         return self
