@@ -339,25 +339,6 @@ class CoordinateSystem:
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
 
-    # move to a util_file, or Mobject()??
-    @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
-
-        Parameters
-        ----------
-        label_tex : The label to be compared against the above types.
-
-        Returns
-        -------
-        :class:`~.Mobject`
-            The label.
-        """
-
-        if isinstance(label_tex, (float, int, str)):
-            label_tex = MathTex(label_tex)
-        return label_tex
-
     def _get_axis_label(
         self,
         label: Union[float, str, "Mobject"],
@@ -387,7 +368,7 @@ class CoordinateSystem:
             The positioned label along the given axis.
         """
 
-        label = self._create_label_tex(label)
+        label = self.x_axis._create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction=direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
@@ -997,7 +978,7 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        label = self._create_label_tex(label)
+        label = self.x_axis._create_label_tex(label)
         color = color or graph.get_color()
         label.set_color(color)
 
@@ -1550,11 +1531,11 @@ class CoordinateSystem:
 
         labels = VGroup()
         if dx_label is not None:
-            group.dx_label = self._create_label_tex(dx_label)
+            group.dx_label = self.x_axis._create_label_tex(dx_label)
             labels.add(group.dx_label)
             group.add(group.dx_label)
         if dy_label is not None:
-            group.df_label = self._create_label_tex(dy_label)
+            group.df_label = self.x_axis._create_label_tex(dy_label)
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -1710,7 +1691,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self._create_label_tex(label).set_color(label_color)
+            t_label = self.x_axis._create_label_tex(label).set_color(label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
