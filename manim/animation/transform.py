@@ -35,7 +35,7 @@ from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..utils.paths import path_along_arc
+from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
@@ -57,6 +57,14 @@ class Transform(Animation):
         self.path_arc_axis: np.ndarray = path_arc_axis
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
+
+        if self.path_arc_centers is not None:
+            self.path_func = path_along_circles(
+                path_arc,
+                self.path_arc_centers,
+                self.path_arc_axis,
+            )
+
         self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
@@ -76,7 +84,6 @@ class Transform(Animation):
         self._path_func = path_along_arc(
             arc_angle=self._path_arc,
             axis=self.path_arc_axis,
-            arc_centers=self.path_arc_centers,
         )
 
     @property
