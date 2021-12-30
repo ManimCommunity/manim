@@ -88,7 +88,7 @@ def path_along_circles(
     arc_angle
         The angle each point traverses around the quasicircle.
     circles_centers
-        The centers of each point's quasicircle to ratate around.
+        The centers of each point's quasicircle to rotate around.
     axis
         The axis of rotation.
 
