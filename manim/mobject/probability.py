@@ -241,7 +241,6 @@ class BarChart(Axes):
         y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = None,
         y_length: Optional[float] = config.frame_height - 4,
-        x_label_constructor: VMobject = Tex,
         bar_colors: Optional[Union[str, Iterable[str]]] = [
             "#003f5c",
             "#58508d",
@@ -257,7 +256,6 @@ class BarChart(Axes):
 
         self.values = values
         self.bar_names = bar_names
-        self.x_label_constructor = x_label_constructor
         self.bar_colors = bar_colors
         self.bar_width = bar_width
         self.bar_fill_opacity = bar_fill_opacity
@@ -277,7 +275,7 @@ class BarChart(Axes):
         if x_length is None:
             x_length = min(len(self.values), config.frame_width - 2)
 
-        x_axis_config = {"font_size": 24}
+        x_axis_config = {"font_size": 24, "label_constructor": Tex}
         self._update_default_configs(
             (x_axis_config,), (kwargs.pop("x_axis_config", None),)
         )
@@ -324,7 +322,7 @@ class BarChart(Axes):
                 direction = UP
             else:
                 direction = DOWN
-            bar_name_label = self.x_label_constructor(bar_name)
+            bar_name_label = self.x_axis.label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
             bar_name_label.next_to(

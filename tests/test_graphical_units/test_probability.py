@@ -43,11 +43,10 @@ def test_label_constructor(scene):
     chart = BarChart(
         values=[25, 46, 50, 10],
         bar_names=[r"\alpha \beta \gamma", r"a+c", r"\sqrt{a \over b}", r"a^2+b^2"],
-        x_label_constructor=MathTex,
         y_length=5,
         x_length=5,
         bar_width=0.8,
-        x_axis_config={"font_size": 36},
+        x_axis_config={"font_size": 36, "label_constructor": MathTex},
     )
 
     scene.add(chart)
