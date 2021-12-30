@@ -5,8 +5,8 @@ __all__ = ["NumberLine", "UnitInterval"]
 from typing import Dict, Iterable, Optional, Sequence, Union
 
 import numpy as np
-from manim.mobject.svg.tex_mobject import MathTex, Tex
 
+from manim.mobject.svg.tex_mobject import MathTex, Tex
 from manim.utils.scale import LinearBase, _ScaleBase
 
 from .. import config
@@ -424,7 +424,9 @@ class NumberLine(Line):
         if label_constructor is None:
             label_constructor = self.label_constructor
 
-        num_mob = DecimalNumber(x, font_size=font_size, mob_class=label_constructor, **number_config)
+        num_mob = DecimalNumber(
+            x, font_size=font_size, mob_class=label_constructor, **number_config
+        )
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -484,7 +486,14 @@ class NumberLine(Line):
         for x in x_values:
             if x in excluding:
                 continue
-            numbers.add(self.get_number_mobject(x, font_size=font_size, label_constructor=label_constructor, **kwargs))
+            numbers.add(
+                self.get_number_mobject(
+                    x,
+                    font_size=font_size,
+                    label_constructor=label_constructor,
+                    **kwargs,
+                )
+            )
         self.add(numbers)
         self.numbers = numbers
         return self
@@ -505,7 +514,7 @@ class NumberLine(Line):
         dict_values
             A dictionary consisting of the position along the number line and the mobject to be added:
             ``{1: Tex("Monday"), 3: Tex("Tuesday")}``. :attr:`label_constructor` will be used
-            to construct the labels if the value is not a mobject (``str`` or ``float``). 
+            to construct the labels if the value is not a mobject (``str`` or ``float``).
         direction
             Determines the direction at which the label is positioned next to the line.
         buff
@@ -538,7 +547,7 @@ class NumberLine(Line):
             # must be explicitly called
             if isinstance(label, str) and self.label_constructor is MathTex:
                 label = Tex(label)
-            else: 
+            else:
                 label = self._create_label_tex(label)
 
             if hasattr(label, "font_size"):
@@ -552,10 +561,7 @@ class NumberLine(Line):
         self.add(labels)
         return self
 
-    
-    def _create_label_tex(
-        self, label_tex: Union[str, float, VMobject]
-    ) -> VMobject:
+    def _create_label_tex(self, label_tex: Union[str, float, VMobject]) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a label according to the label_constructor.
 
         Parameters
