@@ -267,17 +267,27 @@ class _MethodAnimation(MoveToTarget):
 
 
 class ApplyMethod(Transform):
+    """Animates a mobject by applying a method.
+
+    Note that only the method needs to be passed to this animation,
+    it is not required to pass the corresponding mobject. Furthermore,
+    this animation class only works if the method returns the modified
+    mobject.
+
+    Parameters
+    ----------
+    method
+        The method that will be applied in the animation.
+    args
+        Any positional arguments to be passed when applying the method.
+    kwargs
+        Any keyword arguments passed to :class:`~.Transform`.
+
+    """
+
     def __init__(
         self, method: Callable, *args, **kwargs
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
-        """
-        Method is a method of Mobject, ``args`` are arguments for
-        that method.  Key word arguments should be passed in
-        as the last arg, as a dict, since ``kwargs`` is for
-        configuration of the transform itself
-
-        Relies on the fact that mobject methods return the mobject
-        """
         self.check_validity_of_input(method)
         self.method = method
         self.method_args = args
