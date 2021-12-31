@@ -401,11 +401,11 @@ class SpiralIn(Animation):
     def __init__(
             self,
             shapes: Mobject,
-            suspend_mobject_updating: bool = False,
+            scale_factor = 1,
             **kwargs,
     ) -> None:
-        self.scale_factor = 1
         self.shapes = shapes
+        self.scale_factor = scale_factor
         expansion_factor = 8 * self.scale_factor
         self.shape_center = shapes.get_center()
         for shape in shapes:
@@ -418,7 +418,7 @@ class SpiralIn(Animation):
             shape.save_state()
 
         super().__init__(
-            shapes, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            shapes, **kwargs
         )
 
 
