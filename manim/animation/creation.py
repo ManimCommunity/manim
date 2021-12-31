@@ -423,7 +423,7 @@ class SpiralIn(Animation):
     def __init__(
         self,
         shapes: Mobject,
-        scale_factor=1,
+        scale_factor: float=1,
         **kwargs,
     ) -> None:
         self.shapes = shapes
