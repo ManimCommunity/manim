@@ -277,6 +277,7 @@ class ApplyMethod(Transform):
         Any keyword arguments passed to :class:`~.Transform`.
 
     """
+
     def __init__(
         self, method: Callable, *args, **kwargs
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
