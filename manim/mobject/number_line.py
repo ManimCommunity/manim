@@ -561,7 +561,7 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(self, label_tex: Union[str, float, VMobject]) -> VMobject:
-        """Checks if the label is a :class:`~.VMobject`, otherwise, creates a 
+        """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label according to the ``label_constructor``.
 
         Parameters
