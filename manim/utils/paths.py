@@ -21,6 +21,7 @@ STRAIGHT_PATH_THRESHOLD = 0.01
 
 PATH_FUNC_TYPE = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
+
 # Remove `*args` and the `if` inside the functions when removing deprecation
 @deprecated_params(
     params="start_points, end_points, alpha",
