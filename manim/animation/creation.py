@@ -399,7 +399,7 @@ class Unwrite(Write):
 
 
 class SpiralIn(Animation):
-    """Create the Mobject with sub-Mobjects flying in on spiral trajectories.
+    r"""Create the Mobject with sub-Mobjects flying in on spiral trajectories.
 
     Parameters
     ----------
