@@ -31,3 +31,8 @@ context, instructions on how to cite a particular release can be found
    reporting_bugs
    contributing
    conduct
+
+.. image:: _static/crowdin-badge.svg
+  :align: center
+  :alt: Localized with Crowdin
+  :target: https://translate.manim.community
