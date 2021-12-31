@@ -346,7 +346,7 @@ class Mobject:
         """
         pass
 
-    def add(self, *mobjects: "Mobject") -> "Mobject":
+    def add(self, *mobjects: "Mobject"):
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -419,7 +419,7 @@ class Mobject:
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
+    def add_to_back(self, *mobjects: "Mobject"):
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved
@@ -475,7 +475,7 @@ class Mobject:
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
-    def remove(self, *mobjects: "Mobject") -> "Mobject":
+    def remove(self, *mobjects: "Mobject"):
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -508,7 +508,7 @@ class Mobject:
     def __isub__(self, other):
         raise NotImplementedError
 
-    def set(self, **kwargs) -> "Mobject":
+    def set(self, **kwargs):
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -758,7 +758,7 @@ class Mobject:
 
     # Updating
 
-    def update(self, dt: float = 0, recursive: bool = True) -> "Mobject":
+    def update(self, dt: float = 0, recursive: bool = True):
         """Apply all updaters.
 
         Does nothing if updating is suspended.
@@ -853,7 +853,7 @@ class Mobject:
         update_function: Updater,
         index: Optional[int] = None,
         call_updater: bool = False,
-    ) -> "Mobject":
+    ):
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the
@@ -923,7 +923,7 @@ class Mobject:
             update_function(self, 0)
         return self
 
-    def remove_updater(self, update_function: Updater) -> "Mobject":
+    def remove_updater(self, update_function: Updater):
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
@@ -950,7 +950,7 @@ class Mobject:
             self.updaters.remove(update_function)
         return self
 
-    def clear_updaters(self, recursive: bool = True) -> "Mobject":
+    def clear_updaters(self, recursive: bool = True):
         """Remove every updater.
 
         Parameters
@@ -976,7 +976,7 @@ class Mobject:
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject: "Mobject") -> "Mobject":
+    def match_updaters(self, mobject: "Mobject"):
         """Match the updaters of the given mobject.
 
         Parameters
@@ -1006,7 +1006,7 @@ class Mobject:
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive: bool = True) -> "Mobject":
+    def suspend_updating(self, recursive: bool = True):
         """Disable updating from updaters and animations.
 
 
@@ -1033,7 +1033,7 @@ class Mobject:
                 submob.suspend_updating(recursive)
         return self
 
-    def resume_updating(self, recursive: bool = True) -> "Mobject":
+    def resume_updating(self, recursive: bool = True):
         """Enable updating from updaters and animations.
 
         Parameters
@@ -1061,7 +1061,7 @@ class Mobject:
 
     # Transforming operations
 
-    def apply_to_family(self, func: Callable[["Mobject"], None]) -> "Mobject":
+    def apply_to_family(self, func: Callable[["Mobject"], None]):
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -1083,7 +1083,7 @@ class Mobject:
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors: np.ndarray) -> "Mobject":
+    def shift(self, *vectors: np.ndarray):
         """Shift by the given vectors.
 
         Parameters
@@ -1109,7 +1109,7 @@ class Mobject:
 
         return self
 
-    def scale(self, scale_factor: float, **kwargs) -> "Mobject":
+    def scale(self, scale_factor: float, **kwargs):
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1126,8 +1126,8 @@ class Mobject:
 
         Returns
         -------
-        Mobject
-            The scaled mobject.
+        :class:`Mobject`
+            ``self``
 
         Examples
         --------
@@ -2140,7 +2140,7 @@ class Mobject:
         col_widths: Optional[Iterable[Optional[float]]] = None,
         flow_order: str = "rd",
         **kwargs,
-    ) -> "Mobject":
+    ):
         """Arrange submobjects in a grid.
 
         Parameters
@@ -2173,8 +2173,8 @@ class Mobject:
 
         Returns
         -------
-        Mobject
-            The mobject.
+        :class:`Mobject`
+            ``self``
 
         Raises
         ------
@@ -2494,11 +2494,16 @@ class Mobject:
         mob2.add_n_more_submobjects(max(0, n1 - n2))
         return self
 
-    def null_point_align(self, mobject: "Mobject") -> "Mobject":
+    def null_point_align(self, mobject: "Mobject"):
         """If a :class:`~.Mobject` with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
         list.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
         """
         for m1, m2 in (self, mobject), (mobject, self):
             if m1.has_no_points() and m2.has_points():
