@@ -190,7 +190,7 @@ class BarChart(Axes):
 
     Parameters
     ----------
-        values
+    values
         An iterable of values that determines the height of each bar. Accepts negative values.
     bar_names
         An iterable of names for each bar. Does not have to match the length of ``values``.
