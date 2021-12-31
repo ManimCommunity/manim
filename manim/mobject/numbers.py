@@ -170,7 +170,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         return num_string
 
-    def string_to_mob(self, string:str, mob_class:Optional[VMobject]=None, **kwargs):
+    def string_to_mob(
+        self, string: str, mob_class: Optional[VMobject] = None, **kwargs
+    ):
         if mob_class is None:
             mob_class = self.mob_class
 
