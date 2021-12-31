@@ -397,12 +397,13 @@ class Unwrite(Write):
             **kwargs,
         )
 
+
 class SpiralIn(Animation):
     def __init__(
-            self,
-            shapes: Mobject,
-            scale_factor = 1,
-            **kwargs,
+        self,
+        shapes: Mobject,
+        scale_factor=1,
+        **kwargs,
     ) -> None:
         self.shapes = shapes
         self.scale_factor = scale_factor
@@ -411,25 +412,23 @@ class SpiralIn(Animation):
         for shape in shapes:
             shape.final_position = shape.get_center()
             shape.initial_position = (
-                    shape.final_position
-                    + (shape.final_position - self.shape_center) * expansion_factor
+                shape.final_position
+                + (shape.final_position - self.shape_center) * expansion_factor
             )
             shape.move_to(shape.initial_position)
             shape.save_state()
 
-        super().__init__(
-            shapes, **kwargs
-        )
-
+        super().__init__(shapes, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
-        TAU = 2*np.pi
+        TAU = 2 * np.pi
         for shape in self.shapes:
             shape.restore()
             shape.shift((shape.final_position - shape.initial_position) * alpha)
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
             shape.set_opacity(min(1, alpha * 3))
+
 
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
