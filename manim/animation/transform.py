@@ -32,7 +32,7 @@ import numpy as np
 
 from .. import config
 from ..animation.animation import Animation
-from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
+from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..utils.paths import path_along_arc, path_along_circles
@@ -381,11 +381,31 @@ class ApplyFunction(Transform):
 
 
 class ApplyMatrix(ApplyPointwiseFunction):
-    def __init__(self, matrix: np.ndarray, mobject: Mobject, **kwargs) -> None:
+    """Applies a matrix transform to an mobject.
+
+    Parameters
+    ----------
+    matrix
+        The transformation matrix.
+    mobject
+        The :class:`~.Mobject`.
+    about_point
+        The origin point for the transform. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+    """
+
+    def __init__(
+        self,
+        matrix: np.ndarray,
+        mobject: Mobject,
+        about_point: np.ndarray = ORIGIN,
+        **kwargs,
+    ) -> None:
         matrix = self.initialize_matrix(matrix)
 
         def func(p):
-            return np.dot(p, matrix.T)
+            return np.dot(p - about_point, matrix.T) + about_point
 
         super().__init__(func, mobject, **kwargs)
 
