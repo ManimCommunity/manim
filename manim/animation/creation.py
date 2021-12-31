@@ -399,10 +399,13 @@ class Unwrite(Write):
 
 
 class SpiralIn(Animation):
-    r"""Create the Mobject with sub-Mobjects flying in on spiral trajectories.
+    """Create the Mobject with sub-Mobjects flying in on spiral trajectories.
 
     Parameters
     ----------
+    shapes
+        The MObject on which to be operated.
+
     scale_factor
         The factor used for scaling the effect.
 
@@ -410,14 +413,14 @@ class SpiralIn(Animation):
     --------
     .. manim :: SpiralInExample
 
-    class SpiralInExample(Scene):
-        def construct(self):
-            pi = MathTex(r"\pi").scale(7)
-            pi.shift(2.25 * LEFT + 1.5 * UP)
-            circle = Circle(color=GREEN_C, fill_opacity=1).shift(LEFT)
-            square = Square(color=BLUE_D, fill_opacity=1).shift(UP)
-            shapes = VGroup(pi, circle, square)
-            self.play(SpiralIn(shapes))
+        class SpiralInExample(Scene):
+            def construct(self):
+                pi = MathTex(r"\pi").scale(7)
+                pi.shift(2.25 * LEFT + 1.5 * UP)
+                circle = Circle(color=GREEN_C, fill_opacity=1).shift(LEFT)
+                square = Square(color=BLUE_D, fill_opacity=1).shift(UP)
+                shapes = VGroup(pi, circle, square)
+                self.play(SpiralIn(shapes))
     """
 
     def __init__(
