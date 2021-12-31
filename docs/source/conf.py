@@ -16,8 +16,6 @@ from pathlib import Path
 
 import manim
 
-
-
 # -- Project information -----------------------------------------------------
 
 project = "Manim"

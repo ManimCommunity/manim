@@ -680,7 +680,6 @@ class SceneFileWriter:
             ) as file:
                 json.dump(sections_index, file, indent=4)
 
-
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
         cached_partial_movies = [
