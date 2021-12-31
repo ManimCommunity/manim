@@ -1,7 +1,14 @@
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "threed"
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_AddFixedInFrameMobjects(scene):
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+    text = Tex("This is a 3D tex")
+    scene.add_fixed_in_frame_mobjects(text)
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -31,7 +38,10 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    scene.add(Line3D())
+    line = Line3D()
+    perp_line = Line3D.perpendicular_to(line, UP)
+    parallel_line = Line3D.parallel_to(line, UP)
+    scene.add(line, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -46,7 +56,7 @@ def test_Torus(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Axes(scene):
-    scene.add(ThreeDAxes(axis_config={"exclude_origin_tick": False}))
+    scene.add(ThreeDAxes())
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -122,3 +132,28 @@ def test_SurfaceColorscale(scene):
     )
     trig_plane.set_fill_by_value(axes=axes, colors=[BLUE, GREEN, YELLOW, ORANGE, RED])
     scene.add(axes, trig_plane)
+
+
+@frames_comparison(base_scene=ThreeDScene)
+def test_Y_Direction(scene):
+    resolution_fa = 42
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+
+    def param_surface(u, v):
+        x = u
+        y = v
+        z = np.sin(x) * np.cos(y)
+        return z
+
+    surface_plane = Surface(
+        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+        resolution=(resolution_fa, resolution_fa),
+        v_range=[0, 5],
+        u_range=[0, 5],
+    )
+    surface_plane.set_style(fill_opacity=1)
+    surface_plane.set_fill_by_value(
+        axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
+    )
+    scene.add(axes, surface_plane)

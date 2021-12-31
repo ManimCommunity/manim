@@ -30,9 +30,9 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
-from ..utils.deprecation import deprecated, deprecated_params
+from ..utils.deprecation import deprecated
 from ..utils.iterables import tuplify
-from ..utils.space_ops import normalize, z_to_vector
+from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -83,10 +83,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: "Color" = BLUE_D,
+        fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
-        stroke_color: "Color" = LIGHT_GREY,
+        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
@@ -165,16 +165,23 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.set_fill(colors[c_index], opacity=opacity)
         return self
 
-    def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
-        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+    def set_fill_by_value(
+        self,
+        axes: Mobject,
+        colors: Union[Iterable[Color], Color],
+        axis: int = 2,
+    ):
+        """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
 
         Parameters
         ----------
         axes :
-            The axes for the parametric surface, which will be used to map z-values to colors.
+            The axes for the parametric surface, which will be used to map axis-values to colors.
         colors :
-            A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
+            A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
+        axis :
+            The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)
 
         Returns
         -------
@@ -203,16 +210,19 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis = 1)
                     self.add(axes, surface_plane)
         """
+
+        ranges = [axes.x_range, axes.y_range, axes.z_range]
+
         if type(colors[0]) is tuple:
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
             new_colors = colors
 
-            pivot_min = axes.z_range[0]
-            pivot_max = axes.z_range[1]
+            pivot_min = ranges[axis][0]
+            pivot_max = ranges[axis][1]
             pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
             pivots = np.arange(
                 start=pivot_min,
@@ -221,15 +231,15 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             )
 
         for mob in self.family_members_with_points():
-            z_value = axes.point_to_coords(mob.get_midpoint())[2]
-            if z_value <= pivots[0]:
+            axis_value = axes.point_to_coords(mob.get_midpoint())[axis]
+            if axis_value <= pivots[0]:
                 mob.set_color(new_colors[0])
-            elif z_value >= pivots[-1]:
+            elif axis_value >= pivots[-1]:
                 mob.set_color(new_colors[-1])
             else:
                 for i, pivot in enumerate(pivots):
-                    if pivot > z_value:
-                        color_index = (z_value - pivots[i - 1]) / (
+                    if pivot > axis_value:
+                        color_index = (axis_value - pivots[i - 1]) / (
                             pivots[i] - pivots[i - 1]
                         )
                         color_index = min(color_index, 1)
@@ -516,7 +526,10 @@ class Cone(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-        theta = np.arccos(z / r)
+        if r > 0:
+            theta = np.arccos(z / r)
+        else:
+            theta = 0
 
         if x == 0:
             if y == 0:  # along the z axis
@@ -644,7 +657,10 @@ class Cylinder(Surface):
         x, y, z = self.direction
 
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-        theta = np.arccos(z / r)
+        if r > 0:
+            theta = np.arccos(z / r)
+        else:
+            theta = 0
 
         if x == 0:
             if y == 0:  # along the z axis
@@ -748,6 +764,94 @@ class Line3D(Cylinder):
 
     def get_end(self):
         return self.end
+
+    @classmethod
+    def parallel_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        """Returns a line parallel to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be parallel to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: ParallelLineExample
+            :save_last_frame:
+
+            class ParallelLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.parallel_to(line1, color=YELLOW)
+                    self.add(ax, line1, line2)
+        """
+        point = np.array(point)
+        vect = normalize(line.vect)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
+
+    @classmethod
+    def perpendicular_to(
+        cls,
+        line: "Line3D",
+        point: Sequence[float] = ORIGIN,
+        length: float = 5,
+        **kwargs
+    ):
+        """Returns a line perpendicular to another line going through
+        a given point.
+
+        Parameters
+        ----------
+        line
+            The line to be perpendicular to.
+        point
+            The point to pass through.
+        kwargs
+            Additional parameters to be passed to the class.
+
+        Examples
+        --------
+        .. manim:: PerpLineExample
+            :save_last_frame:
+
+            class PerpLineExample(ThreeDScene):
+                def construct(self):
+                    self.set_camera_orientation(PI / 3, -PI / 4)
+                    ax = ThreeDAxes((-5, 5), (-5, 5), (-5, 5), 10, 10, 10)
+                    line1 = Line3D(RIGHT * 2, UP + OUT, color=RED)
+                    line2 = Line3D.perpendicular_to(line1, color=BLUE)
+                    self.add(ax, line1, line2)
+        """
+        point = np.array(point)
+
+        norm = np.cross(line.vect, point - line.start)
+        if all(np.linalg.norm(norm) == np.zeros(3)):
+            raise ValueError("Could not find the perpendicular.")
+
+        start, end = perpendicular_bisector([line.start, line.end], norm)
+        vect = normalize(end - start)
+        return cls(
+            point + vect * length / 2,
+            point - vect * length / 2,
+            **kwargs,
+        )
 
 
 class Arrow3D(Line3D):

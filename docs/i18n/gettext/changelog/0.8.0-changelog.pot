@@ -1,0 +1,600 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.8.0-changelog.rst:3
+msgid "v0.8.0"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:5
+msgid "July 02, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:10
+msgid "A total of 37 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:14
+#: ../../source/changelog/0.8.0-changelog.rst:51
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:15
+msgid "Bill Shillito +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:16
+msgid "Darigov Research +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:17
+#: ../../source/changelog/0.8.0-changelog.rst:53
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:18
+#: ../../source/changelog/0.8.0-changelog.rst:54
+msgid "Devin Neal"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:19
+msgid "Iced-Tea3"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:20
+#: ../../source/changelog/0.8.0-changelog.rst:55
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:21
+#: ../../source/changelog/0.8.0-changelog.rst:56
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:22
+#: ../../source/changelog/0.8.0-changelog.rst:57
+msgid "KingWampy"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:23
+#: ../../source/changelog/0.8.0-changelog.rst:58
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:24
+msgid "MathInvariance +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:25
+msgid "Max Stoumen"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:26
+msgid "Mehmet Ali Özer +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:27
+msgid "Michael Pilosov +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:28
+#: ../../source/changelog/0.8.0-changelog.rst:61
+msgid "Mohammad Al-Fetyani"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:29
+#: ../../source/changelog/0.8.0-changelog.rst:62
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:30
+#: ../../source/changelog/0.8.0-changelog.rst:63
+msgid "Nikhil Garuda"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:31
+#: ../../source/changelog/0.8.0-changelog.rst:64
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:32
+msgid "PaulCMurdoch"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:33
+#: ../../source/changelog/0.8.0-changelog.rst:65
+msgid "Philipp Imhof"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:34
+msgid "PipedQuintes +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:35
+#: ../../source/changelog/0.8.0-changelog.rst:66
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:36
+#: ../../source/changelog/0.8.0-changelog.rst:67
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:37
+msgid "Ujjayanta +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:38
+msgid "Vagrid +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:39
+msgid "andrehisatsuga +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:40
+#: ../../source/changelog/0.8.0-changelog.rst:70
+msgid "friedkeenan"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:41
+msgid "peaceheis +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:42
+msgid "yit6 +"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:45
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:48
+msgid "Abhijith Muthyala"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:49
+msgid "Anton Ballmaier"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:50
+msgid "Aron"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:52
+msgid "Clar Fon"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:59
+msgid "Mark Miller"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:60
+msgid "MathInvariance"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:68
+msgid "Ujjayanta"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:69
+msgid "Vagrid"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:73
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:75
+msgid "A total of 76 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:78
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:80
+msgid "`#1616 <https://github.com/ManimCommunity/manim/pull/1616>`__: Remove all functions and classes that were deprecated until ``v0.6.0``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:84
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:87
+msgid "`#1716 <https://github.com/ManimCommunity/manim/pull/1716>`__: Rewrite stroke and fill shaders"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:87
+msgid "Rewrite vectorized mobject shaders to be compatible with transformation matrices."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:90
+msgid "`#1695 <https://github.com/ManimCommunity/manim/pull/1695>`__: Add option to justify text with :class:`~.MarkupText`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:90
+msgid "A new parameter ``justify`` is added to :class:`~.MarkupText`. It can be used to justify a paragraph of text."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:94
+msgid "`#1660 <https://github.com/ManimCommunity/manim/pull/1660>`__: Added support for ``.webm`` and transparency of videos in Jupyter notebooks"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:93
+msgid "Added support for generating ``webm`` videos via the command line flag ``--format=webm``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:94
+msgid "Added transparency support for Jupyter notebooks"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:96
+msgid "`#1553 <https://github.com/ManimCommunity/manim/pull/1553>`__: Add dearpygui integration"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:100
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:102
+msgid "`#1728 <https://github.com/ManimCommunity/manim/pull/1728>`__: Improved positioning and size of the OpenGL window; added some configuration options"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:105
+msgid "`#1733 <https://github.com/ManimCommunity/manim/pull/1733>`__: Let OpenGLMobject.copy return a deep copy by default"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:108
+msgid "`#1735 <https://github.com/ManimCommunity/manim/pull/1735>`__: Metaclass compatibility for `coordinate_system.py`, `Code` and `ParametricSurface`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:111
+msgid "`#1585 <https://github.com/ManimCommunity/manim/pull/1585>`__: OpenGL compatibility via metaclass for :class:`~.Matrix`, :class:`~.DecimalNumber`, :class:`~.Variable`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:114
+msgid "`#1713 <https://github.com/ManimCommunity/manim/pull/1713>`__: Exit the command line interface gracefully if no scene was chosen"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:119
+msgid "`#1652 <https://github.com/ManimCommunity/manim/pull/1652>`__: Refactored :class:`~.Mobject` and :class:`~.Scene` to no longer inherit from the abstract base class ``Container``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:118
+msgid "Moved tests in ``test_container.py`` for :class:`Container` that test :class:`~.Scene` and :class:`~.Mobject` to their own files."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:119
+msgid "Corrected various instances of incorrectly passed keyword arguments, or unused keyword arguments."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:121
+msgid "`#1693 <https://github.com/ManimCommunity/manim/pull/1693>`__: Made the default arrowhead size for :class:`~.Arrow3D` smaller"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:127
+msgid "`#1678 <https://github.com/ManimCommunity/manim/pull/1678>`__: Allow some rate functions to assume values outside of [0, 1]; introduce clamping decorators"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:125
+msgid "Fixed animations so that certain rate functions (``running_start``, ``wiggle``, ``ease_in_back``, ``ease_out_back``, ``ease_in_out_back``, ``ease_in_elastic``, ``ease_out_elastic``, and ``ease_out_elastic``) can go outside the range from 0 to 1."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:126
+msgid "Fixed lag ratios so that they're spaced out evenly within the time interval and the rate functions are applied to each animation individually, rather than having the rate function determine when the animation starts."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:127
+msgid "Fixed faulty code for ``ease_in_out_expo``, ``ease_in_bounce``, ``ease_out_bounce``, and ``ease_in_out_bounce``."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:129
+msgid "`#1649 <https://github.com/ManimCommunity/manim/pull/1649>`__: Made video file names in Jupyter notebook more readable"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:133
+msgid "`#1667 <https://github.com/ManimCommunity/manim/pull/1667>`__: Determine the default number of decimal places for :class:`~.NumberLine` labels automatically from the step size"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:133
+msgid "As an example: If the step size is set to 0.5, labels will now show at least one decimal place."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:135
+msgid "`#1608 <https://github.com/ManimCommunity/manim/pull/1608>`__: Color file paths in terminal; remove curly braces surrounding the file path in \"Partial movie file written in...\" messages"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:138
+msgid "`#1632 <https://github.com/ManimCommunity/manim/pull/1632>`__: OpenGL compatibility via metaclass: :class:`~.Group`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:142
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:144
+msgid "`#1740 <https://github.com/ManimCommunity/manim/pull/1740>`__: Fix pillow to <8.3.0"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:147
+msgid "`#1729 <https://github.com/ManimCommunity/manim/pull/1729>`__: Fix bug when using :class:`~.Text` with the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:150
+msgid "`#1675 <https://github.com/ManimCommunity/manim/pull/1675>`__: Fixed ignored fill and stroke colors for :class:`~.SVGMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:153
+msgid "`#1664 <https://github.com/ManimCommunity/manim/pull/1664>`__: Fixed accidental displacement in :class:`~.Axes` caused by ``include_numbers`` / ``numbers_to_include``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:156
+msgid "`#1670 <https://github.com/ManimCommunity/manim/pull/1670>`__: Fixed missing ``numpy`` import in OpenGL shader example"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:159
+msgid "`#1636 <https://github.com/ManimCommunity/manim/pull/1636>`__: Fixed bugs and added examples to methods and classes in :mod:`manim.mobject.matrix`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:162
+msgid "`#1614 <https://github.com/ManimCommunity/manim/pull/1614>`__: Fix tick issues and improve tick placement for :class:`~.NumberLine`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:165
+msgid "`#1593 <https://github.com/ManimCommunity/manim/pull/1593>`__: Un-flip output of ``get_frame()`` when using the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:168
+msgid "`#1619 <https://github.com/ManimCommunity/manim/pull/1619>`__: Fix output of automatically detected LaTeX errors"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:176
+msgid "`#1595 <https://github.com/ManimCommunity/manim/pull/1595>`__: Fixed a few CLI and rendering bugs"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:172
+msgid "Corrected issue where gifs were being logged with an incorrect extension"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:173
+msgid "Fixed issue where videos were output when format was set to png"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:174
+msgid "Added logging for png output"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:175
+msgid "Added precedence handling when the ``write_to_movie`` flag would conflict with ``--format``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:176
+msgid "Fixed issue that caused png image output to be ignored when caching was enabled"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:178
+msgid "`#1635 <https://github.com/ManimCommunity/manim/pull/1635>`__: Added missing numpy import for :mod:`manim.mobject.probability`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:182
+msgid "`#1634 <https://github.com/ManimCommunity/manim/pull/1634>`__: Fixed OpenGL examples for MacOS"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:182
+msgid "Renamed deprecated ``gl_FragColor`` to ``fragColor``."
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:185
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:187
+msgid "`#1732 <https://github.com/ManimCommunity/manim/pull/1732>`__: Remove reference to ``--plugins`` flag"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:190
+msgid "`#1734 <https://github.com/ManimCommunity/manim/pull/1734>`__: Fix inheritance graph background color"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:193
+msgid "`#1698 <https://github.com/ManimCommunity/manim/pull/1698>`__: Added an example for :class:`~.PMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:196
+msgid "`#1690 <https://github.com/ManimCommunity/manim/pull/1690>`__: Added an example for :class:`~.CoordinateSystem`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:199
+msgid "`#1510 <https://github.com/ManimCommunity/manim/pull/1510>`__: Add a tutorial for using :class:`~.Text` and :class:`~.Tex`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:202
+msgid "`#1685 <https://github.com/ManimCommunity/manim/pull/1685>`__: Added an example and parameter description for :class:`~.AnnularSector`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:205
+msgid "`#1687 <https://github.com/ManimCommunity/manim/pull/1687>`__: Updated imports in ``geometry.py`` and added example to :class:`~.Arrow`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:208
+msgid "`#1681 <https://github.com/ManimCommunity/manim/pull/1681>`__: Added an example for :class:`~.NumberLine`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:211
+msgid "`#1697 <https://github.com/ManimCommunity/manim/pull/1697>`__: Added an example for :class:`~.PGroup`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:214
+msgid "`#1594 <https://github.com/ManimCommunity/manim/pull/1594>`__: Several improvements to the documentation design and layout"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:217
+msgid "`#1696 <https://github.com/ManimCommunity/manim/pull/1696>`__: Added an example for :class:`~.DashedVMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:220
+msgid "`#1637 <https://github.com/ManimCommunity/manim/pull/1637>`__: Added an example for :class:`~.FunctionGraph`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:223
+msgid "`#1626 <https://github.com/ManimCommunity/manim/pull/1626>`__: Added an example for :class:`~.Prism`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:226
+msgid "`#1712 <https://github.com/ManimCommunity/manim/pull/1712>`__: Added a second example for :class:`~.DoubleArrow`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:229
+msgid "`#1710 <https://github.com/ManimCommunity/manim/pull/1710>`__: Update copyright year in documentation to 2020-2021"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:232
+msgid "`#1708 <https://github.com/ManimCommunity/manim/pull/1708>`__: Fixed link to interactive example notebook"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:235
+msgid "`#1657 <https://github.com/ManimCommunity/manim/pull/1657>`__: Added an example for :class:`~.ParametricSurface`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:238
+msgid "`#1642 <https://github.com/ManimCommunity/manim/pull/1642>`__: Added examples and docstrings for :class:`~.BarChart`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:241
+msgid "`#1700 <https://github.com/ManimCommunity/manim/pull/1700>`__: Added an example for :meth:`~.Mobject.scale`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:244
+msgid "`#1689 <https://github.com/ManimCommunity/manim/pull/1689>`__: Added an example for :class:`~.SurroundingRectangle`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:247
+msgid "`#1627 <https://github.com/ManimCommunity/manim/pull/1627>`__: Added an example for :class:`~.Sphere`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:250
+msgid "`#1569 <https://github.com/ManimCommunity/manim/pull/1569>`__: Added example to demonstrate differences between :class:`~.Transform` and :class:`~.ReplacementTransform`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:253
+msgid "`#1647 <https://github.com/ManimCommunity/manim/pull/1647>`__: Added an example for :class:`~.Sector`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:256
+msgid "`#1673 <https://github.com/ManimCommunity/manim/pull/1673>`__: Updated documentation examples for :class:`~.Text` and :class:`~.MarkupText`: set ``weight=BOLD`` instead of ``style``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:259
+msgid "`#1650 <https://github.com/ManimCommunity/manim/pull/1650>`__: Added an example for :class:`~.ArcBetweenPoints`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:262
+msgid "`#1628 <https://github.com/ManimCommunity/manim/pull/1628>`__: Added an example for :class:`~.NumberPlane`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:265
+msgid "`#1646 <https://github.com/ManimCommunity/manim/pull/1646>`__: Added an example for :class:`~.Underline`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:268
+msgid "`#1659 <https://github.com/ManimCommunity/manim/pull/1659>`__: Added more details to the Google Colab installation instructions"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:271
+msgid "`#1658 <https://github.com/ManimCommunity/manim/pull/1658>`__: Updated python requirement in the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:274
+msgid "`#1639 <https://github.com/ManimCommunity/manim/pull/1639>`__: Added an example for :class:`~.SampleSpace`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:277
+msgid "`#1640 <https://github.com/ManimCommunity/manim/pull/1640>`__: Added an example for :class:`~.Point`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:280
+msgid "`#1643 <https://github.com/ManimCommunity/manim/pull/1643>`__: Fixed ``RightArcAngleExample`` for :class:`~.Angle` in documentation"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:283
+msgid "`#1617 <https://github.com/ManimCommunity/manim/pull/1617>`__: Visually improved an example in our tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:286
+msgid "`#1641 <https://github.com/ManimCommunity/manim/pull/1641>`__: Added an example for :class:`~.ComplexPlane`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:289
+msgid "`#1644 <https://github.com/ManimCommunity/manim/pull/1644>`__: Added an example for :class:`~.BackgroundRectangle`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:292
+msgid "`#1633 <https://github.com/ManimCommunity/manim/pull/1633>`__: Added an example for :class:`~.Integer`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:295
+msgid "`#1630 <https://github.com/ManimCommunity/manim/pull/1630>`__: Added an example for :class:`~.Arc`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:298
+msgid "`#1631 <https://github.com/ManimCommunity/manim/pull/1631>`__: Added an example for :class:`~.BulletedList`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:301
+msgid "`#1620 <https://github.com/ManimCommunity/manim/pull/1620>`__: Fixed reference to command line interface help command"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:305
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:307
+msgid "`#1623 <https://github.com/ManimCommunity/manim/pull/1623>`__: CI: branch rename: master -> main"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:310
+msgid "`#1621 <https://github.com/ManimCommunity/manim/pull/1621>`__: Revert default template and add new templates"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:313
+msgid "`#1573 <https://github.com/ManimCommunity/manim/pull/1573>`__: PR template for the manim hackathon"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:317
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:319
+msgid "`#1720 <https://github.com/ManimCommunity/manim/pull/1720>`__: Renamed incorrect references of ``master`` to ``main``"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:322
+msgid "`#1692 <https://github.com/ManimCommunity/manim/pull/1692>`__: Removed redundant warning in CLI parsing"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:325
+msgid "`#1651 <https://github.com/ManimCommunity/manim/pull/1651>`__: Small code cleanup for :class:`~.Polygram`"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:328
+msgid "`#1610 <https://github.com/ManimCommunity/manim/pull/1610>`__: Changed one image extension to lowercase letters"
+msgstr ""
+
+#: ../../source/changelog/0.8.0-changelog.rst:332
+msgid "New releases"
+msgstr ""
+
+
