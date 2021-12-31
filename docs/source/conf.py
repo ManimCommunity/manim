@@ -16,7 +16,6 @@ from pathlib import Path
 
 import manim
 
-sys.path.insert(0, Path().resolve())
 
 
 # -- Project information -----------------------------------------------------
