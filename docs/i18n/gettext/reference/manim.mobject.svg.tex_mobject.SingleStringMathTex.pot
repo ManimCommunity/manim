@@ -1,0 +1,105 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:2
+msgid "SingleStringMathTex"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:4
+msgid "Qualified name: ``manim.mobject.svg.tex\\_mobject.SingleStringMathTex``"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex:1
+msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex:1
+msgid "Elementary building block for rendering text with LaTeX."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex:4
+msgid "Tests"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex:5
+msgid "Check that creating a :class:`~.SingleStringMathTex` object works::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.init_colors:1
+msgid "Initializes the colors."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1
+msgid "Converts a SVG path element's ``d`` attribute to a mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.remove_stray_braces:1
+msgid "Makes :class:`~.MathTex` resilient to unmatched braces."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:28
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "Used to animate the application of a method."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1
+msgid "The font size of the tex mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.init_colors:3
+msgid "Gets called upon creation. This is an empty method that can be implemented by subclasses."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:3
+msgid "A path with potentially multiple path commands to create a shape."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:5
+msgid "Style specification, using the SVG names for properties."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:8
+msgid "A VMobject from the given path string, or d attribute."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:0
+msgid "Return type"
+msgstr ""
+
+

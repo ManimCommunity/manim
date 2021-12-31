@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 031f65d9b7a2e83b265c23f1c4450271\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
+"X-Crowdin-Project-ID: 1\n"
+"X-Crowdin-Language: sv\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/contributing.pot\n"
+"X-Crowdin-File-ID: 5143\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"PO-Revision-Date: 2021-11-06 12:29\n"
+
+#: ../../source/contributing.rst:3
+msgid "Contributing"
+msgstr "Bidragande"
+
+#: ../../source/contributing.rst:5
+msgid "Thank you for your interest in contributing to Manim! However you have decided to contribute or interact with the community, please always be civil and respect other members of the community. If you haven't read our :doc:`code of conduct<conduct>`, do so here. Manim is Free and Open Source Software (FOSS) for mathematical animations. As such, **we welcome everyone** who is interested in mathematics, pedagogy, computer animations, open-source, software development, and beyond. Manim accepts many kinds of contributions, some are detailed below:"
+msgstr "Tack för ditt intresse för att bidra till Manim! Oavsett hur du bestämt dig för att bidra eller interagera med communityn, kom ihåg att alltid vara civiliserad och respektera andra medlemmar i communityn. Om du inte redan har gjort det, läs vår :doc:`uppförandekod<conduct>`. Manim är en gratis programvara med öppen källkod (FOSS) för matematiska animationer. På grund av detta, **välkomnar vi alla** som är intresserade av matematik, pedagogik, datoranimationer, öppen källkod, mjukvaruutveckling och vidare. Manim tar emot många typer av bidrag, några exempel beskrivs nedan:"
+
+#: ../../source/contributing.rst:14
+msgid "Code maintenance and development"
+msgstr "Underhåll och utveckling av kod"
+
+#: ../../source/contributing.rst:15
+msgid "DevOps"
+msgstr "DevOps"
+
+#: ../../source/contributing.rst:16
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: ../../source/contributing.rst:17
+msgid "Developing educational content & narrative documentation"
+msgstr "Utveckla pedagogiskt innehåll & berättande dokumentation"
+
+#: ../../source/contributing.rst:18
+msgid "Plugins to extend Manim functionality"
+msgstr "Plugins för att utöka Manims funktionalitet"
+
+#: ../../source/contributing.rst:19
+msgid "Testing (graphical, unit & video)"
+msgstr "Testning (grafik, enhetstester & video)"
+
+#: ../../source/contributing.rst:20
+msgid "Website design and development"
+msgstr "Webbplatsdesign och -utveckling"
+
+#: ../../source/contributing.rst:21
+msgid "Translating documentation and docstrings"
+msgstr "Översätta dokumentation och docsträngar"
+
+#: ../../source/contributing.rst:24
+msgid "Please ensure that you are reading the latest version of this guide by ensuring that \"latest\" is selected in the version switcher."
+msgstr "Se till att du läser den senaste versionen av denna guide genom att se till att \"senaste\" väljs i versionshanteraren."
+
