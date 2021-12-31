@@ -1,6 +1,9 @@
+import datetime
+
 import pytest
 
 from manim import Circle, FadeIn, Mobject, Scene, Square, config, tempconfig
+from manim.animation.animation import Wait
 
 
 def test_scene_add_remove():
@@ -46,3 +49,25 @@ def test_scene_time():
         scene.renderer._original_skipping_status = True
         scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
         assert pytest.approx(scene.renderer.time) == 7.5
+
+
+def test_subcaption():
+    with tempconfig({"dry_run": True}):
+        scene = Scene()
+        scene.add_subcaption("Testing add_subcaption", duration=1, offset=0)
+        scene.wait()
+        scene.play(
+            Wait(),
+            run_time=2,
+            subcaption="Testing Scene.play subcaption interface",
+            subcaption_duration=1.5,
+            subcaption_offset=0.5,
+        )
+        subcaptions = scene.renderer.file_writer.subcaptions
+        assert len(subcaptions) == 2
+        assert subcaptions[0].start == datetime.timedelta(seconds=0)
+        assert subcaptions[0].end == datetime.timedelta(seconds=1)
+        assert subcaptions[0].content == "Testing add_subcaption"
+        assert subcaptions[1].start == datetime.timedelta(seconds=1.5)
+        assert subcaptions[1].end == datetime.timedelta(seconds=3)
+        assert subcaptions[1].content == "Testing Scene.play subcaption interface"

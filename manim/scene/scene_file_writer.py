@@ -12,6 +12,7 @@ from time import sleep
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+import srt
 from PIL import Image
 from pydub import AudioSegment
 
@@ -71,9 +72,13 @@ class SceneFileWriter:
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: List[str] = []
+        self.subcaptions: List[srt.Subtitle] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
-        self.next_section("autocreated", DefaultSectionType.NORMAL)
+        # if you need the first section to be skipped, add a first section by hand, it will replace this one
+        self.next_section(
+            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+        )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -153,13 +158,19 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str) -> None:
+    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
         """Create segmentation cut here."""
         self.finish_last_section()
 
         # images don't support sections
         section_video: Optional[str] = None
-        if not config.dry_run and write_to_movie() and config.save_sections:
+        # don't save when None
+        if (
+            not config.dry_run
+            and write_to_movie()
+            and config.save_sections
+            and not skip_animations
+        ):
             # relative to index file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
@@ -168,6 +179,7 @@ class SceneFileWriter:
                 type,
                 section_video,
                 name,
+                skip_animations,
             ),
         )
 
@@ -439,6 +451,8 @@ class SceneFileWriter:
         elif is_png_format() and not config["dry_run"]:
             target_dir, _ = os.path.splitext(self.image_file_path)
             logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
+        if self.subcaptions:
+            self.write_subcaption_file()
 
     def open_movie_pipe(self, file_path=None):
         """
@@ -666,6 +680,7 @@ class SceneFileWriter:
             ) as file:
                 json.dump(sections_index, file, indent=4)
 
+
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
         cached_partial_movies = [
@@ -702,6 +717,13 @@ class SceneFileWriter:
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},
         )
+
+    def write_subcaption_file(self):
+        """Writes the subcaption file."""
+        subcaption_file = Path(config.output_file).with_suffix(".srt")
+        with open(subcaption_file, "w") as f:
+            f.write(srt.compose(self.subcaptions))
+        logger.info(f"Subcaption file has been written as {subcaption_file}")
 
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""

@@ -110,8 +110,8 @@ def test_coords_to_point():
 
 def test_input_to_graph_point():
     ax = Axes()
-    curve = ax.get_graph(lambda x: np.cos(x))
-    line_graph = ax.get_line_graph([1, 3, 5], [-1, 2, -2], add_vertex_dots=False)[
+    curve = ax.plot(lambda x: np.cos(x))
+    line_graph = ax.plot_line_graph([1, 3, 5], [-1, 2, -2], add_vertex_dots=False)[
         "line_graph"
     ]
 

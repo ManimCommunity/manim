@@ -454,10 +454,10 @@ class Camera:
         return not reduce(
             op.or_,
             [
-                mobject.get_right()[0] < fc[0] - fw,
-                mobject.get_bottom()[1] > fc[1] + fh,
-                mobject.get_left()[0] > fc[0] + fw,
-                mobject.get_top()[1] < fc[1] - fh,
+                mobject.get_right()[0] < fc[0] - fw / 2,
+                mobject.get_bottom()[1] > fc[1] + fh / 2,
+                mobject.get_left()[0] > fc[0] + fw / 2,
+                mobject.get_top()[1] < fc[1] - fh / 2,
             ],
         )
 
@@ -1106,7 +1106,7 @@ class Camera:
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
         this_sum = op.add(self.pixel_height, self.pixel_width)
         factor = fdiv(big_sum, this_sum)
-        return 1 + (thickness - 1) / factor
+        return 1 + (thickness - 1) * factor
 
     def get_thickening_nudges(self, thickness):
         """

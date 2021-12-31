@@ -69,7 +69,6 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
-from ...utils.deprecation import deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -352,7 +351,7 @@ class Text(SVGMobject):
                         'Google',
                         t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
                              '[2:3]': '#fbb003', '[3:4]': '#3174f0',
-                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3)
+                             '[4:5]': '#269a43', '[5:]': '#e53125'}, font_size=58).scale(3)
                     self.add(text1)
 
     As :class:`Text` uses Pango to render text, rendering non-English
@@ -398,12 +397,6 @@ class Text(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -430,16 +423,11 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
-            self._font_size = float(font_size)
 
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
+        # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -493,10 +481,7 @@ class Text(SVGMobject):
         )
         self.text = text
         if self.disable_ligatures:
-            if config.renderer == "opengl":
-                self.set_submobjects(self.gen_chars())
-            else:
-                self.submobjects = [*self.gen_chars()]
+            self.submobjects = [*self.gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         if config.renderer == "opengl":
@@ -1025,12 +1010,6 @@ class MarkupText(SVGMobject):
 
     """
 
-    @deprecated_params(
-        params="size",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         text: str,
@@ -1054,15 +1033,9 @@ class MarkupText(SVGMobject):
     ):
         self.text = text
         self.color = color
-        # deprecation
-        size = kwargs.pop("size", None)
-        if size is not None:
-            self._font_size = size * DEFAULT_FONT_SIZE
-        else:
-            self._font_size = float(font_size)
-
         self.line_spacing = line_spacing
         self.font = font
+        self._font_size = float(font_size)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient

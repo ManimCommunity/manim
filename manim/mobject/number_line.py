@@ -16,9 +16,7 @@ from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
-from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.deprecation import deprecated_params
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
@@ -45,8 +43,6 @@ class NumberLine(Line):
         An iterable of specific values with elongated ticks.
     longer_tick_multiple
         Influences how many times larger elongated ticks are than regular ticks (2 = 2x).
-    color
-        The color of the line.
     rotation
         The angle (in radians) at which the line is rotated.
     stroke_width
@@ -62,7 +58,7 @@ class NumberLine(Line):
         by the step size, this default can be overridden by ``decimal_number_config``.
     scaling
         The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
-    font size
+    font_size
         The size of the label mobjects. Defaults to 36.
     label_direction
         The specific position to which label mobjects are added on the line.
@@ -127,12 +123,6 @@ class NumberLine(Line):
         values as the tick locations are dependent on the step size.
     """
 
-    @deprecated_params(
-        params="number_scale_value",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead.  To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         x_range: Optional[Sequence[float]] = None,  # must be first
@@ -145,7 +135,6 @@ class NumberLine(Line):
         longer_tick_multiple: int = 2,
         exclude_origin_tick: bool = False,
         # visuals
-        color: Color = LIGHT_GREY,
         rotation: float = 0,
         stroke_width: float = 2.0,
         # tip
@@ -163,13 +152,6 @@ class NumberLine(Line):
         numbers_to_include: Optional[Iterable[float]] = None,
         **kwargs,
     ):
-        # deprecation
-        number_scale_value = kwargs.pop("number_scale_value", None)
-        if number_scale_value is not None:
-            self.font_size = number_scale_value * DEFAULT_FONT_SIZE * 0.75
-        else:
-            self.font_size = font_size
-
         # avoid mutable arguments in defaults
         if numbers_to_exclude is None:
             numbers_to_exclude = []
@@ -194,7 +176,6 @@ class NumberLine(Line):
         # turn into into an np array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
         self.x_min, self.x_max, self.x_step = scaling.function(self.x_range)
-
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -205,12 +186,12 @@ class NumberLine(Line):
         self.exclude_origin_tick = exclude_origin_tick
         # visuals
         self.rotation = rotation
-        self.color = color
         # tip
         self.include_tip = include_tip
         self.tip_width = tip_width
         self.tip_height = tip_height
         # numbers
+        self.font_size = font_size
         self.include_numbers = include_numbers
         self.label_direction = label_direction
         self.line_to_number_buff = line_to_number_buff
@@ -223,7 +204,6 @@ class NumberLine(Line):
             self.x_range[0] * RIGHT,
             self.x_range[1] * RIGHT,
             stroke_width=stroke_width,
-            color=self.color,
             **kwargs,
         )
         if self.length:
