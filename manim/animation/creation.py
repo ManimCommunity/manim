@@ -64,6 +64,7 @@ __all__ = [
     "Unwrite",
     "ShowPartial",
     "ShowIncreasingSubsets",
+    "WiggleIn",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
@@ -396,6 +397,26 @@ class Unwrite(Write):
             **kwargs,
         )
 
+class WiggleIn(Animation):
+    def __init__(
+            self,
+            group: Mobject,
+            suspend_mobject_updating: bool = False,
+            int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
+            **kwargs,
+    ) -> None:
+        self.center = np.array(group.get_center())
+        self.all_submobs = list(group.submobjects)
+        self.submobpos = {mobj: np.array(mobj.get_center()) for mobj in self.all_submobs}
+        super().__init__(
+            group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+        )
+
+    def interpolate_mobject(self, alpha: float) -> None:
+        for mobj in self.all_submobs:
+            center = self.submobpos[mobj]
+            print("blah", self.center)
+            mobj.move_to(self.center + alpha * (center - self.center))
 
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
