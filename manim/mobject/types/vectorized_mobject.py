@@ -687,7 +687,7 @@ class VMobject(Mobject):
         anchor: np.ndarray,
     ):
         """Add Quadratic bezier curve to the path.
-        
+
         Returns
         -------
         :class:`VMobject`
