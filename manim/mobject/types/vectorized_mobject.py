@@ -1018,7 +1018,7 @@ class VMobject(Mobject):
     def get_subpaths(self) -> typing.Tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
-        We define a subpath between two curve if one of their extreminities are coincidents.
+        We define a subpath between two curve if one of their extremities are coincident.
 
         Returns
         -------
@@ -1394,7 +1394,16 @@ class VMobject(Mobject):
             if n >= len(path_list):
                 # Create a null path at the very end
                 return [path_list[-1][-1]] * nppcc
-            return path_list[n]
+            path = path_list[n]
+            # Check for useless points at the end of the path and remove them
+            # https://github.com/ManimCommunity/manim/issues/1959
+            while len(path) > nppcc:
+                # If the last nppc points are all equal to the preceding point
+                if self.consider_points_equals(path[-nppcc:], path[-nppcc - 1]):
+                    path = path[:-nppcc]
+                else:
+                    break
+            return path
 
         for n in range(n_subpaths):
             sp1 = get_nth_subpath(subpaths1, n)

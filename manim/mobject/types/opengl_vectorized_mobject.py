@@ -708,7 +708,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_subpaths(self):
         """Returns subpaths formed by the curves of the OpenGLVMobject.
 
-        We define a subpath between two curve if one of their extreminities are coincidents.
+        We define a subpath between two curve if one of their extremities are coincident.
 
         Returns
         -------

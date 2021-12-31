@@ -1,7 +1,10 @@
+from math import cos, sin
+
 import numpy as np
 import pytest
 
 from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
+from manim.constants import PI
 
 
 def test_vmobject_point_from_propotion():
@@ -204,3 +207,33 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     vgroup = VGroup(VMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"
+
+
+def test_bounded_become():
+    """Tests that align_points generates a bounded number of points.
+    https://github.com/ManimCommunity/manim/issues/1959
+    """
+    o = VMobject()
+
+    def draw_circle(m: VMobject, n_points, x=0, y=0, r=1):
+        center = np.array([x, y, 0])
+        m.start_new_path(center + [r, 0, 0])
+        for i in range(1, n_points + 1):
+            theta = 2 * PI * i / n_points
+            m.add_line_to(center + [cos(theta) * r, sin(theta) * r, 0])
+
+    # o must contain some points, or else become behaves differently
+    draw_circle(o, 2)
+
+    for _ in range(20):
+        # Alternate between calls to become with different subpath sizes
+        a = VMobject()
+        draw_circle(a, 20)
+        o.become(a)
+        b = VMobject()
+        draw_circle(b, 15)
+        draw_circle(b, 15, x=3)
+        o.become(b)
+
+    # The number of points should be similar to the size of a and b
+    assert len(o.points) <= (20 + 15 + 15) * 4
