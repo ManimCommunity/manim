@@ -284,6 +284,7 @@ class Integer(DecimalNumber):
     def get_value(self):
         return int(np.round(super().get_value()))
 
+
 class Variable(VMobject, metaclass=ConvertToOpenGL):
     """A class for displaying text that shows "label = value" with the value continuously updated from a :class:`~.ValueTracker`.
 
