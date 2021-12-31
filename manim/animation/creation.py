@@ -64,7 +64,7 @@ __all__ = [
     "Unwrite",
     "ShowPartial",
     "ShowIncreasingSubsets",
-    "WiggleIn",
+    "SpiralIn",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
@@ -397,26 +397,39 @@ class Unwrite(Write):
             **kwargs,
         )
 
-class WiggleIn(Animation):
+class SpiralIn(Animation):
     def __init__(
             self,
-            group: Mobject,
+            shapes: Mobject,
             suspend_mobject_updating: bool = False,
-            int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
             **kwargs,
     ) -> None:
-        self.center = np.array(group.get_center())
-        self.all_submobs = list(group.submobjects)
-        self.submobpos = {mobj: np.array(mobj.get_center()) for mobj in self.all_submobs}
+        self.scale_factor = 1
+        self.shapes = shapes
+        expansion_factor = 8 * self.scale_factor
+        self.shape_center = shapes.get_center()
+        for shape in shapes:
+            shape.final_position = shape.get_center()
+            shape.initial_position = (
+                    shape.final_position
+                    + (shape.final_position - self.shape_center) * expansion_factor
+            )
+            shape.move_to(shape.initial_position)
+            shape.save_state()
+
         super().__init__(
-            group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+            shapes, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
 
+
     def interpolate_mobject(self, alpha: float) -> None:
-        for mobj in self.all_submobs:
-            center = self.submobpos[mobj]
-            print("blah", self.center)
-            mobj.move_to(self.center + alpha * (center - self.center))
+        TAU = 2*np.pi
+        for shape in self.shapes:
+            shape.restore()
+            shape.shift((shape.final_position - shape.initial_position) * alpha)
+            shape.rotate(TAU * alpha, about_point=self.shape_center)
+            shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
+            shape.set_opacity(min(1, alpha * 3))
 
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
