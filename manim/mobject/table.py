@@ -146,10 +146,10 @@ class Table(VGroup):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
-        row_labels: Optional[Iterable["VMobject"]] = None,
-        col_labels: Optional[Iterable["VMobject"]] = None,
-        top_left_entry: Optional["VMobject"] = None,
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        row_labels: Optional[Iterable[VMobject]] = None,
+        col_labels: Optional[Iterable[VMobject]] = None,
+        top_left_entry: Optional[VMobject] = None,
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
@@ -158,8 +158,8 @@ class Table(VGroup):
         include_background_rectangle: bool = False,
         background_rectangle_color: Color = BLACK,
         element_to_mobject: Callable[
-            [Union[float, str, "VMobject"]],
-            "VMobject",
+            [Union[float, str, VMobject]],
+            VMobject,
         ] = Paragraph,
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
@@ -250,7 +250,7 @@ class Table(VGroup):
 
     def _table_to_mob_table(
         self,
-        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
     ) -> List:
         """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
 
@@ -273,7 +273,7 @@ class Table(VGroup):
             for row in table
         ]
 
-    def _organize_mob_table(self, table: Iterable[Iterable["VMobject"]]) -> VGroup:
+    def _organize_mob_table(self, table: Iterable[Iterable[VMobject]]) -> VGroup:
         """Arranges the :class:`~.VMobject` of ``table`` in a grid.
 
         Parameters
@@ -299,7 +299,7 @@ class Table(VGroup):
         )
         return help_table
 
-    def _add_labels(self, mob_table: "VGroup") -> VGroup:
+    def _add_labels(self, mob_table: VGroup) -> VGroup:
         """Adds labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
@@ -894,9 +894,9 @@ class Table(VGroup):
         self,
         run_time: float = 1,
         lag_ratio: float = 1,
-        line_animation: Callable[["VGroup"], None] = Create,
-        label_animation: Callable[["VGroup"], None] = Write,
-        element_animation: Callable[["VGroup"], None] = Create,
+        line_animation: Callable[[VGroup], None] = Create,
+        label_animation: Callable[[VGroup], None] = Write,
+        element_animation: Callable[[VGroup], None] = Create,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -992,7 +992,7 @@ class MathTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = MathTex,
+        element_to_mobject: Callable[[Union[float, str]], VMobject] = MathTex,
         **kwargs,
     ):
         """
@@ -1046,8 +1046,8 @@ class MobjectTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable["VMobject"]],
-        element_to_mobject: Callable[["VMobject"], "VMobject"] = lambda m: m,
+        table: Iterable[Iterable[VMobject]],
+        element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
         **kwargs,
     ):
         """
@@ -1095,7 +1095,7 @@ class IntegerTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = Integer,
+        element_to_mobject: Callable[[Union[float, str]], VMobject] = Integer,
         **kwargs,
     ):
         """
@@ -1139,7 +1139,7 @@ class DecimalTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = DecimalNumber,
+        element_to_mobject: Callable[[Union[float, str]], VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
         **kwargs,
     ):
