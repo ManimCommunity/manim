@@ -374,16 +374,16 @@ class ApplyFunction(Transform):
 
 
 class ApplyMatrix(ApplyPointwiseFunction):
-    """Applies a matrix transform to an mobject
+    """Applies a matrix transform to an mobject.
 
     Parameters
     ----------
     matrix
-        The matrix transform
+        The transformation matrix.
     mobject
         The :class:`~.Mobject`.
     about_point
-        The origin point for the transform. Defaults to ORIGIN
+        The origin point for the transform. Defaults to ``ORIGIN``.
     kwargs
         Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
     """
