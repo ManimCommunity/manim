@@ -15,7 +15,13 @@ class SpiralInExample(Scene):
         circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
         square = Square(color=logo_blue, fill_opacity=1).shift(UP)
         triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-        pentagon = Polygon(*[[np.cos(2*np.pi/5 * i),np.sin(2*np.pi/5 * i),0] for i in range(5)], color=PURPLE_B).shift(UP+2*RIGHT)
+        pentagon = Polygon(
+            *[
+                [np.cos(2 * np.pi / 5 * i), np.sin(2 * np.pi / 5 * i), 0]
+                for i in range(5)
+            ],
+            color=PURPLE_B
+        ).shift(UP + 2 * RIGHT)
         shapes = VGroup(triangle, square, circle, pentagon, pi)
         self.play(SpiralIn(shapes))
         self.wait()
