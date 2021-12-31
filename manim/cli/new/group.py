@@ -104,7 +104,7 @@ def project(default_settings, **args):
         )
     else:
         project_name.mkdir()
-        new_cfg = dict()
+        new_cfg = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
         if not default_settings:
