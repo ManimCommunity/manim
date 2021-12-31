@@ -60,4 +60,4 @@ jobs:
         run: cd docs && pip install -r requirements.txt && poetry run make i18n
 
       - name: Add & Commit
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: EndBug/add-and-commit@no-checkout
