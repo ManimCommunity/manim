@@ -1364,11 +1364,11 @@ class VMobject(Mobject):
 
     # Alignment
     def align_points(self, vmobject):
-        # This probably makes the current vmobject and the given one have the same number of points,
-        # by adding extra points to the last sub-path. This method is never used in the whole library.
+        """Adds points to self and vmobject so that they both have the same number of subpaths, each of the matching lengths.
+        Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
+        of a single point repeated.
+        """
         self.align_rgbas(vmobject)
-        if self.get_num_points() == vmobject.get_num_points():
-            return
 
         for mob in self, vmobject:
             # If there are no points, add one to
@@ -1380,7 +1380,7 @@ class VMobject(Mobject):
             if mob.has_new_path_started():
                 mob.add_line_to(mob.get_last_point())
 
-        # Figure out what the subpaths are, and align
+        # Figure out what the subpaths are
         subpaths1 = self.get_subpaths()
         subpaths2 = vmobject.get_subpaths()
         n_subpaths = max(len(subpaths1), len(subpaths2))
@@ -1406,6 +1406,7 @@ class VMobject(Mobject):
             return path
 
         for n in range(n_subpaths):
+            # For each pair of subpaths, add points until they are the same length
             sp1 = get_nth_subpath(subpaths1, n)
             sp2 = get_nth_subpath(subpaths2, n)
             diff1 = max(0, (len(sp2) - len(sp1)) // nppcc)
