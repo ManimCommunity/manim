@@ -143,7 +143,7 @@ Should you choose to work with some smaller TeX distribution like
 of LaTeX packages which Manim interacts with in some way (a subset might
 be sufficient for your particular application) is::
 
-   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
-   fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
-   mathastext microtype ms physics preview ragged2e relsize rsfs
+   collection-basic amsmath babel-english cbfonts-fd cm-super ctex doublestroke
+   dvisvgm everysel fontspec frcursive fundus-calligra gnu-freefont jknapltx
+   latex-bin mathastext microtype ms physics preview ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval

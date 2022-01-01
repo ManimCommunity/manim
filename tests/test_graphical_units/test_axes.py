@@ -154,7 +154,7 @@ def test_plot_line_graph(scene):
         x_values=[0, 1.5, 2, 2.8, 4, 6.25],
         y_values=[1, 3, 2.25, 4, 2.5, 1.75],
         line_color=GOLD_E,
-        vertex_dot_style=dict(stroke_width=3, fill_color=PURPLE),
+        vertex_dot_style={"stroke_width": 3, "fill_color": PURPLE},
         vertex_dot_radius=0.04,
         stroke_width=4,
     )
