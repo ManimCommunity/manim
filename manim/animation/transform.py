@@ -32,10 +32,10 @@ import numpy as np
 
 from .. import config
 from ..animation.animation import Animation
-from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
+from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..utils.paths import path_along_arc
+from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
@@ -57,6 +57,14 @@ class Transform(Animation):
         self.path_arc_axis: np.ndarray = path_arc_axis
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
+
+        if self.path_arc_centers is not None:
+            self.path_func = path_along_circles(
+                path_arc,
+                self.path_arc_centers,
+                self.path_arc_axis,
+            )
+
         self.path_func: Optional[Callable] = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
@@ -76,7 +84,6 @@ class Transform(Animation):
         self._path_func = path_along_arc(
             arc_angle=self._path_arc,
             axis=self.path_arc_axis,
-            arc_centers=self.path_arc_centers,
         )
 
     @property
@@ -260,17 +267,27 @@ class _MethodAnimation(MoveToTarget):
 
 
 class ApplyMethod(Transform):
+    """Animates a mobject by applying a method.
+
+    Note that only the method needs to be passed to this animation,
+    it is not required to pass the corresponding mobject. Furthermore,
+    this animation class only works if the method returns the modified
+    mobject.
+
+    Parameters
+    ----------
+    method
+        The method that will be applied in the animation.
+    args
+        Any positional arguments to be passed when applying the method.
+    kwargs
+        Any keyword arguments passed to :class:`~.Transform`.
+
+    """
+
     def __init__(
         self, method: Callable, *args, **kwargs
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
-        """
-        Method is a method of Mobject, ``args`` are arguments for
-        that method.  Key word arguments should be passed in
-        as the last arg, as a dict, since ``kwargs`` is for
-        configuration of the transform itself
-
-        Relies on the fact that mobject methods return the mobject
-        """
         self.check_validity_of_input(method)
         self.method = method
         self.method_args = args
@@ -374,11 +391,31 @@ class ApplyFunction(Transform):
 
 
 class ApplyMatrix(ApplyPointwiseFunction):
-    def __init__(self, matrix: np.ndarray, mobject: Mobject, **kwargs) -> None:
+    """Applies a matrix transform to an mobject.
+
+    Parameters
+    ----------
+    matrix
+        The transformation matrix.
+    mobject
+        The :class:`~.Mobject`.
+    about_point
+        The origin point for the transform. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+    """
+
+    def __init__(
+        self,
+        matrix: np.ndarray,
+        mobject: Mobject,
+        about_point: np.ndarray = ORIGIN,
+        **kwargs,
+    ) -> None:
         matrix = self.initialize_matrix(matrix)
 
         def func(p):
-            return np.dot(p, matrix.T)
+            return np.dot(p - about_point, matrix.T) + about_point
 
         super().__init__(func, mobject, **kwargs)
 

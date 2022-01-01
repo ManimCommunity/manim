@@ -114,7 +114,7 @@ def _tree_layout(
     # https://github.com/sagemath/sage/blob/cc60cfebc4576fed8b01f0fc487271bdee3cefed/src/sage/graphs/graph_plot.py#L1447
 
     # Always make a copy of the children because they get eaten
-    stack = [[u for u in children[root_vertex]]]
+    stack = [list(children[root_vertex]).copy()]
     stick = [root_vertex]
     parent = {u: root_vertex for u in children[root_vertex]}
     pos = {}
