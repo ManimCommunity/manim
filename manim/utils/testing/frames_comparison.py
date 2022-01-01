@@ -105,7 +105,7 @@ def frames_comparison(
             setting_test = request.config.getoption("--set_test")
             try:
                 test_file_path = tested_scene_construct.__globals__["__file__"]
-            except:
+            except Exception:
                 test_file_path = None
             real_test = _make_test_comparing_frames(
                 file_path=_control_data_path(
