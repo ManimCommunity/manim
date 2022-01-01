@@ -381,10 +381,10 @@ class NumberLine(Line):
     def get_number_mobject(
         self,
         x: float,
-        direction: Optional[Sequence[float]] = None,
-        buff: Optional[float] = None,
-        font_size: Optional[float] = None,
-        label_constructor: Optional[VMobject] = None,
+        direction: Sequence[float] | None = None,
+        buff: float | None = None,
+        font_size: float | None = None,
+        label_constructor: VMobject | None = None,
         **number_config,
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
@@ -443,10 +443,10 @@ class NumberLine(Line):
 
     def add_numbers(
         self,
-        x_values: Optional[Iterable[float]] = None,
-        excluding: Optional[Iterable[float]] = None,
-        font_size: Optional[float] = None,
-        label_constructor: Optional[VMobject] = None,
+        x_values: Iterable[float] | None = None,
+        excluding: Iterable[float] | None = None,
+        font_size: float | None = None,
+        label_constructor: VMobject | None = None,
         **kwargs,
     ):
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -499,11 +499,11 @@ class NumberLine(Line):
 
     def add_labels(
         self,
-        dict_values: Dict[float, Union[str, float, VMobject]],
+        dict_values: dict[float, str | float | VMobject],
         direction: Sequence[float] = None,
-        buff: Optional[float] = None,
-        font_size: Optional[float] = None,
-        label_constructor: Optional[VMobject] = None,
+        buff: float | None = None,
+        font_size: float | None = None,
+        label_constructor: VMobject | None = None,
     ):
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -560,8 +560,7 @@ class NumberLine(Line):
         self.add(labels)
         return self
 
-
-    def _create_label_tex(self, label_tex: Union[str, float, VMobject]) -> VMobject:
+    def _create_label_tex(self, label_tex: str | float | VMobject) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label according to the ``label_constructor``.
 
