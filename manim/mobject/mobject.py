@@ -227,9 +227,11 @@ class Mobject:
     def animate(self):
         """Used to animate the application of any method of :code:`self`.
 
-        Any method called on :code:`animate` is converted to an animation of applying that method on the mobject itself.
+        Any method called on :code:`animate` is converted to an animation of applying
+        that method on the mobject itself.
 
-        For example, :code:`square.set_fill(WHITE)` sets the fill color of a square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+        For example, :code:`square.set_fill(WHITE)` sets the fill color of a square,
+        while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
 
         Multiple methods can be put in a single animation once via chaining:
 

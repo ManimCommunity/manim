@@ -286,7 +286,8 @@ class Integer(DecimalNumber):
 
 
 class Variable(VMobject, metaclass=ConvertToOpenGL):
-    """A class for displaying text that shows "label = value" with the value continuously updated from a :class:`~.ValueTracker`.
+    """A class for displaying text that shows "label = value" with
+    the value continuously updated from a :class:`~.ValueTracker`.
 
     Parameters
     ----------
