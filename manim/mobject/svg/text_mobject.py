@@ -429,7 +429,8 @@ class Text(SVGMobject):
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
-        # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
+        # needs to be a float or else size is inflated when font_size = 24
+        # (unknown cause)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -697,9 +698,7 @@ class Text(SVGMobject):
 
         settings.sort(key=lambda setting: setting.start)
         new_settings = []
-        index = 0
-        for setting in settings:
-            index += 1
+        for index, setting in enumerate(settings):
             if index == len(settings):
                 break
 
