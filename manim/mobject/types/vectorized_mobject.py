@@ -1369,6 +1369,9 @@ class VMobject(Mobject):
         of a single point repeated.
         """
         self.align_rgbas(vmobject)
+        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
+        if self.get_num_points() == vmobject.get_num_points():
+            return
 
         for mob in self, vmobject:
             # If there are no points, add one to
