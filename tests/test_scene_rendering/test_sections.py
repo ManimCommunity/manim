@@ -9,7 +9,7 @@ from tests.assert_utils import assert_dir_exists, assert_dir_not_exists
 from ..utils.video_tester import video_comparison
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SceneWithDisabledSections.json",
     "videos/simple_scenes/480p15/SquareToCircle.mp4",
@@ -34,7 +34,7 @@ def test_no_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     assert_dir_not_exists(os.path.join(scene_dir, "sections"))
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SceneWithEnabledSections.json",
     "videos/simple_scenes/480p15/SquareToCircle.mp4",
@@ -60,7 +60,7 @@ def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     assert_dir_exists(os.path.join(scene_dir, "sections"))
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SceneWithSections.json",
     "videos/simple_scenes/480p15/SceneWithSections.mp4",
@@ -82,7 +82,7 @@ def test_many_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SceneWithSkipAnimations.json",
     "videos/simple_scenes/480p15/ElaborateSceneWithSections.mp4",

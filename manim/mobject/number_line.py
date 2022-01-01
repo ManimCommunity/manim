@@ -1,4 +1,5 @@
 """Mobject representing a number line."""
+from __future__ import annotations
 
 __all__ = ["NumberLine", "UnitInterval"]
 
@@ -125,13 +126,13 @@ class NumberLine(Line):
 
     def __init__(
         self,
-        x_range: Optional[Sequence[float]] = None,  # must be first
-        length: Optional[float] = None,
+        x_range: Sequence[float] | None = None,  # must be first
+        length: float | None = None,
         unit_size: float = 1,
         # ticks
         include_ticks: bool = True,
         tick_size: float = 0.1,
-        numbers_with_elongated_ticks: Optional[Iterable[float]] = None,
+        numbers_with_elongated_ticks: Iterable[float] | None = None,
         longer_tick_multiple: int = 2,
         exclude_origin_tick: bool = False,
         # visuals
@@ -147,9 +148,9 @@ class NumberLine(Line):
         label_direction: Sequence[float] = DOWN,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
-        decimal_number_config: Optional[Dict] = None,
-        numbers_to_exclude: Optional[Iterable[float]] = None,
-        numbers_to_include: Optional[Iterable[float]] = None,
+        decimal_number_config: dict | None = None,
+        numbers_to_exclude: Iterable[float] | None = None,
+        numbers_to_include: Iterable[float] | None = None,
         **kwargs,
     ):
         # avoid mutable arguments in defaults
@@ -268,7 +269,7 @@ class NumberLine(Line):
         self.add(ticks)
         self.ticks = ticks
 
-    def get_tick(self, x: float, size: Optional[float] = None) -> Line:
+    def get_tick(self, x: float, size: float | None = None) -> Line:
         """Generates a tick and positions it along the number line.
 
         Parameters
@@ -339,8 +340,7 @@ class NumberLine(Line):
 
         number = self.scaling.inverse_function(number)
         alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
-        val = interpolate(self.get_start(), self.get_end(), alpha)
-        return val
+        return interpolate(self.get_start(), self.get_end(), alpha)
 
     def point_to_number(self, point: Sequence[float]) -> float:
         """Accepts a point with respect to the scene and returns
@@ -381,9 +381,9 @@ class NumberLine(Line):
     def get_number_mobject(
         self,
         x: float,
-        direction: Optional[Sequence[float]] = None,
-        buff: Optional[float] = None,
-        font_size: Optional[float] = None,
+        direction: Sequence[float] | None = None,
+        buff: float | None = None,
+        font_size: float | None = None,
         **number_config,
     ) -> DecimalNumber:
         """Generates a positioned :class:`~.DecimalNumber` mobject representing a number label.
@@ -433,9 +433,9 @@ class NumberLine(Line):
 
     def add_numbers(
         self,
-        x_values: Optional[Iterable[float]] = None,
-        excluding: Optional[Iterable[float]] = None,
-        font_size: Optional[float] = None,
+        x_values: Iterable[float] | None = None,
+        excluding: Iterable[float] | None = None,
+        font_size: float | None = None,
         **kwargs,
     ):
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -475,7 +475,7 @@ class NumberLine(Line):
 
     def add_labels(
         self,
-        dict_values: Dict[float, Union[str, float, "Mobject"]],
+        dict_values: dict[float, str | float | Mobject],
         direction: Sequence[float] = None,
         buff: float = None,
         font_size: float = None,
@@ -519,7 +519,7 @@ class NumberLine(Line):
         return self
 
     @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
+    def _create_label_tex(label_tex) -> Mobject:
         """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex`/:class:`~.Tex` label accordingly.
 
         Parameters

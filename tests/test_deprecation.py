@@ -13,7 +13,7 @@ def _get_caplog_record_msg(warn_caplog_manim):
 @pytest.fixture()
 def warn_caplog_manim(caplog):
     caplog.set_level(logging.WARNING, logger="manim")
-    yield caplog
+    return caplog
 
 
 @deprecated
@@ -174,8 +174,6 @@ class Top:
     def mid_func(self):
         """Middle function in Top."""
 
-        pass
-
     @deprecated(until="1.4.0", replacement="Top.NewNested")
     class Nested:
         def __init__(self):
@@ -188,8 +186,6 @@ class Top:
         @deprecated(since="1.0.0", until="12/25/2025")
         def nested_func(self):
             """Nested function in Top.NewNested."""
-
-            pass
 
     class Bottom:
         def __init__(self):

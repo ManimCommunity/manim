@@ -1,4 +1,5 @@
 """Mobjects representing objects from probability theory and statistics."""
+from __future__ import annotations
 
 __all__ = ["SampleSpace", "BarChart"]
 
@@ -255,7 +256,7 @@ class BarChart(VGroup):
         bar_colors=[BLUE, YELLOW],
         bar_fill_opacity: float = 0.8,
         bar_stroke_width: float = 3,
-        bar_names: List[str] = [],
+        bar_names: list[str] = [],
         bar_label_scale_val: float = 0.75,
         **kwargs
     ):  # What's the return type?

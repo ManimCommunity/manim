@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List
 
@@ -54,7 +56,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Iterable["Mobject"]:
+    ) -> Iterable[Mobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -144,15 +146,14 @@ class LogBase(_ScaleBase):
             raise ValueError(
                 "log(0) is undefined. Make sure the value is in the domain of the function"
             )
-        value = math.log(value, self.base)
-        return value
+        return math.log(value, self.base)
 
     def get_custom_labels(
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: Dict[str, Any],
-    ) -> List["Mobject"]:
+        **base_config: dict[str, Any],
+    ) -> list[Mobject]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
@@ -167,7 +168,7 @@ class LogBase(_ScaleBase):
         """
 
         # uses `format` syntax to control the number of decimal places.
-        tex_labels = [
+        return [
             Integer(
                 self.base,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
@@ -175,4 +176,3 @@ class LogBase(_ScaleBase):
             )
             for i in val_range
         ]
-        return tex_labels

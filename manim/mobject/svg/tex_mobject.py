@@ -46,8 +46,6 @@ tex_string_to_mob_map = {}
 class TexSymbol(SVGPathMobject):
     """Purely a renaming of SVGPathMobject."""
 
-    pass
-
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -136,8 +134,7 @@ class SingleStringMathTex(SVGMobject):
     def get_modified_expression(self, tex_string):
         result = tex_string
         result = result.strip()
-        result = self.modify_special_strings(result)
-        return result
+        return self.modify_special_strings(result)
 
     def modify_special_strings(self, tex):
         tex = tex.strip()

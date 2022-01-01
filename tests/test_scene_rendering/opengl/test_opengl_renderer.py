@@ -63,7 +63,7 @@ def test_get_frame_with_preview_disabled(use_opengl_renderer):
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @pytest.mark.parametrize("enable_preview", [True])
 def test_get_frame_with_preview_enabled(use_opengl_renderer):
     """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""

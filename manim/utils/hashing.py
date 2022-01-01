@@ -1,4 +1,5 @@
 """Utilities for scene caching."""
+from __future__ import annotations
 
 import collections
 import copy
@@ -48,7 +49,7 @@ class _Memoizer:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
+    def check_already_processed_decorator(cls: _Memoizer, is_method=False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.
@@ -140,7 +141,7 @@ class _Memoizer:
         obj_to_membership_sign: typing.Callable[[Any], int],
         default_func,
         memoizing=True,
-    ) -> typing.Union[str, Any]:
+    ) -> str | Any:
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
@@ -215,7 +216,7 @@ class _CustomEncoder(json.JSONEncoder):
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
-            temp = getattr(obj, "__dict__")
+            temp = obj.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):

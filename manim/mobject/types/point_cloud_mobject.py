@@ -259,7 +259,7 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs]):
+        if not all(isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs):
             raise ValueError(
                 "All submobjects must be of type PMobject or OpenGLPMObject"
                 " if using the opengl renderer",

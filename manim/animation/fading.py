@@ -11,7 +11,7 @@
             self.play(FadeOut(tex_out, shift=DOWN * 2, scale=1.5))
 
 """
-
+from __future__ import annotations
 
 __all__ = [
     "FadeOut",
@@ -51,8 +51,8 @@ class _Fade(Transform):
     def __init__(
         self,
         *mobjects: Mobject,
-        shift: Optional[np.ndarray] = None,
-        target_position: Optional[Union[np.ndarray, Mobject]] = None,
+        shift: np.ndarray | None = None,
+        target_position: np.ndarray | Mobject | None = None,
         scale: float = 1,
         **kwargs
     ) -> None:

@@ -1,5 +1,6 @@
 """A camera converts the mobjects contained in a Scene into an array of pixels."""
 
+from __future__ import annotations
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
@@ -1176,9 +1177,7 @@ class Camera:
 
         # Have to also flip the y coordinates to account for pixel array being listed in
         # top-to-bottom order, opposite of screen coordinate convention
-        centered_space_coords = centered_space_coords * (1, -1)
-
-        return centered_space_coords
+        return centered_space_coords * (1, -1)
 
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitions.
@@ -1248,7 +1247,7 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, image: Union[Image.Image, pathlib.Path, str]):
+    def get_background_array(self, image: Image.Image | pathlib.Path | str):
         """Gets the background array that has the passed file_name.
 
         Parameters

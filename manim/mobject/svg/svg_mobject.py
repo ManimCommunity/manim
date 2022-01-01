@@ -1,5 +1,5 @@
 """Mobjects generated from an SVG file."""
-
+from __future__ import annotations
 
 __all__ = ["SVGMobject", "string_to_numbers"]
 
@@ -146,9 +146,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     def get_mobjects_from(
         self,
         element: MinidomElement,
-        inherited_style: Dict[str, str],
+        inherited_style: dict[str, str],
         within_defs: bool = False,
-    ) -> List[VMobject]:
+    ) -> list[VMobject]:
         """Parses a given SVG element into a Mobject.
 
         Parameters
@@ -282,8 +282,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     def use_to_mobjects(
         self,
         use_element: MinidomElement,
-        local_style: Dict,
-    ) -> List[VMobject]:
+        local_style: dict,
+    ) -> list[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
 
         Parameters

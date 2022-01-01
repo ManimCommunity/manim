@@ -86,6 +86,9 @@ flake8-rst-docstrings = "^0.2.3"
 flake8-pytest-style = "^1.5.0"
 flake8-simplify = "^0.14.1"
 flake8-comprehensions = "^3.7.0"
+flake8-pie = "^0.15.0"
+flake8-typing-imports = "^1.12.0"
+flake8-future-annotations = "^0.0.4"
 
 
 [tool.poetry.urls]

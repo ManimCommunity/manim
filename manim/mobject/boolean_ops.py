@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 
 import numpy as np
@@ -24,7 +26,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         self,
         points: typing.Iterable,
         z_dim: float = 0.0,
-    ) -> typing.List[np.ndarray]:
+    ) -> list[np.ndarray]:
         """Converts an iterable with coordinates in 2d to 3d by adding
         :attr:`z_dim` as the z coordinate.
 
@@ -84,7 +86,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.get_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2 in quads:
+                for _, p1, p2 in quads:
                     path.quadTo(*p1[:2], *p2[:2])
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
@@ -94,7 +96,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for p0, p1, p2, p3 in quads:
+                for _, p1, p2, p3 in quads:
                     path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
 
                 if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):

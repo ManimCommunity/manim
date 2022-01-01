@@ -486,7 +486,7 @@ class OpenGLRenderer:
             The PIL image of the array.
         """
         raw_buffer_data = self.get_raw_frame_buffer_object_data()
-        image = Image.frombytes(
+        return Image.frombytes(
             "RGBA",
             self.get_pixel_shape(),
             raw_buffer_data,
@@ -495,7 +495,6 @@ class OpenGLRenderer:
             0,
             -1,
         )
-        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
@@ -525,12 +524,11 @@ class OpenGLRenderer:
         #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
         # )
         num_channels = 4
-        ret = self.frame_buffer_object.read(
+        return self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,
             components=num_channels,
             dtype=dtype,
         )
-        return ret
 
     def get_frame(self):
         # get current pixel values as numpy data in order to test output
@@ -538,8 +536,7 @@ class OpenGLRenderer:
         pixel_shape = self.get_pixel_shape()
         result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        np_buf = np.flipud(np_buf)
-        return np_buf
+        return np.flipud(np_buf)
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):

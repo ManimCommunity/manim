@@ -1,4 +1,5 @@
 """Basic canvas for animations."""
+from __future__ import annotations
 
 __all__ = ["Scene"]
 
@@ -251,7 +252,6 @@ class Scene:
         are commonly subclassed, and have some common setup
         involved before the construct method is called.
         """
-        pass
 
     def tear_down(self):
         """
@@ -259,7 +259,6 @@ class Scene:
         are commonly subclassed, and have some common method
         to be invoked before the scene ends.
         """
-        pass
 
     def construct(self):
         """Add content to the Scene.
@@ -291,8 +290,7 @@ class Scene:
         :meth:`Scene.render`
         :meth:`Scene.tear_down`
 
-        """
-        pass  # To be implemented in subclasses
+        """  # To be implemented in subclasses
 
     def next_section(
         self,
@@ -356,7 +354,7 @@ class Scene:
             bool
         """
         return self.always_update_mobjects or any(
-            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
+            mob.has_time_based_updater() for mob in self.get_mobject_family_members()
         )
 
     def get_top_level_mobjects(self):
@@ -869,7 +867,7 @@ class Scene:
         else:
             step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
-        time_progression = tqdm(
+        return tqdm(
             times,
             desc=description,
             total=n_iterations,
@@ -877,7 +875,6 @@ class Scene:
             ascii=True if platform.system() == "Windows" else None,
             disable=config["progress_bar"] == "none",
         )
-        return time_progression
 
     def get_run_time(self, animations):
         """

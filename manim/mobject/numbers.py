@@ -1,4 +1,5 @@
 """Mobjects representing numbers."""
+from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
@@ -54,7 +55,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         group_with_commas: bool = True,
         digit_buff_per_font_unit: float = 0.001,
         show_ellipsis: bool = False,
-        unit: Optional[str] = None,  # Aligned to bottom unless it starts with "^"
+        unit: str | None = None,  # Aligned to bottom unless it starts with "^"
         include_background_rectangle: bool = False,
         edge_to_fix: Sequence[float] = LEFT,
         font_size: float = DEFAULT_FONT_SIZE,

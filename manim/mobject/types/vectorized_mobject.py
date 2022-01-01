@@ -1,5 +1,5 @@
 """Mobjects that use vector graphics."""
-
+from __future__ import annotations
 
 __all__ = [
     "VMobject",
@@ -195,10 +195,10 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: Optional[str] = None,
-        opacity: Optional[float] = None,
+        color: str | None = None,
+        opacity: float | None = None,
         family: bool = True,
-    ) -> "VMobject":
+    ) -> VMobject:
         """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
@@ -561,14 +561,14 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image: Union[Image, str]):
+    def color_using_background_image(self, background_image: Image | str):
         self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image(self) -> Union[Image, str]:
+    def get_background_image(self) -> Image | str:
         return self.background_image
 
     def match_background_image(self, vmobject):
@@ -596,7 +596,7 @@ class VMobject(Mobject):
         handles1: Sequence[float],
         handles2: Sequence[float],
         anchors2: Sequence[float],
-    ) -> "VMobject":
+    ) -> VMobject:
         """Given two sets of anchors and handles, process them to set them as anchors
         and handles of the VMobject.
 
@@ -679,7 +679,7 @@ class VMobject(Mobject):
         self,
         handle: np.ndarray,
         anchor: np.ndarray,
-    ) -> "VMobject":
+    ) -> VMobject:
         """Add Quadratic bezier curve to the path."""
         # How does one approximate a quadratic with a cubic?
         # refer to the Wikipedia page on Bezier curves
@@ -695,7 +695,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_line_to(self, point: np.ndarray) -> "VMobject":
+    def add_line_to(self, point: np.ndarray) -> VMobject:
         """Add a straight line from the last point of VMobject to the given point.
 
         Parameters
@@ -713,7 +713,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_smooth_curve_to(self, *points: np.array) -> "VMobject":
+    def add_smooth_curve_to(self, *points: np.array) -> VMobject:
         """Creates a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted
         as a handle, the second as an anchor.
 
@@ -767,12 +767,12 @@ class VMobject(Mobject):
         # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
 
-    def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
+    def add_points_as_corners(self, points: np.ndarray) -> VMobject:
         for point in points:
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]) -> VMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -802,7 +802,7 @@ class VMobject(Mobject):
         self.make_smooth()
         return self
 
-    def change_anchor_mode(self, mode: str) -> "VMobject":
+    def change_anchor_mode(self, mode: str) -> VMobject:
         """Changes the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only two modes, "jagged", and "smooth".
@@ -842,7 +842,7 @@ class VMobject(Mobject):
     def make_jagged(self):
         return self.change_anchor_mode("jagged")
 
-    def add_subpath(self, points: np.ndarray) -> "VMobject":
+    def add_subpath(self, points: np.ndarray) -> VMobject:
         assert len(points) % 4 == 0
         self.points = np.append(self.points, points, axis=0)
         return self
@@ -869,14 +869,14 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: np.ndarray = OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         self.rotate_sheen_direction(angle, axis)
         super().rotate(angle, axis, about_point, **kwargs)
         return self
 
-    def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
+    def scale_handle_to_anchor_distances(self, factor: float) -> VMobject:
         """If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
         away from A, but so that the line from A to H doesn't change.
@@ -932,15 +932,13 @@ class VMobject(Mobject):
         atol = self.tolerance_for_point_equality
         if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
             return False
-        if abs(p0[1] - p1[1]) > atol + rtol * abs(p1[1]):
-            return False
-        return True
+        return abs(p0[1] - p1[1]) > atol + rtol * abs(p1[1])
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(self, points):
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> typing.Tuple:
+    def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> tuple:
         """Returns the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
@@ -971,7 +969,7 @@ class VMobject(Mobject):
         self,
         points: np.ndarray,
         filter_func: typing.Callable[[int], bool],
-    ) -> typing.Tuple:
+    ) -> tuple:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
         Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
 
@@ -1015,7 +1013,7 @@ class VMobject(Mobject):
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
 
-    def get_subpaths(self) -> typing.Tuple:
+    def get_subpaths(self) -> tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
         We define a subpath between two curve if one of their extreminities are coincidents.
@@ -1062,7 +1060,7 @@ class VMobject(Mobject):
     def get_nth_curve_length_pieces(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> np.ndarray:
         """Returns the array of short line lengths used for length approximation.
 
@@ -1084,14 +1082,12 @@ class VMobject(Mobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
-        return norms
+        return np.apply_along_axis(np.linalg.norm, 1, diffs)
 
     def get_nth_curve_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> float:
         """Returns the (approximate) length of the nth curve.
 
@@ -1115,8 +1111,8 @@ class VMobject(Mobject):
     def get_nth_curve_function_with_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
-    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        sample_points: int | None = None,
+    ) -> tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -1169,7 +1165,7 @@ class VMobject(Mobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+    ) -> typing.Iterable[tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -1234,7 +1230,7 @@ class VMobject(Mobject):
 
     def proportion_from_point(
         self,
-        point: typing.Iterable[typing.Union[float, int]],
+        point: typing.Iterable[float | int],
     ) -> float:
         """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
@@ -1284,9 +1280,7 @@ class VMobject(Mobject):
         else:
             raise ValueError(f"Point {point} does not lie on this curve.")
 
-        alpha = target_length / total_length
-
-        return alpha
+        return target_length / total_length
 
     def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
         """Returns anchors1, handles1, handles2, anchors2,
@@ -1341,7 +1335,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*(sm.get_anchors() for sm in self.get_family()))))
 
-    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+    def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1409,7 +1403,7 @@ class VMobject(Mobject):
         vmobject.set_points(new_path2)
         return self
 
-    def insert_n_curves(self, n: int) -> "VMobject":
+    def insert_n_curves(self, n: int) -> VMobject:
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1522,10 +1516,10 @@ class VMobject(Mobject):
 
     def pointwise_become_partial(
         self,
-        vmobject: "VMobject",
+        vmobject: VMobject,
         a: float,
         b: float,
-    ) -> "VMobject":
+    ) -> VMobject:
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
@@ -1577,7 +1571,7 @@ class VMobject(Mobject):
             )
         return self
 
-    def get_subcurve(self, a: float, b: float) -> "VMobject":
+    def get_subcurve(self, a: float, b: float) -> VMobject:
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
 
@@ -1803,7 +1797,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: Union[VMobject, typing.Sequence[VMobject]]):
+    def __setitem__(self, key: int, value: VMobject | typing.Sequence[VMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2012,8 +2006,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
            self.play(Create(my_dict['s']))
         """
-        submob = self.submob_dict[key]
-        return submob
+        return self.submob_dict[key]
 
     def __setitem__(self, key, value):
         """Override the [] operator for item assignment.
@@ -2111,8 +2104,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
             for submob in my_dict.get_all_submobjects():
                 self.play(Create(submob))
         """
-        submobjects = self.submob_dict.values()
-        return submobjects
+        return self.submob_dict.values()
 
     def add_key_value_pair(self, key, value):
         """A utility function used by :meth:`add` to add the key-value pair

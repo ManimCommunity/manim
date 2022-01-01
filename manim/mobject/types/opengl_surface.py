@@ -258,7 +258,7 @@ class OpenGLSurface(OpenGLMobject):
                     surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
                     self.add(axes, surface_plane)
         """
-        if type(colors[0]) is tuple:
+        if isinstance(colors[0], tuple):
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
             new_colors = colors

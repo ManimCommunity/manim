@@ -46,6 +46,7 @@ Examples
             self.add(x)
 
 """
+from __future__ import annotations
 
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
@@ -212,7 +213,7 @@ class Paragraph(VGroup):
         alignment : :class:`str`
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(self.lines[0].__len__()):
             self.change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -232,7 +233,7 @@ class Paragraph(VGroup):
     def set_all_lines_to_initial_positions(self):
         """Set all lines to their initial positions."""
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(self.lines[0].__len__()):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
@@ -408,11 +409,11 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
+        t2c: dict[str, str] = None,
+        t2f: dict[str, str] = None,
+        t2g: dict[str, tuple] = None,
+        t2s: dict[str, str] = None,
+        t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
@@ -1288,7 +1289,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: Union[str, Path]):
+def register_font(font_file: str | Path):
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.
