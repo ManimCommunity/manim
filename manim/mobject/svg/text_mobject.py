@@ -697,15 +697,14 @@ class Text(SVGMobject):
         # Handle overlaps
 
         settings.sort(key=lambda setting: setting.start)
-        new_settings = []
         for index, setting in enumerate(settings):
-            if index == len(settings):
+            if index + 1 == len(settings):
                 break
 
-            next_setting = settings[index]
+            next_setting = settings[index + 1]
             if setting.end > next_setting.start:
                 new_setting = self._merge_settings(setting, next_setting, setting_args)
-                new_index = index
+                new_index = index + 1
                 while (
                     new_index < len(settings)
                     and settings[new_index].start < new_setting.start
