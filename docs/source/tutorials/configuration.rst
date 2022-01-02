@@ -35,7 +35,7 @@ An example of using the above form is:
    manim -qm file.py SceneOne
 
 This asks manim to search for a Scene class called :code:`SceneOne` inside the
-file ``file.py`` and render it with medium quality (with the ``-qm`` flag).
+file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag).
 
 Another frequently used flag is ``-p`` ("preview"), which makes manim 
 open the rendered video after it's done rendering.
