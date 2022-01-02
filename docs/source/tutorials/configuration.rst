@@ -14,8 +14,8 @@ via the command-line interface (CLI), which is described directly below.
 Command-line arguments
 **********************
 
-By far the most commonly used command in the CLI is the ``render`` command, 
-which is used to render scene(s) to an output file. 
+By far the most commonly used command in the CLI is the ``render`` command,
+which is used to render scene(s) to an output file.
 It is used with the following arguments:
 
 .. program-output:: manim render --help
@@ -37,7 +37,7 @@ An example of using the above form is:
 This asks manim to search for a Scene class called :code:`SceneOne` inside the
 file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag).
 
-Another frequently used flag is ``-p`` ("preview"), which makes manim 
+Another frequently used flag is ``-p`` ("preview"), which makes manim
 open the rendered video after it's done rendering.
 
 .. note:: The ``-p`` flag does not change any properties of the global
@@ -146,7 +146,7 @@ making small incremental tweaks to your scene script.  For this reason, manim
 can also be configured using a configuration file.  A configuration file is a
 file ending with the suffix ``.cfg``.
 
-To use a local configuration file when rendering your scene, you must create a 
+To use a local configuration file when rendering your scene, you must create a
 file with name ``manim.cfg`` in the same directory as your scene code.
 
 .. warning:: The config file **must** be named ``manim.cfg``. Currently, manim
