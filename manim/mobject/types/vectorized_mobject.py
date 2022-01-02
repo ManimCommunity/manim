@@ -1018,7 +1018,7 @@ class VMobject(Mobject):
     def get_subpaths(self) -> typing.Tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
-        We define a subpath between two curve if one of their extremities are coincident.
+        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
 
         Returns
         -------
@@ -1363,10 +1363,20 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject):
+    def align_points(self, vmobject: "VMobject"):
         """Adds points to self and vmobject so that they both have the same number of subpaths, each of the matching lengths.
         Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
         of a single point repeated.
+
+        Parameters
+        ----------
+        vmobject
+            The object to align points with.
+
+        Returns
+        -------
+        :class:`VMobject`
+           ``self``
         """
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?

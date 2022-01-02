@@ -209,6 +209,34 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
         vgroup[0] = "invalid object"
 
 
+def test_trim_dummy():
+    o = VMobject()
+    o.start_new_path(np.array([0, 0, 0]))
+    o.add_line_to(np.array([1, 0, 0]))
+    o.add_line_to(np.array([2, 0, 0]))
+    o.add_line_to(np.array([2, 0, 0]))  # Dummy point, will be stripped from points
+    o.start_new_path(np.array([0, 1, 0]))
+    o.add_line_to(np.array([1, 2, 0]))
+
+    o2 = VMobject()
+    o2.start_new_path(np.array([0, 0, 0]))
+    o2.add_line_to(np.array([0, 1, 0]))
+    o2.start_new_path(np.array([1, 0, 0]))
+    o2.add_line_to(np.array([1, 1, 0]))
+    o2.add_line_to(np.array([1, 2, 0]))
+
+    def path_length(p):
+        return len(p) // o.n_points_per_cubic_curve
+
+    assert tuple(map(path_length, o.get_subpaths())) == (3, 1)
+    assert tuple(map(path_length, o2.get_subpaths())) == (1, 2)
+
+    o.align_points(o2)
+
+    assert tuple(map(path_length, o.get_subpaths())) == (2, 2)
+    assert tuple(map(path_length, o2.get_subpaths())) == (2, 2)
+
+
 def test_bounded_become():
     """Tests that align_points generates a bounded number of points.
     https://github.com/ManimCommunity/manim/issues/1959
