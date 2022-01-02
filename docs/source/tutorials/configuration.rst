@@ -363,5 +363,3 @@ A list of all CLI flags
 .. command-output:: manim render --help
 .. command-output:: manim cfg --help
 .. command-output:: manim plugins --help
-
-
