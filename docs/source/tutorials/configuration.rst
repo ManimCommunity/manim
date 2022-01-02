@@ -359,29 +359,9 @@ A list of all config options
 A list of all CLI flags
 ***********************
 
-.. code::
+.. command-output:: manim --help
+.. command-output:: manim render --help
+.. command-output:: manim cfg --help
+.. command-output:: manim plugins --help
 
-   manim --help
 
-   Usage: manim [OPTIONS] COMMAND [ARGS]...
-
-     Animation engine for explanatory math videos
-
-   Options:
-     --version   Show the version and exit.
-     --help  Show this message and exit.
-
-   Commands:
-     render*  Render SCENE(S) from the input FILE.
-     cfg      Manages Manim configuration files.
-     plugins  Manages Manim plugins.
-
-     Made with <3 by Manim Community developers.
-
-Each of the subcommands has its own help page which can be
-
-.. code::
-
-   manim render --help
-   manim cfg --help
-   manim plugins --help
