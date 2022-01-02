@@ -1364,7 +1364,9 @@ class VMobject(Mobject):
 
     # Alignment
     def align_points(self, vmobject: "VMobject"):
-        """Adds points to self and vmobject so that they both have the same number of subpaths, each of the matching lengths.
+        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+        corresponding subpaths each containing the same number of points.
+
         Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
         of a single point repeated.
 
