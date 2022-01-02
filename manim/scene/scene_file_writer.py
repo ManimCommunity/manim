@@ -12,6 +12,7 @@ from time import sleep
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+import srt
 from PIL import Image
 from pydub import AudioSegment
 
@@ -71,6 +72,7 @@ class SceneFileWriter:
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: List[str] = []
+        self.subcaptions: List[srt.Subtitle] = []
         self.sections: List[Section] = []
         # first section gets automatically created for convenience
         # if you need the first section to be skipped, add a first section by hand, it will replace this one
@@ -449,6 +451,8 @@ class SceneFileWriter:
         elif is_png_format() and not config["dry_run"]:
             target_dir, _ = os.path.splitext(self.image_file_path)
             logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
+        if self.subcaptions:
+            self.write_subcaption_file()
 
     def open_movie_pipe(self, file_path=None):
         """
@@ -711,6 +715,13 @@ class SceneFileWriter:
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},
         )
+
+    def write_subcaption_file(self):
+        """Writes the subcaption file."""
+        subcaption_file = Path(config.output_file).with_suffix(".srt")
+        with open(subcaption_file, "w") as f:
+            f.write(srt.compose(self.subcaptions))
+        logger.info(f"Subcaption file has been written as {subcaption_file}")
 
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""
