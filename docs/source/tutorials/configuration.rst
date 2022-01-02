@@ -44,7 +44,7 @@ open the rendered video after it's done rendering.
           ``config`` dict.  The ``-p`` flag is only a command-line convenience.
 
 Advanced examples
-========
+=================
 
 To render a scene in high quality, but only output the last frame of the scene
 instead of the whole video, you can execute
