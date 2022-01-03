@@ -1859,6 +1859,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 ax_config["numbers_to_exclude"] = [intercept]
 
         elif ax_config.get("ticks_to_exclude") is None:
+            # if ticks_to_exclude is defined, then don't touch
+            # the user's pre-defined input
             if ax_config.get("scaling") is None or isinstance(
                 ax_config.get("scaling"), LinearBase
             ):
