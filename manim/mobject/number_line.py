@@ -329,9 +329,10 @@ class NumberLine(Line):
 
             tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
+        tick_range = self.scaling.function(tick_range)
         tick_range = np.setdiff1d(tick_range, self.ticks_to_exclude)
 
-        return self.scaling.function(tick_range)
+        return tick_range
 
     def number_to_point(self, number: float) -> np.ndarray:
         """Accepts a value along the number line and returns a point with

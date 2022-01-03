@@ -1863,9 +1863,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             # the user's pre-defined input
             if ax_config.get("scaling") is not None:
                 # apply the scaling function to num, since
-                # num determines where the axes connect
+                # num determines where the axes connect.
                 # there should be no ticks/numbers at that location
-                num = ax_config["scaling"].function(num)
+                num = ax_config["scaling"].function(ax_range[0])
 
             ax_config["ticks_to_exclude"] = [num]
             if ax_config.get("numbers_to_exclude") is None:
