@@ -1795,21 +1795,21 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # it would remove the "0" tick, which is actually 10^0,
         # not the lowest tick on the graph (which is 10^-2).
 
-        if self.x_axis_config.get("exclude_origin_tick") is None:
+        if self.x_axis_config.get("ticks_to_exclude") is None:
             if self.x_axis_config.get("scaling") is None or isinstance(
                 self.x_axis_config.get("scaling"), LinearBase
             ):
-                self.x_axis_config["exclude_origin_tick"] = True
+                self.x_axis_config["ticks_to_exclude"] = [0]
             else:
-                self.x_axis_config["exclude_origin_tick"] = False
+                self.x_axis_config["ticks_to_exclude"] = []
 
-        if self.y_axis_config.get("exclude_origin_tick") is None:
+        if self.y_axis_config.get("ticks_to_exclude") is None:
             if self.y_axis_config.get("scaling") is None or isinstance(
                 self.y_axis_config.get("scaling"), LinearBase
             ):
-                self.y_axis_config["exclude_origin_tick"] = True
+                self.y_axis_config["ticks_to_exclude"] = [0]
             else:
-                self.y_axis_config["exclude_origin_tick"] = False
+                self.y_axis_config["ticks_to_exclude"] = []
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
@@ -2138,12 +2138,13 @@ class ThreeDAxes(Axes):
 
         self.dimension = 3
 
-        if self.z_axis_config.get("scaling") is None or isinstance(
-            self.z_axis_config.get("scaling"), LinearBase
-        ):
-            self.z_axis_config["exclude_origin_tick"] = True
-        else:
-            self.z_axis_config["exclude_origin_tick"] = False
+        if self.z_axis_config.get("ticks_to_exclude") is None:
+            if self.z_axis_config.get("scaling") is None or isinstance(
+                self.z_axis_config.get("scaling"), LinearBase
+            ):
+                self.z_axis_config["ticks_to_exclude"] = [0]
+            else:
+                self.z_axis_config["ticks_to_exclude"] = []
 
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
