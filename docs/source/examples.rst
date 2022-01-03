@@ -319,7 +319,7 @@ Plotting with Manim
         def construct(self):
             axes = Axes(
                 x_range=[-10, 10.3, 1],
-                y_range=[-1.5, 1.5, 1],
+                y_range=[-1.5, 1.5, 0.5],
                 x_length=10,
                 axis_config={"color": GREEN},
                 x_axis_config={

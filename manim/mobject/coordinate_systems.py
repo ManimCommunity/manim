@@ -423,7 +423,7 @@ class CoordinateSystem:
         self,
         *axes_numbers: Union[
             Optional[Iterable[float]],
-            Union[Dict[float, Union[str, float, "Mobject"]]],
+            Union[Dict[float, Union[str, float, "Mobject"]], Iterable[Union[str, float, "Mobject"]]],
         ],
         **kwargs,
     ):
@@ -1795,19 +1795,21 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # it would remove the "0" tick, which is actually 10^0,
         # not the lowest tick on the graph (which is 10^-2).
 
-        if self.x_axis_config.get("scaling") is None or isinstance(
-            self.x_axis_config.get("scaling"), LinearBase
-        ):
-            self.x_axis_config["exclude_origin_tick"] = True
-        else:
-            self.x_axis_config["exclude_origin_tick"] = False
+        if self.x_axis_config.get("exclude_origin_tick") is None:
+            if self.x_axis_config.get("scaling") is None or isinstance(
+                self.x_axis_config.get("scaling"), LinearBase
+            ):
+                self.x_axis_config["exclude_origin_tick"] = True
+            else:
+                self.x_axis_config["exclude_origin_tick"] = False
 
-        if self.y_axis_config.get("scaling") is None or isinstance(
-            self.y_axis_config.get("scaling"), LinearBase
-        ):
-            self.y_axis_config["exclude_origin_tick"] = True
-        else:
-            self.y_axis_config["exclude_origin_tick"] = False
+        if self.y_axis_config.get("exclude_origin_tick") is None:
+            if self.y_axis_config.get("scaling") is None or isinstance(
+                self.y_axis_config.get("scaling"), LinearBase
+            ):
+                self.y_axis_config["exclude_origin_tick"] = True
+            else:
+                self.y_axis_config["exclude_origin_tick"] = False
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
@@ -1900,8 +1902,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
         result = np.array(origin)
-        for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - origin
+        for i, (axis, coord) in enumerate(zip(self.get_axes(), coords)):
+            result[i] += axis.number_to_point(coord)[i] - origin[i]
         return result
 
     def point_to_coords(self, point: Sequence[float]) -> Tuple[float]:
