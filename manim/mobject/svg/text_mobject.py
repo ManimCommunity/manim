@@ -70,7 +70,7 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors, color_gradient
-from ...utils.deprecation import deprecated_params
+from ...utils.deprecation import deprecated, deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -586,6 +586,11 @@ class Text(SVGMobject):
     #     if "text2weight" in kwargs:
     #         self.t2w = kwargs.pop("text2weight")
 
+    @deprecated(
+        since="v0.14.0",
+        until="v0.15.0",
+        message="This was internal function, you shouldn't be using it anyway.",
+    )
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
@@ -593,6 +598,11 @@ class Text(SVGMobject):
             for start, end in self.find_indexes(word, self.text):
                 self.chars[start:end].set_color(color)
 
+    @deprecated(
+        since="v0.14.0",
+        until="v0.15.0",
+        message="This was internal function, you shouldn't be using it anyway.",
+    )
     def set_color_by_t2g(self, t2g=None):
         """Internally used. Sets gradient colors for specified
         strings. Behaves similarly to ``set_color_by_t2c``."""
