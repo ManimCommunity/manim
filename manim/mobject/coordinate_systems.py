@@ -1861,17 +1861,23 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         elif ax_config.get("ticks_to_exclude") is None:
             # if ticks_to_exclude is defined, then don't touch
             # the user's pre-defined input
-            if ax_config.get("scaling") is None or isinstance(
+
+            if intercept is not None:
+                # if intercept is defined then that's
+                # the point where there should be no tick
+                ax_config["ticks_to_exclude"] = [intercept]
+
+            elif ax_config.get("scaling") is None or isinstance(
                 ax_config.get("scaling"), LinearBase
             ):
+                # otherwise, if linear, then remove the 0 point
+                # since that's where the axes will be joined.
                 ax_config["ticks_to_exclude"] = [0]
                 if ax_config.get("numbers_to_exclude") is None:
                     ax_config["numbers_to_exclude"] = [0]
             else:
                 ax_config["ticks_to_exclude"] = []
 
-            if intercept is not None:
-                ax_config["ticks_to_exclude"].append(intercept)
 
         elif intercept is not None:
             ax_config["ticks_to_exclude"].append(intercept)
