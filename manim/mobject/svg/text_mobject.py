@@ -76,6 +76,9 @@ TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
+STYLING_DICT_TYPE = Dict[Union[str, tuple], str]
+GRADIENT_DICT_TYPE = Dict[Union[str, tuple], Sequence[Color]]
+
 
 def remove_invisible_chars(mobject):
     """Function to remove unwanted invisible characters from some mobjects.
@@ -410,11 +413,11 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
+        t2c: STYLING_DICT_TYPE = None,
+        t2f: STYLING_DICT_TYPE = None,
+        t2g: GRADIENT_DICT_TYPE = None,
+        t2s: STYLING_DICT_TYPE = None,
+        t2w: STYLING_DICT_TYPE = None,
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
@@ -451,11 +454,11 @@ class Text(SVGMobject):
         t2g = kwargs.pop("text2gradient", t2g)
         t2s = kwargs.pop("text2slant", t2s)
         t2w = kwargs.pop("text2weight", t2w)
-        self.t2c = t2c
-        self.t2f = t2f
-        self.t2g = t2g
-        self.t2s = t2s
-        self.t2w = t2w
+        self.t2c: STYLING_DICT_TYPE = t2c
+        self.t2f: STYLING_DICT_TYPE = t2f
+        self.t2g: GRADIENT_DICT_TYPE = t2g
+        self.t2s: STYLING_DICT_TYPE = t2s
+        self.t2w: STYLING_DICT_TYPE = t2w
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
@@ -653,7 +656,7 @@ class Text(SVGMobject):
         return new_setting
 
     def _get_settings_from_t2xs(
-        self, t2xs: Sequence[Tuple[Dict[str, str], str]]
+        self, t2xs: Sequence[Tuple[STYLING_DICT_TYPE, str]]
     ) -> Sequence[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
