@@ -1774,8 +1774,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_intercept = x_intercept
         self.y_intercept = y_intercept
 
-        x_axis_config = self._modify_ticks_and_scaling(x_axis_config, self.x_intercept)
-        y_axis_config = self._modify_ticks_and_scaling(y_axis_config, self.y_intercept)
+        x_axis_config = self._modify_ticks_and_scaling(x_axis_config, self.x_intercept, self.x_range)
+        y_axis_config = self._modify_ticks_and_scaling(y_axis_config, self.y_intercept, self.y_range)
 
         self.axis_config = {
             "include_tip": tips,
@@ -1824,10 +1824,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    @staticmethod
     def _modify_ticks_and_scaling(
-        ax_config: Optional[Dict[str, Any]], intercept: Optional[float] = None
-    ) -> Optional[Dict[str, Any]]:
+        self,
+        ax_config: Optional[Dict[str, Any]], intercept: Optional[float], ax_range: Sequence[float],
+    ) -> Dict[str, Any]:
         """Modify an axis_config dictionary to maintain reasonable defaults when
         used with different scaling configurations.
 
@@ -1837,10 +1837,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             The config dictionary to be modified.
         intercept
             The intercept used to check which ticks will be removed.
+        ax_range
+            The corresponding axis_range for the config being modified.
 
         Returns
         -------
-        Optional[Dict[str, Any]]
+        Dict[str, Any]
         """
 
         # excluding the the 0-point of the axis removes the origin tick.
@@ -1852,32 +1854,22 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # it would remove the "0" tick, which is actually 10^0,
         # not the lowest tick on the graph (which is 10^-2).
 
+        num = self._origin_shift([ax_range[0], ax_range[1]], intercept)
         if ax_config is None:
-            if intercept is not None:
-                ax_config = {}
-                ax_config["ticks_to_exclude"] = [intercept]
-                ax_config["numbers_to_exclude"] = [intercept]
+            ax_config = {}
 
-        elif ax_config.get("ticks_to_exclude") is None:
+        if ax_config.get("ticks_to_exclude") is None:
             # if ticks_to_exclude is defined, then don't touch
             # the user's pre-defined input
+            if ax_config.get("scaling") is not None:
+                # apply the scaling function to num, since
+                # num determines where the axes connect
+                # there should be no ticks/numbers at that location
+                num = ax_config["scaling"].function(num)
 
-            if intercept is not None:
-                # if intercept is defined then that's
-                # the point where there should be no tick
-                ax_config["ticks_to_exclude"] = [intercept]
-
-            elif ax_config.get("scaling") is None or isinstance(
-                ax_config.get("scaling"), LinearBase
-            ):
-                # otherwise, if linear, then remove the 0 point
-                # since that's where the axes will be joined.
-                ax_config["ticks_to_exclude"] = [0]
-                if ax_config.get("numbers_to_exclude") is None:
-                    ax_config["numbers_to_exclude"] = [0]
-            else:
-                ax_config["ticks_to_exclude"] = []
-
+            ax_config["ticks_to_exclude"] = [num]
+            if ax_config.get("numbers_to_exclude") is None:
+                ax_config["numbers_to_exclude"] = [num]
 
         elif intercept is not None:
             ax_config["ticks_to_exclude"].append(intercept)
@@ -1891,7 +1883,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         length: float,
         intercept: Optional[float] = None,
     ) -> NumberLine:
-        """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
+        """Creates an axis and dynamically adjusts its position
+        depending on the intercept (if provided) or where 0 is
+        located on the line.
 
         Parameters
         ----------
@@ -1910,8 +1904,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_config["length"] = length
         axis = NumberLine(range_terms, **axis_config)
 
-        # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
-        # shifts the axis so that 0 is centered
+        # without the call to _origin_shift, graph does
+        # not exist when min > 0 or max < 0
+        # + shifts the axis so that 0 is centered
+
         axis.shift(
             -axis.number_to_point(
                 self._origin_shift([axis.x_min, axis.x_max], intercept)
@@ -2103,11 +2099,14 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_range: Sequence[float], intercept: Optional[float] = None
     ) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
+        If an intercept is provided, then shift by that amount.
 
         Parameters
         ----------
         axis_range
             The range of the axis : ``(x_min, x_max, x_step)``.
+        intercept
+            The distance to shift by, if provided. 
         """
         if intercept is None:
             if axis_range[0] > 0:
@@ -2190,7 +2189,7 @@ class ThreeDAxes(Axes):
         self.light_source = light_source
         self.dimension = 3
 
-        z_axis_config = self._modify_ticks_and_scaling(z_axis_config, self.z_intercept)
+        z_axis_config = self._modify_ticks_and_scaling(z_axis_config, self.z_intercept, self.z_range)
         self.z_axis_config = {}
         self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
