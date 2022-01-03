@@ -168,7 +168,7 @@ def get_summary(body):
         if has_changelog_pattern:
 
             return has_changelog_pattern.group()[22:-21].strip()
-    except:
+    except Exception:
         print(f"Error parsing body for changelog: {body}")
 
 
