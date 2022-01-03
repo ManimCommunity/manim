@@ -35,7 +35,6 @@ class Colors(Enum):
 
     Examples
     --------
-
     .. manim:: ColorsOverview
         :save_last_frame:
         :hide_source:
@@ -175,7 +174,6 @@ class Colors(Enum):
 
         The colors of type "C" have an alias equal to the colorname without a letter,
         e.g. GREEN = GREEN_C
-
     """
 
     white: str = "#FFFFFF"
@@ -261,9 +259,10 @@ class Colors(Enum):
 
 
 def print_constant_definitions():
-    """
-    A simple function used to generate the constant values below. To run it
-    paste this function and the Colors class into a file and run them.
+    """Generate the constant values below.
+
+    To run it paste this function and the Colors class into a file and
+    run them.
     """
     constants_names: list[str] = []
     for name in Colors.__members__.keys():

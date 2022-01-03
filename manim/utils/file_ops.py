@@ -29,80 +29,67 @@ from .. import console
 
 
 def is_mp4_format() -> bool:
-    """
-    Determines if output format is .mp4
+    """Determines if output format is .mp4.
 
     Returns
     -------
     class:`bool`
         ``True`` if format is set as mp4
-
     """
     return config["format"] == "mp4"
 
 
 def is_gif_format() -> bool:
-    """
-    Determines if output format is .gif
+    """Determines if output format is .gif.
 
     Returns
     -------
     class:`bool`
         ``True`` if format is set as gif
-
     """
     return config["format"] == "gif"
 
 
 def is_webm_format() -> bool:
-    """
-    Determines if output format is .webm
+    """Determines if output format is .webm.
 
     Returns
     -------
     class:`bool`
         ``True`` if format is set as webm
-
     """
     return config["format"] == "webm"
 
 
 def is_mov_format() -> bool:
-    """
-    Determines if output format is .mov
+    """Determines if output format is .mov.
 
     Returns
     -------
     class:`bool`
         ``True`` if format is set as mov
-
     """
     return config["format"] == "mov"
 
 
 def is_png_format() -> bool:
-    """
-    Determines if output format is .png
+    """Determines if output format is .png.
 
     Returns
     -------
     class:`bool`
         ``True`` if format is set as png
-
     """
     return config["format"] == "png"
 
 
 def write_to_movie() -> bool:
-    """
-    Determines from config if the output is a video format such as mp4 or gif, if the --format is set as 'png'
-    then it will take precedence event if the write_to_movie flag is set
+    """Determines from config if the output is a video format such as mp4 or gif, if the --format is set as 'png' then it will take precedence event if the write_to_movie flag is set.
 
     Returns
     -------
     class:`bool`
         ``True`` if the output should be written in a movie format
-
     """
     if is_png_format():
         return False
@@ -224,7 +211,7 @@ def get_template_path():
 
 
 def add_import_statement(file):
-    """Prepends an import statement in a file
+    """Prepends an import statement in a file.
 
     Parameters
     ----------
@@ -237,7 +224,7 @@ def add_import_statement(file):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir=Path("."), template_name="Default"):
+def copy_template_files(project_dir=None, template_name="Default"):
     """Copies template files from templates dir to project_dir.
 
     Parameters
@@ -247,6 +234,9 @@ def copy_template_files(project_dir=Path("."), template_name="Default"):
         template_name : :class:`str`
             Name of template.
     """
+    if project_dir is None:
+        project_dir = Path(".")
+
     template_cfg_path = Path.resolve(
         Path(__file__).parent.parent / "templates/template.cfg",
     )

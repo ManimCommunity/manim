@@ -29,22 +29,20 @@ DEFAULT_ARROW_TIP_WIDTH = 0.35
 
 
 class OpenGLTipableVMobject(OpenGLVMobject):
-    """
-    Meant for shared functionality between Arc and Line.
-    Functionality can be classified broadly into these groups:
+    """Meant for shared functionality between Arc and Line. Functionality can be classified broadly into these groups:
 
-        * Adding, Creating, Modifying tips
-            - add_tip calls create_tip, before pushing the new tip
-                into the TipableVMobject's list of submobjects
-            - stylistic and positional configuration
+    * Adding, Creating, Modifying tips
+        - add_tip calls create_tip, before pushing the new tip
+            into the TipableVMobject's list of submobjects
+        - stylistic and positional configuration
 
-        * Checking for tips
-            - Boolean checks for whether the TipableVMobject has a tip
-                and a starting tip
+    * Checking for tips
+        - Boolean checks for whether the TipableVMobject has a tip
+            and a starting tip
 
-        * Getters
-            - Straightforward accessors, returning information pertaining
-                to the TipableVMobject instance's tip(s), its length etc
+    * Getters
+        - Straightforward accessors, returning information pertaining
+            to the TipableVMobject instance's tip(s), its length etc
     """
 
     # Adding, Creating, Modifying tips
@@ -53,20 +51,16 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         self,
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
-        tip_config={},
+        tip_config=None,
         **kwargs
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
-        self.tip_config = tip_config
+        self.tip_config = {} if tip_config is None else tip_config
         super().__init__(**kwargs)
 
     def add_tip(self, at_start=False, **kwargs):
-        """
-        Adds a tip to the TipableVMobject instance, recognising
-        that the endpoints might need to be switched if it's
-        a 'starting tip' or not.
-        """
+        """Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
         tip = self.create_tip(at_start, **kwargs)
         self.reset_endpoints_based_on_tip(tip, at_start)
         self.asign_tip_attr(tip, at_start)
@@ -74,19 +68,13 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return self
 
     def create_tip(self, at_start=False, **kwargs):
-        """
-        Stylises the tip, positions it spacially, and returns
-        the newly instantiated tip to the caller.
-        """
+        """Stylises the tip, positions it spacially, and returns the newly instantiated tip to the caller."""
         tip = self.get_unpositioned_tip(**kwargs)
         self.position_tip(tip, at_start)
         return tip
 
     def get_unpositioned_tip(self, **kwargs):
-        """
-        Returns a tip that has been stylistically configured,
-        but has not yet been given a position in space.
-        """
+        """Returns a tip that has been stylistically configured, but has not yet been given a position in space."""
         config = {}
         config.update(self.tip_config)
         config.update(kwargs)
@@ -148,10 +136,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return result
 
     def get_tips(self):
-        """
-        Returns a VGroup (collection of VMobjects) containing
-        the TipableVMObject instance's tips.
-        """
+        """Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
         result = OpenGLVGroup()
         if hasattr(self, "tip"):
             result.add(self.tip)
@@ -160,8 +145,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        """Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."""
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -246,10 +230,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         return points
 
     def get_arc_center(self):
-        """
-        Looks at the normals to the first two
-        anchors, and finds their intersection points
-        """
+        """Looks at the normals to the first two anchors, and finds their intersection points."""
         # First two anchors and handles
         a1, h, a2 = self.points[:3]
         # Tangent vectors
@@ -435,15 +416,15 @@ class OpenGLLine(OpenGLTipableVMobject):
 
     def account_for_buff(self, buff):
         if buff == 0:
-            return
-        #
+            return None
+
         if self.path_arc == 0:
             length = self.get_length()
         else:
             length = self.get_arc_length()
-        #
+
         if length < 2 * buff:
-            return
+            return None
         buff_prop = buff / length
         self.pointwise_become_partial(self, buff_prop, 1 - buff_prop)
         return self
@@ -461,10 +442,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         self.end = self.pointify(end, -vect) - self.buff * vect
 
     def pointify(self, mob_or_point, direction=None):
-        """
-        Take an argument passed into Line (or subclass) and turn
-        it into a 3d point.
-        """
+        """Take an argument passed into Line (or subclass) and turn it into a 3d point."""
         if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
@@ -493,9 +471,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point):
-        """
-        Return projection of a point onto the line
-        """
+        """Return projection of a point onto the line."""
         unit_vect = self.get_unit_vector()
         start = self.get_start()
         return start + np.dot(point - start, unit_vect) * unit_vect

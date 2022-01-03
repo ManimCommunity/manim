@@ -121,8 +121,7 @@ def test_SurfaceColorscale(scene):
     def param_trig(u, v):
         x = u
         y = v
-        z = y ** 2 / 2 - x ** 2 / 2
-        return z
+        return y ** 2 / 2 - x ** 2 / 2
 
     trig_plane = Surface(
         lambda x, y: axes.c2p(x, y, param_trig(x, y)),
@@ -143,8 +142,7 @@ def test_Y_Direction(scene):
     def param_surface(u, v):
         x = u
         y = v
-        z = np.sin(x) * np.cos(y)
-        return z
+        return np.sin(x) * np.cos(y)
 
     surface_plane = Surface(
         lambda u, v: axes.c2p(u, v, param_surface(u, v)),

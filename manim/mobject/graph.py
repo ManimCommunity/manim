@@ -125,8 +125,8 @@ def _tree_layout(
         o = 1
 
     def slide(v, dx):
-        """
-        Shift the vertex v and its descendants to the right by dx.
+        """Shift the vertex v and its descendants to the right by dx.
+
         Precondition: v and its descendents have already had their
         positions computed.
         """
@@ -682,7 +682,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Group
             A mobject containing all removed objects.
-
         """
         if vertex not in self.vertices:
             raise ValueError(
@@ -722,7 +721,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             VGroup(Line, Line, Dot, Dot)
             >>> G
             Graph on 1 vertices and 0 edges
-
         """
         mobjects = []
         for v in vertices:
@@ -766,7 +764,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         -------
         Group
             A group containing all newly added vertices and edges.
-
         """
         if edge_config is None:
             edge_config = self.default_edge_config.copy()
@@ -820,7 +817,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         -------
         Group
             A group containing all newly added vertices and edges.
-
         """
         if edge_config is None:
             edge_config = {}
@@ -870,7 +866,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Mobject
             The removed edge.
-
         """
         if edge not in self.edges:
             edge = edge[::-1]
@@ -897,7 +892,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         -------
         Group
             A group containing all removed edges.
-
         """
         edge_mobjects = [self._remove_edge(edge) for edge in edges]
         return self.get_group_class()(*edge_mobjects)
@@ -943,7 +937,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                                                      3*UP*np.sin(ind/7 * PI))
                                 for ind, v in enumerate(G.vertices)])
                     self.play(Uncreate(G))
-
         """
         return Graph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
 

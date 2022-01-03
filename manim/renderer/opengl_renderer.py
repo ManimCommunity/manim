@@ -1,6 +1,6 @@
 import itertools as it
 import time
-from typing import Any
+from typing import Any, List, Optional
 
 import moderngl
 import numpy as np
@@ -40,15 +40,17 @@ class OpenGLCamera(OpenGLMobject):
         frame_shape=None,
         center_point=None,
         # Theta, phi, gamma
-        euler_angles=[0, 0, 0],
+        euler_angles: Optional[List] = None,
         focal_distance=2,
-        light_source_position=[-10, 10, 10],
+        light_source_position: Optional[List] = None,
         orthographic=False,
         minimum_polar_angle=-PI / 2,
         maximum_polar_angle=PI / 2,
         model_matrix=None,
         **kwargs,
     ):
+        if light_source_position is None:
+            light_source_position = [-10, 10, 10]
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
@@ -382,12 +384,11 @@ class OpenGLRenderer:
         return self.path_to_texture_id[path]
 
     def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
-        animation needs to be skipped or not. It also checks if
-        the number of animations that were played correspond to
-        the number of animations that need to be played, and
-        raises an EndSceneEarlyException if they don't correspond.
+        """This method is used internally to check if the current animation needs to be skipped or not.
+
+        It also checks if the number of animations that were played
+        correspond to the number of animations that need to be played,
+        and raises an EndSceneEarlyException if they don't correspond.
         """
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
@@ -473,12 +474,7 @@ class OpenGLRenderer:
         return self.num_plays == 0
 
     def get_image(self) -> Image.Image:
-        """Returns an image from the current frame. The first argument passed to image represents
-        the mode RGB with the alpha channel A. The data we read is from the currently bound frame
-        buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically
-        used for the decoder tand represent the stride and orientation. 0 means there is no
-        padding expected between bytes and -1 represents the orientation and means the first
-        line of the image is the bottom line on the screen.
+        """Returns an image from the current frame. The first argument passed to image represents the mode RGB with the alpha channel A. The data we read is from the currently bound frame buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically used for the decoder tand represent the stride and orientation. 0 means there is no padding expected between bytes and -1 represents the orientation and means the first line of the image is the bottom line on the screen.
 
         Returns
         -------
@@ -486,7 +482,7 @@ class OpenGLRenderer:
             The PIL image of the array.
         """
         raw_buffer_data = self.get_raw_frame_buffer_object_data()
-        image = Image.frombytes(
+        return Image.frombytes(
             "RGBA",
             self.get_pixel_shape(),
             raw_buffer_data,
@@ -495,7 +491,6 @@ class OpenGLRenderer:
             0,
             -1,
         )
-        return image
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
@@ -525,12 +520,11 @@ class OpenGLRenderer:
         #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
         # )
         num_channels = 4
-        ret = self.frame_buffer_object.read(
+        return self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,
             components=num_channels,
             dtype=dtype,
         )
-        return ret
 
     def get_frame(self):
         # get current pixel values as numpy data in order to test output
@@ -538,8 +532,7 @@ class OpenGLRenderer:
         pixel_shape = self.get_pixel_shape()
         result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        np_buf = np.flipud(np_buf)
-        return np_buf
+        return np.flipud(np_buf)
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
@@ -547,7 +540,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return np.array([0, 0, 0])
         pw, ph = pixel_shape
-        fw, fh = config["frame_width"], config["frame_height"]
+        _, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])

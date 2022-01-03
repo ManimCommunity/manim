@@ -51,8 +51,7 @@ def bezier(
 
 
 def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
-    """Given an array of points which define bezier curve, and two numbers 0<=a<b<=1, return an array of the same size,
-    which describes the portion of the original bezier curve on the interval [a, b].
+    """Given an array of points which define bezier curve, and two numbers 0<=a<b<=1, return an array of the same size, which describes the portion of the original bezier curve on the interval [a, b].
 
     This algorithm is pretty nifty, and pretty dense.
 
@@ -112,16 +111,10 @@ def integer_interpolate(
     end: float,
     alpha: float,
 ) -> typing.Tuple[int, float]:
-    """
-    Alpha is a float between 0 and 1.  This returns
-    an integer between start and end (inclusive) representing
-    appropriate interpolation between them, along with a
-    "residue" representing a new proportion between the
-    returned integer and the next one of the
-    list.
+    """Alpha is a float between 0 and 1.  This returns an integer between start and end (inclusive) representing appropriate interpolation between them, along with a "residue" representing a new proportion between the returned integer and the next one of the list.
 
-    For example, if start=0, end=10, alpha=0.46, This
-    would return (4, 0.6).
+    For example, if start=0, end=10, alpha=0.46, This would return (4,
+    0.6).
     """
     if alpha >= 1:
         return (end - 1, 1.0)
@@ -289,9 +282,8 @@ def get_smooth_handle_points(
 
 
 def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndarray:
-    """
-    Converts array whose rows represent diagonal
-    entries of a matrix into the matrix itself.
+    """Converts array whose rows represent diagonal entries of a matrix into the matrix itself.
+
     See scipy.linalg.solve_banded
     """
     l, u = l_and_u
@@ -384,8 +376,7 @@ def proportions_along_bezier_curve_for_point(
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
     round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
 ) -> np.ndarray:
-    """Obtains the proportion along the bezier curve corresponding to a given point
-    given the bezier curve's control points.
+    """Obtains the proportion along the bezier curve corresponding to a given point given the bezier curve's control points.
 
     The bezier polynomial is constructed using the coordinates of the given point
     as well as the bezier curve's control points. On solving the polynomial for each dimension,
@@ -459,8 +450,7 @@ def proportions_along_bezier_curve_for_point(
 
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
-    roots = np.array([r.real for r in roots])
-    return roots
+    return np.array([r.real for r in roots])
 
 
 def point_lies_on_bezier(

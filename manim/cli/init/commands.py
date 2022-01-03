@@ -1,9 +1,8 @@
 """Manim's init subcommand.
 
-Manim's init subcommand is accessed in the command-line interface via ``manim
-init``. Here you can specify options, subcommands, and subgroups for the init
-group.
-
+Manim's init subcommand is accessed in the command-line interface via
+``manim init``. Here you can specify options, subcommands, and subgroups
+for the init group.
 """
 from pathlib import Path
 
@@ -23,7 +22,8 @@ It copies files from templates directory and pastes them in the current working 
 def init():
     """Sets up a new project in current working directory with default settings.
 
-    It copies files from templates directory and pastes them in the current working dir.
+    It copies files from templates directory and pastes them in the
+    current working dir.
     """
     cfg = Path("manim.cfg")
     if cfg.exists():

@@ -70,7 +70,6 @@ def straight_path(*args) -> PATH_FUNC_TYPE:
                     )
                 )
                 self.wait()
-
     """
     if len(args) > 0:
         return interpolate(*args)
@@ -136,7 +135,6 @@ def path_along_circles(
                     )
                 )
                 self.wait()
-
     """
     if np.linalg.norm(axis) == 0:
         axis = OUT
@@ -204,7 +202,6 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
                     )
                 )
                 self.wait()
-
     """
     if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path()
@@ -264,7 +261,6 @@ def clockwise_path() -> PATH_FUNC_TYPE:
                     )
                 )
                 self.wait()
-
     """
     return path_along_arc(-np.pi)
 
@@ -310,7 +306,6 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
                     )
                 )
                 self.wait()
-
     """
     return path_along_arc(np.pi)
 
@@ -363,7 +358,6 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
                     )
                 )
                 self.wait()
-
     """
     if abs(angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path()

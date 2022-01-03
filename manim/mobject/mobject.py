@@ -74,7 +74,6 @@ class Mobject:
         .. seealso::
 
             :class:`~.VMobject`
-
     """
 
     animation_overrides = {}
@@ -129,9 +128,8 @@ class Mobject:
 
     @classmethod
     def _add_intrinsic_animation_overrides(cls):
-        """Initializes animation overrides marked with the :func:`~.override_animation`
-        decorator.
-        """
+        """Initializes animation overrides marked with the
+        :func:`~.override_animation` decorator."""
         for method_name in dir(cls):
             # Ignore dunder methods
             if method_name.startswith("__"):
@@ -216,7 +214,6 @@ class Mobject:
 
                     # we revert the colour back to the default to prevent a bug in the docs.
                     Text.set_default(color=WHITE)
-
         """
         if kwargs:
             cls.__init__ = partialmethod(cls.__init__, **kwargs)
@@ -307,7 +304,6 @@ class Mobject:
              or rotations.
              If you want animations to consider the points between, consider using
              :class:`~.ValueTracker` with updaters instead.
-
         """
         return _AnimationBuilder(self)
 
@@ -333,18 +329,16 @@ class Mobject:
     def init_colors(self):
         """Initializes the colors.
 
-        Gets called upon creation. This is an empty method that can be implemented by
-        subclasses.
+        Gets called upon creation. This is an empty method that can be
+        implemented by subclasses.
         """
-        pass
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
 
-        Gets called upon creation. This is an empty method that can be implemented by
-        subclasses.
+        Gets called upon creation. This is an empty method that can be
+        implemented by subclasses.
         """
-        pass
 
     def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
@@ -403,7 +397,6 @@ class Mobject:
             Traceback (most recent call last):
             ...
             ValueError: Mobject cannot contain self
-
         """
         for m in mobjects:
             if not isinstance(m, Mobject):
@@ -461,7 +454,6 @@ class Mobject:
         --------
         :meth:`remove`
         :meth:`add`
-
         """
         if self in mobjects:
             raise ValueError("A mobject shouldn't contain itself")
@@ -495,7 +487,6 @@ class Mobject:
         See Also
         --------
         :meth:`add`
-
         """
         for mobject in mobjects:
             if mobject in self.submobjects:
@@ -637,7 +628,6 @@ class Mobject:
         See also
         --------
         :meth:`length_over_dim`
-
         """
 
         # Get the length across the X dimension
@@ -674,7 +664,6 @@ class Mobject:
         See also
         --------
         :meth:`length_over_dim`
-
         """
 
         # Get the length across the Y dimension
@@ -695,7 +684,6 @@ class Mobject:
         See also
         --------
         :meth:`length_over_dim`
-
         """
 
         # Get the length across the Z dimension
@@ -727,8 +715,7 @@ class Mobject:
         self.get_image(camera=camera).show()
 
     def save_image(self, name=None):
-        """Saves an image of only this :class:`Mobject` at its position to a png
-        file."""
+        """Saves an image of only this :class:`Mobject` at its position to a png file."""
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
@@ -780,7 +767,6 @@ class Mobject:
         --------
         :meth:`add_updater`
         :meth:`get_updaters`
-
         """
         if self.updating_suspended:
             return self
@@ -809,7 +795,6 @@ class Mobject:
         --------
         :meth:`get_updaters`
         :meth:`has_time_based_updater`
-
         """
         return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
 
@@ -825,7 +810,6 @@ class Mobject:
         See Also
         --------
         :meth:`get_time_based_updaters`
-
         """
         return any("dt" in get_parameters(updater) for updater in self.updaters)
 
@@ -841,7 +825,6 @@ class Mobject:
         --------
         :meth:`add_updater`
         :meth:`get_time_based_updaters`
-
         """
         return self.updaters
 
@@ -944,7 +927,6 @@ class Mobject:
         :meth:`clear_updaters`
         :meth:`add_updater`
         :meth:`get_updaters`
-
         """
         while update_function in self.updaters:
             self.updaters.remove(update_function)
@@ -968,7 +950,6 @@ class Mobject:
         :meth:`remove_updater`
         :meth:`add_updater`
         :meth:`get_updaters`
-
         """
         self.updaters = []
         if recursive:
@@ -998,7 +979,6 @@ class Mobject:
         --------
         :meth:`add_updater`
         :meth:`clear_updaters`
-
         """
 
         self.clear_updaters()
@@ -1008,7 +988,6 @@ class Mobject:
 
     def suspend_updating(self, recursive: bool = True) -> "Mobject":
         """Disable updating from updaters and animations.
-
 
         Parameters
         ----------
@@ -1024,7 +1003,6 @@ class Mobject:
         --------
         :meth:`resume_updating`
         :meth:`add_updater`
-
         """
 
         self.updating_suspended = True
@@ -1050,7 +1028,6 @@ class Mobject:
         --------
         :meth:`suspend_updating`
         :meth:`add_updater`
-
         """
         self.updating_suspended = False
         if recursive:
@@ -1078,7 +1055,6 @@ class Mobject:
         See also
         --------
         :meth:`family_members_with_points`
-
         """
         for mob in self.family_members_with_points():
             func(mob)
@@ -1155,8 +1131,11 @@ class Mobject:
         )
         return self
 
-    def rotate_about_origin(self, angle, axis=OUT, axes=[]):
-        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
+    def rotate_about_origin(self, angle, axis=OUT, axes: None = None):
+        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at.
+
+        [0,0,0].
+        """
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(
@@ -1188,7 +1167,6 @@ class Mobject:
                     self.add(s)
                     s2= s.copy().flip()
                     self.add(s2)
-
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
@@ -1231,8 +1209,7 @@ class Mobject:
         return self
 
     def apply_complex_function(self, function, **kwargs):
-        """Applies a complex function to a :class:`Mobject`.
-        The x and y coordinates correspond to the real and imaginary parts respectively.
+        """Applies a complex function to a :class:`Mobject`. The x and y coordinates correspond to the real and imaginary parts respectively.
 
         Example
         -------
@@ -1282,7 +1259,7 @@ class Mobject:
         return self
 
     def repeat(self, count: int):
-        """This can make transition animations nicer"""
+        """This can make transition animations nicer."""
 
         def repeat_array(array):
             return reduce(lambda a1, a2: np.append(a1, a2, axis=0), [array] * count)
@@ -1322,9 +1299,7 @@ class Mobject:
         return self
 
     def align_on_border(self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
-        """Direction just needs to be a vector pointing towards side or
-        corner in the 2d plane.
-        """
+        """Direction just needs to be a vector pointing towards side or corner in the 2d plane."""
         target_point = np.sign(direction) * (
             config["frame_x_radius"],
             config["frame_y_radius"],
@@ -1350,7 +1325,7 @@ class Mobject:
         aligned_edge=ORIGIN,
         submobject_to_align=None,
         index_of_submobject_to_align=None,
-        coor_mask=np.array([1, 1, 1]),
+        coor_mask: Optional[np.array] = None,  # TODO: Is that supposed to be color?
     ):
         """Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or coordinate.
 
@@ -1370,8 +1345,9 @@ class Mobject:
                     s.next_to(c, LEFT)
                     t.next_to(c, DOWN)
                     self.add(d, c, s, t)
-
         """
+        if coor_mask is None:
+            coor_mask = np.array([1, 1, 1])
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -1409,9 +1385,7 @@ class Mobject:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -config["frame_y_radius"]:
-            return True
-        return False
+        return self.get_top()[1] < -config["frame_y_radius"]
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
@@ -1569,9 +1543,11 @@ class Mobject:
         self,
         point_or_mobject,
         aligned_edge=ORIGIN,
-        coor_mask=np.array([1, 1, 1]),
+        coor_mask: Optional[np.array] = None,
     ):
         """Move center of the :class:`~.Mobject` to certain coordinate."""
+        if coor_mask is None:
+            coor_mask = np.array([1, 1, 1])
         if isinstance(point_or_mobject, Mobject):
             target = point_or_mobject.get_critical_point(aligned_edge)
         else:
@@ -1659,7 +1635,6 @@ class Mobject:
         --------
         :meth:`add_to_back`
         :class:`~.BackgroundRectangle`
-
         """
 
         # TODO, this does not behave well when the mobject has points,
@@ -1686,9 +1661,10 @@ class Mobject:
 
     def set_color(self, color: Color = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z).
+
         Here it just recurses to submobjects, but in subclasses this
-        should be further implemented based on the the inner workings
-        of color
+        should be further implemented based on the the inner workings of
+        color
         """
         if family:
             for submob in self.submobjects:
@@ -1772,7 +1748,10 @@ class Mobject:
     ##
 
     def save_state(self):
-        """Save the current state (position, color & size). Can be restored with :meth:`~.Mobject.restore`."""
+        """Save the current state (position, color & size).
+
+        Can be restored with :meth:`~.Mobject.restore`.
+        """
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
@@ -1781,7 +1760,8 @@ class Mobject:
         return self
 
     def restore(self):
-        """Restores the state that was previously saved with :meth:`~.Mobject.save_state`."""
+        """Restores the state that was previously saved with
+        :meth:`~.Mobject.save_state`."""
         if not hasattr(self, "saved_state") or self.save_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
@@ -1871,7 +1851,7 @@ class Mobject:
         return self.get_critical_point(direction)
 
     def get_center(self) -> np.ndarray:
-        """Get center coordinates"""
+        """Get center coordinates."""
         return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
@@ -1883,7 +1863,8 @@ class Mobject:
         return all_points[index]
 
     def get_midpoint(self) -> np.ndarray:
-        """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`.
+        """Get coordinates of the middle of the path that forms the
+        :class:`~.Mobject`.
 
         Examples
         --------
@@ -1901,7 +1882,6 @@ class Mobject:
 
                     self.add(line1, line2, a, d)
                     self.wait()
-
         """
         return self.point_from_proportion(0.5)
 
@@ -1926,7 +1906,8 @@ class Mobject:
         return self.get_edge_center(OUT)
 
     def get_nadir(self) -> np.ndarray:
-        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."""
+        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D
+        :class:`~.Mobject`."""
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
@@ -1957,12 +1938,14 @@ class Mobject:
         return self.get_coord(2, direction)
 
     def get_start(self):
-        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
+        """Returns the point, where the stroke that surrounds the
+        :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self):
-        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
+        """Returns the point, where the stroke that surrounds the
+        :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
@@ -2007,7 +1990,8 @@ class Mobject:
         return self.set_color(mobject.get_color())
 
     def match_dim_size(self, mobject: "Mobject", dim, **kwargs):
-        """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
+        """Match the specified dimension with the dimension of another
+        :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
     def match_width(self, mobject: "Mobject", **kwargs):
@@ -2023,7 +2007,8 @@ class Mobject:
         return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_coord(self, mobject: "Mobject", dim, direction=ORIGIN):
-        """Match the coordinates with the coordinates of another :class:`~.Mobject`."""
+        """Match the coordinates with the coordinates of another
+        :class:`~.Mobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
@@ -2031,15 +2016,24 @@ class Mobject:
         )
 
     def match_x(self, mobject: "Mobject", direction=ORIGIN):
-        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
+        """Match x coord.
+
+        to the x coord. of another :class:`~.Mobject`.
+        """
         return self.match_coord(mobject, 0, direction)
 
     def match_y(self, mobject: "Mobject", direction=ORIGIN):
-        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
+        """Match y coord.
+
+        to the x coord. of another :class:`~.Mobject`.
+        """
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
-        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
+        """Match z coord.
+
+        to the x coord. of another :class:`~.Mobject`.
+        """
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
@@ -2225,8 +2219,6 @@ class Mobject:
                         col_widths=[2, *[None]*4, 2],
                         flow_order="dr"
                     )
-
-
         """
         from .geometry import Line
 
@@ -2241,6 +2233,7 @@ class Mobject:
                 return len(alignments)
             if sizes is not None:
                 return len(sizes)
+            return None
 
         cols = init_size(cols, col_alignments, col_widths)
         rows = init_size(rows, row_alignments, row_heights)
@@ -2313,10 +2306,11 @@ class Mobject:
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
         def reverse(maybe_list):
-            if maybe_list is not None:
-                maybe_list = list(maybe_list)
-                maybe_list.reverse()
-                return maybe_list
+            if maybe_list is None:
+                return None
+            maybe_list = list(maybe_list)
+            maybe_list.reverse()
+            return maybe_list
 
         row_alignments = reverse(row_alignments)
         row_heights = reverse(row_heights)
@@ -2431,7 +2425,6 @@ class Mobject:
                     s2.arrange_submobjects()
                     s2.shift(DOWN)
                     self.add(s,s2)
-
         """
         return self.arrange(*args, **kwargs)
 
@@ -2468,6 +2461,7 @@ class Mobject:
 
     def get_point_mobject(self, center=None):
         """The simplest :class:`~.Mobject` to be transformed to or from self.
+
         Should by a point of the appropriate type
         """
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
@@ -2495,11 +2489,7 @@ class Mobject:
         return self
 
     def null_point_align(self, mobject: "Mobject") -> "Mobject":
-        """If a :class:`~.Mobject` with points is being aligned to
-        one without, treat both as groups, and push
-        the one with points into its own submobjects
-        list.
-        """
+        """If a :class:`~.Mobject` with points is being aligned to one without, treat both as groups, and push the one with points into its own submobjects list."""
         for m1, m2 in (self, mobject), (mobject, self):
             if m1.has_no_points() and m2.has_points():
                 m2.push_self_into_submobjects()
@@ -2514,13 +2504,13 @@ class Mobject:
 
     def add_n_more_submobjects(self, n):
         if n == 0:
-            return
+            return None
 
         curr = len(self.submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
             self.submobjects = [self.get_point_mobject() for k in range(n)]
-            return
+            return None
 
         target = curr + n
         # TODO, factor this out to utils so as to reuse
@@ -2538,9 +2528,30 @@ class Mobject:
     def repeat_submobject(self, submob):
         return submob.copy()
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path()):
-        """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
-        and ``mobject2``.
+    def interpolate(
+        self,
+        mobject1: "Mobject",
+        mobject2: "Mobject",
+        alpha: float,
+        path_func: Optional[Callable] = None,
+    ) -> "Mobject":
+        """Turns this :class:`~.Mobject` into an interpolation between ``mobject1`` and ``mobject2``.
+
+        Parameters
+        ----------
+        mobject1 : Mobject
+            [description]
+        mobject2 : Mobject
+            [description]
+        alpha : float
+            [description]
+        path_func : Optional[Callable], optional
+            [description], by default straight_path()
+
+        Returns
+        -------
+        Mobject
+            [description]
 
         Examples
         --------
@@ -2559,6 +2570,10 @@ class Mobject:
 
                     self.add(dotL, dotR, dotMiddle)
         """
+
+        if path_func is None:
+            path_func = straight_path()
+
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
@@ -2576,8 +2591,8 @@ class Mobject:
         match_center: bool = False,
         stretch: bool = False,
     ):
-        """Edit points, colors and submobjects to be identical
-        to another :class:`~.Mobject`
+        """Edit points, colors and submobjects to be identical to another
+        :class:`~.Mobject`
 
         .. note::
 
@@ -2633,8 +2648,8 @@ class Mobject:
         return self
 
     def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
-        """Edit points, positions, and submobjects to be identical
-        to another :class:`~.Mobject`, while keeping the style unchanged.
+        """Edit points, positions, and submobjects to be identical to another
+        :class:`~.Mobject`, while keeping the style unchanged.
 
         Examples
         --------
@@ -2707,7 +2722,8 @@ class Mobject:
         return self
 
     def set_z_index_by_z_coordinate(self):
-        """Sets the :class:`~.Mobject`'s z coordinate to the value of :attr:`z_index`.
+        """Sets the :class:`~.Mobject`'s z coordinate to the value of
+        :attr:`z_index`.
 
         Returns
         -------

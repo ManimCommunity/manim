@@ -10,7 +10,7 @@ from .tex import *
 
 
 def _new_ams_template():
-    """Returns a simple Tex Template with only basic AMS packages"""
+    """Returns a simple Tex Template with only basic AMS packages."""
     preamble = r"""
 \usepackage[english]{babel}
 \usepackage{amsmath}
@@ -47,15 +47,13 @@ _3b1b_preamble = r"""
 # TexTemplateLibrary
 #
 class TexTemplateLibrary:
-    """
-    A collection of basic TeX template objects
+    """A collection of basic TeX template objects.
 
     Examples
     --------
     Normal usage as a value for the keyword argument tex_template of Tex() and MathTex() mobjects::
 
         ``Tex("My TeX code", tex_template=TexTemplateLibrary.ctex)``
-
     """
 
     default = TexTemplate(preamble=_3b1b_preamble)
@@ -919,8 +917,7 @@ italichelveticaf.add_to_preamble(
 
 
 class TexFontTemplates:
-    """
-    A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html
+    """A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html.
 
     These templates are specifically designed to allow you to typeset formulae and mathematics using
     different fonts. They are based on the mathastext LaTeX package.

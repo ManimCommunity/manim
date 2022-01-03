@@ -15,11 +15,10 @@ from ..utils.color import BLACK, RED, YELLOW, Colors
 
 
 class SurroundingRectangle(RoundedRectangle):
-    r"""A rectangle surrounding a :class:`~.Mobject`
+    r"""A rectangle surrounding a :class:`~.Mobject`.
 
     Examples
     --------
-
     .. manim:: SurroundingRectExample
         :save_last_frame:
 
@@ -55,12 +54,10 @@ class SurroundingRectangle(RoundedRectangle):
 
 
 class BackgroundRectangle(SurroundingRectangle):
-    """A background rectangle. Its default color is the background color
-    of the scene.
+    """A background rectangle. Its default color is the background color of the scene.
 
     Examples
     --------
-
     .. manim:: ExampleBackgroundRectangle
         :save_last_frame:
 

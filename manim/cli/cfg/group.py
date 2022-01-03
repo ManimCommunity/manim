@@ -1,9 +1,8 @@
 """Manim's cfg subcommand.
 
-Manim's cfg subcommand is accessed in the command-line interface via ``manim
-cfg``. Here you can specify options, subcommands, and subgroups for the cfg
-group.
-
+Manim's cfg subcommand is accessed in the command-line interface via
+``manim cfg``. Here you can specify options, subcommands, and subgroups
+for the cfg group.
 """
 import os
 from ast import literal_eval
@@ -46,8 +45,7 @@ def value_from_string(value: str) -> Union[str, int, bool]:
 
 
 def _is_expected_datatype(value: str, expected: str, style: bool = False) -> bool:
-    """Checks whether `value` is the same datatype as `expected`,
-    and checks if it is a valid `style` if `style` is true.
+    """Checks whether `value` is the same datatype as `expected`, and checks if it is a valid `style` if `style` is true.
 
     Parameters
     ----------
@@ -123,7 +121,6 @@ def replace_keys(default: dict) -> dict:
 @click.pass_context
 def cfg(ctx):
     """Responsible for the cfg subcommand."""
-    pass
 
 
 @cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
@@ -273,7 +270,7 @@ Are you sure you want to continue? (y/n)""",
         if not os.path.isdir(directory):
             console.print(f"Creating folder: {directory}.", style="red bold")
             os.mkdir(directory)
-        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:
+        with open(os.path.join(directory, "manim.cfg"), "w"):
             ctx.invoke(write)
             from_path = os.path.join(os.getcwd(), "manim.cfg")
             to_path = os.path.join(directory, "manim.cfg")

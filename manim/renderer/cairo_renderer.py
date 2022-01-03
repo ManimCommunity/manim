@@ -124,7 +124,6 @@ class CairoRenderer:
         ignore_skipping : bool, optional
 
         **kwargs
-
         """
         if self.skip_animations and not ignore_skipping:
             return
@@ -146,8 +145,7 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self):
-        """
-        Gets the current frame as NumPy array.
+        """Gets the current frame as NumPy array.
 
         Returns
         -------
@@ -158,8 +156,7 @@ class CairoRenderer:
         return np.array(self.camera.pixel_array)
 
     def add_frame(self, frame, num_frames=1):
-        """
-        Adds a frame to the video_file_stream
+        """Adds a frame to the video_file_stream.
 
         Parameters
         ----------
@@ -190,10 +187,7 @@ class CairoRenderer:
         )
 
     def show_frame(self):
-        """
-        Opens the current frame in the Default Image Viewer
-        of your system.
-        """
+        """Opens the current frame in the Default Image Viewer of your system."""
         self.update_frame(ignore_skipping=True)
         self.camera.get_image().show()
 
@@ -202,8 +196,7 @@ class CairoRenderer:
         scene,
         static_mobjects: typing.Iterable[Mobject],
     ) -> typing.Iterable[Mobject]:
-        """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer
-        static mobjects.
+        """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer static mobjects.
 
         Parameters
         ----------
@@ -219,18 +212,17 @@ class CairoRenderer:
         """
         if not static_mobjects:
             self.static_image = None
-            return
+            return None
         self.update_frame(scene, mobjects=static_mobjects)
         self.static_image = self.get_frame()
         return self.static_image
 
     def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
-        animation needs to be skipped or not. It also checks if
-        the number of animations that were played correspond to
-        the number of animations that need to be played, and
-        raises an EndSceneEarlyException if they don't correspond.
+        """This method is used internally to check if the current animation needs to be skipped or not.
+
+        It also checks if the number of animations that were played
+        correspond to the number of animations that need to be played,
+        and raises an EndSceneEarlyException if they don't correspond.
         """
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:

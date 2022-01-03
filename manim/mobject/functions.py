@@ -94,12 +94,14 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self,
         function: Callable[[float, float], float],
         t_range: Optional[Sequence[float]] = None,
-        scaling: _ScaleBase = LinearBase(),
+        scaling: Optional[_ScaleBase] = None,
         dt: float = 1e-8,
         discontinuities: Optional[Iterable[float]] = None,
         use_smoothing: bool = True,
         **kwargs
     ):
+        if scaling is None:
+            scaling = LinearBase()
         self.function = function
         t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:

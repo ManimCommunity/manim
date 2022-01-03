@@ -14,10 +14,7 @@ import numpy as np
 
 
 def merge_dicts_recursively(*dicts):
-    """
-    Creates a dict whose keyset is the union of all the
-    input dictionaries.  The value for each key is based
-    on the first dict in the list with that key.
+    """Creates a dict whose keyset is the union of all the input dictionaries. The value for each key is based on the first dict in the list with that key.
 
     dicts later in the list have higher priority
 
@@ -49,6 +46,7 @@ class DictAsObject:
 
 class _Data:
     """Descriptor that allows _Data variables to be grouped and accessed from self.data["attr"] via self.attr.
+
     self.data attributes must be arrays.
     """
 
@@ -64,6 +62,7 @@ class _Data:
 
 class _Uniforms:
     """Descriptor that allows _Uniforms variables to be grouped from self.uniforms["attr"] via self.attr.
+
     self.uniforms attributes must be floats.
     """
 

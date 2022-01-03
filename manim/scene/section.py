@@ -1,4 +1,4 @@
-"""building blocks of segmented video API"""
+"""building blocks of segmented video API."""
 
 import os
 from enum import Enum
@@ -8,8 +8,7 @@ from manim import get_video_metadata
 
 
 class DefaultSectionType(str, Enum):
-    """The type of a section can be used for third party applications.
-    A presentation system could for example use the types to created loops.
+    """The type of a section can be used for third party applications. A presentation system could for example use the types to created loops.
 
     Examples
     --------
@@ -30,9 +29,9 @@ class DefaultSectionType(str, Enum):
 
 
 class Section:
-    """A :class:`.Scene` can be segmented into multiple Sections.
-    Refer to :doc:`the documentation</tutorials/a_deeper_look>` for more info.
-    It consists of multiple animations.
+    """A :class:`.Scene` can be segmented into multiple Sections. Refer to
+    :doc:`the documentation</tutorials/a_deeper_look>` for more info. It
+    consists of multiple animations.
 
     Attributes
     ----------
@@ -79,8 +78,9 @@ class Section:
     def get_dict(self, sections_dir: str) -> Dict[str, Any]:
         """Get dictionary representation with metadata of output video.
 
-        The output from this function is used from every section to build the sections index file.
-        The output video must have been created in the ``sections_dir`` before executing this method.
+        The output from this function is used from every section to
+        build the sections index file. The output video must have been
+        created in the ``sections_dir`` before executing this method.
         This is the main part of the Segmented Video API.
         """
         if self.video is None:

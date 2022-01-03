@@ -56,7 +56,6 @@ class VectorField(VGroup):
         The colors defining the color gradient of the vector field.
     kwargs : Any
         Additional arguments to be passed to the :class:`~.VGroup` constructor
-
     """
 
     def __init__(
@@ -124,7 +123,6 @@ class VectorField(VGroup):
         -------
         `Callable[[np.ndarray], np.ndarray]`
             The shifted vector field function.
-
         """
         return lambda p: func(p - shift_vector)
 
@@ -161,7 +159,6 @@ class VectorField(VGroup):
         -------
         `Callable[[np.ndarray], np.ndarray]`
             The scaled vector field function.
-
         """
         return lambda p: func(p * scalar)
 
@@ -219,7 +216,6 @@ class VectorField(VGroup):
                     dot.add_updater(vector_field.get_nudge_updater())
                     self.add(circle, dot)
                     self.wait(6)
-
         """
 
         def runge_kutta(self, p: Sequence[float], step_size: float) -> float:
@@ -273,7 +269,6 @@ class VectorField(VGroup):
         -------
         VectorField
             This vector field.
-
         """
         for mob in self.submobjects:
             self.nudge(mob, dt, substeps, pointwise)
@@ -322,7 +317,6 @@ class VectorField(VGroup):
         -------
         VectorField
             This vector field.
-
         """
 
         self.stop_submobject_movement()
@@ -334,7 +328,8 @@ class VectorField(VGroup):
         return self
 
     def stop_submobject_movement(self) -> "VectorField":
-        """Stops the continuous movement started using :meth:`start_submobject_movement`.
+        """Stops the continuous movement started using
+        :meth:`start_submobject_movement`.
 
         Returns
         -------
@@ -391,8 +386,7 @@ class VectorField(VGroup):
         end: float,
         colors: Iterable,
     ):
-        """
-        Generates a gradient of rgbas as a numpy array
+        """Generates a gradient of rgbas as a numpy array.
 
         Parameters
         ----------
@@ -418,11 +412,10 @@ class VectorField(VGroup):
             inter_alphas = scaled_alphas % 1
             inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
             result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
-            result = np.concatenate(
+            return np.concatenate(
                 (result, np.full([len(result), 1], opacity)),
                 axis=1,
             )
-            return result
 
         return func
 
@@ -507,7 +500,6 @@ class ArrowVectorField(VectorField):
                     func, min_color_scheme_value=2, max_color_scheme_value=10, colors=colors
                 )
                 self.add(vf, min_radius, max_radius)
-
     """
 
     def __init__(
@@ -589,7 +581,6 @@ class ArrowVectorField(VectorField):
             The root point of the vector.
         kwargs : Any
             Additional arguments to be passed to the :class:`~.Vector` constructor
-
         """
         output = np.array(self.func(point))
         norm = np.linalg.norm(output)
@@ -679,7 +670,6 @@ class StreamLines(VectorField):
                     lbl.add_background_rectangle(opacity=0.6, buff=0.05)
 
                 self.add(stream_lines, spawning_area, flowing_area, *labels)
-
     """
 
     def __init__(
@@ -868,7 +858,6 @@ class StreamLines(VectorField):
                     )
                     self.play(stream_lines.create())  # uses virtual_time as run_time
                     self.wait()
-
         """
         if run_time is None:
             run_time = self.virtual_time
@@ -919,7 +908,6 @@ class StreamLines(VectorField):
                     self.add(stream_lines)
                     stream_lines.start_animation(warm_up=False, flow_speed=1.5)
                     self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
-
         """
 
         for line in self.stream_lines:
@@ -979,7 +967,6 @@ class StreamLines(VectorField):
                     stream_lines.start_animation(warm_up=False, flow_speed=1.5, time_width=0.5)
                     self.wait(1)
                     self.play(stream_lines.end_animation())
-
         """
 
         if self.flow_animation is None:

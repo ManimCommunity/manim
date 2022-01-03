@@ -36,7 +36,7 @@ class ThreeDCamera(Camera):
         zoom=1,
         **kwargs
     ):
-        """Initializes the ThreeDCamera
+        """Initializes the ThreeDCamera.
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class ThreeDCamera(Camera):
         super().capture_mobjects(mobjects, **kwargs)
 
     def get_value_trackers(self):
-        """Returns list of ValueTrackers of phi, theta, focal_distance and gamma
+        """Returns list of ValueTrackers of phi, theta, focal_distance and gamma.
 
         Returns
         -------
@@ -245,9 +245,7 @@ class ThreeDCamera(Camera):
         self.zoom_tracker.set_value(value)
 
     def reset_rotation_matrix(self):
-        """Sets the value of self.rotation_matrix to
-        the matrix corresponding to the current position of the camera
-        """
+        """Sets the value of self.rotation_matrix to the matrix corresponding to the current position of the camera."""
         self.rotation_matrix = self.generate_rotation_matrix()
 
     def get_rotation_matrix(self):
@@ -282,8 +280,7 @@ class ThreeDCamera(Camera):
         return result
 
     def project_points(self, points):
-        """Applies the current rotation_matrix as a projection
-        matrix to the passed array of points.
+        """Applies the current rotation_matrix as a projection matrix to the passed array of points.
 
         Parameters
         ----------
@@ -319,8 +316,7 @@ class ThreeDCamera(Camera):
         return points
 
     def project_point(self, point):
-        """Applies the current rotation_matrix as a projection
-        matrix to the passed point.
+        """Applies the current rotation_matrix as a projection matrix to the passed point.
 
         Parameters
         ----------
@@ -356,11 +352,7 @@ class ThreeDCamera(Camera):
     def add_fixed_orientation_mobjects(
         self, *mobjects, use_static_center_func=False, center_func=None
     ):
-        """This method allows the mobject to have a fixed orientation,
-        even when the camera moves around.
-        E.G If it was passed through this method, facing the camera, it
-        will continue to face the camera even as the camera moves.
-        Highly useful when adding labels to graphs and the like.
+        """This method allows the mobject to have a fixed orientation, even when the camera moves around. E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like.
 
         Parameters
         ----------
@@ -390,10 +382,7 @@ class ThreeDCamera(Camera):
                 self.fixed_orientation_mobjects[submob] = func
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
-        """This method allows the mobject to have a fixed position,
-        even when the camera moves around.
-        E.G If it was passed through this method, at the top of the frame, it
-        will continue to be displayed at the top of the frame.
+        """This method allows the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame.
 
         Highly useful when displaying Titles or formulae or the like.
 

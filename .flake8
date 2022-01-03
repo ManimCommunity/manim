@@ -4,39 +4,49 @@ exclude = ./manim/grpc/gen/*
 max-complexity = 15
 max-line-length = 88
 statistics = True
-# Prevents some flake8-rst-docstrings errors
+
 rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
 rst-directives = manim, SEEALSO, seealso
 docstring-convention=numpy
 
-select = A,A00,B,B9,C4,C90,D,E,F,F,PT,RST,SIM,W
+min_python_version = 3.7.0
+
+select = A,B,B9,C4,C90,D,E,F,PT,R,RST,SIM,W,PIE
 
                 # General Compatibility
-extend-ignore = E203, W503, D202, D212, D213, D404
+extend-ignore = E203, E501,
+                W503,
+                D202, D212, D213, D404,
 
-                # Misc
-                F401, F403, F405, F841, E501, E731, E402, F811, F821,
+                # Duplicates
+                R504,
+
+                # Not Going To Fix
+                E402,
+                F401, F403, F405,
+                PT022,
+                D107,
+
+                #TODO - Remove when possible
+                F811,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
 
-                # Plug-in: flake8-bugbear
-                B006, B007, B008, B009, B010,
-
                 # Plug-in: flake8-simplify
                 SIM105, SIM106, SIM119,
 
+                # Plug-in: flake8-pie
+                PIE786, PIE803,
+
                 # Plug-in: flake8-comprehensions
-                C901
+                C901,
 
                 # Plug-in: flake8-pytest-style
-                PT001, PT004, PT006, PT011, PT018, PT022, PT023,
+                PT004, PT006, PT011,
 
                 # Plug-in: flake8-docstrings
-                D100, D101, D102, D103, D104, D105, D106, D107,
-                D200, D202, D204, D205, D209,
-                D301,
-                D400, D401, D402, D403, D405, D406, D407, D409, D411, D412, D414,
+                D100, D101, D102, D103, D104, D105, D106,
 
                 # Plug-in: flake8-rst-docstrings
                 RST201, RST203, RST210, RST212, RST213, RST215,

@@ -101,7 +101,6 @@ class Animation:
 
                 # lag_ratio also works recursively on nested submobjects:
                 self.play(groups.animate(run_time=1, lag_ratio=0.1).shift(UP * 2))
-
     """
 
     def __new__(
@@ -177,10 +176,9 @@ class Animation:
     def begin(self) -> None:
         """Begin the animation.
 
-        This method is called right as an animation is being played. As much
-        initialization as possible, especially any mobject copying, should live in this
-        method.
-
+        This method is called right as an animation is being played. As
+        much initialization as possible, especially any mobject copying,
+        should live in this method.
         """
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
@@ -200,7 +198,6 @@ class Animation:
         """Finish the animation.
 
         This method gets called when the animation is over.
-
         """
         self.interpolate(1)
         if self.suspend_mobject_updating and self.mobject is not None:
@@ -244,12 +241,11 @@ class Animation:
         )
 
     def update_mobjects(self, dt: float) -> None:
-        """
-        Updates things like starting_mobject, and (for
-        Transforms) target_mobject.  Note, since typically
-        (always?) self.mobject will have its updating
-        suspended during the animation, this will do
-        nothing to self.mobject.
+        """Updates things like starting_mobject, and (for Transforms) target_mobject.
+
+        Note, since typically (always?) self.mobject will have its
+        updating suspended during the animation, this will do nothing to
+        self.mobject.
         """
         for mob in self.get_all_mobjects_to_update():
             mob.update(dt)
@@ -506,7 +502,8 @@ class Wait(Animation):
 def override_animation(
     animation_class: Type["Animation"],
 ) -> Callable[[Callable], Callable]:
-    """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
+    """Decorator used to mark methods as overrides for specific
+    :class:`~.Animation` types.
 
     Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
     ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
@@ -539,7 +536,6 @@ def override_animation(
         class OverrideAnimationExample(Scene):
             def construct(self):
                 self.play(FadeIn(MySquare()))
-
     """
 
     def decorator(func):

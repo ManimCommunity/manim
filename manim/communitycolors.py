@@ -1,4 +1,4 @@
-"""The colormap of manim community"""
+"""The colormap of manim community."""
 
 LOGO_WHITE = "#ece6e2"
 LOGO_GREEN = "#87c2a5"

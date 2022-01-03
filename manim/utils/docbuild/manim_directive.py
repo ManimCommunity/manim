@@ -128,6 +128,7 @@ class ManimDirective(Directive):
 
     See the module docstring for documentation.
     """
+
     has_content = True
     required_arguments = 1
     optional_arguments = 0
@@ -354,8 +355,7 @@ def setup(app):
     app.connect("builder-inited", _delete_rendering_times)
     app.connect("build-finished", _log_rendering_times)
 
-    metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
-    return metadata
+    return {"parallel_read_safe": False, "parallel_write_safe": True}
 
 
 TEMPLATE = r"""

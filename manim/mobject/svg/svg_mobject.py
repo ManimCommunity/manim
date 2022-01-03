@@ -97,9 +97,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
-        """Reads self.file_name and determines whether the given input file_name
-        is valid.
-        """
+        """Reads self.file_name and determines whether the given input file_name is valid."""
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
@@ -128,9 +126,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         raise OSError(error)
 
     def generate_points(self):
-        """Called by the Mobject abstract base class. Responsible for generating
-        the SVGMobject's points from XML tags, populating self.mobjects, and
-        any submobjects within self.mobjects.
+        """Called by the Mobject abstract base class.
+
+        Responsible for generating the SVGMobject's points from XML
+        tags, populating self.mobjects, and any submobjects within
+        self.mobjects.
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
@@ -418,8 +418,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
-        """Creates a stretched Circle VMobject from a SVG <circle> path
-        command.
+        """Creates a stretched Circle VMobject from a SVG <circle> path command.
 
         Parameters
         ----------
@@ -472,8 +471,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return self.path_string_to_mobject(path_string, style)
 
     def handle_transforms(self, element, mobject):
-        """Applies the SVG transform to the specified mobject. Transforms include:
-        ``matrix``, ``translate``, and ``scale``.
+        """Applies the SVG transform to the specified mobject. Transforms
+        include: ``matrix``, ``translate``, and ``scale``.
 
         Parameters
         ----------
@@ -563,9 +562,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return output_list
 
     def move_into_position(self, width, height):
-        """Uses the SVGMobject's config dictionary to set the Mobject's
-        width, height, and/or center it. Use ``width``, ``height``, and
-        ``should_center`` respectively to modify this.
+        """Uses the SVGMobject's config dictionary to set the Mobject's width, height, and/or center it.
+
+        Use ``width``, ``height``, and ``should_center`` respectively to
+        modify this.
         """
         if self.should_center:
             self.center()

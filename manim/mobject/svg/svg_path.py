@@ -232,8 +232,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         self.current_path_start = np.zeros((1, self.dim))
 
     def get_path_commands(self):
-        """Returns a list of possible path commands used within an SVG ``d``
-        attribute.
+        """Returns a list of possible path commands used within an SVG ``d`` attribute.
 
         See: https://svgwg.org/svg2-draft/paths.html#DProperty for further
         details on what each path command does.

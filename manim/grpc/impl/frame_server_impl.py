@@ -247,7 +247,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def ScriptUpdated(self, request, context):
         self.load_scene_module()
         with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+            stub = renderserver_pb2_grpc.RenderServerStub(channel)  # noqa: F841
             try:
                 self.update_renderer_scene_data()
             except grpc._channel._InactiveRpcError:

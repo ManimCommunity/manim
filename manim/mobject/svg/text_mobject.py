@@ -44,7 +44,6 @@ Examples
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
-
 """
 
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
@@ -212,7 +211,7 @@ class Paragraph(VGroup):
         alignment : :class:`str`
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(self.lines[0].__len__()):
             self.change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -232,7 +231,7 @@ class Paragraph(VGroup):
     def set_all_lines_to_initial_positions(self):
         """Set all lines to their initial positions."""
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(self.lines[0].__len__()):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
@@ -556,7 +555,10 @@ class Text(SVGMobject):
         return chars
 
     def find_indexes(self, word: str, text: str):
-        """Internally used function. Finds the indexes of ``text`` in ``word``."""
+        """Internally used function.
+
+        Finds the indexes of ``text`` in ``word``.
+        """
         temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
         if temp:
             start = int(temp.group(1)) if temp.group(1) != "" else 0
@@ -591,15 +593,21 @@ class Text(SVGMobject):
     #         self.t2w = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
-        """Internally used function. Sets color for specified strings."""
+        """Internally used function.
+
+        Sets color for specified strings.
+        """
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(word, self.original_text):
                 self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
-        """Internally used. Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``."""
+        """Internally used.
+
+        Sets gradient colors for specified strings. Behaves similarly to
+        ``set_color_by_t2c``.
+        """
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
             for start, end in self.find_indexes(word, self.original_text):
@@ -607,6 +615,7 @@ class Text(SVGMobject):
 
     def text2hash(self):
         """Internally used function.
+
         Generates ``sha256`` hash for file name.
         """
         settings = (
@@ -621,8 +630,10 @@ class Text(SVGMobject):
         return hasher.hexdigest()[:16]
 
     def text2settings(self):
-        """Internally used function. Converts the texts and styles
-        to a setting for parsing."""
+        """Internally used function.
+
+        Converts the texts and styles to a setting for parsing.
+        """
         settings = []
         t2x = [self.t2f, self.t2s, self.t2w]
         for i in range(len(t2x)):
@@ -1195,7 +1206,8 @@ class MarkupText(SVGMobject):
         """Counts characters that will be displayed.
 
         This is needed for partial coloring or gradients, because space
-        counts to the text's `len`, but has no corresponding character."""
+        counts to the text's `len`, but has no corresponding character.
+        """
         count = 0
         level = 0
         # temporarily replace HTML entities by single char
@@ -1210,10 +1222,10 @@ class MarkupText(SVGMobject):
         return count
 
     def extract_gradient_tags(self):
-        """Used to determine which parts (if any) of the string should be formatted
-        with a gradient.
+        """Used to determine which parts (if any) of the string should be formatted with a gradient.
 
-        Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error.
+        Removes the ``<gradient>`` tag, as it is not part of Pango's
+        markup and would cause an error.
         """
         tags = re.finditer(
             r'<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
@@ -1249,8 +1261,7 @@ class MarkupText(SVGMobject):
             return Colors[col.lower()].value
 
     def extract_color_tags(self):
-        """Used to determine which parts (if any) of the string should be formatted
-        with a custom color.
+        """Used to determine which parts (if any) of the string should be formatted with a custom color.
 
         Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error.
 

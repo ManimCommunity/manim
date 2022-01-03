@@ -22,7 +22,7 @@ from ..types.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
-    """A disc made of a cloud of Dots
+    """A disc made of a cloud of Dots.
 
     Examples
     --------
@@ -47,7 +47,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
                 pG.arrange_in_grid()
 
                 self.add(pG)
-
     """
 
     def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
@@ -65,8 +64,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """Add points.
 
-        Points must be a Nx3 numpy array.
-        Rgbas must be a Nx4 numpy array if it is not None.
+        Points must be a Nx3 numpy array. Rgbas must be a Nx4 numpy
+        array if it is not None.
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -148,9 +147,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def sort_points(self, function=lambda p: p[0]):
-        """
-        Function is any map from R^3 to R
-        """
+        """Function is any map from R^3 to R."""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
             mob.apply_over_attr_arrays(lambda arr: arr[indices])
@@ -259,7 +256,7 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs]):
+        if not all(isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs):
             raise ValueError(
                 "All submobjects must be of type PMobject or OpenGLPMObject"
                 " if using the opengl renderer",

@@ -46,7 +46,7 @@ class FrameServerServicer:
         raise NotImplementedError("Method not implemented!")
 
     def ScriptUpdated(self, request, context):
-        """Returns when the manim script changes"""
+        """Returns when the manim script changes."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")

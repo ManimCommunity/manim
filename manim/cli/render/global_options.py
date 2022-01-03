@@ -7,13 +7,15 @@ from ... import logger
 
 
 def validate_gui_location(ctx, param, value):
-    if value:
-        try:
-            x_offset, y_offset = map(int, re.split(r"[;,\-]", value))
-            return (x_offset, y_offset)
-        except Exception:
-            logger.error("GUI location option is invalid.")
-            exit()
+    if not value:
+        return None
+
+    try:
+        x_offset, y_offset = map(int, re.split(r"[;,\-]", value))
+        return (x_offset, y_offset)
+    except Exception:
+        logger.error("GUI location option is invalid.")
+        exit()
 
 
 global_options = option_group(

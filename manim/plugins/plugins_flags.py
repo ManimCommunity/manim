@@ -13,11 +13,10 @@ __all__ = ["list_plugins"]
 
 
 def get_plugins():
-    plugins = {
+    return {
         entry_point.name: entry_point.load()
         for entry_point in pkg_resources.iter_entry_points("manim.plugins")
     }
-    return plugins
 
 
 def list_plugins():

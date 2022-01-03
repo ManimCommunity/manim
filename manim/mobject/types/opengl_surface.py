@@ -218,7 +218,7 @@ class OpenGLSurface(OpenGLMobject):
 
     def set_fill_by_value(self, axes, colors):
         # directly copied from three_dimensions.py with some compatibility changes.
-        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
+        """Set the color of each mobject of a parametric surface to a color relative to its z-value.
 
         Parameters
         ----------
@@ -258,7 +258,7 @@ class OpenGLSurface(OpenGLMobject):
                     surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
                     self.add(axes, surface_plane)
         """
-        if type(colors[0]) is tuple:
+        if isinstance(colors[0], tuple):
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
             new_colors = colors

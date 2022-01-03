@@ -22,7 +22,6 @@ Examples
                     FadeOut(names[i], shift=UP*1.5),
                     FadeIn(names[(i+1)%len(names)], shift=UP*1.5),
                 ))
-
 """
 
 __all__ = [
@@ -299,7 +298,6 @@ class ShowPassingFlash(ShowPartial):
     See Also
     --------
     :class:`~.Create`
-
     """
 
     def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
@@ -391,7 +389,6 @@ class ApplyWave(Homotopy):
                     rate_func=linear,
                     ripples=4
                 ))
-
     """
 
     def __init__(
@@ -510,7 +507,6 @@ class Wiggle(Animation):
                 tex = Tex("Wiggle").scale(3)
                 self.play(Wiggle(tex))
                 self.wait()
-
     """
 
     def __init__(
@@ -534,10 +530,12 @@ class Wiggle(Animation):
     def get_scale_about_point(self) -> np.ndarray:
         if self.scale_about_point is None:
             return self.mobject.get_center()
+        return None
 
     def get_rotate_about_point(self) -> np.ndarray:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
+        return None
 
     def interpolate_submobject(
         self,
@@ -595,7 +593,6 @@ class Circumscribe(Succession):
                 self.play(Circumscribe(lbl, fade_out=True))
                 self.play(Circumscribe(lbl, time_width=2))
                 self.play(Circumscribe(lbl, Circle, True))
-
     """
 
     def __init__(

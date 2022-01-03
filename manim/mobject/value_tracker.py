@@ -11,8 +11,7 @@ from .opengl_compatibility import ConvertToOpenGL
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
-    """A mobject that can be used for tracking (real-valued) parameters.
-    Useful for animating parameter changes.
+    """A mobject that can be used for tracking (real-valued) parameters. Useful for animating parameter changes.
 
     Not meant to be displayed.  Instead the position encodes some
     number, often one which another animation or continual_animation
@@ -64,7 +63,6 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
                 self.add(tracker)
                 tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
                 self.wait(2)
-
     """
 
     def __init__(self, value=0, **kwargs):
@@ -77,12 +75,12 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return self.points[0, 0]
 
     def set_value(self, value: float):
-        """Sets a new scalar value to the ValueTracker"""
+        """Sets a new scalar value to the ValueTracker."""
         self.points[0, 0] = value
         return self
 
     def increment_value(self, d_value: float):
-        """Increments (adds) a scalar value  to the ValueTracker"""
+        """Increments (adds) a scalar value  to the ValueTracker."""
         self.set_value(self.get_value() + d_value)
         return self
 
@@ -91,7 +89,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return bool(self.get_value())
 
     def __iadd__(self, d_value: float):
-        """adds ``+=`` syntax to increment the value of the ValueTracker"""
+        """adds ``+=`` syntax to increment the value of the ValueTracker."""
         self.increment_value(d_value)
         return self
 
@@ -116,7 +114,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def __isub__(self, d_value: float):
-        """adds ``-=`` syntax to decrement the value of the ValueTracker"""
+        """adds ``-=`` syntax to decrement the value of the ValueTracker."""
         self.increment_value(-d_value)
         return self
 
@@ -125,11 +123,13 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.set_value(self.get_value() / d_value)
         return self
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path()):
+    def interpolate(self, mobject1, mobject2, alpha, path_func=None):
+        """Turns self into an interpolation between mobject1 and mobject2.
+
+        By default the pathfunc is straight_path().
         """
-        Turns self into an interpolation between mobject1
-        and mobject2.
-        """
+        if path_func is None:
+            path_func = straight_path()
         self.set_points(path_func(mobject1.points, mobject2.points, alpha))
         return self
 
@@ -162,12 +162,14 @@ class ComplexValueTracker(ValueTracker):
     def get_value(self):
         """Get the current value of this value tracker as a complex number.
 
-        The value is internally stored as a points array [a, b, 0]. This can be accessed directly
-        to represent the value geometrically, see the usage example."""
+        The value is internally stored as a points array [a, b, 0]. This
+        can be accessed directly to represent the value geometrically,
+        see the usage example.
+        """
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
-        """Sets a new complex value to the ComplexValueTracker"""
+        """Sets a new complex value to the ComplexValueTracker."""
         z = complex(z)
         self.points[0, :2] = (z.real, z.imag)
         return self

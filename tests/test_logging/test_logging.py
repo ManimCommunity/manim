@@ -74,4 +74,5 @@ def test_error_logging(tmp_path, python_version):
     ]
 
     _, err, exitcode = capture(command)
-    assert exitcode != 0 and len(err) > 0
+    assert exitcode != 0
+    assert len(err) > 0

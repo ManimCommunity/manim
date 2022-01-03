@@ -57,8 +57,8 @@ def norm_squared(v: float) -> float:
 def quaternion_mult(
     *quats: Sequence[float],
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
-    """Gets the Hamilton product of the quaternions provided.
-    For more information, check `this Wikipedia page
+    """Gets the Hamilton product of the quaternions provided. For more information, check `this Wikipedia page.
+
     <https://en.wikipedia.org/wiki/Quaternion>`__.
 
     Returns
@@ -101,8 +101,8 @@ def quaternion_from_angle_axis(
     axis: np.ndarray,
     axis_normalized: bool = False,
 ) -> List[float]:
-    """Gets a quaternion from an angle and an axis.
-    For more information, check `this Wikipedia page
+    """Gets a quaternion from an angle and an axis. For more information, check `this Wikipedia page.
+
     <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
 
     Parameters
@@ -148,7 +148,7 @@ def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
 
 
 def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
-    """Used for finding the conjugate of the quaternion
+    """Used for finding the conjugate of the quaternion.
 
     Parameters
     ----------
@@ -209,8 +209,8 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
-    """Converts the quaternion, quat, to an equivalent rotation matrix representation.
-    For more information, check `this page
+    """Converts the quaternion, quat, to an equivalent rotation matrix representation. For more information, check `this page.
+
     <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
 
     Parameters
@@ -260,9 +260,7 @@ def rotation_matrix(
     axis: np.ndarray,
     homogeneous: bool = False,
 ) -> np.ndarray:
-    """
-    Rotation in R^3 about a specified axis of rotation.
-    """
+    """Rotation in R^3 about a specified axis of rotation."""
     about_z = rotation_about_z(angle)
     z_to_axis = z_to_vector(axis)
     axis_to_z = np.linalg.inv(z_to_axis)
@@ -296,10 +294,7 @@ def rotation_about_z(angle: float) -> List[List[float]]:
 
 
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
-    """
-    Returns some matrix in SO(3) which takes the z-axis to the
-    (normalized) vector provided as an argument
-    """
+    """Returns some matrix in SO(3) which takes the z-axis to the (normalized) vector provided as an argument."""
     norm = np.linalg.norm(vector)
     if norm == 0:
         return np.identity(3)
@@ -342,8 +337,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
 
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
-    """Returns the angle between two vectors.
-    This angle will always be between 0 and pi
+    """Returns the angle between two vectors. This angle will always be between 0 and pi.
 
     Parameters
     ----------
@@ -560,8 +554,7 @@ def midpoint(
 
 
 def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndarray:
-    """Returns intersection point of two lines, each defined with
-    a pair of vectors determining the end points.
+    """Returns intersection point of two lines, each defined with a pair of vectors determining the end points.
 
     Parameters
     ----------
@@ -596,10 +589,8 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
 
 
 def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
-    """
-    Return the intersection of a line passing through p0 in direction v0
-    with one passing through p1 in direction v1.  (Or array of intersections
-    from arrays of such points/directions).
+    """Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1.  (Or array of intersections from arrays of such points/directions).
+
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
     ray p1 + v1 * t
     """
@@ -643,14 +634,11 @@ def shoelace(x_y: np.ndarray) -> float:
     """
     x = x_y[:, 0]
     y = x_y[:, 1]
-    area = 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-    return area
+    return 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
 def shoelace_direction(x_y: np.ndarray) -> str:
-    """
-    Uses the area determined by the shoelace method to determine whether
-    the input set of points is directed clockwise or counterclockwise.
+    """Uses the area determined by the shoelace method to determine whether the input set of points is directed clockwise or counterclockwise.
 
     Returns
     -------
@@ -669,8 +657,7 @@ def cross2d(a, b):
 
 
 def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
-    """Returns a list of indices giving a triangulation
-    of a polygon, potentially with holes.
+    """Returns a list of indices giving a triangulation of a polygon, potentially with holes.
 
     Parameters
     ----------
@@ -755,8 +742,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
 
 def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
-    """Returns an array of numbers corresponding to each
-    polar coordinate value (distance, phi, theta).
+    """Returns an array of numbers corresponding to each polar coordinate value (distance, phi, theta).
 
     Parameters
     ----------
@@ -773,8 +759,7 @@ def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
 
 
 def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
-    """Returns a numpy array ``[x, y, z]`` based on the spherical
-    coordinates given.
+    """Returns a numpy array ``[x, y, z]`` based on the spherical coordinates given.
 
     Parameters
     ----------
@@ -801,9 +786,7 @@ def perpendicular_bisector(
     line: Sequence[np.ndarray],
     norm_vector=OUT,
 ) -> Sequence[np.ndarray]:
-    """Returns a list of two points that correspond
-    to the ends of the perpendicular bisector of the
-    two points given.
+    """Returns a list of two points that correspond to the ends of the perpendicular bisector of the two points given.
 
     Parameters
     ----------

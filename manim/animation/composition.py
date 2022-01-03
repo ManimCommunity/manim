@@ -80,10 +80,7 @@ class AnimationGroup(Animation):
         return self.max_end_time if run_time is None else run_time
 
     def build_animations_with_timings(self) -> None:
-        """
-        Creates a list of triplets of the form
-        (anim, start_time, end_time)
-        """
+        """Creates a list of triplets of the form (anim, start_time, end_time)"""
         self.anims_with_timings = []
         curr_time: float = 0
         for anim in self.animations:

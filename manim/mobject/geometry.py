@@ -95,45 +95,38 @@ from .opengl_compatibility import ConvertToOpenGL
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
-    """
-    Meant for shared functionality between Arc and Line.
-    Functionality can be classified broadly into these groups:
+    """Meant for shared functionality between Arc and Line. Functionality can be classified broadly into these groups:
 
-        * Adding, Creating, Modifying tips
-            - add_tip calls create_tip, before pushing the new tip
-                into the TipableVMobject's list of submobjects
-            - stylistic and positional configuration
+    * Adding, Creating, Modifying tips
+        - add_tip calls create_tip, before pushing the new tip
+            into the TipableVMobject's list of submobjects
+        - stylistic and positional configuration
 
-        * Checking for tips
-            - Boolean checks for whether the TipableVMobject has a tip
-                and a starting tip
+    * Checking for tips
+        - Boolean checks for whether the TipableVMobject has a tip
+            and a starting tip
 
-        * Getters
-            - Straightforward accessors, returning information pertaining
-                to the TipableVMobject instance's tip(s), its length etc
-
+    * Getters
+        - Straightforward accessors, returning information pertaining
+            to the TipableVMobject instance's tip(s), its length etc
     """
 
     def __init__(
         self,
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
-        tip_style={},
+        tip_style=None,
         **kwargs,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
-        self.tip_style = tip_style
+        self.tip_style = {} if tip_style is None else tip_style
         super().__init__(**kwargs)
 
     # Adding, Creating, Modifying tips
 
     def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
-        """
-        Adds a tip to the TipableVMobject instance, recognising
-        that the endpoints might need to be switched if it's
-        a 'starting tip' or not.
-        """
+        """Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
         if tip is None:
             tip = self.create_tip(tip_shape, tip_length, at_start)
         else:
@@ -144,19 +137,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
-        """
-        Stylises the tip, positions it spatially, and returns
-        the newly instantiated tip to the caller.
-        """
+        """Stylises the tip, positions it spatially, and returns the newly instantiated tip to the caller."""
         tip = self.get_unpositioned_tip(tip_shape, tip_length)
         self.position_tip(tip, at_start)
         return tip
 
     def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
-        """
-        Returns a tip that has been stylistically configured,
-        but has not yet been given a position in space.
-        """
+        """Returns a tip that has been stylistically configured, but has not yet been given a position in space."""
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
         if tip_length is None:
@@ -164,8 +151,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         color = self.get_color()
         style = {"fill_color": color, "stroke_color": color}
         style.update(self.tip_style)
-        tip = tip_shape(length=tip_length, **style)
-        return tip
+        return tip_shape(length=tip_length, **style)
 
     def position_tip(self, tip, at_start=False):
         # Last two control points, defining both
@@ -235,10 +221,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tips(self):
-        """
-        Returns a VGroup (collection of VMobjects) containing
-        the TipableVMObject instance's tips.
-        """
+        """Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
         result = self.get_group_class()()
         if hasattr(self, "tip"):
             result.add(self.tip)
@@ -247,8 +230,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        """Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."""
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -379,10 +361,7 @@ class Arc(TipableVMobject):
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
-        """
-        Looks at the normals to the first two
-        anchors, and finds their intersection points
-        """
+        """Looks at the normals to the first two anchors, and finds their intersection points."""
         # First two anchors and handles
         a1, h1, h2, a2 = self.points[:4]
 
@@ -414,8 +393,7 @@ class Arc(TipableVMobject):
 
 
 class ArcBetweenPoints(Arc):
-    """
-    Inherits from Arc and additionally takes 2 points between which the arc is spanned.
+    """Inherits from Arc and additionally takes 2 points between which the arc is spanned.
 
     Example
     --------------------
@@ -604,8 +582,7 @@ class Circle(Arc):
     def from_three_points(
         p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
     ):
-        """Returns a circle passing through the specified
-        three points.
+        """Returns a circle passing through the specified three points.
 
         Example
         -------
@@ -683,9 +660,7 @@ class Dot(Circle):
 
 
 class AnnotationDot(Dot):
-    """
-    A dot with bigger radius and bold stroke to annotate scenes.
-    """
+    """A dot with bigger radius and bold stroke to annotate scenes."""
 
     def __init__(
         self,
@@ -984,15 +959,15 @@ class Line(TipableVMobject):
 
     def account_for_buff(self, buff):
         if buff == 0:
-            return
-        #
+            return None
+
         if self.path_arc == 0:
             length = self.get_length()
         else:
             length = self.get_arc_length()
-        #
+
         if length < 2 * buff:
-            return
+            return None
         buff_proportion = buff / length
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
@@ -1064,7 +1039,6 @@ class Line(TipableVMobject):
         ----------
         point
             The point to which the line is projected.
-
         """
 
         start = self.get_start()
@@ -1478,7 +1452,7 @@ class Arrow(Line):
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
-        """Resets the normal of a vector"""
+        """Resets the normal of a vector."""
         self.normal_vector = self.get_normal_vector()
         return self
 
@@ -1498,7 +1472,10 @@ class Arrow(Line):
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
-        """Used internally. Sets stroke width based on length."""
+        """Used internally.
+
+        Sets stroke width based on length.
+        """
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
             self.set_stroke(
@@ -1726,8 +1703,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 self.play(MoveAlongPath(dot, hexagram), run_time=5, rate_func=linear)
                 self.remove(dot)
                 self.wait()
-
-
     """
 
     def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
@@ -2090,7 +2065,6 @@ class Star(Polygon):
                 density_3 = Star(7, outer_radius=2, density=3, color=PURPLE)
 
                 self.add(VGroup(density_2, density_3).arrange(RIGHT))
-
     """
 
     def __init__(
@@ -2352,7 +2326,6 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
                 reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
-
     """
 
     def __init__(self, *arcs, **kwargs):
@@ -2937,7 +2910,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
                 self.add(l1, l2)
                 self.add(mfill)
-
     """
 
     def __init__(

@@ -17,6 +17,7 @@ from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
+    from ..mobject.types.vectorized_mobject import VMobject
 
 
 class Homotopy(Animation):
@@ -28,10 +29,7 @@ class Homotopy(Animation):
         apply_function_kwargs: Optional[Dict[str, Any]] = None,
         **kwargs
     ) -> None:
-        """
-        Homotopy is a function from
-        (x, y, z, t) to (x', y', z')
-        """
+        """Homotopy is a function from (x, y, z, t) to (x', y', z')"""
         self.homotopy = homotopy
         self.apply_function_kwargs = (
             apply_function_kwargs if apply_function_kwargs is not None else {}
@@ -68,9 +66,7 @@ class ComplexHomotopy(Homotopy):
     def __init__(
         self, complex_homotopy: Callable[[complex], float], mobject: "Mobject", **kwargs
     ) -> None:
-        """
-        Complex Homotopy a function Cx[0, 1] to C
-        """
+        """Complex Homotopy a function Cx[0, 1] to C."""
 
         def homotopy(
             x: float,

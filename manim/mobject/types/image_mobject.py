@@ -20,8 +20,7 @@ from ...utils.images import get_full_raster_image_path
 
 
 class AbstractImageMobject(Mobject):
-    """
-    Automatically filters out black pixels
+    """Automatically filters out black pixels.
 
     Parameters
     ----------
@@ -53,11 +52,7 @@ class AbstractImageMobject(Mobject):
         pass
 
     def set_resampling_algorithm(self, resampling_algorithm):
-        """
-        Sets the interpolation method for upscaling the image. By default the image is
-        interpolated using bicubic algorithm. This method lets you change it.
-        Interpolation is done internally using Pillow, and the function besides the
-        string constants describing the algorithm accepts the Pillow integer constants.
+        """Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------
@@ -246,8 +241,7 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
-        """Interpolates an array of pixel color values into another array of
-        equal size.
+        """Interpolates an array of pixel color values into another array of equal size.
 
         Parameters
         ----------

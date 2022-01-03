@@ -28,13 +28,12 @@ class AnimatedBoundary(VGroup):
                                             cycle_rate=3)
                 self.add(text, boundary)
                 self.wait(2)
-
     """
 
     def __init__(
         self,
         vmobject,
-        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        colors=(BLUE_D, BLUE_B, BLUE_E, GREY_BROWN),
         max_stroke_width=3,
         cycle_rate=0.5,
         back_and_forth=True,
@@ -132,7 +131,6 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                 self.play(a.animate(path_arc=PI / 4).shift(LEFT * 2))
                 self.play(a.animate(path_arc=-PI / 4).shift(LEFT * 2))
                 self.wait()
-
     """
 
     def __init__(

@@ -2,7 +2,6 @@ r"""Mobjects representing tables.
 
 Examples
 --------
-
 .. manim:: TableExamples
     :save_last_frame:
 
@@ -81,11 +80,10 @@ from ..utils.color import BLACK, WHITE, YELLOW
 
 
 class Table(VGroup):
-    """A mobject that displays a table on the screen.
+    r"""A mobject that displays a table on the screen.
 
     Examples
     --------
-
     .. manim:: TableExamples
         :save_last_frame:
 
@@ -93,7 +91,7 @@ class Table(VGroup):
             def construct(self):
                 t0 = Table(
                     [["This", "is a"],
-                    ["simple", "Table in \\n Manim."]])
+                    ["simple", "Table in \n Manim."]])
                 t1 = Table(
                     [["This", "is a"],
                     ["simple", "Table."]],
@@ -161,12 +159,13 @@ class Table(VGroup):
             [Union[float, str, VMobject]],
             VMobject,
         ] = Paragraph,
-        element_to_mobject_config: dict = {},
-        arrange_in_grid_config: dict = {},
-        line_config: dict = {},
+        element_to_mobject_config: Optional[dict] = None,
+        arrange_in_grid_config: Optional[dict] = None,
+        line_config: Optional[dict] = None,
         **kwargs,
     ):
-        """
+        """Initialize Table.
+
         Parameters
         ----------
         table
@@ -218,9 +217,13 @@ class Table(VGroup):
         self.include_background_rectangle = include_background_rectangle
         self.background_rectangle_color = background_rectangle_color
         self.element_to_mobject = element_to_mobject
-        self.element_to_mobject_config = element_to_mobject_config
-        self.arrange_in_grid_config = arrange_in_grid_config
-        self.line_config = line_config
+        self.element_to_mobject_config = (
+            {} if element_to_mobject_config is None else element_to_mobject_config
+        )
+        self.arrange_in_grid_config = (
+            {} if arrange_in_grid_config is None else arrange_in_grid_config
+        )
+        self.line_config = {} if line_config is None else line_config
 
         for row in table:
             if len(row) == len(table[0]):
@@ -261,7 +264,7 @@ class Table(VGroup):
             for the callable set in ``element_to_mobject``.
 
         Returns
-        --------
+        -------
         List
             List of :class:`~.VMobject` from the entries of ``table``.
         """
@@ -282,7 +285,7 @@ class Table(VGroup):
             A 2D iterable object with :class:`~.VMobject` entries.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             The :class:`~.VMobject` of the ``table`` in a :class:`~.VGroup` already
             arranged in a table-like grid.
@@ -300,7 +303,7 @@ class Table(VGroup):
         return help_table
 
     def _add_labels(self, mob_table: VGroup) -> VGroup:
-        """Adds labels to an in a grid arranged :class:`~.VGroup`.
+        """Add labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
         ----------
@@ -308,7 +311,7 @@ class Table(VGroup):
             An in a grid organized class:`~.VGroup`.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             Returns the ``mob_table`` with added labels.
         """
@@ -337,7 +340,7 @@ class Table(VGroup):
         return mob_table
 
     def _add_horizontal_lines(self) -> "Table":
-        """Adds the horizontal lines to the table."""
+        """Add the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
         line_group = VGroup()
@@ -367,7 +370,7 @@ class Table(VGroup):
         return self
 
     def _add_vertical_lines(self) -> "Table":
-        """Adds the vertical lines to the table"""
+        """Add the vertical lines to the table."""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
         line_group = VGroup()
@@ -401,13 +404,12 @@ class Table(VGroup):
         """Return the horizontal lines of the table.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing all the horizontal lines of the table.
 
         Examples
         --------
-
         .. manim:: GetHorizontalLinesExample
             :save_last_frame:
 
@@ -427,13 +429,12 @@ class Table(VGroup):
         """Return the vertical lines of the table.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing all the vertical lines of the table.
 
         Examples
         --------
-
         .. manim:: GetVerticalLinesExample
             :save_last_frame:
 
@@ -453,13 +454,12 @@ class Table(VGroup):
         """Return columns of the table as a :class:`~.VGroup` of :class:`~.VGroup`.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing each column in a :class:`~.VGroup`.
 
         Examples
         --------
-
         .. manim:: GetColumnsExample
             :save_last_frame:
 
@@ -481,16 +481,16 @@ class Table(VGroup):
         )
 
     def get_rows(self) -> VGroup:
-        """Return the rows of the table as a :class:`~.VGroup` of :class:`~.VGroup`.
+        """Return the rows of the table as a :class:`~.VGroup` of
+        :class:`~.VGroup`.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing each row in a :class:`~.VGroup`.
 
         Examples
         --------
-
         .. manim:: GetRowsExample
             :save_last_frame:
 
@@ -516,7 +516,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: SetColumnColorsExample
             :save_last_frame:
 
@@ -568,8 +567,7 @@ class Table(VGroup):
         self,
         pos: Optional[Sequence[int]] = None,
     ) -> Union[VMobject, VGroup]:
-        """Return the individual entries of the table (including labels) or one specific entry
-        if the parameter, ``pos``,  is set.
+        """Return the individual entries of the table (including labels) or one specific entry if the parameter, ``pos``,  is set.
 
         Parameters
         ----------
@@ -585,7 +583,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetEntriesExample
             :save_last_frame:
 
@@ -620,8 +617,7 @@ class Table(VGroup):
         self,
         pos: Optional[Sequence[int]] = None,
     ) -> Union[VMobject, VGroup]:
-        """Return the individual entries of the table (without labels) or one specific entry
-        if the parameter, ``pos``, is set.
+        """Return the individual entries of the table (without labels) or one specific entry if the parameter, ``pos``, is set.
 
         Parameters
         ----------
@@ -637,7 +633,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetEntriesWithoutLabelsExample
             :save_last_frame:
 
@@ -671,7 +666,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetRowLabelsExample
             :save_last_frame:
 
@@ -700,7 +694,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetColLabelsExample
             :save_last_frame:
 
@@ -729,7 +722,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetLabelsExample
             :save_last_frame:
 
@@ -778,7 +770,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetCellExample
             :save_last_frame:
 
@@ -814,8 +805,7 @@ class Table(VGroup):
             row.get_bottom()[1] - self.v_buff / 2,
             0,
         ]
-        rec = Polygon(edge_UL, edge_UR, edge_DR, edge_DL, **kwargs)
-        return rec
+        return Polygon(edge_UL, edge_UR, edge_DR, edge_DL, **kwargs)
 
     def get_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
@@ -834,7 +824,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: GetHighlightedCellExample
             :save_last_frame:
 
@@ -850,13 +839,13 @@ class Table(VGroup):
                     self.add(table)
         """
         cell = self.get_cell(pos)
-        bg_cell = BackgroundRectangle(cell, color=color, **kwargs)
-        return bg_cell
+        return BackgroundRectangle(cell, color=color, **kwargs)
 
     def add_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
     ) -> "Table":
-        """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
+        """Highlights one cell at a specific position on the table by adding a
+        :class:`~.BackgroundRectangle`.
 
         Parameters
         ----------
@@ -870,7 +859,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: AddHighlightedCellExample
             :save_last_frame:
 
@@ -923,7 +911,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: CreateTableExample
 
             class CreateTableExample(Scene):
@@ -974,7 +961,6 @@ class MathTable(Table):
 
     Examples
     --------
-
     .. manim:: MathTableExample
         :save_last_frame:
 
@@ -995,9 +981,9 @@ class MathTable(Table):
         element_to_mobject: Callable[[Union[float, str]], VMobject] = MathTex,
         **kwargs,
     ):
-        """
-        Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.MathTex`.
-        Every entry in `table` is set in a Latex `align` environment.
+        """Special case of :class:`~.Table` with `element_to_mobject` set to
+        :class:`~.MathTex`. Every entry in `table` is set in a Latex `align`
+        environment.
 
         Parameters
         ----------
@@ -1017,11 +1003,11 @@ class MathTable(Table):
 
 
 class MobjectTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`.
+    """A specialized :class:`~.Table` mobject for use with with
+    :class:`~.Mobject`.
 
     Examples
     --------
-
     .. manim:: MobjectTableExample
         :save_last_frame:
 
@@ -1050,9 +1036,7 @@ class MobjectTable(Table):
         element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
         **kwargs,
     ):
-        """
-        Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function.
-        Here, every item in ``table`` must already be of type :class:`~.Mobject`.
+        """Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`.
 
         Parameters
         ----------
@@ -1067,11 +1051,11 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`.
+    """A specialized :class:`~.Table` mobject for use with with
+    :class:`~.Integer`.
 
     Examples
     --------
-
     .. manim:: IntegerTableExample
         :save_last_frame:
 
@@ -1098,9 +1082,9 @@ class IntegerTable(Table):
         element_to_mobject: Callable[[Union[float, str]], VMobject] = Integer,
         **kwargs,
     ):
-        """
-        Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.Integer`.
-        Will round if there are decimal entries in the table.
+        """Special case of :class:`~.Table` with `element_to_mobject` set to
+        :class:`~.Integer`. Will round if there are decimal entries in the
+        table.
 
         Parameters
         ----------
@@ -1116,11 +1100,11 @@ class IntegerTable(Table):
 
 
 class DecimalTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
+    """A specialized :class:`~.Table` mobject for use with with
+    :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------
-
     .. manim:: DecimalTableExample
         :save_last_frame:
 
@@ -1140,13 +1124,13 @@ class DecimalTable(Table):
         self,
         table: Iterable[Iterable[Union[float, str]]],
         element_to_mobject: Callable[[Union[float, str]], VMobject] = DecimalNumber,
-        element_to_mobject_config: dict = {"num_decimal_places": 1},
+        element_to_mobject_config: Optional[dict] = None,
         **kwargs,
     ):
-        """
-        Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`.
-        By default, ``num_decimal_places`` is set to 1.
-        Will round/truncate the decimal places based on the provided ``element_to_mobject_config``.
+        """Special case of :class:`~.Table` with ``element_to_mobject`` set to
+        :class:`~.DecimalNumber`. By default, ``num_decimal_places`` is set to
+        1. Will round/truncate the decimal places based on the provided
+        ``element_to_mobject_config``.
 
         Parameters
         ----------
@@ -1163,6 +1147,8 @@ class DecimalTable(Table):
         super().__init__(
             table,
             element_to_mobject=element_to_mobject,
-            element_to_mobject_config=element_to_mobject_config,
+            element_to_mobject_config={"num_decimal_places": 1}
+            if element_to_mobject_config is None
+            else element_to_mobject_config,
             **kwargs,
         )

@@ -201,11 +201,11 @@ class CoordinateSystem:
         return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
 
     def c2p(self, *coords):
-        """Abbreviation for coords_to_point"""
+        """Abbreviation for coords_to_point."""
         return self.coords_to_point(*coords)
 
     def p2c(self, point):
-        """Abbreviation for point_to_coords"""
+        """Abbreviation for point_to_coords."""
         return self.point_to_coords(point)
 
     def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
@@ -378,8 +378,7 @@ class CoordinateSystem:
         x_label: Union[float, str, "Mobject"] = "x",
         y_label: Union[float, str, "Mobject"] = "y",
     ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
-        use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
+        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels, use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
         Examples
         --------
@@ -423,12 +422,11 @@ class CoordinateSystem:
         self,
         *axes_numbers: Union[
             Optional[Iterable[float]],
-            Union[Dict[float, Union[str, float, "Mobject"]]],
+            Dict[float, Union[str, float, "Mobject"]],
         ],
         **kwargs,
     ):
-        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
-        access the coordinates after creation.
+        """Adds labels to the axes. Use ``Axes.coordinate_labels`` to access the coordinates after creation.
 
         Parameters
         ----------
@@ -522,8 +520,7 @@ class CoordinateSystem:
         line_config["color"] = color
         line_config["stroke_width"] = stroke_width
         axis = self.get_axis(index)
-        line = line_func(axis.get_projection(point), point, **line_config)
-        return line
+        return line_func(axis.get_projection(point), point, **line_config)
 
     def get_vertical_line(self, point: Sequence[float], **kwargs) -> "Line":
         """A vertical line from the x-axis to a given point in the scene.
@@ -793,7 +790,7 @@ class CoordinateSystem:
     def plot_polar_graph(
         self,
         r_func: Callable[[float], float],
-        theta_range: Sequence[float] = [0, 2 * PI],
+        theta_range: Sequence[float] = (0, 2 * PI),
         **kwargs,
     ) -> ParametricFunction:
         """A polar graph.
@@ -889,9 +886,7 @@ class CoordinateSystem:
                 )
 
     def input_to_graph_coords(self, x: float, graph: "ParametricFunction") -> Tuple:
-        """
-        Returns a tuple of the axis relative coordinates of the point
-        on the graph based on the x-value given.
+        """Returns a tuple of the axis relative coordinates of the point on the graph based on the x-value given.
 
         Examples
         --------
@@ -907,15 +902,11 @@ class CoordinateSystem:
         return x, graph.underlying_function(x)
 
     def i2gc(self, x: float, graph: "ParametricFunction") -> Tuple:
-        """
-        Alias for :meth:`input_to_graph_coords`.
-        """
+        """Alias for :meth:`input_to_graph_coords`."""
         return self.input_to_graph_coords(x, graph)
 
     def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
-        """
-        Alias for :meth:`input_to_graph_point`.
-        """
+        """Alias for :meth:`input_to_graph_point`."""
         return self.input_to_graph_point(x, graph)
 
     def get_graph_label(
@@ -1011,7 +1002,7 @@ class CoordinateSystem:
         stroke_width: float = 1,
         stroke_color: Color = BLACK,
         fill_opacity: float = 1,
-        color: Union[Iterable[Color], Color] = np.array((BLUE, GREEN)),
+        color: Union[Iterable[Color], Color] = (BLUE, GREEN),
         show_signed_area: bool = True,
         bounded_graph: "ParametricFunction" = None,
         blend: bool = False,
@@ -1107,7 +1098,6 @@ class CoordinateSystem:
         :class:`~.VGroup`
             A :class:`~.VGroup` containing the Riemann Rectangles.
         """
-
         # setting up x_range, overwrite user's third input
         if x_range is None:
             if bounded_graph is None:
@@ -1123,7 +1113,7 @@ class CoordinateSystem:
         x_range = np.arange(*x_range)
 
         # allows passing a string to color the graph
-        if type(color) is str:
+        if isinstance(color, str):
             colors = [color] * len(x_range)
         else:
             colors = color_gradient(color, len(x_range))
@@ -1181,7 +1171,7 @@ class CoordinateSystem:
         self,
         graph: "ParametricFunction",
         x_range: Optional[Tuple[float, float]] = None,
-        color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
+        color: Optional[Union[Color, Iterable[Color]]] = None,
         opacity: float = 0.3,
         bounded_graph: "ParametricFunction" = None,
         **kwargs,
@@ -1214,7 +1204,7 @@ class CoordinateSystem:
         x_range
             The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
         color
-            The color of the area. Creates a gradient if a list of colors is provided.
+            The color of the area. Creates a gradient if a list of colors is provided. By default [BLUE, GREEN].
         opacity
             The opacity of the area.
         bounded_graph
@@ -1232,6 +1222,8 @@ class CoordinateSystem:
         :exc:`ValueError`
             When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
         """
+        if color is None:
+            color = [BLUE, GREEN]
         if x_range is None:
             a = graph.t_min
             b = graph.t_max
@@ -1271,8 +1263,7 @@ class CoordinateSystem:
         graph: "ParametricFunction",
         dx: float = 1e-8,
     ) -> float:
-        """Returns the angle to the x-axis of the tangent
-        to the plotted curve at a particular x-value.
+        """Returns the angle to the x-axis of the tangent to the plotted curve at a particular x-value.
 
         Examples
         --------
@@ -1307,8 +1298,7 @@ class CoordinateSystem:
     def slope_of_tangent(
         self, x: float, graph: "ParametricFunction", **kwargs
     ) -> float:
-        """Returns the slope of the tangent to the plotted curve
-        at a particular x-value.
+        """Returns the slope of the tangent to the plotted curve at a particular x-value.
 
         Examples
         --------
@@ -1449,8 +1439,7 @@ class CoordinateSystem:
         secant_line_color: Color = GREEN,
         secant_line_length: float = 10,
     ) -> VGroup:
-        """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
-         the secant to the curve at a particular x-value.
+        """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and the secant to the curve at a particular x-value.
 
         Examples
         --------
@@ -1514,7 +1503,6 @@ class CoordinateSystem:
         :class:`~.VGroup`
             A group containing the elements: `dx_line`, `df_line`, and
             if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`.
-
         """
         group = VGroup()
 
@@ -1639,8 +1627,7 @@ class CoordinateSystem:
         line_func: "Line" = Line,
         line_color: Color = YELLOW,
     ) -> VGroup:
-        """Creates a labelled triangle marker with a vertical line from the x-axis
-        to a curve at a given x-value.
+        """Creates a labelled triangle marker with a vertical line from the x-axis to a curve at a given x-value.
 
         Parameters
         ----------
@@ -1680,7 +1667,6 @@ class CoordinateSystem:
         -------
         :class:`~.VGroup`
             A :class:`~.VGroup` of the label, triangle and vertical line mobjects.
-
         """
 
         T_label_group = VGroup()
@@ -2379,8 +2365,8 @@ class NumberPlane(Axes):
         )
 
     def _get_lines(self) -> Tuple[VGroup, VGroup]:
-        """Generate all the lines, faded and not faded.
-         Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+        """Generate all the lines, faded and not faded. Two sets of lines are
+        generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
         -------
@@ -2931,7 +2917,6 @@ class ComplexPlane(NumberPlane):
                     d2,
                     label2,
                 )
-
     """
 
     def __init__(self, **kwargs):
@@ -3031,7 +3016,8 @@ class ComplexPlane(NumberPlane):
         return self.coordinate_labels
 
     def add_coordinates(self, *numbers: Iterable[Union[float, complex]], **kwargs):
-        """Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
+        """Adds the labels produced from
+        :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
 
         Parameters
         ----------

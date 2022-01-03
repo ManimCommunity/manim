@@ -155,8 +155,7 @@ class TexTemplate:
         return self.body.replace(self.placeholder_text, expression)
 
     def _texcode_for_environment(self, environment):
-        """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
-        ``\\end{environment}`` strings
+        """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and ``\\end{environment}`` strings.
 
         Parameters
         ----------

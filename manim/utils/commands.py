@@ -37,7 +37,7 @@ def get_video_metadata(path_to_video: str) -> Dict[str, Any]:
 def get_dir_layout(dirpath: str) -> List[str]:
     """Get list of paths relative to dirpath of all files in dir and subdirs recursively."""
     index_files: List[str] = []
-    for root, dirs, files in os.walk(dirpath):
+    for root, _, files in os.walk(dirpath):
         for file in files:
             index_files.append(f"{os.path.relpath(os.path.join(root, file), dirpath)}")
     return index_files

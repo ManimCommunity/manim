@@ -15,9 +15,7 @@ from ..utils.config_ops import DictAsObject
 
 
 class MappingCamera(Camera):
-    """Camera object that allows mapping
-    between objects.
-    """
+    """Camera object that allows mapping between objects."""
 
     def __init__(
         self,

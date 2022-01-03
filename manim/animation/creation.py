@@ -109,7 +109,6 @@ class ShowPartial(Animation):
     See Also
     --------
     :class:`Create`, :class:`~.ShowPassingFlash`
-
     """
 
     def __init__(
@@ -158,7 +157,6 @@ class Create(ShowPartial):
     See Also
     --------
     :class:`~.ShowPassingFlash`
-
     """
 
     def __init__(
@@ -187,7 +185,6 @@ class Uncreate(Create):
     See Also
     --------
     :class:`Create`
-
     """
 
     def __init__(
@@ -219,16 +216,22 @@ class DrawBorderThenFill(Animation):
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: Dict = {},  # what does this dict accept?
-        fill_animation_config: Dict = {},
+        draw_border_animation_config: Optional[
+            Dict
+        ] = None,  # what does this dict accept?
+        fill_animation_config: Optional[Dict] = None,
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
         super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
-        self.draw_border_animation_config = draw_border_animation_config
-        self.fill_animation_config = fill_animation_config
+        self.draw_border_animation_config = (
+            {} if draw_border_animation_config is None else draw_border_animation_config
+        )
+        self.fill_animation_config = (
+            {} if fill_animation_config is None else fill_animation_config
+        )
         self.outline = self.get_outline()
 
     def _typecheck_input(self, vmobject: Union[VMobject, OpenGLVMobject]) -> None:
@@ -274,7 +277,8 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`.
+    """Simulate hand-writing a :class:`~.Text` or hand-drawing a
+    :class:`~.VMobject`.
 
     Examples
     --------
@@ -449,7 +453,6 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
     .. tip::
 
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
-
     """
 
     def __init__(
@@ -499,7 +502,10 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 # TODO, this is broken...
 class AddTextWordByWord(Succession):
-    """Show a :class:`~.Text` word by word on the scene. Note: currently broken."""
+    """Show a :class:`~.Text` word by word on the scene.
+
+    Note: currently broken.
+    """
 
     def __init__(
         self,

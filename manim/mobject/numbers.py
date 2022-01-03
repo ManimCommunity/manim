@@ -43,7 +43,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                     run_time=5,
                 )
                 self.wait()
-
     """
 
     def __init__(
@@ -183,10 +182,8 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         return mob
 
     def get_formatter(self, **kwargs):
-        """
-        Configuration is based first off instance attributes,
-        but overwritten by any kew word argument.  Relevant
-        key words:
+        """Configuration is based first off instance attributes, but overwritten by any kew word argument.  Relevant key words:
+
         - include_sign
         - group_with_commas
         - num_decimal_places
@@ -231,7 +228,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         ----------
         number
             The value that will overwrite the current number of the :class:`~.DecimalNumber`.
-
         """
         # creates a new number mob via `set_submobjects_from_number`
         # then matches the properties (color, font_size, etc...)
@@ -394,7 +390,6 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
                 self.add(x_var, sqr_var)
                 self.play(x_var.tracker.animate.set_value(5), run_time=2, rate_func=linear)
                 self.wait(0.1)
-
     """
 
     def __init__(

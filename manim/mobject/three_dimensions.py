@@ -48,9 +48,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     func :
         The function that defines the surface.
     u_range :
-        The range of the ``u`` variable: ``(u_min, u_max)``.
+        The range of the ``u`` variable: ``(u_min, u_max)``, by default [0, 1].
     v_range :
-        The range of the ``v`` variable: ``(v_min, v_max)``.
+        The range of the ``v`` variable: ``(v_min, v_max)``, by default [0, 1].
     resolution :
         The number of samples taken of the surface. A tuple
         can be used to define different resolutions for ``u`` and
@@ -79,19 +79,28 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], np.ndarray],
-        u_range: Sequence[float] = [0, 1],
-        v_range: Sequence[float] = [0, 1],
+        u_range: Optional[Sequence[float]] = None,
+        v_range: Optional[Sequence[float]] = None,
         resolution: Sequence[int] = 32,
-        surface_piece_config: dict = {},
+        surface_piece_config: Optional[dict] = None,
         fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        checkerboard_colors: Optional[Sequence[Color]] = None,
         stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
     ) -> None:
+        if u_range is None:
+            u_range = [0, 1]
+        if v_range is None:
+            v_range = [0, 1]
+        if surface_piece_config is None:
+            surface_piece_config = {}
+        if checkerboard_colors is None:
+            checkerboard_colors = [BLUE_D, BLUE_E]
+
         self.u_range = u_range
         self.v_range = v_range
         super().__init__(**kwargs)
@@ -171,7 +180,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         colors: Union[Iterable[Color], Color],
         axis: int = 2,
     ):
-        """Sets the color of each mobject of a parametric surface to a color relative to its axis-value
+        """Set the color of each mobject of a parametric surface to a color relative to its axis-value.
 
         Parameters
         ----------
@@ -216,7 +225,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         ranges = [axes.x_range, axes.y_range, axes.z_range]
 
-        if type(colors[0]) is tuple:
+        if isinstance(colors[0], tuple):
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
         else:
             new_colors = colors
@@ -260,7 +269,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 @deprecated(since="v0.10.0", replacement=Surface)
 class ParametricSurface(Surface):
     # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
-    """Creates a parametric surface"""
+    """Creates a parametric surface."""
 
 
 # Specific shapes
@@ -270,8 +279,7 @@ class Sphere(Surface):
     """A mobject representing a three-dimensional sphere.
 
     Examples
-    ---------
-
+    --------
     .. manim:: ExampleSphere
         :save_last_frame:
 
@@ -333,7 +341,7 @@ class Dot3D(Sphere):
     """A spherical dot.
 
     Parameters
-    --------
+    ----------
     point : Union[:class:`list`, :class:`numpy.ndarray`], optional
         The location of the dot.
     radius : :class:`float`, optional
@@ -343,7 +351,6 @@ class Dot3D(Sphere):
 
     Examples
     --------
-
     .. manim:: Dot3DExample
         :save_last_frame:
 
@@ -407,7 +414,6 @@ class Prism(Cube):
 
     Examples
     --------
-
     .. manim:: ExamplePrism
         :save_last_frame:
 
@@ -419,7 +425,9 @@ class Prism(Cube):
                 self.add(prismSmall, prismLarge)
     """
 
-    def __init__(self, dimensions=[3, 2, 1], **kwargs):
+    def __init__(self, dimensions: Optional[List] = None, **kwargs):
+        if dimensions is None:
+            dimensions = [3, 2, 1]
         self.dimensions = dimensions
         super().__init__(**kwargs)
 
@@ -430,11 +438,7 @@ class Prism(Cube):
 
 
 class Cone(Surface):
-    """A circular cone.
-    Can be defined using 2 parameters: its height, and its base radius.
-    The polar angle, theta, can be calculated using arctan(base_radius /
-    height) The spherical radius, r, is calculated using the pythagorean
-    theorem.
+    """A circular cone. Can be defined using 2 parameters: its height, and its base radius. The polar angle, theta, can be calculated using arctan(base_radius / height) The spherical radius, r, is calculated using the pythagorean theorem.
 
     Examples
     --------
@@ -449,7 +453,7 @@ class Cone(Surface):
                 self.add(axes, cone)
 
     Parameters
-    --------
+    ----------
     base_radius : :class:`float`
         The base radius from which the cone tapers.
     height : :class:`float`
@@ -472,11 +476,12 @@ class Cone(Surface):
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        v_range=[0, TAU],
+        v_range: Optional[List] = None,
         u_min=0,
         checkerboard_colors=False,
         **kwargs
     ):
+        v_range = [0, TAU] if v_range is None else v_range
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
@@ -504,9 +509,10 @@ class Cone(Surface):
         self._rotate_to_direction()
 
     def func(self, u, v):
-        """Converts from spherical coordinates to cartesian.
+        """Convert from spherical coordinates to cartesian.
+
         Parameters
-        ---------
+        ----------
         u : :class:`float`
             The radius.
         v : :class:`float`
@@ -564,10 +570,10 @@ class Cone(Surface):
 
 
 class Cylinder(Surface):
-    """A cylinder, defined by its height, radius and direction,
+    """A cylinder, defined by its height, radius and direction.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleCylinder
         :save_last_frame:
 
@@ -579,7 +585,7 @@ class Cylinder(Surface):
                 self.add(axes, cylinder)
 
     Parameters
-    ---------
+    ----------
     radius : :class:`float`
         The radius of the cylinder.
     height : :class:`float`
@@ -597,11 +603,12 @@ class Cylinder(Surface):
         radius=1,
         height=2,
         direction=Z_AXIS,
-        v_range=[0, TAU],
+        v_range: Optional[List] = None,
         show_ends=True,
         resolution=(24, 24),
         **kwargs
     ):
+        v_range = [0, TAU] if v_range is None else v_range
         self._height = height
         self.radius = radius
         super().__init__(
@@ -618,9 +625,10 @@ class Cylinder(Surface):
         self.set_direction(direction)
 
     def func(self, u, v):
-        """Converts from cylindrical coordinates to cartesian.
+        """Convert from cylindrical coordinates to cartesian.
+
         Parameters
-        ---------
+        ----------
         u : :class:`float`
             The height.
         v : :class:`float`
@@ -632,7 +640,7 @@ class Cylinder(Surface):
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
     def add_bases(self):
-        """Adds the end caps of the cylinder."""
+        """Add the end caps of the cylinder."""
         color = self.color if config["renderer"] == "opengl" else self.fill_color
         opacity = self.opacity if config["renderer"] == "opengl" else self.fill_opacity
         self.base_top = Circle(
@@ -700,7 +708,7 @@ class Line3D(Cylinder):
     """A cylindrical line, for use in ThreeDScene.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleLine3D
         :save_last_frame:
 
@@ -712,7 +720,7 @@ class Line3D(Cylinder):
                 self.add(axes, line)
 
     Parameters
-    ---------
+    ----------
     start : :class:`numpy.array`
         The start position of the line.
     end : :class:`numpy.array`
@@ -728,9 +736,10 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(self, start, end, **kwargs):
-        """Sets the start and end points of the line.
+        """Set the start and end points of the line.
 
-        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers.
+        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`,
+        this gives their centers.
         """
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
@@ -773,8 +782,7 @@ class Line3D(Cylinder):
         length: float = 5,
         **kwargs
     ):
-        """Returns a line parallel to another line going through
-        a given point.
+        """Return a line parallel to another line going through a given point.
 
         Parameters
         ----------
@@ -814,8 +822,7 @@ class Line3D(Cylinder):
         length: float = 5,
         **kwargs
     ):
-        """Returns a line perpendicular to another line going through
-        a given point.
+        """Return a line perpendicular to another line going through a given point.
 
         Parameters
         ----------
@@ -858,7 +865,7 @@ class Arrow3D(Line3D):
     """An arrow made out of a cylindrical line and a conical tip.
 
     Examples
-    ---------
+    --------
     .. manim:: ExampleArrow3D
         :save_last_frame:
 
@@ -870,7 +877,7 @@ class Arrow3D(Line3D):
                 self.add(axes, arrow)
 
     Parameters
-    ---------
+    ----------
     start : :class:`numpy.array`
         The start position of the arrow.
     end : :class:`numpy.array`
@@ -916,7 +923,7 @@ class Torus(Surface):
     """A torus.
 
     Examples
-    ---------
+    --------
     .. manim :: ExampleTorus
         :save_last_frame:
 
@@ -928,7 +935,7 @@ class Torus(Surface):
                 self.add(axes, torus)
 
     Parameters
-    ---------
+    ----------
     major_radius : :class:`float`
         Distance from the center of the tube to the center of the torus.
     minor_radius : :class:`float`

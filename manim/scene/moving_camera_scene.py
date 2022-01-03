@@ -7,7 +7,6 @@
 
 Examples
 --------
-
 .. manim:: ChangingCameraWidthAndRestore
 
     class ChangingCameraWidthAndRestore(MovingCameraScene):
@@ -63,7 +62,6 @@ Examples
             self.play(self.camera.frame.animate.move_to(dot_2))
             self.play(Restore(self.camera.frame))
             self.wait()
-
 """
 
 __all__ = ["MovingCameraScene"]
@@ -75,9 +73,7 @@ from ..utils.iterables import list_update
 
 
 class MovingCameraScene(Scene):
-    """
-    This is a Scene, with special configurations and properties that
-    make it suitable for cases where the camera must be moved around.
+    """This is a Scene, with special configurations and properties that make it suitable for cases where the camera must be moved around.
 
     .. SEEALSO::
 
@@ -88,9 +84,7 @@ class MovingCameraScene(Scene):
         super().__init__(camera_class=camera_class, **kwargs)
 
     def get_moving_mobjects(self, *animations):
-        """
-        This method returns a list of all of the Mobjects in the Scene that
-        are moving, that are also in the animations passed.
+        """Return a list of all of the Mobjects in the Scene that are moving, that are also in the animations passed.
 
         Parameters
         ----------

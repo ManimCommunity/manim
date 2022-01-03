@@ -194,7 +194,6 @@ class ManimBanner(VGroup):
                         banners[1].expand(direction="center"),
                         banners[2].expand(direction="left"),
                     )
-
         """
         if direction not in ["left", "right", "center"]:
             raise ValueError("direction must be 'left', 'right' or 'center'.")

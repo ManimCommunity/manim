@@ -13,7 +13,7 @@ from manim.utils.file_ops import add_version_before_extension
 from tests.utils.video_tester import video_comparison
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SquareToCircleWithDefaultValues.json",
     "videos/simple_scenes/1080p60/SquareToCircle.mp4",
@@ -36,7 +36,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "NoAnimations"
     # test different separators
@@ -73,7 +73,7 @@ def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         assert (width, height) == (meta["width"], meta["height"])
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SquareToCircleWithlFlag.json",
     "videos/simple_scenes/480p15/SquareToCircle.mp4",
@@ -97,7 +97,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 @video_comparison(
     "SceneWithMultipleCallsWithNFlag.json",
     "videos/simple_scenes/480p15/SceneWithMultipleCalls.mp4",
@@ -122,7 +122,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "NoAnimations"
     command = [
@@ -148,7 +148,7 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
     assert not is_empty, "running manim with -s flag did not render an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_image_output_for_static_scene(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "StaticScene"
     command = [
@@ -173,7 +173,7 @@ def test_image_output_for_static_scene(tmp_path, manim_cfg_file, simple_scenes_p
     assert not is_empty, "running manim without animations did not render an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_no_image_output_with_interactive_embed(
     tmp_path, manim_cfg_file, simple_scenes_path
 ):
@@ -203,7 +203,7 @@ def test_no_image_output_with_interactive_embed(
     ), "running manim static scene with interactive embed rendered an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_no_default_image_output_with_non_static_scene(
     tmp_path, manim_cfg_file, simple_scenes_path
 ):
@@ -232,7 +232,7 @@ def test_no_default_image_output_with_non_static_scene(
     ), "running manim static scene with interactive embed rendered an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_image_output_for_static_scene_with_write_to_movie(
     tmp_path, manim_cfg_file, simple_scenes_path
 ):
@@ -260,7 +260,7 @@ def test_image_output_for_static_scene_with_write_to_movie(
     assert not is_empty, "running manim without animations did not render an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
@@ -286,7 +286,7 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     assert not is_empty, "running manim with -s flag did not render an image"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
@@ -316,7 +316,7 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     assert np.asarray(Image.open(filename)).shape == (100, 200, 4)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     command = [
         sys.executable,
@@ -347,7 +347,7 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     ), "running manim with -a flag did not render the second scene"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
@@ -374,7 +374,7 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     assert exists, "--custom_folders did not produce the output file"
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_dash_as_filename(tmp_path):
     code = (
         "class Test(Scene):\n"
@@ -400,7 +400,7 @@ def test_dash_as_filename(tmp_path):
     assert exists, result.output
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     """Test only gif created with manim version in file name when --format gif is set"""
     scene_name = "SquareToCircle"
@@ -438,7 +438,7 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     assert expected_gif_path.exists(), "gif file not found at " + str(expected_gif_path)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     """Test only mp4 created without manim version in file name when --format mp4 is set"""
     scene_name = "SquareToCircle"
@@ -478,7 +478,7 @@ def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     )
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_videos_not_created_when_png_format_set(
     tmp_path,
     manim_cfg_file,
@@ -522,7 +522,7 @@ def test_videos_not_created_when_png_format_set(
     )
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_images_are_created_when_png_format_set(
     tmp_path,
     manim_cfg_file,
@@ -551,7 +551,7 @@ def test_images_are_created_when_png_format_set(
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_images_are_zero_padded_when_zero_pad_set(
     tmp_path,
     manim_cfg_file,
@@ -587,7 +587,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     """Test only webm created when --format webm is set"""
     scene_name = "SquareToCircle"
@@ -623,7 +623,7 @@ def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     )
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_default_format_output_for_transparent_flag(
     tmp_path,
     manim_cfg_file,
@@ -663,7 +663,7 @@ def test_default_format_output_for_transparent_flag(
     )
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes_path):
     """Test .mov is created by when set using --format mov arg"""
     scene_name = "SquareToCircle"

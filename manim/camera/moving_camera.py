@@ -3,7 +3,6 @@
 .. SEEALSO::
 
     :mod:`.moving_camera_scene`
-
 """
 
 __all__ = ["CameraFrame", "MovingCamera"]
@@ -25,13 +24,11 @@ class CameraFrame(VGroup):
 
 
 class MovingCamera(Camera):
-    """
-    Stays in line with the height, width and position of it's 'frame', which is a Rectangle
+    """Stays in line with the height, width and position of it's 'frame', which is a Rectangle.
 
     .. SEEALSO::
 
         :class:`.MovingCameraScene`
-
     """
 
     def __init__(
@@ -42,10 +39,7 @@ class MovingCamera(Camera):
         default_frame_stroke_width=0,
         **kwargs
     ):
-        """
-        Frame is a Mobject, (should almost certainly be a rectangle)
-        determining which region of space the camera displays
-        """
+        """Frame is a Mobject, (should almost certainly be a rectangle) determining which region of space the camera displays."""
         self.fixed_dimension = fixed_dimension
         self.default_frame_stroke_color = default_frame_stroke_color
         self.default_frame_stroke_width = default_frame_stroke_width
@@ -72,7 +66,7 @@ class MovingCamera(Camera):
 
     @property
     def frame_width(self):
-        """Returns the width of the frame
+        """Returns the width of the frame.
 
         Returns
         -------
@@ -136,22 +130,18 @@ class MovingCamera(Camera):
     # context used for updating should be regenerated
     # at each frame.  So no caching.
     def get_cached_cairo_context(self, pixel_array):
+        """Since the frame can be moving around, the cairo context used for updating should be regenerated at each frame.
+
+        So no caching.
         """
-        Since the frame can be moving around, the cairo
-        context used for updating should be regenerated
-        at each frame.  So no caching.
-        """
-        return None
 
     def cache_cairo_context(self, pixel_array, ctx):
-        """
-        Since the frame can be moving around, the cairo
-        context used for updating should be regenerated
-        at each frame.  So no caching.
-        """
-        pass
+        """Since the frame can be moving around, the cairo context used for updating should be regenerated at each frame.
 
-    # def reset_frame_center(self):
+        So no caching.
+        """
+
+    # def reset_frame_center(self):  # TODO: Remove? Grant commented this out.
     #     self.frame_center = self.frame.get_center()
 
     # def realign_frame_shape(self):
@@ -163,9 +153,7 @@ class MovingCamera(Camera):
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
     def get_mobjects_indicating_movement(self):
-        """
-        Returns all mobjects whose movement implies that the camera
-        should think of all other mobjects on the screen as moving
+        """Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving.
 
         Returns
         -------
@@ -174,8 +162,7 @@ class MovingCamera(Camera):
         return [self.frame]
 
     def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False):
-        """Zooms on to a given array of mobjects (or a singular mobject)
-        and automatically resizes to frame all the mobjects.
+        """Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects.
 
         .. NOTE::
 
@@ -198,7 +185,6 @@ class MovingCamera(Camera):
         _AnimationBuilder
             Returns an animation that zooms the camera view to a given
             list of mobjects.
-
         """
         scene_critical_x_left = None
         scene_critical_x_right = None

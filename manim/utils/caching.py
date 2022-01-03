@@ -3,8 +3,7 @@ from ..utils.hashing import get_hash_from_play_call
 
 
 def handle_caching_play(func):
-    """Decorator that returns a wrapped version of func that will compute
-    the hash of the play invocation.
+    """Decorator that returns a wrapped version of func that will compute the hash of the play invocation.
 
     The returned function will act according to the computed hash: either skip
     the animation because it's already cached, or let the invoked function

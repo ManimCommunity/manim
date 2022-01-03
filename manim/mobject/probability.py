@@ -103,11 +103,15 @@ class SampleSpace(Rectangle):
             parts.add(part)
         return parts
 
-    def get_horizontal_division(self, p_list, colors=[GREEN_E, BLUE_E], vect=DOWN):
-        return self.get_division_along_dimension(p_list, 1, colors, vect)
+    def get_horizontal_division(self, p_list, colors=None, vect=DOWN):
+        return self.get_division_along_dimension(
+            p_list, 1, [GREEN_E, BLUE_E] if colors is None else colors, vect
+        )
 
-    def get_vertical_division(self, p_list, colors=[MAROON_B, YELLOW], vect=RIGHT):
-        return self.get_division_along_dimension(p_list, 0, colors, vect)
+    def get_vertical_division(self, p_list, colors=None, vect=RIGHT):
+        return self.get_division_along_dimension(
+            p_list, 0, [MAROON_B, YELLOW] if colors is None else colors, vect
+        )
 
     def divide_horizontally(self, *args, **kwargs):
         self.horizontal_parts = self.get_horizontal_division(*args, **kwargs)
@@ -252,10 +256,10 @@ class BarChart(VGroup):
         label_y_axis: bool = True,
         y_axis_label_height: float = 0.25,
         max_value: float = 1,
-        bar_colors=[BLUE, YELLOW],
+        bar_colors=None,
         bar_fill_opacity: float = 0.8,
         bar_stroke_width: float = 3,
-        bar_names: List[str] = [],
+        bar_names: List[str] = None,
         bar_label_scale_val: float = 0.75,
         **kwargs
     ):  # What's the return type?
@@ -265,10 +269,10 @@ class BarChart(VGroup):
         self.label_y_axis = label_y_axis
         self.y_axis_label_height = y_axis_label_height
         self.max_value = max_value
-        self.bar_colors = bar_colors
+        self.bar_colors = [BLUE, YELLOW] if bar_colors is None else bar_colors
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
-        self.bar_names = bar_names
+        self.bar_names = [] if bar_names is None else bar_names
         self.bar_label_scale_val = bar_label_scale_val
         self.total_bar_width = width
         self.total_bar_height = height

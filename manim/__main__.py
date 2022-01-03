@@ -38,7 +38,6 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
 @click.pass_context
 def main(ctx):
     """The entry point for manim."""
-    pass
 
 
 main.add_command(cfg)

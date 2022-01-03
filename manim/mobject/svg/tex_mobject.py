@@ -46,8 +46,6 @@ tex_string_to_mob_map = {}
 class TexSymbol(SVGPathMobject):
     """Purely a renaming of SVGPathMobject."""
 
-    pass
-
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -73,7 +71,7 @@ class SingleStringMathTex(SVGMobject):
         tex_environment="align*",
         tex_template=None,
         font_size=DEFAULT_FONT_SIZE,
-        color=Color(WHITE),
+        color=WHITE,
         **kwargs,
     ):
 
@@ -136,8 +134,7 @@ class SingleStringMathTex(SVGMobject):
     def get_modified_expression(self, tex_string):
         result = tex_string
         result = result.strip()
-        result = self.modify_special_strings(result)
-        return result
+        return self.modify_special_strings(result)
 
     def modify_special_strings(self, tex):
         tex = tex.strip()
@@ -336,11 +333,7 @@ class MathTex(SingleStringMathTex):
         return [p for p in pieces if p]
 
     def break_up_by_substrings(self):
-        """
-        Reorganize existing submobjects one layer
-        deeper based on the structure of tex_strings (as a list
-        of tex_strings)
-        """
+        """Reorganize existing submobjects one layer deeper based on the structure of tex_strings (as a list of tex_strings)"""
         new_submobjects = []
         curr_index = 0
         for tex_string in self.tex_strings:

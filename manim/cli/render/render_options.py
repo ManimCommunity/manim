@@ -15,23 +15,27 @@ def validate_scene_range(ctx, param, value):
     except Exception:
         pass
 
-    if value:
-        try:
-            start, end = map(int, re.split(r"[;,\-]", value))
-            return start, end
-        except Exception:
-            logger.error("Couldn't determine a range for -n option.")
-            exit()
+    if not value:
+        return None
+
+    try:
+        start, end = map(int, re.split(r"[;,\-]", value))
+        return start, end
+    except Exception:
+        logger.error("Couldn't determine a range for -n option.")
+        exit()
 
 
 def validate_resolution(ctx, param, value):
-    if value:
-        try:
-            start, end = map(int, re.split(r"[;,\-]", value))
-            return (start, end)
-        except Exception:
-            logger.error("Resolution option is invalid.")
-            exit()
+    if not value:
+        return None
+
+    try:
+        start, end = map(int, re.split(r"[;,\-]", value))
+        return (start, end)
+    except Exception:
+        logger.error("Resolution option is invalid.")
+        exit()
 
 
 render_options = option_group(

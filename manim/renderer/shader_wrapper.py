@@ -133,7 +133,7 @@ class ShaderWrapper:
     def combine_with(self, *shader_wrappers):
         # Assume they are of the same type
         if len(shader_wrappers) == 0:
-            return
+            return None
         if self.vert_indices is not None:
             num_verts = len(self.vert_data)
             indices_list = [self.vert_indices]

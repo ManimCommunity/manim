@@ -25,8 +25,7 @@ KEYS_TO_FILTER_OUT = {
 
 
 class _Memoizer:
-    """Implements the memoization logic to optimize the hashing procedure and prevent
-    the circular references within iterable processed.
+    """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
 
     Keeps a record of all the processed objects, and handle the logic to return a place
     holder instead of the original object if the object has already been processed
@@ -49,9 +48,7 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
-        """Decorator to handle the arguments that goes through the decorated function.
-        Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
-        the decorated function call go ahead.
+        """Decorator to handle the arguments that goes through the decorated function. Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets the decorated function call go ahead.
 
         Parameters
         ----------
@@ -73,9 +70,7 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
-        """Checks if obj has been already processed. Returns itself if it has not been,
-        or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has.
-        Marks the object as processed in the second case.
+        """Checks if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has. Marks the object as processed in the second case.
 
         Parameters
         ----------
@@ -166,8 +161,7 @@ class _Memoizer:
 
 class _CustomEncoder(json.JSONEncoder):
     def default(self, obj):
-        """
-        This method is used to serialize objects to JSON format.
+        """This method is used to serialize objects to JSON format.
 
         If obj is a function, then it will return a dict with two keys : 'code', for
         the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals
@@ -186,7 +180,6 @@ class _CustomEncoder(json.JSONEncoder):
         -------
         Any
             Python object that JSON encoder will recognize
-
         """
         if not (isinstance(obj, ModuleType)) and isinstance(
             obj,
@@ -215,7 +208,7 @@ class _CustomEncoder(json.JSONEncoder):
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
-            temp = getattr(obj, "__dict__")
+            temp = obj.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
@@ -278,6 +271,7 @@ class _CustomEncoder(json.JSONEncoder):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
+        return None
 
     def encode(self, obj):
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.

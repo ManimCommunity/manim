@@ -128,7 +128,6 @@ class LogBase(_ScaleBase):
         .. code-block:: python
 
             func = ParametricFunction(lambda x: x, scaling=LogBase(base=2))
-
         """
         super().__init__()
         self.base = base
@@ -139,13 +138,15 @@ class LogBase(_ScaleBase):
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
-        """Inverse of ``function``. The value must be greater than 0"""
+        """Inverse of ``function``.
+
+        The value must be greater than 0
+        """
         if value <= 0:
             raise ValueError(
                 "log(0) is undefined. Make sure the value is in the domain of the function"
             )
-        value = math.log(value, self.base)
-        return value
+        return math.log(value, self.base)
 
     def get_custom_labels(
         self,
@@ -167,7 +168,7 @@ class LogBase(_ScaleBase):
         """
 
         # uses `format` syntax to control the number of decimal places.
-        tex_labels = [
+        return [
             Integer(
                 self.base,
                 unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
@@ -175,4 +176,3 @@ class LogBase(_ScaleBase):
             )
             for i in val_range
         ]
-        return tex_labels

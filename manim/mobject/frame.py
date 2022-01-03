@@ -19,8 +19,8 @@ class ScreenRectangle(Rectangle):
     def aspect_ratio(self):
         """The aspect ratio.
 
-        When set, the width is stretched to accommodate
-        the new aspect ratio.
+        When set, the width is stretched to accommodate the new aspect
+        ratio.
         """
 
         return self.width / self.height

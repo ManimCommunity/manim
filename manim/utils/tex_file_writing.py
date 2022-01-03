@@ -3,7 +3,6 @@
 .. SEEALSO::
 
     :mod:`.mobject.svg.tex_mobject`
-
 """
 
 import hashlib
@@ -24,7 +23,7 @@ def tex_hash(expression):
 
 
 def tex_to_svg_file(expression, environment=None, tex_template=None):
-    """Takes a tex expression and returns the svg version of the compiled tex
+    """Takes a tex expression and returns the svg version of the compiled tex.
 
     Parameters
     ----------
@@ -52,8 +51,7 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
 
 
 def generate_tex_file(expression, environment=None, tex_template=None):
-    """Takes a tex expression (and an optional tex environment),
-    and returns a fully formed tex file ready for compilation.
+    """Takes a tex expression (and an optional tex environment), and returns a fully formed tex file ready for compilation.
 
     Parameters
     ----------
@@ -89,7 +87,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
 
 
 def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
-    """Prepares the tex compilation command with all necessary cli flags
+    """Prepares the tex compilation command with all necessary cli flags.
 
     Parameters
     ----------
@@ -148,7 +146,7 @@ def insight_inputenc_error(match):
 
 
 def compile_tex(tex_file, tex_compiler, output_format):
-    """Compiles a tex_file into a .dvi or a .xdv or a .pdf
+    """Compiles a tex_file into a .dvi or a .xdv or a .pdf.
 
     Parameters
     ----------
@@ -282,7 +280,7 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
     )
     # our tex error may be on a line outside our user input because of post-processing
     if line_of_tex_error >= len(tex_source):
-        return None
+        return
 
     # all lines numbers containing '\begin{' or '\end{' - except the Manim added center and document tags
     env_markers_indices = [

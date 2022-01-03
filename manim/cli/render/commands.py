@@ -1,9 +1,8 @@
 """Manim's default subcommand, render.
 
 Manim's render subcommand is accessed in the command-line interface via
-``manim``, but can be more explicitly accessed with ``manim render``. Here you
-can specify options, and arguments for the render command.
-
+``manim``, but can be more explicitly accessed with ``manim render``.
+Here you can specify options, and arguments for the render command.
 """
 import json
 import sys

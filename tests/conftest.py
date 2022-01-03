@@ -52,7 +52,7 @@ def python_version():
     return sys.executable
 
 
-@pytest.fixture
+@pytest.fixture()
 def reset_cfg_file():
     cfgfilepath = os.path.join(os.path.dirname(__file__), "test_cli", "manim.cfg")
     with open(cfgfilepath) as cfgfile:
@@ -62,7 +62,7 @@ def reset_cfg_file():
         cfgfile.write(original)
 
 
-@pytest.fixture
+@pytest.fixture()
 def using_opengl_renderer():
     """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
     with tempconfig({"renderer": "opengl"}):

@@ -7,7 +7,6 @@ messages that need not be logged.
 
 Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
-
 """
 import configparser
 import copy
@@ -77,7 +76,6 @@ def make_logger(
     -----
     The ``parser`` is assumed to contain only the options related to
     configuring the logger at the top level.
-
     """
     # Throughout the codebase, use console.print() instead of print()
     theme = parse_theme(parser)
@@ -117,7 +115,6 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
     See Also
     --------
     :func:`make_logger`.
-
     """
     theme = {key.replace("_", "."): parser[key] for key in parser}
 
@@ -158,7 +155,6 @@ def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
     -----
     Calling this function changes the verbosity of all handlers assigned to
     manim logger.
-
     """
     # Note: The log file name will be
     # <name_of_animation_file>_<name_of_scene>.log, gotten from config.  So it
@@ -189,7 +185,6 @@ class JSONFormatter(logging.Formatter):
     """A formatter that outputs logs in a custom JSON format.
 
     This class is used internally for testing purposes.
-
     """
 
     def format(self, record: dict) -> str:

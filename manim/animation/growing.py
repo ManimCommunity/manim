@@ -18,7 +18,6 @@
             self.play(GrowFromEdge(triangle, DOWN))
             self.play(GrowArrow(arrow))
             self.play(SpinInFromNothing(star))
-
 """
 
 __all__ = [
@@ -69,7 +68,6 @@ class GrowFromPoint(Transform):
                 self.play(GrowFromPoint(squares[1], [-2, 2, 0]))
                 self.play(GrowFromPoint(squares[2], [3, -2, 0], RED))
                 self.play(GrowFromPoint(squares[3], dot, dot.get_color()))
-
     """
 
     def __init__(
@@ -112,7 +110,6 @@ class GrowFromCenter(GrowFromPoint):
                 VGroup(*squares).set_x(0).arrange(buff=2)
                 self.play(GrowFromCenter(squares[0]))
                 self.play(GrowFromCenter(squares[1], point_color=RED))
-
     """
 
     def __init__(self, mobject: "Mobject", point_color: str = None, **kwargs) -> None:
@@ -145,8 +142,6 @@ class GrowFromEdge(GrowFromPoint):
                 self.play(GrowFromEdge(squares[1], RIGHT))
                 self.play(GrowFromEdge(squares[2], UR))
                 self.play(GrowFromEdge(squares[3], UP, point_color=RED))
-
-
     """
 
     def __init__(
@@ -177,7 +172,6 @@ class GrowArrow(GrowFromPoint):
                 VGroup(*arrows).set_x(0).arrange(buff=2)
                 self.play(GrowArrow(arrows[0]))
                 self.play(GrowArrow(arrows[1], point_color=RED))
-
     """
 
     def __init__(self, arrow: "Arrow", point_color: str = None, **kwargs) -> None:
@@ -217,7 +211,6 @@ class SpinInFromNothing(GrowFromCenter):
                 self.play(SpinInFromNothing(squares[0]))
                 self.play(SpinInFromNothing(squares[1], angle=2 * PI))
                 self.play(SpinInFromNothing(squares[2], point_color=RED))
-
     """
 
     def __init__(

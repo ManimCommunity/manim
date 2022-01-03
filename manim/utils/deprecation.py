@@ -144,7 +144,6 @@ def deprecated(
 
         foo()
         # WARNING  The function foo has been deprecated since 05/01/2021 and is expected to be removed after 06/01/2021.
-
     """
     # If used as factory:
     if func is None:
@@ -354,8 +353,6 @@ def deprecated_params(
         foo(buff=(1,2))
         # WARNING  The parameter buff of method foo has been deprecated and may be removed in a later version.
         # returns {"buff_x": 1, buff_y: 2}
-
-
     """
     # Check if decorator is used without parenthesis
     if callable(params):
@@ -453,7 +450,6 @@ def deprecated_params(
         Any
             The return value of the given callable when being passed the given
             arguments.
-
         """
         used = []
         for param in params:

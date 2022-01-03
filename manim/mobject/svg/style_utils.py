@@ -122,9 +122,7 @@ def parse_color_string(color_spec: str) -> str:
 
 
 def fill_default_values(svg_style: Dict) -> None:
-    """
-    Fill in the default values for properties of SVG elements,
-    if they are not currently set in the style dictionary.
+    """Fill in the default values for properties of SVG elements, if they are not currently set in the style dictionary.
 
     Parameters
     ----------

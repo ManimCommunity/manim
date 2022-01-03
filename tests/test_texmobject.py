@@ -156,7 +156,7 @@ def test_error_in_nested_context(capsys):
     \end{align}
     """
 
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError):
         Tex(invalid_tex)
 
     stdout = str(capsys.readouterr().out)

@@ -44,7 +44,6 @@ class Camera:
 
     pixel_height : :class:`int`, optional
         The height of the scene in pixels.
-
     """
 
     def __init__(
@@ -190,8 +189,7 @@ class Camera:
         raise TypeError(f"Displaying an object of class {_type} is not supported")
 
     def reset_pixel_shape(self, new_height, new_width):
-        """This method resets the height and width
-        of a single pixel to the passed new_height and new_width.
+        """This method resets the height and width of a single pixel to the passed new_height and new_width.
 
         Parameters
         ----------
@@ -207,11 +205,7 @@ class Camera:
         self.reset()
 
     def resize_frame_shape(self, fixed_dimension=0):
-        """
-        Changes frame_shape to match the aspect ratio
-        of the pixels, where fixed_dimension determines
-        whether frame_height or frame_width
-        remains fixed while the other changes accordingly.
+        """Changes frame_shape to match the aspect ratio of the pixels, where fixed_dimension determines whether frame_height or frame_width remains fixed while the other changes accordingly.
 
         Parameters
         ----------
@@ -233,9 +227,10 @@ class Camera:
 
     def init_background(self):
         """Initialize the background.
-        If self.background_image is the path of an image
-        the image is set as background; else, the default
-        background color fills the background.
+
+        If self.background_image is the path of an image the image is
+        set as background; else, the default background color fills the
+        background.
         """
         height = self.pixel_height
         width = self.pixel_width
@@ -258,9 +253,7 @@ class Camera:
             self.background[:, :] = background_rgba
 
     def get_image(self, pixel_array=None):
-        """Returns an image from the passed
-        pixel array, or from the current frame
-        if the passed pixel array is none.
+        """Returns an image from the passed pixel array, or from the current frame if the passed pixel array is none.
 
         Parameters
         ----------
@@ -277,8 +270,7 @@ class Camera:
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
     def convert_pixel_array(self, pixel_array, convert_from_floats=False):
-        """Converts a pixel array from values that have floats in then
-        to proper RGB values.
+        """Converts a pixel array from values that have floats in then to proper RGB values.
 
         Parameters
         ----------
@@ -322,8 +314,7 @@ class Camera:
             self.pixel_array[:, :, :] = converted_array[:, :, :]
 
     def set_background(self, pixel_array, convert_from_floats=False):
-        """Sets the background to the passed pixel_array after converting
-        to valid RGB values.
+        """Sets the background to the passed pixel_array after converting to valid RGB values.
 
         Parameters
         ----------
@@ -336,10 +327,7 @@ class Camera:
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(self, coords_to_colors_func):
-        """
-        Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color. Each input
-        pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not
-        pixel coordinates), and each output is expected to be an RGBA array of 4 floats.
+        """Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats.
 
         Parameters
         ----------
@@ -367,10 +355,7 @@ class Camera:
         return self.convert_pixel_array(new_background, convert_from_floats=True)
 
     def set_background_from_func(self, coords_to_colors_func):
-        """
-        Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color. Each input
-        pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not
-        pixel coordinates), and each output is expected to be an RGBA array of 4 floats.
+        """Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats.
 
         Parameters
         ----------
@@ -381,8 +366,7 @@ class Camera:
         self.set_background(self.make_background_from_func(coords_to_colors_func))
 
     def reset(self):
-        """Resets the camera's pixel array
-        to that of the background
+        """Resets the camera's pixel array to that of the background.
 
         Returns
         -------
@@ -403,8 +387,7 @@ class Camera:
         include_submobjects=True,
         excluded_mobjects=None,
     ):
-        """Used to get the list of mobjects to display
-        with the camera.
+        """Used to get the list of mobjects to display with the camera.
 
         Parameters
         ----------
@@ -435,8 +418,7 @@ class Camera:
         return mobjects
 
     def is_in_frame(self, mobject):
-        """Checks whether the passed mobject is in
-        frame or not.
+        """Checks whether the passed mobject is in frame or not.
 
         Parameters
         ----------
@@ -473,7 +455,6 @@ class Camera:
 
         kwargs
             Keyword arguments to be passed to :meth:`get_mobjects_to_display`.
-
         """
         return self.capture_mobjects([mobject], **kwargs)
 
@@ -494,7 +475,6 @@ class Camera:
         Notes
         -----
         For a list of classes that can currently be rendered, see :meth:`display_funcs`.
-
         """
         # The mobjects will be processed in batches (or runs) of mobjects of
         # the same type.  That is, if the list mobjects contains objects of
@@ -513,8 +493,7 @@ class Camera:
     # detailed as possible.
 
     def get_cached_cairo_context(self, pixel_array):
-        """Returns the cached cairo context of the passed
-        pixel array if it exists, and None if it doesn't.
+        """Returns the cached cairo context of the passed pixel array if it exists, and None if it doesn't.
 
         Parameters
         ----------
@@ -529,7 +508,7 @@ class Camera:
         return self.pixel_array_to_cairo_context.get(id(pixel_array), None)
 
     def cache_cairo_context(self, pixel_array, ctx):
-        """Caches the passed Pixel array into a Cairo Context
+        """Caches the passed Pixel array into a Cairo Context.
 
         Parameters
         ----------
@@ -541,10 +520,7 @@ class Camera:
         self.pixel_array_to_cairo_context[id(pixel_array)] = ctx
 
     def get_cairo_context(self, pixel_array):
-        """Returns the cairo context for a pixel array after
-        caching it to self.pixel_array_to_cairo_context
-        If that array has already been cached, it returns the
-        cached version instead.
+        """Returns the cairo context for a pixel array after caching it to self.pixel_array_to_cairo_context If that array has already been cached, it returns the cached version instead.
 
         Parameters
         ----------
@@ -586,7 +562,7 @@ class Camera:
         return ctx
 
     def display_multiple_vectorized_mobjects(self, vmobjects, pixel_array):
-        """Displays multiple VMobjects in the pixel_array
+        """Displays multiple VMobjects in the pixel_array.
 
         Parameters
         ----------
@@ -608,8 +584,7 @@ class Camera:
                 )
 
     def display_multiple_non_background_colored_vmobjects(self, vmobjects, pixel_array):
-        """Displays multiple VMobjects in the cairo context, as long as they don't have
-        background colors.
+        """Displays multiple VMobjects in the cairo context, as long as they don't have background colors.
 
         Parameters
         ----------
@@ -623,7 +598,7 @@ class Camera:
             self.display_vectorized(vmobject, ctx)
 
     def display_vectorized(self, vmobject, ctx):
-        """Displays a VMobject in the cairo context
+        """Displays a VMobject in the cairo context.
 
         Parameters
         ----------
@@ -644,7 +619,7 @@ class Camera:
         return self
 
     def set_cairo_context_path(self, ctx, vmobject):
-        """Sets a path for the cairo context with the vmobject passed
+        """Sets a path for the cairo context with the vmobject passed.
 
         Parameters
         ----------
@@ -662,7 +637,7 @@ class Camera:
         # TODO, shouldn't this be handled in transform_points_pre_display?
         # points = points - self.get_frame_center()
         if len(points) == 0:
-            return
+            return None
 
         ctx.new_path()
         subpaths = vmobject.gen_subpaths_from_points_2d(points)
@@ -678,7 +653,7 @@ class Camera:
         return self
 
     def set_cairo_context_color(self, ctx, rgbas, vmobject):
-        """Sets the color of the cairo context
+        """Sets the color of the cairo context.
 
         Parameters
         ----------
@@ -710,7 +685,7 @@ class Camera:
         return self
 
     def apply_fill(self, ctx, vmobject):
-        """Fills the cairo context
+        """Fills the cairo context.
 
         Parameters
         ----------
@@ -764,8 +739,7 @@ class Camera:
         return self
 
     def get_stroke_rgbas(self, vmobject, background=False):
-        """Gets the RGBA array for the stroke of the passed
-        VMobject.
+        """Gets the RGBA array for the stroke of the passed VMobject.
 
         Parameters
         ----------
@@ -783,7 +757,7 @@ class Camera:
         return vmobject.get_stroke_rgbas(background)
 
     def get_fill_rgbas(self, vmobject):
-        """Returns the RGBA array of the fill of the passed VMobject
+        """Returns the RGBA array of the fill of the passed VMobject.
 
         Parameters
         ----------
@@ -798,8 +772,7 @@ class Camera:
         return vmobject.get_fill_rgbas()
 
     def get_background_colored_vmobject_displayer(self):
-        """Returns the background_colored_vmobject_displayer
-        if it exists or makes one and returns it if not.
+        """Returns the background_colored_vmobject_displayer if it exists or makes one and returns it if not.
 
         Returns
         -------
@@ -999,8 +972,7 @@ class Camera:
         )
 
     def adjust_out_of_range_points(self, points):
-        """If any of the points in the passed array are out of
-        the viable range, they are adjusted suitably.
+        """If any of the points in the passed array are out of the viable range, they are adjusted suitably.
 
         Parameters
         ----------
@@ -1067,8 +1039,7 @@ class Camera:
         return result.astype("int")
 
     def on_screen_pixels(self, pixel_coords):
-        """Returns array of pixels that are on the screen from a given
-        array of pixel_coordinates
+        """Returns array of pixels that are on the screen from a given array of pixel_coordinates.
 
         Parameters
         ----------
@@ -1125,8 +1096,7 @@ class Camera:
         return np.array(list(it.product(_range, _range)))
 
     def thickened_coordinates(self, pixel_coords, thickness):
-        """Returns thickened coordinates for a passed array of pixel coords and
-        a thickness to thicken by.
+        """Returns thickened coordinates for a passed array of pixel coords and a thickness to thicken by.
 
         Parameters
         ----------
@@ -1176,9 +1146,7 @@ class Camera:
 
         # Have to also flip the y coordinates to account for pixel array being listed in
         # top-to-bottom order, opposite of screen coordinate convention
-        centered_space_coords = centered_space_coords * (1, -1)
-
-        return centered_space_coords
+        return centered_space_coords * (1, -1)
 
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitions.

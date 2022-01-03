@@ -1,6 +1,4 @@
-"""
-Constant definitions.
-"""
+"""Constant definitions."""
 
 import typing
 

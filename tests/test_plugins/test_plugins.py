@@ -56,9 +56,9 @@ cfg_file_contents = textwrap.dedent(
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def simple_scenes_path():
-    yield str(Path(__file__).parent / "simple_scenes.py")
+    return str(Path(__file__).parent / "simple_scenes.py")
 
 
 def cfg_file_create(cfg_file_contents, path):
@@ -68,12 +68,12 @@ def cfg_file_create(cfg_file_contents, path):
     return file_loc
 
 
-@pytest.fixture
+@pytest.fixture()
 def random_string():
     all_letters = string.ascii_lowercase
     a = random.Random()
     final_letters = [a.choice(all_letters) for _ in range(8)]
-    yield "".join(final_letters)
+    return "".join(final_letters)
 
 
 def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
@@ -99,7 +99,7 @@ def test_plugin_warning(tmp_path, python_version, simple_scenes_path):
     assert "Missing Plugins" in out, "Missing Plugins isn't in Output."
 
 
-@pytest.fixture
+@pytest.fixture()
 def create_plugin(tmp_path, python_version, random_string):
     plugin_dir = tmp_path / "plugin_dir"
     plugin_name = random_string
@@ -145,7 +145,7 @@ def create_plugin(tmp_path, python_version, random_string):
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_plugin_function_like(
     tmp_path,
     create_plugin,
@@ -180,7 +180,7 @@ def test_plugin_function_like(
     assert exit_code == 0, err
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_plugin_no_all(tmp_path, create_plugin, python_version):
     create_plugin = create_plugin("{plugin_name}", "NoAll", "import_all")
     plugin_name = create_plugin["plugin_name"]
@@ -226,7 +226,7 @@ def test_plugin_no_all(tmp_path, create_plugin, python_version):
     Path(tmpfile.name).unlink()
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_path):
     create_plugin = create_plugin(
         "{plugin_name}",

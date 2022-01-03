@@ -51,10 +51,7 @@ def resize_with_interpolation(nparray, length):
 
 
 def remove_list_redundancies(lst):
-    """
-    Used instead of list(set(l)) to maintain order
-    Keeps the last occurrence of each element
-    """
+    """Used instead of list(set(l)) to maintain order Keeps the last occurrence of each element."""
     reversed_result = []
     used = set()
     for x in reversed(lst):
@@ -66,10 +63,7 @@ def remove_list_redundancies(lst):
 
 
 def list_update(l1, l2):
-    """
-    Used instead of list(set(l1).update(l2)) to maintain order,
-    making sure duplicates are removed from l1, not l2.
-    """
+    """Used instead of list(set(l1).update(l2)) to maintain order, making sure duplicates are removed from l1, not l2."""
     return [e for e in l1 if e not in l2] + list(l2)
 
 
@@ -78,7 +72,7 @@ def list_difference_update(l1, l2):
 
 
 def all_elements_are_instances(iterable, Class):
-    return all([isinstance(e, Class) for e in iterable])
+    return all(isinstance(e, Class) for e in iterable)
 
 
 def adjacent_n_tuples(objects, n):
@@ -99,13 +93,7 @@ def tuplify(obj):
 
 
 def batch_by_property(items, property_func):
-    """
-    Takes in a list, and returns a list of tuples, (batch, prop)
-    such that all items in a batch have the same output when
-    put into property_func, and such that chaining all these
-    batches together would give the original list (i.e. order is
-    preserved)
-    """
+    """Takes in a list, and returns a list of tuples, (batch, prop) such that all items in a batch have the same output when put into property_func, and such that chaining all these batches together would give the original list (i.e. order is preserved)"""
     batch_prop_pairs = []
     curr_batch = []
     curr_prop = None

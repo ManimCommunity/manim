@@ -1,6 +1,6 @@
 """General polyhedral class and platonic solids."""
 
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -87,10 +87,16 @@ class Polyhedron(VGroup):
         self,
         vertex_coords: List[Union[List[float], np.ndarray]],
         faces_list: List[List[int]],
-        faces_config: Dict[str, Union[str, int, float, bool]] = {},
-        graph_config: Dict[str, Union[str, int, float, bool]] = {},
+        faces_config: Optional[Dict[str, Union[str, int, float, bool]]] = None,
+        graph_config: Optional[Dict[str, Union[str, int, float, bool]]] = None,
     ):
         super().__init__()
+
+        if faces_config is None:
+            faces_config = {}
+        if graph_config is None:
+            graph_config = {}
+
         self.faces_config = dict(
             {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
         )
@@ -140,6 +146,7 @@ class Polyhedron(VGroup):
 
     def extract_face_coords(self) -> List[List[Union[np.ndarray]]]:
         """Extracts the coordinates of the vertices in the graph.
+
         Used for updating faces.
         """
         new_vertex_coords = []

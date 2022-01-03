@@ -84,7 +84,8 @@ def update_cfg(cfg_dict, project_cfg_path):
 def project(default_settings, **args):
     """Creates a new project.
 
-    PROJECT_NAME is the name of the folder in which the new project will be initialized.
+    PROJECT_NAME is the name of the folder in which the new project will
+    be initialized.
     """
     if args["project_name"]:
         project_name = args["project_name"]

@@ -16,7 +16,7 @@ class MultiCamera(MovingCamera):
         allow_cameras_to_capture_their_own_display=False,
         **kwargs
     ):
-        """Initialises the MultiCamera
+        """Initialises the MultiCamera.
 
         Parameters
         ----------
@@ -35,8 +35,7 @@ class MultiCamera(MovingCamera):
         super().__init__(**kwargs)
 
     def add_image_mobject_from_camera(self, image_mobject_from_camera):
-        """Adds an ImageMobject that's been obtained from the camera
-        into the list ``self.image_mobject_from_cameras``
+        """Adds an ImageMobject that's been obtained from the camera into the list ``self.image_mobject_from_cameras``
 
         Parameters
         ----------
@@ -50,7 +49,7 @@ class MultiCamera(MovingCamera):
         self.image_mobjects_from_cameras.append(imfc)
 
     def update_sub_cameras(self):
-        """Reshape sub_camera pixel_arrays"""
+        """Reshape sub_camera pixel_arrays."""
         for imfc in self.image_mobjects_from_cameras:
             pixel_height, pixel_width = self.pixel_array.shape[:2]
             imfc.camera.frame_shape = (
@@ -85,8 +84,7 @@ class MultiCamera(MovingCamera):
         super().capture_mobjects(mobjects, **kwargs)
 
     def get_mobjects_indicating_movement(self):
-        """Returns all mobjects whose movement implies that the camera
-        should think of all other mobjects on the screen as moving
+        """Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving.
 
         Returns
         -------

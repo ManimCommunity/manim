@@ -38,7 +38,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Iterable, Sequence, Type
+from typing import Iterable, Optional, Sequence, Type
 
 import numpy as np
 
@@ -135,11 +135,11 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
         element_to_mobject: Type[MathTex] = MathTex,
-        element_to_mobject_config: dict = {},
+        element_to_mobject_config: Optional[dict] = None,
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
-        bracket_config: dict = {},
+        bracket_config: Optional[dict] = None,
         **kwargs,
     ):
         """
@@ -176,6 +176,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             the brackets.
 
         """
+        if bracket_config is None:
+            bracket_config = {}
 
         self.v_buff = v_buff
         self.h_buff = h_buff
@@ -184,7 +186,9 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.include_background_rectangle = include_background_rectangle
         self.element_to_mobject = element_to_mobject
-        self.element_to_mobject_config = element_to_mobject_config
+        self.element_to_mobject_config = (
+            {} if element_to_mobject_config is None else element_to_mobject_config
+        )
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
@@ -362,8 +366,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def add_background_to_entries(self):
-        """Add a black background rectangle to the matrix,
-        see above for an example.
+        """Add a black background rectangle to the matrix, see above for an example.
 
         Returns
         -------
@@ -458,11 +461,10 @@ class DecimalMatrix(Matrix):
         self,
         matrix,
         element_to_mobject=DecimalNumber,
-        element_to_mobject_config={"num_decimal_places": 1},
+        element_to_mobject_config=None,
         **kwargs,
     ):
-        """
-        Will round/truncate the decimal places as per the provided config.
+        """Will round/truncate the decimal places as per the provided config.
 
         Parameters
         ----------
@@ -476,7 +478,9 @@ class DecimalMatrix(Matrix):
         super().__init__(
             matrix,
             element_to_mobject=element_to_mobject,
-            element_to_mobject_config=element_to_mobject_config,
+            element_to_mobject_config={"num_decimal_places": 1}
+            if element_to_mobject_config is None
+            else element_to_mobject_config,
             **kwargs,
         )
 
@@ -500,8 +504,7 @@ class IntegerMatrix(Matrix):
     """
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
-        """
-        Will round if there are decimal entries in the matrix.
+        """Will round if there are decimal entries in the matrix.
 
         Parameters
         ----------

@@ -64,7 +64,6 @@ def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
        100.0
        >>> config["frame_height"]
        8.0
-
     """
     global config
     original = config.copy()

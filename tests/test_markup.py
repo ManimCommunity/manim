@@ -6,8 +6,8 @@ from manim import MarkupText
 def test_good_markup():
     """Test creation of valid :class:`MarkupText` object"""
     try:
-        text1 = MarkupText("<b>foo</b>")
-        text2 = MarkupText("foo")
+        MarkupText("<b>foo</b>")
+        MarkupText("foo")
         success = True
     except ValueError:
         success = False
@@ -17,8 +17,8 @@ def test_good_markup():
 def test_special_tags_markup():
     """Test creation of valid :class:`MarkupText` object with unofficial tags"""
     try:
-        text1 = MarkupText('<color col="RED">foo</color>')
-        text1 = MarkupText('<gradient from="RED" to="YELLOW">foo</gradient>')
+        MarkupText('<color col="RED">foo</color>')
+        MarkupText('<gradient from="RED" to="YELLOW">foo</gradient>')
         success = True
     except ValueError:
         success = False
@@ -30,7 +30,7 @@ def test_special_tags_markup():
 def test_unbalanced_tag_markup():
     """Test creation of invalid :class:`MarkupText` object (unbalanced tag)"""
     try:
-        text = MarkupText("<b>foo")
+        MarkupText("<b>foo")
         success = False
     except ValueError:
         success = True
@@ -40,7 +40,7 @@ def test_unbalanced_tag_markup():
 def test_invalid_tag_markup():
     """Test creation of invalid :class:`MarkupText` object (invalid tag)"""
     try:
-        text = MarkupText("<invalidtag>foo</invalidtag>")
+        MarkupText("<invalidtag>foo</invalidtag>")
         success = False
     except ValueError:
         success = True

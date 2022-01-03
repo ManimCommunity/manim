@@ -52,7 +52,6 @@ class Brace(SVGPathMobject):
                     self.add(t)
                     self.add(br)
                 VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
-
     """
 
     def __init__(
@@ -203,8 +202,7 @@ class BraceText(BraceLabel):
 
 
 class BraceBetweenPoints(Brace):
-    """Similar to Brace, but instead of taking a mobject it uses 2
-    points to place the brace.
+    """Similar to Brace, but instead of taking a mobject it uses 2 points to place the brace.
 
     A fitting direction for the brace is
     computed, but it still can be manually overridden.
@@ -299,15 +297,14 @@ class ArcBrace(Brace):
 
                     arc_group = VGroup(group_1, group_2, group_3, group_4).arrange_in_grid(buff=1.5)
                     self.add(arc_group.center())
-
     """
 
     def __init__(
-        self,
-        arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
-        direction: Sequence[float] = RIGHT,
-        **kwargs
+        self, arc: Optional[Arc] = None, direction: Sequence[float] = RIGHT, **kwargs
     ):
+        if arc is None:
+            arc = Arc(start_angle=-1, angle=2, radius=1)
+
         arc_end_angle = arc.start_angle + arc.angle
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
         scale_shift = RIGHT * np.log(arc.radius)

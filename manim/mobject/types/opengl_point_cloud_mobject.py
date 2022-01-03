@@ -1,5 +1,6 @@
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
+from typing import Callable
 import moderngl
 import numpy as np
 
@@ -42,8 +43,8 @@ class OpenGLPMobject(OpenGLMobject):
     def add_points(self, points, rgbas=None, color=None, opacity=None):
         """Add points.
 
-        Points must be a Nx3 numpy array.
-        Rgbas must be a Nx4 numpy array if it is not None.
+        Points must be a Nx3 numpy array. Rgbas must be a Nx4 numpy
+        array if it is not None.
         """
         if rgbas is None and color is None:
             color = YELLOW
@@ -61,9 +62,7 @@ class OpenGLPMobject(OpenGLMobject):
         return self
 
     def thin_out(self, factor=5):
-        """
-        Removes all but every nth point for n = factor
-        """
+        """Remove all but every nth point for n = factor."""
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
 
@@ -121,9 +120,18 @@ class OpenGLPMobject(OpenGLMobject):
                 mob.data[key] = mob.data[key][to_keep]
         return self
 
-    def sort_points(self, function=lambda p: p[0]):
-        """
-        function is any map from R^3 to R
+    def sort_points(self, function: Callable = lambda p: p[0]) -> "OpenGLPMobject":
+        """Sort Points.
+
+        Parameters
+        ----------
+        function : Callable, optional
+            Function is any map from R^3 to R, by default lambdap:p[0]
+
+        Returns
+        -------
+        OpenGLPMobject
+            [description]
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -156,7 +164,7 @@ class OpenGLPMobject(OpenGLMobject):
 
 class OpenGLPGroup(OpenGLPMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, OpenGLPMobject) for m in pmobs]):
+        if not all(isinstance(m, OpenGLPMobject) for m in pmobs):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)

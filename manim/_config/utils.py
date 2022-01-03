@@ -7,7 +7,6 @@ height/width, frame rate), output (e.g. directories, logging), styling
 movie vs writing a single frame).
 
 See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
-
 """
 import argparse
 import configparser
@@ -62,7 +61,6 @@ def config_file_paths() -> typing.List[Path]:
     Notes
     -----
     The location of the user-wide config file is OS-specific.
-
     """
     library_wide = Path.resolve(Path(__file__).parent / "default.cfg")
     if sys.platform.startswith("win32"):
@@ -99,7 +97,6 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     See Also
     --------
     :func:`config_file_paths`
-
     """
     library_wide, user_wide, folder_wide = config_file_paths()
     # From the documentation: "An application which requires initial values to
@@ -228,7 +225,6 @@ class ManimConfig(MutableMapping):
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
-
     """
 
     _OPTS = {
@@ -345,7 +341,6 @@ class ManimConfig(MutableMapping):
         --------
         :meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`,
         :meth:`~ManimConfig.digest_parser`
-
         """
 
         if isinstance(obj, ManimConfig):
@@ -384,7 +379,6 @@ class ManimConfig(MutableMapping):
         Notes
         -----
         This is the main mechanism behind :func:`tempconfig`.
-
         """
         return copy.deepcopy(self)
 
@@ -513,7 +507,6 @@ class ManimConfig(MutableMapping):
 
             parser = make_config_parser()
             config = ManimConfig().digest_parser(parser)
-
         """
         self._parser = parser
 
@@ -593,14 +586,14 @@ class ManimConfig(MutableMapping):
         gui_location = tuple(
             map(int, re.split(r"[;,\-]", parser["CLI"]["gui_location"])),
         )
-        setattr(self, "gui_location", gui_location)
+        self.gui_location = gui_location
 
         window_size = parser["CLI"][
             "window_size"
         ]  # if not "default", get a tuple of the position
         if window_size != "default":
             window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
-        setattr(self, "window_size", window_size)
+        self.window_size = window_size
 
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
@@ -619,7 +612,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["CLI"].get("progress_bar")
         if val:
-            setattr(self, "progress_bar", val)
+            self.progress_bar = val
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
@@ -627,7 +620,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["jupyter"].get("media_width")
         if val:
-            setattr(self, "media_width", val)
+            self.media_width = val
 
         val = parser["CLI"].get("quality", fallback="", raw=True)
         if val:
@@ -658,7 +651,6 @@ class ManimConfig(MutableMapping):
         If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the
         contents of said file with :meth:`~ManimConfig.digest_file` before
         digesting any other CLI arguments.
-
         """
         # if the input file is a config file, parse it properly
         if args.file.suffix == ".cfg":
@@ -778,12 +770,12 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.renderer == "opengl" and getattr(args, "write_to_movie") is None:
+        if self.renderer == "opengl" and args.write_to_movie is None:
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 
         # Handle --gui_location flag.
-        if getattr(args, "gui_location") is not None:
+        if args.gui_location is not None:
             self.gui_location = args.gui_location
 
         return self
@@ -817,7 +809,6 @@ class ManimConfig(MutableMapping):
         first and digesting them with one call to
         :meth:`~ManimConfig.digest_parser`, instead of calling this method
         multiple times.
-
         """
         if not os.path.isfile(filename):
             raise FileNotFoundError(
@@ -828,6 +819,7 @@ class ManimConfig(MutableMapping):
 
         if filename:
             return self.digest_parser(make_config_parser(filename))
+        return False
 
     # config options are properties
     preview = property(
@@ -1126,7 +1118,7 @@ class ManimConfig(MutableMapping):
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:
-            if all([q[k] == constants.QUALITIES[qual][k] for k in keys]):
+            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):
                 return qual
         return None
 
@@ -1419,7 +1411,6 @@ class ManimConfig(MutableMapping):
             >>> config.media_dir = "./media"
             >>> config.get_dir("media_dir").as_posix()
             'media'
-
         """
         dirs = [
             "assets_dir",
@@ -1539,7 +1530,10 @@ class ManimConfig(MutableMapping):
 
     @property
     def tex_template(self):
-        """Template used when rendering Tex.  See :class:`.TexTemplate`."""
+        """Template used when rendering Tex.
+
+        See :class:`.TexTemplate`.
+        """
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]
             if fn:
@@ -1555,7 +1549,10 @@ class ManimConfig(MutableMapping):
 
     @property
     def tex_template_file(self):
-        """File to read Tex template from (no flag).  See :class:`.TexTemplateFromFile`."""
+        """File to read Tex template from (no flag).
+
+        See :class:`.TexTemplateFromFile`.
+        """
         return self._d["tex_template_file"]
 
     @tex_template_file.setter

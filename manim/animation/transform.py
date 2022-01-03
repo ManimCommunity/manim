@@ -205,7 +205,6 @@ class ReplacementTransform(Transform):
                 self.play(Transform(transform[0], transform[1]))
                 self.play(Transform(transform[1], transform[2]))
                 self.wait()
-
     """
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
@@ -215,9 +214,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """
-    Performs a reversed Transform
-    """
+    """Performs a reversed Transform."""
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
@@ -282,7 +279,6 @@ class ApplyMethod(Transform):
         Any positional arguments to be passed when applying the method.
     kwargs
         Any keyword arguments passed to :class:`~.Transform`.
-
     """
 
     def __init__(
@@ -333,7 +329,6 @@ class ApplyPointwiseFunction(ApplyMethod):
                     )
                 )
                 self.wait()
-
     """
 
     def __init__(
@@ -470,9 +465,11 @@ class TransformAnimations(Transform):
         self,
         start_anim: Animation,
         end_anim: Animation,
-        rate_func: Callable = squish_rate_func(smooth),
+        rate_func: Optional[Callable] = None,
         **kwargs,
     ) -> None:
+        if rate_func is None:
+            rate_func = squish_rate_func(smooth)
         self.start_anim = start_anim
         self.end_anim = end_anim
         if "run_time" in kwargs:
@@ -546,7 +543,6 @@ class FadeTransform(Transform):
                 )
 
                 self.play(*[FadeOut(mobj) for mobj in self.mobjects])
-
     """
 
     def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
@@ -563,10 +559,11 @@ class FadeTransform(Transform):
     def begin(self):
         """Initial setup for the animation.
 
-        The mobject to which this animation is bound is a group consisting of
-        both the starting and the ending mobject. At the start, the ending
-        mobject replaces the starting mobject (and is completely faded). In the
-        end, it is set to be the other way around.
+        The mobject to which this animation is bound is a group
+        consisting of both the starting and the ending mobject. At the
+        start, the ending mobject replaces the starting mobject (and is
+        completely faded). In the end, it is set to be the other way
+        around.
         """
         self.ending_mobject = self.mobject.copy()
         Animation.begin(self)
@@ -626,7 +623,6 @@ class FadeTransformPieces(FadeTransform):
                     FadeTransformPieces(src_copy, target_copy)
                 )
                 self.play(*[FadeOut(mobj) for mobj in self.mobjects])
-
     """
 
     def begin(self):
@@ -634,8 +630,6 @@ class FadeTransformPieces(FadeTransform):
         super().begin()
 
     def ghost_to(self, source, target):
-        """Replaces the source submobjects by the target submobjects and sets
-        the opacity to 0.
-        """
+        """Replaces the source submobjects by the target submobjects and sets the opacity to 0."""
         for sm0, sm1 in zip(source.get_family(), target.get_family()):
             super().ghost_to(sm0, sm1)

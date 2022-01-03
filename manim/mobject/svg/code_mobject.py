@@ -48,7 +48,6 @@ class Code(VGroup):
 
     Examples
     --------
-
     Normal usage::
 
         listing = Code(
@@ -137,7 +136,6 @@ class Code(VGroup):
         ``insert_line_no=False`` has been specified.
     code : :class:`~.Paragraph`
         The highlighted code.
-
     """
 
     # tuples in the form (name, aliases, filetypes, mimetypes)
@@ -277,7 +275,7 @@ class Code(VGroup):
         self.move_to(np.array([0, 0, 0]))
 
     def ensure_valid_file(self):
-        """Function to validate file."""
+        """Validate a file."""
         if self.file_name is None:
             raise Exception("Must specify file for Code")
         possible_paths = [
@@ -295,7 +293,7 @@ class Code(VGroup):
         raise OSError(error)
 
     def gen_line_numbers(self):
-        """Function to generate line_numbers.
+        """Generate line_numbers.
 
         Returns
         -------
@@ -303,7 +301,7 @@ class Code(VGroup):
             The generated line_numbers according to parameters.
         """
         line_numbers_array = []
-        for line_no in range(0, self.code_json.__len__()):
+        for line_no in range(self.code_json.__len__()):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
         line_numbers = Paragraph(
@@ -320,7 +318,7 @@ class Code(VGroup):
         return line_numbers
 
     def gen_colored_lines(self):
-        """Function to generate code.
+        """Generate code.
 
         Returns
         -------
@@ -328,7 +326,7 @@ class Code(VGroup):
             The generated code according to parameters.
         """
         lines_text = []
-        for line_no in range(0, self.code_json.__len__()):
+        for line_no in range(self.code_json.__len__()):
             line_str = ""
             for word_index in range(self.code_json[line_no].__len__()):
                 line_str = line_str + self.code_json[line_no][word_index][0]
@@ -354,7 +352,7 @@ class Code(VGroup):
         return code
 
     def gen_html_string(self):
-        """Function to generate html string with code highlighted and stores in variable html_string."""
+        """Generate html string with code highlighted and stores in variable html_string."""
         self.html_string = hilite_me(
             self.code_string,
             self.language,
@@ -382,12 +380,14 @@ class Code(VGroup):
                 file.write(self.html_string)
 
     def gen_code_json(self):
-        """Function to background_color, generate code_json and tab_spaces from html_string.
+        """Generate code_json and tab_spaces from html_string.
+
         background_color is just background color of displayed code.
-        code_json is 2d array with rows as line numbers
-        and columns as a array with length 2 having text and text's color value.
-        tab_spaces is 2d array with rows as line numbers
-        and columns as corresponding number of indentation_chars in front of that line in code.
+        code_json is 2d array with rows as line numbers and columns as a
+        array with length 2 having text and text's color value.
+        tab_spaces is 2d array with rows as line numbers and columns as
+        corresponding number of indentation_chars in front of that line
+        in code.
         """
         if (
             self.background_color == "#111111"
@@ -423,7 +423,7 @@ class Code(VGroup):
         self.code_json = []
         self.tab_spaces = []
         code_json_line_index = -1
-        for line_index in range(0, lines.__len__()):
+        for line_index in range(lines.__len__()):
             # print(lines[line_index])
             self.code_json.append([])
             code_json_line_index = code_json_line_index + 1
@@ -477,10 +477,10 @@ class Code(VGroup):
         # print(self.code_json)
 
     def correct_non_span(self, line_str):
-        """Function put text color to those strings that don't have one according to background_color of displayed code.
+        """Put text color to those strings that don't have one according to background_color of displayed code.
 
         Parameters
-        ---------
+        ----------
         line_str : :class:`str`
             Takes a html element's string to put color to it according to background_color of displayed code.
 
@@ -491,14 +491,14 @@ class Code(VGroup):
         """
         words = line_str.split("</span>")
         line_str = ""
-        for i in range(0, words.__len__()):
+        for i in range(words.__len__()):
             if i != words.__len__() - 1:
                 j = words[i].find("<span")
             else:
                 j = words[i].__len__()
             temp = ""
             starti = -1
-            for k in range(0, j):
+            for k in range(j):
                 if words[i][k] == "\t" and starti == -1:
                     continue
                 else:
@@ -537,10 +537,10 @@ def hilite_me(
     file_path,
     line_no_from,
 ):
-    """Function to highlight code from string to html.
+    """Highlight code from string to html.
 
     Parameters
-    ---------
+    ----------
     code : :class:`str`
         Code string.
     language : :class:`str`
@@ -575,18 +575,17 @@ def hilite_me(
             "The code language has to be specified when rendering a code string",
         )
     else:
-        html = highlight(code, get_lexer_by_name(language, **{}), formatter)
+        html = highlight(code, get_lexer_by_name(language), formatter)
     if insert_line_no:
         html = insert_line_numbers_in_html(html, line_no_from)
-    html = "<!-- HTML generated by Code() -->" + html
-    return html
+    return "<!-- HTML generated by Code() -->" + html
 
 
 def insert_line_numbers_in_html(html, line_no_from):
-    """Function that inserts line numbers in the highlighted HTML code.
+    """Insert line numbers in the highlighted HTML code.
 
     Parameters
-    ---------
+    ----------
     html : :class:`str`
         html string of highlighted code.
     line_no_from : :class:`int`
@@ -608,8 +607,7 @@ def insert_line_numbers_in_html(html, line_no_from):
     numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
     format_lines = "%" + str(len(str(numbers[-1]))) + "i"
     lines = "\n".join(format_lines % i for i in numbers)
-    html = html.replace(
+    return html.replace(
         pre_open,
         "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open,
     )
-    return html

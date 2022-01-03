@@ -60,7 +60,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
     the target mobject, and unmatched submobjects in the target mobject
     are faded in from the direction of the unmatched submobjects in the
     start mobject.
-
     """
 
     def __init__(
@@ -166,8 +165,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
 
 
 class TransformMatchingShapes(TransformMatchingAbstractBase):
-    """An animation trying to transform groups by matching the shape
-    of their submobjects.
+    """An animation trying to transform groups by matching the shape of their submobjects.
 
     Two submobjects match if the hash of their point coordinates after
     normalization (i.e., after translation to the origin, fixing the submobject
@@ -191,7 +189,6 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
                 self.wait(0.5)
                 self.play(TransformMatchingShapes(src, tar, path_arc=PI/2))
                 self.wait(0.5)
-
     """
 
     def __init__(
@@ -248,7 +245,6 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
                 self.wait(0.5)
                 self.play(TransformMatchingTex(eq1, eq2))
                 self.wait(0.5)
-
     """
 
     def __init__(

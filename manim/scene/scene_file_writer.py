@@ -35,12 +35,7 @@ from .section import DefaultSectionType, Section
 
 
 class SceneFileWriter:
-    """
-    SceneFileWriter is the object that actually writes the animations
-    played, into video files, using FFMPEG.
-    This is mostly for Manim's internal use. You will rarely, if ever,
-    have to use the methods for this class, unless tinkering with the very
-    fabric of Manim's reality.
+    """SceneFileWriter is the object that actually writes the animations played, into video files, using FFMPEG. This is mostly for Manim's internal use. You will rarely, if ever, have to use the methods for this class, unless tinkering with the very fabric of Manim's reality.
 
     Attributes
     ----------
@@ -60,7 +55,6 @@ class SceneFileWriter:
             The file-type extension of the outputted video.
         "partial_movie_files"
             List of all the partial-movie files.
-
     """
 
     force_output_as_scene_name = False
@@ -88,7 +82,6 @@ class SceneFileWriter:
         The directories are read from ``config``, for example
         ``config['media_dir']``.  If the target directories don't already
         exist, they will be created.
-
         """
         if config["dry_run"]:  # in dry-run mode there is no output
             return
@@ -184,8 +177,7 @@ class SceneFileWriter:
         )
 
     def add_partial_movie_file(self, hash_animation):
-        """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash.
-        This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
+        """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash. This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
         Parameters
         ----------
@@ -209,8 +201,7 @@ class SceneFileWriter:
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
 
     def get_resolution_directory(self):
-        """Get the name of the resolution directory directly containing
-        the video file.
+        """Get the name of the resolution directory directly containing the video file.
 
         This method gets the name of the directory that immediately contains the
         video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.
@@ -239,21 +230,15 @@ class SceneFileWriter:
 
     # Sound
     def init_audio(self):
-        """
-        Preps the writer for adding audio to the movie.
-        """
+        """Preps the writer for adding audio to the movie."""
         self.includes_sound = False
 
     def create_audio_segment(self):
-        """
-        Creates an empty, silent, Audio Segment.
-        """
+        """Creates an empty, silent, Audio Segment."""
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(self, new_segment, time=None, gain_to_background=None):
-        """
-        This method adds an audio segment from an
-        AudioSegment type object and suitable parameters.
+        """This method adds an audio segment from an AudioSegment type object and suitable parameters.
 
         Parameters
         ----------
@@ -291,8 +276,7 @@ class SceneFileWriter:
         )
 
     def add_sound(self, sound_file, time=None, gain=None, **kwargs):
-        """
-        This method adds an audio segment from a sound file.
+        """This method adds an audio segment from a sound file.
 
         Parameters
         ----------
@@ -308,7 +292,6 @@ class SceneFileWriter:
         **kwargs
             This method uses add_audio_segment, so any keyword arguments
             used there can be referenced here.
-
         """
         file_path = get_full_sound_file_path(sound_file)
         new_segment = AudioSegment.from_file(file_path)
@@ -318,9 +301,7 @@ class SceneFileWriter:
 
     # Writers
     def begin_animation(self, allow_write=False, file_path=None):
-        """
-        Used internally by manim to stream the animation to FFMPEG for
-        displaying or writing to a file.
+        """Used internally by manim to stream the animation to FFMPEG for displaying or writing to a file.
 
         Parameters
         ----------
@@ -331,9 +312,7 @@ class SceneFileWriter:
             self.open_movie_pipe(file_path=file_path)
 
     def end_animation(self, allow_write=False):
-        """
-        Internally used by Manim to stop streaming to
-        FFMPEG gracefully.
+        """Internally used by Manim to stop streaming to FFMPEG gracefully.
 
         Parameters
         ----------
@@ -344,9 +323,7 @@ class SceneFileWriter:
             self.close_movie_pipe()
 
     def write_frame(self, frame_or_renderer):
-        """
-        Used internally by Manim to write a frame to
-        the FFMPEG input buffer.
+        """Used internally by Manim to write a frame to the FFMPEG input buffer.
 
         Parameters
         ----------
@@ -393,9 +370,7 @@ class SceneFileWriter:
         self.frame_count += 1
 
     def save_final_image(self, image):
-        """
-        The name is a misnomer. This method saves the image
-        passed to it as an in the default image directory.
+        """The name is a misnomer. This method saves the image passed to it as an in the default image directory.
 
         Parameters
         ----------
@@ -411,9 +386,7 @@ class SceneFileWriter:
         self.print_file_ready_message(self.image_file_path)
 
     def idle_stream(self):
-        """
-        Doesn't write anything to the FFMPEG frame buffer.
-        """
+        """Doesn't write anything to the FFMPEG frame buffer."""
         while self.stream_lock:
             a = datetime.datetime.now()
             # self.update_frame()
@@ -430,13 +403,11 @@ class SceneFileWriter:
                 sleep(frame_duration - time_diff)
 
     def finish(self):
-        """
-        Finishes writing to the FFMPEG buffer or writing images
-        to output directory.
-        Combines the partial movie files into the
-        whole scene.
-        If save_last_frame is True, saves the last
-        frame in the default image directory.
+        """Finishes writing to the FFMPEG buffer or writing images to output directory.
+
+        Combines the partial movie files into the whole scene. If
+        save_last_frame is True, saves the last frame in the default
+        image directory.
         """
         if write_to_movie():
             if hasattr(self, "writing_process"):
@@ -455,11 +426,7 @@ class SceneFileWriter:
             self.write_subcaption_file()
 
     def open_movie_pipe(self, file_path=None):
-        """
-        Used internally by Manim to initialise
-        FFMPEG and begin writing to FFMPEG's input
-        buffer.
-        """
+        """Used internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."""
         if file_path is None:
             file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
@@ -505,9 +472,7 @@ class SceneFileWriter:
         self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
 
     def close_movie_pipe(self):
-        """
-        Used internally by Manim to gracefully stop writing to FFMPEG's input buffer
-        """
+        """Used internally by Manim to gracefully stop writing to FFMPEG's input buffer."""
         self.writing_process.stdin.close()
         self.writing_process.wait()
 
@@ -591,10 +556,7 @@ class SceneFileWriter:
         combine_process.wait()
 
     def combine_to_movie(self):
-        """Used internally by Manim to combine the separate
-        partial movie files that make up a Scene into a single
-        video file for that Scene.
-        """
+        """Used internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."""
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
@@ -703,7 +665,7 @@ class SceneFileWriter:
             )
 
     def flush_cache_directory(self):
-        """Delete all the cached partial movie files"""
+        """Delete all the cached partial movie files."""
         cached_partial_movies = [
             os.path.join(self.partial_movie_directory, file_name)
             for file_name in os.listdir(self.partial_movie_directory)

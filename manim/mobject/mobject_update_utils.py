@@ -35,11 +35,7 @@ def always(method, *args, **kwargs):
 
 
 def f_always(method, *arg_generators, **kwargs):
-    """
-    More functional version of always, where instead
-    of taking in args, it takes in functions which output
-    the relevant arguments.
-    """
+    """More functional version of always, where instead of taking in args, it takes in functions which output the relevant arguments."""
     assert_is_mobject_method(method)
     mobject = method.__self__
     func = method.__func__
@@ -75,12 +71,10 @@ def always_rotate(mobject, rate=20 * DEGREES, **kwargs):
 
 
 def turn_animation_into_updater(animation, cycle=False, **kwargs):
-    """
-    Add an updater to the animation's mobject which applies
-    the interpolation and update functions of the animation
+    """Add an updater to the animation's mobject which applies the interpolation and update functions of the animation.
 
-    If cycle is True, this repeats over and over.  Otherwise,
-    the updater will be popped upon completion
+    If cycle is True, this repeats over and over.  Otherwise, the
+    updater will be popped upon completion
     """
     mobject = animation.mobject
     animation.suspend_mobject_updating = False

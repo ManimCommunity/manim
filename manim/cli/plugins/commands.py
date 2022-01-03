@@ -1,9 +1,8 @@
 """Manim's plugin subcommand.
 
-Manim's plugin subcommand is accessed in the command-line interface via ``manim
-plugin``. Here you can specify options, subcommands, and subgroups for the plugin
-group.
-
+Manim's plugin subcommand is accessed in the command-line interface via
+``manim plugin``. Here you can specify options, subcommands, and
+subgroups for the plugin group.
 """
 import click
 

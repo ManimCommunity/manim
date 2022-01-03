@@ -9,7 +9,6 @@
             self.play(FadeIn(tex_in, shift=DOWN, scale=0.66))
             self.play(ReplacementTransform(tex_in, tex_out))
             self.play(FadeOut(tex_out, shift=DOWN * 2, scale=1.5))
-
 """
 
 
@@ -45,7 +44,6 @@ class _Fade(Transform):
     scale
         The factor by which the mobject is scaled initially before being rescaling to
         its original size while being faded in.
-
     """
 
     def __init__(
@@ -132,7 +130,6 @@ class FadeIn(_Fade):
                     FadeIn(tex[3], scale=1.5),
                 ]
                 self.play(AnimationGroup(*animations, lag_ratio=0.5))
-
     """
 
     def create_target(self):
@@ -176,8 +173,6 @@ class FadeOut(_Fade):
                     FadeOut(tex[3], scale=0.5),
                 ]
                 self.play(AnimationGroup(*animations, lag_ratio=0.5))
-
-
     """
 
     def __init__(self, *mobjects: Mobject, **kwargs) -> None:

@@ -354,17 +354,11 @@ class OpenGLVMobject(OpenGLMobject):
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
     def get_fill_color(self):
-        """
-        If there are multiple colors (for gradient)
-        this returns the first one
-        """
+        """If there are multiple colors (for gradient) this returns the first one."""
         return self.get_fill_colors()[0]
 
     def get_fill_opacity(self):
-        """
-        If there are multiple opacities, this returns the
-        first
-        """
+        """If there are multiple opacities, this returns the first."""
         return self.get_fill_opacities()[0]
 
     def get_stroke_color(self):
@@ -426,9 +420,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(new_points)
 
     def add_cubic_bezier_curve_to(self, handle1, handle2, anchor):
-        """
-        Add cubic bezier curve to the path.
-        """
+        """Add cubic bezier curve to the path."""
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
             self.get_last_point(),
@@ -593,22 +585,20 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def make_smooth(self):
-        """
-        This will double the number of points in the mobject,
-        so should not be called repeatedly.  It also means
-        transforming between states before and after calling
-        this might have strange artifacts
+        """This will double the number of points in the mobject, so should not be called repeatedly.
+
+        It also means transforming between states before and after
+        calling this might have strange artifacts
         """
         self.change_anchor_mode("true_smooth")
         return self
 
     def make_approximately_smooth(self):
-        """
-        Unlike make_smooth, this will not change the number of
-        points, but it also does not result in a perfectly smooth
-        curve.  It's most useful when the points have been
-        sampled at a not-too-low rate from a continuous function,
-        as in the case of ParametricCurve
+        """Unlike make_smooth, this will not change the number of points, but it also does not result in a perfectly smooth curve.
+
+        It's most useful when the points have been sampled at a not-too-
+        low rate from a continuous function, as in the case of
+        ParametricCurve
         """
         self.change_anchor_mode("approx_smooth")
         return self
@@ -638,8 +628,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Information about the curve
     def force_direction(self, target_direction):
-        """Makes sure that points are either directed clockwise or
-        counterclockwise.
+        """Makes sure that points are either directed clockwise or counterclockwise.
 
         Parameters
         ----------
@@ -891,7 +880,8 @@ class OpenGLVMobject(OpenGLMobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
+        """Gets the point at a proportion along the path of the
+        :class:`OpenGLVMobject`.
 
         Parameters
         ----------
@@ -933,13 +923,13 @@ class OpenGLVMobject(OpenGLMobject):
                 return curve(residue)
 
             current_length += length
+        return False
 
     def proportion_from_point(
         self,
         point: Iterable[Union[float, int]],
     ) -> float:
-        """Returns the proportion along the path of the :class:`OpenGLVMobject`
-        a particular given point is at.
+        """Returns the proportion along the path of the :class:`OpenGLVMobject` a particular given point is at.
 
         Parameters
         ----------
@@ -986,17 +976,12 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             raise ValueError(f"Point {point} does not lie on this curve.")
 
-        alpha = target_length / total_length
+        return target_length / total_length
 
         return alpha
 
     def get_anchors_and_handles(self):
-        """
-        Returns anchors1, handles, anchors2,
-        where (anchors1[i], handles[i], anchors2[i])
-        will be three points defining a quadratic bezier curve
-        for any i in range(0, len(anchors1))
-        """
+        """Returns anchors1, handles, anchors2, where (anchors1[i], handles[i], anchors2[i]) will be three points defining a quadratic bezier curve for any i in range(0, len(anchors1))"""
         nppc = self.n_points_per_curve
         points = self.points
         return [points[i::nppc] for i in range(nppc)]
@@ -1106,9 +1091,7 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_direction(self):
-        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction.
-        The direction of points determines in which direction the
-        object is drawn, clockwise or counterclockwise.
+        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
 
         Examples
         --------
@@ -1151,7 +1134,7 @@ class OpenGLVMobject(OpenGLMobject):
     # Alignment
     def align_points(self, vmobject):
         if self.get_num_points() == len(vmobject.points):
-            return
+            return None
 
         for mob in self, vmobject:
             # If there are no points, add one to
@@ -1215,9 +1198,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def insert_n_curves_to_point_list(self, n: int, points: np.ndarray) -> np.ndarray:
-        """Given an array of k points defining a bezier curves
-         (anchors and handles), returns points defining exactly
-        k + n bezier curves.
+        """Given an array of k points defining a bezier curves (anchors and handles), returns points defining exactly k + n bezier curves.
 
         Parameters
         ----------
@@ -1278,8 +1259,7 @@ class OpenGLVMobject(OpenGLMobject):
         a: float,
         b: float,
     ) -> "OpenGLVMobject":
-        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
-        passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
+        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
         Parameters
         ----------
@@ -1344,8 +1324,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
-        """Returns the subcurve of the OpenGLVMobject between the interval [a, b].
-        The curve is a OpenGLVMobject itself.
+        """Returns the subcurve of the OpenGLVMobject between the interval [a, b]. The curve is a OpenGLVMobject itself.
 
         Parameters
         ----------
@@ -1653,7 +1632,7 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
+        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
             raise Exception("All submobjects must be of type OpenGLVMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
@@ -1673,7 +1652,7 @@ class OpenGLVGroup(OpenGLVMobject):
         )
 
     def add(self, *vmobjects):
-        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
+        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects.
 
         Parameters
         ----------
@@ -1801,7 +1780,6 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
                 new_curve = CurvesAsSubmobjects(curve)
                 new_curve.set_color_by_gradient(BLUE, RED)
                 self.add(new_curve.shift(UP), curve)
-
     """
 
     def __init__(self, vmobject, **kwargs):
