@@ -20,6 +20,8 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
 
+from ..utils.deprecation import deprecated_params
+
 class NumberLine(Line):
     """Creates a number line with tick marks.
 
@@ -121,6 +123,12 @@ class NumberLine(Line):
         values as the tick locations are dependent on the step size.
     """
 
+    @deprecated_params(
+        params="exclude_origin_tick",
+        since="v0.14",
+        until="v0.15",
+        message="Use `ticks_to_exclude` instead."
+    )
     def __init__(
         self,
         x_range: Optional[Sequence[float]] = None,  # must be first
@@ -131,7 +139,7 @@ class NumberLine(Line):
         tick_size: float = 0.1,
         numbers_with_elongated_ticks: Optional[Iterable[float]] = None,
         longer_tick_multiple: int = 2,
-        exclude_origin_tick: bool = False,
+        ticks_to_exclude: Optional[Iterable[float]] = None,
         # visuals
         rotation: float = 0,
         stroke_width: float = 2.0,
@@ -156,6 +164,8 @@ class NumberLine(Line):
             numbers_to_exclude = []
         if numbers_with_elongated_ticks is None:
             numbers_with_elongated_ticks = []
+        if ticks_to_exclude is None:
+            ticks_to_exclude = [0]
 
         if x_range is None:
             x_range = [
@@ -182,7 +192,7 @@ class NumberLine(Line):
         self.tick_size = tick_size
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
         self.longer_tick_multiple = longer_tick_multiple
-        self.exclude_origin_tick = exclude_origin_tick
+        self.ticks_to_exclude = ticks_to_exclude
         # visuals
         self.rotation = rotation
         # tip
@@ -312,12 +322,16 @@ class NumberLine(Line):
             tick_range = np.arange(x_min, x_max, x_step)
         else:
             start_point = 0
-            if self.exclude_origin_tick:
-                start_point += x_step
 
             x_min_segment = np.arange(start_point, np.abs(x_min) + 1e-6, x_step) * -1
             x_max_segment = np.arange(start_point, x_max, x_step)
 
+            min_filter_arr = x_min_segment in self.ticks_to_exclude
+            x_min_segment = x_min_segment[min_filter_arr]
+
+            max_filter_arr = x_max_segment in self.ticks_to_exclude
+            x_max_segment = x_max_segment[max_filter_arr]
+            
             tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
         return self.scaling.function(tick_range)
