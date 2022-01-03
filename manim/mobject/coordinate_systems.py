@@ -1774,8 +1774,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_intercept = x_intercept
         self.y_intercept = y_intercept
 
-        x_axis_config = self._modify_ticks_and_scaling(x_axis_config)
-        y_axis_config = self._modify_ticks_and_scaling(y_axis_config)
+        x_axis_config = self._modify_ticks_and_scaling(x_axis_config, self.x_intercept)
+        y_axis_config = self._modify_ticks_and_scaling(y_axis_config, self.y_intercept)
 
         self.axis_config = {
             "include_tip": tips,
@@ -1797,8 +1797,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.y_axis_config,
         )
 
-        self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length, self.x_intercept)
-        self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length, self.y_intercept)
+        self.x_axis = self._create_axis(
+            self.x_range, self.x_axis_config, self.x_length, self.x_intercept
+        )
+        self.y_axis = self._create_axis(
+            self.y_range, self.y_axis_config, self.y_length, self.y_intercept
+        )
 
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
@@ -1819,16 +1823,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
-    
+
     @staticmethod
-    def _modify_ticks_and_scaling(ax_config: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-        """Modify an axis_config dictionary to maintain reasonable defaults when 
+    def _modify_ticks_and_scaling(
+        ax_config: Optional[Dict[str, Any]], intercept: Optional[float] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Modify an axis_config dictionary to maintain reasonable defaults when
         used with different scaling configurations.
 
         Parameters
         ----------
-        ax_config : Optional[Dict[str, Any]]
-            The 
+        ax_config
+            The config dictionary to be modified.
+        intercept
+            The intercept used to check which ticks will be removed.
 
         Returns
         -------
@@ -1845,7 +1853,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # not the lowest tick on the graph (which is 10^-2).
 
         if ax_config is None:
-            return None
+            if intercept is not None:
+                ax_config = {}
+                ax_config["ticks_to_exclude"] = [intercept]
+                ax_config["numbers_to_exclude"] = [intercept]
 
         elif ax_config.get("ticks_to_exclude") is None:
             if ax_config.get("scaling") is None or isinstance(
@@ -1857,16 +1868,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             else:
                 ax_config["ticks_to_exclude"] = []
 
+            if intercept is not None:
+                ax_config["ticks_to_exclude"].append(intercept)
+
+        elif intercept is not None:
+            ax_config["ticks_to_exclude"].append(intercept)
+
         return ax_config
-
-
 
     def _create_axis(
         self,
         range_terms: Sequence[float],
         axis_config: dict,
         length: float,
-        intercept: Optional[float] = None
+        intercept: Optional[float] = None,
     ) -> NumberLine:
         """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
 
@@ -1889,7 +1904,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max], intercept)))
+        axis.shift(
+            -axis.number_to_point(
+                self._origin_shift([axis.x_min, axis.x_max], intercept)
+            )
+        )
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -2072,7 +2091,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return line_graph
 
     @staticmethod
-    def _origin_shift(axis_range: Sequence[float], intercept: Optional[float] = None) -> float:
+    def _origin_shift(
+        axis_range: Sequence[float], intercept: Optional[float] = None
+    ) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
@@ -2161,7 +2182,7 @@ class ThreeDAxes(Axes):
         self.light_source = light_source
         self.dimension = 3
 
-        z_axis_config = self._modify_ticks_and_scaling(z_axis_config)
+        z_axis_config = self._modify_ticks_and_scaling(z_axis_config, self.z_intercept)
         self.z_axis_config = {}
         self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
