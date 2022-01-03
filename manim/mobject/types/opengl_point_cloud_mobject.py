@@ -1,6 +1,7 @@
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
 from typing import Callable
+
 import moderngl
 import numpy as np
 
