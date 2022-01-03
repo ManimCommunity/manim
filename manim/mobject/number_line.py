@@ -327,11 +327,8 @@ class NumberLine(Line):
             x_min_segment = np.arange(start_point, np.abs(x_min) + 1e-6, x_step) * -1
             x_max_segment = np.arange(start_point, x_max, x_step)
 
-            min_filter_arr = x_min_segment in self.ticks_to_exclude
-            x_min_segment = x_min_segment[min_filter_arr]
-
-            max_filter_arr = x_max_segment in self.ticks_to_exclude
-            x_max_segment = x_max_segment[max_filter_arr]
+            x_min_segment = np.setdiff1d(x_min_segment, self.ticks_to_exclude)
+            x_max_segment = np.setdiff1d(x_max_segment, self.ticks_to_exclude)
 
             tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
