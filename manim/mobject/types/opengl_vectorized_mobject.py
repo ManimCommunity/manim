@@ -708,7 +708,8 @@ class OpenGLVMobject(OpenGLMobject):
     def get_subpaths(self):
         """Returns subpaths formed by the curves of the OpenGLVMobject.
 
-        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
+        Subpaths are ranges of curves with each pair of consecutive
+        curves having their end/start points coincident.
 
         Returns
         -------
