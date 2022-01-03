@@ -551,12 +551,25 @@ class Text(SVGMobject):
                 submobjects_char_index += 1
         return chars
 
-    def find_indexes(self, word: str, text: str):
+    def _find_indexes(self, word: Union[str, tuple], text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
+        if isinstance(word, tuple):
+            start, end, step = slice(*word).indices(len(text))
+            if step != 1:
+                logger.warning(
+                    "In splice coloring specification (t2c and t2g), steps other"
+                    "than 1 are currently not supported. Ignoring it."
+                )
+            return [(start, end)]
         temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
         if temp:
             start = int(temp.group(1)) if temp.group(1) != "" else 0
             end = int(temp.group(2)) if temp.group(2) != "" else len(text)
+            logger.warning(
+                f"You have passed string splice specification '{word}' to the coloring dictionary (t2c or t2g)."
+                "This method of coloring words has been deprecated and will be soon removed."
+                "Please use tuples instead of strings i.e. `({start}, {end})` instead."
+            )
             start = len(text) + start if start < 0 else start
             end = len(text) + end if end < 0 else end
             return [(start, end)]
@@ -566,6 +579,15 @@ class Text(SVGMobject):
             indexes.append((index, index + len(word)))
             index = text.find(word, index + len(word))
         return indexes
+
+    @deprecated(
+        since="v0.14.0",
+        until="v0.15.0",
+        message="This was internal function, you shouldn't be using it anyway.",
+    )
+    def find_indexes(self, word: str, text: str):
+        """Internally used function. Finds the indexes of ``text`` in ``word``."""
+        return self._find_indexes(self, word, text)
 
     @deprecated(
         since="v0.14.0",
@@ -641,7 +663,7 @@ class Text(SVGMobject):
                 for t2x, arg in t2xs
             }
 
-            for start, end in self.find_indexes(word, self.text):
+            for start, end in self._find_indexes(word, self.text):
                 settings.append(TextSetting(start, end, **setting_args))
         return settings
 
@@ -660,12 +682,12 @@ class Text(SVGMobject):
             if isinstance(gradient, str) or len(gradient) == 1:
                 color = gradient if isinstance(gradient, str) else gradient[0]
                 gradient = [Color(color)]
-            colors = (
-                color_gradient(gradient, len(word))
-                if len(gradient) != 1
-                else len(word) * gradient
-            )
-            for start, end in self.find_indexes(word, self.text):
+            for start, end in self._find_indexes(word, self.text):
+                colors = (
+                    color_gradient(gradient, end - start)
+                    if len(gradient) != 1
+                    else (end - start) * gradient
+                )
                 for i in range(start, end):
                     args["color"] = colors[i - start].hex
                     settings.append(TextSetting(i, i + 1, **args))
@@ -716,7 +738,7 @@ class Text(SVGMobject):
 
         if re.search(r"\n", self.text):
             line_num = 0
-            for start, end in self.find_indexes("\n", self.text):
+            for start, end in self._find_indexes("\n", self.text):
                 for setting in settings:
                     if setting.line_num == -1:
                         setting.line_num = line_num
