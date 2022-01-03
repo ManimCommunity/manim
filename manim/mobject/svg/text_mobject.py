@@ -567,25 +567,6 @@ class Text(SVGMobject):
             index = text.find(word, index + len(word))
         return indexes
 
-    # def full2short(self, kwargs):
-    #     """Internally used function. Formats some expansion to short forms.
-    #     text2color -> t2c
-    #     text2font -> t2f
-    #     text2gradient -> t2g
-    #     text2slant -> t2s
-    #     text2weight -> t2w
-    #     """
-    #     if "text2color" in kwargs:
-    #         self.t2c = kwargs.pop("text2color")
-    #     if "text2font" in kwargs:
-    #         self.t2f = kwargs.pop("text2font")
-    #     if "text2gradient" in kwargs:
-    #         self.t2g = kwargs.pop("text2gradient")
-    #     if "text2slant" in kwargs:
-    #         self.t2s = kwargs.pop("text2slant")
-    #     if "text2weight" in kwargs:
-    #         self.t2w = kwargs.pop("text2weight")
-
     @deprecated(
         since="v0.14.0",
         until="v0.15.0",
