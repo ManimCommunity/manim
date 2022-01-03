@@ -328,7 +328,7 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if write_to_movie() and allow_write:
-            self.open_movie_pipe(file_path=file_path.name)
+            self.open_movie_pipe(file_path=file_path)
 
     def end_animation(self, allow_write=False):
         """
