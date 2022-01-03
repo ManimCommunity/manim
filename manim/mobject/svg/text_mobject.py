@@ -55,8 +55,9 @@ import hashlib
 import os
 import re
 from contextlib import contextmanager
+from itertools import chain
 from pathlib import Path
-from typing import Dict, Union
+from typing import Callable, Dict, Iterable, Sequence, Tuple, Union
 
 import manimpango
 import numpy as np
@@ -68,7 +69,8 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE, Colors
+from ...utils.color import WHITE, Colors, color_gradient
+from ...utils.deprecation import deprecated, deprecated_params
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -423,11 +425,12 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-
+        self.color = color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
-        # needs to be a float or else size is inflated when font_size = 24 (unknown cause)
+        # needs to be a float or else size is inflated when font_size = 24
+        # (unknown cause)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -470,7 +473,6 @@ class Text(SVGMobject):
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
-            color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             height=height,
@@ -504,12 +506,6 @@ class Text(SVGMobject):
                     each.add_line_to(last)
                     last = points[index + 1]
             each.add_line_to(last)
-        if self.t2c:
-            self.set_color_by_t2c()
-        if self.gradient:
-            self.set_color_by_gradient(*self.gradient)
-        if self.t2g:
-            self.set_color_by_t2g()
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
@@ -571,38 +567,29 @@ class Text(SVGMobject):
             index = text.find(word, index + len(word))
         return indexes
 
-    # def full2short(self, kwargs):
-    #     """Internally used function. Formats some expansion to short forms.
-    #     text2color -> t2c
-    #     text2font -> t2f
-    #     text2gradient -> t2g
-    #     text2slant -> t2s
-    #     text2weight -> t2w
-    #     """
-    #     if "text2color" in kwargs:
-    #         self.t2c = kwargs.pop("text2color")
-    #     if "text2font" in kwargs:
-    #         self.t2f = kwargs.pop("text2font")
-    #     if "text2gradient" in kwargs:
-    #         self.t2g = kwargs.pop("text2gradient")
-    #     if "text2slant" in kwargs:
-    #         self.t2s = kwargs.pop("text2slant")
-    #     if "text2weight" in kwargs:
-    #         self.t2w = kwargs.pop("text2weight")
-
+    @deprecated(
+        since="v0.14.0",
+        until="v0.15.0",
+        message="This was internal function, you shouldn't be using it anyway.",
+    )
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
-            for start, end in self.find_indexes(word, self.original_text):
+            for start, end in self.find_indexes(word, self.text):
                 self.chars[start:end].set_color(color)
 
+    @deprecated(
+        since="v0.14.0",
+        until="v0.15.0",
+        message="This was internal function, you shouldn't be using it anyway.",
+    )
     def set_color_by_t2g(self, t2g=None):
         """Internally used. Sets gradient colors for specified
         strings. Behaves similarly to ``set_color_by_t2c``."""
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
-            for start, end in self.find_indexes(word, self.original_text):
+            for start, end in self.find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
     def text2hash(self):
@@ -610,9 +597,9 @@ class Text(SVGMobject):
         Generates ``sha256`` hash for file name.
         """
         settings = (
-            "PANGO" + self.font + self.slant + self.weight
+            "PANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate Text and CairoText
-        settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
+        settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         id_str = self.text + settings
@@ -620,29 +607,111 @@ class Text(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
+    def _merge_settings(
+        self, left_setting: TextSetting, right_setting: TextSetting, args: Sequence[str]
+    ) -> TextSetting:
+        contained = right_setting.end < left_setting.end
+        new_setting = copy.copy(left_setting) if contained else copy.copy(right_setting)
+
+        new_setting.start = right_setting.end if contained else left_setting.end
+        left_setting.end = right_setting.start
+        if not contained:
+            right_setting.end = new_setting.start
+
+        for arg in args:
+            left = getattr(left_setting, arg)
+            right = getattr(right_setting, arg)
+            default = getattr(self, arg)
+            if left != default and getattr(right_setting, arg) != default:
+                raise ValueError(
+                    f"Ambiguous style for text '{self.text[right_setting.start:right_setting.end]}':"
+                    + f"'{arg}' cannot be both '{left}' and '{right}'."
+                )
+            setattr(right_setting, arg, left if left != default else right)
+        return new_setting
+
+    def _get_settings_from_t2xs(
+        self, t2xs: Sequence[Tuple[Dict[str, str], str]]
+    ) -> Sequence[TextSetting]:
+        settings = []
+        t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
+        for word in t2xwords:
+            setting_args = {
+                arg: t2x[word] if word in t2x else getattr(self, arg)
+                for t2x, arg in t2xs
+            }
+
+            for start, end in self.find_indexes(word, self.text):
+                settings.append(TextSetting(start, end, **setting_args))
+        return settings
+
+    def _get_settings_from_gradient(
+        self, setting_args: Dict[str, Iterable[str]]
+    ) -> Sequence[TextSetting]:
+        settings = []
+        args = copy.copy(setting_args)
+        if self.gradient:
+            colors = color_gradient(self.gradient, len(self.text))
+            for i in range(len(self.text)):
+                args["color"] = colors[i].hex
+                settings.append(TextSetting(i, i + 1, **args))
+
+        for word, gradient in self.t2g.items():
+            if isinstance(gradient, str) or len(gradient) == 1:
+                color = gradient if isinstance(gradient, str) else gradient[0]
+                gradient = [Color(color)]
+            colors = (
+                color_gradient(gradient, len(word))
+                if len(gradient) != 1
+                else len(word) * gradient
+            )
+            for start, end in self.find_indexes(word, self.text):
+                for i in range(start, end):
+                    args["color"] = colors[i - start].hex
+                    settings.append(TextSetting(i, i + 1, **args))
+        return settings
+
     def text2settings(self):
         """Internally used function. Converts the texts and styles
         to a setting for parsing."""
-        settings = []
-        t2x = [self.t2f, self.t2s, self.t2w]
-        for i in range(len(t2x)):
-            fsw = [self.font, self.slant, self.weight]
-            if t2x[i]:
-                for word, x in list(t2x[i].items()):
-                    for start, end in self.find_indexes(word, self.text):
-                        fsw[i] = x
-                        settings.append(TextSetting(start, end, *fsw))
-        # Set all text settings (default font, slant, weight)
-        fsw = [self.font, self.slant, self.weight]
+        t2xs = [
+            (self.t2f, "font"),
+            (self.t2s, "slant"),
+            (self.t2w, "weight"),
+            (self.t2c, "color"),
+        ]
+        setting_args = {arg: getattr(self, arg) for _, arg in t2xs}
+
+        settings = self._get_settings_from_t2xs(t2xs)
+        settings.extend(self._get_settings_from_gradient(setting_args))
+
+        # Handle overlaps
+
         settings.sort(key=lambda setting: setting.start)
+        for index, setting in enumerate(settings):
+            if index + 1 == len(settings):
+                break
+
+            next_setting = settings[index + 1]
+            if setting.end > next_setting.start:
+                new_setting = self._merge_settings(setting, next_setting, setting_args)
+                new_index = index + 1
+                while (
+                    new_index < len(settings)
+                    and settings[new_index].start < new_setting.start
+                ):
+                    new_index += 1
+                settings.insert(new_index, new_setting)
+
+        # Set all text settings (default font, slant, weight)
         temp_settings = settings.copy()
         start = 0
         for setting in settings:
             if setting.start != start:
-                temp_settings.append(TextSetting(start, setting.start, *fsw))
+                temp_settings.append(TextSetting(start, setting.start, **setting_args))
             start = setting.end
         if start != len(self.text):
-            temp_settings.append(TextSetting(start, len(self.text), *fsw))
+            temp_settings.append(TextSetting(start, len(self.text), **setting_args))
         settings = sorted(temp_settings, key=lambda setting: setting.start)
 
         if re.search(r"\n", self.text):
