@@ -1763,15 +1763,21 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_config: Optional[dict] = None,
         x_axis_config: Optional[dict] = None,
         y_axis_config: Optional[dict] = None,
+        x_intercept: Optional[float] = None,
+        y_intercept: Optional[float] = None,
         tips: bool = True,
         **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
+        self.x_intercept = x_intercept
+        self.y_intercept = y_intercept
+
         # excluding the the 0-point of the axis removes the origin tick.
         # This is desired for LinearBase because the 0 point is always the x-axis
-        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
+        # For non-LinearBase, the "0-point" does not have this quality,
+        # so it must be included.
 
         # i.e. with LogBase range [-2, 4]:
         # it would remove the "0" tick, which is actually 10^0,
@@ -1788,14 +1794,14 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 x_axis_config["ticks_to_exclude"] = []
 
         if y_axis_config.get("ticks_to_exclude") is None:
-            if self.y_axis_config.get("scaling") is None or isinstance(
-                self.y_axis_config.get("scaling"), LinearBase
+            if y_axis_config.get("scaling") is None or isinstance(
+                y_axis_config.get("scaling"), LinearBase
             ):
-                self.y_axis_config["ticks_to_exclude"] = [0]
+                y_axis_config["ticks_to_exclude"] = [0]
                 if y_axis_config.get("numbers_to_exclude") is None:
                     y_axis_config["numbers_to_exclude"] = [0]
             else:
-                self.y_axis_config["ticks_to_exclude"] = []
+                y_axis_config["ticks_to_exclude"] = []
 
         self.axis_config = {
             "include_tip": tips,
@@ -1818,8 +1824,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.y_axis_config,
         )
 
-        self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
-        self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
+        self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length, self.x_intercept)
+        self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length, self.y_intercept)
 
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
@@ -1846,6 +1852,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         range_terms: Sequence[float],
         axis_config: dict,
         length: float,
+        intercept: Optional[float] = None
     ) -> NumberLine:
         """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
 
@@ -1868,7 +1875,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         # without the call to _origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
+        axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max], intercept)))
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
@@ -2051,7 +2058,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return line_graph
 
     @staticmethod
-    def _origin_shift(axis_range: Sequence[float]) -> float:
+    def _origin_shift(axis_range: Sequence[float], intercept: Optional[float] = None) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
@@ -2059,14 +2066,17 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_range
             The range of the axis : ``(x_min, x_max, x_step)``.
         """
-        if axis_range[0] > 0:
-            # min greater than 0
-            return axis_range[0]
-        if axis_range[1] < 0:
-            # max less than 0
-            return axis_range[1]
+        if intercept is None:
+            if axis_range[0] > 0:
+                # min greater than 0
+                return axis_range[0]
+            if axis_range[1] < 0:
+                # max less than 0
+                return axis_range[1]
+            else:
+                return 0
         else:
-            return 0
+            return intercept
 
 
 class ThreeDAxes(Axes):
@@ -2156,14 +2166,6 @@ class ThreeDAxes(Axes):
         self.light_source = light_source
 
         self.dimension = 3
-
-        if self.z_axis_config.get("ticks_to_exclude") is None:
-            if self.z_axis_config.get("scaling") is None or isinstance(
-                self.z_axis_config.get("scaling"), LinearBase
-            ):
-                self.z_axis_config["ticks_to_exclude"] = [0]
-            else:
-                self.z_axis_config["ticks_to_exclude"] = []
 
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
