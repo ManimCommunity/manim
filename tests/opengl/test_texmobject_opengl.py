@@ -30,7 +30,8 @@ def test_tex(using_opengl_renderer):
 
 
 def test_tex_whitespace_arg(using_opengl_renderer):
-    """Check that correct number of submobjects are created per string with whitespace separator"""
+    """Check that correct number of submobjects are created per string with
+    whitespace separator."""
     separator = "\t"
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -45,7 +46,8 @@ def test_tex_whitespace_arg(using_opengl_renderer):
 
 
 def test_tex_non_whitespace_arg(using_opengl_renderer):
-    """Check that correct number of submobjects are created per string with non_whitespace characters"""
+    """Check that correct number of submobjects are created per string with
+    non_whitespace characters."""
     separator = ","
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -60,7 +62,8 @@ def test_tex_non_whitespace_arg(using_opengl_renderer):
 
 
 def test_tex_white_space_and_non_whitespace_args(using_opengl_renderer):
-    """Check that correct number of submobjects are created per string when mixing characters with whitespace"""
+    """Check that correct number of submobjects are created per string when
+    mixing characters with whitespace."""
     separator = ", \n . \t\t"
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -84,8 +87,8 @@ def test_tex_size(using_opengl_renderer):
 
 
 def test_font_size(using_opengl_renderer):
-    """Test that tex_mobject classes return
-    the correct font_size value after being scaled."""
+    """Test that tex_mobject classes return the correct font_size value after
+    being scaled."""
     string = MathTex(0).scale(0.3)
 
     assert round(string.font_size, 5) == 14.4
@@ -100,7 +103,8 @@ def test_font_size_vs_scale(using_opengl_renderer):
 
 
 def test_changing_font_size(using_opengl_renderer):
-    """Test that the font_size property properly scales tex_mobject.py classes."""
+    """Test that the font_size property properly scales tex_mobject.py
+    classes."""
     num = Tex("0", font_size=12)
     num.font_size = 48
 

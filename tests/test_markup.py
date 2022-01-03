@@ -4,7 +4,7 @@ from manim import MarkupText
 
 
 def test_good_markup():
-    """Test creation of valid :class:`MarkupText` object"""
+    """Test creation of valid :class:`MarkupText` object."""
     try:
         MarkupText("<b>foo</b>")
         MarkupText("foo")
@@ -15,7 +15,8 @@ def test_good_markup():
 
 
 def test_special_tags_markup():
-    """Test creation of valid :class:`MarkupText` object with unofficial tags"""
+    """Test creation of valid :class:`MarkupText` object with unofficial
+    tags."""
     try:
         MarkupText('<color col="RED">foo</color>')
         MarkupText('<gradient from="RED" to="YELLOW">foo</gradient>')

@@ -17,7 +17,8 @@ def simple_scenes_path():
 
 @pytest.fixture()
 def using_temp_config(tmpdir):
-    """Standard fixture that makes tests use a standard_config.cfg with a temp dir."""
+    """Standard fixture that makes tests use a standard_config.cfg with a temp
+    dir."""
     with tempconfig(
         config.digest_file(Path(__file__).parent.parent / "standard_config.cfg"),
     ):
@@ -27,7 +28,8 @@ def using_temp_config(tmpdir):
 
 @pytest.fixture()
 def using_temp_opengl_config(tmpdir):
-    """Standard fixture that makes tests use a standard_config.cfg with a temp dir."""
+    """Standard fixture that makes tests use a standard_config.cfg with a temp
+    dir."""
     with tempconfig(
         config.digest_file(Path(__file__).parent.parent / "standard_config.cfg"),
     ):

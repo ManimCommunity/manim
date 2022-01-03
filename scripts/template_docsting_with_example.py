@@ -73,5 +73,4 @@ class SomeClass:
     .. note::
 
         This is something to note.
-
     """

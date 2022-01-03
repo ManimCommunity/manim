@@ -49,7 +49,8 @@ def test_abstract_base_class(using_opengl_renderer):
     reason="Causes conflicts with other tests due to axis_config changing default config",
 )
 def test_NumberPlane(using_opengl_renderer):
-    """Test that NumberPlane generates the correct number of lines when its ranges do not cross 0."""
+    """Test that NumberPlane generates the correct number of lines when its
+    ranges do not cross 0."""
     pos_x_range = (0, 7)
     neg_x_range = (-7, 0)
 

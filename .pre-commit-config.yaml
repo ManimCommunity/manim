@@ -12,6 +12,10 @@ repos:
       - id: end-of-file-fixer
       - id: check-toml
         name: Validate Poetry
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.1.0
+    hooks:
+      - id: codespell
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
@@ -57,7 +61,3 @@ repos:
           flake8-comprehensions,
           flake8-pie,
         ]
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.1.0
-    hooks:
-      - id: codespell

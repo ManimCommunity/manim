@@ -56,9 +56,9 @@ def test_overlapping_family():
 def test_shift_family():
     """Check that each member of the family is shifted along with the parent.
 
-    Importantly, here we add a common grandchild to each of the children.  So
-    this test will fail if the grandchild moves twice as much as it should.
-
+    Importantly, here we add a common grandchild to each of the
+    children.  So this test will fail if the grandchild moves twice as
+    much as it should.
     """
     # Note shift() needs the mobject to have a non-empty `points` attribute, so
     # we cannot use a plain Mobject or VMobject.  We use Circle instead.

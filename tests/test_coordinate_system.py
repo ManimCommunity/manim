@@ -46,7 +46,8 @@ def test_abstract_base_class():
 
 
 def test_NumberPlane():
-    """Test that NumberPlane generates the correct number of lines when its ranges do not cross 0."""
+    """Test that NumberPlane generates the correct number of lines when its
+    ranges do not cross 0."""
     pos_x_range = (0, 7)
     neg_x_range = (-7, 0)
 

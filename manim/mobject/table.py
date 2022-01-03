@@ -481,8 +481,7 @@ class Table(VGroup):
         )
 
     def get_rows(self) -> VGroup:
-        """Return the rows of the table as a :class:`~.VGroup` of
-        :class:`~.VGroup`.
+        """Return the rows of the table as a :class:`~.VGroup` of :class:`~.VGroup`.
 
         Returns
         -------
@@ -544,7 +543,6 @@ class Table(VGroup):
 
         Examples
         --------
-
         .. manim:: SetRowColorsExample
             :save_last_frame:
 

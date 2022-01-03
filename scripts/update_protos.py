@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-This is intended to be run from manim/grpc
-"""
+"""This is intended to be run from manim/grpc."""
 
 import os
 

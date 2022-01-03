@@ -19,7 +19,8 @@ from ..simple_scenes import (
 )
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(using_temp_opengl_config, disabling_caching, frame_rate):
-    """Test that the framerate corresponds to the number of t values generated"""
+    """Test that the framerate corresponds to the number of t values
+    generated."""
     config.frame_rate = frame_rate
     scene = SquareToCircle()
     scene.update_to_time = Mock()
@@ -36,7 +37,7 @@ def test_t_values(using_temp_opengl_config, disabling_caching, frame_rate):
     reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
 )
 def test_t_values_with_skip_animations(using_temp_opengl_config, disabling_caching):
-    """Test the behaviour of scene.skip_animations"""
+    """Test the behaviour of scene.skip_animations."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.renderer._original_skipping_status = True
@@ -50,7 +51,8 @@ def test_t_values_with_skip_animations(using_temp_opengl_config, disabling_cachi
 
 @pytest.mark.xfail(reason="Not currently implemented for opengl")
 def test_static_wait_detection(using_temp_opengl_config, disabling_caching):
-    """Test if a static wait (wait that freeze the frame) is correctly detected"""
+    """Test if a static wait (wait that freeze the frame) is correctly
+    detected."""
     scene = SceneWithStaticWait()
     scene.render()
     # Test is is_static_wait of the Wait animation has been set to True by compile_animation_ata
@@ -67,7 +69,8 @@ def test_non_static_wait_detection(using_temp_opengl_config, disabling_caching):
 
 @pytest.mark.xfail(reason="Should be fixed in #2133")
 def test_t_values_with_cached_data(using_temp_opengl_config):
-    """Test the proper generation and use of the t values when an animation is cached."""
+    """Test the proper generation and use of the t values when an animation is
+    cached."""
     scene = SceneWithMultipleCalls()
     # Mocking the file_writer will skip all the writing process.
     scene.renderer.file_writer = Mock(scene.renderer.file_writer)
@@ -81,7 +84,8 @@ def test_t_values_with_cached_data(using_temp_opengl_config):
 
 @pytest.mark.xfail(reason="Not currently handled correctly for opengl")
 def test_t_values_save_last_frame(using_temp_opengl_config):
-    """Test that there is only one t value handled when only saving the last frame"""
+    """Test that there is only one t value handled when only saving the last
+    frame."""
     config.save_last_frame = True
     scene = SquareToCircle()
     scene.update_to_time = Mock()

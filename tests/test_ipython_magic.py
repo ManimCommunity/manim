@@ -5,7 +5,7 @@ from manim.utils.ipython_magic import _generate_file_name
 
 
 def test_jupyter_file_naming():
-    """Check the format of file names for jupyter"""
+    """Check the format of file names for jupyter."""
     scene_name = "SimpleScene"
     expected_pattern = r"[0-9a-zA-Z_]+[@_-]\d\d\d\d-\d\d-\d\d[@_-]\d\d-\d\d-\d\d"
     with tempconfig({"scene_names": [scene_name]}):
@@ -18,7 +18,7 @@ def test_jupyter_file_naming():
 
 
 def test_jupyter_file_output(tmp_path):
-    """Check the jupyter file naming is valid and can be created"""
+    """Check the jupyter file naming is valid and can be created."""
     scene_name = "SimpleScene"
     with tempconfig({"scene_names": [scene_name]}):
         file_name = _generate_file_name()

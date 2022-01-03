@@ -21,11 +21,8 @@ def load_control_data(path_to_data):
 def check_video_data(path_control_data, path_video_gen):
     """Compare control data with generated output.
 
-    Used abbreviations:
-        exp  -> expected
-        gen  -> generated
-        sec  -> section
-        meta -> metadata
+    Used abbreviations:     exp  -> expected     gen  -> generated
+    sec  -> section     meta -> metadata
     """
     # movie file specification
     path_sec_gen = os.path.join(
@@ -74,7 +71,8 @@ def check_video_data(path_control_data, path_video_gen):
 
 
 def video_comparison(control_data_file, scene_path_from_media_dir):
-    """Use as as a decorator for any test that needs to check a rendered scene/video.
+    """Use as as a decorator for any test that needs to check a rendered
+    scene/video.
 
     .. warning::
         The directories, such as the movie dir or sections dir, are expected to abide by the default.

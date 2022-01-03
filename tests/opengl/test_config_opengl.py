@@ -120,7 +120,7 @@ def test_temporary_dry_run(using_opengl_renderer):
 
 
 def test_dry_run_with_png_format(using_opengl_renderer):
-    """Test that there are no exceptions when running a png without output"""
+    """Test that there are no exceptions when running a png without output."""
     with tempconfig(
         {"dry_run": True, "write_to_movie": False, "disable_caching": True}
     ):
@@ -130,7 +130,8 @@ def test_dry_run_with_png_format(using_opengl_renderer):
 
 
 def test_dry_run_with_png_format_skipped_animations(using_opengl_renderer):
-    """Test that there are no exceptions when running a png without output and skipped animations"""
+    """Test that there are no exceptions when running a png without output and
+    skipped animations."""
     with tempconfig(
         {"dry_run": True, "write_to_movie": False, "disable_caching": True}
     ):

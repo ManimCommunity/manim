@@ -30,7 +30,8 @@ def test_tex():
 
 
 def test_tex_whitespace_arg():
-    """Check that correct number of submobjects are created per string with whitespace separator"""
+    """Check that correct number of submobjects are created per string with
+    whitespace separator."""
     separator = "\t"
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -45,7 +46,8 @@ def test_tex_whitespace_arg():
 
 
 def test_tex_non_whitespace_arg():
-    """Check that correct number of submobjects are created per string with non_whitespace characters"""
+    """Check that correct number of submobjects are created per string with
+    non_whitespace characters."""
     separator = ","
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -60,7 +62,8 @@ def test_tex_non_whitespace_arg():
 
 
 def test_tex_white_space_and_non_whitespace_args():
-    """Check that correct number of submobjects are created per string when mixing characters with whitespace"""
+    """Check that correct number of submobjects are created per string when
+    mixing characters with whitespace."""
     separator = ", \n . \t\t"
     str_part_1 = "Hello"
     str_part_2 = "world"
@@ -84,8 +87,8 @@ def test_tex_size():
 
 
 def test_font_size():
-    """Test that tex_mobject classes return
-    the correct font_size value after being scaled."""
+    """Test that tex_mobject classes return the correct font_size value after
+    being scaled."""
     string = MathTex(0).scale(0.3)
 
     assert round(string.font_size, 5) == 14.4
@@ -100,7 +103,8 @@ def test_font_size_vs_scale():
 
 
 def test_changing_font_size():
-    """Test that the font_size property properly scales tex_mobject.py classes."""
+    """Test that the font_size property properly scales tex_mobject.py
+    classes."""
     num = Tex("0", font_size=12)
     num.font_size = 48
 
@@ -108,7 +112,8 @@ def test_changing_font_size():
 
 
 def test_log_error_context(capsys):
-    """Test that the environment context of an error is correctly logged if it exists"""
+    """Test that the environment context of an error is correctly logged if it
+    exists."""
     invalid_tex = r"""
         some text that is fine
 
@@ -127,7 +132,8 @@ def test_log_error_context(capsys):
 
 
 def test_log_error_no_relevant_context(capsys):
-    """Test that an error with no environment context contains no environment context"""
+    """Test that an error with no environment context contains no environment
+    context."""
     failing_preamble = r"""\usepackage{fontspec}
     \setmainfont[Ligatures=TeX]{not_a_font}"""
 
@@ -145,7 +151,7 @@ def test_log_error_no_relevant_context(capsys):
 
 
 def test_error_in_nested_context(capsys):
-    """Test that displayed error context is not excessively large"""
+    """Test that displayed error context is not excessively large."""
     invalid_tex = r"""
     \begin{align}
       \begin{tabular}{ c }

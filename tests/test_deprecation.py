@@ -112,7 +112,8 @@ def test_deprecate_class_until(warn_caplog_manim):
 
 
 def test_deprecate_class_since_and_until(warn_caplog_manim):
-    """Test the deprecation of a class (decorator with since and until arguments)."""
+    """Test the deprecation of a class (decorator with since and until
+    arguments)."""
     qx = Qux()
     assert len(warn_caplog_manim.record_tuples) == 1
     msg = _get_caplog_record_msg(warn_caplog_manim)
@@ -136,7 +137,8 @@ def test_deprecate_class_msg(warn_caplog_manim):
 
 
 def test_deprecate_class_replacement(warn_caplog_manim):
-    """Test the deprecation of a class (decorator with replacement argument)."""
+    """Test the deprecation of a class (decorator with replacement
+    argument)."""
     qz = Quuz()
     assert len(warn_caplog_manim.record_tuples) == 1
     msg = _get_caplog_record_msg(warn_caplog_manim)
@@ -248,7 +250,8 @@ def test_deprecate_func_no_args(warn_caplog_manim):
 
 
 def test_deprecate_func_in_class_since_and_message(warn_caplog_manim):
-    """Test the deprecation of a method within a class (decorator with since and message arguments)."""
+    """Test the deprecation of a method within a class (decorator with since
+    and message arguments)."""
     t = Top()
     t.mid_func()
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -261,7 +264,8 @@ def test_deprecate_func_in_class_since_and_message(warn_caplog_manim):
 
 
 def test_deprecate_nested_class_until_and_replacement(warn_caplog_manim):
-    """Test the deprecation of a nested class (decorator with until and replacement arguments)."""
+    """Test the deprecation of a nested class (decorator with until and
+    replacement arguments)."""
     n = Top().Nested()
     assert len(warn_caplog_manim.record_tuples) == 1
     msg = _get_caplog_record_msg(warn_caplog_manim)
@@ -274,7 +278,8 @@ def test_deprecate_nested_class_until_and_replacement(warn_caplog_manim):
 
 
 def test_deprecate_nested_class_func_since_and_until(warn_caplog_manim):
-    """Test the deprecation of a method within a nested class (decorator with since and until arguments)."""
+    """Test the deprecation of a method within a nested class (decorator with
+    since and until arguments)."""
     n = Top().NewNested()
     n.nested_func()
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -290,7 +295,8 @@ def test_deprecate_nested_class_func_since_and_until(warn_caplog_manim):
 
 
 def test_deprecate_nested_func(warn_caplog_manim):
-    """Test the deprecation of a nested method (decorator with no arguments)."""
+    """Test the deprecation of a nested method (decorator with no
+    arguments)."""
     b = Top().Bottom()
     answer = b.normal_func()
     answer(1)
@@ -304,7 +310,8 @@ def test_deprecate_nested_func(warn_caplog_manim):
 
 
 def test_deprecate_func_params(warn_caplog_manim):
-    """Test the deprecation of method parameters (decorator with params argument)."""
+    """Test the deprecation of method parameters (decorator with params
+    argument)."""
     t = Top()
     t.foo(a=2, b=3, z=4)
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -316,7 +323,8 @@ def test_deprecate_func_params(warn_caplog_manim):
 
 
 def test_deprecate_func_single_param_since_and_until(warn_caplog_manim):
-    """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
+    """Test the deprecation of a single method parameter (decorator with since
+    and until arguments)."""
     t = Top()
     t.bar(a=1, b=2)
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -328,7 +336,8 @@ def test_deprecate_func_single_param_since_and_until(warn_caplog_manim):
 
 
 def test_deprecate_func_param_redirect_tuple(warn_caplog_manim):
-    """Test the deprecation of a method parameter and redirecting it to a new one using tuple."""
+    """Test the deprecation of a method parameter and redirecting it to a new
+    one using tuple."""
     t = Top()
     obj = t.baz(x=1, old_param=2)
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -341,7 +350,8 @@ def test_deprecate_func_param_redirect_tuple(warn_caplog_manim):
 
 
 def test_deprecate_func_param_redirect_lambda(warn_caplog_manim):
-    """Test the deprecation of a method parameter and redirecting it to a new one using lambda function."""
+    """Test the deprecation of a method parameter and redirecting it to a new
+    one using lambda function."""
     t = Top()
     obj = t.qux(runtime_in_ms=500)
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -354,7 +364,8 @@ def test_deprecate_func_param_redirect_lambda(warn_caplog_manim):
 
 
 def test_deprecate_func_param_redirect_many_to_one(warn_caplog_manim):
-    """Test the deprecation of multiple method parameters and redirecting them to one."""
+    """Test the deprecation of multiple method parameters and redirecting them
+    to one."""
     t = Top()
     obj = t.quux(point2D_x=3, point2D_y=5)
     assert len(warn_caplog_manim.record_tuples) == 1
@@ -367,7 +378,8 @@ def test_deprecate_func_param_redirect_many_to_one(warn_caplog_manim):
 
 
 def test_deprecate_func_param_redirect_one_to_many(warn_caplog_manim):
-    """Test the deprecation of one method parameter and redirecting it to many."""
+    """Test the deprecation of one method parameter and redirecting it to
+    many."""
     t = Top()
     obj1 = t.quuz(point2D=0)
     assert len(warn_caplog_manim.record_tuples) == 1

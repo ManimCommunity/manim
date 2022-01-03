@@ -179,7 +179,7 @@ def test_vdict_remove(using_opengl_renderer):
 
 
 def test_vgroup_supports_item_assigment(using_opengl_renderer):
-    """Test VGroup supports array-like assignment for OpenGLVMObjects"""
+    """Test VGroup supports array-like assignment for OpenGLVMObjects."""
     a = OpenGLVMobject()
     b = OpenGLVMobject()
     vgroup = VGroup(a)
@@ -190,7 +190,8 @@ def test_vgroup_supports_item_assigment(using_opengl_renderer):
 
 
 def test_vgroup_item_assignment_at_correct_position(using_opengl_renderer):
-    """Test VGroup item-assignment adds to correct position for OpenGLVMObjects"""
+    """Test VGroup item-assignment adds to correct position for
+    OpenGLVMObjects."""
     n_items = 10
     vgroup = VGroup()
     for _i in range(n_items):
@@ -202,7 +203,8 @@ def test_vgroup_item_assignment_at_correct_position(using_opengl_renderer):
 
 
 def test_vgroup_item_assignment_only_allows_vmobjects(using_opengl_renderer):
-    """Test VGroup item-assignment raises TypeError when invalid type is passed"""
+    """Test VGroup item-assignment raises TypeError when invalid type is
+    passed."""
     vgroup = VGroup(OpenGLVMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"

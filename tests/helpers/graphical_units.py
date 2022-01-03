@@ -10,8 +10,9 @@ from manim import config, logger
 
 
 def set_test_scene(scene_object, module_name):
-    """Function used to set up the test data for a new feature. This will basically set up a pre-rendered frame for a scene. This is meant to be used only
-    when setting up tests. Please refer to the wiki.
+    """Function used to set up the test data for a new feature. This will
+    basically set up a pre-rendered frame for a scene. This is meant to be used
+    only when setting up tests. Please refer to the wiki.
 
     Parameters
     ----------
@@ -25,7 +26,6 @@ def set_test_scene(scene_object, module_name):
     --------
     Normal usage::
         set_test_scene(DotTest, "geometry")
-
     """
     config["write_to_movie"] = False
     config["disable_caching"] = True

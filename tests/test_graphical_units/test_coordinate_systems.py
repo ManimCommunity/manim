@@ -44,7 +44,7 @@ def test_implicit_graph(scene):
 
 @frames_comparison
 def test_number_plane_log(scene):
-    """Test that NumberPlane generates its lines properly with a LogBase"""
+    """Test that NumberPlane generates its lines properly with a LogBase."""
     # y_axis log
     plane1 = (
         NumberPlane(

@@ -177,7 +177,7 @@ def test_vdict_remove():
 
 
 def test_vgroup_supports_item_assigment():
-    """Test VGroup supports array-like assignment for VMObjects"""
+    """Test VGroup supports array-like assignment for VMObjects."""
     a = VMobject()
     b = VMobject()
     vgroup = VGroup(a)
@@ -188,7 +188,7 @@ def test_vgroup_supports_item_assigment():
 
 
 def test_vgroup_item_assignment_at_correct_position():
-    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    """Test VGroup item-assignment adds to correct position for VMObjects."""
     n_items = 10
     vgroup = VGroup()
     for _i in range(n_items):
@@ -200,7 +200,8 @@ def test_vgroup_item_assignment_at_correct_position():
 
 
 def test_vgroup_item_assignment_only_allows_vmobjects():
-    """Test VGroup item-assignment raises TypeError when invalid type is passed"""
+    """Test VGroup item-assignment raises TypeError when invalid type is
+    passed."""
     vgroup = VGroup(VMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"

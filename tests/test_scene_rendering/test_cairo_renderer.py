@@ -21,7 +21,7 @@ def test_render(using_temp_config, disabling_caching):
 
 
 def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
-    """Test if skip_animations is well updated when -n flag is passed"""
+    """Test if skip_animations is well updated when -n flag is passed."""
     config.from_animation_number = 2
     config.upto_animation_number = 6
 

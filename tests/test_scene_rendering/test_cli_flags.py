@@ -296,7 +296,8 @@ def test_dash_as_filename(tmp_path):
 
 @pytest.mark.slow()
 def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
-    """Test only gif created with manim version in file name when --format gif is set"""
+    """Test only gif created with manim version in file name when --format gif
+    is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -332,7 +333,8 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
 
 @pytest.mark.slow()
 def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
-    """Test only mp4 created without manim version in file name when --format mp4 is set"""
+    """Test only mp4 created without manim version in file name when --format
+    mp4 is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -374,7 +376,7 @@ def test_videos_not_created_when_png_format_set(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test mp4 and gifs are not created when --format png is set"""
+    """Test mp4 and gifs are not created when --format png is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -416,7 +418,7 @@ def test_images_are_created_when_png_format_set(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set"""
+    """Test images are created in media directory when --format png is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -443,7 +445,8 @@ def test_images_are_created_when_png_format_set_for_opengl(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set for opengl"""
+    """Test images are created in media directory when --format png is set for
+    opengl."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -472,7 +475,8 @@ def test_images_are_zero_padded_when_zero_pad_set(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set"""
+    """Test images are zero padded when --format png and --zero_pad n are
+    set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -506,7 +510,8 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
+    """Test images are zero padded when --format png and --zero_pad n are set
+    with the opengl renderer."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -538,7 +543,7 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
 
 @pytest.mark.slow()
 def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
-    """Test only webm created when --format webm is set"""
+    """Test only webm created when --format webm is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -576,7 +581,7 @@ def test_default_format_output_for_transparent_flag(
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test .mov is created by default when transparent flag is set"""
+    """Test .mov is created by default when transparent flag is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -609,7 +614,7 @@ def test_default_format_output_for_transparent_flag(
 
 @pytest.mark.slow()
 def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes_path):
-    """Test .mov is created by when set using --format mov arg"""
+    """Test .mov is created by when set using --format mov arg."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,

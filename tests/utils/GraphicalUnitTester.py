@@ -72,7 +72,8 @@ class GraphicalUnitTester:
             self.scene.render()
 
     def _load_data(self):
-        """Load the np.array of the last frame of a pre-rendered scene. If not found, throw FileNotFoundError.
+        """Load the np.array of the last frame of a pre-rendered scene. If not
+        found, throw FileNotFoundError.
 
         Returns
         -------
@@ -85,7 +86,8 @@ class GraphicalUnitTester:
         return np.load(frame_data_path)["frame_data"]
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
-        """Will visually display with matplotlib differences between frame generated and the one expected."""
+        """Will visually display with matplotlib differences between frame
+        generated and the one expected."""
         import matplotlib.gridspec as gridspec
         import matplotlib.pyplot as plt
 

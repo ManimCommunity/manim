@@ -90,7 +90,7 @@ class ZoomedScene(MovingCameraScene):
             else zoomed_camera_config
         )
         self.zoomed_camera_image_mobject_config = (
-            {} if (x := zoomed_camera_image_mobject_config) is None else x
+            {} if zoomed_camera_image_mobject_config is None else zoomed_camera_image_mobject_config
         )
         self.zoomed_camera_frame_starting_position = (
             zoomed_camera_frame_starting_position

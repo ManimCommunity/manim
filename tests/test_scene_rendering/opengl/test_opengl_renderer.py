@@ -8,7 +8,7 @@ from tests.test_scene_rendering.simple_scenes import *
 
 
 def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_caching):
-    """write_to_movie should disable window by default"""
+    """write_to_movie should disable window by default."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
@@ -23,7 +23,7 @@ def test_force_window_opengl_render_with_movies(
     force_window_config_write_to_movie,
     disabling_caching,
 ):
-    """force_window creates window when write_to_movie is set"""
+    """force_window creates window when write_to_movie is set."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
@@ -38,7 +38,7 @@ def test_force_window_opengl_render_with_format(
     force_window_config_pngs,
     disabling_caching,
 ):
-    """force_window creates window when format is set"""
+    """force_window creates window when format is set."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
@@ -49,7 +49,8 @@ def test_force_window_opengl_render_with_format(
 
 @pytest.mark.parametrize("enable_preview", [False])
 def test_get_frame_with_preview_disabled(use_opengl_renderer):
-    """Get frame is able to fetch frame with the correct dimensions when preview is disabled"""
+    """Get frame is able to fetch frame with the correct dimensions when
+    preview is disabled."""
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
     assert not config.preview
@@ -66,7 +67,8 @@ def test_get_frame_with_preview_disabled(use_opengl_renderer):
 @pytest.mark.slow()
 @pytest.mark.parametrize("enable_preview", [True])
 def test_get_frame_with_preview_enabled(use_opengl_renderer):
-    """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""
+    """Get frame is able to fetch frame with the correct dimensions when
+    preview is enabled."""
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
     assert config.preview is True
