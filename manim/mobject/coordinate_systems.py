@@ -423,7 +423,10 @@ class CoordinateSystem:
         self,
         *axes_numbers: Union[
             Optional[Iterable[float]],
-            Union[Dict[float, Union[str, float, "Mobject"]], Iterable[Union[str, float, "Mobject"]]],
+            Union[
+                Dict[float, Union[str, float, "Mobject"]],
+                Iterable[Union[str, float, "Mobject"]],
+            ],
         ],
         **kwargs,
     ):
@@ -1766,10 +1769,38 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
+        # excluding the the 0-point of the axis removes the origin tick.
+        # This is desired for LinearBase because the 0 point is always the x-axis
+        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
+
+        # i.e. with LogBase range [-2, 4]:
+        # it would remove the "0" tick, which is actually 10^0,
+        # not the lowest tick on the graph (which is 10^-2).
+
+        if x_axis_config.get("ticks_to_exclude") is None:
+            if x_axis_config.get("scaling") is None or isinstance(
+                x_axis_config.get("scaling"), LinearBase
+            ):
+                x_axis_config["ticks_to_exclude"] = [0]
+                if x_axis_config.get("numbers_to_exclude") is None:
+                    x_axis_config["numbers_to_exclude"] = [0]
+            else:
+                x_axis_config["ticks_to_exclude"] = []
+
+        if y_axis_config.get("ticks_to_exclude") is None:
+            if self.y_axis_config.get("scaling") is None or isinstance(
+                self.y_axis_config.get("scaling"), LinearBase
+            ):
+                self.y_axis_config["ticks_to_exclude"] = [0]
+                if y_axis_config.get("numbers_to_exclude") is None:
+                    y_axis_config["numbers_to_exclude"] = [0]
+            else:
+                self.y_axis_config["ticks_to_exclude"] = []
+
         self.axis_config = {
             "include_tip": tips,
-            "numbers_to_exclude": [0],
         }
+
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
@@ -1786,30 +1817,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.axis_config,
             self.y_axis_config,
         )
-
-        # excluding the origin tick removes a tick at the 0-point of the axis
-        # This is desired for LinearBase because the 0 point is always the x-axis
-        # For non-LinearBase, the "0-point" does not have this quality, so it must be included.
-
-        # i.e. with LogBase range [-2, 4]:
-        # it would remove the "0" tick, which is actually 10^0,
-        # not the lowest tick on the graph (which is 10^-2).
-
-        if self.x_axis_config.get("ticks_to_exclude") is None:
-            if self.x_axis_config.get("scaling") is None or isinstance(
-                self.x_axis_config.get("scaling"), LinearBase
-            ):
-                self.x_axis_config["ticks_to_exclude"] = [0]
-            else:
-                self.x_axis_config["ticks_to_exclude"] = []
-
-        if self.y_axis_config.get("ticks_to_exclude") is None:
-            if self.y_axis_config.get("scaling") is None or isinstance(
-                self.y_axis_config.get("scaling"), LinearBase
-            ):
-                self.y_axis_config["ticks_to_exclude"] = [0]
-            else:
-                self.y_axis_config["ticks_to_exclude"] = []
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
@@ -2120,6 +2127,18 @@ class ThreeDAxes(Axes):
             y_length=y_length,
             **kwargs,
         )
+
+        # see Axes for explanation.
+
+        if z_axis_config.get("ticks_to_exclude") is None:
+            if z_axis_config.get("scaling") is None or isinstance(
+                z_axis_config.get("scaling"), LinearBase
+            ):
+                z_axis_config["ticks_to_exclude"] = [0]
+                if z_axis_config.get("numbers_to_exclude") is None:
+                    z_axis_config["numbers_to_exclude"] = [0]
+            else:
+                z_axis_config["ticks_to_exclude"] = []
 
         self.z_range = z_range
         self.z_length = z_length

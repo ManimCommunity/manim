@@ -22,6 +22,7 @@ from ..utils.space_ops import normalize
 
 from ..utils.deprecation import deprecated_params
 
+
 class NumberLine(Line):
     """Creates a number line with tick marks.
 
@@ -127,7 +128,7 @@ class NumberLine(Line):
         params="exclude_origin_tick",
         since="v0.14",
         until="v0.15",
-        message="Use `ticks_to_exclude` instead."
+        message="Use `ticks_to_exclude` instead.",
     )
     def __init__(
         self,
@@ -331,7 +332,7 @@ class NumberLine(Line):
 
             max_filter_arr = x_max_segment in self.ticks_to_exclude
             x_max_segment = x_max_segment[max_filter_arr]
-            
+
             tick_range = np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
         return self.scaling.function(tick_range)
