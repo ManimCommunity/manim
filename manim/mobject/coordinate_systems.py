@@ -1774,14 +1774,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_intercept = x_intercept
         self.y_intercept = y_intercept
 
-
         x_axis_config = self._modify_ticks_and_scaling(x_axis_config)
         y_axis_config = self._modify_ticks_and_scaling(y_axis_config)
 
         self.axis_config = {
             "include_tip": tips,
         }
-
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
@@ -2137,6 +2135,7 @@ class ThreeDAxes(Axes):
         y_length: Optional[float] = config.frame_height + 2.5,
         z_length: Optional[float] = config.frame_height - 1.5,
         z_axis_config: Optional[dict] = None,
+        z_intercept: Optional[float] = None,
         z_normal: Sequence[float] = DOWN,
         num_axis_pieces: int = 20,
         light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
@@ -2154,12 +2153,15 @@ class ThreeDAxes(Axes):
             **kwargs,
         )
 
-        # see Axes for explanation.
-
-        z_axis_config = self._modify_ticks_and_scaling(z_axis_config)
         self.z_range = z_range
         self.z_length = z_length
+        self.z_intercept = z_intercept
+        self.z_normal = z_normal
+        self.num_axis_pieces = num_axis_pieces
+        self.light_source = light_source
+        self.dimension = 3
 
+        z_axis_config = self._modify_ticks_and_scaling(z_axis_config)
         self.z_axis_config = {}
         self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
@@ -2167,18 +2169,11 @@ class ThreeDAxes(Axes):
             self.z_axis_config,
         )
 
-        self.z_normal = z_normal
-        self.num_axis_pieces = num_axis_pieces
-
-        self.light_source = light_source
-
-        self.dimension = 3
-
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         # [ax.x_min, ax.x_max] used to account for LogBase() scaling
         # where ax.x_range[0] != ax.x_min
-        z_origin = self._origin_shift([z_axis.x_min, z_axis.x_max])
+        z_origin = self._origin_shift([z_axis.x_min, z_axis.x_max], self.z_intercept)
 
         z_axis.rotate_about_number(z_origin, -PI / 2, UP)
         z_axis.rotate_about_number(z_origin, angle_of_vector(self.z_normal))
