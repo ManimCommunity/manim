@@ -1780,8 +1780,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.x_intercept = x_intercept
         self.y_intercept = y_intercept
 
-        x_axis_config = self._modify_ticks_and_scaling(x_axis_config, self.x_intercept, self.x_range)
-        y_axis_config = self._modify_ticks_and_scaling(y_axis_config, self.y_intercept, self.y_range)
+        x_axis_config = self._modify_ticks_and_scaling(
+            x_axis_config, self.x_intercept, self.x_range
+        )
+        y_axis_config = self._modify_ticks_and_scaling(
+            y_axis_config, self.y_intercept, self.y_range
+        )
 
         self.axis_config = {
             "include_tip": tips,
@@ -1832,11 +1836,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     def _modify_ticks_and_scaling(
         self,
-        ax_config: Optional[Dict[str, Any]], intercept: Optional[float], ax_range: Sequence[float],
+        ax_config: Optional[Dict[str, Any]],
+        intercept: Optional[float],
+        ax_range: Sequence[float],
     ) -> Dict[str, Any]:
         """Modify an axis_config dictionary to remove the tick and number
         at the point where axes connect. If ``ticks_to_exclude`` is already defined
-        then this method does not touch the user's decision. 
+        then this method does not touch the user's decision.
 
         Parameters
         ----------
@@ -2110,7 +2116,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis_range
             The range of the axis : ``(x_min, x_max, x_step)``.
         intercept
-            The distance to shift by, if provided. 
+            The distance to shift by, if provided.
         """
         if intercept is None:
             if axis_range[0] > 0:
@@ -2196,7 +2202,9 @@ class ThreeDAxes(Axes):
         self.light_source = light_source
         self.dimension = 3
 
-        z_axis_config = self._modify_ticks_and_scaling(z_axis_config, self.z_intercept, self.z_range)
+        z_axis_config = self._modify_ticks_and_scaling(
+            z_axis_config, self.z_intercept, self.z_range
+        )
         self.z_axis_config = {}
         self._update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
