@@ -21,6 +21,7 @@ __all__ = [
 import typing
 from functools import reduce
 
+import bezier as bz
 import numpy as np
 from scipy import linalg
 
@@ -28,7 +29,7 @@ from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
 
-def bezier(
+def classic_bezier(
     points: np.ndarray,
 ) -> typing.Callable[[float], typing.Union[int, typing.Iterable]]:
     """Classic implementation of a bezier curve.
@@ -48,6 +49,25 @@ def bezier(
         ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
         for k, point in enumerate(points)
     )
+
+
+def bezier(
+    points: np.ndarray,
+) -> typing.Callable[[float], typing.Union[int, typing.Iterable]]:
+    """Wrapper for implementation of Bézier curves in ``bezier`` library.
+
+    Parameters
+    ----------
+    points
+        Points defining the Bézier curve.
+
+    Returns
+    typing.Callable[[float], typing.Union[int, typing.Iterable]]
+        A function describing the Bézier curve.
+    """
+    points = np.array(points)
+    curve = bz.Curve.from_nodes(np.array(points).transpose())
+    return lambda t: curve.evaluate(float(t)).transpose()[0]
 
 
 def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
@@ -70,12 +90,9 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     np.ndarray
         Set of points defining the partial bezier curve.
     """
-    if a == 1:
-        return [points[-1]] * len(points)
-
-    a_to_1 = np.array([bezier(points[i:])(a) for i in range(len(points))])
-    end_prop = (b - a) / (1.0 - a)
-    return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(len(points))])
+    curve = bz.Curve.from_nodes(np.array(points).transpose())
+    specialized_curve = curve.specialize(a, b)
+    return specialized_curve.nodes.transpose()
 
 
 # Shortened version of partial_bezier_points just for quadratics,
@@ -356,8 +373,8 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     t_mid = t_mid.repeat(n).reshape((m, n))
 
     # Compute bezier point and tangent at the chosen value of t
-    mid = bezier([a0, h0, h1, a1])(t_mid)
-    Tm = bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)
+    mid = classic_bezier([a0, h0, h1, a1])(t_mid)
+    Tm = classic_bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)
 
     # Intersection between tangent lines at end points
     # and tangent in the middle
