@@ -1748,6 +1748,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
     y_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    x_intercept
+        Determines where other axes connect on the x-axis. Defaults to 0 or the limits
+        of the axis if 0 is not on the axis.
+    y_intercept
+        Determines where other axes connect on the y-axis. Defaults to 0 or the limits
+        of the axis if 0 is not on the axis.
     tips
         Whether or not to include the tips on both axes.
     kwargs : Any
@@ -2137,6 +2143,9 @@ class ThreeDAxes(Axes):
         The length of the z-axis.
     z_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
+    z_intercept
+        Determines where other axes connect on the z-axis. Defaults to 0 or the limits
+        of the axis if 0 is not on the axis.
     z_normal
         The direction of the normal.
     num_axis_pieces

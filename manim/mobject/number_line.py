@@ -42,6 +42,8 @@ class NumberLine(Line):
         An iterable of specific values with elongated ticks.
     longer_tick_multiple
         Influences how many times larger elongated ticks are than regular ticks (2 = 2x).
+    ticks_to_exclude
+        An iterable of ticks to exclude. Defaults to ``(0)``.
     rotation
         The angle (in radians) at which the line is rotated.
     stroke_width
@@ -140,7 +142,7 @@ class NumberLine(Line):
         tick_size: float = 0.1,
         numbers_with_elongated_ticks: Optional[Iterable[float]] = None,
         longer_tick_multiple: int = 2,
-        ticks_to_exclude: Optional[Iterable[float]] = None,
+        ticks_to_exclude: Optional[Iterable[float]] = (0),
         # visuals
         rotation: float = 0,
         stroke_width: float = 2.0,
@@ -165,8 +167,6 @@ class NumberLine(Line):
             numbers_to_exclude = []
         if numbers_with_elongated_ticks is None:
             numbers_with_elongated_ticks = []
-        if ticks_to_exclude is None:
-            ticks_to_exclude = [0]
 
         if x_range is None:
             x_range = [
