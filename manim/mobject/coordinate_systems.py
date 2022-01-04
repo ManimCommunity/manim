@@ -1834,8 +1834,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self,
         ax_config: Optional[Dict[str, Any]], intercept: Optional[float], ax_range: Sequence[float],
     ) -> Dict[str, Any]:
-        """Modify an axis_config dictionary to maintain reasonable defaults when
-        used with different scaling configurations.
+        """Modify an axis_config dictionary to remove the tick and number
+        at the point where axes connect. If ``ticks_to_exclude`` is already defined
+        then this method does not touch the user's decision. 
 
         Parameters
         ----------
