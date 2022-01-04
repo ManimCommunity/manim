@@ -225,7 +225,19 @@ class Mobject:
 
     @property
     def animate(self):
-        """Used to animate the application of a method.
+        """Used to animate the application of any method of :code:`self`.
+
+        Any method called on :code:`animate` is converted to an animation of applying
+        that method on the mobject itself.
+
+        For example, :code:`square.set_fill(WHITE)` sets the fill color of a square,
+        while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+
+        Multiple methods can be put in a single animation once via chaining:
+
+        ::
+
+            self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
 
         .. warning::
 
@@ -237,9 +249,7 @@ class Mobject:
 
                 self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
 
-            make use of method chaining for ``animate``, meaning::
-
-                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
+            make use of method chaining.
 
         Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
         directly after accessing ``.animate``, like so::
@@ -511,7 +521,9 @@ class Mobject:
     def set(self, **kwargs) -> "Mobject":
         """Sets attributes.
 
-        Mainly to be used along with :attr:`animate` to
+        I.e. ``my_mobject.set(foo=1)`` applies ``my_mobject.foo = 1``.
+
+        This is a convenience to be used along with :attr:`animate` to
         animate setting attributes.
 
         In addition to this method, there is a compatibility

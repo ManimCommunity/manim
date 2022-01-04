@@ -55,6 +55,12 @@ repos:
         additional_dependencies: [flake8-builtins==1.5.3, flake8-bugbear==21.4.3,
                                   flake8-docstrings==1.6.0, flake8-rst-docstrings==0.2.3,
                                   flake8-pytest-style==1.5.0, flake8-simplify==0.14.1, flake8-comprehensions>=3.6.1]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.930'
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-decorator, types-docutils, types-requests, types-setuptools]
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
     hooks:
