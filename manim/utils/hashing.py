@@ -25,7 +25,7 @@ KEYS_TO_FILTER_OUT = {
 
 
 class _Memoizer:
-    """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
+    """Implements memoization to optimize hashing and avoid circular references within the processed iterable.
 
     Keeps a record of all the processed objects, and handle the logic to return a place
     holder instead of the original object if the object has already been processed
