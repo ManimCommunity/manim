@@ -10,7 +10,7 @@ def extract_mobject_family_members(
     only_those_with_points=False,
 ):
     """Return a list of the types of mobjects and their family members present.
-    
+
     A "family" in this context refers to a mobject, its submobjects, and their submobjects, recursively.
 
     Parameters

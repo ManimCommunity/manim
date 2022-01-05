@@ -10,7 +10,7 @@ def extract_mobject_family_members(mobject_list, only_those_with_points=False):
 
 def restructure_list_to_exclude_certain_family_members(mobject_list, to_remove):
     """Remove anything in to_remove from mobject_list, except certain family members.
-    
+
     In the event that one of the items to be removed is a member of the family of
     an item in mobject_list, the other family members are added back into the list.
 

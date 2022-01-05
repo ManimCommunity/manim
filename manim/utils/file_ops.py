@@ -85,7 +85,7 @@ def is_png_format() -> bool:
 
 def write_to_movie() -> bool:
     """Determine if the output is a video format such as mp4 or gif
-    
+
     Based on config, but --format 'png' takes precedence over the write_to_movie flag.
 
     Returns
