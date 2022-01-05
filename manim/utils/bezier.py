@@ -21,10 +21,9 @@ __all__ = [
 import typing
 from functools import reduce
 
-import scipy
-
 import bezier as bz
 import numpy as np
+import scipy
 from scipy import linalg, special
 
 from ..utils.simple_functions import choose
