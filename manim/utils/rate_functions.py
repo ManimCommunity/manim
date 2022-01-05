@@ -1,4 +1,7 @@
-"""A selection of rate functions, i.e., *speed curves* for animations. Please find a standard list at https://easings.net/. Here is a picture for the non- standard ones.
+"""A selection of rate functions, i.e., *speed curves* for animations.
+
+Please find a standard list at https://easings.net/. Here is a picture
+for the non-standard ones
 
 .. manim:: RateFuncExample
     :save_last_frame:

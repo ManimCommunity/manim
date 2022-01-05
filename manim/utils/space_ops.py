@@ -57,7 +57,9 @@ def norm_squared(v: float) -> float:
 def quaternion_mult(
     *quats: Sequence[float],
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
-    """Get the Hamilton product of the quaternions provided. For more information, check `this Wikipedia page.
+    """Get the Hamilton product of the quaternions provided.
+    
+    For more information, check `the Wikipedia page for quaternions
 
     <https://en.wikipedia.org/wiki/Quaternion>`__.
 
@@ -101,7 +103,9 @@ def quaternion_from_angle_axis(
     axis: np.ndarray,
     axis_normalized: bool = False,
 ) -> List[float]:
-    """Get a quaternion from an angle and an axis. For more information, check `this Wikipedia page.
+    """Get a quaternion from an angle and an axis.
+    
+    For more information, check `this Wikipedia page.
 
     <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
 
@@ -209,8 +213,9 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
-    """Convert the quaternion, quat, to an equivalent rotation matrix representation. For more information, check `this page.
-
+    """Convert the quaternion, ``quat``, to an equivalent rotation matrix representation.
+    
+    For more information, check `this page.
     <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
 
     Parameters
@@ -337,7 +342,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
 
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
-    """Return the angle between two vectors. This angle will always be between 0 and pi.
+    """Return the angle between two vectors, from 0 to pi.
 
     Parameters
     ----------
@@ -554,7 +559,7 @@ def midpoint(
 
 
 def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndarray:
-    """Return intersection point of two lines, each defined with a pair of vectors determining the end points.
+    """Return intersection point of two lines, each defined as a pair of vector end points.
 
     Parameters
     ----------
@@ -589,7 +594,9 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
 
 
 def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
-    """Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1.  (Or array of intersections from arrays of such points/directions).
+    """Return the intersection of two lines, or an array of intersections of two arrays of lines
+    
+    Each line is given as a point ``p0`` or ``p1`` and direction vector ``v0`` or ``v1``, respectively.
 
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
     ray p1 + v1 * t
@@ -638,7 +645,7 @@ def shoelace(x_y: np.ndarray) -> float:
 
 
 def shoelace_direction(x_y: np.ndarray) -> str:
-    """Use the area determined by the shoelace method to determine whether the input set of points is directed clockwise or counterclockwise.
+    """Use the shoelace method to determine the clockwise/counterclockwise orientation of an array of points.
 
     Returns
     -------
@@ -786,7 +793,7 @@ def perpendicular_bisector(
     line: Sequence[np.ndarray],
     norm_vector=OUT,
 ) -> Sequence[np.ndarray]:
-    """Return a list of two points that correspond to the ends of the perpendicular bisector of the two points given.
+    """Return the endpoints of a perpendicular bisector to the two points given.
 
     Parameters
     ----------
