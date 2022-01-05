@@ -13,7 +13,8 @@ class _ScaleBase:
     """Scale baseclass for graphing/functions."""
 
     def __init__(self, custom_labels: bool = False):
-        """
+        """A base class for scale.
+
         Parameters
         ----------
         custom_labels
@@ -124,7 +125,6 @@ class LogBase(_ScaleBase):
 
         Examples
         --------
-
         .. code-block:: python
 
             func = ParametricFunction(lambda x: x, scaling=LogBase(base=2))
@@ -134,7 +134,7 @@ class LogBase(_ScaleBase):
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
-        """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
+        """Scale the value to fit it to a logarithmic scale.``self.function(5)==10**5``."""
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
@@ -154,11 +154,10 @@ class LogBase(_ScaleBase):
         unit_decimal_places: int = 0,
         **base_config: Dict[str, Any],
     ) -> List["Mobject"]:
-        """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
+        """Produce custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
         ----------
-
         val_range
             The iterable of values used to create the labels. Determines the exponent.
         units_decimal_places

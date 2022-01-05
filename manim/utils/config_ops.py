@@ -14,7 +14,7 @@ import numpy as np
 
 
 def merge_dicts_recursively(*dicts):
-    """Creates a dict whose keyset is the union of all the input dictionaries. The value for each key is based on the first dict in the list with that key.
+    """Create a dict whose keyset is the union of all the input dictionaries. The value for each key is based on the first dict in the list with that key.
 
     dicts later in the list have higher priority
 

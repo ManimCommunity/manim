@@ -145,7 +145,7 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self):
-        """Gets the current frame as NumPy array.
+        """Get the current frame as NumPy array.
 
         Returns
         -------
@@ -156,7 +156,7 @@ class CairoRenderer:
         return np.array(self.camera.pixel_array)
 
     def add_frame(self, frame, num_frames=1):
-        """Adds a frame to the video_file_stream.
+        """Add a frame to the video_file_stream.
 
         Parameters
         ----------
@@ -173,7 +173,7 @@ class CairoRenderer:
             self.file_writer.write_frame(frame)
 
     def freeze_current_frame(self, duration: float):
-        """Adds a static frame to the movie for a given duration. The static frame is the current frame.
+        """Add a static frame to the movie for a given duration. The static frame is the current frame.
 
         Parameters
         ----------
@@ -218,7 +218,7 @@ class CairoRenderer:
         return self.static_image
 
     def update_skipping_status(self):
-        """This method is used internally to check if the current animation needs to be skipped or not.
+        """Use internally to check if the current animation needs to be skipped or not.
 
         It also checks if the number of animations that were played
         correspond to the number of animations that need to be played,

@@ -34,7 +34,6 @@ class SampleSpace(Rectangle):
 
     Examples
     --------
-
     .. manim:: ExampleSampleSpace
         :save_last_frame:
 

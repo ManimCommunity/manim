@@ -22,8 +22,7 @@ def FrenchCursive(*tex_strings, **kwargs):
 
 
 class TexFontTemplateManual(Scene):
-    """An example scene that uses a manually defined TexTemplate() object to
-    create LaTeX output in French Cursive font."""
+    """An example scene that uses a manually defined TexTemplate() object to create LaTeX output in French Cursive font."""
 
     def construct(self):
         self.add(Tex("Tex Font Example").to_edge(UL))

@@ -76,7 +76,6 @@ class Animation:
 
     Examples
     --------
-
     .. manim:: LagRatios
 
         class LagRatios(Scene):
@@ -241,7 +240,7 @@ class Animation:
         )
 
     def update_mobjects(self, dt: float) -> None:
-        """Updates things like starting_mobject, and (for Transforms) target_mobject.
+        """Update things like starting_mobject, and (for Transforms) target_mobject.
 
         Note, since typically (always?) self.mobject will have its
         updating suspended during the animation, this will do nothing to
@@ -434,12 +433,10 @@ class Animation:
 def prepare_animation(
     anim: Union["Animation", "mobject._AnimationBuilder"],
 ) -> "Animation":
-    r"""Returns either an unchanged animation, or the animation built
-    from a passed animation factory.
+    r"""Return either an unchanged animation, or the animation built from a passed animation factory.
 
     Examples
     --------
-
     ::
 
         >>> from manim import Square, FadeIn
@@ -502,8 +499,7 @@ class Wait(Animation):
 def override_animation(
     animation_class: Type["Animation"],
 ) -> Callable[[Callable], Callable]:
-    """Decorator used to mark methods as overrides for specific
-    :class:`~.Animation` types.
+    """Use this decorator mark methods as overrides for specific :class:`~.Animation` types.
 
     Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
     ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
@@ -525,7 +521,6 @@ def override_animation(
 
     Examples
     --------
-
     .. manim:: OverrideAnimationExample
 
         class MySquare(Square):

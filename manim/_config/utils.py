@@ -332,7 +332,7 @@ class ManimConfig(MutableMapping):
         None
 
         Raises
-        -----
+        ------
         :class:`AttributeError`
             If ``obj`` is a dict but contains keys that do not belong to any
             config options.
@@ -1338,7 +1338,6 @@ class ManimConfig(MutableMapping):
 
         Examples
         --------
-
         The value of ``config.tex_dir`` is ``'{media_dir}/Tex'`` by default,
         i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In
         order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`.

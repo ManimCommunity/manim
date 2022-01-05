@@ -160,7 +160,7 @@ class OpenGLMobject:
 
     @classmethod
     def set_default(cls, **kwargs):
-        """Sets the default values of keyword arguments.
+        """Set the default values of keyword arguments.
 
         If this method is called without any additional keyword
         arguments, the original default values of the initialization
@@ -168,7 +168,6 @@ class OpenGLMobject:
 
         Parameters
         ----------
-
         kwargs
             Passing any keyword argument will update the default
             values of the keyword arguments of the initialization
@@ -176,7 +175,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         ::
 
             >>> from manim import Square, GREEN
@@ -206,7 +204,7 @@ class OpenGLMobject:
             cls.__init__ = cls._original__init__
 
     def init_data(self):
-        """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
+        """Initialize the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
 
         Subclasses can inherit and overwrite this method to extend
         `self.data`.
@@ -216,14 +214,14 @@ class OpenGLMobject:
         self.rgbas = np.zeros((1, 4))
 
     def init_colors(self):
-        """Initializes the colors.
+        """Initialize the colors.
 
         Gets called upon creation
         """
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
-        """Initializes :attr:`points` and therefore the shape.
+        """Initialize :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be
         implemented by subclasses.
@@ -231,7 +229,7 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
 
     def set(self, **kwargs) -> "OpenGLMobject":
-        """Sets attributes.
+        """Set attributes.
 
         Mainly to be used along with :attr:`animate` to
         animate setting attributes.
@@ -274,7 +272,7 @@ class OpenGLMobject:
 
     @property
     def animate(self):
-        """Used to animate the application of a method.
+        """Use to animate the application of a method.
 
         .. warning::
 
@@ -310,7 +308,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: AnimateExample
 
             class AnimateExample(Scene):
@@ -383,7 +380,7 @@ class OpenGLMobject:
                     self.play(rect.animate.set(width=7))
                     self.wait()
 
-        See also
+        See Also
         --------
         :meth:`length_over_dim`
         """
@@ -420,7 +417,7 @@ class OpenGLMobject:
                     self.play(rect.animate.set(height=5))
                     self.wait()
 
-        See also
+        See Also
         --------
         :meth:`length_over_dim`
         """
@@ -440,7 +437,7 @@ class OpenGLMobject:
         -------
         :class:`float`
 
-        See also
+        See Also
         --------
         :meth:`length_over_dim`
         """
@@ -490,7 +487,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: AngleMidPoint
             :save_last_frame:
 
@@ -824,7 +820,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: InvertSumobjectsExample
 
             class InvertSumobjectsExample(Scene):
@@ -848,7 +843,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: Example
             :save_last_frame:
 
@@ -915,9 +909,8 @@ class OpenGLMobject:
         OpenGLMobject
             The mobject.
 
-        NOTES
+        Notes
         -----
-
         If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
         enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
         tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
@@ -1112,7 +1105,7 @@ class OpenGLMobject:
         return self
 
     def get_grid(self, n_rows, n_cols, height=None, **kwargs):
-        """Returns a new mobject containing multiple copies of this one arranged in a grid."""
+        """Return a new mobject containing multiple copies of this one arranged in a grid."""
         grid = self.duplicate(n_rows * n_cols)
         grid.arrange_in_grid(n_rows, n_cols, **kwargs)
         if height is not None:
@@ -1120,7 +1113,7 @@ class OpenGLMobject:
         return grid
 
     def duplicate(self, n: int):
-        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
+        """Return an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
         return self.get_group_class()(*[self.copy() for _ in range(n)])
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
@@ -1136,7 +1129,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: ShuffleSubmobjectsExample
 
             class ShuffleSubmobjectsExample(Scene):
@@ -1164,7 +1156,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: InvertSumobjectsExample
 
             class InvertSumobjectsExample(Scene):
@@ -1413,7 +1404,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: MobjectScaleExample
             :save_last_frame:
 
@@ -1427,7 +1417,7 @@ class OpenGLMobject:
                     vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
                     self.add(vgroup)
 
-        See also
+        See Also
         --------
         :meth:`move_to`
 
@@ -1473,7 +1463,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: FlipExample
             :save_last_frame:
 
@@ -1517,11 +1506,10 @@ class OpenGLMobject:
         return self
 
     def apply_complex_function(self, function, **kwargs):
-        """Applies a complex function to a :class:`OpenGLMobject`. The x and y coordinates correspond to the real and imaginary parts respectively.
+        """Apply a complex function to a :class:`OpenGLMobject`. The x and y coordinates correspond to the real and imaginary parts respectively.
 
         Example
         -------
-
         .. manim:: ApplyFuncExample
 
             class ApplyFuncExample(Scene):
@@ -1616,7 +1604,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: GeometricShapes
             :save_last_frame:
 
@@ -2089,15 +2076,15 @@ class OpenGLMobject:
         return abs((bb[2] - bb[0])[dim])
 
     def get_width(self):
-        """Returns the width of the mobject."""
+        """Return the width of the mobject."""
         return self.length_over_dim(0)
 
     def get_height(self):
-        """Returns the height of the mobject."""
+        """Return the height of the mobject."""
         return self.length_over_dim(1)
 
     def get_depth(self):
-        """Returns the depth of the mobject."""
+        """Return the depth of the mobject."""
         return self.length_over_dim(2)
 
     def get_coord(self, dim: int, direction=ORIGIN):
@@ -2105,31 +2092,31 @@ class OpenGLMobject:
         return self.get_bounding_box_point(direction)[dim]
 
     def get_x(self, direction=ORIGIN) -> np.float64:
-        """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
+        """Return x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN) -> np.float64:
-        """Returns y coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
+        """Return y coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN) -> np.float64:
-        """Returns z coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
+        """Return z coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(2, direction)
 
     def get_start(self):
-        """Returns the point, where the stroke that surrounds the
+        """Return the point, where the stroke that surrounds the
         :class:`~.OpenGLMobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self):
-        """Returns the point, where the stroke that surrounds the
+        """Return the point, where the stroke that surrounds the
         :class:`~.OpenGLMobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
     def get_start_and_end(self):
-        """Returns starting and ending point of a stroke as a ``tuple``."""
+        """Return starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
@@ -2324,7 +2311,6 @@ class OpenGLMobject:
 
         Examples
         --------
-
         .. manim:: DotInterpolation
             :save_last_frame:
 
@@ -2755,7 +2741,6 @@ def override_animate(method):
 
     Examples
     --------
-
     .. manim:: AnimationOverrideExample
 
         class CircleWithContent(VGroup):

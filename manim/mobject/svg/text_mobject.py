@@ -14,7 +14,6 @@ With Pango, you are also able to render non-English alphabets like `你好` or  
 
 Examples
 --------
-
 .. manim:: HelloWorld
     :save_last_frame:
 
@@ -303,8 +302,7 @@ class Text(SVGMobject):
         The mobject like :class:`.VGroup`.
 
     Examples
-    ---------
-
+    --------
     .. manim:: Example1Text
         :save_last_frame:
 
@@ -826,7 +824,6 @@ class MarkupText(SVGMobject):
 
     Parameters
     ----------
-
     text : :class:`str`
         The text that need to created as mobject.
     fill_opacity : :class:`int`
@@ -855,8 +852,7 @@ class MarkupText(SVGMobject):
         The text displayed in form of a :class:`.VGroup`-like mobject.
 
     Examples
-    ---------
-
+    --------
     .. manim:: BasicMarkupExample
         :save_last_frame:
 
@@ -1013,7 +1009,6 @@ class MarkupText(SVGMobject):
 
     Tests
     -----
-
     Check that the creation of :class:`~.MarkupText` works::
 
         >>> MarkupText('The horse does not eat cucumber salad.')
@@ -1156,7 +1151,7 @@ class MarkupText(SVGMobject):
             self.scale(font_val / self.font_size)
 
     def text2hash(self):
-        """Generates ``sha256`` hash for file name."""
+        """Generate ``sha256`` hash for file name."""
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate from classical Pango Text
@@ -1222,7 +1217,7 @@ class MarkupText(SVGMobject):
         return count
 
     def extract_gradient_tags(self):
-        """Used to determine which parts (if any) of the string should be formatted with a gradient.
+        """Use to determine which parts (if any) of the string should be formatted with a gradient.
 
         Removes the ``<gradient>`` tag, as it is not part of Pango's
         markup and would cause an error.
@@ -1261,7 +1256,7 @@ class MarkupText(SVGMobject):
             return Colors[col.lower()].value
 
     def extract_color_tags(self):
-        """Used to determine which parts (if any) of the string should be formatted with a custom color.
+        """Use to determine which parts (if any) of the string should be formatted with a custom color.
 
         Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error.
 

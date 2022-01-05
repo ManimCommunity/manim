@@ -232,7 +232,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         self.current_path_start = np.zeros((1, self.dim))
 
     def get_path_commands(self):
-        """Returns a list of possible path commands used within an SVG ``d`` attribute.
+        """Return a list of possible path commands used within an SVG ``d`` attribute.
 
         See: https://svgwg.org/svg2-draft/paths.html#DProperty for further
         details on what each path command does.
@@ -258,7 +258,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def generate_points(self):
-        """Generates points from a given an SVG ``d`` attribute."""
+        """Generate points from a given an SVG ``d`` attribute."""
         pattern = "[%s]" % ("".join(self.get_path_commands()))
         pairs = list(
             zip(
@@ -376,7 +376,7 @@ class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
         """Convert an SVG command string into a sequence of absolute-positioned control points.
 
         Parameters
-        -----
+        ----------
         command : `str`
             A string containing a single uppercase letter representing the SVG command.
 

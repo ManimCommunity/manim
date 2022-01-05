@@ -172,13 +172,12 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
     height at 1 unit, and rounding the coordinates to three decimal places)
     matches.
 
-    See also
+    See Also
     --------
     :class:`~.TransformMatchingAbstractBase`
 
     Examples
     --------
-
     .. manim:: Anagram
 
         class Anagram(Scene):
@@ -228,13 +227,12 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     Two submobjects match if their ``tex_string`` matches.
 
-    See also
+    See Also
     --------
     :class:`~.TransformMatchingAbstractBase`
 
     Examples
     --------
-
     .. manim:: MatchingEquationParts
 
         class MatchingEquationParts(Scene):

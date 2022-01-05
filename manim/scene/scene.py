@@ -205,10 +205,10 @@ class Scene:
         return result
 
     def render(self, preview=False):
-        """Renders this Scene.
+        """Render this Scene.
 
         Parameters
-        ---------
+        ----------
         preview : bool
             If true, opens scene in a file viewer.
         """
@@ -300,7 +300,7 @@ class Scene:
         return self.__class__.__name__
 
     def get_attrs(self, *keys):
-        """Gets attributes of a scene given the attribute's identifier/name.
+        """Get attributes of a scene given the attribute's identifier/name.
 
         Parameters
         ----------
@@ -335,7 +335,7 @@ class Scene:
             func(dt)
 
     def should_update_mobjects(self):
-        """Returns True if any mobject in Scene is being updated or if the scene has always_update_mobjects set to true.
+        """Return True if any mobject in Scene is being updated or if the scene has always_update_mobjects set to true.
 
         Returns
         -------
@@ -346,7 +346,7 @@ class Scene:
         )
 
     def get_top_level_mobjects(self):
-        """Returns all mobjects which are not submobjects.
+        """Return all mobjects which are not submobjects.
 
         Returns
         -------
@@ -364,7 +364,7 @@ class Scene:
         return list(filter(is_top_level, self.mobjects))
 
     def get_mobject_family_members(self):
-        """Returns list of family-members of all mobjects in scene. If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only the Circle(), Rectangle() and Triangle(), but also the VGroup() object.
+        """Return list of family-members of all mobjects in scene. If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only the Circle(), Rectangle() and Triangle(), but also the VGroup() object.
 
         Returns
         -------
@@ -386,7 +386,7 @@ class Scene:
         """Mobjects will be displayed, from background to foreground in the order with which they are added.
 
         Parameters
-        ---------
+        ----------
         *mobjects : Mobject
             Mobjects to add.
 
@@ -430,7 +430,7 @@ class Scene:
                 curr_mobjects += mob.get_family()
 
     def remove(self, *mobjects):
-        """Removes mobjects in the passed list of mobjects from the scene and the foreground, by removing them from "mobjects" and "foreground_mobjects".
+        """Remove mobjects in the passed list of mobjects from the scene and the foreground, by removing them from "mobjects" and "foreground_mobjects".
 
         Parameters
         ----------
@@ -508,7 +508,6 @@ class Scene:
 
         Parameters
         ----------
-
         mobjects : list
             The Mobjects to check.
 
@@ -538,7 +537,7 @@ class Scene:
 
     # TODO, remove this, and calls to this
     def add_foreground_mobjects(self, *mobjects):
-        """Adds mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects.
+        """Add mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects.
 
         Parameters
         ----------
@@ -546,7 +545,7 @@ class Scene:
             The Mobjects to add to the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobjects added.
         """
@@ -555,7 +554,7 @@ class Scene:
         return self
 
     def add_foreground_mobject(self, mobject):
-        """Adds a single mobject to the foreground, and internally to the list foreground_mobjects, and mobjects.
+        """Add a single mobject to the foreground, and internally to the list foreground_mobjects, and mobjects.
 
         Parameters
         ----------
@@ -563,14 +562,14 @@ class Scene:
             The Mobject to add to the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobject added.
         """
         return self.add_foreground_mobjects(mobject)
 
     def remove_foreground_mobjects(self, *to_remove):
-        """Removes mobjects from the foreground, and internally from the list foreground_mobjects.
+        """Remove mobjects from the foreground, and internally from the list foreground_mobjects.
 
         Parameters
         ----------
@@ -578,7 +577,7 @@ class Scene:
             The mobject(s) to remove from the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobjects removed.
         """
@@ -586,7 +585,7 @@ class Scene:
         return self
 
     def remove_foreground_mobject(self, mobject):
-        """Removes a single mobject from the foreground, and internally from the list foreground_mobjects.
+        """Remove a single mobject from the foreground, and internally from the list foreground_mobjects.
 
         Parameters
         ----------
@@ -594,14 +593,14 @@ class Scene:
             The mobject to remove from the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobject removed.
         """
         return self.remove_foreground_mobjects(mobject)
 
     def bring_to_front(self, *mobjects):
-        """Adds the passed mobjects to the scene again, pushing them to he front of the scene.
+        """Add the passed mobjects to the scene again, pushing them to he front of the scene.
 
         Parameters
         ----------
@@ -609,7 +608,7 @@ class Scene:
             The mobject(s) to bring to the front of the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the mobjects brought to the front
             of the scene.
@@ -618,7 +617,7 @@ class Scene:
         return self
 
     def bring_to_back(self, *mobjects):
-        """Removes the mobject from the scene and adds them to the back of the scene.
+        """Remove the mobject from the scene and adds them to the back of the scene.
 
         Parameters
         ----------
@@ -626,7 +625,7 @@ class Scene:
             The mobject(s) to push to the back of the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the mobjects pushed to the back
             of the scene.
@@ -636,10 +635,10 @@ class Scene:
         return self
 
     def clear(self):
-        """Removes all mobjects present in self.mobjects and self.foreground_mobjects from the scene.
+        """Remove all mobjects present in self.mobjects and self.foreground_mobjects from the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with all of its mobjects in
             self.mobjects and self.foreground_mobjects
@@ -650,7 +649,7 @@ class Scene:
         return self
 
     def get_moving_mobjects(self, *animations):
-        """Gets all moving mobjects in the passed animation(s).
+        """Get all moving mobjects in the passed animation(s).
 
         Parameters
         ----------
@@ -658,7 +657,7 @@ class Scene:
             The animations to check for moving mobjects.
 
         Returns
-        ------
+        -------
         list
             The list of mobjects that could be moving in
             the Animation(s)
@@ -698,7 +697,7 @@ class Scene:
         return all_moving_mobject_families, static_mobjects
 
     def compile_animations(self, *args, **kwargs):
-        """Creates _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play().
+        """Create _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play().
 
         Parameters
         ----------
@@ -827,7 +826,7 @@ class Scene:
         )
 
     def get_run_time(self, animations):
-        """Gets the total run time for a list of animations.
+        """Get the total run time for a list of animations.
 
         Parameters
         ----------
@@ -862,7 +861,6 @@ class Scene:
 
         Parameters
         ----------
-
         args
             Animations to be played.
         subcaption
@@ -965,7 +963,7 @@ class Scene:
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:
-        """Returns whether the current animation produces a static frame (generally a Wait)."""
+        """Return whether the current animation produces a static frame (generally a Wait)."""
         return (
             isinstance(self.animations[0], Wait)
             and len(self.animations) == 1
@@ -973,7 +971,7 @@ class Scene:
         )
 
     def play_internal(self, skip_rendering=False):
-        """This method is used to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file.
+        """Use to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file.
 
         Parameters
         ----------
@@ -1229,14 +1227,13 @@ class Scene:
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
     ) -> None:
-        r"""Adds an entry in the corresponding subcaption file
+        r"""Add an entry in the corresponding subcaption file
         at the current time stamp.
 
         The current time stamp is obtained from ``Scene.renderer.time``.
 
         Parameters
         ----------
-
         content
             The subcaption content.
         duration
@@ -1247,7 +1244,6 @@ class Scene:
 
         Examples
         --------
-
         This example illustrates both possibilities for adding
         subcaptions to Manimations::
 
@@ -1276,11 +1272,10 @@ class Scene:
         self.renderer.file_writer.subcaptions.append(subtitle)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
-        """This method is used to add a sound to the animation.
+        """Use to add a sound to the animation.
 
         Parameters
         ----------
-
         sound_file : str
             The path to the sound file.
         time_offset : int,float, optional

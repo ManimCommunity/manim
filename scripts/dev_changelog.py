@@ -23,7 +23,6 @@ Dependencies
 
 Examples
 --------
-
 From a bash command line with $GITHUB environment variable as the GitHub token::
 
     $ ./scripts/dev_changelog.py $GITHUB v0.3.0 v0.4.0

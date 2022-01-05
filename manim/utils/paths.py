@@ -34,7 +34,6 @@ def straight_path(*args) -> PATH_FUNC_TYPE:
 
     Examples
     --------
-
     .. manim :: StraightPathExample
 
         class StraightPathExample(Scene):
@@ -79,7 +78,7 @@ def straight_path(*args) -> PATH_FUNC_TYPE:
 def path_along_circles(
     arc_angle: float, circles_centers: np.ndarray, axis: np.ndarray = OUT
 ) -> PATH_FUNC_TYPE:
-    """This function transforms each point by moving it roughly along a circle, each with its own specified center.
+    """Transform each point by moving it roughly along a circle, each with its own specified center.
 
     The path may be seen as each point smoothly changing its orbit from its starting position to its destination.
 
@@ -94,7 +93,6 @@ def path_along_circles(
 
     Examples
     --------
-
     .. manim :: PathAlongCirclesExample
 
         class PathAlongCirclesExample(Scene):
@@ -155,7 +153,7 @@ def path_along_circles(
 
 
 def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
-    """This function transforms each point by moving it along a circular arc.
+    """Transform each point by moving it along a circular arc.
 
     Parameters
     ----------
@@ -166,7 +164,6 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
 
     Examples
     --------
-
     .. manim :: PathAlongArcExample
 
         class PathAlongArcExample(Scene):
@@ -221,11 +218,10 @@ def path_along_arc(arc_angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
 
 
 def clockwise_path() -> PATH_FUNC_TYPE:
-    """This function transforms each point by moving clockwise around a half circle.
+    """Transform each point by moving clockwise around a half circle.
 
     Examples
     --------
-
     .. manim :: ClockwisePathExample
 
         class ClockwisePathExample(Scene):
@@ -266,11 +262,10 @@ def clockwise_path() -> PATH_FUNC_TYPE:
 
 
 def counterclockwise_path() -> PATH_FUNC_TYPE:
-    """This function transforms each point by moving counterclockwise around a half circle.
+    """Transform each point by moving counterclockwise around a half circle.
 
     Examples
     --------
-
     .. manim :: CounterclockwisePathExample
 
         class CounterclockwisePathExample(Scene):
@@ -311,7 +306,7 @@ def counterclockwise_path() -> PATH_FUNC_TYPE:
 
 
 def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
-    """This function transforms each point by moving along a spiral to its destination.
+    """Transform each point by moving along a spiral to its destination.
 
     Parameters
     ----------
@@ -322,7 +317,6 @@ def spiral_path(angle: float, axis: np.ndarray = OUT) -> PATH_FUNC_TYPE:
 
     Examples
     --------
-
     .. manim :: SpiralPathExample
 
         class SpiralPathExample(Scene):

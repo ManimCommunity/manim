@@ -384,7 +384,7 @@ class OpenGLRenderer:
         return self.path_to_texture_id[path]
 
     def update_skipping_status(self):
-        """This method is used internally to check if the current animation needs to be skipped or not.
+        """Use internally to check if the current animation needs to be skipped or not.
 
         It also checks if the number of animations that were played
         correspond to the number of animations that need to be played,
@@ -474,7 +474,7 @@ class OpenGLRenderer:
         return self.num_plays == 0
 
     def get_image(self) -> Image.Image:
-        """Returns an image from the current frame. The first argument passed to image represents the mode RGB with the alpha channel A. The data we read is from the currently bound frame buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically used for the decoder tand represent the stride and orientation. 0 means there is no padding expected between bytes and -1 represents the orientation and means the first line of the image is the bottom line on the screen.
+        """Return an image from the current frame. The first argument passed to image represents the mode RGB with the alpha channel A. The data we read is from the currently bound frame buffer. We pass in 'raw' as the name of the decoder, 0 and -1 args are specifically used for the decoder tand represent the stride and orientation. 0 means there is no padding expected between bytes and -1 represents the orientation and means the first line of the image is the bottom line on the screen.
 
         Returns
         -------

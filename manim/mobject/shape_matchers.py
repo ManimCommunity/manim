@@ -127,7 +127,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
 
 class Cross(VGroup):
-    """Creates a cross.
+    """Create a cross.
 
     Parameters
     ----------
@@ -169,7 +169,7 @@ class Cross(VGroup):
 
 
 class Underline(Line):
-    """Creates an underline.
+    """Create an underline.
 
     Parameters
     ----------

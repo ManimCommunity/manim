@@ -21,7 +21,7 @@ from ..utils.space_ops import normalize
 
 
 class NumberLine(Line):
-    """Creates a number line with tick marks.
+    """Create a number line with tick marks.
 
     Parameters
     ----------
@@ -258,7 +258,7 @@ class NumberLine(Line):
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
     def add_ticks(self):
-        """Adds ticks to the number line.
+        """Add ticks to the number line.
 
         Ticks can be accessed after creation via ``self.ticks``.
         """
@@ -273,7 +273,7 @@ class NumberLine(Line):
         self.ticks = ticks
 
     def get_tick(self, x: float, size: Optional[float] = None) -> Line:
-        """Generates a tick and positions it along the number line.
+        """Generate a tick and positions it along the number line.
 
         Parameters
         ----------
@@ -299,7 +299,7 @@ class NumberLine(Line):
         return self.ticks
 
     def get_tick_range(self) -> np.ndarray:
-        """Generates the range of values on which labels are plotted based on the ``x_range`` attribute of the number line.
+        """Generate the range of values on which labels are plotted based on the ``x_range`` attribute of the number line.
 
         Returns
         -------
@@ -326,7 +326,7 @@ class NumberLine(Line):
         return self.scaling.function(tick_range)
 
     def number_to_point(self, number: float) -> np.ndarray:
-        """Accepts a value along the number line and returns a point with respect to the scene.
+        """Accept a value along the number line and returns a point with respect to the scene.
 
         Parameters
         ----------
@@ -344,7 +344,7 @@ class NumberLine(Line):
         return interpolate(self.get_start(), self.get_end(), alpha)
 
     def point_to_number(self, point: Sequence[float]) -> float:
-        """Accepts a point with respect to the scene and returns a float along the number line.
+        """Accept a point with respect to the scene and returns a float along the number line.
 
         Parameters
         ----------
@@ -387,7 +387,7 @@ class NumberLine(Line):
         label_constructor: Optional[VMobject] = None,
         **number_config,
     ) -> VMobject:
-        """Generates a positioned :class:`~.DecimalNumber` mobject generated according to ``label_constructor``.
+        """Generate a positioned :class:`~.DecimalNumber` mobject generated according to ``label_constructor``.
 
         Parameters
         ----------
@@ -448,7 +448,7 @@ class NumberLine(Line):
         label_constructor: Optional[VMobject] = None,
         **kwargs,
     ):
-        """Adds :class:`~.DecimalNumber` mobjects representing their position at each tick of the number line. The numbers can be accessed after creation via ``self.numbers``.
+        """Add :class:`~.DecimalNumber` mobjects representing their position at each tick of the number line. The numbers can be accessed after creation via ``self.numbers``.
 
         Parameters
         ----------
@@ -501,7 +501,7 @@ class NumberLine(Line):
         font_size: Optional[float] = None,
         label_constructor: Optional[VMobject] = None,
     ):
-        """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``. The labels can be accessed after creation via ``self.labels``.
+        """Add specifically positioned labels to the :class:`~.NumberLine` using a ``dict``. The labels can be accessed after creation via ``self.labels``.
 
         Parameters
         ----------
@@ -556,7 +556,7 @@ class NumberLine(Line):
         return self
 
     def _create_label_tex(self, label_tex: Union[str, float, VMobject]) -> VMobject:
-        """Checks if the label is a :class:`~.VMobject`, otherwise, creates a label according to the ``label_constructor``.
+        """Check if the label is a :class:`~.VMobject`, otherwise, creates a label according to the ``label_constructor``.
 
         Parameters
         ----------

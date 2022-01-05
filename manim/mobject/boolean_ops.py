@@ -22,25 +22,24 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         points: typing.Iterable,
         z_dim: float = 0.0,
     ) -> typing.List[np.ndarray]:
-        """Converts an iterable with coordinates in 2d to 3d by adding
-        :attr:`z_dim` as the z coordinate.
+        """Convert an iterable with coordinates in 2d to 3d by adding :attr:`z_dim` as the z coordinate.
 
         Parameters
-        ==========
+        ----------
         points:
             An iterable which has the coordinates.
         z_dim:
             The default value of z coordinate.
 
         Example
-        =======
+        -------
         >>> a = _BooleanOps()
         >>> p = [(1, 2), (3, 4)]
         >>> a._convert_2d_to_3d_array(p)
         [array([1., 2., 0.]), array([3., 4., 0.])]
 
         Returns
-        =======
+        -------
         typing.List[np.ndarray]
             A list of array converted to 3d.
         """
@@ -51,15 +50,15 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         return points
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
-        """Converts a :class:`~.VMobject` to SkiaPath. This method only works for cairo renderer because it treats the points as Cubic beizer curves.
+        """Convert a :class:`~.VMobject` to SkiaPath. This method only works for cairo renderer because it treats the points as Cubic beizer curves.
 
         Parameters
-        ==========
+        ----------
         vmobject:
             The :class:`~.VMobject` to convert from.
 
         Returns
-        =======
+        -------
         SkiaPath:
             The converted path.
         """
@@ -99,14 +98,15 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         return path
 
     def _convert_skia_path_to_vmobject(self, path: SkiaPath) -> VMobject:
-        """Converts SkiaPath back to VMobject.
+        """Convert SkiaPath back to VMobject.
+
         Parameters
-        ==========
+        ----------
         path:
             The SkiaPath to convert.
 
         Returns
-        =======
+        -------
         VMobject:
             The converted VMobject.
         """
@@ -140,17 +140,17 @@ class Union(_BooleanOps):
     """Union of two or more :class:`~.VMobject` s. This returns the common region of the :class:`~VMobject` s.
 
     Parameters
-    ==========
+    ----------
     vmobjects
         The :class:`~.VMobject` s to find the union of.
 
     Raises
-    ======
+    ------
     ValueError
         If less than 2 :class:`~.VMobject` s are passed.
 
     Example
-    =======
+    -------
 
     .. manim:: UnionExample
         :save_last_frame:
@@ -182,14 +182,14 @@ class Difference(_BooleanOps):
     """Subtracts one :class:`~.VMobject` from another one.
 
     Parameters
-    ==========
+    ----------
     subject
         The 1st :class:`~.VMobject`.
     clip
         The 2nd :class:`~.VMobject`
 
     Example
-    =======
+    -------
     .. manim:: DifferenceExample
         :save_last_frame:
 
@@ -219,17 +219,17 @@ class Intersection(_BooleanOps):
     """Find the intersection of two :class:`~.VMobject` s. This keeps the parts covered by both :class:`~.VMobject` s.
 
     Parameters
-    ==========
+    ----------
     vmobjects
         The :class:`~.VMobject` to find the intersection.
 
     Raises
-    ======
+    ------
     ValueError
         If less the 2 :class:`~.VMobject` are passed.
 
     Example
-    =======
+    -------
     .. manim:: IntersectionExample
         :save_last_frame:
 
@@ -269,20 +269,17 @@ class Intersection(_BooleanOps):
 
 
 class Exclusion(_BooleanOps):
-    """Find the XOR between two :class:`~.VMobject`. This creates a new
-    :class:`~.VMobject` consisting of the region covered by exactly one of
-    them.
+    """Find the XOR region between two :class:`~.VMobject` and create a new :class:`~.VMobject` consisting it.
 
     Parameters
-    ==========
+    ----------
     subject
         The 1st :class:`~.VMobject`.
     clip
         The 2nd :class:`~.VMobject`
 
     Example
-    =======
-
+    -------
     .. manim:: IntersectionExample
         :save_last_frame:
 

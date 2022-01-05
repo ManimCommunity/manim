@@ -161,7 +161,7 @@ class Transform(Animation):
 
 
 class ReplacementTransform(Transform):
-    """Replaces and morphs a mobject into a target mobject.
+    """Replace and morphs a mobject into a target mobject.
 
     Parameters
     ----------
@@ -174,7 +174,6 @@ class ReplacementTransform(Transform):
 
     Examples
     --------
-
     .. manim:: ReplacementTransformOrTransform
         :quality: low
 
@@ -316,7 +315,6 @@ class ApplyPointwiseFunction(ApplyMethod):
 
     Examples
     --------
-
     .. manim:: WarpSquare
         :quality: low
 
@@ -386,7 +384,7 @@ class ApplyFunction(Transform):
 
 
 class ApplyMatrix(ApplyPointwiseFunction):
-    """Applies a matrix transform to an mobject.
+    """Apply a matrix transform to an mobject.
 
     Parameters
     ----------
@@ -525,7 +523,6 @@ class FadeTransform(Transform):
 
     Examples
     --------
-
     .. manim:: DifferentFadeTransforms
 
         class DifferentFadeTransforms(Scene):
@@ -557,7 +554,7 @@ class FadeTransform(Transform):
         super().__init__(group, **kwargs)
 
     def begin(self):
-        """Initial setup for the animation.
+        """Use to Setup the animation.
 
         The mobject to which this animation is bound is a group
         consisting of both the starting and the ending mobject. At the
@@ -575,7 +572,7 @@ class FadeTransform(Transform):
             self.ghost_to(m0, m1)
 
     def ghost_to(self, source, target):
-        """Replaces the source by the target and sets the opacity to 0."""
+        """Replace the source by the target and sets the opacity to 0."""
         source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
@@ -597,9 +594,9 @@ class FadeTransform(Transform):
 
 
 class FadeTransformPieces(FadeTransform):
-    """Fades submobjects of one mobject into submobjects of another one.
+    """Fade submobjects of one mobject into submobjects of another one.
 
-    See also
+    See Also
     --------
     :class:`~.FadeTransform`
 
@@ -630,6 +627,6 @@ class FadeTransformPieces(FadeTransform):
         super().begin()
 
     def ghost_to(self, source, target):
-        """Replaces the source submobjects by the target submobjects and sets the opacity to 0."""
+        """Replace the source submobjects by the target submobjects and sets the opacity to 0."""
         for sm0, sm1 in zip(source.get_family(), target.get_family()):
             super().ghost_to(sm0, sm1)

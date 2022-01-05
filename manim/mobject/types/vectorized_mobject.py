@@ -442,7 +442,7 @@ class VMobject(Mobject):
         return self.get_fill_color()
 
     def set_sheen_direction(self, direction: np.ndarray, family=True):
-        """Sets the direction of the applied sheen.
+        """Set the direction of the applied sheen.
 
         Parameters
         ----------
@@ -501,7 +501,7 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(self, factor, direction: np.ndarray = None, family=True):
-        """Applies a color gradient from a direction.
+        """Apply a color gradient from a direction.
 
         Parameters
         ----------
@@ -693,7 +693,6 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-
         point : np.ndarray
             end of the straight line.
         """
@@ -707,7 +706,7 @@ class VMobject(Mobject):
         return self
 
     def add_smooth_curve_to(self, *points: np.array) -> "VMobject":
-        """Creates a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted as a handle, the second as an anchor.
+        """Create a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted as a handle, the second as an anchor.
 
         Parameters
         ----------
@@ -795,7 +794,7 @@ class VMobject(Mobject):
         return self
 
     def change_anchor_mode(self, mode: str) -> "VMobject":
-        """Changes the anchor mode of the bezier curves. This will modify the handles.
+        """Change the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only two modes, "jagged", and "smooth".
 
@@ -902,6 +901,7 @@ class VMobject(Mobject):
 
         This uses the algorithm from np.isclose(), but expanded here for the
         2D point case. NumPy is overkill for such a small question.
+
         Parameters
         ----------
         p0 : np.ndarray
@@ -925,7 +925,7 @@ class VMobject(Mobject):
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
     def gen_cubic_bezier_tuples_from_points(self, points: np.ndarray) -> typing.Tuple:
-        """Returns the bezier tuples from an array of points.
+        """Return the bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
         This algorithm basically retrieve them by taking an element every n, where n is the number of control points
@@ -999,7 +999,7 @@ class VMobject(Mobject):
         )
 
     def get_subpaths(self) -> typing.Tuple:
-        """Returns subpaths formed by the curves of the VMobject.
+        """Return subpaths formed by the curves of the VMobject.
 
         We define a subpath between two curve if one of their extreminities are coincidents.
 
@@ -1011,7 +1011,7 @@ class VMobject(Mobject):
         return self.get_subpaths_from_points(self.points)
 
     def get_nth_curve_points(self, n: int) -> np.ndarray:
-        """Returns the points defining the nth curve of the vmobject.
+        """Return the points defining the nth curve of the vmobject.
 
         Parameters
         ----------
@@ -1028,7 +1028,7 @@ class VMobject(Mobject):
         return self.points[nppcc * n : nppcc * (n + 1)]
 
     def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
-        """Returns the expression of the nth curve.
+        """Return the expression of the nth curve.
 
         Parameters
         ----------
@@ -1047,7 +1047,7 @@ class VMobject(Mobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> np.ndarray:
-        """Returns the array of short line lengths used for length approximation.
+        """Return the array of short line lengths used for length approximation.
 
         Parameters
         ----------
@@ -1074,7 +1074,7 @@ class VMobject(Mobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> float:
-        """Returns the (approximate) length of the nth curve.
+        """Return the (approximate) length of the nth curve.
 
         Parameters
         ----------
@@ -1098,7 +1098,7 @@ class VMobject(Mobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
+        """Return the expression of the nth curve along with its (approximate) length.
 
         Parameters
         ----------
@@ -1122,7 +1122,7 @@ class VMobject(Mobject):
         return curve, length
 
     def get_num_curves(self) -> int:
-        """Returns the number of curves of the vmobject.
+        """Return the number of curves of the vmobject.
 
         Returns
         -------
@@ -1135,7 +1135,7 @@ class VMobject(Mobject):
     def get_curve_functions(
         self,
     ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
-        """Gets the functions for the curves of the mobject.
+        """Get the functions for the curves of the mobject.
 
         Returns
         -------
@@ -1151,7 +1151,7 @@ class VMobject(Mobject):
     def get_curve_functions_with_lengths(
         self, **kwargs
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
-        """Gets the functions and lengths of the curves for the mobject.
+        """Get the functions and lengths of the curves for the mobject.
 
         Parameters
         ----------
@@ -1170,7 +1170,7 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the
+        """Get the point at a proportion along the path of the
         :class:`VMobject`.
 
         Parameters
@@ -1219,7 +1219,7 @@ class VMobject(Mobject):
         self,
         point: typing.Iterable[typing.Union[float, int]],
     ) -> float:
-        """Returns the proportion along the path of the :class:`VMobject` a particular given point is at.
+        """Return the proportion along the path of the :class:`VMobject` a particular given point is at.
 
         Parameters
         ----------
@@ -1269,7 +1269,7 @@ class VMobject(Mobject):
         return target_length / total_length
 
     def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
-        """Returns anchors1, handles1, handles2, anchors2, where (anchors1[i], handles1[i], handles2[i], anchors2[i]) will be four points defining a cubic bezier curve for any i in range(0, len(anchors1))
+        """Return anchors1, handles1, handles2, anchors2, where (anchors1[i], handles1[i], handles2[i], anchors2[i]) will be four points defining a cubic bezier curve for any i in range(0, len(anchors1))
 
         Returns
         -------
@@ -1280,7 +1280,7 @@ class VMobject(Mobject):
         return [self.points[i::nppcc] for i in range(nppcc)]
 
     def get_start_anchors(self) -> np.ndarray:
-        """Returns the start anchors of the bezier curves.
+        """Return the start anchors of the bezier curves.
 
         Returns
         -------
@@ -1301,7 +1301,7 @@ class VMobject(Mobject):
         return self.points[nppcc - 1 :: nppcc]
 
     def get_anchors(self) -> np.ndarray:
-        """Returns the anchors of the curves forming the VMobject.
+        """Return the anchors of the curves forming the VMobject.
 
         Returns
         -------
@@ -1387,7 +1387,7 @@ class VMobject(Mobject):
         return self
 
     def insert_n_curves(self, n: int) -> "VMobject":
-        """Inserts n curves to the bezier curves of the vmobject.
+        """Insert n curves to the bezier curves of the vmobject.
 
         Parameters
         ----------
@@ -1503,7 +1503,9 @@ class VMobject(Mobject):
         a: float,
         b: float,
     ) -> "VMobject":
-        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
+        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds.
+
+        Points here stand for control points of the bezier curves (anchors and handles)
 
         Parameters
         ----------
@@ -1554,11 +1556,10 @@ class VMobject(Mobject):
         return self
 
     def get_subcurve(self, a: float, b: float) -> "VMobject":
-        """Returns the subcurve of the VMobject between the interval [a, b]. The curve is a VMobject itself.
+        """Return the subcurve of the VMobject between the interval [a, b]. The curve is a VMobject itself.
 
         Parameters
         ----------
-
         a
             The lower bound.
         b
@@ -1581,7 +1582,7 @@ class VMobject(Mobject):
         return vmob
 
     def get_direction(self):
-        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
+        """Use :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
 
         Examples
         --------
@@ -1624,7 +1625,7 @@ class VMobject(Mobject):
         return self
 
     def force_direction(self, target_direction):
-        """Makes sure that points are either directed clockwise or counterclockwise.
+        """Make sure that points are either directed clockwise or counterclockwise.
 
         Parameters
         ----------
@@ -1648,7 +1649,6 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
     :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you
     can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or
@@ -1709,7 +1709,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def add(self, *vmobjects):
-        """Checks if all passed elements are an instance of VMobject and then add them to submobjects.
+        """Check if all passed elements are an instance of VMobject and then add them to submobjects.
 
         Parameters
         ----------
@@ -1831,7 +1831,6 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: ShapesWithVDict
 
         class ShapesWithVDict(Scene):
@@ -1914,13 +1913,13 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         return __class__.__name__ + "(" + repr(self.submob_dict) + ")"
 
     def add(self, mapping_or_iterable):
-        """Adds the key-value pairs to the :class:`VDict` object.
+        """Add the key-value pairs to the :class:`VDict` object.
 
         Also, it internally adds the value to the `submobjects` :class:`list`
         of :class:`~.Mobject`, which is responsible for actual on-screen display.
 
         Parameters
-        ---------
+        ----------
         mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
             The parameter specifying the key-value mapping of keys and mobjects.
 
@@ -1942,7 +1941,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def remove(self, key):
-        """Removes the mobject from the :class:`VDict` object having the key `key`
+        """Remove the mobject from the :class:`VDict` object having the key `key`
 
         Also, it internally removes the mobject from the `submobjects` :class:`list`
         of :class:`~.Mobject`, (which is responsible for removing it from the screen)

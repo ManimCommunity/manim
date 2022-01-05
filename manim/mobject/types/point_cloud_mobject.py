@@ -26,7 +26,6 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: PMobjectExample
         :save_last_frame:
 
@@ -136,9 +135,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def thin_out(self, factor=5):
-        """
-        Removes all but every nth point for n = factor
-        """
+        """Removes all but every nth point for n = factor"""
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
@@ -237,7 +234,6 @@ class PGroup(PMobject):
     """
     Examples
     --------
-
     .. manim:: PgroupExample
         :save_last_frame:
 
@@ -341,7 +337,6 @@ class Point(PMobject):
 
     Examples
     --------
-
     .. manim:: ExamplePoint
         :save_last_frame:
 

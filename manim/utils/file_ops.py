@@ -29,7 +29,7 @@ from .. import console
 
 
 def is_mp4_format() -> bool:
-    """Determines if output format is .mp4.
+    """Determine if output format is .mp4.
 
     Returns
     -------
@@ -40,7 +40,7 @@ def is_mp4_format() -> bool:
 
 
 def is_gif_format() -> bool:
-    """Determines if output format is .gif.
+    """Determine if output format is .gif.
 
     Returns
     -------
@@ -51,7 +51,7 @@ def is_gif_format() -> bool:
 
 
 def is_webm_format() -> bool:
-    """Determines if output format is .webm.
+    """Determine if output format is .webm.
 
     Returns
     -------
@@ -62,7 +62,7 @@ def is_webm_format() -> bool:
 
 
 def is_mov_format() -> bool:
-    """Determines if output format is .mov.
+    """Determine if output format is .mov.
 
     Returns
     -------
@@ -73,7 +73,7 @@ def is_mov_format() -> bool:
 
 
 def is_png_format() -> bool:
-    """Determines if output format is .png.
+    """Determine if output format is .png.
 
     Returns
     -------
@@ -84,7 +84,7 @@ def is_png_format() -> bool:
 
 
 def write_to_movie() -> bool:
-    """Determines from config if the output is a video format such as mp4 or gif, if the --format is set as 'png' then it will take precedence event if the write_to_movie flag is set.
+    """Determine from config if the output is a video format such as mp4 or gif, if the --format is set as 'png' then it will take precedence event if the write_to_movie flag is set.
 
     Returns
     -------
@@ -190,7 +190,7 @@ def open_media_file(file_writer):
 
 
 def get_template_names():
-    """Returns template names from the templates directory.
+    """Return template names from the templates directory.
 
     Returns
     -------
@@ -201,7 +201,7 @@ def get_template_names():
 
 
 def get_template_path():
-    """Returns the Path of templates directory.
+    """Return the Path of templates directory.
 
     Returns
     -------

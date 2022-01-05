@@ -282,7 +282,7 @@ def get_smooth_handle_points(
 
 
 def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndarray:
-    """Converts array whose rows represent diagonal entries of a matrix into the matrix itself.
+    """Convert array whose rows represent diagonal entries of a matrix into the matrix itself.
 
     See scipy.linalg.solve_banded
     """
@@ -458,7 +458,7 @@ def point_lies_on_bezier(
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
     round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
 ) -> bool:
-    """Checks if a given point lies on the bezier curves with the given control points.
+    """Check if a given point lies on the bezier curves with the given control points.
 
     This is done by solving the bezier polynomial with the point as the constant term; if
     any real roots exist, the point lies on the bezier curve.

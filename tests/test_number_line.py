@@ -14,7 +14,7 @@ def test_unit_vector():
 
 
 def test_decimal_determined_by_step():
-    """Checks that step size is considered when determining the number of
+    """Check that step size is considered when determining the number of
     decimal places."""
     axis = NumberLine(x_range=[-2, 2, 0.5])
     expected_decimal_places = 1
@@ -32,7 +32,7 @@ def test_decimal_determined_by_step():
 
 
 def test_decimal_config_overrides_defaults():
-    """Checks that ``num_decimal_places`` is determined by step size and gets
+    """Check that ``num_decimal_places`` is determined by step size and gets
     overridden by ``decimal_number_config``."""
     axis = NumberLine(
         x_range=[-2, 2, 0.5],
@@ -46,7 +46,7 @@ def test_decimal_config_overrides_defaults():
 
 
 def test_whole_numbers_step_size_default_to_0_decimal_places():
-    """Checks that ``num_decimal_places`` defaults to 0 when a whole number
+    """Check that ``num_decimal_places`` defaults to 0 when a whole number
     step size is passed."""
     axis = NumberLine(x_range=[-2, 2, 1])
     expected_decimal_places = 0

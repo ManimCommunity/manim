@@ -5,8 +5,11 @@ max-complexity = 15
 max-line-length = 88
 statistics = True
 
-rst-roles = attr,class,func,meth,mod,obj,ref,doc,exc
-rst-directives = manim, SEEALSO, seealso
+per-file-ignores =
+    manim/utils/scale.py:D401
+    scripts/template_docsting_with_example.py:D414 D412
+    manim/cli/cfg/group.py:D401
+
 docstring-convention=numpy
 
 min_python_version = 3.7.0
@@ -27,8 +30,11 @@ extend-ignore = E203, E501,
                 PT022,
                 D107,
 
-                #TODO - Remove when possible
+                # TODO - Remove when possible
                 F811,
+
+                # FIXME - Waiting for bugfix ( https://github.com/PyCQA/pydocstyle/issues/566 )
+                D401,
 
                 # Plug-in: flake8-builtins
                 A001, A002, A003,
@@ -47,7 +53,5 @@ extend-ignore = E203, E501,
 
                 # Plug-in: flake8-docstrings
                 D100, D101, D102, D103, D104, D105, D106,
-
-                # Plug-in: flake8-rst-docstrings
-                RST201, RST203, RST210, RST212, RST213, RST215,
-                RST301,
+                D205, D209,
+                D400,

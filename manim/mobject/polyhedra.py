@@ -123,7 +123,7 @@ class Polyhedron(VGroup):
         self.add_updater(self.update_faces)
 
     def get_edges(self, faces_list: List[List[int]]) -> List[Tuple[int, int]]:
-        """Creates list of cyclic pairwise tuples."""
+        """Create list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
             edges += zip(face, face[1:] + face[:1])
@@ -133,7 +133,7 @@ class Polyhedron(VGroup):
         self,
         face_coords: List[List[Union[List, np.ndarray]]],
     ) -> "VGroup":
-        """Creates VGroup of faces from a list of face coordinates."""
+        """Create VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
             face_group.add(Polygon(*face, **self.faces_config))
@@ -145,7 +145,7 @@ class Polyhedron(VGroup):
         self.faces.match_points(new_faces)
 
     def extract_face_coords(self) -> List[List[Union[np.ndarray]]]:
-        """Extracts the coordinates of the vertices in the graph.
+        """Extract the coordinates of the vertices in the graph.
 
         Used for updating faces.
         """
@@ -166,7 +166,6 @@ class Tetrahedron(Polyhedron):
 
     Examples
     --------
-
     .. manim:: TetrahedronScene
         :save_last_frame:
 
@@ -201,7 +200,6 @@ class Octahedron(Polyhedron):
 
     Examples
     --------
-
     .. manim:: OctahedronScene
         :save_last_frame:
 
@@ -247,7 +245,6 @@ class Icosahedron(Polyhedron):
 
     Examples
     --------
-
     .. manim:: IcosahedronScene
         :save_last_frame:
 
@@ -312,7 +309,6 @@ class Dodecahedron(Polyhedron):
 
     Examples
     --------
-
     .. manim:: DodecahedronScene
         :save_last_frame:
 

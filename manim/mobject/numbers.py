@@ -21,7 +21,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: MovingSquareWithUpdaters
 
         class MovingSquareWithUpdaters(Scene):
@@ -269,7 +268,6 @@ class Integer(DecimalNumber):
 
     Examples
     --------
-
     .. manim:: IntegerExample
         :save_last_frame:
 

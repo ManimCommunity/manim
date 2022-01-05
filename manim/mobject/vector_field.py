@@ -195,7 +195,6 @@ class VectorField(VGroup):
 
         Examples
         --------
-
         .. manim:: Nudging
 
             class Nudging(Scene):
@@ -219,7 +218,8 @@ class VectorField(VGroup):
         """
 
         def runge_kutta(self, p: Sequence[float], step_size: float) -> float:
-            """Returns the change in position of a point along a vector field.
+            """Return the change in position of a point along a vector field.
+
             Parameters
             ----------
             p
@@ -386,7 +386,7 @@ class VectorField(VGroup):
         end: float,
         colors: Iterable,
     ):
-        """Generates a gradient of rgbas as a numpy array.
+        """Generate a gradient of rgbas as a numpy array.
 
         Parameters
         ----------
@@ -464,7 +464,6 @@ class ArrowVectorField(VectorField):
 
     Examples
     --------
-
     .. manim:: BasicUsage
         :save_last_frame:
 
@@ -569,7 +568,7 @@ class ArrowVectorField(VectorField):
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
-        """Creates a vector in the vector field.
+        """Create a vector in the vector field.
 
         The created vector is based on the function of the vector field and is
         rooted in the given point. Color and length fit the specifications of
@@ -644,7 +643,6 @@ class StreamLines(VectorField):
 
     Examples
     --------
-
     .. manim:: BasicUsage
         :save_last_frame:
 
@@ -841,7 +839,6 @@ class StreamLines(VectorField):
 
         Examples
         --------
-
         .. manim:: StreamLineCreation
 
             class StreamLineCreation(Scene):
@@ -898,7 +895,6 @@ class StreamLines(VectorField):
 
         Examples
         --------
-
         .. manim:: ContinuousMotion
 
             class ContinuousMotion(Scene):
@@ -954,7 +950,6 @@ class StreamLines(VectorField):
 
         Examples
         --------
-
         .. manim:: EndAnimation
 
             class EndAnimation(Scene):

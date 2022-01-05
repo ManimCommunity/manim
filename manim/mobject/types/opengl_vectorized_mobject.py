@@ -445,7 +445,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         Parameters
         ----------
-
         point : Sequence[float]
             end of the straight line.
         """
@@ -548,7 +547,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def change_anchor_mode(self, mode):
-        """Changes the anchor mode of the bezier curves. This will modify the handles.
+        """Change the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only three modes, "jagged", "approx_smooth"  and "true_smooth".
 
@@ -585,7 +584,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def make_smooth(self):
-        """This will double the number of points in the mobject, so should not be called repeatedly.
+        """Double the number of points in the mobject, so should not be called repeatedly.
 
         It also means transforming between states before and after
         calling this might have strange artifacts
@@ -594,11 +593,9 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def make_approximately_smooth(self):
-        """Unlike make_smooth, this will not change the number of points, but it also does not result in a perfectly smooth curve.
+        """Make approximately smooth.
 
-        It's most useful when the points have been sampled at a not-too-
-        low rate from a continuous function, as in the case of
-        ParametricCurve
+        Unlike make_smooth, this will not change the number of points, but it also does not result in a perfectly smooth curve. It's most useful when the points have been sampled at a not-too-low rate from a continuous function, as in the case of ParametricCurve
         """
         self.change_anchor_mode("approx_smooth")
         return self
@@ -628,7 +625,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Information about the curve
     def force_direction(self, target_direction):
-        """Makes sure that points are either directed clockwise or counterclockwise.
+        """Make sure that points are either directed clockwise or counterclockwise.
 
         Parameters
         ----------
@@ -695,7 +692,7 @@ class OpenGLVMobject(OpenGLMobject):
         ]
 
     def get_subpaths(self):
-        """Returns subpaths formed by the curves of the OpenGLVMobject.
+        """Return subpaths formed by the curves of the OpenGLVMobject.
 
         We define a subpath between two curve if one of their extreminities are coincidents.
 
@@ -707,7 +704,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_subpaths_from_points(self.points)
 
     def get_nth_curve_points(self, n: int) -> np.ndarray:
-        """Returns the points defining the nth curve of the vmobject.
+        """Return the points defining the nth curve of the vmobject.
 
         Parameters
         ----------
@@ -724,7 +721,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.points[nppc * n : nppc * (n + 1)]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
-        """Returns the expression of the nth curve.
+        """Return the expression of the nth curve.
 
         Parameters
         ----------
@@ -743,7 +740,7 @@ class OpenGLVMobject(OpenGLMobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> Tuple[Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
+        """Return the expression of the nth curve along with its (approximate) length.
 
         Parameters
         ----------
@@ -774,7 +771,7 @@ class OpenGLVMobject(OpenGLMobject):
         return curve, length
 
     def get_num_curves(self) -> int:
-        """Returns the number of curves of the vmobject.
+        """Return the number of curves of the vmobject.
 
         Returns
         -------
@@ -788,7 +785,7 @@ class OpenGLVMobject(OpenGLMobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> float:
-        """Returns the (approximate) length of the nth curve.
+        """Return the (approximate) length of the nth curve.
 
         Parameters
         ----------
@@ -812,7 +809,7 @@ class OpenGLVMobject(OpenGLMobject):
         n: int,
         sample_points: Optional[int] = None,
     ) -> Tuple[Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
+        """Return the expression of the nth curve along with its (approximate) length.
 
         Parameters
         ----------
@@ -845,7 +842,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_curve_functions(
         self,
     ) -> Iterable[Callable[[float], np.ndarray]]:
-        """Gets the functions for the curves of the mobject.
+        """Get the functions for the curves of the mobject.
 
         Returns
         -------
@@ -861,7 +858,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_curve_functions_with_lengths(
         self, **kwargs
     ) -> Iterable[Tuple[Callable[[float], np.ndarray], float]]:
-        """Gets the functions and lengths of the curves for the mobject.
+        """Get the functions and lengths of the curves for the mobject.
 
         Parameters
         ----------
@@ -880,8 +877,7 @@ class OpenGLVMobject(OpenGLMobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the
-        :class:`OpenGLVMobject`.
+        """Get the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
         Parameters
         ----------
@@ -929,7 +925,7 @@ class OpenGLVMobject(OpenGLMobject):
         self,
         point: Iterable[Union[float, int]],
     ) -> float:
-        """Returns the proportion along the path of the :class:`OpenGLVMobject` a particular given point is at.
+        """Return the proportion along the path of the :class:`OpenGLVMobject` a particular given point is at.
 
         Parameters
         ----------
@@ -981,13 +977,13 @@ class OpenGLVMobject(OpenGLMobject):
         return alpha
 
     def get_anchors_and_handles(self):
-        """Returns anchors1, handles, anchors2, where (anchors1[i], handles[i], anchors2[i]) will be three points defining a quadratic bezier curve for any i in range(0, len(anchors1))"""
+        """Return anchors1, handles, anchors2, where (anchors1[i], handles[i], anchors2[i]) will be three points defining a quadratic bezier curve for any i in range(0, len(anchors1))."""
         nppc = self.n_points_per_curve
         points = self.points
         return [points[i::nppc] for i in range(nppc)]
 
     def get_start_anchors(self) -> np.ndarray:
-        """Returns the start anchors of the bezier curves.
+        """Return the start anchors of the bezier curves.
 
         Returns
         -------
@@ -1008,7 +1004,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.points[nppc - 1 :: nppc]
 
     def get_anchors(self) -> np.ndarray:
-        """Returns the anchors of the curves forming the OpenGLVMobject.
+        """Return the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
@@ -1091,7 +1087,7 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_direction(self):
-        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
+        """Use :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
 
         Examples
         --------
@@ -1176,7 +1172,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def insert_n_curves(self, n: int, recurse=True) -> "OpenGLVMobject":
-        """Inserts n curves to the bezier curves of the vmobject.
+        """Insert n curves to the bezier curves of the vmobject.
 
         Parameters
         ----------
@@ -1259,7 +1255,7 @@ class OpenGLVMobject(OpenGLMobject):
         a: float,
         b: float,
     ) -> "OpenGLVMobject":
-        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
+        """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles).
 
         Parameters
         ----------
@@ -1324,11 +1320,10 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
-        """Returns the subcurve of the OpenGLVMobject between the interval [a, b]. The curve is a OpenGLVMobject itself.
+        """Return the subcurve of the OpenGLVMobject between the interval [a, b]. The curve is a OpenGLVMobject itself.
 
         Parameters
         ----------
-
         a
             The lower bound.
         b
@@ -1589,7 +1584,6 @@ class OpenGLVGroup(OpenGLVMobject):
 
     Examples
     --------
-
     To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
     :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
@@ -1652,7 +1646,7 @@ class OpenGLVGroup(OpenGLVMobject):
         )
 
     def add(self, *vmobjects):
-        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects.
+        """Check if all passed elements are an instance of OpenGLVMobject and then add them to submobjects.
 
         Parameters
         ----------

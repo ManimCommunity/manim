@@ -202,7 +202,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     ----------
-
     vertices
         A list of vertices. Must be hashable elements.
     edges
@@ -256,7 +255,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     First, we create a small graph and demonstrate that the edges move
     together with the vertices.
 
@@ -511,7 +509,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         vertex
             A hashable vertex identifier.
         position
@@ -588,7 +585,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         vertices
             Hashable vertex identifiers.
         positions
@@ -673,13 +669,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         vertex
             The identifier of a vertex to be removed.
 
         Returns
         -------
-
         Group
             A mobject containing all removed objects.
         """
@@ -708,7 +702,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         vertices
             Vertices to be removed from the graph.
 
@@ -749,7 +742,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         edge
             The edge (as a tuple of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
@@ -799,7 +791,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         edges
             Edges (as tuples of vertex identifiers) to be added. If a non-existing
             vertex is passed, a new vertex with default settings will be created. Create
@@ -857,13 +848,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         edge
             The edge (i.e., a tuple of vertex identifiers) to be removed from the graph.
 
         Returns
         -------
-
         Mobject
             The removed edge.
         """
@@ -914,7 +903,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-
         nxgraph
             A ``networkx`` graph.
         **kwargs
@@ -922,7 +910,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: ImportNetworkxGraph
 
             import networkx as nx
@@ -955,7 +942,6 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: ChangeGraphLayout
 
             class ChangeGraphLayout(Scene):

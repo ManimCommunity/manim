@@ -56,7 +56,7 @@ class ThreeDScene(Scene):
         frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
         **kwargs,
     ):
-        """This method sets the orientation of the camera in the scene.
+        """Sets the orientation of the camera in the scene.
 
         Parameters
         ----------
@@ -93,7 +93,7 @@ class ThreeDScene(Scene):
             self.renderer.camera._frame_center.move_to(frame_center)
 
     def begin_ambient_camera_rotation(self, rate=0.02, about="theta"):
-        """This method begins an ambient rotation of the camera about the Z_AXIS, in the anticlockwise direction.
+        """Begins an ambient rotation of the camera about the Z_AXIS, in the anticlockwise direction.
 
         Parameters
         ----------
@@ -129,7 +129,7 @@ class ThreeDScene(Scene):
             raise ValueError("Invalid ambient rotation angle.")
 
     def stop_ambient_camera_rotation(self, about="theta"):
-        """This method stops all ambient camera rotation."""
+        """Stops all ambient camera rotation."""
         about: str = about.lower()
         try:
             if config.renderer != "opengl":
@@ -152,7 +152,7 @@ class ThreeDScene(Scene):
         origin_phi: Optional[float] = None,
         origin_theta: Optional[float] = None,
     ):
-        """This method creates a 3D camera rotation illusion around the current camera orientation.
+        """Creates a 3D camera rotation illusion around the current camera orientation.
 
         Parameters
         ----------
@@ -191,7 +191,7 @@ class ThreeDScene(Scene):
         self.add(self.renderer.camera.phi_tracker)
 
     def stop_3dillusion_camera_rotation(self):
-        """This method stops all illusion camera rotations."""
+        """Stops all illusion camera rotations."""
         self.renderer.camera.theta_tracker.clear_updaters()
         self.remove(self.renderer.camera.theta_tracker)
         self.renderer.camera.phi_tracker.clear_updaters()
@@ -208,7 +208,7 @@ class ThreeDScene(Scene):
         added_anims: Optional[Iterable["Animation"]] = None,
         **kwargs,
     ):
-        """This method animates the movement of the camera to the given spherical coordinates.
+        """Animates the movement of the camera to the given spherical coordinates.
 
         Parameters
         ----------
@@ -300,7 +300,7 @@ class ThreeDScene(Scene):
             self.remove(self.camera._frame_center)
 
     def get_moving_mobjects(self, *animations):
-        """This method returns a list of all of the Mobjects in the Scene that are moving, that are also in the animations passed.
+        """Returns a list of all of the Mobjects in the Scene that are moving, that are also in the animations passed.
 
         Parameters
         ----------
@@ -316,7 +316,9 @@ class ThreeDScene(Scene):
         return moving_mobjects
 
     def add_fixed_orientation_mobjects(self, *mobjects, **kwargs):
-        """This method is used to prevent the rotation and tilting of mobjects as the camera moves around. The mobject can still move in the x,y,z directions, but will always be at the angle (relative to the camera) that it was at when it was passed through this method.)
+        """Prevent the rotation and tilting of mobjects as the camera moves around.
+
+        The mobject can still move in the x,y,z directions, but will always be at the angle (relative to the camera) that it was at when it was passed through this method.
 
         Parameters
         ----------
@@ -332,7 +334,9 @@ class ThreeDScene(Scene):
         self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
-        """This method is used to prevent the rotation and movement of mobjects as the camera moves around. The mobject is essentially overlaid, and is not impacted by the camera's movement in any way.
+        """Prevent the rotation and movement of mobjects as the camera moves around.
+
+        The mobject is essentially overlaid, and is not impacted by the camera's movement in any way.
 
         Parameters
         ----------
@@ -343,7 +347,9 @@ class ThreeDScene(Scene):
         self.renderer.camera.add_fixed_in_frame_mobjects(*mobjects)
 
     def remove_fixed_orientation_mobjects(self, *mobjects):
-        """This method "unfixes" the orientation of the mobjects passed, meaning they will no longer be at the same angle relative to the camera. This only makes sense if the mobject was passed through add_fixed_orientation_mobjects first.
+        """Unfix the orientation of the mobjects passed.
+
+        This means they will no longer be at the same angle relative to the camera. This only makes sense if the mobject was passed through add_fixed_orientation_mobjects first.
 
         Parameters
         ----------
@@ -353,7 +359,7 @@ class ThreeDScene(Scene):
         self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
-        """This method undoes what add_fixed_in_frame_mobjects does. It allows the mobject to be affected by the movement of the camera.
+        """Undo what add_fixed_in_frame_mobjects did. Allow the mobject to be affected by the movement of the camera.
 
         Parameters
         ----------
@@ -364,7 +370,7 @@ class ThreeDScene(Scene):
 
     ##
     def set_to_default_angled_camera_orientation(self, **kwargs):
-        """This method sets the default_angled_camera_orientation to the keyword arguments passed, and sets the camera to that orientation.
+        """Set the default_angled_camera_orientation to the keyword arguments passed, and set the camera to that orientation.
 
         Parameters
         ----------
@@ -492,7 +498,7 @@ class SpecialThreeDScene(ThreeDScene):
         return axes
 
     def get_sphere(self, **kwargs):
-        """Returns a sphere with the passed keyword arguments as properties.
+        """Return a sphere with the passed keyword arguments as properties.
 
         Parameters
         ----------
@@ -508,7 +514,7 @@ class SpecialThreeDScene(ThreeDScene):
         return Sphere(**config)
 
     def get_default_camera_position(self):
-        """Returns the default_angled_camera position.
+        """Return the default_angled_camera position.
 
         Returns
         -------
@@ -518,5 +524,5 @@ class SpecialThreeDScene(ThreeDScene):
         return self.default_angled_camera_position
 
     def set_camera_to_default_position(self):
-        """Sets the camera to its default position."""
+        """Set the camera to its default position."""
         self.set_camera_orientation(**self.default_angled_camera_position)

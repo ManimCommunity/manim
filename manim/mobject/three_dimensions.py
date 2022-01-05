@@ -41,7 +41,7 @@ class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Surface(VGroup, metaclass=ConvertToOpenGL):
-    """Creates a Parametric Surface using a checkerboard pattern.
+    """Create a Parametric Surface using a checkerboard pattern.
 
     Parameters
     ----------
@@ -269,7 +269,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 @deprecated(since="v0.10.0", replacement=Surface)
 class ParametricSurface(Surface):
     # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
-    """Creates a parametric surface."""
+    """Create a parametric surface."""
 
 
 # Specific shapes

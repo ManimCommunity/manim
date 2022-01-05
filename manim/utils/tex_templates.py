@@ -10,7 +10,7 @@ from .tex import *
 
 
 def _new_ams_template():
-    """Returns a simple Tex Template with only basic AMS packages."""
+    """Return a simple Tex Template with only basic AMS packages."""
     preamble = r"""
 \usepackage[english]{babel}
 \usepackage{amsmath}
@@ -923,13 +923,13 @@ class TexFontTemplates:
     different fonts. They are based on the mathastext LaTeX package.
 
     Examples
-    ---------
+    --------
     Normal usage as a value for the keyword argument tex_template of Tex() and MathTex() mobjects::
 
         ``Tex("My TeX code", tex_template=TexFontTemplates.comic_sans)``
 
     Notes
-    ------
+    -----
     Many of these templates require that specific fonts
     are installed on your local machine.
     For example, choosing the template TexFontTemplates.comic_sans will

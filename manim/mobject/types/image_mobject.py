@@ -52,7 +52,7 @@ class AbstractImageMobject(Mobject):
         pass
 
     def set_resampling_algorithm(self, resampling_algorithm):
-        """Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+        """Set the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class AbstractImageMobject(Mobject):
 
 
 class ImageMobject(AbstractImageMobject):
-    """Displays an Image from a numpy array or a file.
+    """Display an Image from a numpy array or a file.
 
     Parameters
     ----------
@@ -183,7 +183,7 @@ class ImageMobject(AbstractImageMobject):
         super().__init__(scale_to_resolution, **kwargs)
 
     def change_to_rgba_array(self):
-        """Converts an RGB array into RGBA with the alpha value opacity maxed."""
+        """Convert an RGB array into RGBA with the alpha value opacity maxed."""
         pa = self.pixel_array
         if len(pa.shape) == 2:
             pa = pa.reshape(list(pa.shape) + [1])
@@ -212,7 +212,7 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def set_opacity(self, alpha):
-        """Sets the image's opacity.
+        """Set the image's opacity.
 
         Parameters
         ----------
@@ -226,7 +226,7 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def fade(self, darkness=0.5, family=True):
-        """Sets the image's opacity using a 1 - alpha relationship.
+        """Set the image's opacity using a 1 - alpha relationship.
 
         Parameters
         ----------

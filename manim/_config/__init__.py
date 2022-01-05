@@ -50,7 +50,6 @@ def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
 
     Examples
     --------
-
     Use ``with tempconfig({...})`` to temporarily change the default values of
     certain config options.
 

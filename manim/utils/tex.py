@@ -10,7 +10,7 @@ import re
 
 
 class TexTemplate:
-    """TeX templates are used for creating Tex() and MathTex() objects.
+    r"""TeX templates are used for creating Tex() and MathTex() objects.
 
     Parameters
     ----------
@@ -19,13 +19,13 @@ class TexTemplate:
     output_format : Optional[:class:`str`], optional
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     documentclass : Optional[:class:`str`], optional
-        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
+        The command defining the documentclass, e.g. ``\documentclass[preview]{standalone}``
     preamble : Optional[:class:`str`], optional
-        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\documentclass`` and ``\begin{document}``
     placeholder_text : Optional[:class:`str`], optional
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : Optional[:class:`str`], optional
-        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
+        Text (definitions, commands) to be inserted at right after ``\begin{document}``, e.g. ``\boldmath``
 
     Attributes
     ----------
@@ -34,13 +34,13 @@ class TexTemplate:
     output_format : :class:`str`
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     documentclass : :class:`str`
-        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
+        The command defining the documentclass, e.g. ``\documentclass[preview]{standalone}``
     preamble : :class:`str`
-        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\documentclass`` and ``\begin{document}``
     placeholder_text : :class:`str`
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : :class:`str`
-        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
+        Text (definitions, commands) to be inserted at right after ``\begin{document}``, e.g. ``\boldmath``
     """
 
     default_documentclass = r"\documentclass[preview]{standalone}"
@@ -95,7 +95,7 @@ class TexTemplate:
         self._rebuild()
 
     def _rebuild(self):
-        """Rebuilds the entire TeX template text from ``\\documentclass`` to ``\\end{document}`` according to all settings and choices."""
+        r"""Rebuilds the entire TeX template text from ``\documentclass`` to ``\end{document}`` according to all settings and choices."""
         self.body = (
             self.documentclass
             + "\n"
@@ -113,14 +113,14 @@ class TexTemplate:
         )
 
     def add_to_preamble(self, txt, prepend=False):
-        """Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
+        r"""Add stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
 
         Parameters
         ----------
         txt : :class:`string`
-            String containing the text to be added, e.g. ``\\usepackage{hyperref}``
+            String containing the text to be added, e.g. ``\usepackage{hyperref}``
         prepend : Optional[:class:`bool`], optional
-            Whether the text should be added at the beginning of the preamble, i.e. right after ``\\documentclass``. Default is to add it at the end of the preamble, i.e. right before ``\\begin{document}``
+            Whether the text should be added at the beginning of the preamble, i.e. right after ``\documentclass``. Default is to add it at the end of the preamble, i.e. right before ``\begin{document}``
         """
         if prepend:
             self.preamble = txt + "\n" + self.preamble
@@ -129,7 +129,7 @@ class TexTemplate:
         self._rebuild()
 
     def add_to_document(self, txt):
-        """Adds txt to the TeX template just after \\begin{document}, e.g. ``\\boldmath``
+        r"""Add txt to the TeX template just after \begin{document}, e.g. ``\boldmath``
 
         Parameters
         ----------
@@ -140,12 +140,12 @@ class TexTemplate:
         self._rebuild()
 
     def get_texcode_for_expression(self, expression):
-        """Inserts expression verbatim into TeX template.
+        r"""Insert expression verbatim into TeX template.
 
         Parameters
         ----------
         expression : :class:`str`
-            The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
+            The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``
 
         Returns
         -------
@@ -155,19 +155,19 @@ class TexTemplate:
         return self.body.replace(self.placeholder_text, expression)
 
     def _texcode_for_environment(self, environment):
-        """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and ``\\end{environment}`` strings.
+        r"""Processes the tex_environment string to return the correct ``\begin{environment}[extra]{extra}`` and ``\end{environment}`` strings.
 
         Parameters
         ----------
         environment : :class:`str`
             The tex_environment as a string. Acceptable formats include:
-            ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\\begin{tabular}[t]{cccl}``.
+            ``{align*}``, ``align*``, ``{tabular}[t]{cccl}``, ``tabular}{cccl``, ``\begin{tabular}[t]{cccl}``.
 
         Returns
         -------
         Tuple[:class:`str`, :class:`str`]
             A pair of strings representing the opening and closing of the tex environment, e.g.
-            ``\\begin{tabular}{cccl}`` and ``\\end{tabular}``
+            ``\begin{tabular}{cccl}`` and ``\end{tabular}``
         """
 
         # If the environment starts with \begin, remove it
@@ -192,12 +192,12 @@ class TexTemplate:
         return begin, end
 
     def get_texcode_for_expression_in_env(self, expression, environment):
-        r"""Inserts expression into TeX template wrapped in \begin{environment} and \end{environment}
+        r"""Insert expression into TeX template wrapped in \begin{environment} and \end{environment}
 
         Parameters
         ----------
         expression : :class:`str`
-            The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``
+            The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``
         environment : :class:`str`
             The string containing the environment in which the expression should be typeset, e.g. ``align*``
 
@@ -214,7 +214,7 @@ class TexTemplate:
 
 
 class TexTemplateFromFile(TexTemplate):
-    """A TexTemplate object created from a template file (default: tex_template.tex)
+    r"""A TexTemplate object created from a template file (default: tex_template.tex)
 
     Parameters
     ----------
@@ -223,13 +223,13 @@ class TexTemplateFromFile(TexTemplate):
     output_format : Optional[:class:`str`], optional
         The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``
     documentclass : Optional[:class:`str`], optional
-        The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
+        The command defining the documentclass, e.g. ``\documentclass[preview]{standalone}``
     preamble : Optional[:class:`str`], optional
-        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\documentclass`` and ``\begin{document}``
     placeholder_text : Optional[:class:`str`], optional
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : Optional[:class:`str`], optional
-        Text (definitions, commands) to be inserted at right after ``\\begin{document}``, e.g. ``\\boldmath``
+        Text (definitions, commands) to be inserted at right after ``\begin{document}``, e.g. ``\boldmath``
     kwargs : :class:`str`
         The kwargs specified can only be strings.
 

@@ -75,7 +75,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return self.points[0, 0]
 
     def set_value(self, value: float):
-        """Sets a new scalar value to the ValueTracker."""
+        """Set a new scalar value to the ValueTracker."""
         self.points[0, 0] = value
         return self
 
@@ -89,7 +89,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return bool(self.get_value())
 
     def __iadd__(self, d_value: float):
-        """adds ``+=`` syntax to increment the value of the ValueTracker."""
+        """Add ``+=`` syntax to increment the value of the ValueTracker."""
         self.increment_value(d_value)
         return self
 
@@ -114,12 +114,12 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def __isub__(self, d_value: float):
-        """adds ``-=`` syntax to decrement the value of the ValueTracker."""
+        """Add ``-=`` syntax to decrement the value of the ValueTracker."""
         self.increment_value(-d_value)
         return self
 
     def __itruediv__(self, d_value: float):
-        """Sets the value of this value tracker to the current value divided by ``d_value``."""
+        """Set the value of this value tracker to the current value divided by ``d_value``."""
         self.set_value(self.get_value() / d_value)
         return self
 
@@ -169,7 +169,7 @@ class ComplexValueTracker(ValueTracker):
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
-        """Sets a new complex value to the ComplexValueTracker."""
+        """Set a new complex value to the ComplexValueTracker."""
         z = complex(z)
         self.points[0, :2] = (z.real, z.imag)
         return self

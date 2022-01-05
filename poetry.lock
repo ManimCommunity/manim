@@ -532,19 +532,6 @@ python-versions = ">=3.6,<4.0"
 flake8-plugin-utils = ">=1.0,<2.0"
 
 [[package]]
-name = "flake8-rst-docstrings"
-version = "0.2.3"
-description = "Python docstring reStructuredText (RST) validator"
-category = "dev"
-optional = false
-python-versions = ">=3.3"
-
-[package.dependencies]
-flake8 = ">=3.0.0"
-pygments = "*"
-restructuredtext-lint = "*"
-
-[[package]]
 name = "flake8-simplify"
 version = "0.14.2"
 description = "flake8 plugin which checks for code that can be simplified"
@@ -1769,17 +1756,6 @@ requests = ">=1.1"
 urllib3 = ">=1.8"
 
 [[package]]
-name = "restructuredtext-lint"
-version = "1.3.2"
-description = "reStructuredText linter"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-docutils = ">=0.11,<1.0"
-
-[[package]]
 name = "rich"
 version = "10.11.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
@@ -2205,7 +2181,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "8f2facc0de50d89e98cf204a8196980dde09f6574e650afed15aa98cc5b04042"
+content-hash = "13cdcc58f3d5fd84b29abb3663590e2f221bb02e0da1cf75e7a982a950780223"
 
 [metadata.files]
 alabaster = [
@@ -2563,10 +2539,6 @@ flake8-pytest-style = [
 flake8-return = [
     {file = "flake8-return-1.1.3.tar.gz", hash = "sha256:13a31edeb0c6157dd4f77166cdaa6141703d2b8b24def5558ae659852a003cb4"},
     {file = "flake8_return-1.1.3-py3-none-any.whl", hash = "sha256:4a266191f7ed69aa26b835ec90c5a5522fa8f79f5cf6363a877ac499f8eb418b"},
-]
-flake8-rst-docstrings = [
-    {file = "flake8-rst-docstrings-0.2.3.tar.gz", hash = "sha256:3045794e1c8467fba33aaea5c246b8369efc9c44ef8b0b20199bb6df7a4bd47b"},
-    {file = "flake8_rst_docstrings-0.2.3-py3-none-any.whl", hash = "sha256:565bbb391d7e4d0042924102221e9857ad72929cdd305b26501736ec22c1451a"},
 ]
 flake8-simplify = [
     {file = "flake8_simplify-0.14.2-py3-none-any.whl", hash = "sha256:6584f3d49350659caaf2a42129f820dc64e60d4bdcb316f621b4e1cfae27e33a"},
@@ -3561,9 +3533,6 @@ requests = [
 requests-unixsocket = [
     {file = "requests-unixsocket-0.2.0.tar.gz", hash = "sha256:9e5c1a20afc3cf786197ae59c79bcdb0e7565f218f27df5f891307ee8817c1ea"},
     {file = "requests_unixsocket-0.2.0-py2.py3-none-any.whl", hash = "sha256:014d07bfb66dc805a011a8b4b306cf4ec96d2eddb589f6b2b5765e626f0dc0cc"},
-]
-restructuredtext-lint = [
-    {file = "restructuredtext_lint-1.3.2.tar.gz", hash = "sha256:d3b10a1fe2ecac537e51ae6d151b223b78de9fafdd50e5eb6b08c243df173c80"},
 ]
 rich = [
     {file = "rich-10.11.0-py3-none-any.whl", hash = "sha256:44bb3f9553d00b3c8938abf89828df870322b9ba43caf3b12bb7758debdc6dec"},

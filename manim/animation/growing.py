@@ -55,7 +55,6 @@ class GrowFromPoint(Transform):
 
     Examples
     --------
-
     .. manim :: GrowFromPointExample
 
         class GrowFromPointExample(Scene):
@@ -101,7 +100,6 @@ class GrowFromCenter(GrowFromPoint):
 
     Examples
     --------
-
     .. manim :: GrowFromCenterExample
 
         class GrowFromCenterExample(Scene):
@@ -131,7 +129,6 @@ class GrowFromEdge(GrowFromPoint):
 
     Examples
     --------
-
     .. manim :: GrowFromEdgeExample
 
         class GrowFromEdgeExample(Scene):
@@ -163,7 +160,6 @@ class GrowArrow(GrowFromPoint):
 
     Examples
     --------
-
     .. manim :: GrowArrowExample
 
         class GrowArrowExample(Scene):
@@ -201,7 +197,6 @@ class SpinInFromNothing(GrowFromCenter):
 
     Examples
     --------
-
     .. manim :: SpinInFromNothingExample
 
         class SpinInFromNothingExample(Scene):

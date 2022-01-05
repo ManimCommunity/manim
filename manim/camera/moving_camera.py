@@ -55,7 +55,7 @@ class MovingCamera(Camera):
     # TODO, make these work for a rotated frame
     @property
     def frame_height(self):
-        """Returns the height of the frame.
+        """Return the height of the frame.
 
         Returns
         -------
@@ -66,7 +66,7 @@ class MovingCamera(Camera):
 
     @property
     def frame_width(self):
-        """Returns the width of the frame.
+        """Return the width of the frame.
 
         Returns
         -------
@@ -77,7 +77,7 @@ class MovingCamera(Camera):
 
     @property
     def frame_center(self):
-        """Returns the centerpoint of the frame in cartesian coordinates.
+        """Return the centerpoint of the frame in cartesian coordinates.
 
         Returns
         -------
@@ -88,7 +88,7 @@ class MovingCamera(Camera):
 
     @frame_height.setter
     def frame_height(self, frame_height):
-        """Sets the height of the frame in MUnits.
+        """Set the height of the frame in MUnits.
 
         Parameters
         ----------
@@ -99,7 +99,7 @@ class MovingCamera(Camera):
 
     @frame_width.setter
     def frame_width(self, frame_width):
-        """Sets the width of the frame in MUnits.
+        """Set the width of the frame in MUnits.
 
         Parameters
         ----------
@@ -110,7 +110,7 @@ class MovingCamera(Camera):
 
     @frame_center.setter
     def frame_center(self, frame_center):
-        """Sets the centerpoint of the frame.
+        """Set the centerpoint of the frame.
 
         Parameters
         ----------
@@ -153,7 +153,7 @@ class MovingCamera(Camera):
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
     def get_mobjects_indicating_movement(self):
-        """Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving.
+        """Return all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving.
 
         Returns
         -------
@@ -183,7 +183,7 @@ class MovingCamera(Camera):
         Returns
         -------
         _AnimationBuilder
-            Returns an animation that zooms the camera view to a given
+            Return an animation that zooms the camera view to a given
             list of mobjects.
         """
         scene_critical_x_left = None

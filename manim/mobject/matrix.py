@@ -2,26 +2,25 @@ r"""Mobjects representing matrices.
 
 Examples
 --------
-
 .. manim:: MatrixExamples
     :save_last_frame:
 
     class MatrixExamples(Scene):
         def construct(self):
-            m0 = Matrix([["\\pi", 0], [-1, 1]])
+            m0 = Matrix([["\pi", 0], [-1, 1]])
             m1 = IntegerMatrix([[1.5, 0.], [12, -1.3]],
                 left_bracket="(",
                 right_bracket=")")
             m2 = DecimalMatrix(
                 [[3.456, 2.122], [33.2244, 12.33]],
                 element_to_mobject_config={"num_decimal_places": 2},
-                left_bracket="\\{",
-                right_bracket="\\}")
+                left_bracket="\{",
+                right_bracket="\}")
             m3 = MobjectMatrix(
                 [[Circle().scale(0.3), Square().scale(0.3)],
-                [MathTex("\\pi").scale(2), Star().scale(0.3)]],
-                left_bracket="\\langle",
-                right_bracket="\\rangle")
+                [MathTex("\pi").scale(2), Star().scale(0.3)]],
+                left_bracket="\langle",
+                right_bracket="\rangle")
             g = Group(m0, m1, m2, m3).arrange_in_grid(buff=2)
             self.add(g)
 """
@@ -69,7 +68,7 @@ def matrix_to_mobject(matrix):
 
 
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
-    """A mobject that displays a matrix on the screen.
+    r"""A mobject that displays a matrix on the screen.
 
     Examples
     --------
@@ -82,22 +81,22 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         class MatrixExamples(Scene):
             def construct(self):
-                m0 = Matrix([[2, "\\pi"], [-1, 1]])
+                m0 = Matrix([[2, "\pi"], [-1, 1]])
                 m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
                     v_buff=1.3,
                     h_buff=0.8,
                     bracket_h_buff=SMALL_BUFF,
                     bracket_v_buff=SMALL_BUFF,
-                    left_bracket="\\{",
-                    right_bracket="\\}")
+                    left_bracket="\{",
+                    right_bracket="\}")
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\\\langle",
-                    right_bracket="\\\\rangle")
+                    left_bracket="\\langle",
+                    right_bracket="\\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
@@ -207,7 +206,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             self.add_background_rectangle()
 
     def matrix_to_mob_matrix(self, matrix):
-        """Used internally."""
+        """Use internally."""
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -217,7 +216,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         ]
 
     def organize_mob_matrix(self, matrix):
-        """Used internally."""
+        """Use internally."""
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -228,7 +227,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def add_brackets(self, left="[", right="]", **kwargs):
-        """Used internally. Adds the brackets to the Matrix mobject.
+        """Use internally. Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
 
@@ -256,22 +255,21 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_columns(self):
-        """Return columns of the matrix as VGroups.
+        r"""Return columns of the matrix as VGroups.
 
         Returns
-        --------
+        -------
         List[:class:`~.VGroup`]
             Each VGroup contains a column of the matrix.
 
         Examples
         --------
-
         .. manim:: GetColumnsExample
             :save_last_frame:
 
             class GetColumnsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0 = Matrix([["\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
                     self.add(m0)
         """
@@ -284,7 +282,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def set_column_colors(self, *colors):
-        """Set individual colors for each columns of the matrix.
+        r"""Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
@@ -298,13 +296,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: SetColumnColorsExample
             :save_last_frame:
 
             class SetColumnColorsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 1], [-1, 3]],
+                    m0 = Matrix([["\pi", 1], [-1, 3]],
                     ).set_column_colors([RED,BLUE], GREEN)
                     self.add(m0)
         """
@@ -314,29 +311,28 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_rows(self):
-        """Return rows of the matrix as VGroups.
+        r"""Return rows of the matrix as VGroups.
 
         Returns
-        --------
+        -------
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
 
         Examples
         --------
-
         .. manim:: GetRowsExample
             :save_last_frame:
 
             class GetRowsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0 = Matrix([["\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_rows()[1]))
                     self.add(m0)
         """
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors):
-        """Set individual colors for each row of the matrix.
+        r"""Set individual colors for each row of the matrix.
 
         Parameters
         ----------
@@ -350,13 +346,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: SetRowColorsExample
             :save_last_frame:
 
             class SetRowColorsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 1], [-1, 3]],
+                    m0 = Matrix([["\pi", 1], [-1, 3]],
                     ).set_row_colors([RED,BLUE], GREEN)
                     self.add(m0)
         """
@@ -381,7 +376,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """Return the underlying mob matrix mobjects.
 
         Returns
-        --------
+        -------
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
         """
@@ -391,13 +386,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         """Return the individual entries of the matrix.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             VGroup containing entries of the matrix.
 
         Examples
         --------
-
         .. manim:: GetEntriesExample
             :save_last_frame:
 
@@ -413,22 +407,21 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self.elements
 
     def get_brackets(self):
-        """Return the bracket mobjects.
+        r"""Return the bracket mobjects.
 
         Returns
-        --------
+        -------
         List[:class:`~.VGroup`]
             Each VGroup contains a bracket
 
         Examples
         --------
-
         .. manim:: GetBracketsExample
             :save_last_frame:
 
             class GetBracketsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0 = Matrix([["\pi", 3], [1, 5]])
                     bra = m0.get_brackets()
                     colors = [BLUE, GREEN]
                     for k in range(len(colors)):
@@ -439,11 +432,10 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
 
 class DecimalMatrix(Matrix):
-    """A mobject that displays a matrix with decimal entries on the screen.
+    r"""A mobject that displays a matrix with decimal entries on the screen.
 
     Examples
     --------
-
     .. manim:: DecimalMatrixExample
         :save_last_frame:
 
@@ -452,8 +444,8 @@ class DecimalMatrix(Matrix):
                 m0 = DecimalMatrix(
                     [[3.456, 2.122], [33.2244, 12]],
                     element_to_mobject_config={"num_decimal_places": 2},
-                    left_bracket="\\{",
-                    right_bracket="\\}")
+                    left_bracket="\{",
+                    right_bracket="\}")
                 self.add(m0)
     """
 
@@ -490,7 +482,6 @@ class IntegerMatrix(Matrix):
 
     Examples
     --------
-
     .. manim:: IntegerMatrixExample
         :save_last_frame:
 
@@ -517,11 +508,10 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    """A mobject that displays a matrix of mobject entries on the screen.
+    r"""A mobject that displays a matrix of mobject entries on the screen.
 
     Examples
     --------
-
     .. manim:: MobjectMatrixExample
         :save_last_frame:
 
@@ -529,7 +519,7 @@ class MobjectMatrix(Matrix):
             def construct(self):
                 a = Circle().scale(0.3)
                 b = Square().scale(0.3)
-                c = MathTex("\\pi").scale(2)
+                c = MathTex("\pi").scale(2)
                 d = Star().scale(0.3)
                 m0 = MobjectMatrix([[a, b], [c, d]])
                 self.add(m0)
@@ -562,13 +552,12 @@ def get_det_text(
         The scale of the text `det` w.r.t the matrix
 
     Returns
-    --------
+    -------
     :class:`~.VGroup`
         A VGroup containing the determinant
 
     Examples
     --------
-
     .. manim:: DeterminantOfAMatrix
         :save_last_frame:
 

@@ -45,7 +45,7 @@ def select_resolution():
 
 
 def update_cfg(cfg_dict, project_cfg_path):
-    """Updates the manim.cfg file after reading it from the project_cfg_path.
+    """Update the manim.cfg file after reading it from the project_cfg_path.
 
     Parameters
     ----------

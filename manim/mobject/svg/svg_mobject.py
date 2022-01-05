@@ -34,7 +34,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. code-block:: python
 
         class Sample(Scene):
@@ -42,14 +41,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 self.play(FadeIn(SVGMobject("manim-logo-sidebar.svg")))
 
     Parameters
-    --------
+    ----------
     file_name : :class:`str`
         The file's path name. When possible, the full path is preferred but a
         relative path may be used as well. Relative paths are relative to the
         directory specified by the `--assets_dir` command line argument.
 
     Other Parameters
-    --------
+    ----------------
     should_center : :class:`bool`
         Whether the SVGMobject should be centered to the origin. Defaults to `True`.
     height : :class:`float`
@@ -242,7 +241,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return style
 
     def path_string_to_mobject(self, path_string: str, style: dict):
-        """Converts a SVG path element's ``d`` attribute to a mobject.
+        """Convert a SVG path element's ``d`` attribute to a mobject.
 
         Parameters
         ----------
@@ -284,7 +283,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         use_element: MinidomElement,
         local_style: Dict,
     ) -> List[VMobject]:
-        """Converts a SVG <use> element to a collection of VMobjects.
+        """Convert a SVG <use> element to a collection of VMobjects.
 
         Parameters
         ----------
@@ -321,7 +320,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return self.get_mobjects_from(def_element, style)
 
     def line_to_mobject(self, line_element: MinidomElement, style: dict):
-        """Creates a Line VMobject from an SVG <line> element.
+        """Create a Line VMobject from an SVG <line> element.
 
         Parameters
         ----------
@@ -345,7 +344,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
 
     def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
-        """Converts a SVG <rect> command to a VMobject.
+        """Convert a SVG <rect> command to a VMobject.
 
         Parameters
         ----------
@@ -394,7 +393,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return mob
 
     def circle_to_mobject(self, circle_element: MinidomElement, style: dict):
-        """Creates a Circle VMobject from a SVG <circle> command.
+        """Create a Circle VMobject from a SVG <circle> command.
 
         Parameters
         ----------
@@ -418,7 +417,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
-        """Creates a stretched Circle VMobject from a SVG <circle> path command.
+        """Create a stretched Circle VMobject from a SVG <circle> path command.
 
         Parameters
         ----------
@@ -471,7 +470,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return self.path_string_to_mobject(path_string, style)
 
     def handle_transforms(self, element, mobject):
-        """Applies the SVG transform to the specified mobject. Transforms
+        """Apply the SVG transform to the specified mobject. Transforms
         include: ``matrix``, ``translate``, and ``scale``.
 
         Parameters
@@ -562,7 +561,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return output_list
 
     def move_into_position(self, width, height):
-        """Uses the SVGMobject's config dictionary to set the Mobject's width, height, and/or center it.
+        """Use the SVGMobject's config dictionary to set the Mobject's width, height, and/or center it.
 
         Use ``width``, ``height``, and ``should_center`` respectively to
         modify this.

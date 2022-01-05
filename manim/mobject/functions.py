@@ -38,7 +38,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: PlotParametricFunction
         :save_last_frame:
 

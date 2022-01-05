@@ -23,12 +23,12 @@ def tex_hash(expression):
 
 
 def tex_to_svg_file(expression, environment=None, tex_template=None):
-    """Takes a tex expression and returns the svg version of the compiled tex.
+    r"""Takes a tex expression and returns the svg version of the compiled tex.
 
     Parameters
     ----------
     expression : :class:`str`
-        String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
+        String containing the TeX expression to be rendered, e.g. ``\sqrt{2}`` or ``foo``
     environment : Optional[:class:`str`], optional
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template : Optional[:class:`~.TexTemplate`], optional
@@ -51,12 +51,12 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
 
 
 def generate_tex_file(expression, environment=None, tex_template=None):
-    """Takes a tex expression (and an optional tex environment), and returns a fully formed tex file ready for compilation.
+    r"""Takes a tex expression (and an optional tex environment), and returns a fully formed tex file ready for compilation.
 
     Parameters
     ----------
     expression : :class:`str`
-        String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
+        String containing the TeX expression to be rendered, e.g. ``\sqrt{2}`` or ``foo``
     environment : Optional[:class:`str`], optional
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template : Optional[:class:`~.TexTemplate`], optional
@@ -186,7 +186,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
 
 
 def convert_to_svg(dvi_file, extension, page=1):
-    """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
+    """Convert a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
     ----------

@@ -2,7 +2,6 @@ r"""Mobjects that are simple geometric shapes.
 
 Examples
 --------
-
 .. manim:: UsefulAnnotations
     :save_last_frame:
 
@@ -95,7 +94,9 @@ from .opengl_compatibility import ConvertToOpenGL
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
-    """Meant for shared functionality between Arc and Line. Functionality can be classified broadly into these groups:
+    """Meant for shared functionality between :class:`~.Arc` and :class:`~.Line`.
+
+    Functionality can be classified broadly into these groups:
 
     * Adding, Creating, Modifying tips
         - add_tip calls create_tip, before pushing the new tip
@@ -126,7 +127,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     # Adding, Creating, Modifying tips
 
     def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
-        """Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
+        """Add a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
         if tip is None:
             tip = self.create_tip(tip_shape, tip_length, at_start)
         else:
@@ -143,7 +144,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return tip
 
     def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
-        """Returns a tip that has been stylistically configured, but has not yet been given a position in space."""
+        """Return a tip that has been stylistically configured, but has not yet been given a position in space."""
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
         if tip_length is None:
@@ -221,7 +222,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tips(self):
-        """Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
+        """Return a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
         result = self.get_group_class()()
         if hasattr(self, "tip"):
             result.add(self.tip)
@@ -230,7 +231,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."""
+        """Return the TipableVMobject instance's (first) tip, otherwise throws an exception."""
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -361,7 +362,7 @@ class Arc(TipableVMobject):
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
-        """Looks at the normals to the first two anchors, and finds their intersection points."""
+        """Look at the normals to the first two anchors, and find their intersection points."""
         # First two anchors and handles
         a1, h1, h2, a2 = self.points[:4]
 
@@ -393,10 +394,10 @@ class Arc(TipableVMobject):
 
 
 class ArcBetweenPoints(Arc):
-    """Inherits from Arc and additionally takes 2 points between which the arc is spanned.
+    """Create an Arc between 2 points.
 
     Example
-    --------------------
+    -------
     .. manim:: ArcBetweenPointsExample
 
       class ArcBetweenPointsExample(Scene):
@@ -469,7 +470,6 @@ class Circle(Arc):
 
     Examples
     --------
-
     .. manim:: CircleExample
         :save_last_frame:
 
@@ -498,7 +498,7 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
-        """Modifies a circle so that it surrounds a given mobject.
+        """Modify a circle so that it surrounds a given mobject.
 
         Parameters
         ----------
@@ -512,7 +512,6 @@ class Circle(Arc):
 
         Examples
         --------
-
         .. manim:: CircleSurround
             :save_last_frame:
 
@@ -546,7 +545,7 @@ class Circle(Arc):
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
-        """Returns the position of a point on the circle.
+        """Return the position of a point on the circle.
 
         Parameters
         ----------
@@ -555,7 +554,6 @@ class Circle(Arc):
 
         Examples
         --------
-
         .. manim:: PointAtAngleExample
             :save_last_frame:
 
@@ -582,11 +580,10 @@ class Circle(Arc):
     def from_three_points(
         p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
     ):
-        """Returns a circle passing through the specified three points.
+        """Return a circle passing through the specified three points.
 
         Example
         -------
-
         .. manim:: CircleFromPointsExample
             :save_last_frame:
 
@@ -628,7 +625,6 @@ class Dot(Circle):
 
     Examples
     --------
-
     .. manim:: DotExample
         :save_last_frame:
 
@@ -696,7 +692,6 @@ class LabeledDot(Dot):
 
     Examples
     --------
-
     .. manim:: SeveralLabeledDots
         :save_last_frame:
 
@@ -744,7 +739,6 @@ class Ellipse(Circle):
 
     Examples
     --------
-
     .. manim:: EllipseExample
         :save_last_frame:
 
@@ -763,7 +757,7 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """
+    """Create an AnnularSector.
 
     Parameters
     ----------
@@ -851,11 +845,10 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """
+    """Create a Sector.
 
     Examples
     --------
-
     .. manim:: ExampleSector
         :save_last_frame:
 
@@ -886,7 +879,6 @@ class Annulus(Circle):
 
     Examples
     --------
-
     .. manim:: AnnulusExample
         :save_last_frame:
 
@@ -994,7 +986,8 @@ class Line(TipableVMobject):
         return np.array(mob_or_point)
 
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
-        """Sets starts and end coordinates of a line.
+        """Set starts and end coordinates of a line.
+
         Examples
         --------
         .. manim:: LineExample
@@ -1033,7 +1026,7 @@ class Line(TipableVMobject):
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point: Sequence[float]) -> Sequence[float]:
-        """Returns the projection of a point onto a line.
+        """Return the projection of a point onto a line.
 
         Parameters
         ----------
@@ -1117,7 +1110,7 @@ class DashedLine(Line):
         self.add(*dashes)
 
     def calculate_num_dashes(self) -> int:
-        """Returns the number of dashes in the dashed line.
+        """Return the number of dashes in the dashed line.
 
         Examples
         --------
@@ -1134,7 +1127,7 @@ class DashedLine(Line):
         )
 
     def get_start(self) -> np.ndarray:
-        """Returns the start point of the line.
+        """Return the start point of the line.
 
         Examples
         --------
@@ -1150,7 +1143,7 @@ class DashedLine(Line):
             return super().get_start()
 
     def get_end(self) -> np.ndarray:
-        """Returns the end point of the line.
+        """Return the end point of the line.
 
         Examples
         --------
@@ -1166,7 +1159,7 @@ class DashedLine(Line):
             return super().get_end()
 
     def get_first_handle(self) -> np.ndarray:
-        """Returns the point of the first handle.
+        """Return the point of the first handle.
 
         Examples
         --------
@@ -1179,7 +1172,7 @@ class DashedLine(Line):
         return self.submobjects[0].points[1]
 
     def get_last_handle(self) -> np.ndarray:
-        """Returns the point of the last handle.
+        """Return the point of the last handle.
 
         Examples
         --------
@@ -1210,7 +1203,6 @@ class TangentLine(Line):
 
     Examples
     --------
-
     .. manim:: TangentLineExample
         :save_last_frame:
 
@@ -1252,7 +1244,6 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: ElbowExample
         :save_last_frame:
 
@@ -1298,7 +1289,6 @@ class Arrow(Line):
 
     Examples
     --------
-
     .. manim:: ArrowExample
         :save_last_frame:
 
@@ -1438,7 +1428,7 @@ class Arrow(Line):
         return self
 
     def get_normal_vector(self) -> np.ndarray:
-        """Returns the normal of a vector.
+        """Return the normal of a vector.
 
         Examples
         --------
@@ -1452,16 +1442,15 @@ class Arrow(Line):
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
-        """Resets the normal of a vector."""
+        """Reset the normal of a vector."""
         self.normal_vector = self.get_normal_vector()
         return self
 
     def get_default_tip_length(self) -> float:
-        """Returns the default tip_length of the arrow.
+        """Return the default tip_length of the arrow.
 
         Examples
         --------
-
         ::
 
             >>> Arrow().get_default_tip_length()
@@ -1472,7 +1461,7 @@ class Arrow(Line):
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
-        """Used internally.
+        """Use internally.
 
         Sets stroke width based on length.
         """
@@ -1504,7 +1493,6 @@ class Vector(Arrow):
 
     Examples
     --------
-
     .. manim:: VectorExample
         :save_last_frame:
 
@@ -1530,7 +1518,7 @@ class Vector(Arrow):
         color: Optional[Color] = None,
         **kwargs,
     ):
-        """Creates a label based on the coordinates of the vector.
+        """Create a label based on the coordinates of the vector.
 
         Parameters
         ----------
@@ -1545,7 +1533,6 @@ class Vector(Arrow):
 
         Examples
         --------
-
         .. manim:: VectorCoordinateLabel
             :save_last_frame:
 
@@ -1600,7 +1587,6 @@ class DoubleArrow(Arrow):
 
     Examples
     --------
-
     .. manim:: DoubleArrowExample
         :save_last_frame:
 
@@ -1643,10 +1629,10 @@ class DoubleArrow(Arrow):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """Create a CubicBezier curve.
+
     Example
     -------
-
     .. manim:: BezierSplineExample
         :save_last_frame:
 
@@ -1718,7 +1704,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
             )
 
     def get_vertices(self) -> np.ndarray:
-        """Gets the vertices of the :class:`Polygram`.
+        """Get the vertices of the :class:`Polygram`.
 
         Returns
         -------
@@ -1740,7 +1726,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         return self.get_start_anchors()
 
     def get_vertex_groups(self) -> np.ndarray:
-        """Gets the vertex groups of the :class:`Polygram`.
+        """Get the vertex groups of the :class:`Polygram`.
 
         Returns
         -------
@@ -1775,7 +1761,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         return np.array(vertex_groups)
 
     def round_corners(self, radius: float = 0.5):
-        """Rounds off the corners of the :class:`Polygram`.
+        """Round off the corners of the :class:`Polygram`.
 
         Parameters
         ----------
@@ -1784,7 +1770,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: PolygramRoundCorners
             :save_last_frame:
 
@@ -1865,7 +1850,6 @@ class Polygon(Polygram):
 
     Examples
     --------
-
     .. manim:: PolygonExample
         :save_last_frame:
 
@@ -1991,7 +1975,6 @@ class RegularPolygon(RegularPolygram):
 
     Examples
     --------
-
     .. manim:: RegularPolygonExample
         :save_last_frame:
 
@@ -2169,7 +2152,6 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
     Examples
     --------
-
     .. manim:: SeveralArcPolygons
 
         class SeveralArcPolygons(Scene):
@@ -2361,7 +2343,6 @@ class Triangle(RegularPolygon):
 
     Examples
     --------
-
     .. manim:: TriangleExample
         :save_last_frame:
 
@@ -2400,8 +2381,7 @@ class Rectangle(Polygon):
         Additional arguments to be passed to :class:`Polygon`
 
     Examples
-    ----------
-
+    --------
     .. manim:: RectangleExample
         :save_last_frame:
 
@@ -2471,7 +2451,6 @@ class Square(Rectangle):
 
     Examples
     --------
-
     .. manim:: SquareExample
         :save_last_frame:
 
@@ -2500,7 +2479,6 @@ class RoundedRectangle(Rectangle):
 
     Examples
     --------
-
     .. manim:: RoundedRectangleExample
         :save_last_frame:
 
@@ -3031,7 +3009,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
-        """Get the value of an angle of the :class:`Angle` class.
+        r"""Get the value of an angle of the :class:`Angle` class.
 
         Parameters
         ----------
@@ -3045,7 +3023,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-
         .. manim:: GetValueExample
             :save_last_frame:
 
@@ -3056,7 +3033,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     angle = Angle(line1, line2, radius=0.4)
 
-                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
+                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\circ}")
                     value.next_to(angle, UR)
 
                     self.add(line1, line2, angle, value)
@@ -3083,7 +3060,6 @@ class RightAngle(Angle):
 
     Examples
     --------
-
     .. manim:: RightAngleExample
         :save_last_frame:
 

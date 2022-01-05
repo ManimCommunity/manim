@@ -177,7 +177,7 @@ class SceneFileWriter:
         )
 
     def add_partial_movie_file(self, hash_animation):
-        """Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash. This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
+        """Add a new partial movie file path to `scene.partial_movie_files` and current section from a hash. This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
         Parameters
         ----------
@@ -234,11 +234,11 @@ class SceneFileWriter:
         self.includes_sound = False
 
     def create_audio_segment(self):
-        """Creates an empty, silent, Audio Segment."""
+        """Create an empty, silent, Audio Segment."""
         self.audio_segment = AudioSegment.silent()
 
     def add_audio_segment(self, new_segment, time=None, gain_to_background=None):
-        """This method adds an audio segment from an AudioSegment type object and suitable parameters.
+        """Add an audio segment from an AudioSegment type object and suitable parameters.
 
         Parameters
         ----------
@@ -276,7 +276,7 @@ class SceneFileWriter:
         )
 
     def add_sound(self, sound_file, time=None, gain=None, **kwargs):
-        """This method adds an audio segment from a sound file.
+        """Add an audio segment from a sound file.
 
         Parameters
         ----------
@@ -301,7 +301,7 @@ class SceneFileWriter:
 
     # Writers
     def begin_animation(self, allow_write=False, file_path=None):
-        """Used internally by manim to stream the animation to FFMPEG for displaying or writing to a file.
+        """Use internally by manim to stream the animation to FFMPEG for displaying or writing to a file.
 
         Parameters
         ----------
@@ -323,7 +323,7 @@ class SceneFileWriter:
             self.close_movie_pipe()
 
     def write_frame(self, frame_or_renderer):
-        """Used internally by Manim to write a frame to the FFMPEG input buffer.
+        """Use internally by Manim to write a frame to the FFMPEG input buffer.
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class SceneFileWriter:
             self.write_subcaption_file()
 
     def open_movie_pipe(self, file_path=None):
-        """Used internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."""
+        """Use internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."""
         if file_path is None:
             file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
@@ -472,7 +472,7 @@ class SceneFileWriter:
         self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
 
     def close_movie_pipe(self):
-        """Used internally by Manim to gracefully stop writing to FFMPEG's input buffer."""
+        """Use internally by Manim to gracefully stop writing to FFMPEG's input buffer."""
         self.writing_process.stdin.close()
         self.writing_process.wait()
 
@@ -556,7 +556,7 @@ class SceneFileWriter:
         combine_process.wait()
 
     def combine_to_movie(self):
-        """Used internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."""
+        """Use internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."""
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in

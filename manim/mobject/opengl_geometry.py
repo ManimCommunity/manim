@@ -60,7 +60,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         super().__init__(**kwargs)
 
     def add_tip(self, at_start=False, **kwargs):
-        """Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
+        """Add a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
         tip = self.create_tip(at_start, **kwargs)
         self.reset_endpoints_based_on_tip(tip, at_start)
         self.asign_tip_attr(tip, at_start)
@@ -74,7 +74,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return tip
 
     def get_unpositioned_tip(self, **kwargs):
-        """Returns a tip that has been stylistically configured, but has not yet been given a position in space."""
+        """Return a tip that has been stylistically configured, but has not yet been given a position in space."""
         config = {}
         config.update(self.tip_config)
         config.update(kwargs)
@@ -136,7 +136,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return result
 
     def get_tips(self):
-        """Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
+        """Return a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
         result = OpenGLVGroup()
         if hasattr(self, "tip"):
             result.add(self.tip)
@@ -145,7 +145,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."""
+        """Return the TipableVMobject instance's (first) tip, otherwise throws an exception."""
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -230,7 +230,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         return points
 
     def get_arc_center(self):
-        """Looks at the normals to the first two anchors, and finds their intersection points."""
+        """Look at the normals to the first two anchors, and finds their intersection points."""
         # First two anchors and handles
         a1, h, a2 = self.points[:3]
         # Tangent vectors

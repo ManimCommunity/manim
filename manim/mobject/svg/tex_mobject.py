@@ -436,7 +436,6 @@ class BulletedList(Tex):
     """
     Examples
     --------
-
     .. manim:: BulletedListExample
         :save_last_frame:
 

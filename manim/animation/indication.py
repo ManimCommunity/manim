@@ -2,7 +2,6 @@
 
 Examples
 --------
-
 .. manim:: Indications
 
     class Indications(Scene):
@@ -268,7 +267,7 @@ class Flash(AnimationGroup):
 
 
 class ShowPassingFlash(ShowPartial):
-    """Show only a sliver of the VMobject each frame.
+    r"""Show only a sliver of the VMobject each frame.
 
     Parameters
     ----------
@@ -288,7 +287,7 @@ class ShowPassingFlash(ShowPartial):
                 self.add(p, lbl)
                 p = p.copy().set_color(BLUE)
                 for time_width in [0.2, 0.5, 1, 2]:
-                    lbl.become(Tex(r"\\texttt{time\\_width={{%.1f}}}"%time_width))
+                    lbl.become(Tex(r"\texttt{time\_width={{%.1f}}}"%time_width))
                     self.play(ShowPassingFlash(
                         p.copy().set_color(BLUE),
                         run_time=2,
@@ -371,7 +370,6 @@ class ApplyWave(Homotopy):
 
     Examples
     --------
-
     .. manim:: ApplyingWaves
 
         class ApplyingWaves(Scene):
@@ -499,7 +497,6 @@ class Wiggle(Animation):
 
     Examples
     --------
-
     .. manim:: ApplyingWaves
 
         class ApplyingWaves(Scene):
@@ -555,7 +552,7 @@ class Wiggle(Animation):
 
 
 class Circumscribe(Succession):
-    """Draw a temporary line surrounding the mobject.
+    r"""Draw a temporary line surrounding the mobject.
 
     Parameters
     ----------
@@ -581,12 +578,11 @@ class Circumscribe(Succession):
 
     Examples
     --------
-
     .. manim:: UsingCircumscribe
 
         class UsingCircumscribe(Scene):
             def construct(self):
-                lbl = Tex(r"Circum-\\\\scribe").scale(2)
+                lbl = Tex(r"Circum-\\scribe").scale(2)
                 self.add(lbl)
                 self.play(Circumscribe(lbl))
                 self.play(Circumscribe(lbl, Circle))

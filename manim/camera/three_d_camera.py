@@ -36,7 +36,7 @@ class ThreeDCamera(Camera):
         zoom=1,
         **kwargs
     ):
-        """Initializes the ThreeDCamera.
+        """Initialize the ThreeDCamera.
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class ThreeDCamera(Camera):
         super().capture_mobjects(mobjects, **kwargs)
 
     def get_value_trackers(self):
-        """Returns list of ValueTrackers of phi, theta, focal_distance and gamma.
+        """Return list of ValueTrackers of phi, theta, focal_distance and gamma.
 
         Returns
         -------
@@ -144,7 +144,7 @@ class ThreeDCamera(Camera):
         return sorted(mobjects, key=z_key)
 
     def get_phi(self):
-        """Returns the Polar angle (the angle off Z_AXIS) phi.
+        """Return the Polar angle (the angle off Z_AXIS) phi.
 
         Returns
         -------
@@ -154,7 +154,7 @@ class ThreeDCamera(Camera):
         return self.phi_tracker.get_value()
 
     def get_theta(self):
-        """Returns the Azimuthal i.e the angle that spins the camera around the Z_AXIS.
+        """Return the Azimuthal i.e the angle that spins the camera around the Z_AXIS.
 
         Returns
         -------
@@ -164,7 +164,7 @@ class ThreeDCamera(Camera):
         return self.theta_tracker.get_value()
 
     def get_focal_distance(self):
-        """Returns focal_distance of the Camera.
+        """Return focal_distance of the Camera.
 
         Returns
         -------
@@ -174,7 +174,7 @@ class ThreeDCamera(Camera):
         return self.focal_distance_tracker.get_value()
 
     def get_gamma(self):
-        """Returns the rotation of the camera about the vector from the ORIGIN to the Camera.
+        """Return the rotation of the camera about the vector from the ORIGIN to the Camera.
 
         Returns
         -------
@@ -185,7 +185,7 @@ class ThreeDCamera(Camera):
         return self.gamma_tracker.get_value()
 
     def get_zoom(self):
-        """Returns the zoom amount of the camera.
+        """Return the zoom amount of the camera.
 
         Returns
         -------
@@ -195,7 +195,7 @@ class ThreeDCamera(Camera):
         return self.zoom_tracker.get_value()
 
     def set_phi(self, value):
-        """Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
+        """Set the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class ThreeDCamera(Camera):
         self.phi_tracker.set_value(value)
 
     def set_theta(self, value):
-        """Sets the azimuthal angle i.e the angle that spins the camera around Z_AXIS in radians.
+        """Set the azimuthal angle i.e the angle that spins the camera around Z_AXIS in radians.
 
         Parameters
         ----------
@@ -215,7 +215,7 @@ class ThreeDCamera(Camera):
         self.theta_tracker.set_value(value)
 
     def set_focal_distance(self, value):
-        """Sets the focal_distance of the Camera.
+        """Set the focal_distance of the Camera.
 
         Parameters
         ----------
@@ -225,7 +225,7 @@ class ThreeDCamera(Camera):
         self.focal_distance_tracker.set_value(value)
 
     def set_gamma(self, value):
-        """Sets the angle of rotation of the camera about the vector from the ORIGIN to the Camera.
+        """Set the angle of rotation of the camera about the vector from the ORIGIN to the Camera.
 
         Parameters
         ----------
@@ -235,7 +235,7 @@ class ThreeDCamera(Camera):
         self.gamma_tracker.set_value(value)
 
     def set_zoom(self, value):
-        """Sets the zoom amount of the camera.
+        """Set the zoom amount of the camera.
 
         Parameters
         ----------
@@ -245,11 +245,11 @@ class ThreeDCamera(Camera):
         self.zoom_tracker.set_value(value)
 
     def reset_rotation_matrix(self):
-        """Sets the value of self.rotation_matrix to the matrix corresponding to the current position of the camera."""
+        """Set the value of self.rotation_matrix to the matrix corresponding to the current position of the camera."""
         self.rotation_matrix = self.generate_rotation_matrix()
 
     def get_rotation_matrix(self):
-        """Returns the matrix corresponding to the current position of the camera.
+        """Return the matrix corresponding to the current position of the camera.
 
         Returns
         -------
@@ -259,7 +259,7 @@ class ThreeDCamera(Camera):
         return self.rotation_matrix
 
     def generate_rotation_matrix(self):
-        """Generates a rotation matrix based off the current position of the camera.
+        """Generate a rotation matrix based off the current position of the camera.
 
         Returns
         -------
@@ -280,7 +280,7 @@ class ThreeDCamera(Camera):
         return result
 
     def project_points(self, points):
-        """Applies the current rotation_matrix as a projection matrix to the passed array of points.
+        """Apply the current rotation_matrix as a projection matrix to the passed array of points.
 
         Parameters
         ----------
@@ -316,7 +316,7 @@ class ThreeDCamera(Camera):
         return points
 
     def project_point(self, point):
-        """Applies the current rotation_matrix as a projection matrix to the passed point.
+        """Apply the current rotation_matrix as a projection matrix to the passed point.
 
         Parameters
         ----------
@@ -352,7 +352,9 @@ class ThreeDCamera(Camera):
     def add_fixed_orientation_mobjects(
         self, *mobjects, use_static_center_func=False, center_func=None
     ):
-        """This method allows the mobject to have a fixed orientation, even when the camera moves around. E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like.
+        """Allow the mobject to have a fixed orientation, even when the camera moves around.
+
+        E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like.
 
         Parameters
         ----------
@@ -382,7 +384,7 @@ class ThreeDCamera(Camera):
                 self.fixed_orientation_mobjects[submob] = func
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
-        """This method allows the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame.
+        """Allow the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame.
 
         Highly useful when displaying Titles or formulae or the like.
 

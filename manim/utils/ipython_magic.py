@@ -78,7 +78,6 @@ else:
 
             Examples
             --------
-
             First make sure to put ``import manim``, or even ``from manim import *``
             in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim
             could look as follows::

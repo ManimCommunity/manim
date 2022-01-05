@@ -358,7 +358,6 @@ class Unwrite(Write):
 
     Examples
     --------
-
     .. manim :: UnwriteReverseTrue
 
         class UnwriteReverseTrue(Scene):
@@ -406,7 +405,6 @@ class ShowIncreasingSubsets(Animation):
 
     Examples
     --------
-
     .. manim:: ShowIncreasingSubsetsScene
 
         class ShowIncreasingSubsetsScene(Scene):

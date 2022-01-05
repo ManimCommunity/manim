@@ -35,8 +35,7 @@ class Broadcast(LaggedStart):
         Additional arguments to be passed to :class:`~.LaggedStart`.
 
     Examples
-    ---------
-
+    --------
     .. manim:: BroadcastExample
 
         class BroadcastExample(Scene):

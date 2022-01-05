@@ -6,8 +6,6 @@ class SomeClass:
 
     A short paragraph providing more details.
 
-    Extended Summary
-
     Parameters
     ----------
     scale_factor : :class:`float`
@@ -22,13 +20,13 @@ class SomeClass:
     -----
 
     Yields
-    -------
+    ------
 
     Receives
-    ----------
+    --------
 
     Other Parameters
-    -----------------
+    ----------------
 
     Raises
     ------

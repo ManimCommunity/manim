@@ -13,7 +13,7 @@ from .. import logger
 
 
 def _get_callable_info(callable: Callable) -> Tuple[str, str]:
-    """Returns type and name of a callable.
+    """Return type and name of a callable.
 
     Parameters
     ----------
@@ -40,7 +40,7 @@ def _deprecation_text_component(
     until: Optional[str],
     message: str,
 ) -> str:
-    """Generates a text component used in deprecation messages.
+    """Generate a text component used in deprecation messages.
 
     Parameters
     ----------

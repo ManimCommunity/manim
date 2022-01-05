@@ -70,7 +70,7 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
-        """Checks if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has. Marks the object as processed in the second case.
+        """Check if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has. Marks the object as processed in the second case.
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class _Memoizer:
 
 class _CustomEncoder(json.JSONEncoder):
     def default(self, obj):
-        """This method is used to serialize objects to JSON format.
+        """Use to serialize objects to JSON format.
 
         If obj is a function, then it will return a dict with two keys : 'code', for
         the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals
@@ -317,7 +317,7 @@ def get_hash_from_play_call(
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
-    -----------
+    ----------
     scene_object : :class:`~.Scene`
         The scene object.
 

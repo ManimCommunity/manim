@@ -26,7 +26,8 @@ RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
 
 def value_from_string(value: str) -> Union[str, int, bool]:
-    """Extracts the literal of proper datatype from a string.
+    """Extract the literal of proper datatype from a string.
+
     Parameters
     ----------
     value : :class:`str`
@@ -35,7 +36,7 @@ def value_from_string(value: str) -> Union[str, int, bool]:
     Returns
     -------
     Union[:class:`str`, :class:`int`, :class:`bool`]
-        Returns the literal of appropriate datatype.
+        Return the literal of appropriate datatype.
     """
     try:
         value = literal_eval(value)
@@ -45,7 +46,7 @@ def value_from_string(value: str) -> Union[str, int, bool]:
 
 
 def _is_expected_datatype(value: str, expected: str, style: bool = False) -> bool:
-    """Checks whether `value` is the same datatype as `expected`, and checks if it is a valid `style` if `style` is true.
+    """Check whether `value` is the same datatype as `expected`, and checks if it is a valid `style` if `style` is true.
 
     Parameters
     ----------
@@ -69,15 +70,17 @@ def _is_expected_datatype(value: str, expected: str, style: bool = False) -> boo
 
 
 def is_valid_style(style: str) -> bool:
-    """Checks whether the entered color is a valid color according to rich
+    """Check whether the entered color is a valid color according to rich.
+
     Parameters
     ----------
     style : :class:`str`
         The style to check whether it is valid.
+
     Returns
     -------
     Boolean
-        Returns whether it is valid style or not according to rich.
+        Return whether it is valid style or not according to rich.
     """
     try:
         Style.parse(style)
@@ -87,11 +90,13 @@ def is_valid_style(style: str) -> bool:
 
 
 def replace_keys(default: dict) -> dict:
-    """Replaces _ to . and vice versa in a dictionary for rich
+    """Replace _ to . and vice versa in a dictionary for rich.
+
     Parameters
     ----------
     default : :class:`dict`
         The dictionary to check and replace
+
     Returns
     -------
     :class:`dict`

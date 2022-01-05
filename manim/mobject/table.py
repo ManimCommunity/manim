@@ -686,7 +686,7 @@ class Table(VGroup):
         """Return the column labels of the table.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             VGroup containing the column labels of the table.
 
@@ -711,10 +711,10 @@ class Table(VGroup):
         return VGroup(*self.col_labels)
 
     def get_labels(self) -> VGroup:
-        """Returns the labels of the table.
+        """Return the labels of the table.
 
         Returns
-        --------
+        -------
         :class:`~.VGroup`
             :class:`~.VGroup` containing all the labels of the table.
 
@@ -745,13 +745,13 @@ class Table(VGroup):
         return label_group
 
     def add_background_to_entries(self, color: Color = BLACK) -> "Table":
-        """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
+        """Add a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=color)
         return self
 
     def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
-        """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
+        """Return one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
         ----------
@@ -808,7 +808,7 @@ class Table(VGroup):
     def get_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
     ) -> "BackgroundRectangle":
-        """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
+        """Return a :class:`~.BackgroundRectangle` of the cell at the given position.
 
         Parameters
         ----------
@@ -1049,7 +1049,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with
+    r"""A specialized :class:`~.Table` mobject for use with with
     :class:`~.Integer`.
 
     Examples
@@ -1063,11 +1063,11 @@ class IntegerTable(Table):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex("\\\\frac{\\sqrt{0}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{1}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{2}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{3}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{4}}{2}")],
+                        MathTex("\\frac{\\sqrt{0}}{2}"),
+                        MathTex("\\frac{\\sqrt{1}}{2}"),
+                        MathTex("\\frac{\\sqrt{2}}{2}"),
+                        MathTex("\\frac{\\sqrt{3}}{2}"),
+                        MathTex("\\frac{\\sqrt{4}}{2}")],
                     row_labels=[MathTex("\\sin"), MathTex("\\cos")],
                     h_buff=1,
                     element_to_mobject_config={"unit": "^{\\circ}"})
