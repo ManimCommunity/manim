@@ -8,7 +8,7 @@ from tests.test_scene_rendering.simple_scenes import *
 
 
 def test_write_to_movie_disables_window(using_temp_opengl_config, disabling_caching):
-    """write_to_movie should disable window by default."""
+    """Test that write_to_movie disables window by default."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
