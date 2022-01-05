@@ -58,7 +58,7 @@ def quaternion_mult(
     *quats: Sequence[float],
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
     """Get the Hamilton product of the quaternions provided.
-    
+
     For more information, check `the Wikipedia page for quaternions
 
     <https://en.wikipedia.org/wiki/Quaternion>`__.
@@ -104,7 +104,7 @@ def quaternion_from_angle_axis(
     axis_normalized: bool = False,
 ) -> List[float]:
     """Get a quaternion from an angle and an axis.
-    
+
     For more information, check `this Wikipedia page.
 
     <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
@@ -214,7 +214,7 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     """Convert the quaternion, ``quat``, to an equivalent rotation matrix representation.
-    
+
     For more information, check `this page.
     <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
 
@@ -595,7 +595,7 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
 
 def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
     """Return the intersection of two lines, or an array of intersections of two arrays of lines
-    
+
     Each line is given as a point ``p0`` or ``p1`` and direction vector ``v0`` or ``v1``, respectively.
 
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
