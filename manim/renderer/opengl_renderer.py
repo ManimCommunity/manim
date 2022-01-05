@@ -1,6 +1,6 @@
 import itertools as it
 import time
-from typing import Any, List, Optional
+from typing import Any, Iterable, List, Optional
 
 import moderngl
 import numpy as np
@@ -83,7 +83,7 @@ class OpenGLCamera(OpenGLMobject):
         self.focal_distance = focal_distance
 
         if light_source_position is None:
-            self.light_source_position = [-10, 10, 10]
+            self.light_source_position: Optional[Iterable] = [-10, 10, 10]
         else:
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
