@@ -51,7 +51,9 @@ def resize_with_interpolation(nparray, length):
 
 
 def remove_list_redundancies(lst):
-    """Use instead of list(set(l)) to maintain order Keeps the last occurrence of each element."""
+    """Returns the list in the same order but with duplicates removed.
+    
+    Keeps the last occurrence of each element."""
     reversed_result = []
     used = set()
     for x in reversed(lst):
@@ -63,7 +65,7 @@ def remove_list_redundancies(lst):
 
 
 def list_update(l1, l2):
-    """Use instead of list(set(l1).update(l2)) to maintain order, making sure duplicates are removed from l1, not l2."""
+    """Returns ``l1+l2``, but with with elements of ``l2`` removed from ``l1``."""
     return [e for e in l1 if e not in l2] + list(l2)
 
 

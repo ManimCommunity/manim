@@ -73,7 +73,7 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
-        """Check if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has. Marks the object as processed in the second case.
+        """If obj has not been processed, returns obj and marks it as processed. Otherwise returns _ALREADY_PROCESSED_PLACEHOLDER
 
         Parameters
         ----------
