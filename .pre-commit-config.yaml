@@ -60,3 +60,8 @@ repos:
           flake8-comprehensions,
           flake8-pie,
         ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.930'
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-decorator, types-docutils, types-requests, types-setuptools]
