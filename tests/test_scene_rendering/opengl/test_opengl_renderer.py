@@ -67,7 +67,7 @@ def test_get_frame_with_preview_disabled(use_opengl_renderer):
 @pytest.mark.slow()
 @pytest.mark.parametrize("enable_preview", [True])
 def test_get_frame_with_preview_enabled(use_opengl_renderer):
-    """Get frame is able to fetch frame with the correct dimensions when
+    """Test that get frame is able to fetch frame with the correct dimensions when
     preview is enabled."""
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
