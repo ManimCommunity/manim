@@ -21,8 +21,11 @@ def load_control_data(path_to_data):
 def check_video_data(path_control_data, path_video_gen):
     """Compare control data with generated output.
 
-    Used abbreviations:     exp  -> expected     gen  -> generated
-    sec  -> section     meta -> metadata
+    Used abbreviations:
+    * exp  -> expected
+    * gen  -> generated
+    * sec  -> section
+    * meta -> metadata
     """
     # movie file specification
     path_sec_gen = os.path.join(
