@@ -195,7 +195,7 @@ class CairoRenderer:
         self,
         scene,
         static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Iterable[Mobject]:
+    ) -> typing.Optional[typing.Iterable[Mobject]]:
         """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer static mobjects.
 
         Parameters
