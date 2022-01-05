@@ -2001,17 +2001,11 @@ class Mobject:
         return self.match_coord(mobject, 0, direction)
 
     def match_y(self, mobject: "Mobject", direction=ORIGIN):
-        """Match y coord.
-
-        to the x coord. of another :class:`~.Mobject`.
-        """
+        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
-        """Match z coord.
-
-        to the x coord. of another :class:`~.Mobject`.
-        """
+        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
