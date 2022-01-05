@@ -52,7 +52,7 @@ def resize_with_interpolation(nparray, length):
 
 def remove_list_redundancies(lst):
     """Returns the list in the same order but with duplicates removed.
-    
+
     Keeps the last occurrence of each element."""
     reversed_result = []
     used = set()
