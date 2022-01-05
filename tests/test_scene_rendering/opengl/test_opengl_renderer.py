@@ -23,7 +23,7 @@ def test_force_window_opengl_render_with_movies(
     force_window_config_write_to_movie,
     disabling_caching,
 ):
-    """force_window creates window when write_to_movie is set."""
+    """Test that force_window creates window when write_to_movie is set."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
