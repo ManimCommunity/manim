@@ -124,7 +124,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=None):
-        """Turns self into an interpolation between mobject1 and mobject2.
+        """Turn self into an interpolation between mobject1 and mobject2.
 
         By default the pathfunc is straight_path().
         """

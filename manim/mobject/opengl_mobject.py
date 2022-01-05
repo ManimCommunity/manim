@@ -2167,13 +2167,11 @@ class OpenGLMobject:
         return self.match_dim_size(mobject, 1, **kwargs)
 
     def match_depth(self, mobject: "OpenGLMobject", **kwargs):
-        """Match the depth with the depth of another
-        :class:`~.OpenGLMobject`."""
+        """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_coord(self, mobject: "OpenGLMobject", dim, direction=ORIGIN):
-        """Match the coordinates with the coordinates of another
-        :class:`~.OpenGLMobject`."""
+        """Match the coordinates with the coordinates of another :class:`~.OpenGLMobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
@@ -2207,13 +2205,13 @@ class OpenGLMobject:
         direction=ORIGIN,
     ):
         """
-        Examples:
-        mob1.align_to(mob2, UP) moves mob1 vertically so that its
-        top edge lines ups with mob2's top edge.
+        Examples
+        --------
+        >> mob1.align_to(mob2, UP)
+        moves mob1 vertically so that its top edge lines ups with mob2's top edge.
 
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
-        horizontally so that it's center is directly above/below
-        the center of mob2
+        >> mob1.align_to(mob2, alignment_vect = RIGHT)
+        moves mob1 horizontally so that it's center is directly above/below the center of mob2
         """
         if isinstance(mobject_or_point, OpenGLMobject):
             point = mobject_or_point.get_bounding_box_point(direction)
@@ -2307,7 +2305,7 @@ class OpenGLMobject:
     # Interpolate
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=None):
-        """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1`` and ``mobject2``.
+        """Turn this :class:`~.OpenGLMobject` into an interpolation between ``mobject1`` and ``mobject2``.
 
         Examples
         --------

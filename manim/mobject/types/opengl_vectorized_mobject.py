@@ -595,7 +595,11 @@ class OpenGLVMobject(OpenGLMobject):
     def make_approximately_smooth(self):
         """Make approximately smooth.
 
-        Unlike make_smooth, this will not change the number of points, but it also does not result in a perfectly smooth curve. It's most useful when the points have been sampled at a not-too-low rate from a continuous function, as in the case of ParametricCurve
+        Unlike make_smooth, this will not change the number of points,
+        but it also does not result in a perfectly smooth curve. It's
+        most useful when the points have been sampled at a not-too-low
+        rate from a continuous function, as in the case of
+        ParametricCurve
         """
         self.change_anchor_mode("approx_smooth")
         return self

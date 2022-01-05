@@ -14,6 +14,8 @@ docstring-convention=numpy
 
 min_python_version = 3.7.0
 
+# TODO - Add Flake-RST-Docstrings Plugin
+
 select = A,B,B9,C4,C90,D,E,F,PT,R,RST,SIM,W,PIE
 
                 # General Compatibility

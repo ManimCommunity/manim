@@ -1126,10 +1126,7 @@ class Mobject:
         return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes: None = None):
-        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at.
-
-        [0,0,0].
-        """
+        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(
@@ -1817,7 +1814,6 @@ class Mobject:
             max_y_1 = sample.get_top()[1]
             max_y_2 = sample.get_critical_point(UP)[1]
             max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
-
         """
         result = np.zeros(self.dim)
         all_points = self.get_points_defining_boundary()
@@ -2024,7 +2020,7 @@ class Mobject:
         direction=ORIGIN,
         alignment_vect=UP,
     ):
-        """Aligns mobject to another :class:`~.Mobject` in a certain direction.
+        """Align mobject to another :class:`~.Mobject` in a certain direction.
 
         Examples
         --------
@@ -2514,7 +2510,7 @@ class Mobject:
         alpha: float,
         path_func: Optional[Callable] = None,
     ) -> "Mobject":
-        """Turns this :class:`~.Mobject` into an interpolation between ``mobject1`` and ``mobject2``.
+        """Turn this :class:`~.Mobject` into an interpolation between ``mobject1`` and ``mobject2``.
 
         Parameters
         ----------
@@ -2625,8 +2621,7 @@ class Mobject:
         return self
 
     def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
-        """Edit points, positions, and submobjects to be identical to another
-        :class:`~.Mobject`, while keeping the style unchanged.
+        """Edit points, positions, and submobjects to be identical to another :class:`~.Mobject`, while keeping the style unchanged.
 
         Examples
         --------

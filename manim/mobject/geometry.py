@@ -799,8 +799,6 @@ class AnnularSector(Arc):
                 s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
 
                 self.add(s1, s2, s3, s4)
-
-
     """
 
     def __init__(
@@ -1648,7 +1646,6 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
                 l2 = Line(p2, p2b)
                 bezier = CubicBezier(p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b)
                 self.add(l1, d1, l2, d2, bezier)
-
     """
 
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):

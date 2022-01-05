@@ -847,7 +847,6 @@ class Camera:
             The thickness of each point of the PMobject
         pixel_array : np.array
             The pixel array to modify.
-
         """
         if len(points) == 0:
             return
@@ -1073,7 +1072,6 @@ class Camera:
         Returns
         -------
         float
-
         """
         # TODO: This seems...unsystematic
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
@@ -1091,7 +1089,6 @@ class Camera:
         Returns
         -------
         np.array
-
         """
         thickness = int(thickness)
         _range = list(range(-thickness // 2 + 1, thickness // 2 + 1))
