@@ -38,7 +38,7 @@ def test_force_window_opengl_render_with_format(
     force_window_config_pngs,
     disabling_caching,
 ):
-    """force_window creates window when format is set."""
+    """Test that force_window creates window when format is set."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
