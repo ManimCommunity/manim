@@ -21,9 +21,11 @@ __all__ = [
 import typing
 from functools import reduce
 
+import scipy
+
 import bezier as bz
 import numpy as np
-from scipy import linalg
+from scipy import linalg, special
 
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
@@ -46,7 +48,7 @@ def classic_bezier(
     """
     n = len(points) - 1
     return lambda t: sum(
-        ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
+        ((1 - t) ** (n - k)) * (t ** k) * special.comb(n, k, exact=True) * point
         for k, point in enumerate(points)
     )
 
