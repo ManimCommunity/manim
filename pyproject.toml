@@ -93,6 +93,7 @@ flake8-rst-docstrings = "^0.2.3"
 flake8-pytest-style = "^1.5.0"
 flake8-simplify = "^0.14.1"
 flake8-comprehensions = "^3.7.0"
+sphinxcontrib-programoutput = "^0.17"
 data-science-types = "^0.2.23"
 
 
