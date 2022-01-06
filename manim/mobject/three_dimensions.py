@@ -83,10 +83,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         v_range: Sequence[float] = [0, 1],
         resolution: Sequence[int] = 32,
         surface_piece_config: dict = {},
-        fill_color: "Color" = BLUE_D,
+        fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Sequence["Color"] = [BLUE_D, BLUE_E],
-        stroke_color: "Color" = LIGHT_GREY,
+        checkerboard_colors: Sequence[Color] = [BLUE_D, BLUE_E],
+        stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
@@ -167,7 +167,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     def set_fill_by_value(
         self,
-        axes: "Mobject",
+        axes: Mobject,
         colors: Union[Iterable[Color], Color],
         axis: int = 2,
     ):
