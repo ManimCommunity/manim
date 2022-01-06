@@ -2,16 +2,18 @@
 v0.14.0
 *******
 
-:Date: January 01, 2022
+:Date: January 06, 2022
 
 Contributors
 ============
 
-A total of 24 people contributed to this
+A total of 29 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
 * Benjamin Hackl
+* BorisTheBrave +
+* Darylgolden
 * GameDungeon
 * Gergely Bencsik +
 * Jan-Hendrik Müller
@@ -21,6 +23,7 @@ time.
 * Laith Bahodi
 * Leo Xu +
 * Marcin Serwin
+* Matt Gleich +
 * Naveen M K
 * Steven nguyen +
 * Vectozavr +
@@ -33,14 +36,19 @@ The patches included in this release have been reviewed by
 the following contributors.
 
 * Benjamin Hackl
+* BorisTheBrave
 * Christopher Besch
 * Darylgolden
 * GameDungeon
 * Gergely Bencsik
+* Hugues Devimeux
+* Jan-Hendrik Müller
 * Kiran-Raj-Dev
 * Laith Bahodi
 * Leo Xu
+* Lucas Ricci
 * Marcin Serwin
+* Naveen M K
 * Raghav Goel
 * Ryan McCauley
 * Viicos
@@ -49,7 +57,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 19 pull requests were merged for this release.
+A total of 29 pull requests were merged for this release.
 
 Deprecated classes and functions
 --------------------------------
@@ -59,6 +67,12 @@ Deprecated classes and functions
    - Removed `FullScreenFadeRectangle` and `PictureInPictureFrame`
    - Removed `path_arc` parameter from :class:`~.SpinInFromNothing`
    - Removed `set_submobjects` method from `opengl_mobject.py`
+
+New features
+------------
+
+* `#2341 <https://github.com/ManimCommunity/manim/pull/2341>`__: Update `Text` to use new ManimPango color setting
+   * `Text` class now uses color setting introduced in `ManimPango 0.4.0` for color and gradient.
 
 Enhancements
 ------------
@@ -86,6 +100,15 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
+* `#2414 <https://github.com/ManimCommunity/manim/pull/2414>`__: Made improvements to the :doc:`configuration` tutorial
+   - Set up automated rendering of the list of CLI flags in our documentation.
+   -  Moved the CLI section of the tutorial to the top, since it's by far the most commonly used
+   - Slightly rewritten of the CLI section of the tutorial
+   - Did some minor copyediting
+
+* `#2423 <https://github.com/ManimCommunity/manim/pull/2423>`__: Changed recommendatiom to ``mactex-no-gui`` from ``mactex`` for macOS install
+
+
 * `#2352 <https://github.com/ManimCommunity/manim/pull/2352>`__: docs: add localized with Crowdin badge
 
 
@@ -104,6 +127,15 @@ Documentation-related changes
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* `#2408 <https://github.com/ManimCommunity/manim/pull/2408>`__: Removed various return annotations that were stifling type inference
+
+
+* `#2424 <https://github.com/ManimCommunity/manim/pull/2424>`__: Remove `strings.py`
+
+
+* `#1972 <https://github.com/ManimCommunity/manim/pull/1972>`__: Added MyPy Support
+
+
 * `#2410 <https://github.com/ManimCommunity/manim/pull/2410>`__: Fixed Flake8
 
 
@@ -119,8 +151,20 @@ Code quality improvements and similar refactors
 * `#2385 <https://github.com/ManimCommunity/manim/pull/2385>`__: Made comments in quickstart tutorial more precise
 
 
+New releases
+------------
+
+* `#2411 <https://github.com/ManimCommunity/manim/pull/2411>`__: Prepare new release, ``v0.14.0``
+
+
 Unclassified changes
 --------------------
+
+* `#2407 <https://github.com/ManimCommunity/manim/pull/2407>`__: Clarify the docs for MObject.animate, MObject.set and Variable.
+
+
+* `#2409 <https://github.com/ManimCommunity/manim/pull/2409>`__: Trim empty curves from paths when calling align_points.
+
 
 * `#2397 <https://github.com/ManimCommunity/manim/pull/2397>`__: Add `label_constructor` parameter for :class:`~NumberLine`.
    - Allows changing the class that will be used to construct :class:`~.Axes` and :class:`~.NumberLine` labels by default.
