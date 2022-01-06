@@ -73,7 +73,7 @@ running:
 
 .. code-block:: bash
 
-   brew install --cask mactex-no-gui
+   brew install --cask mactex
 
 .. warning::
 

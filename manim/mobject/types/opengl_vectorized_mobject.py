@@ -708,8 +708,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_subpaths(self):
         """Returns subpaths formed by the curves of the OpenGLVMobject.
 
-        Subpaths are ranges of curves with each pair of consecutive
-        curves having their end/start points coincident.
+        We define a subpath between two curve if one of their extreminities are coincidents.
 
         Returns
         -------
@@ -1151,7 +1150,6 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Alignment
     def align_points(self, vmobject):
-        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == len(vmobject.points):
             return
 
@@ -1179,16 +1177,7 @@ class OpenGLVMobject(OpenGLMobject):
             if n >= len(path_list):
                 # Create a null path at the very end
                 return [path_list[-1][-1]] * nppc
-            path = path_list[n]
-            # Check for useless points at the end of the path and remove them
-            # https://github.com/ManimCommunity/manim/issues/1959
-            while len(path) > nppc:
-                # If the last nppc points are all equal to the preceding point
-                if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
-                    path = path[:-nppc]
-                else:
-                    break
-            return path
+            return path_list[n]
 
         for n in range(n_subpaths):
             sp1 = get_nth_subpath(subpaths1, n)

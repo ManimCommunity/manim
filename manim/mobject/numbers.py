@@ -293,15 +293,17 @@ class Integer(DecimalNumber):
 
 
 class Variable(VMobject, metaclass=ConvertToOpenGL):
-    """A class for displaying text that shows "label = value" with
-    the value continuously updated from a :class:`~.ValueTracker`.
+    """A class for displaying text that continuously updates to reflect the value of a python variable.
+
+    Automatically adds the text for the label and the value when instantiated and added to the screen.
 
     Parameters
     ----------
     var : Union[:class:`int`, :class:`float`]
-        The initial value you need to keep track of and display.
+        The python variable you need to keep track of and display.
     label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
-        The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
+        The label for your variable, for example ``x = ...``. To use math mode, for e.g.
+        subscripts, superscripts, etc. simply pass in a raw string.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
     num_decimal_places : :class:`int`, optional
