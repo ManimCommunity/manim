@@ -100,23 +100,19 @@ class FocusOn(Transform):
         self.color = color
         self.opacity = opacity
         remover = True
-        # Initialize with blank mobject, while create_target
-        # and create_starting_mobject handle the meat
-        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
-
-    def create_target(self) -> "Dot":
-        little_dot = Dot(radius=0)
-        little_dot.set_fill(self.color, opacity=self.opacity)
-        little_dot.add_updater(lambda d: d.move_to(self.focus_point))
-        return little_dot
-
-    def create_starting_mobject(self) -> "Dot":
-        return Dot(
+        starting_dot = Dot(
             radius=config["frame_x_radius"] + config["frame_y_radius"],
             stroke_width=0,
             fill_color=self.color,
             fill_opacity=0,
         )
+        super().__init__(starting_dot, run_time=run_time, remover=remover, **kwargs)
+
+    def create_target(self) -> Dot:
+        little_dot = Dot(radius=0)
+        little_dot.set_fill(self.color, opacity=self.opacity)
+        little_dot.add_updater(lambda d: d.move_to(self.focus_point))
+        return little_dot
 
 
 class Indicate(Transform):

@@ -30,7 +30,7 @@ from .render_options import render_options
 @click.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
-@render_options
+@render_options  # type: ignore
 @ease_of_access_options
 def render(
     **args,
