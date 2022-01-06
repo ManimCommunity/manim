@@ -105,7 +105,6 @@ from .utils.scale import *
 from .utils.simple_functions import *
 from .utils.sounds import *
 from .utils.space_ops import *
-from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
 
