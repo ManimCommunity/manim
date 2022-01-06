@@ -25,8 +25,6 @@ Examples
 
 """
 
-from __future__ import annotations
-
 __all__ = [
     "FocusOn",
     "Indicate",
@@ -92,7 +90,7 @@ class FocusOn(Transform):
 
     def __init__(
         self,
-        focus_point: np.ndarray | Mobject,
+        focus_point: Union[np.ndarray, Mobject],
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
@@ -102,23 +100,19 @@ class FocusOn(Transform):
         self.color = color
         self.opacity = opacity
         remover = True
-        # Initialize with blank mobject, while create_target
-        # and create_starting_mobject handle the meat
-        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
+        starting_dot = Dot(
+            radius=config["frame_x_radius"] + config["frame_y_radius"],
+            stroke_width=0,
+            fill_color=self.color,
+            fill_opacity=0,
+        )
+        super().__init__(starting_dot, run_time=run_time, remover=remover, **kwargs)
 
     def create_target(self) -> Dot:
         little_dot = Dot(radius=0)
         little_dot.set_fill(self.color, opacity=self.opacity)
         little_dot.add_updater(lambda d: d.move_to(self.focus_point))
         return little_dot
-
-    def create_starting_mobject(self) -> Dot:
-        return Dot(
-            radius=config["frame_x_radius"] + config["frame_y_radius"],
-            stroke_width=0,
-            fill_color=self.color,
-            fill_opacity=0,
-        )
 
 
 class Indicate(Transform):
@@ -150,17 +144,17 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: "Mobject",
         scale_factor: float = 1.2,
         color: str = YELLOW,
-        rate_func: Callable[[float, float | None], np.ndarray] = there_and_back,
+        rate_func: Callable[[float, Optional[float]], np.ndarray] = there_and_back,
         **kwargs
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> "Mobject":
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -220,7 +214,7 @@ class Flash(AnimationGroup):
 
     def __init__(
         self,
-        point: np.ndarray | Mobject,
+        point: Union[np.ndarray, Mobject],
         line_length: float = 0.2,
         num_lines: int = 12,
         flash_radius: float = 0.1,
@@ -258,7 +252,7 @@ class Flash(AnimationGroup):
         lines.set_stroke(width=self.line_stroke_width)
         return lines
 
-    def create_line_anims(self) -> Iterable[ShowPassingFlash]:
+    def create_line_anims(self) -> Iterable["ShowPassingFlash"]:
         return [
             ShowPassingFlash(
                 line,
@@ -304,11 +298,11 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(self, mobject: VMobject, time_width: float = 0.1, **kwargs) -> None:
+    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[float]:
+    def _get_bounds(self, alpha: float) -> Tuple[float]:
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
@@ -349,7 +343,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Deprecate?
 #   Keep and add docs?
 class ShowCreationThenFadeOut(Succession):
-    def __init__(self, mobject: Mobject, remover: bool = True, **kwargs) -> None:
+    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
@@ -398,7 +392,7 @@ class ApplyWave(Homotopy):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: "Mobject",
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         wave_func: Callable[[float], float] = smooth,
@@ -471,7 +465,7 @@ class ApplyWave(Homotopy):
             y: float,
             z: float,
             t: float,
-        ) -> tuple[float, float, float]:
+        ) -> Tuple[float, float, float]:
             upper = interpolate(0, 1 + time_width, t)
             lower = upper - time_width
             relative_x = inverse_interpolate(x_min, x_max, x)
@@ -517,12 +511,12 @@ class Wiggle(Animation):
 
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: "Mobject",
         scale_value: float = 1.1,
         rotation_angle: float = 0.01 * TAU,
         n_wiggles: int = 6,
-        scale_about_point: np.ndarray | None = None,
-        rotate_about_point: np.ndarray | None = None,
+        scale_about_point: Optional[np.ndarray] = None,
+        rotate_about_point: Optional[np.ndarray] = None,
         run_time: float = 2,
         **kwargs
     ) -> None:
@@ -543,8 +537,8 @@ class Wiggle(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
+        submobject: "Mobject",
+        starting_submobject: "Mobject",
         alpha: float,
     ) -> None:
         submobject.points[:, :] = starting_submobject.points
@@ -603,7 +597,7 @@ class Circumscribe(Succession):
     def __init__(
         self,
         mobject: Mobject,
-        shape: type = Rectangle,
+        shape: Type = Rectangle,
         fade_in=False,
         fade_out=False,
         time_width=0.3,

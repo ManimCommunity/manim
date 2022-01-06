@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pkg_resources
 
-__version__ = pkg_resources.get_distribution(__name__).version
+__version__: str = pkg_resources.get_distribution(__name__).version
 
 
 import sys
@@ -107,7 +107,6 @@ from .utils.scale import *
 from .utils.simple_functions import *
 from .utils.sounds import *
 from .utils.space_ops import *
-from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
 
