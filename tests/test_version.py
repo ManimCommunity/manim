@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pkg_resources
 
 from manim import __name__, __version__

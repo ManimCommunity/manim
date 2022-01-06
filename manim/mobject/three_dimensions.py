@@ -1,5 +1,7 @@
 """Three-dimensional mobjects."""
 
+from __future__ import annotations
+
 __all__ = [
     "ThreeDVMobject",
     "Surface",
@@ -767,11 +769,7 @@ class Line3D(Cylinder):
 
     @classmethod
     def parallel_to(
-        cls,
-        line: "Line3D",
-        point: Sequence[float] = ORIGIN,
-        length: float = 5,
-        **kwargs
+        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
     ):
         """Returns a line parallel to another line going through
         a given point.
@@ -808,11 +806,7 @@ class Line3D(Cylinder):
 
     @classmethod
     def perpendicular_to(
-        cls,
-        line: "Line3D",
-        point: Sequence[float] = ORIGIN,
-        length: float = 5,
-        **kwargs
+        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
     ):
         """Returns a line perpendicular to another line going through
         a given point.

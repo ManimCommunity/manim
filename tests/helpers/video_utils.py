@@ -1,5 +1,7 @@
 """Helpers for dev to set up new tests that use videos."""
 
+from __future__ import annotations
+
 import json
 import os
 import pathlib
@@ -8,7 +10,7 @@ from typing import Any, Dict, List
 from manim import get_dir_layout, get_video_metadata, logger
 
 
-def get_section_dir_layout(dirpath: str) -> List[str]:
+def get_section_dir_layout(dirpath: str) -> list[str]:
     """Return a list of all files in the sections directory."""
     # test if sections have been created in the first place, doesn't work with multiple scene but this isn't an issue with tests
     if not os.path.isdir(dirpath):
@@ -19,7 +21,7 @@ def get_section_dir_layout(dirpath: str) -> List[str]:
     return files
 
 
-def get_section_index(metapath: str) -> List[Dict[str, Any]]:
+def get_section_index(metapath: str) -> list[dict[str, Any]]:
     """Return content of sections index file."""
     parent_folder = pathlib.Path(metapath).parent.absolute()
     # test if sections have been created in the first place

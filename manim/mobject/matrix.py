@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Mobjects representing matrices.
 
 Examples
@@ -134,7 +136,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: Type[MathTex] = MathTex,
+        element_to_mobject: type[MathTex] = MathTex,
         element_to_mobject_config: dict = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",

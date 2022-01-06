@@ -1,5 +1,7 @@
 """A scene suitable for vector spaces."""
 
+from __future__ import annotations
+
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
 
@@ -561,8 +563,8 @@ class LinearTransformationScene(VectorScene):
         self,
         include_background_plane: bool = True,
         include_foreground_plane: bool = True,
-        background_plane_kwargs: Optional[dict] = None,
-        foreground_plane_kwargs: Optional[dict] = None,
+        background_plane_kwargs: dict | None = None,
+        foreground_plane_kwargs: dict | None = None,
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,

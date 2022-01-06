@@ -1,6 +1,8 @@
 """Mobjects generated from an SVG pathstring."""
 
 
+from __future__ import annotations
+
 __all__ = ["SVGPathMobject", "string_to_numbers"]
 
 
@@ -190,7 +192,7 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
     return bezier_points
 
 
-def string_to_numbers(num_string: str) -> List[float]:
+def string_to_numbers(num_string: str) -> list[float]:
     """Parse the SVG string representing a sequence of numbers into an array of floats.
 
     Parameters

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 from manim import *
 
 # To watch one of these scenes, run the following:

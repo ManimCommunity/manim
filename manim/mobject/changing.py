@@ -1,5 +1,7 @@
 """Animation of a mobject boundary and tracing of points."""
 
+from __future__ import annotations
+
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
 from typing import Callable, Optional
@@ -140,7 +142,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         traced_point_func: Callable,
         stroke_width: float = 2,
         stroke_color: Color = WHITE,
-        dissipating_time: Optional[float] = None,
+        dissipating_time: float | None = None,
         **kwargs
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)

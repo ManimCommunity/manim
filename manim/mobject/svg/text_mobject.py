@@ -47,6 +47,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -408,11 +410,11 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
+        t2c: dict[str, str] = None,
+        t2f: dict[str, str] = None,
+        t2g: dict[str, tuple] = None,
+        t2s: dict[str, str] = None,
+        t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
@@ -1288,7 +1290,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: Union[str, Path]):
+def register_font(font_file: str | Path):
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.

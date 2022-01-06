@@ -1,5 +1,7 @@
 """String manipulation utilities."""
 
+from __future__ import annotations
+
 __all__ = [
     "to_camel_case",
     "initials",

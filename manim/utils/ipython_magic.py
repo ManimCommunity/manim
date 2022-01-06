@@ -1,5 +1,7 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
+from __future__ import annotations
+
 import mimetypes
 import os
 import shutil
@@ -37,7 +39,7 @@ else:
             self,
             line: str,
             cell: str = None,
-            local_ns: Dict[str, Any] = None,
+            local_ns: dict[str, Any] = None,
         ) -> None:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
@@ -176,7 +178,7 @@ else:
                     ),
                 )
 
-        def add_additional_args(self, args: List[str]) -> List[str]:
+        def add_additional_args(self, args: list[str]) -> list[str]:
             additional_args = ["--jupyter"]
             # Use webm to support transparency
             if "-t" in args and "--format" not in args:
