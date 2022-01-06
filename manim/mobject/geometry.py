@@ -63,6 +63,7 @@ __all__ = [
     "ArrowCircleTip",
     "ArrowSquareTip",
     "ArrowSquareFilledTip",
+    "AngleArrow",
 ]
 
 import itertools
@@ -2831,7 +2832,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
             self.append_points(mobject.force_direction(sub_direction).points)
 
 
-class Angle(VMobject, metaclass=ConvertToOpenGL):
+class Angle(TipableVMobject, metaclass=ConvertToOpenGL):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters
@@ -3135,3 +3136,33 @@ class RightAngle(Angle):
 
     def __init__(self, line1, line2, length=None, **kwargs):
         super().__init__(line1, line2, radius=length, elbow=True, **kwargs)
+
+
+class AngleArrow(Angle):
+    """
+    Same as the :class:`Angle`, but has an arrow.
+
+    Parameters
+    ----------
+    line1 :
+        The first line.
+    line2 :
+        The second line.
+    **kwargs
+        Further keyword arguments that are passed to the constructor of :class:`Angle` or :class:`TipableVMobject` (for the arrowtip).
+
+    See Also
+    --------
+    :class:`Angle`
+    """
+
+    def __init__(
+        self,
+        line1: Line,
+        line2: Line,
+        **kwargs,
+    ):
+        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
+        at_start = kwargs.pop("at_start", False)
+        super().__init__(line1, line2, **kwargs)
+        self.add_tip(tip_shape=tip_shape, at_start=at_start)
