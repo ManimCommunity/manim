@@ -1018,7 +1018,7 @@ class VMobject(Mobject):
     def get_subpaths(self) -> typing.Tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
-        We define a subpath between two curve if one of their extreminities are coincidents.
+        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
 
         Returns
         -------
@@ -1363,10 +1363,25 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject):
-        # This probably makes the current vmobject and the given one have the same number of points,
-        # by adding extra points to the last sub-path. This method is never used in the whole library.
+    def align_points(self, vmobject: "VMobject"):
+        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+        corresponding subpaths each containing the same number of points.
+
+        Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
+        of a single point repeated.
+
+        Parameters
+        ----------
+        vmobject
+            The object to align points with.
+
+        Returns
+        -------
+        :class:`VMobject`
+           ``self``
+        """
         self.align_rgbas(vmobject)
+        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():
             return
 
@@ -1380,7 +1395,7 @@ class VMobject(Mobject):
             if mob.has_new_path_started():
                 mob.add_line_to(mob.get_last_point())
 
-        # Figure out what the subpaths are, and align
+        # Figure out what the subpaths are
         subpaths1 = self.get_subpaths()
         subpaths2 = vmobject.get_subpaths()
         n_subpaths = max(len(subpaths1), len(subpaths2))
@@ -1394,9 +1409,19 @@ class VMobject(Mobject):
             if n >= len(path_list):
                 # Create a null path at the very end
                 return [path_list[-1][-1]] * nppcc
-            return path_list[n]
+            path = path_list[n]
+            # Check for useless points at the end of the path and remove them
+            # https://github.com/ManimCommunity/manim/issues/1959
+            while len(path) > nppcc:
+                # If the last nppc points are all equal to the preceding point
+                if self.consider_points_equals(path[-nppcc:], path[-nppcc - 1]):
+                    path = path[:-nppcc]
+                else:
+                    break
+            return path
 
         for n in range(n_subpaths):
+            # For each pair of subpaths, add points until they are the same length
             sp1 = get_nth_subpath(subpaths1, n)
             sp2 = get_nth_subpath(subpaths2, n)
             diff1 = max(0, (len(sp2) - len(sp1)) // nppcc)
