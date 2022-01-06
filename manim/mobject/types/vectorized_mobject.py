@@ -198,7 +198,7 @@ class VMobject(Mobject):
         color: Optional[str] = None,
         opacity: Optional[float] = None,
         family: bool = True,
-    ) -> "VMobject":
+    ):
         """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
@@ -212,8 +212,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            self. For chaining purposes.
+        :class:`VMobject`
+            ``self``
 
         Examples
         --------
@@ -596,7 +596,7 @@ class VMobject(Mobject):
         handles1: Sequence[float],
         handles2: Sequence[float],
         anchors2: Sequence[float],
-    ) -> "VMobject":
+    ):
         """Given two sets of anchors and handles, process them to set them as anchors
         and handles of the VMobject.
 
@@ -607,8 +607,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            for chaining.
+        :class:`VMobject`
+            ``self``
         """
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
@@ -654,7 +654,7 @@ class VMobject(Mobject):
         handle1: np.ndarray,
         handle2: np.ndarray,
         anchor: np.ndarray,
-    ) -> None:
+    ):
         """Add cubic bezier curve to the path.
 
         NOTE : the first anchor is not a parameter as by default the end of the last sub-path!
@@ -667,6 +667,11 @@ class VMobject(Mobject):
             second handle
         anchor : np.ndarray
             anchor
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         self.throw_error_if_no_points()
         new_points = [handle1, handle2, anchor]
@@ -674,13 +679,20 @@ class VMobject(Mobject):
             self.append_points(new_points)
         else:
             self.append_points([self.get_last_point()] + new_points)
+        return self
 
     def add_quadratic_bezier_curve_to(
         self,
         handle: np.ndarray,
         anchor: np.ndarray,
-    ) -> "VMobject":
-        """Add Quadratic bezier curve to the path."""
+    ):
+        """Add Quadratic bezier curve to the path.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+        """
         # How does one approximate a quadratic with a cubic?
         # refer to the Wikipedia page on Bezier curves
         # https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Degree_elevation, accessed Jan 20, 2021
@@ -695,7 +707,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_line_to(self, point: np.ndarray) -> "VMobject":
+    def add_line_to(self, point: np.ndarray):
         """Add a straight line from the last point of VMobject to the given point.
 
         Parameters
@@ -703,6 +715,11 @@ class VMobject(Mobject):
 
         point : np.ndarray
             end of the straight line.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
@@ -713,7 +730,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_smooth_curve_to(self, *points: np.array) -> "VMobject":
+    def add_smooth_curve_to(self, *points: np.array):
         """Creates a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted
         as a handle, the second as an anchor.
 
@@ -721,10 +738,11 @@ class VMobject(Mobject):
         ----------
         points: np.array
             Points (anchor and handle, or just anchor) to add a smooth curve from
+
         Returns
         -------
-        VMobject
-
+        :class:`VMobject`
+            ``self``
 
         Raises
         ------
@@ -772,7 +790,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]):
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -785,8 +803,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            self. For chaining purposes.
+        :class:`VMobject`
+            ``self``
         """
         nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
@@ -802,15 +820,15 @@ class VMobject(Mobject):
         self.make_smooth()
         return self
 
-    def change_anchor_mode(self, mode: str) -> "VMobject":
+    def change_anchor_mode(self, mode: str):
         """Changes the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only two modes, "jagged", and "smooth".
 
         Returns
         -------
-        VMobject
-            For chaining purposes.
+        :class:`VMobject`
+            ``self``
         """
         assert mode in ["jagged", "smooth"]
         nppcc = self.n_points_per_cubic_curve
@@ -842,7 +860,7 @@ class VMobject(Mobject):
     def make_jagged(self):
         return self.change_anchor_mode("jagged")
 
-    def add_subpath(self, points: np.ndarray) -> "VMobject":
+    def add_subpath(self, points: np.ndarray):
         assert len(points) % 4 == 0
         self.points = np.append(self.points, points, axis=0)
         return self
@@ -876,7 +894,7 @@ class VMobject(Mobject):
         super().rotate(angle, axis, about_point, **kwargs)
         return self
 
-    def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
+    def scale_handle_to_anchor_distances(self, factor: float):
         """If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
         away from A, but so that the line from A to H doesn't change.
@@ -892,8 +910,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            For chaining.
+        :class:`VMobject`
+            ``self``
         """
         for submob in self.family_members_with_points():
             if len(submob.points) < self.n_points_per_cubic_curve:
@@ -1434,7 +1452,7 @@ class VMobject(Mobject):
         vmobject.set_points(new_path2)
         return self
 
-    def insert_n_curves(self, n: int) -> "VMobject":
+    def insert_n_curves(self, n: int):
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1444,8 +1462,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            for chaining.
+        :class:`VMobject`
+            ``self``
         """
         new_path_point = None
         if self.has_new_path_started():
@@ -1550,7 +1568,7 @@ class VMobject(Mobject):
         vmobject: "VMobject",
         a: float,
         b: float,
-    ) -> "VMobject":
+    ):
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
@@ -1562,6 +1580,11 @@ class VMobject(Mobject):
             upper-bound.
         b : float
             lower-bound
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         assert isinstance(vmobject, VMobject)
         # Partial curve includes three portions:

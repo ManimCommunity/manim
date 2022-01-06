@@ -45,6 +45,7 @@ extensions = [
     "manim.utils.docbuild.manim_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
+    "sphinxcontrib.programoutput",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
