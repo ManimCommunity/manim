@@ -216,3 +216,11 @@ def test_CurvedArrowCustomTip(scene):
         tip_shape_end=ArrowSquareFilledTip,
     )
     scene.add(arrow, double_arrow)
+
+
+@frames_comparison
+def test_AngleArrow(scene):
+    l1 = Line(ORIGIN, RIGHT)
+    l2 = Line(ORIGIN, UP)
+    a = AngleArrow(l1, l2, radius=1)
+    scene.add(a)
