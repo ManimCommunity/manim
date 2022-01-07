@@ -264,7 +264,7 @@ the use of :meth:`.animate`.
         def construct(self):
             square = Square().set_fill(RED, opacity=1.0)
             self.add(square)
-            
+
             # animate the change of color
             self.play(square.animate.set_fill(WHITE))
             self.wait(1)
