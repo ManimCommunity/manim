@@ -228,7 +228,6 @@ your scene by calling the :meth:`~.Scene.play` method.
     class SomeAnimations(Scene):
         def construct(self):
             square = Square()
-            self.add(square)
 
             # some animations display mobjects, ...
             self.play(FadeIn(square))
@@ -265,7 +264,7 @@ the use of :meth:`.animate`.
         def construct(self):
             square = Square().set_fill(RED, opacity=1.0)
             self.add(square)
-
+            
             # animate the change of color
             self.play(square.animate.set_fill(WHITE))
             self.wait(1)
@@ -276,7 +275,7 @@ the use of :meth:`.animate`.
 
 :meth:`.animate` is a property of all mobjects that animates the methods that come
 afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
-the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+the square, while :code:`square.animate.set_fill(WHITE)` animates this action.
 
 Animation run time
 ==================
