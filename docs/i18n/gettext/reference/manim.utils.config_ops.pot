@@ -18,6 +18,10 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.utils.config_ops.rst:26:<autosummary>:1
+msgid ":py:obj:`DictAsObject <manim.utils.config_ops.DictAsObject>`"
+msgstr ""
+
 #: ../../source/reference/manim.utils.config_ops.rst:29
 msgid "Functions"
 msgstr ""

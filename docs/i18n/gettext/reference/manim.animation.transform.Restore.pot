@@ -15,15 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.Restore``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:1
-msgid "Bases: :class:`manim.animation.transform.ApplyMethod`"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:1
-msgid "Method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:6
-msgid "Relies on the fact that mobject methods return the mobject"
+msgid "Bases: :py:class:`manim.animation.transform.ApplyMethod`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.Restore.rst:14
@@ -32,6 +24,18 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.Restore.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Restore.rst:25:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.Restore.path_arc>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.Restore.rst:25:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.Restore.path_func>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:0
+msgid "Parameters"
 msgstr ""
 
 

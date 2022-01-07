@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.brace.Brace``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
-msgid "Bases: :class:`manim.mobject.svg.svg_path.SVGPathMobject`"
+msgid "Bases: :py:class:`manim.mobject.svg.svg_path.SVGPathMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
@@ -52,7 +52,27 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
+msgid ":py:obj:`get_direction <manim.mobject.svg.brace.Brace.get_direction>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
 msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
+msgid ":py:obj:`get_tex <manim.mobject.svg.brace.Brace.get_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
+msgid ":py:obj:`get_text <manim.mobject.svg.brace.Brace.get_text>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
+msgid ":py:obj:`get_tip <manim.mobject.svg.brace.Brace.get_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24:<autosummary>:1
+msgid ":py:obj:`put_at_tip <manim.mobject.svg.brace.Brace.put_at_tip>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.Brace.rst:26
@@ -60,7 +80,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.brace.Brace.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.brace.Brace.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.brace.Brace.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
@@ -68,7 +100,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.brace.Brace.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.brace.Brace.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1

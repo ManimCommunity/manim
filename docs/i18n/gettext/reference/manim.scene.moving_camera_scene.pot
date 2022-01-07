@@ -22,4 +22,8 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.scene.moving_camera_scene.rst:20:<autosummary>:1
+msgid ":py:obj:`MovingCameraScene <manim.scene.moving_camera_scene.MovingCameraScene>`"
+msgstr ""
+
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.logo.ManimBanner``"
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:1
@@ -47,13 +47,25 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+msgid ":py:obj:`create <manim.mobject.logo.ManimBanner.create>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1
 msgid "The creation animation for Manim's logo."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+msgid ":py:obj:`expand <manim.mobject.logo.ManimBanner.expand>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:1
 msgid "An animation that expands Manim's logo into its banner."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+msgid ":py:obj:`scale <manim.mobject.logo.ManimBanner.scale>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
@@ -66,7 +78,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.logo.ManimBanner.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.logo.ManimBanner.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.logo.ManimBanner.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
@@ -74,7 +98,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.logo.ManimBanner.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.logo.ManimBanner.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1

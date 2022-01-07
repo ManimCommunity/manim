@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.tex\\_templates.TexFontTemplates``"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates:1
@@ -59,258 +59,466 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1
+msgid ":py:obj:`american_typewriter <manim.utils.tex_templates.TexFontTemplates.american_typewriter>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1
 msgid "American Typewriter"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.antykwa:1
+msgid ":py:obj:`antykwa <manim.utils.tex_templates.TexFontTemplates.antykwa>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.antykwa:1
 msgid "Antykwa Półtawskiego (TX Fonts for Greek and math symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.apple_chancery:1
+msgid ":py:obj:`apple_chancery <manim.utils.tex_templates.TexFontTemplates.apple_chancery>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.apple_chancery:1
 msgid "Apple Chancery"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.auriocus_kalligraphicus:1
+msgid ":py:obj:`auriocus_kalligraphicus <manim.utils.tex_templates.TexFontTemplates.auriocus_kalligraphicus>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.auriocus_kalligraphicus:1
 msgid "Auriocus Kalligraphicus (Symbol Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.baskervald_adf_fourier:1
+msgid ":py:obj:`baskervald_adf_fourier <manim.utils.tex_templates.TexFontTemplates.baskervald_adf_fourier>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.baskervald_adf_fourier:1
 msgid "Baskervald ADF with Fourier"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.baskerville_it:1
+msgid ":py:obj:`baskerville_it <manim.utils.tex_templates.TexFontTemplates.baskerville_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.baskerville_it:1
 msgid "Baskerville (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.biolinum:1
+msgid ":py:obj:`biolinum <manim.utils.tex_templates.TexFontTemplates.biolinum>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.biolinum:1
 msgid "Biolinum"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.brushscriptx:1
+msgid ":py:obj:`brushscriptx <manim.utils.tex_templates.TexFontTemplates.brushscriptx>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.brushscriptx:1
 msgid "BrushScriptX-Italic (PX math and Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.chalkboard_se:1
+msgid ":py:obj:`chalkboard_se <manim.utils.tex_templates.TexFontTemplates.chalkboard_se>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.chalkboard_se:1
 msgid "Chalkboard SE"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.chalkduster:1
+msgid ":py:obj:`chalkduster <manim.utils.tex_templates.TexFontTemplates.chalkduster>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.chalkduster:1
 msgid "Chalkduster"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.comfortaa:1
+msgid ":py:obj:`comfortaa <manim.utils.tex_templates.TexFontTemplates.comfortaa>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.comfortaa:1
 msgid "Comfortaa"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.comic_sans:1
+msgid ":py:obj:`comic_sans <manim.utils.tex_templates.TexFontTemplates.comic_sans>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.comic_sans:1
 msgid "Comic Sans MS"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.droid_sans:1
+msgid ":py:obj:`droid_sans <manim.utils.tex_templates.TexFontTemplates.droid_sans>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.droid_sans:1
 msgid "Droid Sans"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.droid_sans_it:1
+msgid ":py:obj:`droid_sans_it <manim.utils.tex_templates.TexFontTemplates.droid_sans_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.droid_sans_it:1
 msgid "Droid Sans (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.droid_serif:1
+msgid ":py:obj:`droid_serif <manim.utils.tex_templates.TexFontTemplates.droid_serif>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.droid_serif:1
 msgid "Droid Serif"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.droid_serif_px_it:1
+msgid ":py:obj:`droid_serif_px_it <manim.utils.tex_templates.TexFontTemplates.droid_serif_px_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.droid_serif_px_it:1
 msgid "Droid Serif (PX math symbols) (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.ecf_augie:1
+msgid ":py:obj:`ecf_augie <manim.utils.tex_templates.TexFontTemplates.ecf_augie>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.ecf_augie:1
 msgid "ECF Augie (Euler Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.ecf_jd:1
+msgid ":py:obj:`ecf_jd <manim.utils.tex_templates.TexFontTemplates.ecf_jd>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.ecf_jd:1
 msgid "ECF JD (with TX fonts)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.ecf_skeetch:1
+msgid ":py:obj:`ecf_skeetch <manim.utils.tex_templates.TexFontTemplates.ecf_skeetch>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.ecf_skeetch:1
 msgid "ECF Skeetch (CM Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.ecf_tall_paul:1
+msgid ":py:obj:`ecf_tall_paul <manim.utils.tex_templates.TexFontTemplates.ecf_tall_paul>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.ecf_tall_paul:1
 msgid "ECF Tall Paul (with Symbol font)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.ecf_webster:1
+msgid ":py:obj:`ecf_webster <manim.utils.tex_templates.TexFontTemplates.ecf_webster>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.ecf_webster:1
 msgid "ECF Webster (with TX fonts)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.electrum_adf:1
+msgid ":py:obj:`electrum_adf <manim.utils.tex_templates.TexFontTemplates.electrum_adf>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.electrum_adf:1
 msgid "Electrum ADF (CM Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.epigrafica:1
+msgid ":py:obj:`epigrafica <manim.utils.tex_templates.TexFontTemplates.epigrafica>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.epigrafica:1
 msgid "Epigrafica"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.fourier_utopia:1
+msgid ":py:obj:`fourier_utopia <manim.utils.tex_templates.TexFontTemplates.fourier_utopia>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.fourier_utopia:1
 msgid "Fourier Utopia (Fourier upright Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.french_cursive:1
+msgid ":py:obj:`french_cursive <manim.utils.tex_templates.TexFontTemplates.french_cursive>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.french_cursive:1
 msgid "French Cursive (Euler Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.gfs_bodoni:1
+msgid ":py:obj:`gfs_bodoni <manim.utils.tex_templates.TexFontTemplates.gfs_bodoni>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.gfs_bodoni:1
 msgid "GFS Bodoni"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.gfs_didot:1
+msgid ":py:obj:`gfs_didot <manim.utils.tex_templates.TexFontTemplates.gfs_didot>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.gfs_didot:1
 msgid "GFS Didot (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.gfs_neoHellenic:1
+msgid ":py:obj:`gfs_neoHellenic <manim.utils.tex_templates.TexFontTemplates.gfs_neoHellenic>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.gfs_neoHellenic:1
 msgid "GFS NeoHellenic"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.gnu_freesans_tx:1
+msgid ":py:obj:`gnu_freesans_tx <manim.utils.tex_templates.TexFontTemplates.gnu_freesans_tx>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.gnu_freesans_tx:1
 msgid "GNU FreeSerif (and TX fonts symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.gnu_freeserif_freesans:1
+msgid ":py:obj:`gnu_freeserif_freesans <manim.utils.tex_templates.TexFontTemplates.gnu_freeserif_freesans>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.gnu_freeserif_freesans:1
 msgid "GNU FreeSerif and FreeSans"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.helvetica_fourier_it:1
+msgid ":py:obj:`helvetica_fourier_it <manim.utils.tex_templates.TexFontTemplates.helvetica_fourier_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.helvetica_fourier_it:1
 msgid "Helvetica with Fourier (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.latin_modern_tw:1
+msgid ":py:obj:`latin_modern_tw <manim.utils.tex_templates.TexFontTemplates.latin_modern_tw>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.latin_modern_tw:1
 msgid "Latin Modern Typewriter Proportional"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.latin_modern_tw_it:1
+msgid ":py:obj:`latin_modern_tw_it <manim.utils.tex_templates.TexFontTemplates.latin_modern_tw_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.latin_modern_tw_it:1
 msgid "Latin Modern Typewriter Proportional (CM Greek) (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.libertine:1
+msgid ":py:obj:`libertine <manim.utils.tex_templates.TexFontTemplates.libertine>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.libertine:1
 msgid "Libertine"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.libris_adf_fourier:1
+msgid ":py:obj:`libris_adf_fourier <manim.utils.tex_templates.TexFontTemplates.libris_adf_fourier>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.libris_adf_fourier:1
 msgid "Libris ADF with Fourier"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.minion_pro_myriad_pro:1
+msgid ":py:obj:`minion_pro_myriad_pro <manim.utils.tex_templates.TexFontTemplates.minion_pro_myriad_pro>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.minion_pro_myriad_pro:1
 msgid "Minion Pro and Myriad Pro (and TX fonts symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.minion_pro_tx:1
+msgid ":py:obj:`minion_pro_tx <manim.utils.tex_templates.TexFontTemplates.minion_pro_tx>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.minion_pro_tx:1
 msgid "Minion Pro (and TX fonts symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook:1
+msgid ":py:obj:`new_century_schoolbook <manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook:1
 msgid "New Century Schoolbook (Symbol Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook_px:1
+msgid ":py:obj:`new_century_schoolbook_px <manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook_px>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.new_century_schoolbook_px:1
 msgid "New Century Schoolbook (Symbol Greek, PX math symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.noteworthy_light:1
+msgid ":py:obj:`noteworthy_light <manim.utils.tex_templates.TexFontTemplates.noteworthy_light>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.noteworthy_light:1
 msgid "Noteworthy Light"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.palatino:1
+msgid ":py:obj:`palatino <manim.utils.tex_templates.TexFontTemplates.palatino>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.palatino:1
 msgid "Palatino (Symbol Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.papyrus:1
+msgid ":py:obj:`papyrus <manim.utils.tex_templates.TexFontTemplates.papyrus>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.papyrus:1
 msgid "Papyrus"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.romande_adf_fourier_it:1
+msgid ":py:obj:`romande_adf_fourier_it <manim.utils.tex_templates.TexFontTemplates.romande_adf_fourier_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.romande_adf_fourier_it:1
 msgid "Romande ADF with Fourier (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.slitex:1
+msgid ":py:obj:`slitex <manim.utils.tex_templates.TexFontTemplates.slitex>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.slitex:1
 msgid "SliTeX (Euler Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.times_fourier_it:1
+msgid ":py:obj:`times_fourier_it <manim.utils.tex_templates.TexFontTemplates.times_fourier_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.times_fourier_it:1
 msgid "Times with Fourier (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.urw_avant_garde:1
+msgid ":py:obj:`urw_avant_garde <manim.utils.tex_templates.TexFontTemplates.urw_avant_garde>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.urw_avant_garde:1
 msgid "URW Avant Garde (Symbol Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.urw_zapf_chancery:1
+msgid ":py:obj:`urw_zapf_chancery <manim.utils.tex_templates.TexFontTemplates.urw_zapf_chancery>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.urw_zapf_chancery:1
 msgid "URW Zapf Chancery (CM Greek)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.venturis_adf_fourier_it:1
+msgid ":py:obj:`venturis_adf_fourier_it <manim.utils.tex_templates.TexFontTemplates.venturis_adf_fourier_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.venturis_adf_fourier_it:1
 msgid "Venturis ADF with Fourier (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.verdana_it:1
+msgid ":py:obj:`verdana_it <manim.utils.tex_templates.TexFontTemplates.verdana_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.verdana_it:1
 msgid "Verdana (Italic)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.vollkorn:1
+msgid ":py:obj:`vollkorn <manim.utils.tex_templates.TexFontTemplates.vollkorn>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.vollkorn:1
 msgid "Vollkorn (TX fonts for Greek and math symbols)"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexFontTemplates.vollkorn_fourier_it:1
+msgid ":py:obj:`vollkorn_fourier_it <manim.utils.tex_templates.TexFontTemplates.vollkorn_fourier_it>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexFontTemplates.vollkorn_fourier_it:1
 msgid "Vollkorn with Fourier (Italic)"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates.american_typewriter:1:<autosummary>:1
+msgid ":py:obj:`zapf_chancery <manim.utils.tex_templates.TexFontTemplates.zapf_chancery>`\\"
 msgstr ""
 
 

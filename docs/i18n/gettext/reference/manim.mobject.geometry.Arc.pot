@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Arc``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
-msgid "Bases: :class:`manim.mobject.geometry.TipableVMobject`"
+msgid "Bases: :py:class:`manim.mobject.geometry.TipableVMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
@@ -35,8 +35,20 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`create_quadratic_bezier_points <manim.mobject.geometry.Arc.create_quadratic_bezier_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`generate_points <manim.mobject.geometry.Arc.generate_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1
 msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`get_arc_center <manim.mobject.geometry.Arc.get_arc_center>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
@@ -44,12 +56,40 @@ msgstr ""
 msgid "Looks at the normals to the first two anchors, and finds their intersection points"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`init_points <manim.mobject.geometry.Arc.init_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`move_arc_center_to <manim.mobject.geometry.Arc.move_arc_center_to>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`set_pre_positioned_points <manim.mobject.geometry.Arc.set_pre_positioned_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
+msgid ":py:obj:`stop_angle <manim.mobject.geometry.Arc.stop_angle>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.geometry.Arc.rst:28
 msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.Arc.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Arc.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.Arc.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
@@ -57,7 +97,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.Arc.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.Arc.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1

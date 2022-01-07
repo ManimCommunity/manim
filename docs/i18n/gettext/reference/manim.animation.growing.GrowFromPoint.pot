@@ -15,15 +15,55 @@ msgid "Qualified name: ``manim.animation.growing.GrowFromPoint``"
 msgstr ""
 
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:1
+msgid "Introduce an :class:`~.Mobject` by growing it from a point."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:3
+msgid "The mobjects to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:4
+msgid "The point from which the mobject grows."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:5
+msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:8
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:14
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:21:<autosummary>:1
+msgid ":py:obj:`create_starting_mobject <manim.animation.growing.GrowFromPoint.create_starting_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:21:<autosummary>:1
+msgid ":py:obj:`create_target <manim.animation.growing.GrowFromPoint.create_target>`"
+msgstr ""
+
 #: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:23
 msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:27:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.growing.GrowFromPoint.path_arc>`\\"
 msgstr ""
 
 

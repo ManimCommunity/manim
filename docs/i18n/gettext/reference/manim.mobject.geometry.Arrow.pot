@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Arrow``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:1
-msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Line`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow:1
@@ -66,8 +66,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid ":py:obj:`get_default_tip_length <manim.mobject.geometry.Arrow.get_default_tip_length>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1
 msgid "Returns the default tip_length of the arrow."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid ":py:obj:`get_normal_vector <manim.mobject.geometry.Arrow.get_normal_vector>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
@@ -76,13 +84,25 @@ msgid "Returns the normal of a vector."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid ":py:obj:`reset_normal_vector <manim.mobject.geometry.Arrow.reset_normal_vector>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.reset_normal_vector:1
 msgid "Resets the normal of a vector"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid ":py:obj:`scale <manim.mobject.geometry.Arrow.scale>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1
 msgid "Scale an arrow, but keep stroke width and arrow tip size fixed."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
+msgid ":py:obj:`set_stroke_width_from_length <manim.mobject.geometry.Arrow.set_stroke_width_from_length>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Arrow.rst:24:<autosummary>:1
@@ -94,7 +114,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.Arrow.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Arrow.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.Arrow.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
@@ -102,7 +134,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.Arrow.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.Arrow.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.get_default_tip_length:1:<autosummary>:1

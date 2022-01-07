@@ -11,7 +11,19 @@ msgid "Mobjects"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`boolean_ops <manim.mobject.boolean_ops>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`changing <manim.mobject.changing>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Animation of a mobject boundary and tracing of points."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`coordinate_systems <manim.mobject.coordinate_systems>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -19,7 +31,15 @@ msgid "Mobjects that represent coordinate systems."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`frame <manim.mobject.frame>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Special rectangles."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`functions <manim.mobject.functions>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -27,7 +47,15 @@ msgid "Mobjects representing function graphs."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`geometry <manim.mobject.geometry>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects that are simple geometric shapes."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`graph <manim.mobject.graph>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -35,7 +63,15 @@ msgid "Mobjects used to represent mathematical graphs (think graph theory, not p
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`logo <manim.mobject.logo>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Utilities for Manim's logo and banner."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`matrix <manim.mobject.matrix>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -43,7 +79,15 @@ msgid "Mobjects representing matrices."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`mobject <manim.mobject.mobject>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Base classes for objects that can be displayed."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`mobject_update_utils <manim.mobject.mobject_update_utils>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -51,7 +95,15 @@ msgid "Utility functions for continuous animation of mobjects."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`number_line <manim.mobject.number_line>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobject representing a number line."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`numbers <manim.mobject.numbers>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -59,7 +111,15 @@ msgid "Mobjects representing numbers."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`polyhedra <manim.mobject.polyhedra>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "General polyhedral class and platonic solids."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`probability <manim.mobject.probability>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -67,7 +127,15 @@ msgid "Mobjects representing objects from probability theory and statistics."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`shape_matchers <manim.mobject.shape_matchers>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects used to mark and annotate other mobjects."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`table <manim.mobject.table>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -75,7 +143,15 @@ msgid "Mobjects representing tables."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`three_d_utils <manim.mobject.three_d_utils>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Utility functions for three-dimensional mobjects."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`three_dimensions <manim.mobject.three_dimensions>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -83,7 +159,15 @@ msgid "Three-dimensional mobjects."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`value_tracker <manim.mobject.value_tracker>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects that dynamically show the change of a variable."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`vector_field <manim.mobject.vector_field>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -91,7 +175,15 @@ msgid "Mobjects representing vector fields."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`brace <manim.mobject.svg.brace>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobject representing curly braces."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`code_mobject <manim.mobject.svg.code_mobject>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -99,7 +191,15 @@ msgid "Mobject representing highlighted source code listings."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`style_utils <manim.mobject.svg.style_utils>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Utility functions for parsing SVG styles."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`svg_path <manim.mobject.svg.svg_path>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -107,7 +207,15 @@ msgid "Mobjects generated from an SVG pathstring."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`svg_mobject <manim.mobject.svg.svg_mobject>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects generated from an SVG file."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`tex_mobject <manim.mobject.svg.tex_mobject>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -115,7 +223,15 @@ msgid "Mobjects representing text rendered using LaTeX."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`text_mobject <manim.mobject.svg.text_mobject>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`image_mobject <manim.mobject.types.image_mobject>`\\"
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
@@ -123,7 +239,15 @@ msgid "Mobjects representing raster images."
 msgstr ""
 
 #: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`point_cloud_mobject <manim.mobject.types.point_cloud_mobject>`\\"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
 msgid "Mobjects representing point clouds."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:39:<autosummary>:1
+msgid ":py:obj:`vectorized_mobject <manim.mobject.types.vectorized_mobject>`\\"
 msgstr ""
 
 

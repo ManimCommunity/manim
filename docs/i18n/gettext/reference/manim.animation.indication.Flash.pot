@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.indication.Flash``"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
-msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
+msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
@@ -62,12 +62,20 @@ msgstr ""
 msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
 msgstr ""
 
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:0
+msgid "Return type"
+msgstr ""
+
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:15
 msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.Flash.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Flash.rst:19:<autosummary>:1
+msgid ":py:obj:`create_line_anims <manim.animation.indication.Flash.create_line_anims>`"
 msgstr ""
 
 

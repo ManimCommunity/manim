@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.Create``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:1
-msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgid "Bases: :py:class:`manim.animation.creation.ShowPartial`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:1
@@ -36,6 +36,10 @@ msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:6
 msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:0
+msgid "Return type"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:9
