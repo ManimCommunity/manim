@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
+msgid ":py:obj:`Dodecahedron <manim.mobject.polyhedra.Dodecahedron>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
 msgid "A dodecahedron, one of the five platonic solids."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
+msgid ":py:obj:`Icosahedron <manim.mobject.polyhedra.Icosahedron>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
@@ -27,11 +35,23 @@ msgid "An icosahedron, one of the five platonic solids."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
+msgid ":py:obj:`Octahedron <manim.mobject.polyhedra.Octahedron>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
 msgid "An octahedron, one of the five platonic solids."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
+msgid ":py:obj:`Polyhedron <manim.mobject.polyhedra.Polyhedron>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
 msgid "An abstract polyhedra class."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.rst:28:<autosummary>:1
+msgid ":py:obj:`Tetrahedron <manim.mobject.polyhedra.Tetrahedron>`"
 msgstr ""
 
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.multi\\_camera.MultiCamera``"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
-msgid "Bases: :class:`manim.camera.moving_camera.MovingCamera`"
+msgid "Bases: :py:class:`manim.camera.moving_camera.MovingCamera`"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
@@ -41,8 +41,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`add_image_mobject_from_camera <manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1
 msgid "Adds an ImageMobject that's been obtained from the camera into the list ``self.image_mobject_from_cameras``"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`capture_mobjects <manim.camera.multi_camera.MultiCamera.capture_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
@@ -51,13 +59,25 @@ msgid "Capture mobjects by printing them on :attr:`pixel_array`."
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`get_mobjects_indicating_movement <manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:1
 msgid "Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving"
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`reset <manim.camera.multi_camera.MultiCamera.reset>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:1
 msgid "Resets the MultiCamera."
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`update_sub_cameras <manim.camera.multi_camera.MultiCamera.update_sub_cameras>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
@@ -70,11 +90,31 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":py:obj:`background_color <manim.camera.multi_camera.MultiCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":py:obj:`background_opacity <manim.camera.multi_camera.MultiCamera.background_opacity>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":py:obj:`frame_center <manim.camera.multi_camera.MultiCamera.frame_center>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
 msgid "Returns the centerpoint of the frame in cartesian coordinates."
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":py:obj:`frame_height <manim.camera.multi_camera.MultiCamera.frame_height>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
 msgid "Returns the height of the frame."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":py:obj:`frame_width <manim.camera.multi_camera.MultiCamera.frame_width>`\\"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1

@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.rst:22:<autosummary>:1
+msgid ":py:obj:`RerunSceneHandler <manim.scene.scene.RerunSceneHandler>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.rst:22:<autosummary>:1
 msgid "A class to handle rerunning a Scene after the input file is modified."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.rst:22:<autosummary>:1
+msgid ":py:obj:`Scene <manim.scene.scene.Scene>`"
 msgstr ""
 
 

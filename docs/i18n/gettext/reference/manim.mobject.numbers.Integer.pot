@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.numbers.Integer``"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Integer:1
-msgid "Bases: :class:`manim.mobject.numbers.DecimalNumber`"
+msgid "Bases: :py:class:`manim.mobject.numbers.DecimalNumber`"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Integer:1
@@ -30,12 +30,28 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:20:<autosummary>:1
+msgid ":py:obj:`get_value <manim.mobject.numbers.Integer.get_value>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:22
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.numbers.Integer.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.numbers.Integer.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.numbers.Integer.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
@@ -43,11 +59,23 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid ":py:obj:`font_size <manim.mobject.numbers.Integer.font_size>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
 msgid "The font size of the tex mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.numbers.Integer.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.numbers.Integer.width>`\\"
 msgstr ""
 
 

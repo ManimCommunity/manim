@@ -18,12 +18,20 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.camera.camera.rst:22:<autosummary>:1
+msgid ":py:obj:`BackgroundColoredVMobjectDisplayer <manim.camera.camera.BackgroundColoredVMobjectDisplayer>`"
+msgstr ""
+
 #: ../../source/reference/manim.camera.camera.rst:22:<autosummary>:0
 msgid "param camera"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.rst:22:<autosummary>:1
 msgid "Camera object to use."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.rst:22:<autosummary>:1
+msgid ":py:obj:`Camera <manim.camera.camera.Camera>`"
 msgstr ""
 
 

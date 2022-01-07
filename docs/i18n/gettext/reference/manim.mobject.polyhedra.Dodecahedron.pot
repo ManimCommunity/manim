@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.polyhedra.Dodecahedron``"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Dodecahedron:1
-msgid "Bases: :class:`manim.mobject.polyhedra.Polyhedron`"
+msgid "Bases: :py:class:`manim.mobject.polyhedra.Polyhedron`"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Dodecahedron:1
@@ -43,7 +43,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.polyhedra.Dodecahedron.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.polyhedra.Dodecahedron.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.polyhedra.Dodecahedron.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
@@ -51,7 +63,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.polyhedra.Dodecahedron.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Dodecahedron.rst:28:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.polyhedra.Dodecahedron.width>`\\"
 msgstr ""
 
 

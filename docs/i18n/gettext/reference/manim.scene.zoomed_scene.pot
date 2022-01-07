@@ -22,4 +22,8 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.scene.zoomed_scene.rst:20:<autosummary>:1
+msgid ":py:obj:`ZoomedScene <manim.scene.zoomed_scene.ZoomedScene>`"
+msgstr ""
+
 

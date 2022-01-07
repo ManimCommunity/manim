@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.scale.LogBase``"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase:1
-msgid "Bases: :class:`manim.utils.scale._ScaleBase`"
+msgid "Bases: :py:class:`manim.utils.scale._ScaleBase`"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase:1
@@ -46,13 +46,25 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1
+msgid ":py:obj:`function <manim.utils.scale.LogBase.function>`"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1
 msgid "Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1
+msgid ":py:obj:`get_custom_labels <manim.utils.scale.LogBase.get_custom_labels>`"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.get_custom_labels:1
 msgid "Produces custom :class:`~.Integer` labels in the form of ``10^2``."
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1
+msgid ":py:obj:`inverse_function <manim.utils.scale.LogBase.inverse_function>`"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LogBase.function:1:<autosummary>:1

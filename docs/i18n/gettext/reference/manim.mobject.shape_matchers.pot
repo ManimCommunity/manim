@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
-msgid "A background rectangle"
+msgid ":py:obj:`BackgroundRectangle <manim.mobject.shape_matchers.BackgroundRectangle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
+msgid "A background rectangle."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
+msgid ":py:obj:`Cross <manim.mobject.shape_matchers.Cross>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
@@ -27,7 +35,15 @@ msgid "Creates a cross."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
+msgid ":py:obj:`SurroundingRectangle <manim.mobject.shape_matchers.SurroundingRectangle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
 msgid "A rectangle surrounding a :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
+msgid ":py:obj:`Underline <manim.mobject.shape_matchers.Underline>`"
 msgstr ""
 
 

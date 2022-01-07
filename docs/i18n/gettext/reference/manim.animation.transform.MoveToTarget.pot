@@ -15,15 +15,31 @@ msgid "Qualified name: ``manim.animation.transform.MoveToTarget``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.MoveToTarget.rst:14
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.animation.transform.MoveToTarget.rst:20:<autosummary>:1
+msgid ":py:obj:`check_validity_of_input <manim.animation.transform.MoveToTarget.check_validity_of_input>`"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.MoveToTarget.rst:22
 msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.MoveToTarget.rst:26:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.MoveToTarget.path_arc>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.MoveToTarget.rst:26:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.MoveToTarget.path_func>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:0
+msgid "Parameters"
 msgstr ""
 
 

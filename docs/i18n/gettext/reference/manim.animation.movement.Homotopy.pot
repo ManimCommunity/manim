@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.movement.Homotopy``"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:1
@@ -24,6 +24,18 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.movement.Homotopy.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.Homotopy.rst:19:<autosummary>:1
+msgid ":py:obj:`function_at_time_t <manim.animation.movement.Homotopy.function_at_time_t>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.Homotopy.rst:19:<autosummary>:1
+msgid ":py:obj:`interpolate_submobject <manim.animation.movement.Homotopy.interpolate_submobject>`"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:0
+msgid "Parameters"
 msgstr ""
 
 
