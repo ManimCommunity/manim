@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.indication.Wiggle``"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1
@@ -54,12 +54,24 @@ msgstr ""
 msgid "The duration of the animation"
 msgstr ""
 
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:0
+msgid "Return type"
+msgstr ""
+
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:13
 msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.Wiggle.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
+msgid ":py:obj:`get_rotate_about_point <manim.animation.indication.Wiggle.get_rotate_about_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:20:<autosummary>:1
+msgid ":py:obj:`get_scale_about_point <manim.animation.indication.Wiggle.get_scale_about_point>`"
 msgstr ""
 
 

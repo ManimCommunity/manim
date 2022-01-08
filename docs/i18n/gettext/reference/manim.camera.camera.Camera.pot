@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.camera.Camera``"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:1
@@ -111,8 +111,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`adjust_out_of_range_points <manim.camera.camera.Camera.adjust_out_of_range_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:1
 msgid "If any of the points in the passed array are out of the viable range, they are adjusted suitably."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`adjusted_thickness <manim.camera.camera.Camera.adjusted_thickness>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:0
@@ -121,8 +129,16 @@ msgid "param thickness"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`apply_fill <manim.camera.camera.Camera.apply_fill>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_fill:1
 msgid "Fills the cairo context"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`apply_stroke <manim.camera.camera.Camera.apply_stroke>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -131,8 +147,16 @@ msgid "Applies a stroke to the VMobject in the cairo context."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`cache_cairo_context <manim.camera.camera.Camera.cache_cairo_context>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.cache_cairo_context:1
 msgid "Caches the passed Pixel array into a Cairo Context"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`capture_mobject <manim.camera.camera.Camera.capture_mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -141,8 +165,16 @@ msgid "Capture mobjects by storing it in :attr:`pixel_array`."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`capture_mobjects <manim.camera.camera.Camera.capture_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:1
 msgid "Capture mobjects by printing them on :attr:`pixel_array`."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`convert_pixel_array <manim.camera.camera.Camera.convert_pixel_array>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -151,8 +183,16 @@ msgid "Converts a pixel array from values that have floats in then to proper RGB
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_image_mobject <manim.camera.camera.Camera.display_image_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_image_mobject:1
 msgid "Displays an ImageMobject by changing the pixel_array suitably."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_multiple_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_background_colored_vmobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -161,8 +201,16 @@ msgid "Displays multiple vmobjects that have the same color as the background."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_multiple_image_mobjects <manim.camera.camera.Camera.display_multiple_image_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_image_mobjects:1
 msgid "Displays multiple image mobjects by modifying the passed pixel_array."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_multiple_non_background_colored_vmobjects <manim.camera.camera.Camera.display_multiple_non_background_colored_vmobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -171,8 +219,16 @@ msgid "Displays multiple VMobjects in the cairo context, as long as they don't h
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_multiple_point_cloud_mobjects <manim.camera.camera.Camera.display_multiple_point_cloud_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_point_cloud_mobjects:1
 msgid "Displays multiple PMobjects by modifying the passed pixel array."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_multiple_vectorized_mobjects <manim.camera.camera.Camera.display_multiple_vectorized_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -181,7 +237,15 @@ msgid "Displays multiple VMobjects in the pixel_array"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_point_cloud <manim.camera.camera.Camera.display_point_cloud>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 msgid "Displays a PMobject by modifying the Pixel array suitably."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`display_vectorized <manim.camera.camera.Camera.display_vectorized>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -190,8 +254,16 @@ msgid "Displays a VMobject in the cairo context"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_background_colored_vmobject_displayer <manim.camera.camera.Camera.get_background_colored_vmobject_displayer>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_background_colored_vmobject_displayer:1
 msgid "Returns the background_colored_vmobject_displayer if it exists or makes one and returns it if not."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_cached_cairo_context <manim.camera.camera.Camera.get_cached_cairo_context>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -200,8 +272,16 @@ msgid "Returns the cached cairo context of the passed pixel array if it exists, 
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_cairo_context <manim.camera.camera.Camera.get_cairo_context>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_cairo_context:1
 msgid "Returns the cairo context for a pixel array after caching it to self.pixel_array_to_cairo_context If that array has already been cached, it returns the cached version instead."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_coords_of_all_pixels <manim.camera.camera.Camera.get_coords_of_all_pixels>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -210,8 +290,16 @@ msgid "Returns the cartesian coordinates of each pixel."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_fill_rgbas <manim.camera.camera.Camera.get_fill_rgbas>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_fill_rgbas:1
 msgid "Returns the RGBA array of the fill of the passed VMobject"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_image <manim.camera.camera.Camera.get_image>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -220,8 +308,16 @@ msgid "Returns an image from the passed pixel array, or from the current frame i
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_mobjects_to_display <manim.camera.camera.Camera.get_mobjects_to_display>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_mobjects_to_display:1
 msgid "Used to get the list of mobjects to display with the camera."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_stroke_rgbas <manim.camera.camera.Camera.get_stroke_rgbas>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -230,7 +326,19 @@ msgid "Gets the RGBA array for the stroke of the passed VMobject."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`get_thickening_nudges <manim.camera.camera.Camera.get_thickening_nudges>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`init_background <manim.camera.camera.Camera.init_background>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 msgid "Initialize the background."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`is_in_frame <manim.camera.camera.Camera.is_in_frame>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -239,7 +347,15 @@ msgid "Checks whether the passed mobject is in frame or not."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`make_background_from_func <manim.camera.camera.Camera.make_background_from_func>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 msgid "Makes a pixel array for the background by using coords_to_colors_func to determine each pixel's color."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`on_screen_pixels <manim.camera.camera.Camera.on_screen_pixels>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -248,8 +364,16 @@ msgid "Returns array of pixels that are on the screen from a given array of pixe
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`overlay_PIL_image <manim.camera.camera.Camera.overlay_PIL_image>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.overlay_PIL_image:1
 msgid "Overlays a PIL image on the passed pixel array."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`overlay_rgba_array <manim.camera.camera.Camera.overlay_rgba_array>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -258,8 +382,20 @@ msgid "Overlays an RGBA array on top of the given Pixel array."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`points_to_pixel_coords <manim.camera.camera.Camera.points_to_pixel_coords>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`reset <manim.camera.camera.Camera.reset>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.reset:1
 msgid "Resets the camera's pixel array to that of the background"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`reset_pixel_shape <manim.camera.camera.Camera.reset_pixel_shape>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -268,8 +404,16 @@ msgid "This method resets the height and width of a single pixel to the passed n
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`resize_frame_shape <manim.camera.camera.Camera.resize_frame_shape>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.resize_frame_shape:1
 msgid "Changes frame_shape to match the aspect ratio of the pixels, where fixed_dimension determines whether frame_height or frame_width remains fixed while the other changes accordingly."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_background <manim.camera.camera.Camera.set_background>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -278,7 +422,15 @@ msgid "Sets the background to the passed pixel_array after converting to valid R
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_background_from_func <manim.camera.camera.Camera.set_background_from_func>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 msgid "Sets the background to a pixel array using coords_to_colors_func to determine each pixel's color."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_cairo_context_color <manim.camera.camera.Camera.set_cairo_context_color>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -287,8 +439,20 @@ msgid "Sets the color of the cairo context"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_cairo_context_path <manim.camera.camera.Camera.set_cairo_context_path>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_cairo_context_path:1
 msgid "Sets a path for the cairo context with the vmobject passed"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_frame_to_background <manim.camera.camera.Camera.set_frame_to_background>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`set_pixel_array <manim.camera.camera.Camera.set_pixel_array>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -297,8 +461,20 @@ msgid "Sets the pixel array of the camera to the passed pixel array."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`thickened_coordinates <manim.camera.camera.Camera.thickened_coordinates>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.thickened_coordinates:1
 msgid "Returns thickened coordinates for a passed array of pixel coords and a thickness to thicken by."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`transform_points_pre_display <manim.camera.camera.Camera.transform_points_pre_display>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+msgid ":py:obj:`type_or_raise <manim.camera.camera.Camera.type_or_raise>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -308,6 +484,14 @@ msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:65
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:1:<autosummary>:1
+msgid ":py:obj:`background_color <manim.camera.camera.Camera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:1:<autosummary>:1
+msgid ":py:obj:`background_opacity <manim.camera.camera.Camera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:4

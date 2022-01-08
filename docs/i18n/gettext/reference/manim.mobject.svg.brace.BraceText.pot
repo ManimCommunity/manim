@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.brace.BraceText``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.BraceText:1
-msgid "Bases: :class:`manim.mobject.svg.brace.BraceLabel`"
+msgid "Bases: :py:class:`manim.mobject.svg.brace.BraceLabel`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:14
@@ -27,7 +27,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.brace.BraceText.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.brace.BraceText.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.brace.BraceText.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
@@ -35,7 +47,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.brace.BraceText.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.BraceText.rst:28:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.brace.BraceText.width>`\\"
 msgstr ""
 
 

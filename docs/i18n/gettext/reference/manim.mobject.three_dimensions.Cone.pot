@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.Cone``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone:1
-msgid "Bases: :class:`manim.mobject.three_dimensions.Surface`"
+msgid "Bases: :py:class:`manim.mobject.three_dimensions.Surface`"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone:1
@@ -64,11 +64,23 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:22:<autosummary>:1
+msgid ":py:obj:`func <manim.mobject.three_dimensions.Cone.func>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:22:<autosummary>:1
 msgid "Converts from spherical coordinates to cartesian."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:22:<autosummary>:1
+msgid ":py:obj:`get_direction <manim.mobject.three_dimensions.Cone.get_direction>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:22:<autosummary>:1
 msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:22:<autosummary>:1
+msgid ":py:obj:`set_direction <manim.mobject.three_dimensions.Cone.set_direction>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cone.rst:24
@@ -76,7 +88,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.three_dimensions.Cone.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Cone.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.three_dimensions.Cone.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
@@ -84,7 +108,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.three_dimensions.Cone.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.three_dimensions.Cone.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cone.func:1:<autosummary>:1

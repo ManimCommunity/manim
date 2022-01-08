@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Cutout``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Cutout:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Cutout:1
@@ -55,7 +55,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.Cutout.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Cutout.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.Cutout.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
@@ -63,7 +75,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.Cutout.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Cutout.rst:28:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.Cutout.width>`\\"
 msgstr ""
 
 

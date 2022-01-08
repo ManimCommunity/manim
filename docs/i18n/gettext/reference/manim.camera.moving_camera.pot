@@ -18,4 +18,12 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.camera.moving_camera.rst:22:<autosummary>:1
+msgid ":py:obj:`CameraFrame <manim.camera.moving_camera.CameraFrame>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.rst:22:<autosummary>:1
+msgid ":py:obj:`MovingCamera <manim.camera.moving_camera.MovingCamera>`"
+msgstr ""
+
 

@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid ":py:obj:`ArcBrace <manim.mobject.svg.brace.ArcBrace>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
 msgid "Creates a :class:`~Brace` that wraps around an :class:`~.Arc`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid ":py:obj:`Brace <manim.mobject.svg.brace.Brace>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
@@ -27,7 +35,15 @@ msgid "Takes a mobject and draws a brace adjacent to it."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid ":py:obj:`BraceBetweenPoints <manim.mobject.svg.brace.BraceBetweenPoints>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
 msgid "Similar to Brace, but instead of taking a mobject it uses 2 points to place the brace."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid ":py:obj:`BraceLabel <manim.mobject.svg.brace.BraceLabel>`"
 msgstr ""
 
 

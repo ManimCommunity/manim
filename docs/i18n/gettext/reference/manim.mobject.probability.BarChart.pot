@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.probability.BarChart``"
 msgstr ""
 
 #: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/probability.py:docstring of manim.mobject.probability.BarChart:1
@@ -86,12 +86,36 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:22:<autosummary>:1
+msgid ":py:obj:`add_axes <manim.mobject.probability.BarChart.add_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:22:<autosummary>:1
+msgid ":py:obj:`add_bars <manim.mobject.probability.BarChart.add_bars>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:22:<autosummary>:1
+msgid ":py:obj:`change_bar_values <manim.mobject.probability.BarChart.change_bar_values>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.probability.BarChart.rst:24
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.probability.BarChart.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.probability.BarChart.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.probability.BarChart.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
@@ -99,7 +123,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.probability.BarChart.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:31:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.probability.BarChart.width>`\\"
 msgstr ""
 
 

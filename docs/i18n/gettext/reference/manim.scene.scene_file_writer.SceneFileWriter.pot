@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.scene\\_file\\_writer.SceneFileWriter``"
 msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter:1
@@ -81,120 +81,241 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`add_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment:1
 msgid "This method adds an audio segment from an AudioSegment type object and suitable parameters."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`add_partial_movie_file <manim.scene.scene_file_writer.SceneFileWriter.add_partial_movie_file>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 msgid "Adds a new partial movie file path to `scene.partial_movie_files` and current section from a hash."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`add_sound <manim.scene.scene_file_writer.SceneFileWriter.add_sound>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_sound:1
 msgid "This method adds an audio segment from a sound file."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`begin_animation <manim.scene.scene_file_writer.SceneFileWriter.begin_animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.begin_animation:1
 msgid "Used internally by manim to stream the animation to FFMPEG for displaying or writing to a file."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`clean_cache <manim.scene.scene_file_writer.SceneFileWriter.clean_cache>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.clean_cache:1
 msgid "Will clean the cache by removing the oldest partial_movie_files."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`close_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe:1
 msgid "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer"
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`combine_files <manim.scene.scene_file_writer.SceneFileWriter.combine_files>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`combine_to_movie <manim.scene.scene_file_writer.SceneFileWriter.combine_to_movie>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.combine_to_movie:1
 msgid "Used internally by Manim to combine the separate partial movie files that make up a Scene into a single video file for that Scene."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`combine_to_section_videos <manim.scene.scene_file_writer.SceneFileWriter.combine_to_section_videos>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.combine_to_section_videos:1
 msgid "Concatenate partial movie files for each section."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`create_audio_segment <manim.scene.scene_file_writer.SceneFileWriter.create_audio_segment>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.create_audio_segment:1
 msgid "Creates an empty, silent, Audio Segment."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`end_animation <manim.scene.scene_file_writer.SceneFileWriter.end_animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.end_animation:1
 msgid "Internally used by Manim to stop streaming to FFMPEG gracefully."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`finish <manim.scene.scene_file_writer.SceneFileWriter.finish>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 msgid "Finishes writing to the FFMPEG buffer or writing images to output directory."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`finish_last_section <manim.scene.scene_file_writer.SceneFileWriter.finish_last_section>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.finish_last_section:1
 msgid "Delete current section if it is empty."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`flush_cache_directory <manim.scene.scene_file_writer.SceneFileWriter.flush_cache_directory>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.flush_cache_directory:1
 msgid "Delete all the cached partial movie files"
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`get_resolution_directory <manim.scene.scene_file_writer.SceneFileWriter.get_resolution_directory>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.get_resolution_directory:1
 msgid "Get the name of the resolution directory directly containing the video file."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`idle_stream <manim.scene.scene_file_writer.SceneFileWriter.idle_stream>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.idle_stream:1
 msgid "Doesn't write anything to the FFMPEG frame buffer."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`init_audio <manim.scene.scene_file_writer.SceneFileWriter.init_audio>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.init_audio:1
 msgid "Preps the writer for adding audio to the movie."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`init_output_directories <manim.scene.scene_file_writer.SceneFileWriter.init_output_directories>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.init_output_directories:1
 msgid "Initialise output directories."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`is_already_cached <manim.scene.scene_file_writer.SceneFileWriter.is_already_cached>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.is_already_cached:1
 msgid "Will check if a file named with `hash_invocation` exists."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`next_section <manim.scene.scene_file_writer.SceneFileWriter.next_section>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.next_section:1
 msgid "Create segmentation cut here."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`open_movie_pipe <manim.scene.scene_file_writer.SceneFileWriter.open_movie_pipe>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.open_movie_pipe:1
 msgid "Used internally by Manim to initialise FFMPEG and begin writing to FFMPEG's input buffer."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`output_image <manim.scene.scene_file_writer.SceneFileWriter.output_image>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`output_image_from_array <manim.scene.scene_file_writer.SceneFileWriter.output_image_from_array>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`print_file_ready_message <manim.scene.scene_file_writer.SceneFileWriter.print_file_ready_message>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.print_file_ready_message:1
 msgid "Prints the \"File Ready\" message to STDOUT."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`save_final_image <manim.scene.scene_file_writer.SceneFileWriter.save_final_image>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 msgid "The name is a misnomer."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`write_frame <manim.scene.scene_file_writer.SceneFileWriter.write_frame>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.write_frame:1
 msgid "Used internally by Manim to write a frame to the FFMPEG input buffer."
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:48
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`write_opengl_frame <manim.scene.scene_file_writer.SceneFileWriter.write_opengl_frame>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+msgid ":py:obj:`write_subcaption_file <manim.scene.scene_file_writer.SceneFileWriter.write_subcaption_file>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:47:<autosummary>:1
+#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.write_subcaption_file:1
+msgid "Writes the subcaption file."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:49
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment:1:<autosummary>:1
+msgid ":py:obj:`force_output_as_scene_name <manim.scene.scene_file_writer.SceneFileWriter.force_output_as_scene_name>`\\"
 msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment:0
