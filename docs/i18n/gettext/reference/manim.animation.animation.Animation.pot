@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.animation.Animation``"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:1
@@ -95,8 +95,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`begin <manim.animation.animation.Animation.begin>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1
 msgid "Begin the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`clean_up_from_scene <manim.animation.animation.Animation.clean_up_from_scene>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -105,8 +113,20 @@ msgid "Clean up the :class:`~.Scene` after finishing the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`copy <manim.animation.animation.Animation.copy>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.copy:1
 msgid "Create a copy of the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`create_starting_mobject <manim.animation.animation.Animation.create_starting_mobject>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`finish <manim.animation.animation.Animation.finish>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -115,8 +135,20 @@ msgid "Finish the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_all_families_zipped <manim.animation.animation.Animation.get_all_families_zipped>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_all_mobjects <manim.animation.animation.Animation.get_all_mobjects>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_all_mobjects:1
 msgid "Get all mobjects involved in the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_all_mobjects_to_update <manim.animation.animation.Animation.get_all_mobjects_to_update>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -125,8 +157,16 @@ msgid "Get all mobjects to be updated during the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_rate_func <manim.animation.animation.Animation.get_rate_func>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_rate_func:1
 msgid "Get the rate function of the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_run_time <manim.animation.animation.Animation.get_run_time>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -135,8 +175,16 @@ msgid "Get the run time of the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`get_sub_alpha <manim.animation.animation.Animation.get_sub_alpha>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.get_sub_alpha:1
 msgid "Get the animation progress of any submobjects subanimation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`interpolate <manim.animation.animation.Animation.interpolate>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -145,8 +193,20 @@ msgid "Set the animation progress."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`interpolate_mobject <manim.animation.animation.Animation.interpolate_mobject>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`interpolate_submobject <manim.animation.animation.Animation.interpolate_submobject>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`is_remover <manim.animation.animation.Animation.is_remover>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -155,8 +215,16 @@ msgid "Test if a the animation is a remover."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`set_name <manim.animation.animation.Animation.set_name>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_name:1
 msgid "Set the name of the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`set_rate_func <manim.animation.animation.Animation.set_rate_func>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
@@ -165,8 +233,16 @@ msgid "Set the rate function of the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`set_run_time <manim.animation.animation.Animation.set_run_time>`"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.set_run_time:1
 msgid "Set the run time of the animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1
+msgid ":py:obj:`update_mobjects <manim.animation.animation.Animation.update_mobjects>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.begin:1:<autosummary>:1

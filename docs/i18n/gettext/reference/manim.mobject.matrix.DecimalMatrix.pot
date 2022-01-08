@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.matrix.DecimalMatrix``"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.DecimalMatrix:1
-msgid "Bases: :class:`manim.mobject.matrix.Matrix`"
+msgid "Bases: :py:class:`manim.mobject.matrix.Matrix`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.DecimalMatrix:1
@@ -55,7 +55,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.matrix.DecimalMatrix.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.matrix.DecimalMatrix.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.matrix.DecimalMatrix.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
@@ -63,7 +75,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.matrix.DecimalMatrix.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.DecimalMatrix.rst:28:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.matrix.DecimalMatrix.width>`\\"
 msgstr ""
 
 

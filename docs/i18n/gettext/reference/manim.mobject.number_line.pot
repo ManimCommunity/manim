@@ -19,6 +19,10 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.rst:22:<autosummary>:1
+msgid ":py:obj:`NumberLine <manim.mobject.number_line.NumberLine>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.number_line.rst:22:<autosummary>:1
 msgid "Creates a number line with tick marks."
 msgstr ""
 

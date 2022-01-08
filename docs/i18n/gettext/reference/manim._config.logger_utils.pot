@@ -27,6 +27,10 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim._config.logger_utils.rst:26:<autosummary>:1
+msgid ":py:obj:`JSONFormatter <manim._config.logger_utils.JSONFormatter>`"
+msgstr ""
+
+#: ../../source/reference/manim._config.logger_utils.rst:26:<autosummary>:1
 msgid "A formatter that outputs logs in a custom JSON format."
 msgstr ""
 

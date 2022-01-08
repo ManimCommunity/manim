@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.polyhedra.Polyhedron``"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron:1
@@ -73,8 +73,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid ":py:obj:`create_faces <manim.mobject.polyhedra.Polyhedron.create_faces>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1
 msgid "Creates VGroup of faces from a list of face coordinates."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid ":py:obj:`extract_face_coords <manim.mobject.polyhedra.Polyhedron.extract_face_coords>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
@@ -82,8 +90,16 @@ msgid "Extracts the coordinates of the vertices in the graph."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid ":py:obj:`get_edges <manim.mobject.polyhedra.Polyhedron.get_edges>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.get_edges:1
 msgid "Creates list of cyclic pairwise tuples."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid ":py:obj:`update_faces <manim.mobject.polyhedra.Polyhedron.update_faces>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Polyhedron.rst:25
@@ -91,7 +107,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.polyhedra.Polyhedron.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.polyhedra.Polyhedron.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.polyhedra.Polyhedron.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
@@ -99,7 +127,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.polyhedra.Polyhedron.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.polyhedra.Polyhedron.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Polyhedron.create_faces:1:<autosummary>:1

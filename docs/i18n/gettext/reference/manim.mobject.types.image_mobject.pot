@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.rst:24:<autosummary>:1
+msgid ":py:obj:`AbstractImageMobject <manim.mobject.types.image_mobject.AbstractImageMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.rst:24:<autosummary>:1
 msgid "Automatically filters out black pixels"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.rst:24:<autosummary>:1
+msgid ":py:obj:`ImageMobject <manim.mobject.types.image_mobject.ImageMobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.rst:24:<autosummary>:1

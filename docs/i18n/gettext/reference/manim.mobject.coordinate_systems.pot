@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`Axes <manim.mobject.coordinate_systems.Axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
 msgid "Creates a set of axes."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`ComplexPlane <manim.mobject.coordinate_systems.ComplexPlane>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
@@ -27,7 +35,15 @@ msgid "A :class:`~.NumberPlane` specialized for use with complex numbers."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`CoordinateSystem <manim.mobject.coordinate_systems.CoordinateSystem>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
 msgid "Abstract class for Axes and NumberPlane"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`NumberPlane <manim.mobject.coordinate_systems.NumberPlane>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
@@ -35,7 +51,15 @@ msgid "Creates a cartesian plane with background lines."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`PolarPlane <manim.mobject.coordinate_systems.PolarPlane>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
 msgid "Creates a polar plane with background lines."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.rst:30:<autosummary>:1
+msgid ":py:obj:`ThreeDAxes <manim.mobject.coordinate_systems.ThreeDAxes>`"
 msgstr ""
 
 

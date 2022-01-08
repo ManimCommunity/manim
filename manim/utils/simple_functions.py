@@ -76,7 +76,6 @@ def clip_in_place(array, min_val=None, max_val=None):
     return array
 
 
-
 def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
     lh = lower_bound
     rh = upper_bound

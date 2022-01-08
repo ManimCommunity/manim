@@ -15,19 +15,15 @@ msgid "Qualified name: ``manim.animation.transform.ApplyPointwiseFunctionToCente
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:1
-msgid "Bases: :class:`manim.animation.transform.ApplyPointwiseFunction`"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:1
-msgid "Method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:6
-msgid "Relies on the fact that mobject methods return the mobject"
+msgid "Bases: :py:class:`manim.animation.transform.ApplyPointwiseFunction`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:20:<autosummary>:1
+msgid ":py:obj:`begin <manim.animation.transform.ApplyPointwiseFunctionToCenter.begin>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyPointwiseFunctionToCenter.rst:20:<autosummary>:1
@@ -39,8 +35,21 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:3
-msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:1:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.ApplyPointwiseFunctionToCenter.path_arc>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:1:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.ApplyPointwiseFunctionToCenter.path_func>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter:0
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunctionToCenter.begin:0
+msgid "Return type"
 msgstr ""
 
 

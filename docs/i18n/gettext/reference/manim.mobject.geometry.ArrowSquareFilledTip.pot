@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.ArrowSquareFilledTip``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowSquareFilledTip:1
-msgid "Bases: :class:`manim.mobject.geometry.ArrowSquareTip`"
+msgid "Bases: :py:class:`manim.mobject.geometry.ArrowSquareTip`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowSquareFilledTip:1
@@ -31,7 +31,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.ArrowSquareFilledTip.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.ArrowSquareFilledTip.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`base <manim.mobject.geometry.ArrowSquareFilledTip.base>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
@@ -39,7 +51,15 @@ msgid "The base point of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.ArrowSquareFilledTip.depth>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
 msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.ArrowSquareFilledTip.height>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
@@ -47,7 +67,15 @@ msgid "The height of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`length <manim.mobject.geometry.ArrowSquareFilledTip.length>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
 msgid "The length of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`tip_angle <manim.mobject.geometry.ArrowSquareFilledTip.tip_angle>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
@@ -55,11 +83,23 @@ msgid "The angle of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`tip_point <manim.mobject.geometry.ArrowSquareFilledTip.tip_point>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
 msgid "The tip point of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`vector <manim.mobject.geometry.ArrowSquareFilledTip.vector>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
 msgid "The vector pointing from the base point to the tip point."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:33:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.ArrowSquareFilledTip.width>`\\"
 msgstr ""
 
 

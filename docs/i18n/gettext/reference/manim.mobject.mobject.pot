@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
+msgid ":py:obj:`Group <manim.mobject.mobject.Group>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
 msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
+msgid ":py:obj:`Mobject <manim.mobject.mobject.Mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1

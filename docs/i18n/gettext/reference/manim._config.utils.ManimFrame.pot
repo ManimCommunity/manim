@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.\\_config.utils.ManimFrame``"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimFrame:1
-msgid "Bases: :class:`collections.abc.Mapping`"
+msgid "Bases: :py:class:`collections.abc.Mapping`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimFrame.rst:14
@@ -24,6 +24,106 @@ msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimFrame.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`DL <manim._config.utils.ManimFrame.DL>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`DOWN <manim._config.utils.ManimFrame.DOWN>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`DR <manim._config.utils.ManimFrame.DR>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`IN <manim._config.utils.ManimFrame.IN>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`LEFT <manim._config.utils.ManimFrame.LEFT>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`ORIGIN <manim._config.utils.ManimFrame.ORIGIN>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`OUT <manim._config.utils.ManimFrame.OUT>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`RIGHT <manim._config.utils.ManimFrame.RIGHT>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`UL <manim._config.utils.ManimFrame.UL>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`UP <manim._config.utils.ManimFrame.UP>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`UR <manim._config.utils.ManimFrame.UR>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`X_AXIS <manim._config.utils.ManimFrame.X_AXIS>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`Y_AXIS <manim._config.utils.ManimFrame.Y_AXIS>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`Z_AXIS <manim._config.utils.ManimFrame.Z_AXIS>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`aspect_ratio <manim._config.utils.ManimFrame.aspect_ratio>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`bottom <manim._config.utils.ManimFrame.bottom>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`frame_height <manim._config.utils.ManimFrame.frame_height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`frame_width <manim._config.utils.ManimFrame.frame_width>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`frame_x_radius <manim._config.utils.ManimFrame.frame_x_radius>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`frame_y_radius <manim._config.utils.ManimFrame.frame_y_radius>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`left_side <manim._config.utils.ManimFrame.left_side>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`pixel_height <manim._config.utils.ManimFrame.pixel_height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`pixel_width <manim._config.utils.ManimFrame.pixel_width>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`right_side <manim._config.utils.ManimFrame.right_side>`\\"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:48:<autosummary>:1
+msgid ":py:obj:`top <manim._config.utils.ManimFrame.top>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimFrame:0

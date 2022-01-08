@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.svg\\_mobject.SVGMobject``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
@@ -77,8 +77,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`attribute_to_float <manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1
 msgid "A helper method which converts the attribute to float."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`circle_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.circle_to_mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -87,8 +95,16 @@ msgid "Creates a Circle VMobject from a SVG <circle> command."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`ellipse_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.ellipse_to_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.ellipse_to_mobject:1
 msgid "Creates a stretched Circle VMobject from a SVG <circle> path command."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`ensure_valid_file <manim.mobject.svg.svg_mobject.SVGMobject.ensure_valid_file>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -97,8 +113,16 @@ msgid "Reads self.file_name and determines whether the given input file_name is 
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`flatten <manim.mobject.svg.svg_mobject.SVGMobject.flatten>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.flatten:1
 msgid "A helper method to flatten the ``input_list`` into an 1D array."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`generate_points <manim.mobject.svg.svg_mobject.SVGMobject.generate_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -107,12 +131,28 @@ msgid "Called by the Mobject abstract base class."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`generate_style <manim.mobject.svg.svg_mobject.SVGMobject.generate_style>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`get_mobjects_from <manim.mobject.svg.svg_mobject.SVGMobject.get_mobjects_from>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.get_mobjects_from:1
 msgid "Parses a given SVG element into a Mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`handle_transforms <manim.mobject.svg.svg_mobject.SVGMobject.handle_transforms>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 msgid "Applies the SVG transform to the specified mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`init_colors <manim.mobject.svg.svg_mobject.SVGMobject.init_colors>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -121,12 +161,28 @@ msgid "Initializes the colors."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`init_points <manim.mobject.svg.svg_mobject.SVGMobject.init_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`line_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.line_to_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.line_to_mobject:1
 msgid "Creates a Line VMobject from an SVG <line> element."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`move_into_position <manim.mobject.svg.svg_mobject.SVGMobject.move_into_position>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 msgid "Uses the SVGMobject's config dictionary to set the Mobject's width, height, and/or center it."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`path_string_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.path_string_to_mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -135,13 +191,25 @@ msgid "Converts a SVG path element's ``d`` attribute to a mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`polygon_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.polygon_to_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.polygon_to_mobject:1
 msgid "Constructs a VMobject from a SVG <polygon> element."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`rect_to_mobject <manim.mobject.svg.svg_mobject.SVGMobject.rect_to_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.rect_to_mobject:1
 msgid "Converts a SVG <rect> command to a VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
+msgid ":py:obj:`use_to_mobjects <manim.mobject.svg.svg_mobject.SVGMobject.use_to_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:36:<autosummary>:1
@@ -154,7 +222,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.svg_mobject.SVGMobject.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.svg_mobject.SVGMobject.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.svg_mobject.SVGMobject.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
@@ -162,7 +242,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.svg_mobject.SVGMobject.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.svg_mobject.SVGMobject.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
