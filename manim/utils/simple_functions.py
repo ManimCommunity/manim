@@ -45,11 +45,7 @@ def clip(a, min_a, max_a):
 
 
 def clip_in_place(array, min_val=None, max_val=None):
-    if max_val is not None:
-        array[array > max_val] = max_val
-    if min_val is not None:
-        array[array < min_val] = min_val
-    return array
+    np.clip(array, min_val, max_val, out=array)
 
 
 def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
