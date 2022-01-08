@@ -3,7 +3,6 @@
 __all__ = [
     "sigmoid",
     "choose",
-    "get_num_args",
     "get_parameters",
     "clip_in_place",
     "binary_search",
@@ -20,13 +19,10 @@ from scipy import special
 def sigmoid(x):
     return 1.0 / (1 + np.exp(-x))
 
+
 @lru_cache(maxsize=10)
 def choose(n, k):
     return special.comb(n, k, exact=True)
-
-
-def get_num_args(function):
-    return len(get_parameters(function))
 
 
 def get_parameters(function):
