@@ -547,4 +547,6 @@ def get_shaded_rgb(
     factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
     if factor < 0:
         factor *= 0.5
-    return clip_in_place(rgb + factor, 0, 1)
+    result = rgb + factor
+    clip_in_place(rgb + factor, 0, 1)
+    return result
