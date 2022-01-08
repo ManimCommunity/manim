@@ -2,7 +2,6 @@
 
 __all__ = [
     "sigmoid",
-    "choose_using_cache",
     "choose",
     "get_num_args",
     "get_parameters",
@@ -12,8 +11,8 @@ __all__ = [
 
 
 import inspect
-import operator as op
-from functools import reduce
+from functools import lru_cache, reduce
+from scipy import special
 
 import numpy as np
 
@@ -21,29 +20,9 @@ import numpy as np
 def sigmoid(x):
     return 1.0 / (1 + np.exp(-x))
 
-
-CHOOSE_CACHE = {}
-
-
-def choose_using_cache(n, r):
-    if n not in CHOOSE_CACHE:
-        CHOOSE_CACHE[n] = {}
-    if r not in CHOOSE_CACHE[n]:
-        CHOOSE_CACHE[n][r] = choose(n, r, use_cache=False)
-    return CHOOSE_CACHE[n][r]
-
-
-def choose(n, r, use_cache=True):
-    if use_cache:
-        return choose_using_cache(n, r)
-    if n < r:
-        return 0
-    if r == 0:
-        return 1
-    denominator = reduce(op.mul, range(1, r + 1), 1)
-    numerator = reduce(op.mul, range(n, n - r, -1), 1)
-    return numerator // denominator
-
+@lru_cache
+def choose(n, k):
+    return special.comb(n, k, exact=True)
 
 def get_num_args(function):
     return len(get_parameters(function))
