@@ -77,16 +77,6 @@ def clip_in_place(array, min_val=None, max_val=None):
     return array
 
 
-def fdiv(a, b, zero_over_zero_value=None):
-    if zero_over_zero_value is not None:
-        out = np.full_like(a, zero_over_zero_value)
-        where = np.logical_or(a != 0, b != 0)
-    else:
-        out = None
-        where = True
-
-    return np.true_divide(a, b, out=out, where=where)
-
 
 def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
     lh = lower_bound
