@@ -12,17 +12,19 @@ __all__ = [
 
 import inspect
 from functools import lru_cache, reduce
-from scipy import special
 
 import numpy as np
+from scipy import special
 
 
 def sigmoid(x):
     return 1.0 / (1 + np.exp(-x))
 
+
 @lru_cache
 def choose(n, k):
     return special.comb(n, k, exact=True)
+
 
 def get_num_args(function):
     return len(get_parameters(function))
