@@ -27,10 +27,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler.on_modified:1:<autosummary>:1
-msgid ":py:obj:`on_modified <manim.scene.scene.RerunSceneHandler.on_modified>`"
-msgstr ""
-
-#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler.on_modified:1:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler.on_modified:1
 msgid "Called when a file or directory is modified."
 msgstr ""

@@ -27,20 +27,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.scene.moving_camera_scene.MovingCameraScene.rst:20:<autosummary>:1
-msgid ":py:obj:`get_moving_mobjects <manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.moving_camera_scene.MovingCameraScene.rst:20:<autosummary>:1
 #: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:1
 msgid "This method returns a list of all of the Mobjects in the Scene that are moving, that are also in the animations passed."
 msgstr ""
 
 #: ../../source/reference/manim.scene.moving_camera_scene.MovingCameraScene.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:1:<autosummary>:1
-msgid ":py:obj:`camera <manim.scene.moving_camera_scene.MovingCameraScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:0

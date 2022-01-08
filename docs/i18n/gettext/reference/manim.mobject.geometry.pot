@@ -24,23 +24,11 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Angle <manim.mobject.geometry.Angle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A circular arc or elbow-type mobject representing an angle of two lines."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`AnnotationDot <manim.mobject.geometry.AnnotationDot>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A dot with bigger radius and bold stroke to annotate scenes."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`AnnularSector <manim.mobject.geometry.AnnularSector>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:0
@@ -52,15 +40,7 @@ msgid "The inside radius of the Annular Sector."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Annulus <manim.mobject.geometry.Annulus>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Region between two concentric :class:`Circles <.Circle>`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Arc <manim.mobject.geometry.Arc>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -68,15 +48,7 @@ msgid "A circular arc."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArcBetweenPoints <manim.mobject.geometry.ArcBetweenPoints>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Inherits from Arc and additionally takes 2 points between which the arc is spanned."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArcPolygon <manim.mobject.geometry.ArcPolygon>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -85,19 +57,7 @@ msgid "A generalized polygon allowing for points to be connected with arcs."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArcPolygonFromArcs <manim.mobject.geometry.ArcPolygonFromArcs>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Arrow <manim.mobject.geometry.Arrow>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "An arrow."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowCircleFilledTip <manim.mobject.geometry.ArrowCircleFilledTip>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -105,15 +65,7 @@ msgid "Circular arrow tip with filled tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowCircleTip <manim.mobject.geometry.ArrowCircleTip>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Circular arrow tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowSquareFilledTip <manim.mobject.geometry.ArrowSquareFilledTip>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -121,15 +73,7 @@ msgid "Square arrow tip with filled tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowSquareTip <manim.mobject.geometry.ArrowSquareTip>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Square arrow tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowTip <manim.mobject.geometry.ArrowTip>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -137,15 +81,7 @@ msgid "Base class for arrow tips."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowTriangleFilledTip <manim.mobject.geometry.ArrowTriangleFilledTip>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Triangular arrow tip with filled tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`ArrowTriangleTip <manim.mobject.geometry.ArrowTriangleTip>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -153,15 +89,7 @@ msgid "Triangular arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Circle <manim.mobject.geometry.Circle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A circle."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`CubicBezier <manim.mobject.geometry.CubicBezier>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:0
@@ -169,23 +97,7 @@ msgid "Example"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`CurvedArrow <manim.mobject.geometry.CurvedArrow>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`CurvedDoubleArrow <manim.mobject.geometry.CurvedDoubleArrow>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Cutout <manim.mobject.geometry.Cutout>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A shape with smaller cutouts."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`DashedLine <manim.mobject.geometry.DashedLine>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -193,15 +105,7 @@ msgid "A dashed :class:`Line`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Dot <manim.mobject.geometry.Dot>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A circle with a very small radius."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`DoubleArrow <manim.mobject.geometry.DoubleArrow>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -209,15 +113,7 @@ msgid "An arrow with tips on both ends."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Elbow <manim.mobject.geometry.Elbow>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Two lines that create a right angle about each other: L-shape."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Ellipse <manim.mobject.geometry.Ellipse>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -225,19 +121,7 @@ msgid "A circular shape; oval, circle."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`LabeledDot <manim.mobject.geometry.LabeledDot>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A :class:`Dot` containing a label in its center."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Line <manim.mobject.geometry.Line>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Polygon <manim.mobject.geometry.Polygon>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -245,15 +129,7 @@ msgid "A shape consisting of one closed loop of vertices."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Polygram <manim.mobject.geometry.Polygram>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A generalized :class:`Polygon`, allowing for disconnected sets of edges."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Rectangle <manim.mobject.geometry.Rectangle>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -261,15 +137,7 @@ msgid "A quadrilateral with two sets of parallel sides."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`RegularPolygon <manim.mobject.geometry.RegularPolygon>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "An n-sided regular :class:`Polygon`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`RegularPolygram <manim.mobject.geometry.RegularPolygram>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -277,15 +145,7 @@ msgid "A :class:`Polygram` with regularly spaced vertices."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`RightAngle <manim.mobject.geometry.RightAngle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "An elbow-type mobject representing a right angle between two lines."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`RoundedRectangle <manim.mobject.geometry.RoundedRectangle>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -293,19 +153,7 @@ msgid "A rectangle with rounded corners."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Sector <manim.mobject.geometry.Sector>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Square <manim.mobject.geometry.Square>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "A rectangle with equal side lengths."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Star <manim.mobject.geometry.Star>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -313,15 +161,7 @@ msgid "A regular polygram without the intersecting lines."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`TangentLine <manim.mobject.geometry.TangentLine>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "Constructs a line tangent to a :class:`~.VMobject` at a specific point."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`TipableVMobject <manim.mobject.geometry.TipableVMobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
@@ -329,15 +169,7 @@ msgid "Meant for shared functionality between Arc and Line."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Triangle <manim.mobject.geometry.Triangle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
 msgid "An equilateral triangle."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:102:<autosummary>:1
-msgid ":py:obj:`Vector <manim.mobject.geometry.Vector>`"
 msgstr ""
 
 

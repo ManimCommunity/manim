@@ -22,24 +22,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.CyclicReplace.rst:20:<autosummary>:1
-msgid ":py:obj:`create_target <manim.animation.transform.CyclicReplace.create_target>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.transform.CyclicReplace.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.CyclicReplace.rst:26:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.CyclicReplace.path_arc>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.CyclicReplace.rst:26:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.CyclicReplace.path_func>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.CyclicReplace:0
-msgid "Parameters"
 msgstr ""
 
 

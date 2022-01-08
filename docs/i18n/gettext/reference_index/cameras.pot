@@ -11,15 +11,7 @@ msgid "Cameras"
 msgstr ""
 
 #: ../../source/reference_index/cameras.rst:13:<autosummary>:1
-msgid ":py:obj:`camera <manim.camera.camera>`\\"
-msgstr ""
-
-#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
 msgid "A camera converts the mobjects contained in a Scene into an array of pixels."
-msgstr ""
-
-#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
-msgid ":py:obj:`mapping_camera <manim.camera.mapping_camera>`\\"
 msgstr ""
 
 #: ../../source/reference_index/cameras.rst:13:<autosummary>:1
@@ -27,23 +19,11 @@ msgid "A camera that allows mapping between objects."
 msgstr ""
 
 #: ../../source/reference_index/cameras.rst:13:<autosummary>:1
-msgid ":py:obj:`moving_camera <manim.camera.moving_camera>`\\"
-msgstr ""
-
-#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
 msgid "A camera able to move through a scene."
 msgstr ""
 
 #: ../../source/reference_index/cameras.rst:13:<autosummary>:1
-msgid ":py:obj:`multi_camera <manim.camera.multi_camera>`\\"
-msgstr ""
-
-#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
 msgid "A camera supporting multiple perspectives."
-msgstr ""
-
-#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
-msgid ":py:obj:`three_d_camera <manim.camera.three_d_camera>`\\"
 msgstr ""
 
 

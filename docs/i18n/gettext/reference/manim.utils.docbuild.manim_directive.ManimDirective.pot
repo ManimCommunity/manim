@@ -30,16 +30,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:20:<autosummary>:1
-msgid ":py:obj:`run <manim.utils.docbuild.manim_directive.ManimDirective.run>`"
-msgstr ""
-
 #: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid ":py:obj:`final_argument_whitespace <manim.utils.docbuild.manim_directive.ManimDirective.final_argument_whitespace>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
@@ -47,15 +39,7 @@ msgid "May the final argument contain whitespace?"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid ":py:obj:`has_content <manim.utils.docbuild.manim_directive.ManimDirective.has_content>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
 msgid "May the directive have content?"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid ":py:obj:`option_spec <manim.utils.docbuild.manim_directive.ManimDirective.option_spec>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
@@ -63,15 +47,7 @@ msgid "Mapping of option names to validator functions."
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid ":py:obj:`optional_arguments <manim.utils.docbuild.manim_directive.ManimDirective.optional_arguments>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
 msgid "Number of optional arguments after the required arguments."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid ":py:obj:`required_arguments <manim.utils.docbuild.manim_directive.ManimDirective.required_arguments>`\\"
 msgstr ""
 
 

@@ -18,8 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.utils.ipython_magic.rst:20:<autosummary>:1
-msgid ":py:obj:`ManimMagic <manim.utils.ipython_magic.ManimMagic>`"
-msgstr ""
-
 

@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.rst:22:<autosummary>:1
-msgid ":py:obj:`SpecialThreeDScene <manim.scene.three_d_scene.SpecialThreeDScene>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.three_d_scene.rst:22:<autosummary>:1
 msgid "An extension of :class:`ThreeDScene` with more settings."
-msgstr ""
-
-#: ../../source/reference/manim.scene.three_d_scene.rst:22:<autosummary>:1
-msgid ":py:obj:`ThreeDScene <manim.scene.three_d_scene.ThreeDScene>`"
 msgstr ""
 
 

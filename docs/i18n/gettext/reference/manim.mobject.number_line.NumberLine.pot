@@ -135,15 +135,7 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`add_labels <manim.mobject.number_line.NumberLine.add_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
 msgid "Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`add_numbers <manim.mobject.number_line.NumberLine.add_numbers>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
@@ -151,19 +143,7 @@ msgid "Adds :class:`~.DecimalNumber` mobjects representing their position at eac
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`add_ticks <manim.mobject.number_line.NumberLine.add_ticks>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
 msgid "Adds ticks to the number line."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_labels <manim.mobject.number_line.NumberLine.get_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_number_mobject <manim.mobject.number_line.NumberLine.get_number_mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
@@ -172,24 +152,8 @@ msgid "Generates a positioned :class:`~.DecimalNumber` mobject generated accordi
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_number_mobjects <manim.mobject.number_line.NumberLine.get_number_mobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_tick <manim.mobject.number_line.NumberLine.get_tick>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.get_tick:1
 msgid "Generates a tick and positions it along the number line."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_tick_marks <manim.mobject.number_line.NumberLine.get_tick_marks>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_tick_range <manim.mobject.number_line.NumberLine.get_tick_range>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
@@ -198,24 +162,8 @@ msgid "Generates the range of values on which labels are plotted based on the ``
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_unit_size <manim.mobject.number_line.NumberLine.get_unit_size>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`get_unit_vector <manim.mobject.number_line.NumberLine.get_unit_vector>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`n2p <manim.mobject.number_line.NumberLine.n2p>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.n2p:1
 msgid "Abbreviation for :meth:`~.NumberLine.number_to_point`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`number_to_point <manim.mobject.number_line.NumberLine.number_to_point>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
@@ -224,16 +172,8 @@ msgid "Accepts a value along the number line and returns a point with respect to
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`p2n <manim.mobject.number_line.NumberLine.p2n>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.p2n:1
 msgid "Abbreviation for :meth:`~.NumberLine.point_to_number`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`point_to_number <manim.mobject.number_line.NumberLine.point_to_number>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
@@ -241,20 +181,8 @@ msgstr ""
 msgid "Accepts a point with respect to the scene and returns a float along the number line."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`rotate_about_number <manim.mobject.number_line.NumberLine.rotate_about_number>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:36:<autosummary>:1
-msgid ":py:obj:`rotate_about_zero <manim.mobject.number_line.NumberLine.rotate_about_zero>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.number_line.NumberLine.rst:38
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.number_line.NumberLine.animate>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
@@ -262,27 +190,11 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.number_line.NumberLine.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.number_line.NumberLine.depth>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.number_line.NumberLine.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.number_line.NumberLine.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.NumberLine.add_labels:1:<autosummary>:1

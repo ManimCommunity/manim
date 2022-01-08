@@ -22,28 +22,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:23:<autosummary>:1
-msgid ":py:obj:`change_brace_label <manim.mobject.svg.brace.BraceLabel.change_brace_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:23:<autosummary>:1
-msgid ":py:obj:`change_label <manim.mobject.svg.brace.BraceLabel.change_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:23:<autosummary>:1
-msgid ":py:obj:`creation_anim <manim.mobject.svg.brace.BraceLabel.creation_anim>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:23:<autosummary>:1
-msgid ":py:obj:`shift_brace <manim.mobject.svg.brace.BraceLabel.shift_brace>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:25
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.svg.brace.BraceLabel.animate>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
@@ -51,27 +31,11 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.svg.brace.BraceLabel.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.svg.brace.BraceLabel.depth>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.svg.brace.BraceLabel.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.svg.brace.BraceLabel.width>`\\"
 msgstr ""
 
 

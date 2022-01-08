@@ -56,16 +56,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
-msgid ":py:obj:`add_bases <manim.mobject.three_dimensions.Cylinder.add_bases>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1
 msgid "Adds the end caps of the cylinder."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
-msgid ":py:obj:`func <manim.mobject.three_dimensions.Cylinder.func>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
@@ -73,15 +65,7 @@ msgid "Converts from cylindrical coordinates to cartesian."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
-msgid ":py:obj:`get_direction <manim.mobject.three_dimensions.Cylinder.get_direction>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
 msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:23:<autosummary>:1
-msgid ":py:obj:`set_direction <manim.mobject.three_dimensions.Cylinder.set_direction>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Cylinder.rst:25
@@ -89,19 +73,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.three_dimensions.Cylinder.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Cylinder.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.three_dimensions.Cylinder.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
@@ -109,15 +81,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.three_dimensions.Cylinder.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.three_dimensions.Cylinder.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Cylinder.add_bases:1:<autosummary>:1

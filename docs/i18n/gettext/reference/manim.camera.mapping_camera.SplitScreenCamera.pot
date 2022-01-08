@@ -42,8 +42,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.camera.mapping_camera.SplitScreenCamera.rst:25:<autosummary>:1
-msgid ":py:obj:`background_color <manim.camera.mapping_camera.SplitScreenCamera.background_color>`\\"
-msgstr ""
-
 
