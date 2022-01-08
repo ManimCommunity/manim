@@ -57,17 +57,25 @@ else:
 
             Usage in line mode::
 
-                %manim [CLI options] MyAwesomeScene
+                %manim [--embed] [CLI options] MyAwesomeScene
 
             Usage in cell mode::
 
-                %%manim [CLI options] MyAwesomeScene
+                %%manim [--embed] [CLI options] MyAwesomeScene
 
                 class MyAweseomeScene(Scene):
                     def construct(self):
                         ...
 
             Run ``%manim --help`` and ``%manim render --help`` for possible command line interface options.
+
+            The ``--embed`` option will embed the video output in the notebook. This is generally
+            undesirable as it makes the notebooks very large, but is required on some platforms
+            (notably Google's CoLab, which is automatically enabled unless suppressed by
+            ``config.embed_video = False``) and needed in cases when the notebook (or converted HTML
+            file) will be moved relative to the video locations. Use-cases include building
+            documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
+            <manim.utils.docbuild.manim_directive>`.
 
             .. note::
 
@@ -83,7 +91,7 @@ else:
             in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim
             could look as follows::
 
-                %%manim -v WARNING --disable_caching -qm BannerExample
+                %%manim --embed -v WARNING --disable_caching -qm BannerExample
 
                 config.media_width = "75%"
 
@@ -110,6 +118,20 @@ else:
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
                 return
+
+            # Allow used to specify `--embed` in magic.  We remove this because it
+            # should not be passed to the CLI.
+            if "--embed" in args:
+                embed_video = True
+                args.remove("--embed")
+            elif hasattr(config, "embed_video"):
+                # Let user override.
+                embed_video = config.embed_video
+            else:
+                # videos need to be embedded when running in google colab.  Do this
+                # unless suppressed explicitly by config.embed_video
+                embed_video = "google.colab" in str(get_ipython())
+
             modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
@@ -165,14 +187,11 @@ else:
                     display(Image(filename=config["output_file"]))
                     return
 
-                # videos need to be embedded when running in google colab
-                video_embed = "google.colab" in str(get_ipython())
-
                 display(
                     Video(
                         tmpfile,
                         html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
-                        embed=video_embed,
+                        embed=embed_video,
                     ),
                 )
 
