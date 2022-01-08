@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.changing.AnimatedBoundary``"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.AnimatedBoundary:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.AnimatedBoundary:1
@@ -30,12 +30,32 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:21:<autosummary>:1
+msgid ":py:obj:`full_family_become_partial <manim.mobject.changing.AnimatedBoundary.full_family_become_partial>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:21:<autosummary>:1
+msgid ":py:obj:`update_boundary_copies <manim.mobject.changing.AnimatedBoundary.update_boundary_copies>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:23
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.changing.AnimatedBoundary.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.changing.AnimatedBoundary.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.changing.AnimatedBoundary.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
@@ -43,7 +63,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.changing.AnimatedBoundary.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.changing.AnimatedBoundary.width>`\\"
 msgstr ""
 
 

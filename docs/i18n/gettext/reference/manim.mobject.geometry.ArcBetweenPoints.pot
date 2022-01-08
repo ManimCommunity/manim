@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.ArcBetweenPoints``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcBetweenPoints:1
-msgid "Bases: :class:`manim.mobject.geometry.Arc`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Arc`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcBetweenPoints:1
@@ -35,7 +35,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.ArcBetweenPoints.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.ArcBetweenPoints.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.ArcBetweenPoints.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
@@ -43,7 +55,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.ArcBetweenPoints.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArcBetweenPoints.rst:28:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.ArcBetweenPoints.width>`\\"
 msgstr ""
 
 

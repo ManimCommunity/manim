@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.rst:24:<autosummary>:1
+msgid ":py:obj:`MappingCamera <manim.camera.mapping_camera.MappingCamera>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.rst:24:<autosummary>:1
 msgid "Camera object that allows mapping between objects."
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.rst:24:<autosummary>:1
+msgid ":py:obj:`OldMultiCamera <manim.camera.mapping_camera.OldMultiCamera>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.rst:24:<autosummary>:1

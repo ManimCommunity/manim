@@ -19,11 +19,23 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
+msgid ":py:obj:`DecimalNumber <manim.mobject.numbers.DecimalNumber>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
 msgid "An mobject representing a decimal number."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
+msgid ":py:obj:`Integer <manim.mobject.numbers.Integer>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
 msgid "A class for displaying Integers."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.rst:24:<autosummary>:1
+msgid ":py:obj:`Variable <manim.mobject.numbers.Variable>`"
 msgstr ""
 
 

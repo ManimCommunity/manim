@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.tex\\_templates.TexTemplateLibrary``"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary:1
@@ -39,18 +39,34 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1
+msgid ":py:obj:`ctex <manim.utils.tex_templates.TexTemplateLibrary.ctex>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1
 msgid "An instance of the TeX template used by 3b1b when using the use_ctex flag"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexTemplateLibrary.default:1
+msgid ":py:obj:`default <manim.utils.tex_templates.TexTemplateLibrary.default>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexTemplateLibrary.default:1
 msgid "An instance of the default TeX template in manim"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
-#: ../../source/docstring of manim.utils.tex_templates.TexTemplateLibrary.simple:1
+msgid ":py:obj:`simple <manim.utils.tex_templates.TexTemplateLibrary.simple>`\\"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
+#: ../../docstring of manim.utils.tex_templates.TexTemplateLibrary.simple:1
 msgid "An instance of a simple TeX template with only basic AMS packages loaded"
+msgstr ""
+
+#: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexTemplateLibrary.ctex:1:<autosummary>:1
+msgid ":py:obj:`threeb1b <manim.utils.tex_templates.TexTemplateLibrary.threeb1b>`\\"
 msgstr ""
 
 

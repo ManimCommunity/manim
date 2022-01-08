@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.rst:22:<autosummary>:1
+msgid ":py:obj:`AnimatedBoundary <manim.mobject.changing.AnimatedBoundary>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.rst:22:<autosummary>:1
 msgid "Boundary of a :class:`.VMobject` with animated color change."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.rst:22:<autosummary>:1
+msgid ":py:obj:`TracedPath <manim.mobject.changing.TracedPath>`"
 msgstr ""
 
 

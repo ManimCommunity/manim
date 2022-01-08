@@ -19,6 +19,10 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.utils.color.rst:26:<autosummary>:1
+msgid ":py:obj:`Colors <manim.utils.color.Colors>`"
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.rst:26:<autosummary>:1
 msgid "A list of pre-defined colors."
 msgstr ""
 

@@ -15,11 +15,19 @@ msgid "Qualified name: ``manim.animation.movement.ComplexHomotopy``"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.ComplexHomotopy:1
-msgid "Bases: :class:`manim.animation.movement.Homotopy`"
+msgid "Bases: :py:class:`manim.animation.movement.Homotopy`"
 msgstr ""
 
 #: ../../../manim/animation/movement.py:docstring of manim.animation.movement.ComplexHomotopy:1
 msgid "Complex Homotopy a function Cx[0, 1] to C"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.ComplexHomotopy.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.ComplexHomotopy:0
+msgid "Parameters"
 msgstr ""
 
 

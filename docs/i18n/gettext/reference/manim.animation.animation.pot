@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
+msgid ":py:obj:`Animation <manim.animation.animation.Animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
 msgid "An animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
+msgid ":py:obj:`Wait <manim.animation.animation.Wait>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.animation.rst:31

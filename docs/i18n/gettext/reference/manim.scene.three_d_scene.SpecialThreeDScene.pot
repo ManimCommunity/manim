@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.three\\_d\\_scene.SpecialThreeDScene``"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene:1
-msgid "Bases: :class:`manim.scene.three_d_scene.ThreeDScene`"
+msgid "Bases: :py:class:`manim.scene.three_d_scene.ThreeDScene`"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene:1
@@ -39,8 +39,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
+msgid ":py:obj:`get_axes <manim.scene.three_d_scene.SpecialThreeDScene.get_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene.get_axes:1
 msgid "Return a set of 3D axes."
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
+msgid ":py:obj:`get_default_camera_position <manim.scene.three_d_scene.SpecialThreeDScene.get_default_camera_position>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
@@ -49,8 +57,16 @@ msgid "Returns the default_angled_camera position."
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
+msgid ":py:obj:`get_sphere <manim.scene.three_d_scene.SpecialThreeDScene.get_sphere>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene.get_sphere:1
 msgid "Returns a sphere with the passed keyword arguments as properties."
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
+msgid ":py:obj:`set_camera_to_default_position <manim.scene.three_d_scene.SpecialThreeDScene.set_camera_to_default_position>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:23:<autosummary>:1
@@ -60,6 +76,10 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.SpecialThreeDScene.rst:25
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene.get_axes:1:<autosummary>:1
+msgid ":py:obj:`camera <manim.scene.three_d_scene.SpecialThreeDScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.SpecialThreeDScene.get_axes:0

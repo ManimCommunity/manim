@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.tex\\_mobject.MathTex``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex:1
-msgid "Bases: :class:`manim.mobject.svg.tex_mobject.SingleStringMathTex`"
+msgid "Bases: :py:class:`manim.mobject.svg.tex_mobject.SingleStringMathTex`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex:1
@@ -43,8 +43,44 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`break_up_by_substrings <manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1
 msgid "Reorganize existing submobjects one layer deeper based on the structure of tex_strings (as a list of tex_strings)"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`break_up_tex_strings <manim.mobject.svg.tex_mobject.MathTex.break_up_tex_strings>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`get_part_by_tex <manim.mobject.svg.tex_mobject.MathTex.get_part_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`get_parts_by_tex <manim.mobject.svg.tex_mobject.MathTex.get_parts_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`index_of_part <manim.mobject.svg.tex_mobject.MathTex.index_of_part>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`index_of_part_by_tex <manim.mobject.svg.tex_mobject.MathTex.index_of_part_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`set_color_by_tex <manim.mobject.svg.tex_mobject.MathTex.set_color_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`set_color_by_tex_to_color_map <manim.mobject.svg.tex_mobject.MathTex.set_color_by_tex_to_color_map>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28:<autosummary>:1
+msgid ":py:obj:`sort_alphabetically <manim.mobject.svg.tex_mobject.MathTex.sort_alphabetically>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:30
@@ -52,7 +88,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.tex_mobject.MathTex.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.tex_mobject.MathTex.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.tex_mobject.MathTex.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
@@ -60,11 +108,23 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid ":py:obj:`font_size <manim.mobject.svg.tex_mobject.MathTex.font_size>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
 msgid "The font size of the tex mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.tex_mobject.MathTex.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.tex_mobject.MathTex.width>`\\"
 msgstr ""
 
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.scene.RerunSceneHandler``"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler:1
-msgid "Bases: :class:`watchdog.events.FileSystemEventHandler`"
+msgid "Bases: :py:class:`watchdog.events.FileSystemEventHandler`"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler:1
@@ -24,6 +24,10 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.scene.RerunSceneHandler.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler.on_modified:1:<autosummary>:1
+msgid ":py:obj:`on_modified <manim.scene.scene.RerunSceneHandler.on_modified>`"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler.on_modified:1:<autosummary>:1

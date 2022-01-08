@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Polygram``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
@@ -59,13 +59,25 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+msgid ":py:obj:`get_vertex_groups <manim.mobject.geometry.Polygram.get_vertex_groups>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1
 msgid "Gets the vertex groups of the :class:`Polygram`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+msgid ":py:obj:`get_vertices <manim.mobject.geometry.Polygram.get_vertices>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:1
 msgid "Gets the vertices of the :class:`Polygram`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
+msgid ":py:obj:`round_corners <manim.mobject.geometry.Polygram.round_corners>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Polygram.rst:22:<autosummary>:1
@@ -78,7 +90,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.Polygram.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Polygram.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.Polygram.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
@@ -86,7 +110,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.Polygram.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.Polygram.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1

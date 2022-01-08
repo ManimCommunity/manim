@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Angle``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle:1
@@ -86,8 +86,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Angle.rst:21:<autosummary>:1
+msgid ":py:obj:`get_lines <manim.mobject.geometry.Angle.get_lines>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Angle.rst:21:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1
 msgid "Get the lines forming an angle of the :class:`Angle` class."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.Angle.rst:21:<autosummary>:1
+msgid ":py:obj:`get_value <manim.mobject.geometry.Angle.get_value>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Angle.rst:21:<autosummary>:1
@@ -100,7 +108,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.Angle.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Angle.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.Angle.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
@@ -108,7 +128,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.Angle.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.Angle.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Angle.get_lines:1:<autosummary>:1

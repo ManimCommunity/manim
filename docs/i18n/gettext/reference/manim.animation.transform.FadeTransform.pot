@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.FadeTransform``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:1
@@ -56,8 +56,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+msgid ":py:obj:`begin <manim.animation.transform.FadeTransform.begin>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:1
 msgid "Initial setup for the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+msgid ":py:obj:`clean_up_from_scene <manim.animation.transform.FadeTransform.clean_up_from_scene>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
@@ -66,8 +74,20 @@ msgid "Clean up the :class:`~.Scene` after finishing the animation."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+msgid ":py:obj:`get_all_families_zipped <manim.animation.transform.FadeTransform.get_all_families_zipped>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+msgid ":py:obj:`get_all_mobjects <manim.animation.transform.FadeTransform.get_all_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.get_all_mobjects:1
 msgid "Get all mobjects involved in the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+msgid ":py:obj:`ghost_to <manim.animation.transform.FadeTransform.ghost_to>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
@@ -77,6 +97,14 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransform.rst:26
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:1:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.FadeTransform.path_arc>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:1:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.FadeTransform.path_func>`\\"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:3
