@@ -1162,7 +1162,9 @@ class Camera:
         uncentered_pixel_coords = np.indices([self.pixel_height, self.pixel_width])[
             ::-1
         ].transpose(1, 2, 0)
-        uncentered_space_coords = (uncentered_pixel_coords * full_space_dims) / full_pixel_dims
+        uncentered_space_coords = (
+            uncentered_pixel_coords * full_space_dims
+        ) / full_pixel_dims
         # Could structure above line's computation slightly differently, but figured (without much
         # thought) multiplying by frame_shape first, THEN dividing by pixel_shape, is probably
         # better than the other order, for avoiding underflow quantization in the division (whereas
