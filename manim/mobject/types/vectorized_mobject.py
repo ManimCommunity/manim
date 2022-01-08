@@ -167,7 +167,6 @@ class VMobject(Mobject):
             light_rgbas = np.array(rgbas)
             light_rgbas[:, :3] += sheen_factor
             clip_in_place(light_rgbas, 0, 1)
-            light_rgbas.clip(0, 1)
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
