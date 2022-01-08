@@ -7,7 +7,6 @@ __all__ = [
     "get_num_args",
     "get_parameters",
     "clip_in_place",
-    "fdiv",
     "binary_search",
 ]
 
