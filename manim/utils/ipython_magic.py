@@ -69,10 +69,10 @@ else:
 
             Run ``%manim --help`` and ``%manim render --help`` for possible command line interface options.
 
-            The ``--embed`` option will embed the video output in the notebook. This is generally
+            The ``--embed`` option will embed the image/video output in the notebook. This is generally
             undesirable as it makes the notebooks very large, but is required on some platforms
             (notably Google's CoLab, which is automatically enabled unless suppressed by
-            ``config.embed_video = False``) and needed in cases when the notebook (or converted HTML
+            ``config.embed = False``) and needed in cases when the notebook (or converted HTML
             file) will be moved relative to the video locations. Use-cases include building
             documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
             <manim.utils.docbuild.manim_directive>`.
@@ -121,16 +121,13 @@ else:
 
             # Allow used to specify `--embed` in magic.  We remove this because it
             # should not be passed to the CLI.
+            embed = None
             if "--embed" in args:
-                embed_video = True
+                embed = True
                 args.remove("--embed")
-            elif hasattr(config, "embed_video"):
+            elif hasattr(config, "embed"):
                 # Let user override.
-                embed_video = config.embed_video
-            else:
-                # videos need to be embedded when running in google colab.  Do this
-                # unless suppressed explicitly by config.embed_video
-                embed_video = "google.colab" in str(get_ipython())
+                embed = config.embed
 
             modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
@@ -184,16 +181,20 @@ else:
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 if file_type.startswith("image"):
-                    display(Image(filename=config["output_file"]))
-                    return
+                    result = Image(filename=config["output_file"], embed=embed)
+                else:
+                    if embed is None and "google.colab" in str(get_ipython()):
+                        # videos need to be embedded when running in google colab.  Do
+                        # this unless suppressed explicitly by config.embed
+                        embed = True
 
-                display(
-                    Video(
+                    result = Video(
                         tmpfile,
                         html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
-                        embed=embed_video,
-                    ),
-                )
+                        embed=embed,
+                    )
+
+                display(result)
 
         def add_additional_args(self, args: List[str]) -> List[str]:
             additional_args = ["--jupyter"]
