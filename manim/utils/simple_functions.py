@@ -20,7 +20,7 @@ import numpy as np
 def sigmoid(x):
     return 1.0 / (1 + np.exp(-x))
 
-@lru_cache
+@lru_cache(maxsize=10)
 def choose(n, k):
     return special.comb(n, k, exact=True)
 
