@@ -11,10 +11,10 @@ __all__ = [
 
 
 import inspect
-from functools import lru_cache, reduce
-from scipy import special
+from functools import lru_cache
 
 import numpy as np
+from scipy import special
 
 
 def sigmoid(x):
@@ -23,6 +23,7 @@ def sigmoid(x):
 @lru_cache(maxsize=10)
 def choose(n, k):
     return special.comb(n, k, exact=True)
+
 
 def get_num_args(function):
     return len(get_parameters(function))
