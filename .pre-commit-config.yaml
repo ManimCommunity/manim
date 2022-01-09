@@ -47,6 +47,15 @@ repos:
     hooks:
       - id: yesqa
         name: Remove unneeded flake ignores
+        additional_dependencies: [
+          flake8-builtins,
+          flake8-bugbear,
+          flake8-docstrings,
+          flake8-pytest-style,
+          flake8-simplify,
+          flake8-comprehensions,
+          flake8-pie,
+        ]
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
     hooks:

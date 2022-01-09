@@ -1155,7 +1155,7 @@ class CoordinateSystem:
         self,
         graph: "ParametricFunction",
         x_range: Optional[Tuple[float, float]] = None,
-        color: Optional[Union[Color, Iterable[Color]]] = None,
+        color: Union[Color, Iterable[Color]] = (BLUE, GREEN),
         opacity: float = 0.3,
         bounded_graph: "ParametricFunction" = None,
         **kwargs,
@@ -1205,8 +1205,6 @@ class CoordinateSystem:
         :exc:`ValueError`
             When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
         """
-        if color is None:
-            color = [BLUE, GREEN]
         if x_range is None:
             a = graph.t_min
             b = graph.t_max
