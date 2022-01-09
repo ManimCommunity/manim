@@ -11,12 +11,11 @@ from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
-from .opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
 
-class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
+class DecimalNumber(VMobject):
     """An mobject representing a decimal number.
 
     Examples
@@ -284,7 +283,7 @@ class Integer(DecimalNumber):
         return int(np.round(super().get_value()))
 
 
-class Variable(VMobject, metaclass=ConvertToOpenGL):
+class Variable(VMobject):
     """A class for displaying text that shows "label = value" with
     the value continuously updated from a :class:`~.ValueTracker`.
 

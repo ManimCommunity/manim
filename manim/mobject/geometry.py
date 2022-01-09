@@ -90,10 +90,8 @@ from ..utils.space_ops import (
     regular_vertices,
     rotate_vector,
 )
-from .opengl_compatibility import ConvertToOpenGL
 
-
-class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
+class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
@@ -1263,7 +1261,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(VMobject, metaclass=ConvertToOpenGL):
+class Elbow(VMobject,):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -1659,7 +1657,7 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
+class CubicBezier(VMobject,):
     """
     Example
     -------
@@ -1687,7 +1685,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
 
 
-class Polygram(VMobject, metaclass=ConvertToOpenGL):
+class Polygram(VMobject):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -2134,7 +2132,7 @@ class Star(Polygon):
         super().__init__(*vertices, **kwargs)
 
 
-class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
+class ArcPolygon(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version tries to stick close to the way :class:`Polygon` is used. Points
@@ -2244,7 +2242,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
         self.arcs = arcs
 
 
-class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
+class ArcPolygonFromArcs(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version takes in pre-defined arcs to generate the arcpolygon and introduces
@@ -2540,7 +2538,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
+class ArrowTip(VMobject):
     r"""Base class for arrow tips.
 
     See Also
@@ -2779,7 +2777,7 @@ class ArrowSquareFilledTip(ArrowSquareTip):
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
-class Cutout(VMobject, metaclass=ConvertToOpenGL):
+class Cutout(VMobject):
     """A shape with smaller cutouts.
 
     .. warning::
@@ -2825,7 +2823,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
             self.append_points(mobject.force_direction(sub_direction).points)
 
 
-class Angle(VMobject, metaclass=ConvertToOpenGL):
+class Angle(VMobject):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters

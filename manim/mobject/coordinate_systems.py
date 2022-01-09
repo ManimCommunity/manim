@@ -17,7 +17,6 @@ from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Un
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
 from manim.utils.scale import LinearBase
 
 from .. import config
@@ -1706,7 +1705,7 @@ class CoordinateSystem:
         return T_label_group
 
 
-class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
+class Axes(VGroup, CoordinateSystem):
     """Creates a set of axes.
 
     Examples

@@ -19,12 +19,11 @@ from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VMobject
-from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
 
-class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
+class SVGMobject(VMobject):
     """A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file.
 
     SVGMobjects are constructed from the XML data within the SVG file

@@ -46,8 +46,6 @@ from ..constants import *
 from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import WHITE
-from .opengl_compatibility import ConvertToOpenGL
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.
@@ -68,7 +66,7 @@ def matrix_to_mobject(matrix):
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject, metaclass=ConvertToOpenGL):
+class Matrix(VMobject):
     """A mobject that displays a matrix on the screen.
 
     Examples

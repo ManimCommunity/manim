@@ -12,7 +12,6 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ..opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
 
 
@@ -223,7 +222,7 @@ def grouped(iterable, n):
     return (np.array(v) for v in zip(*[iter(iterable)] * n))
 
 
-class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
+class SVGPathMobject(VMobject):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         kwargs["long_lines"] = True

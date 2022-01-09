@@ -13,10 +13,8 @@ from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
 from ..utils.scale import LinearBase, _ScaleBase
-from .opengl_compatibility import ConvertToOpenGL
 
-
-class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
+class ParametricFunction(VMobject):
     """A parametric curve.
 
     Parameters
@@ -201,7 +199,7 @@ class FunctionGraph(ParametricFunction):
         return self.parametric_function(x)
 
 
-class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+class ImplicitFunction(VMobject):
     def __init__(
         self,
         func: Callable[[float, float], float],

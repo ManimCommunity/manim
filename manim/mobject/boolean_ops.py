@@ -5,13 +5,12 @@ from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
 from .. import config
-from .opengl_compatibility import ConvertToOpenGL
 from .types.vectorized_mobject import VMobject
 
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
-class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
+class _BooleanOps(VMobject):
     """This class contains some helper functions which
     helps to convert to and from skia objects and manim
     objects (:class:`~.VMobject`).

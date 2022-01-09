@@ -11,7 +11,7 @@ from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
-from .opengl_compatibility import ConvertToOpenGL
+from .opengl_compatibility import 
 
 
 class AnimatedBoundary(VGroup):
@@ -93,7 +93,7 @@ class AnimatedBoundary(VGroup):
         return self
 
 
-class TracedPath(VMobject, metaclass=ConvertToOpenGL):
+class TracedPath(VMobject):
     """Traces the path of a point returned by a function call.
 
     Parameters

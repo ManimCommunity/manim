@@ -15,7 +15,6 @@ from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
-from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
@@ -186,7 +185,7 @@ def _tree_layout(
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
-class Graph(VMobject, metaclass=ConvertToOpenGL):
+class Graph(VMobject):
     """An undirected graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
