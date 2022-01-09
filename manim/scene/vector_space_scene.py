@@ -21,7 +21,6 @@ from ..mobject.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
@@ -894,7 +893,7 @@ class LinearTransformationScene(VectorScene):
         LinearTransformationScene
             The scene with the title added to it.
         """
-        if not isinstance(title, (Mobject, OpenGLMobject)):
+        if not isinstance(title, Mobject):
             title = Tex(title).scale(scale_factor)
         title.to_edge(UP)
         title.add_background_rectangle()

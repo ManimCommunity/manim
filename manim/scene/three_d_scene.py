@@ -16,7 +16,6 @@ from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
@@ -276,7 +275,7 @@ class ThreeDScene(Scene):
                 "frame_center": cam2.move_to,
             }
             if frame_center is not None:
-                if isinstance(frame_center, OpenGLMobject):
+                if isinstance(frame_center, Mobject):
                     frame_center = frame_center.get_center()
                 frame_center = list(frame_center)
 

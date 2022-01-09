@@ -34,7 +34,6 @@ from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -299,7 +298,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate",
             )
-        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
+        assert isinstance(method.__self__, Mobject)
 
     def create_target(self) -> Mobject:
         method = self.method
@@ -383,7 +382,7 @@ class ApplyFunction(Transform):
 
     def create_target(self) -> Any:
         target = self.function(self.mobject.copy())
-        if not isinstance(target, (Mobject, OpenGLMobject)):
+        if not isinstance(target, Mobject):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject",
             )
@@ -554,10 +553,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if config["renderer"] == "opengl":
-            group = OpenGLGroup(mobject, target_mobject.copy())
-        else:
-            group = Group(mobject, target_mobject.copy())
+        group = Group(mobject, target_mobject.copy())
         super().__init__(group, **kwargs)
 
     def begin(self):

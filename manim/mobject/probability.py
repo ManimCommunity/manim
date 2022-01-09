@@ -10,7 +10,6 @@ import numpy as np
 from ..constants import *
 from ..mobject.geometry import Line, Rectangle
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
@@ -129,7 +128,7 @@ class SampleSpace(Rectangle):
         braces = VGroup()
         for label, part in zip(labels, parts):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
-            if isinstance(label, (Mobject, OpenGLMobject)):
+            if isinstance(label, Mobject):
                 label_mob = label
             else:
                 label_mob = MathTex(label)

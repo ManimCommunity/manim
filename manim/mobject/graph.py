@@ -10,8 +10,6 @@ from typing import Hashable, List, Optional, Tuple, Type, Union
 import networkx as nx
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
-
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
@@ -548,7 +546,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self._graph.add_node(vertex)
         self._layout[vertex] = position
 
-        if isinstance(label, (Mobject, OpenGLMobject)):
+        if isinstance(label, Mobject):
             self._labels[vertex] = label
         elif label is True:
             self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)

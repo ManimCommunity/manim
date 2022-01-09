@@ -2,9 +2,7 @@
 
 
 from .. import config, logger
-from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.rate_functions import smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
@@ -141,14 +139,8 @@ class Animation:
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        if config["renderer"] == "opengl":
-            self.starting_mobject: OpenGLMobject = OpenGLMobject()
-            self.mobject: OpenGLMobject = (
-                mobject if mobject is not None else OpenGLMobject()
-            )
-        else:
-            self.starting_mobject: Mobject = Mobject()
-            self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -163,7 +155,7 @@ class Animation:
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
