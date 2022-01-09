@@ -248,10 +248,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == "opengl":
-                            mob.set_color(mob_color, recurse=False)
-                        else:
-                            mob.set_color(mob_color, family=False)
+                        mob.set_color(mob_color, recurse=False)
+
                         break
 
         return self
@@ -304,10 +302,7 @@ class Sphere(Surface):
         v_range=(0, PI),
         **kwargs
     ):
-        if config.renderer == "opengl":
-            res_value = (101, 51)
-        else:
-            res_value = (24, 12)
+        res_value = (101, 51)
 
         resolution = resolution if resolution is not None else res_value
 
@@ -944,10 +939,7 @@ class Torus(Surface):
         resolution=None,
         **kwargs
     ):
-        if config.renderer == "opengl":
-            res_value = (101, 101)
-        else:
-            res_value = (24, 24)
+        res_value = (101, 101)
 
         resolution = resolution if resolution is not None else res_value
 

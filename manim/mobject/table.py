@@ -322,14 +322,8 @@ class Table(VGroup):
                     mob_table.insert(0, col_labels)
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
-                    # Import OpenGLVMobject to work with --renderer=opengl
-                    if config.renderer == "opengl":
-                        from manim.opengl import OpenGLVMobject
 
-                        dummy_class = OpenGLVMobject
-                    else:
-                        dummy_class = VMobject
-                    dummy_mobject = dummy_class()
+                    dummy_mobject = VMobject()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:

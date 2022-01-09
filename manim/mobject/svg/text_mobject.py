@@ -486,10 +486,7 @@ class Text(SVGMobject):
             self.submobjects = [*self.gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue
@@ -1149,10 +1146,7 @@ class MarkupText(SVGMobject):
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        if config.renderer == "opengl":
-            nppc = self.n_points_per_curve
-        else:
-            nppc = self.n_points_per_cubic_curve
+        nppc = self.n_points_per_curve
         for each in self:
             if len(each.points) == 0:
                 continue

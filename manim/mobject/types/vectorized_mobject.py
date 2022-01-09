@@ -291,8 +291,7 @@ class VMobject(Mobject):
 
     def match_style(self, vmobject, recurse=True):
         vmobject_style = vmobject.get_style()
-        if config.renderer == "opengl":
-            vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+        vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and

@@ -88,8 +88,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
                 "should_remove_null_curves": should_remove_null_curves,
             }
-            if config.renderer == "opengl"
-            else {}
         )
         super().__init__(
             color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
@@ -575,14 +573,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             self.width = width
 
     def init_colors(self, propagate_colors=False):
-        if config.renderer == "opengl":
-            self.set_style(
-                fill_color=self.fill_color or self.color,
-                fill_opacity=self.fill_opacity,
-                stroke_color=self.stroke_color or self.color,
-                stroke_width=self.stroke_width,
-                stroke_opacity=self.stroke_opacity,
-                recurse=propagate_colors,
-            )
-        else:
-            super().init_colors(propagate_colors=propagate_colors)
+        self.set_style(
+            fill_color=self.fill_color or self.color,
+            fill_opacity=self.fill_opacity,
+            stroke_color=self.stroke_color or self.color,
+            stroke_width=self.stroke_width,
+            stroke_opacity=self.stroke_opacity,
+            recurse=propagate_colors,
+        )

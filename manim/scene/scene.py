@@ -120,18 +120,12 @@ class Scene:
         self.mouse_press_callbacks = []
         self.interactive_mode = False
 
-        if config.renderer == "opengl":
-            # Items associated with interaction
-            self.mouse_point = OpenGLPoint()
-            self.mouse_drag_point = OpenGLPoint()
-            if renderer is None:
-                renderer = OpenGLRenderer()
-
+        # Items associated with interaction
+        self.mouse_point = OpenGLPoint()
+        self.mouse_drag_point = OpenGLPoint()
         if renderer is None:
-            self.renderer = CairoRenderer(
-                camera_class=self.camera_class,
-                skip_animations=self.skip_animations,
-            )
+            renderer = OpenGLRenderer()
+
         else:
             self.renderer = renderer
         self.renderer.init_scene(self)
@@ -390,16 +384,11 @@ class Scene:
         list
             List of mobject family members.
         """
-        if config.renderer == "opengl":
-            family_members = []
-            for mob in self.mobjects:
-                family_members.extend(mob.get_family())
-            return family_members
-        else:
-            return extract_mobject_family_members(
-                self.mobjects,
-                use_z_index=self.renderer.camera.use_z_index,
-            )
+        family_members = []
+        for mob in self.mobjects:
+            family_members.extend(mob.get_family())
+        return family_members
+
 
     def add(self, *mobjects):
         """
@@ -417,28 +406,18 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        if config.renderer == "opengl":
-            new_mobjects = []
-            new_meshes = []
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    new_meshes.append(mobject_or_mesh)
-                else:
-                    new_mobjects.append(mobject_or_mesh)
-            self.remove(*new_mobjects)
-            self.mobjects += new_mobjects
-            self.remove(*new_meshes)
-            self.meshes += new_meshes
-        else:
-            mobjects = [*mobjects, *self.foreground_mobjects]
-            self.restructure_mobjects(to_remove=mobjects)
-            self.mobjects += mobjects
-            if self.moving_mobjects:
-                self.restructure_mobjects(
-                    to_remove=mobjects,
-                    mobject_list_name="moving_mobjects",
-                )
-                self.moving_mobjects += mobjects
+        new_mobjects = []
+        new_meshes = []
+        for mobject_or_mesh in mobjects:
+            if isinstance(mobject_or_mesh, Object3D):
+                new_meshes.append(mobject_or_mesh)
+            else:
+                new_mobjects.append(mobject_or_mesh)
+        self.remove(*new_mobjects)
+        self.mobjects += new_mobjects
+        self.remove(*new_meshes)
+        self.meshes += new_meshes
+
         return self
 
     def add_mobjects_from_animations(self, animations):
@@ -462,26 +441,21 @@ class Scene:
         *mobjects : Mobject
             The mobjects to remove.
         """
-        if config.renderer == "opengl":
-            mobjects_to_remove = []
-            meshes_to_remove = set()
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    meshes_to_remove.add(mobject_or_mesh)
-                else:
-                    mobjects_to_remove.append(mobject_or_mesh)
-            self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects,
-                mobjects_to_remove,
-            )
-            self.meshes = list(
-                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
-            )
-            return self
-        else:
-            for list_name in "mobjects", "foreground_mobjects":
-                self.restructure_mobjects(mobjects, list_name, False)
-            return self
+        mobjects_to_remove = []
+        meshes_to_remove = set()
+        for mobject_or_mesh in mobjects:
+            if isinstance(mobject_or_mesh, Object3D):
+                meshes_to_remove.add(mobject_or_mesh)
+            else:
+                mobjects_to_remove.append(mobject_or_mesh)
+        self.mobjects = restructure_list_to_exclude_certain_family_members(
+            self.mobjects,
+            mobjects_to_remove,
+        )
+        self.meshes = list(
+            filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes),
+        )
+        return self
 
     def add_updater(self, func):
         self.updaters.append(func)
@@ -997,23 +971,12 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
-        if config.renderer != "opengl":
-            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-                self.update_mobjects(dt=0)  # Any problems with this?
-                if self.should_update_mobjects():
-                    self.stop_condition = self.animations[0].stop_condition
-                else:
-                    self.duration = self.animations[0].duration
-                    # Static image logic when the wait is static is done by the renderer, not here.
-                    self.animations[0].is_static_wait = True
-                    return None
-            else:
-                # Paint all non-moving objects onto the screen, so they don't
-                # have to be rendered every frame
-                (
-                    self.moving_mobjects,
-                    self.static_mobjects,
-                ) = self.get_moving_and_static_mobjects(self.animations)
+        # Paint all non-moving objects onto the screen, so they don't
+        # have to be rendered every frame
+        (
+            self.moving_mobjects,
+            self.static_mobjects,
+        ) = self.get_moving_and_static_mobjects(self.animations)
         self.duration = self.get_run_time(self.animations)
         return self
 

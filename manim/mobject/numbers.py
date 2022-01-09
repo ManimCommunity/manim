@@ -250,14 +250,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
 
-        if config.renderer != "opengl":
-            for mob in old_family:
-                # Dumb hack...due to how scene handles families
-                # of animated mobjects
-                # for compatibility with updaters to not leave first number in place while updating,
-                # not needed with opengl renderer
-                mob.points[:] = 0
-
         self.init_colors()
         return self
 
