@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.moving\\_camera.MovingCamera``"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera:1
-msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgid "Bases: :py:class:`manim.camera.camera.Camera`"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera:1
@@ -31,8 +31,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`auto_zoom <manim.camera.moving_camera.MovingCamera.auto_zoom>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1
 msgid "Zooms on to a given array of mobjects (or a singular mobject) and automatically resizes to frame all the mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`cache_cairo_context <manim.camera.moving_camera.MovingCamera.cache_cairo_context>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
@@ -41,8 +49,20 @@ msgid "Since the frame can be moving around, the cairo context used for updating
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`capture_mobjects <manim.camera.moving_camera.MovingCamera.capture_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.capture_mobjects:1
 msgid "Capture mobjects by printing them on :attr:`pixel_array`."
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`get_cached_cairo_context <manim.camera.moving_camera.MovingCamera.get_cached_cairo_context>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
+msgid ":py:obj:`get_mobjects_indicating_movement <manim.camera.moving_camera.MovingCamera.get_mobjects_indicating_movement>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:24:<autosummary>:1
@@ -55,13 +75,33 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
+msgid ":py:obj:`background_color <manim.camera.moving_camera.MovingCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
+msgid ":py:obj:`background_opacity <manim.camera.moving_camera.MovingCamera.background_opacity>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
+msgid ":py:obj:`frame_center <manim.camera.moving_camera.MovingCamera.frame_center>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_center:1
 msgid "Returns the centerpoint of the frame in cartesian coordinates."
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
+msgid ":py:obj:`frame_height <manim.camera.moving_camera.MovingCamera.frame_height>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_height:1
 msgid "Returns the height of the frame."
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1
+msgid ":py:obj:`frame_width <manim.camera.moving_camera.MovingCamera.frame_width>`\\"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.auto_zoom:1:<autosummary>:1

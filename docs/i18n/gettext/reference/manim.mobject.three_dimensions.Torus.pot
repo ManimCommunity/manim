@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.Torus``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Torus:1
-msgid "Bases: :class:`manim.mobject.three_dimensions.Surface`"
+msgid "Bases: :py:class:`manim.mobject.three_dimensions.Surface`"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Torus:1
@@ -42,12 +42,28 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:20:<autosummary>:1
+msgid ":py:obj:`func <manim.mobject.three_dimensions.Torus.func>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:22
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.three_dimensions.Torus.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Torus.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.three_dimensions.Torus.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
@@ -55,7 +71,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.three_dimensions.Torus.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_dimensions.Torus.rst:29:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.three_dimensions.Torus.width>`\\"
 msgstr ""
 
 

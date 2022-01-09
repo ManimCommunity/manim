@@ -16,7 +16,6 @@ from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
 
@@ -358,10 +357,7 @@ class NumberLine(Line):
         """
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
-        proportion = fdiv(
-            np.dot(point - start, unit_vect),
-            np.dot(end - start, unit_vect),
-        )
+        proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)
         return interpolate(self.x_min, self.x_max, proportion)
 
     def n2p(self, number: float) -> np.ndarray:

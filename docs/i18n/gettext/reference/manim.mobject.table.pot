@@ -23,7 +23,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid ":py:obj:`DecimalTable <manim.mobject.table.DecimalTable>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
 msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid ":py:obj:`IntegerTable <manim.mobject.table.IntegerTable>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
@@ -31,11 +39,23 @@ msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Intege
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid ":py:obj:`MathTable <manim.mobject.table.MathTable>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
 msgid "A specialized :class:`~.Table` mobject for use with with LaTeX."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid ":py:obj:`MobjectTable <manim.mobject.table.MobjectTable>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
 msgid "A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.rst:28:<autosummary>:1
+msgid ":py:obj:`Table <manim.mobject.table.Table>`"
 msgstr ""
 
 

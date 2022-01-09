@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.value\\_tracker.ValueTracker``"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:1
-msgid "Bases: :class:`manim.mobject.mobject.Mobject`"
+msgid "Bases: :py:class:`manim.mobject.mobject.Mobject`"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker:1
@@ -43,8 +43,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
+msgid ":py:obj:`get_value <manim.mobject.value_tracker.ValueTracker.get_value>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1
 msgid "Get the current value of this ValueTracker."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
+msgid ":py:obj:`increment_value <manim.mobject.value_tracker.ValueTracker.increment_value>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
@@ -53,8 +61,16 @@ msgid "Increments (adds) a scalar value  to the ValueTracker"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
+msgid ":py:obj:`interpolate <manim.mobject.value_tracker.ValueTracker.interpolate>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.interpolate:1
 msgid "Turns self into an interpolation between mobject1 and mobject2."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
+msgid ":py:obj:`set_value <manim.mobject.value_tracker.ValueTracker.set_value>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23:<autosummary>:1
@@ -67,7 +83,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.value_tracker.ValueTracker.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.value_tracker.ValueTracker.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.value_tracker.ValueTracker.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
@@ -75,7 +103,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.value_tracker.ValueTracker.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.value_tracker.ValueTracker.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ValueTracker.get_value:1:<autosummary>:1

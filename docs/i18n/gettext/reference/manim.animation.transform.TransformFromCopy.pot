@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.TransformFromCopy``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy:1
@@ -27,6 +27,10 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformFromCopy.rst:20:<autosummary>:1
+msgid ":py:obj:`interpolate <manim.animation.transform.TransformFromCopy.interpolate>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.TransformFromCopy.rst:20:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1
 msgid "Set the animation progress."
 msgstr ""
@@ -35,16 +39,26 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:3
-msgid "This method gets called for every frame during an animation."
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.TransformFromCopy.path_arc>`\\"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:1:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.TransformFromCopy.path_func>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy:0
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:0
 msgid "Parameters"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:5
-msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy:0
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformFromCopy.interpolate:3
+msgid "This method gets called for every frame during an animation."
 msgstr ""
 
 

@@ -19,11 +19,23 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.rst:24:<autosummary>:1
+msgid ":py:obj:`FunctionGraph <manim.mobject.functions.FunctionGraph>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.rst:24:<autosummary>:1
 msgid "A :class:`ParametricFunction` that spans the length of the scene by default."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.rst:24:<autosummary>:1
+msgid ":py:obj:`ImplicitFunction <manim.mobject.functions.ImplicitFunction>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.rst:24:<autosummary>:1
 msgid "An implicit function."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.rst:24:<autosummary>:1
+msgid ":py:obj:`ParametricFunction <manim.mobject.functions.ParametricFunction>`"
 msgstr ""
 
 

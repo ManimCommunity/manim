@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.Axes``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`, :class:`manim.mobject.coordinate_systems.CoordinateSystem`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`, :py:class:`manim.mobject.coordinate_systems.CoordinateSystem`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes:1
@@ -31,7 +31,6 @@ msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.point_to_coords:0
@@ -78,32 +77,60 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:24:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
+msgid ":py:obj:`coords_to_point <manim.mobject.coordinate_systems.Axes.coords_to_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1
 msgid "Accepts coordinates from the axes and returns a point with respect to the scene."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:24:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
+msgid ":py:obj:`get_axes <manim.mobject.coordinate_systems.Axes.get_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_axes:1
 msgid "Gets the axes."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:24:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
+msgid ":py:obj:`plot_line_graph <manim.mobject.coordinate_systems.Axes.plot_line_graph>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:1
 msgid "Draws a line graph."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:24:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
+msgid ":py:obj:`point_to_coords <manim.mobject.coordinate_systems.Axes.point_to_coords>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:23:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.point_to_coords:1
 msgid "Accepts a point from the scene and returns its coordinates with respect to the axes."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:26
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25
 msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.coordinate_systems.Axes.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.coordinate_systems.Axes.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.coordinate_systems.Axes.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
@@ -111,7 +138,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.coordinate_systems.Axes.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.coordinate_systems.Axes.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
@@ -135,7 +170,6 @@ msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.coords_to_point:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_axes:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.point_to_coords:0
@@ -144,14 +178,6 @@ msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_axes:3
 msgid "A pair of axes."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_line_graph:1
-msgid "Deprecated"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.get_line_graph:4
-msgid "The method Axes.get_line_graph has been deprecated since v0.11.0 and is expected to be removed after v0.13.0. Use :meth:`~.plot_line_graph` instead."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.Axes.plot_line_graph:3

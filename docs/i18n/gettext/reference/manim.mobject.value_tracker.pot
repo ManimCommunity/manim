@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.value_tracker.rst:22:<autosummary>:1
+msgid ":py:obj:`ComplexValueTracker <manim.mobject.value_tracker.ComplexValueTracker>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.rst:22:<autosummary>:1
 msgid "Tracks a complex-valued parameter."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.rst:22:<autosummary>:1
+msgid ":py:obj:`ValueTracker <manim.mobject.value_tracker.ValueTracker>`"
 msgstr ""
 
 

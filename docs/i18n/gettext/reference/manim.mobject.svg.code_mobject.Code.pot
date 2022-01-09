@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.code\\_mobject.Code``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code:1
@@ -158,8 +158,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`correct_non_span <manim.mobject.svg.code_mobject.Code.correct_non_span>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1
 msgid "Function put text color to those strings that don't have one according to background_color of displayed code."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`ensure_valid_file <manim.mobject.svg.code_mobject.Code.ensure_valid_file>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
@@ -168,7 +176,15 @@ msgid "Function to validate file."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`gen_code_json <manim.mobject.svg.code_mobject.Code.gen_code_json>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
 msgid "Function to background_color, generate code_json and tab_spaces from html_string."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`gen_colored_lines <manim.mobject.svg.code_mobject.Code.gen_colored_lines>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
@@ -177,8 +193,16 @@ msgid "Function to generate code."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`gen_html_string <manim.mobject.svg.code_mobject.Code.gen_html_string>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.gen_html_string:1
 msgid "Function to generate html string with code highlighted and stores in variable html_string."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
+msgid ":py:obj:`gen_line_numbers <manim.mobject.svg.code_mobject.Code.gen_line_numbers>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.Code.rst:25:<autosummary>:1
@@ -191,7 +215,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.code_mobject.Code.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.code_mobject.Code.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.code_mobject.Code.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
@@ -199,7 +235,19 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.code_mobject.Code.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid ":py:obj:`styles_list <manim.mobject.svg.code_mobject.Code.styles_list>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.code_mobject.Code.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1

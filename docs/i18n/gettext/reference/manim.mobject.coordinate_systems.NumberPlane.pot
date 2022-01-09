@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.NumberPlane``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
-msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgid "Bases: :py:class:`manim.mobject.coordinate_systems.Axes`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
@@ -74,12 +74,32 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:21:<autosummary>:1
+msgid ":py:obj:`get_vector <manim.mobject.coordinate_systems.NumberPlane.get_vector>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:21:<autosummary>:1
+msgid ":py:obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:23
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.coordinate_systems.NumberPlane.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.coordinate_systems.NumberPlane.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.coordinate_systems.NumberPlane.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
@@ -87,7 +107,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.coordinate_systems.NumberPlane.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.coordinate_systems.NumberPlane.width>`\\"
 msgstr ""
 
 

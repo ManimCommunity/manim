@@ -15,11 +15,15 @@ msgid "Qualified name: ``manim.animation.composition.Succession``"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession:1
-msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
+msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.composition.Succession.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`begin <manim.animation.composition.Succession.begin>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
@@ -28,8 +32,16 @@ msgid "Begin the animation."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`finish <manim.animation.composition.Succession.finish>`"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.finish:1
 msgid "Finish the animation."
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`interpolate <manim.animation.composition.Succession.interpolate>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
@@ -38,18 +50,37 @@ msgid "Set the animation progress."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`next_animation <manim.animation.composition.Succession.next_animation>`"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`update_active_animation <manim.animation.composition.Succession.update_active_animation>`"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
+msgid ":py:obj:`update_mobjects <manim.animation.composition.Succession.update_mobjects>`"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:1:<autosummary>:1
 msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:3
-msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.update_mobjects:0
+msgid "Parameters"
 msgstr ""
 
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.finish:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.update_mobjects:0
 msgid "Return type"
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.finish:3
@@ -58,11 +89,6 @@ msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:3
 msgid "This method gets called for every frame during an animation."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.update_mobjects:0
-msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:5

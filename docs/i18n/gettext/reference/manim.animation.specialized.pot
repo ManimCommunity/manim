@@ -14,4 +14,8 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.animation.specialized.rst:20:<autosummary>:1
+msgid ":py:obj:`Broadcast <manim.animation.specialized.Broadcast>`"
+msgstr ""
+
 

@@ -19,7 +19,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.scene.section.rst:22:<autosummary>:1
+msgid ":py:obj:`DefaultSectionType <manim.scene.section.DefaultSectionType>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.rst:22:<autosummary>:1
 msgid "The type of a section can be used for third party applications."
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.rst:22:<autosummary>:1
+msgid ":py:obj:`Section <manim.scene.section.Section>`"
 msgstr ""
 
 

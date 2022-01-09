@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.camera.BackgroundColoredVMobjectDisplayer`
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:0
@@ -35,8 +35,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+msgid ":py:obj:`display <manim.camera.camera.BackgroundColoredVMobjectDisplayer.display>`"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1
 msgid "Displays the colored VMobjects."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+msgid ":py:obj:`get_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array>`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
@@ -45,8 +53,20 @@ msgid "Gets the background array that has the passed file_name."
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+msgid ":py:obj:`reset_pixel_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.reset_pixel_array>`"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+msgid ":py:obj:`resize_background_array <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array>`"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:1
 msgid "Resizes the pixel array representing the background."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+msgid ":py:obj:`resize_background_array_to_match <manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match>`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1

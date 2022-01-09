@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.zoomed\\_scene.ZoomedScene``"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene:1
-msgid "Bases: :class:`manim.scene.moving_camera_scene.MovingCameraScene`"
+msgid "Bases: :py:class:`manim.scene.moving_camera_scene.MovingCameraScene`"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene:1
@@ -27,12 +27,24 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
+msgid ":py:obj:`activate_zooming <manim.scene.zoomed_scene.ZoomedScene.activate_zooming>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:1
 msgid "This method is used to activate the zooming for the zoomed_camera."
 msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
+msgid ":py:obj:`get_zoom_factor <manim.scene.zoomed_scene.ZoomedScene.get_zoom_factor>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
 msgid "Returns the Zoom factor of the Zoomed camera."
+msgstr ""
+
+#: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
+msgid ":py:obj:`get_zoom_in_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoom_in_animation>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
@@ -41,8 +53,16 @@ msgid "Returns the animation of camera zooming in."
 msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
+msgid ":py:obj:`get_zoomed_display_pop_out_animation <manim.scene.zoomed_scene.ZoomedScene.get_zoomed_display_pop_out_animation>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.get_zoomed_display_pop_out_animation:1
 msgid "This is the animation of the popping out of the mini-display that shows the content of the zoomed camera."
+msgstr ""
+
+#: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
+msgid ":py:obj:`setup <manim.scene.zoomed_scene.ZoomedScene.setup>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:24:<autosummary>:1
@@ -52,6 +72,10 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.zoomed_scene.ZoomedScene.rst:26
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:1:<autosummary>:1
+msgid ":py:obj:`camera <manim.scene.zoomed_scene.ZoomedScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:0

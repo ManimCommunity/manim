@@ -15,11 +15,23 @@ msgid "Qualified name: ``manim.mobject.types.image\\_mobject.ImageMobjectFromCam
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobjectFromCamera:1
-msgid "Bases: :class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:22:<autosummary>:1
+msgid ":py:obj:`add_display_frame <manim.mobject.types.image_mobject.ImageMobjectFromCamera.add_display_frame>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:22:<autosummary>:1
+msgid ":py:obj:`get_pixel_array <manim.mobject.types.image_mobject.ImageMobjectFromCamera.get_pixel_array>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:22:<autosummary>:1
+msgid ":py:obj:`interpolate_color <manim.mobject.types.image_mobject.ImageMobjectFromCamera.interpolate_color>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:24
@@ -27,7 +39,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.types.image_mobject.ImageMobjectFromCamera.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.types.image_mobject.ImageMobjectFromCamera.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.types.image_mobject.ImageMobjectFromCamera.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
@@ -35,7 +59,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.types.image_mobject.ImageMobjectFromCamera.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.types.image_mobject.ImageMobjectFromCamera.width>`\\"
 msgstr ""
 
 

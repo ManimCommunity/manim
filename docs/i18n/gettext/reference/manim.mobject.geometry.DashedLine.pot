@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.DashedLine``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine:1
-msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Line`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine:1
@@ -56,8 +56,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
+msgid ":py:obj:`calculate_num_dashes <manim.mobject.geometry.DashedLine.calculate_num_dashes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1
 msgid "Returns the number of dashes in the dashed line."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
+msgid ":py:obj:`get_end <manim.mobject.geometry.DashedLine.get_end>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
@@ -66,13 +74,25 @@ msgid "Returns the end point of the line."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
+msgid ":py:obj:`get_first_handle <manim.mobject.geometry.DashedLine.get_first_handle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.get_first_handle:1
 msgid "Returns the point of the first handle."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
+msgid ":py:obj:`get_last_handle <manim.mobject.geometry.DashedLine.get_last_handle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.get_last_handle:1
 msgid "Returns the point of the last handle."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
+msgid ":py:obj:`get_start <manim.mobject.geometry.DashedLine.get_start>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.DashedLine.rst:24:<autosummary>:1
@@ -85,7 +105,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.geometry.DashedLine.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.geometry.DashedLine.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.geometry.DashedLine.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
@@ -93,7 +125,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.geometry.DashedLine.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.geometry.DashedLine.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.DashedLine.calculate_num_dashes:1:<autosummary>:1

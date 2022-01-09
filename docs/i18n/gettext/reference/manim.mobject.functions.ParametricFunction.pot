@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.functions.ParametricFunction``"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:1
@@ -63,10 +63,26 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
+msgid ":py:obj:`generate_points <manim.mobject.functions.ParametricFunction.generate_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
 #: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1
 msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
+msgid ":py:obj:`get_function <manim.mobject.functions.ParametricFunction.get_function>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
+msgid ":py:obj:`get_point_from_function <manim.mobject.functions.ParametricFunction.get_point_from_function>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23:<autosummary>:1
+msgid ":py:obj:`init_points <manim.mobject.functions.ParametricFunction.init_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:25
@@ -74,7 +90,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.functions.ParametricFunction.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.functions.ParametricFunction.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.functions.ParametricFunction.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
@@ -82,7 +110,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.functions.ParametricFunction.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.functions.ParametricFunction.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1

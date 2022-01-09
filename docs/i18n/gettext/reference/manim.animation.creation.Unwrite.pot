@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.Unwrite``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:1
-msgid "Bases: :class:`manim.animation.creation.Write`"
+msgid "Bases: :py:class:`manim.animation.creation.Write`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:1
@@ -28,6 +28,10 @@ msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:3
 msgid "Set True to have the animation start erasing from the last submobject first."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:0
+msgid "Return type"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:7
