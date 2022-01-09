@@ -12,8 +12,8 @@ from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from ..mobject.opengl_mobject import Mobject, Point
+from ..mobject.types.opengl_vectorized_mobject import VMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.config_ops import _Data
@@ -32,7 +32,7 @@ from .vectorized_mobject_rendering import (
 )
 
 
-class OpenGLCamera(OpenGLMobject):
+class OpenGLCamera(Mobject):
     euler_angles = _Data()
 
     def __init__(
@@ -84,7 +84,7 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = [-10, 10, 10]
         else:
             self.light_source_position = light_source_position
-        self.light_source = OpenGLPoint(self.light_source_position)
+        self.light_source = Point(self.light_source_position)
 
         self.default_model_matrix = model_matrix
         super().__init__(model_matrix=model_matrix, should_render=False, **kwargs)
@@ -314,7 +314,7 @@ class OpenGLRenderer:
         }
 
     def render_mobject(self, mobject):
-        if isinstance(mobject, OpenGLVMobject):
+        if isinstance(mobject, VMobject):
             if config["use_projection_fill_shaders"]:
                 render_opengl_vectorized_mobject_fill(self, mobject)
 
