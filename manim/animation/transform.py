@@ -161,7 +161,7 @@ class Transform(Animation):
 
 
 class ReplacementTransform(Transform):
-    """Replace and morphs a mobject into a target mobject.
+    """Replace and morph a mobject into a target mobject.
 
     Parameters
     ----------
