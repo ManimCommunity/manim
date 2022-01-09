@@ -1,17 +1,17 @@
-__all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
+__all__ = ["PMobject", "PGroup", "PMPoint"]
 
 import moderngl
 import numpy as np
 
 from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject
+from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
 from ...utils.config_ops import _Uniforms
 from ...utils.iterables import resize_with_interpolation
 
 
-class OpenGLPMobject(OpenGLMobject):
+class PMobject(Mobject):
     shader_folder = "true_dot"
     # Scale for consistency with cairo units
     OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
@@ -28,7 +28,7 @@ class OpenGLPMobject(OpenGLMobject):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)
         self.point_radius = (
-            self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
+            self.stroke_width * PMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
     def reset_points(self):
@@ -154,9 +154,9 @@ class OpenGLPMobject(OpenGLMobject):
         return shader_data
 
 
-class OpenGLPGroup(OpenGLPMobject):
+class PGroup(PMobject):
     def __init__(self, *pmobs, **kwargs):
-        if not all([isinstance(m, OpenGLPMobject) for m in pmobs]):
+        if not all([isinstance(m, PMobject) for m in pmobs]):
             raise Exception("All submobjects must be of type OpenglPMObject")
         super().__init__(**kwargs)
         self.add(*pmobs)
@@ -167,7 +167,7 @@ class OpenGLPGroup(OpenGLPMobject):
                 mob.fade_to(color, alpha, family)
 
 
-class OpenGLPMPoint(OpenGLPMobject):
+class PMPoint(PMobject):
     def __init__(self, location=ORIGIN, stroke_width=4.0, **kwargs):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)
