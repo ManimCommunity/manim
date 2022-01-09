@@ -270,13 +270,12 @@ class SVGPathMobject(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string, prev_command)
             prev_command = command
-        if config["renderer"] == "opengl":
-            if self.should_subdivide_sharp_curves:
-                # For a healthy triangulation later
-                self.subdivide_sharp_curves()
-            if self.should_remove_null_curves:
-                # Get rid of any null curves
-                self.set_points(self.get_points_without_null_curves())
+        if self.should_subdivide_sharp_curves:
+            # For a healthy triangulation later
+            self.subdivide_sharp_curves()
+        if self.should_remove_null_curves:
+            # Get rid of any null curves
+            self.set_points(self.get_points_without_null_curves())
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
@@ -289,10 +288,7 @@ class SVGPathMobject(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        if config["renderer"] == "opengl":
-            points = self.points
-        else:
-            points = self.points
+        points = self.points
         start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
 
         # Produce the (absolute) coordinates of the controls and handles
@@ -321,10 +317,7 @@ class SVGPathMobject(VMobject):
             return
 
         elif command == "S":  # Smooth cubic
-            if config["renderer"] == "opengl":
-                points = self.points
-            else:
-                points = self.points
+            points = self.points
             prev_handle = start_point
             if prev_command.upper() in ["C", "S"]:
                 prev_handle = points[-2]
@@ -365,10 +358,7 @@ class SVGPathMobject(VMobject):
                 return
 
         elif command == "Z":  # closepath
-            if config["renderer"] == "opengl":
-                self.close_path()
-            else:
-                self.add_line_to(self.current_path_start)
+            self.close_path()
             return
 
     def string_to_points(self, command, is_relative, coord_string, start_point):

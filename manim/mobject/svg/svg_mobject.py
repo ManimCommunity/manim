@@ -518,10 +518,7 @@ class SVGMobject(VMobject):
                 matrix[:, 1] *= -1
 
                 for mob in mobject.family_members_with_points():
-                    if config["renderer"] == "opengl":
-                        mob.points = np.dot(mob.points, matrix)
-                    else:
-                        mob.points = np.dot(mob.points, matrix)
+                    mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
 
             elif op_name == "scale":

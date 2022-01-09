@@ -39,10 +39,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations],
             )
-            if config["renderer"] == "opengl":
-                self.group = OpenGLGroup(*mobjects)
-            else:
-                self.group = Group(*mobjects)
+            self.group = Group(*mobjects)
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time: float = self.init_run_time(run_time)
 

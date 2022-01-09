@@ -776,12 +776,11 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config["renderer"] == "opengl":
-                self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                    min_color_scheme_value,
-                    max_color_scheme_value,
-                    colors,
-                )
+            self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
+                min_color_scheme_value,
+                max_color_scheme_value,
+                colors,
+            )
         for point in start_points:
             points = [point]
             for _ in range(max_steps):
@@ -800,24 +799,16 @@ class StreamLines(VectorField):
             if self.single_color:
                 line.set_stroke(self.color)
             else:
-                if config["renderer"] == "opengl":
-                    # scaled for compatibility with cairo
-                    line.set_stroke(width=self.stroke_width / 4.0)
-                    norms = np.array(
-                        [np.linalg.norm(self.func(point)) for point in line.points],
-                    )
-                    line.set_rgba_array_direct(
-                        self.values_to_rgbas(norms, opacity),
-                        name="stroke_rgba",
-                    )
-                else:
-                    if np.any(self.z_range != np.array([0, 0.5, 0.5])):
-                        line.set_stroke(
-                            [self.pos_to_color(p) for p in line.get_anchors()],
-                        )
-                    else:
-                        line.color_using_background_image(self.background_img)
-                    line.set_stroke(width=self.stroke_width, opacity=opacity)
+                # scaled for compatibility with cairo
+                line.set_stroke(width=self.stroke_width / 4.0)
+                norms = np.array(
+                    [np.linalg.norm(self.func(point)) for point in line.points],
+                )
+                line.set_rgba_array_direct(
+                    self.values_to_rgbas(norms, opacity),
+                    name="stroke_rgba",
+                )
+
             self.add(line)
         self.stream_lines = [*self.submobjects]
 
