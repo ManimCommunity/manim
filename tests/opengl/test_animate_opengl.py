@@ -3,7 +3,7 @@ import pytest
 
 from manim.animation.creation import Uncreate
 from manim.mobject.geometry import Dot, Line, Square
-from manim.mobject.mobject import override_animate
+from manim.animation.animation_utils import override_animate
 from manim.mobject.types.vectorized_mobject import VGroup
 
 

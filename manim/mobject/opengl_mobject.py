@@ -10,6 +10,8 @@ import moderngl
 import numpy as np
 from colour import Color
 
+from manim.interface.mobject_base import MobjectBase
+
 from .. import config
 from ..constants import *
 from ..utils.bezier import integer_interpolate, interpolate
@@ -37,7 +39,7 @@ from ..utils.space_ops import (
 )
 
 
-class OpenGLMobject:
+class OpenGLMobject(MobjectBase):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -60,7 +62,6 @@ class OpenGLMobject:
 
     # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
     points = _Data()
-    bounding_box = _Data()
     rgbas = _Data()
 
     is_fixed_in_frame = _Uniforms()
@@ -88,8 +89,11 @@ class OpenGLMobject:
         listen_to_events=False,
         model_matrix=None,
         should_render=True,
+        name=None,
         **kwargs,
     ):
+        super().__init__(name=name)
+
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
@@ -117,7 +121,7 @@ class OpenGLMobject:
         self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
-        self.needs_new_bounding_box = True
+        
         if model_matrix is None:
             self.model_matrix = np.eye(4)
         else:
@@ -136,82 +140,16 @@ class OpenGLMobject:
 
         self.should_render = should_render
 
-    @classmethod
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls._original__init__ = cls.__init__
 
     def __str__(self):
         return self.__class__.__name__
 
-    def __repr__(self):
-        return self.__class__.__name__
-
-    def __sub__(self, other):
-        raise NotImplementedError
-
-    def __isub__(self, other):
-        raise NotImplementedError
-
-    def __add__(self, mobject):
-        raise NotImplementedError
-
-    def __iadd__(self, mobject):
-        raise NotImplementedError
-
-    @classmethod
-    def set_default(cls, **kwargs):
-        """Sets the default values of keyword arguments.
-
-        If this method is called without any additional keyword
-        arguments, the original default values of the initialization
-        method of this class are restored.
-
-        Parameters
-        ----------
-
-        kwargs
-            Passing any keyword argument will update the default
-            values of the keyword arguments of the initialization
-            function of this class.
-
-        Examples
-        --------
-
-        ::
-
-            >>> from manim import Square, GREEN
-            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
-            >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
-
-        .. manim:: ChangedDefaultTextcolor
-            :save_last_frame:
-
-            config.background_color = WHITE
-
-            class ChangedDefaultTextcolor(Scene):
-                def construct(self):
-                    Text.set_default(color=BLACK)
-                    self.add(Text("Changing default values is easy!"))
-
-                    # we revert the colour back to the default to prevent a bug in the docs.
-                    Text.set_default(color=WHITE)
-
-        """
-        if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
-        else:
-            cls.__init__ = cls._original__init__
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
         self.points = np.zeros((0, 3))
-        self.bounding_box = np.zeros((3, 3))
+        self.update_bounding_box()
         self.rgbas = np.zeros((1, 4))
 
     def init_colors(self):
@@ -228,40 +166,6 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set(self, **kwargs) -> "OpenGLMobject":
-        """Sets attributes.
-
-        Mainly to be used along with :attr:`animate` to
-        animate setting attributes.
-
-        Examples
-        --------
-        ::
-
-            >>> mob = OpenGLMobject()
-            >>> mob.set(foo=0)
-            OpenGLMobject
-            >>> mob.foo
-            0
-
-        Parameters
-        ----------
-        **kwargs
-            The attributes and corresponding values to set.
-
-        Returns
-        -------
-        :class:`OpenGLMobject`
-            ``self``
-
-
-        """
-
-        for attr, value in kwargs.items():
-            setattr(self, attr, value)
-
-        return self
-
     def set_data(self, data):
         for key in data:
             self.data[key] = data[key].copy()
@@ -272,93 +176,6 @@ class OpenGLMobject:
             self.uniforms[key] = uniforms[key]  # Copy?
         return self
 
-    @property
-    def animate(self):
-        """Used to animate the application of a method.
-
-        .. warning::
-
-            Passing multiple animations for the same :class:`OpenGLMobject` in one
-            call to :meth:`~.Scene.play` is discouraged and will most likely
-            not work properly. Instead of writing an animation like
-
-            ::
-
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
-
-            make use of method chaining for ``animate``, meaning::
-
-                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
-
-        Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
-        directly after accessing ``.animate``, like so::
-
-            self.play(my_mobject.animate(rate_func=linear).shift(RIGHT))
-
-        This is especially useful when animating simultaneous ``.animate`` calls that
-        you want to behave differently::
-
-            self.play(
-                mobject1.animate(run_time=2).rotate(PI),
-                mobject2.animate(rate_func=there_and_back).shift(RIGHT),
-            )
-
-        .. seealso::
-
-            :func:`override_animate`
-
-
-        Examples
-        --------
-
-        .. manim:: AnimateExample
-
-            class AnimateExample(Scene):
-                def construct(self):
-                    s = Square()
-                    self.play(Create(s))
-                    self.play(s.animate.shift(RIGHT))
-                    self.play(s.animate.scale(2))
-                    self.play(s.animate.rotate(PI / 2))
-                    self.play(Uncreate(s))
-
-
-        .. manim:: AnimateChainExample
-
-            class AnimateChainExample(Scene):
-                def construct(self):
-                    s = Square()
-                    self.play(Create(s))
-                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
-                    self.play(Uncreate(s))
-
-        .. manim:: AnimateWithArgsExample
-
-            class AnimateWithArgsExample(Scene):
-                def construct(self):
-                    s = Square()
-                    c = Circle()
-
-                    VGroup(s, c).arrange(RIGHT, buff=2)
-                    self.add(s, c)
-
-                    self.play(
-                        s.animate(run_time=2).rotate(PI / 2),
-                        c.animate(rate_func=there_and_back).shift(RIGHT),
-                    )
-
-        .. warning::
-
-            ``.animate``
-             will interpolate the :class:`~.OpenGLMobject` between its points prior to
-             ``.animate`` and its points after applying ``.animate`` to it. This may
-             result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
-             If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
-
-        """
-        return _AnimationBuilder(self)
 
     @property
     def width(self):
@@ -459,7 +276,7 @@ class OpenGLMobject:
     def resize_points(self, new_length, resize_func=resize_array):
         if new_length != len(self.points):
             self.points = resize_func(self.points, new_length)
-        self.refresh_bounding_box()
+        self.update_bounding_box()
         return self
 
     def set_points(self, points):
@@ -469,7 +286,7 @@ class OpenGLMobject:
             self.points = points.copy()
         else:
             self.points = np.array(points)
-        self.refresh_bounding_box()
+        self.update_bounding_box()
         return self
 
     def apply_over_attr_arrays(self, func):
@@ -479,7 +296,7 @@ class OpenGLMobject:
 
     def append_points(self, new_points):
         self.points = np.vstack([self.points, new_points])
-        self.refresh_bounding_box()
+        self.update_bounding_box()
         return self
 
     def reverse_points(self):
@@ -526,7 +343,9 @@ class OpenGLMobject:
             if mob.has_points():
                 arrs.append(mob.points)
             if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
+                if mob._bounding_box is None:
+                    mob.update_bounding_box()
+                arrs.append(mob._bounding_box)
 
             for arr in arrs:
                 if about_point is None:
@@ -535,10 +354,10 @@ class OpenGLMobject:
                     arr[:] = func(arr - about_point) + about_point
 
         if not works_on_bounding_box:
-            self.refresh_bounding_box(recurse_down=True)
+            self.invalidate_bounding_box(recurse_down=True)
         else:
             for parent in self.parents:
-                parent.refresh_bounding_box()
+                parent.invalidate_bounding_box()
         return self
 
     # Others related to points
@@ -577,68 +396,20 @@ class OpenGLMobject:
     def has_points(self):
         return self.get_num_points() > 0
 
-    def get_bounding_box(self):
-        if self.needs_new_bounding_box:
-            self.bounding_box = self.compute_bounding_box()
-            self.needs_new_bounding_box = False
-        return self.bounding_box
-
-    def compute_bounding_box(self):
-        all_points = np.vstack(
-            [
-                self.points,
-                *(
-                    mob.get_bounding_box()
-                    for mob in self.get_family()[1:]
-                    if mob.has_points()
-                ),
-            ],
-        )
-        if len(all_points) == 0:
-            return np.zeros((3, self.dim))
-        else:
-            # Lower left and upper right corners
-            mins = all_points.min(0)
-            maxs = all_points.max(0)
-            mids = (mins + maxs) / 2
-            return np.array([mins, mids, maxs])
-
-    def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
-        for mob in self.get_family(recurse_down):
-            mob.needs_new_bounding_box = True
-        if recurse_up:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
-        return self
 
     def is_point_touching(self, point, buff=MED_SMALL_BUFF):
-        bb = self.get_bounding_box()
+        bb = self.bounding_box
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return (point >= mins).all() and (point <= maxs).all()
 
     # Family matters
 
-    def __getitem__(self, value):
-        if isinstance(value, slice):
-            GroupClass = self.get_group_class()
-            return GroupClass(*self.split().__getitem__(value))
-        return self.split().__getitem__(value)
-
-    def __iter__(self):
-        return iter(self.split())
-
-    def __len__(self):
-        return len(self.split())
-
-    def split(self):
-        return self.submobjects
-
     def assemble_family(self):
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
-        self.refresh_bounding_box()
+        self.invalidate_bounding_box()
         for parent in self.parents:
             parent.assemble_family()
         return self
@@ -2022,23 +1793,6 @@ class OpenGLMobject:
 
     # Getters
 
-    def get_bounding_box_point(self, direction):
-        bb = self.get_bounding_box()
-        indices = (np.sign(direction) + 1).astype(int)
-        return np.array([bb[indices[i]][i] for i in range(3)])
-
-    def get_edge_center(self, direction) -> np.ndarray:
-        """Get edge coordinates for certain direction."""
-        return self.get_bounding_box_point(direction)
-
-    def get_corner(self, direction) -> np.ndarray:
-        """Get corner coordinates for certain direction."""
-        return self.get_bounding_box_point(direction)
-
-    def get_center(self) -> np.ndarray:
-        """Get center coordinates."""
-        return self.get_bounding_box()[1]
-
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
 
@@ -2051,7 +1805,7 @@ class OpenGLMobject:
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction):
-        dl, center, ur = self.get_bounding_box()
+        dl, center, ur = self.bounding_box
         corner_vect = ur - center
         return center + direction / np.max(
             np.abs(
@@ -2089,7 +1843,7 @@ class OpenGLMobject:
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
-        bb = self.get_bounding_box()
+        bb = self.bounding_box
         return abs((bb[2] - bb[0])[dim])
 
     def get_width(self):
@@ -2421,7 +2175,7 @@ class OpenGLMobject:
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.set_data(sm2.data)
             sm1.set_uniforms(sm2.uniforms)
-        self.refresh_bounding_box(recurse_down=True)
+        self.invalidate_bounding_box(recurse_down=True)
         return self
 
     # Locking data
@@ -2667,127 +2421,3 @@ class OpenGLPoint(OpenGLMobject):
     def set_location(self, new_loc):
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
-
-class _AnimationBuilder:
-    def __init__(self, mobject):
-        self.mobject = mobject
-        self.mobject.generate_target()
-
-        self.overridden_animation = None
-        self.is_chaining = False
-        self.methods = []
-
-        # Whether animation args can be passed
-        self.cannot_pass_args = False
-        self.anim_args = {}
-
-    def __call__(self, **kwargs):
-        if self.cannot_pass_args:
-            raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once",
-            )
-
-        self.anim_args = kwargs
-        self.cannot_pass_args = True
-
-        return self
-
-    def __getattr__(self, method_name):
-        method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
-        has_overridden_animation = hasattr(method, "_override_animate")
-
-        if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
-            raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
-            )
-
-        def update_target(*method_args, **method_kwargs):
-            if has_overridden_animation:
-                self.overridden_animation = method._override_animate(
-                    self.mobject,
-                    *method_args,
-                    anim_args=self.anim_args,
-                    **method_kwargs,
-                )
-            else:
-                method(*method_args, **method_kwargs)
-            return self
-
-        self.is_chaining = True
-        self.cannot_pass_args = True
-
-        return update_target
-
-    def build(self):
-        from ..animation.transform import _MethodAnimation
-
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
-
-        for attr, value in self.anim_args.items():
-            setattr(anim, attr, value)
-
-        return anim
-
-
-def override_animate(method):
-    r"""Decorator for overriding method animations.
-
-    This allows to specify a method (returning an :class:`~.Animation`)
-    which is called when the decorated method is used with the ``.animate`` syntax
-    for animating the application of a method.
-
-    .. seealso::
-
-        :attr:`OpenGLMobject.animate`
-
-    .. note::
-
-        Overridden methods cannot be combined with normal or other overridden
-        methods using method chaining with the ``.animate`` syntax.
-
-
-    Examples
-    --------
-
-    .. manim:: AnimationOverrideExample
-
-        class CircleWithContent(VGroup):
-            def __init__(self, content):
-                super().__init__()
-                self.circle = Circle()
-                self.content = content
-                self.add(self.circle, content)
-                content.move_to(self.circle.get_center())
-
-            def clear_content(self):
-                self.remove(self.content)
-                self.content = None
-
-            @override_animate(clear_content)
-            def _clear_content_animation(self, anim_args=None):
-                if anim_args is None:
-                    anim_args = {}
-                anim = Uncreate(self.content, **anim_args)
-                self.clear_content()
-                return anim
-
-        class AnimationOverrideExample(Scene):
-            def construct(self):
-                t = Text("hello!")
-                my_mobject = CircleWithContent(t)
-                self.play(Create(my_mobject))
-                self.play(my_mobject.animate.clear_content())
-                self.wait()
-
-    """
-
-    def decorator(animation_method):
-        method._override_animate = animation_method
-        return animation_method
-
-    return decorator

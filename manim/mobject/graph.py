@@ -12,11 +12,12 @@ import numpy as np
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
+from ..animation.animation_utils import override_animate
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
-from .mobject import Mobject, override_animate
+from .mobject import Mobject
 from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject

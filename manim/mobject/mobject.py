@@ -1,7 +1,7 @@
 """Base classes for objects that can be displayed."""
 
 
-__all__ = ["Mobject", "Group", "override_animate"]
+__all__ = ["Mobject", "Group"]
 
 
 import copy
@@ -31,6 +31,8 @@ from typing import (
 import numpy as np
 from colour import Color
 
+from manim.interface.mobject_base import MobjectBase
+
 from .. import config
 from ..constants import *
 from ..utils.color import (
@@ -41,7 +43,6 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -57,7 +58,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject:
+class Mobject(MobjectBase):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
@@ -77,22 +78,10 @@ class Mobject:
 
     """
 
-    animation_overrides = {}
-
-    @classmethod
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        cls.animation_overrides: Dict[
-            Type["Animation"],
-            Callable[["Mobject"], "Animation"],
-        ] = {}
-        cls._add_intrinsic_animation_overrides()
-        cls._original__init__ = cls.__init__
-
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+        super().__init__(name=name)
+
         self.color = Color(color) if color else None
-        self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
@@ -104,223 +93,6 @@ class Mobject:
         self.generate_points()
         self.init_colors()
 
-    @classmethod
-    def animation_override_for(
-        cls,
-        animation_class: Type["Animation"],
-    ) -> "Optional[Callable[[Mobject, ...], Animation]]":
-        """Returns the function defining a specific animation override for this class.
-
-        Parameters
-        ----------
-        animation_class
-            The animation class for which the override function should be returned.
-
-        Returns
-        -------
-        Optional[Callable[[Mobject, ...], Animation]]
-            The function returning the override animation or ``None`` if no such animation
-            override is defined.
-        """
-        if animation_class in cls.animation_overrides:
-            return cls.animation_overrides[animation_class]
-
-        return None
-
-    @classmethod
-    def _add_intrinsic_animation_overrides(cls):
-        """Initializes animation overrides marked with the :func:`~.override_animation`
-        decorator.
-        """
-        for method_name in dir(cls):
-            # Ignore dunder methods
-            if method_name.startswith("__"):
-                continue
-
-            method = getattr(cls, method_name)
-            if hasattr(method, "_override_animation"):
-                animation_class = method._override_animation
-                cls.add_animation_override(animation_class, method)
-
-    @classmethod
-    def add_animation_override(
-        cls,
-        animation_class: Type["Animation"],
-        override_func: "Callable[[Mobject, ...], Animation]",
-    ):
-        """Add an animation override.
-
-        This does not apply to subclasses.
-
-        Parameters
-        ----------
-        animation_class
-            The animation type to be overridden
-        override_func
-            The function returning an animation replacing the default animation. It gets
-            passed the parameters given to the animnation constructor.
-
-        Raises
-        ------
-        MultiAnimationOverrideException
-            If the overridden animation was already overridden.
-        """
-        if animation_class not in cls.animation_overrides:
-            cls.animation_overrides[animation_class] = override_func
-        else:
-            raise MultiAnimationOverrideException(
-                f"The animation {animation_class.__name__} for "
-                f"{cls.__name__} is overridden by more than one method: "
-                f"{cls.animation_overrides[animation_class].__qualname__} and "
-                f"{override_func.__qualname__}.",
-            )
-
-    @classmethod
-    def set_default(cls, **kwargs):
-        """Sets the default values of keyword arguments.
-
-        If this method is called without any additional keyword
-        arguments, the original default values of the initialization
-        method of this class are restored.
-
-        Parameters
-        ----------
-
-        kwargs
-            Passing any keyword argument will update the default
-            values of the keyword arguments of the initialization
-            function of this class.
-
-        Examples
-        --------
-
-        ::
-
-            >>> from manim import Square, GREEN
-            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
-            (<Color #83c167>, 0.25)
-            >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
-            (<Color white>, 0.0)
-
-        .. manim:: ChangedDefaultTextcolor
-            :save_last_frame:
-
-            config.background_color = WHITE
-
-            class ChangedDefaultTextcolor(Scene):
-                def construct(self):
-                    Text.set_default(color=BLACK)
-                    self.add(Text("Changing default values is easy!"))
-
-                    # we revert the colour back to the default to prevent a bug in the docs.
-                    Text.set_default(color=WHITE)
-
-        """
-        if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
-        else:
-            cls.__init__ = cls._original__init__
-
-    @property
-    def animate(self):
-        """Used to animate the application of any method of :code:`self`.
-
-        Any method called on :code:`animate` is converted to an animation of applying
-        that method on the mobject itself.
-
-        For example, :code:`square.set_fill(WHITE)` sets the fill color of a square,
-        while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
-
-        Multiple methods can be put in a single animation once via chaining:
-
-        ::
-
-            self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
-
-        .. warning::
-
-            Passing multiple animations for the same :class:`Mobject` in one
-            call to :meth:`~.Scene.play` is discouraged and will most likely
-            not work properly. Instead of writing an animation like
-
-            ::
-
-                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
-
-            make use of method chaining.
-
-        Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
-        directly after accessing ``.animate``, like so::
-
-            self.play(my_mobject.animate(rate_func=linear).shift(RIGHT))
-
-        This is especially useful when animating simultaneous ``.animate`` calls that
-        you want to behave differently::
-
-            self.play(
-                mobject1.animate(run_time=2).rotate(PI),
-                mobject2.animate(rate_func=there_and_back).shift(RIGHT),
-            )
-
-        .. seealso::
-
-            :func:`override_animate`
-
-
-        Examples
-        --------
-
-        .. manim:: AnimateExample
-
-            class AnimateExample(Scene):
-                def construct(self):
-                    s = Square()
-                    self.play(Create(s))
-                    self.play(s.animate.shift(RIGHT))
-                    self.play(s.animate.scale(2))
-                    self.play(s.animate.rotate(PI / 2))
-                    self.play(Uncreate(s))
-
-
-        .. manim:: AnimateChainExample
-
-            class AnimateChainExample(Scene):
-                def construct(self):
-                    s = Square()
-                    self.play(Create(s))
-                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
-                    self.play(Uncreate(s))
-
-        .. manim:: AnimateWithArgsExample
-
-            class AnimateWithArgsExample(Scene):
-                def construct(self):
-                    s = Square()
-                    c = Circle()
-
-                    VGroup(s, c).arrange(RIGHT, buff=2)
-                    self.add(s, c)
-
-                    self.play(
-                        s.animate(run_time=2).rotate(PI / 2),
-                        c.animate(rate_func=there_and_back).shift(RIGHT),
-                    )
-
-        .. warning::
-
-            ``.animate``
-             will interpolate the :class:`~.Mobject` between its points prior to
-             ``.animate`` and its points after applying ``.animate`` to it. This may
-             result in unexpected behavior when attempting to interpolate along paths,
-             or rotations.
-             If you want animations to consider the points between, consider using
-             :class:`~.ValueTracker` with updaters instead.
-
-        """
-        return _AnimationBuilder(self)
-
     def __deepcopy__(self, clone_from_id):
         cls = self.__class__
         result = cls.__new__(cls)
@@ -329,12 +101,6 @@ class Mobject:
             setattr(result, k, copy.deepcopy(v, clone_from_id))
         result.original_id = str(id(self))
         return result
-
-    def __repr__(self):
-        if config["renderer"] == "opengl":
-            return super().__repr__()
-        else:
-            return str(self.name)
 
     def reset_points(self):
         """Sets :attr:`points` to be an empty array."""
@@ -420,14 +186,11 @@ class Mobject:
                 raise TypeError("All submobjects must be of type Mobject")
             if m is self:
                 raise ValueError("Mobject cannot contain self")
+            if self not in m.parents:
+                m.parents.append(self)
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
-    def __add__(self, mobject):
-        raise NotImplementedError
-
-    def __iadd__(self, mobject):
-        raise NotImplementedError
 
     def add_to_back(self, *mobjects: "Mobject"):
         """Add all passed mobjects to the back of the submobjects.
@@ -479,6 +242,8 @@ class Mobject:
         for mobject in mobjects:
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
+            if self not in mobject.parents:
+                mobject.parents.append(self)
 
         self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
@@ -510,70 +275,10 @@ class Mobject:
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
+            if self in mobject.parents:
+                mobject.parents.remove(self)
         return self
 
-    def __sub__(self, other):
-        raise NotImplementedError
-
-    def __isub__(self, other):
-        raise NotImplementedError
-
-    def set(self, **kwargs):
-        """Sets attributes.
-
-        I.e. ``my_mobject.set(foo=1)`` applies ``my_mobject.foo = 1``.
-
-        This is a convenience to be used along with :attr:`animate` to
-        animate setting attributes.
-
-        In addition to this method, there is a compatibility
-        layer that allows ``get_*`` and ``set_*`` methods to
-        get and set generic attributes. For instance::
-
-            >>> mob = Mobject()
-            >>> mob.set_foo(0)
-            Mobject
-            >>> mob.get_foo()
-            0
-            >>> mob.foo
-            0
-
-        This compatibility layer does not interfere with any
-        ``get_*`` or ``set_*`` methods that are explicitly
-        defined.
-
-        .. warning::
-
-            This compatibility layer is for backwards compatibility
-            and is not guaranteed to stay around. Where applicable,
-            please prefer getting/setting attributes normally or with
-            the :meth:`set` method.
-
-        Parameters
-        ----------
-        **kwargs
-            The attributes and corresponding values to set.
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        Examples
-        --------
-        ::
-
-            >>> mob = Mobject()
-            >>> mob.set(foo=0)
-            Mobject
-            >>> mob.foo
-            0
-        """
-
-        for attr, value in kwargs.items():
-            setattr(self, attr, value)
-
-        return self
 
     def __getattr__(self, attr):
         # Add automatic compatibility layer
@@ -1321,6 +1026,7 @@ class Mobject:
             mob.points -= about_point
             mob.points = func(mob.points)
             mob.points += about_point
+        self.invalidate_bounding_box(recurse_down=True)
         return self
 
     def pose_at_angle(self, **kwargs):
@@ -1844,47 +1550,6 @@ class Mobject:
             return (np.min(values) + np.max(values)) / 2
         else:
             return np.max(values)
-
-    def get_critical_point(self, direction):
-        """Picture a box bounding the :class:`~.Mobject`.  Such a box has
-        9 'critical points': 4 corners, 4 edge center, the
-        center. This returns one of them, along the given direction.
-
-        ::
-
-            sample = Arc(start_angle=PI/7, angle = PI/5)
-
-            # These are all equivalent
-            max_y_1 = sample.get_top()[1]
-            max_y_2 = sample.get_critical_point(UP)[1]
-            max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
-
-        """
-        result = np.zeros(self.dim)
-        all_points = self.get_points_defining_boundary()
-        if len(all_points) == 0:
-            return result
-        for dim in range(self.dim):
-            result[dim] = self.get_extremum_along_dim(
-                all_points,
-                dim=dim,
-                key=direction[dim],
-            )
-        return result
-
-    # Pseudonyms for more general get_critical_point method
-
-    def get_edge_center(self, direction) -> np.ndarray:
-        """Get edge coordinates for certain direction."""
-        return self.get_critical_point(direction)
-
-    def get_corner(self, direction) -> np.ndarray:
-        """Get corner coordinates for certain direction."""
-        return self.get_critical_point(direction)
-
-    def get_center(self) -> np.ndarray:
-        """Get center coordinates"""
-        return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
         return np.apply_along_axis(np.mean, 0, self.get_all_points())
@@ -2647,6 +2312,7 @@ class Mobject:
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
+        self.invalidate_bounding_box(recurse_down=True)
         return self
 
     def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
@@ -2742,128 +2408,3 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     def __init__(self, *mobjects, **kwargs):
         super().__init__(**kwargs)
         self.add(*mobjects)
-
-
-class _AnimationBuilder:
-    def __init__(self, mobject):
-        self.mobject = mobject
-        self.mobject.generate_target()
-
-        self.overridden_animation = None
-        self.is_chaining = False
-        self.methods = []
-
-        # Whether animation args can be passed
-        self.cannot_pass_args = False
-        self.anim_args = {}
-
-    def __call__(self, **kwargs):
-        if self.cannot_pass_args:
-            raise ValueError(
-                "Animation arguments must be passed before accessing methods and can only be passed once",
-            )
-
-        self.anim_args = kwargs
-        self.cannot_pass_args = True
-
-        return self
-
-    def __getattr__(self, method_name):
-        method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
-        has_overridden_animation = hasattr(method, "_override_animate")
-
-        if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
-            raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
-            )
-
-        def update_target(*method_args, **method_kwargs):
-            if has_overridden_animation:
-                self.overridden_animation = method._override_animate(
-                    self.mobject,
-                    *method_args,
-                    anim_args=self.anim_args,
-                    **method_kwargs,
-                )
-            else:
-                method(*method_args, **method_kwargs)
-            return self
-
-        self.is_chaining = True
-        self.cannot_pass_args = True
-
-        return update_target
-
-    def build(self):
-        from ..animation.transform import _MethodAnimation
-
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
-
-        for attr, value in self.anim_args.items():
-            setattr(anim, attr, value)
-
-        return anim
-
-
-def override_animate(method):
-    r"""Decorator for overriding method animations.
-
-    This allows to specify a method (returning an :class:`~.Animation`)
-    which is called when the decorated method is used with the ``.animate`` syntax
-    for animating the application of a method.
-
-    .. seealso::
-
-        :attr:`Mobject.animate`
-
-    .. note::
-
-        Overridden methods cannot be combined with normal or other overridden
-        methods using method chaining with the ``.animate`` syntax.
-
-
-    Examples
-    --------
-
-    .. manim:: AnimationOverrideExample
-
-        class CircleWithContent(VGroup):
-            def __init__(self, content):
-                super().__init__()
-                self.circle = Circle()
-                self.content = content
-                self.add(self.circle, content)
-                content.move_to(self.circle.get_center())
-
-            def clear_content(self):
-                self.remove(self.content)
-                self.content = None
-
-            @override_animate(clear_content)
-            def _clear_content_animation(self, anim_args=None):
-                if anim_args is None:
-                    anim_args = {}
-                anim = Uncreate(self.content, **anim_args)
-                self.clear_content()
-                return anim
-
-        class AnimationOverrideExample(Scene):
-            def construct(self):
-                t = Text("hello!")
-                my_mobject = CircleWithContent(t)
-                self.play(Create(my_mobject))
-                self.play(my_mobject.animate.clear_content())
-                self.wait()
-
-    """
-
-    def decorator(animation_method):
-        method._override_animate = animation_method
-        return animation_method
-
-    return decorator

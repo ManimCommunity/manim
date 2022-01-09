@@ -6,6 +6,7 @@ from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.rate_functions import smooth
+from .animation_utils import _AnimationBuilder
 
 __all__ = ["Animation", "Wait", "override_animation"]
 
@@ -464,10 +465,7 @@ def prepare_animation(
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, mobject._AnimationBuilder):
-        return anim.build()
-
-    if isinstance(anim, opengl_mobject._AnimationBuilder):
+    if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):
