@@ -28,7 +28,6 @@ import numpy as np
 from colour import Color
 
 from ..utils.bezier import interpolate
-from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
 
 
@@ -550,5 +549,4 @@ def get_shaded_rgb(
     if factor < 0:
         factor *= 0.5
     result = rgb + factor
-    clip_in_place(rgb + factor, 0, 1)
     return result

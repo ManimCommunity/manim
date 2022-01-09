@@ -15,7 +15,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
+msgid ":py:obj:`Difference <manim.mobject.boolean_ops.Difference>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
 msgid "Subtracts one :class:`~.VMobject` from another one."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
+msgid ":py:obj:`Exclusion <manim.mobject.boolean_ops.Exclusion>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
@@ -23,7 +31,15 @@ msgid "Find the XOR between two :class:`~.VMobject`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
+msgid ":py:obj:`Intersection <manim.mobject.boolean_ops.Intersection>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
 msgid "Find the intersection of two :class:`~.VMobject` s."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.boolean_ops.rst:26:<autosummary>:1
+msgid ":py:obj:`Union <manim.mobject.boolean_ops.Union>`"
 msgstr ""
 
 

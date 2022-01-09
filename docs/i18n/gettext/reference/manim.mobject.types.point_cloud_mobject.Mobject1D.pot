@@ -15,11 +15,15 @@ msgid "Qualified name: ``manim.mobject.types.point\\_cloud\\_mobject.Mobject1D``
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.Mobject1D:1
-msgid "Bases: :class:`manim.mobject.types.point_cloud_mobject.PMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.point_cloud_mobject.PMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:14
 msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:20:<autosummary>:1
+msgid ":py:obj:`add_line <manim.mobject.types.point_cloud_mobject.Mobject1D.add_line>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:22
@@ -27,7 +31,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.types.point_cloud_mobject.Mobject1D.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.types.point_cloud_mobject.Mobject1D.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.types.point_cloud_mobject.Mobject1D.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
@@ -35,7 +51,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.types.point_cloud_mobject.Mobject1D.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:29:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.types.point_cloud_mobject.Mobject1D.width>`\\"
 msgstr ""
 
 

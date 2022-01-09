@@ -18,13 +18,37 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`Mobject1D <manim.mobject.types.point_cloud_mobject.Mobject1D>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`Mobject2D <manim.mobject.types.point_cloud_mobject.Mobject2D>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`PGroup <manim.mobject.types.point_cloud_mobject.PGroup>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:0
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:0
 msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`PMobject <manim.mobject.types.point_cloud_mobject.PMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
 msgid "A disc made of a cloud of Dots"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`Point <manim.mobject.types.point_cloud_mobject.Point>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`PointCloudDot <manim.mobject.types.point_cloud_mobject.PointCloudDot>`"
 msgstr ""
 
 

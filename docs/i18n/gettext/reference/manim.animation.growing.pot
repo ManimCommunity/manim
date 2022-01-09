@@ -11,11 +11,47 @@ msgid "growing"
 msgstr ""
 
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing:1
-msgid "Animations that grow mobjects."
+msgid "Animations that introduce mobjects to scene by growing them from points."
 msgstr ""
 
 #: ../../source/reference/manim.animation.growing.rst:15
 msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid ":py:obj:`GrowArrow <manim.animation.growing.GrowArrow>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid "Introduce an :class:`~.Arrow` by growing it from its start toward its tip."
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid ":py:obj:`GrowFromCenter <manim.animation.growing.GrowFromCenter>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid "Introduce an :class:`~.Mobject` by growing it from its center."
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid ":py:obj:`GrowFromEdge <manim.animation.growing.GrowFromEdge>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid "Introduce an :class:`~.Mobject` by growing it from one of its bounding box edges."
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid ":py:obj:`GrowFromPoint <manim.animation.growing.GrowFromPoint>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid "Introduce an :class:`~.Mobject` by growing it from a point."
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.rst:28:<autosummary>:1
+msgid ":py:obj:`SpinInFromNothing <manim.animation.growing.SpinInFromNothing>`"
 msgstr ""
 
 

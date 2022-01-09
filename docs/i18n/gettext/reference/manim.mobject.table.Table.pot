@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.table.Table``"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table:1
@@ -125,8 +125,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`add_background_to_entries <manim.mobject.table.Table.add_background_to_entries>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1
 msgid "Adds a black :class:`~.BackgroundRectangle` to each entry of the table."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`add_highlighted_cell <manim.mobject.table.Table.add_highlighted_cell>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -135,8 +143,16 @@ msgid "Highlights one cell at a specific position on the table by adding a :clas
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`create <manim.mobject.table.Table.create>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.create:1
 msgid "Customized create-type function for tables."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_cell <manim.mobject.table.Table.get_cell>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -145,8 +161,16 @@ msgid "Returns one specific cell as a rectangular :class:`~.Polygon` without the
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_col_labels <manim.mobject.table.Table.get_col_labels>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_col_labels:1
 msgid "Return the column labels of the table."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_columns <manim.mobject.table.Table.get_columns>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -155,8 +179,16 @@ msgid "Return columns of the table as a :class:`~.VGroup` of :class:`~.VGroup`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_entries <manim.mobject.table.Table.get_entries>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries:1
 msgid "Return the individual entries of the table (including labels) or one specific entry if the parameter, ``pos``,  is set."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_entries_without_labels <manim.mobject.table.Table.get_entries_without_labels>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -165,8 +197,16 @@ msgid "Return the individual entries of the table (without labels) or one specif
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_highlighted_cell <manim.mobject.table.Table.get_highlighted_cell>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_highlighted_cell:1
 msgid "Returns a :class:`~.BackgroundRectangle` of the cell at the given position."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_horizontal_lines <manim.mobject.table.Table.get_horizontal_lines>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -175,8 +215,16 @@ msgid "Return the horizontal lines of the table."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_labels <manim.mobject.table.Table.get_labels>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_labels:1
 msgid "Returns the labels of the table."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_row_labels <manim.mobject.table.Table.get_row_labels>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -185,8 +233,16 @@ msgid "Return the row labels of the table."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_rows <manim.mobject.table.Table.get_rows>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_rows:1
 msgid "Return the rows of the table as a :class:`~.VGroup` of :class:`~.VGroup`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`get_vertical_lines <manim.mobject.table.Table.get_vertical_lines>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -195,13 +251,25 @@ msgid "Return the vertical lines of the table."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`scale <manim.mobject.table.Table.scale>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:1
 msgid "Scale the size by a factor."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`set_column_colors <manim.mobject.table.Table.set_column_colors>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.set_column_colors:1
 msgid "Set individual colors for each column of the table."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
+msgid ":py:obj:`set_row_colors <manim.mobject.table.Table.set_row_colors>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.Table.rst:36:<autosummary>:1
@@ -214,7 +282,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.table.Table.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.table.Table.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.table.Table.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
@@ -222,7 +302,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.table.Table.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.table.Table.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
@@ -343,7 +431,11 @@ msgid "Additional keyword arguments passed to :meth:`apply_points_function_about
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:11
-msgid "The scaled mobject."
+msgid "``self``"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:12
+msgid ":class:`Mobject`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:29

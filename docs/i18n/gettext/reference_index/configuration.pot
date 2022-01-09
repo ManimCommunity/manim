@@ -15,11 +15,23 @@ msgid "Module Index"
 msgstr ""
 
 #: ../../source/reference_index/configuration.rst:14:<autosummary>:1
+msgid ":py:obj:`_config <manim._config>`\\"
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:14:<autosummary>:1
 msgid "Set the global config and logger."
 msgstr ""
 
 #: ../../source/reference_index/configuration.rst:14:<autosummary>:1
+msgid ":py:obj:`utils <manim._config.utils>`\\"
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:14:<autosummary>:1
 msgid "Utilities to create and set the config."
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:14:<autosummary>:1
+msgid ":py:obj:`logger_utils <manim._config.logger_utils>`\\"
 msgstr ""
 
 

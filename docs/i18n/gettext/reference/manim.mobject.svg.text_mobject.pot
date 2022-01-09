@@ -36,12 +36,24 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`MarkupText <manim.mobject.svg.text_mobject.MarkupText>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
 #: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
 msgid "Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`Paragraph <manim.mobject.svg.text_mobject.Paragraph>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
 msgid "Display a paragraph of text."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:30:<autosummary>:1
+msgid ":py:obj:`Text <manim.mobject.svg.text_mobject.Text>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.rst:33

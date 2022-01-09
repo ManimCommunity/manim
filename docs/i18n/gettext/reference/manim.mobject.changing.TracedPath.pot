@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.changing.TracedPath``"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.TracedPath:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.TracedPath:1
@@ -50,12 +50,28 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:20:<autosummary>:1
+msgid ":py:obj:`update_path <manim.mobject.changing.TracedPath.update_path>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:22
 msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.changing.TracedPath.animate>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.changing.TracedPath.animation_overrides>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.changing.TracedPath.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
@@ -63,7 +79,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.changing.TracedPath.height>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.changing.TracedPath.width>`\\"
 msgstr ""
 
 

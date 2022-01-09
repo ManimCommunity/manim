@@ -23,7 +23,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`ApplyWave <manim.animation.indication.ApplyWave>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
 msgid "Send a wave through the Mobject distorting it temporarily."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`Circumscribe <manim.animation.indication.Circumscribe>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
@@ -31,7 +39,15 @@ msgid "Draw a temporary line surrounding the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`Flash <manim.animation.indication.Flash>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
 msgid "Send out lines in all directions."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`FocusOn <manim.animation.indication.FocusOn>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
@@ -39,11 +55,31 @@ msgid "Shrink a spotlight to a position."
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`Indicate <manim.animation.indication.Indicate>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
 msgid "Indicate a Mobject by temporarily resizing and recoloring it."
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`ShowCreationThenFadeOut <manim.animation.indication.ShowCreationThenFadeOut>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`ShowPassingFlash <manim.animation.indication.ShowPassingFlash>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
 msgid "Show only a sliver of the VMobject each frame."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`ShowPassingFlashWithThinningStrokeWidth <manim.animation.indication.ShowPassingFlashWithThinningStrokeWidth>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:36:<autosummary>:1
+msgid ":py:obj:`Wiggle <manim.animation.indication.Wiggle>`"
 msgstr ""
 
 
