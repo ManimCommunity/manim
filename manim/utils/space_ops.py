@@ -81,7 +81,6 @@ def quaternion_mult(
     return result
 
 
-
 def quaternion_from_angle_axis(
     angle: float,
     axis: np.ndarray,
@@ -108,7 +107,6 @@ def quaternion_from_angle_axis(
     if not axis_normalized:
         axis = normalize(axis)
     return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:

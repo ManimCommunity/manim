@@ -3,7 +3,7 @@ import numpy as np
 
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.types.vectorized_mobject import VMobject, VGroup
+from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from ...utils.bezier import integer_interpolate, interpolate
 from ...utils.color import *
 from ...utils.config_ops import _Data, _Uniforms
@@ -387,6 +387,7 @@ class TexturedSurface(Surface):
         self.read_data_to_shader(shader_data, "im_coords", "im_coords")
         return shader_data
 
+
 class SurfaceMesh(VGroup):
     def __init__(
         self,
@@ -431,4 +432,3 @@ class SurfaceMesh(VGroup):
             path = VMobject()
             path.set_points_smoothly(nudged_points[vi::full_nv])
             self.add(path)
-

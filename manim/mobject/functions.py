@@ -14,6 +14,7 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
 from ..utils.scale import LinearBase, _ScaleBase
 
+
 class ParametricFunction(VMobject):
     """A parametric curve.
 

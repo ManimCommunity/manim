@@ -2161,7 +2161,6 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-
     def get_z_axis_label(
         self,
         label: Union[float, str, "Mobject"],

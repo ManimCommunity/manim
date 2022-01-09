@@ -91,11 +91,10 @@ if TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.surface import Surface
+from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
-
 
 
 class ShowPartial(Animation):
@@ -112,10 +111,7 @@ class ShowPartial(Animation):
 
     """
 
-
-    def __init__(
-        self, mobject: Optional[Union[VMobject, Surface]], **kwargs
-    ):
+    def __init__(self, mobject: Optional[Union[VMobject, Surface]], **kwargs):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
             raise NotImplementedError("This animation is not defined for this Mobject.")

@@ -652,9 +652,7 @@ class Mobject:
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.has_points()]
 
-    def add(
-        self, *mobjects: "Mobject", update_parent: bool = False
-    ) -> "Mobject":
+    def add(self, *mobjects: "Mobject", update_parent: bool = False) -> "Mobject":
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -729,9 +727,7 @@ class Mobject:
         self.assemble_family()
         return self
 
-    def remove(
-        self, *mobjects: "Mobject", update_parent: bool = False
-    ) -> "Mobject":
+    def remove(self, *mobjects: "Mobject", update_parent: bool = False) -> "Mobject":
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -1238,11 +1234,7 @@ class Mobject:
         # Make sure any mobject or numpy array attributes are copied
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
-            if (
-                isinstance(value, Mobject)
-                and value in family
-                and value is not self
-            ):
+            if isinstance(value, Mobject) and value in family and value is not self:
                 setattr(copy_mobject, attr, value.copy())
             if isinstance(value, np.ndarray):
                 setattr(copy_mobject, attr, value.copy())
@@ -2628,9 +2620,7 @@ class Mobject:
 
     def throw_error_if_no_points(self):
         if not self.has_points():
-            message = (
-                "Cannot call Mobject.{} " + "for a Mobject with no points"
-            )
+            message = "Cannot call Mobject.{} " + "for a Mobject with no points"
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 

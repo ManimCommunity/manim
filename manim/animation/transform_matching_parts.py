@@ -71,7 +71,6 @@ class TransformMatchingAbstractBase(AnimationGroup):
         **kwargs
     ):
 
-
         if isinstance(mobject, VMobject):
             group_type = VGroup
         else:

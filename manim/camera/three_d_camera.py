@@ -8,13 +8,13 @@ import numpy as np
 from .. import config
 from ..camera.camera import Camera
 from ..constants import *
+from ..mobject.mobject import Point
 from ..mobject.three_d_utils import (
     get_3d_vmob_end_corner,
     get_3d_vmob_end_corner_unit_normal,
     get_3d_vmob_start_corner,
     get_3d_vmob_start_corner_unit_normal,
 )
-from ..mobject.mobject import Point
 from ..mobject.value_tracker import ValueTracker
 from ..utils.color import get_shaded_rgb
 from ..utils.family import extract_mobject_family_members

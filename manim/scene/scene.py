@@ -389,7 +389,6 @@ class Scene:
             family_members.extend(mob.get_family())
         return family_members
 
-
     def add(self, *mobjects):
         """
         Mobjects will be displayed, from background to

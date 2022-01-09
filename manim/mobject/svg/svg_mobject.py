@@ -82,12 +82,10 @@ class SVGMobject(VMobject):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        self.path_string_config = (
-            {
-                "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
-                "should_remove_null_curves": should_remove_null_curves,
-            }
-        )
+        self.path_string_config = {
+            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+            "should_remove_null_curves": should_remove_null_curves,
+        }
         super().__init__(
             color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )

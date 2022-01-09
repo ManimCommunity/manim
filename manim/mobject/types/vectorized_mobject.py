@@ -1748,9 +1748,7 @@ class VGroup(VMobject):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(
-        self, key: int, value: Union[VMobject, Sequence[VMobject]]
-    ):
+    def __setitem__(self, key: int, value: Union[VMobject, Sequence[VMobject]]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -1912,7 +1910,6 @@ class VDict(VMobject):
 
         return self
 
-
     def remove(self, key):
         """Removes the mobject from the :class:`VDict` object having the key `key`
 
@@ -1940,7 +1937,6 @@ class VDict(VMobject):
         super().remove(self.submob_dict[key])
         del self.submob_dict[key]
         return self
-
 
     def __getitem__(self, key):
         """Override the [] operator for item retrieval.
@@ -2063,7 +2059,6 @@ class VDict(VMobject):
         submobjects = self.submob_dict.values()
         return submobjects
 
-
     def add_key_value_pair(self, key, value):
         """A utility function used by :meth:`add` to add the key-value pair
         to :attr:`submob_dict`. Not really meant to be used externally.
@@ -2104,6 +2099,7 @@ class VDict(VMobject):
 
         self.submob_dict[key] = mob
         super().add(value)
+
 
 class VectorizedPoint(Point, VMobject):
     def __init__(

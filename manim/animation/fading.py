@@ -22,7 +22,6 @@ from typing import Optional, Union
 
 import numpy as np
 
-
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject

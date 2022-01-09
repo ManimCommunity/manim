@@ -73,7 +73,6 @@ from typing import Iterable, Optional, Sequence
 import numpy as np
 from colour import Color
 
-
 from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
@@ -90,6 +89,7 @@ from ..utils.space_ops import (
     regular_vertices,
     rotate_vector,
 )
+
 
 class TipableVMobject(VMobject):
     """
@@ -1261,7 +1261,9 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(VMobject,):
+class Elbow(
+    VMobject,
+):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -1657,7 +1659,9 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class CubicBezier(VMobject,):
+class CubicBezier(
+    VMobject,
+):
     """
     Example
     -------

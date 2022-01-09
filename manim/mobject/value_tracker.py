@@ -8,6 +8,7 @@ import numpy as np
 from ..mobject.mobject import Mobject
 from ..utils.paths import straight_path
 
+
 class ValueTracker(Mobject):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
