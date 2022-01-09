@@ -9,7 +9,7 @@ from colour import Color
 
 from ... import config
 from ...constants import *
-from ...mobject.opengl_mobject import Mobject, Point
+from ...mobject.mobject import Mobject, Point
 from ...utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -1777,6 +1777,334 @@ class VGroup(VMobject):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
+
+class VDict(VMobject):
+    """A VGroup-like class, also offering submobject access by
+    key, like a python dict
+
+    Parameters
+    ----------
+    mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
+    show_keys : :class:`bool`, optional
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. Defaults to False.
+    kwargs : Any
+            Other arguments to be passed to `Mobject`.
+
+    Attributes
+    ----------
+    show_keys : :class:`bool`
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. When displayed, the key is towards
+            the left of the mobject.
+            Defaults to False.
+    submob_dict : :class:`dict`
+            Is the actual python dictionary that is used to bind
+            the keys to the mobjects.
+
+    Examples
+    --------
+
+    .. manim:: ShapesWithVDict
+
+        class ShapesWithVDict(Scene):
+            def construct(self):
+                square = Square().set_color(RED)
+                circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+                # create dict from list of tuples each having key-mobject pair
+                pairs = [("s", square), ("c", circle)]
+                my_dict = VDict(pairs, show_keys=True)
+
+                # display it just like a VGroup
+                self.play(Create(my_dict))
+                self.wait()
+
+                text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
+
+                # add a key-value pair by wrapping it in a single-element list of tuple
+                # after attrs branch is merged, it will be easier like `.add(t=text)`
+                my_dict.add([("t", text)])
+                self.wait()
+
+                rect = Rectangle().next_to(text, DOWN)
+                # can also do key assignment like a python dict
+                my_dict["r"] = rect
+
+                # access submobjects like a python dict
+                my_dict["t"].set_color(PURPLE)
+                self.play(my_dict["t"].animate.scale(3))
+                self.wait()
+
+                # also supports python dict styled reassignment
+                my_dict["t"] = Tex("Some other text").set_color(BLUE)
+                self.wait()
+
+                # remove submobject by key
+                my_dict.remove("t")
+                self.wait()
+
+                self.play(Uncreate(my_dict["s"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["c"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
+                self.wait()
+
+                # you can also make a VDict from an existing dict of mobjects
+                plain_dict = {
+                    1: Integer(1).shift(DOWN),
+                    2: Integer(2).shift(2 * DOWN),
+                    3: Integer(3).shift(3 * DOWN),
+                }
+
+                vdict_from_plain_dict = VDict(plain_dict)
+                vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
+                self.play(Create(vdict_from_plain_dict))
+
+                # you can even use zip
+                vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
+                vdict_using_zip.shift(1.5 * RIGHT)
+                self.play(Create(vdict_using_zip))
+                self.wait()
+    """
+
+    def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
+        super().__init__(**kwargs)
+        self.show_keys = show_keys
+        self.submob_dict = {}
+        self.add(mapping_or_iterable)
+
+    def __repr__(self):
+        return __class__.__name__ + "(" + repr(self.submob_dict) + ")"
+
+    def add(self, mapping_or_iterable):
+        """Adds the key-value pairs to the :class:`VDict` object.
+
+        Also, it internally adds the value to the `submobjects` :class:`list`
+        of :class:`~.Mobject`, which is responsible for actual on-screen display.
+
+        Parameters
+        ---------
+        mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict.add([('s', square_obj)])
+        """
+        for key, value in dict(mapping_or_iterable).items():
+            self.add_key_value_pair(key, value)
+
+        return self
+
+
+    def remove(self, key):
+        """Removes the mobject from the :class:`VDict` object having the key `key`
+
+        Also, it internally removes the mobject from the `submobjects` :class:`list`
+        of :class:`~.Mobject`, (which is responsible for removing it from the screen)
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submoject to be removed.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            my_dict.remove('square')
+        """
+        if key not in self.submob_dict:
+            raise KeyError("The given key '%s' is not present in the VDict" % str(key))
+        super().remove(self.submob_dict[key])
+        del self.submob_dict[key]
+        return self
+
+
+    def __getitem__(self, key):
+        """Override the [] operator for item retrieval.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+           The key of the submoject to be accessed
+
+        Returns
+        -------
+        :class:`VMobject`
+           The submobject corresponding to the key `key`
+
+        Examples
+        --------
+        Normal usage::
+
+           self.play(Create(my_dict['s']))
+        """
+        submob = self.submob_dict[key]
+        return submob
+
+    def __setitem__(self, key, value):
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submoject to be assigned
+        value : :class:`VMobject`
+            The submobject to bind the key to
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict['sq'] = square_obj
+        """
+        if key in self.submob_dict:
+            self.remove(key)
+        self.add([(key, value)])
+
+    def __delitem__(self, key):
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key):
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key to check membership of.
+
+        Returns
+        -------
+        :class:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
+
+    def get_all_submobjects(self):
+        """To get all the submobjects associated with a particular :class:`VDict` object
+
+        Returns
+        -------
+        :class:`dict_values`
+            All the submobjects associated with the :class:`VDict` object
+
+        Examples
+        --------
+        Normal usage::
+
+            for submob in my_dict.get_all_submobjects():
+                self.play(Create(submob))
+        """
+        submobjects = self.submob_dict.values()
+        return submobjects
+
+
+    def add_key_value_pair(self, key, value):
+        """A utility function used by :meth:`add` to add the key-value pair
+        to :attr:`submob_dict`. Not really meant to be used externally.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submobject to be added.
+        value : :class:`~.VMobject`
+            The mobject associated with the key
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If the value is not an instance of VMobject
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            self.add_key_value_pair('s', square_obj)
+
+        """
+        if not isinstance(value, VMobject):
+            raise TypeError("All submobjects must be of type VMobject")
+        mob = value
+        if self.show_keys:
+            # This import is here and not at the top to avoid circular import
+            from ...mobject.svg.tex_mobject import Tex
+
+            key_text = Tex(str(key)).next_to(value, LEFT)
+            mob.add(key_text)
+
+        self.submob_dict[key] = mob
+        super().add(value)
 
 class VectorizedPoint(Point, VMobject):
     def __init__(
