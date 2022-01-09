@@ -469,13 +469,13 @@ class SurfaceExample(Scene):
         night_texture = script_location / "assets" / "1280px-The_earth_at_night.jpg"
 
         surfaces = [
-            OpenGLTexturedSurface(surface, day_texture, night_texture)
+            TexturedSurface(surface, day_texture, night_texture)
             for surface in [sphere, torus1, torus2]
         ]
 
         for mob in surfaces:
             mob.shift(IN)
-            mob.mesh = OpenGLSurfaceMesh(mob)
+            mob.mesh = SurfaceMesh(mob)
             mob.mesh.set_stroke(BLUE, 1, opacity=0.5)
 
         # Set perspective
