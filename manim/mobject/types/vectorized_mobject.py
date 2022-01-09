@@ -36,7 +36,6 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
-from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
 from ..opengl_compatibility import ConvertToOpenGL
 from .opengl_vectorized_mobject import OpenGLVMobject
@@ -166,7 +165,7 @@ class VMobject(Mobject):
         if sheen_factor != 0 and len(rgbas) == 1:
             light_rgbas = np.array(rgbas)
             light_rgbas[:, :3] += sheen_factor
-            clip_in_place(light_rgbas, 0, 1)
+            np.clip(light_rgbas, 0, 1, out=light_rgbas)
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
