@@ -3,6 +3,7 @@
 __all__ = ["Scene"]
 
 import copy
+import datetime
 import inspect
 import platform
 import random
@@ -11,6 +12,8 @@ import time
 import types
 from queue import Queue
 from typing import List, Optional
+
+import srt
 
 from manim.scene.section import DefaultSectionType
 
@@ -744,12 +747,14 @@ class Scene:
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
+
         Parameters
         ----------
         *args : Tuple[:class:`Animation`]
             Animations to be played.
         **kwargs
             Configuration for the call to play().
+
         Returns
         -------
         Tuple[:class:`Animation`]
@@ -899,8 +904,50 @@ class Scene:
         else:
             return np.max([animation.run_time for animation in animations])
 
-    def play(self, *args, **kwargs):
+    def play(
+        self,
+        *args,
+        subcaption=None,
+        subcaption_duration=None,
+        subcaption_offset=0,
+        **kwargs,
+    ):
+        r"""Plays an animation in this scene.
+
+        Parameters
+        ----------
+
+        args
+            Animations to be played.
+        subcaption
+            The content of the external subcaption that should
+            be added during the animation.
+        subcaption_duration
+            The duration for which the specified subcaption is
+            added. If ``None`` (the default), the run time of the
+            animation is taken.
+        subcaption_offset
+            An offset (in seconds) for the start time of the
+            added subcaption.
+        kwargs
+            All other keywords are passed to the renderer.
+
+        """
+        start_time = self.renderer.time
         self.renderer.play(self, *args, **kwargs)
+        run_time = self.renderer.time - start_time
+        if subcaption:
+            if subcaption_duration is None:
+                subcaption_duration = run_time
+            # The start of the subcaption needs to be offset by the
+            # run_time of the animation because it is added after
+            # the animation has already been played (and Scene.renderer.time
+            # has already been updated).
+            self.add_subcaption(
+                content=subcaption,
+                duration=subcaption_duration,
+                offset=-run_time + subcaption_offset,
+            )
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.play(Wait(run_time=duration, stop_condition=stop_condition))
@@ -1241,6 +1288,55 @@ class Scene:
         self.update_mobjects(dt)
         self.update_meshes(dt)
         self.update_self(dt)
+
+    def add_subcaption(
+        self, content: str, duration: float = 1, offset: float = 0
+    ) -> None:
+        r"""Adds an entry in the corresponding subcaption file
+        at the current time stamp.
+
+        The current time stamp is obtained from ``Scene.renderer.time``.
+
+        Parameters
+        ----------
+
+        content
+            The subcaption content.
+        duration
+            The duration (in seconds) for which the subcaption is shown.
+        offset
+            This offset (in seconds) is added to the starting time stamp
+            of the subcaption.
+
+        Examples
+        --------
+
+        This example illustrates both possibilities for adding
+        subcaptions to Manimations::
+
+            class SubcaptionExample(Scene):
+                def construct(self):
+                    square = Square()
+                    circle = Circle()
+
+                    # first option: via the add_subcaption method
+                    self.add_subcaption("Hello square!", duration=1)
+                    self.play(Create(square))
+
+                    # second option: within the call to Scene.play
+                    self.play(
+                        Transform(square, circle),
+                        subcaption="The square transforms."
+                    )
+
+        """
+        subtitle = srt.Subtitle(
+            index=len(self.renderer.file_writer.subcaptions),
+            content=content,
+            start=datetime.timedelta(seconds=self.renderer.time + offset),
+            end=datetime.timedelta(seconds=self.renderer.time + offset + duration),
+        )
+        self.renderer.file_writer.subcaptions.append(subtitle)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """

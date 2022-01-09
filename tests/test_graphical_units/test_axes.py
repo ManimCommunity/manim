@@ -1,5 +1,5 @@
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "plot"
 
@@ -71,7 +71,8 @@ def test_plot_derivative_graph(scene):
 
     curve_1 = ax.plot(lambda x: x ** 2, color=PURPLE_B)
     curve_2 = ax.plot_derivative_graph(curve_1)
-    curves = VGroup(curve_1, curve_2)
+    curve_3 = ax.plot_antiderivative_graph(curve_1)
+    curves = VGroup(curve_1, curve_2, curve_3)
     scene.add(ax, curves)
 
 
@@ -153,7 +154,7 @@ def test_plot_line_graph(scene):
         x_values=[0, 1.5, 2, 2.8, 4, 6.25],
         y_values=[1, 3, 2.25, 4, 2.5, 1.75],
         line_color=GOLD_E,
-        vertex_dot_style=dict(stroke_width=3, fill_color=PURPLE),
+        vertex_dot_style={"stroke_width": 3, "fill_color": PURPLE},
         vertex_dot_radius=0.04,
         stroke_width=4,
     )

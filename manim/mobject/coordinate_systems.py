@@ -54,7 +54,6 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
-from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
@@ -340,25 +339,6 @@ class CoordinateSystem:
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
 
-    # move to a util_file, or Mobject()??
-    @staticmethod
-    def _create_label_tex(label_tex) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
-
-        Parameters
-        ----------
-        label_tex : The label to be compared against the above types.
-
-        Returns
-        -------
-        :class:`~.Mobject`
-            The label.
-        """
-
-        if isinstance(label_tex, (float, int, str)):
-            label_tex = MathTex(label_tex)
-        return label_tex
-
     def _get_axis_label(
         self,
         label: Union[float, str, "Mobject"],
@@ -388,7 +368,7 @@ class CoordinateSystem:
             The positioned label along the given axis.
         """
 
-        label = self._create_label_tex(label)
+        label = self.x_axis._create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction=direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
@@ -754,19 +734,6 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot",
-    )
-    def get_graph(
-        self,
-        function: Callable[[float], float],
-        x_range: Optional[Sequence[float]] = None,
-        **kwargs,
-    ) -> ParametricFunction:
-        return self.plot(function, x_range, **kwargs)
-
     def plot_implicit_curve(
         self,
         func: Callable,
@@ -815,20 +782,6 @@ class CoordinateSystem:
         )
         return graph
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_implicit_curve",
-    )
-    def get_implicit_curve(
-        self,
-        func: Callable,
-        min_depth: int = 5,
-        max_quads: int = 1500,
-        **kwargs,
-    ) -> ImplicitFunction:
-        return self.plot_implicit_curve(func, min_depth, max_quads, **kwargs)
-
     def plot_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
@@ -836,14 +789,6 @@ class CoordinateSystem:
         )
         graph.underlying_function = function
         return graph
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_parametric_curve",
-    )
-    def get_parametric_curve(self, function, **kwargs):
-        return self.plot_parametric_curve(function, **kwargs)
 
     def plot_polar_graph(
         self,
@@ -1033,7 +978,7 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        label = self._create_label_tex(label)
+        label = self.x_axis._create_label_tex(label)
         color = color or graph.get_color()
         label.set_color(color)
 
@@ -1437,15 +1382,59 @@ class CoordinateSystem:
 
         return self.plot(deriv, color=color, **kwargs)
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_derivative_graph",
-    )
-    def get_derivative_graph(
-        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
-    ) -> ParametricFunction:
-        return self.plot_derivative_graph(graph, color, **kwargs)
+    def plot_antiderivative_graph(
+        self,
+        graph: ParametricFunction,
+        y_intercept: float = 0,
+        samples: int = 50,
+        **kwargs,
+    ):
+        """Plots an antiderivative graph.
+
+        Examples
+        --------
+        .. manim:: AntiderivativeExample
+            :save_last_frame:
+
+            class AntiderivativeExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    graph1 = ax.plot(
+                        lambda x: (x ** 2 - 2) / 3,
+                        color=RED,
+                    )
+                    graph2 = ax.plot_antiderivative_graph(graph1, color=BLUE)
+                    self.add(ax, graph1, graph2)
+
+        .. note::
+            This graph is plotted from the values of area under the reference graph.
+            The result might not be ideal if the reference graph contains uncalculatable
+            areas from x=0.
+
+        Parameters
+        ----------
+        graph
+            The graph for which the antiderivative will be found.
+        y_intercept
+            The y-value at which the graph intercepts the y-axis.
+        samples
+            The number of points to take the area under the graph.
+        **kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the antiderivative.
+        """
+
+        def antideriv(x):
+            x_vals = np.linspace(0, x, samples)
+            f_vec = np.vectorize(graph.underlying_function)
+            y_vals = f_vec(x_vals)
+            return np.trapz(y_vals, x_vals) + y_intercept
+
+        return self.plot(antideriv, **kwargs)
 
     def get_secant_slope_group(
         self,
@@ -1542,11 +1531,11 @@ class CoordinateSystem:
 
         labels = VGroup()
         if dx_label is not None:
-            group.dx_label = self._create_label_tex(dx_label)
+            group.dx_label = self.x_axis._create_label_tex(dx_label)
             labels.add(group.dx_label)
             group.add(group.dx_label)
         if dy_label is not None:
-            group.df_label = self._create_label_tex(dy_label)
+            group.df_label = self.x_axis._create_label_tex(dy_label)
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -1702,7 +1691,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self._create_label_tex(label).set_color(label_color)
+            t_label = self.x_axis._create_label_tex(label).set_color(label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
@@ -1737,7 +1726,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
 
                 # x_min must be > 0 because log is undefined at 0.
-                graph = ax.get_graph(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
                 self.add(ax, graph)
 
     Parameters
@@ -2052,33 +2041,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         return line_graph
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_line_graph",
-    )
-    def get_line_graph(
-        self,
-        x_values: Iterable[float],
-        y_values: Iterable[float],
-        z_values: Optional[Iterable[float]] = None,
-        line_color: Color = YELLOW,
-        add_vertex_dots: bool = True,
-        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
-        vertex_dot_style: Optional[dict] = None,
-        **kwargs,
-    ) -> VDict:
-        return self.plot_line_graph(
-            x_values,
-            y_values,
-            z_values,
-            line_color,
-            add_vertex_dots,
-            vertex_dot_radius,
-            vertex_dot_style,
-            **kwargs,
-        )
-
     @staticmethod
     def _origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
@@ -2183,11 +2145,16 @@ class ThreeDAxes(Axes):
 
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
-        z_axis.rotate_about_zero(-PI / 2, UP)
-        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
+        # [ax.x_min, ax.x_max] used to account for LogBase() scaling
+        # where ax.x_range[0] != ax.x_min
+        z_origin = self._origin_shift([z_axis.x_min, z_axis.x_max])
+
+        z_axis.rotate_about_number(z_origin, -PI / 2, UP)
+        z_axis.rotate_about_number(z_origin, angle_of_vector(self.z_normal))
+        z_axis.shift(-z_axis.number_to_point(z_origin))
         z_axis.shift(
             self.x_axis.number_to_point(
-                self._origin_shift([z_axis.x_min, z_axis.x_max]),
+                self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
             ),
         )
 

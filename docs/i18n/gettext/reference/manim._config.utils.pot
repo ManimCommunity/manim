@@ -27,7 +27,15 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
+msgid ":py:obj:`ManimConfig <manim._config.utils.ManimConfig>`"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
 msgid "Dict-like class storing all config options."
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
+msgid ":py:obj:`ManimFrame <manim._config.utils.ManimFrame>`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.rst:31

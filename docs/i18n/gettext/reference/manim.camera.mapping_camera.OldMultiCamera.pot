@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.mapping\\_camera.OldMultiCamera``"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera:1
-msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgid "Bases: :py:class:`manim.camera.camera.Camera`"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera:1
@@ -42,8 +42,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
+msgid ":py:obj:`capture_mobjects <manim.camera.mapping_camera.OldMultiCamera.capture_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera.capture_mobjects:1
 msgid "Capture mobjects by printing them on :attr:`pixel_array`."
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
+msgid ":py:obj:`init_background <manim.camera.mapping_camera.OldMultiCamera.init_background>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
@@ -51,8 +59,16 @@ msgid "Initialize the background."
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
+msgid ":py:obj:`set_background <manim.camera.mapping_camera.OldMultiCamera.set_background>`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera.set_background:1
 msgid "Sets the background to the passed pixel_array after converting to valid RGB values."
+msgstr ""
+
+#: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
+msgid ":py:obj:`set_pixel_array <manim.camera.mapping_camera.OldMultiCamera.set_pixel_array>`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:23:<autosummary>:1
@@ -62,6 +78,14 @@ msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.OldMultiCamera.rst:25
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera.capture_mobjects:1:<autosummary>:1
+msgid ":py:obj:`background_color <manim.camera.mapping_camera.OldMultiCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera.capture_mobjects:1:<autosummary>:1
+msgid ":py:obj:`background_opacity <manim.camera.mapping_camera.OldMultiCamera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera.capture_mobjects:3

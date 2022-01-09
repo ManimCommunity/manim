@@ -23,7 +23,6 @@ from ..mobject.value_tracker import ValueTracker
 from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
-from ..utils.deprecation import deprecated_params
 
 
 class ThreeDScene(Scene):
@@ -50,12 +49,6 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
 
-    @deprecated_params(
-        params="distance",
-        since="v0.11.0",
-        until="v0.12.0",
-        message="Use focal_distance instead.",
-    )
     def set_camera_orientation(
         self,
         phi: Optional[float] = None,
@@ -90,7 +83,7 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
-        focal_distance = kwargs.pop("distance", focal_distance)
+
         if phi is not None:
             self.renderer.camera.set_phi(phi)
         if theta is not None:
@@ -139,7 +132,7 @@ class ThreeDScene(Scene):
                 }
                 cam.add_updater(lambda m, dt: methods[about](rate * dt))
                 self.add(self.camera)
-        except:
+        except Exception:
             raise ValueError("Invalid ambient rotation angle.")
 
     def stop_ambient_camera_rotation(self, about="theta"):
@@ -159,15 +152,35 @@ class ThreeDScene(Scene):
                 self.remove(x)
             else:
                 self.camera.clear_updaters()
-        except:
+        except Exception:
             raise ValueError("Invalid ambient rotation angle.")
 
     def begin_3dillusion_camera_rotation(
         self,
-        rate=1,
-        origin_theta=-60 * DEGREES,
-        origin_phi=75 * DEGREES,
+        rate: float = 1,
+        origin_phi: Optional[float] = None,
+        origin_theta: Optional[float] = None,
     ):
+        """
+        This method creates a 3D camera rotation illusion around
+        the current camera orientation.
+
+        Parameters
+        ----------
+        rate
+            The rate at which the camera rotation illusion should operate.
+        origin_phi
+            The polar angle the camera should move around. Defaults
+            to the current phi angle.
+        origin_theta
+            The azimutal angle the camera should move around. Defaults
+            to the current theta angle.
+        """
+        if origin_theta is None:
+            origin_theta = self.renderer.camera.theta_tracker.get_value()
+        if origin_phi is None:
+            origin_phi = self.renderer.camera.phi_tracker.get_value()
+
         val_tracker_theta = ValueTracker(0)
 
         def update_theta(m, dt):
@@ -182,7 +195,7 @@ class ThreeDScene(Scene):
 
         def update_phi(m, dt):
             val_tracker_phi.increment_value(dt * rate)
-            val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value())
+            val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value()) - 0.1
             return m.set_value(origin_phi + val_for_up_down)
 
         self.renderer.camera.phi_tracker.add_updater(update_phi)
@@ -197,12 +210,6 @@ class ThreeDScene(Scene):
         self.renderer.camera.phi_tracker.clear_updaters()
         self.remove(self.renderer.camera.phi_tracker)
 
-    @deprecated_params(
-        params="distance",
-        since="v0.11.0",
-        until="v0.12.0",
-        message="Use focal_distance instead.",
-    )
     def move_camera(
         self,
         phi: Optional[float] = None,
@@ -243,7 +250,6 @@ class ThreeDScene(Scene):
 
         """
         anims = []
-        focal_distance = kwargs.pop("distance", focal_distance)
 
         if config.renderer != "opengl":
             self.camera: ThreeDCamera

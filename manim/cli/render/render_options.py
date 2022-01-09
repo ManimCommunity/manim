@@ -3,6 +3,8 @@ import re
 import click
 from cloup import option, option_group
 
+from manim.constants import QUALITIES
+
 from ... import logger
 
 
@@ -59,15 +61,20 @@ render_options = option_group(
         "-q",
         "--quality",
         default=None,
-        type=click.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
-        help="""
-            Render quality at the follow resolution framerates, respectively:
-            854x480 30FPS,
-            1280x720 30FPS,
-            1920x1080 60FPS,
-            2560x1440 60FPS,
-            3840x2160 60FPS
-            """,
+        type=click.Choice(
+            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
+            case_sensitive=False,
+        ),
+        help="Render quality at the follow resolution framerates, respectively: "
+        + ", ".join(
+            reversed(
+                [
+                    f'{q["pixel_width"]}x{q["pixel_height"]} {q["frame_rate"]}FPS'
+                    for q in QUALITIES.values()
+                    if q["flag"]
+                ]
+            )
+        ),
     ),
     option(
         "-r",

@@ -18,6 +18,10 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.mobject.svg.svg_path.rst:26:<autosummary>:1
+msgid ":py:obj:`SVGPathMobject <manim.mobject.svg.svg_path.SVGPathMobject>`"
+msgstr ""
+
 #: ../../source/reference/manim.mobject.svg.svg_path.rst:29
 msgid "Functions"
 msgstr ""

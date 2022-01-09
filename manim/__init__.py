@@ -3,7 +3,7 @@
 
 import pkg_resources
 
-__version__ = pkg_resources.get_distribution(__name__).version
+__version__: str = pkg_resources.get_distribution(__name__).version
 
 
 import sys
@@ -85,8 +85,6 @@ from .mobject.value_tracker import *
 from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
 from .scene.moving_camera_scene import *
-from .scene.reconfigurable_scene import *
-from .scene.sample_space_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
 from .scene.section import *
@@ -107,7 +105,6 @@ from .utils.scale import *
 from .utils.simple_functions import *
 from .utils.sounds import *
 from .utils.space_ops import *
-from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
 

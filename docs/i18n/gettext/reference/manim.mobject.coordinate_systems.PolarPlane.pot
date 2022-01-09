@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.PolarPlane``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane:1
-msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgid "Bases: :py:class:`manim.mobject.coordinate_systems.Axes`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane:1
@@ -25,10 +25,6 @@ msgstr ""
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pr2pt:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pt2pr:0
 msgid "Parameters"
 msgstr ""
 
@@ -137,7 +133,6 @@ msgid "The axis config for the radius."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane:35
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:10
 msgid "Examples"
 msgstr ""
 
@@ -145,44 +140,60 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`add_coordinates <manim.mobject.coordinate_systems.PolarPlane.add_coordinates>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
 msgid "Adds the coordinates."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`get_axes <manim.mobject.coordinate_systems.PolarPlane.get_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
 msgid "Gets the axes."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`get_coordinate_labels <manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
 msgid "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:1
-msgid "Gets polar coordinates from a point."
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`get_radian_label <manim.mobject.coordinate_systems.PolarPlane.get_radian_label>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:1
-msgid "Gets a point from polar coordinates."
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`get_vector <manim.mobject.coordinate_systems.PolarPlane.get_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pr2pt:1
-msgid "Abbreviation for :meth:`polar_to_point`"
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+msgid ":py:obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.PolarPlane.prepare_for_nonlinear_transform>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:29:<autosummary>:1
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pt2pr:1
-msgid "Abbreviation for :meth:`point_to_polar`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:31
+#: ../../source/reference/manim.mobject.coordinate_systems.PolarPlane.rst:27
 msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.coordinate_systems.PolarPlane.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.coordinate_systems.PolarPlane.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.coordinate_systems.PolarPlane.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
@@ -190,7 +201,15 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.coordinate_systems.PolarPlane.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.coordinate_systems.PolarPlane.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
@@ -207,10 +226,6 @@ msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.get_axes:0
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pr2pt:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.pt2pr:0
 msgid "Return type"
 msgstr ""
 
@@ -219,30 +234,7 @@ msgid "Gets labels for the coordinates :param r_values: Iterable of values along
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:0
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:0
 msgid "Returns"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.get_coordinate_labels:5
-msgid "Labels for the radius and azimuth values."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:3
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:6
-msgid "The point."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:5
-msgid "The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\\theta`)."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.point_to_polar:6
-msgid "Tuple[:class:`float`, :class:`float`]"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.PolarPlane.polar_to_point:3
-msgid "The coordinate radius (:math:`r`)."
 msgstr ""
 
 

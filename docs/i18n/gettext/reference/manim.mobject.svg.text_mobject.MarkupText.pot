@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.text\\_mobject.MarkupText``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText:1
-msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgid "Bases: :py:class:`manim.mobject.svg.svg_mobject.SVGMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText:1
@@ -235,8 +235,16 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
+msgid ":py:obj:`extract_color_tags <manim.mobject.svg.text_mobject.MarkupText.extract_color_tags>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1
 msgid "Used to determine which parts (if any) of the string should be formatted with a custom color."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
+msgid ":py:obj:`extract_gradient_tags <manim.mobject.svg.text_mobject.MarkupText.extract_gradient_tags>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
@@ -245,8 +253,16 @@ msgid "Used to determine which parts (if any) of the string should be formatted 
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
+msgid ":py:obj:`text2hash <manim.mobject.svg.text_mobject.MarkupText.text2hash>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.text2hash:1
 msgid "Generates ``sha256`` hash for file name."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
+msgid ":py:obj:`text2svg <manim.mobject.svg.text_mobject.MarkupText.text2svg>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.MarkupText.rst:23:<autosummary>:1
@@ -259,7 +275,19 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid ":py:obj:`animate <manim.mobject.svg.text_mobject.MarkupText.animate>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid ":py:obj:`animation_overrides <manim.mobject.svg.text_mobject.MarkupText.animation_overrides>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid ":py:obj:`depth <manim.mobject.svg.text_mobject.MarkupText.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
@@ -267,7 +295,19 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid ":py:obj:`font_size <manim.mobject.svg.text_mobject.MarkupText.font_size>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid ":py:obj:`height <manim.mobject.svg.text_mobject.MarkupText.height>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
 msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1
+msgid ":py:obj:`width <manim.mobject.svg.text_mobject.MarkupText.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.MarkupText.extract_color_tags:1:<autosummary>:1

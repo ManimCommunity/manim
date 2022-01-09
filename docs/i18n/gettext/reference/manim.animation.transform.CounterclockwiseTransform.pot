@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.CounterclockwiseTransform``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.CounterclockwiseTransform:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.CounterclockwiseTransform.rst:14
@@ -24,6 +24,18 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.CounterclockwiseTransform.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.CounterclockwiseTransform.rst:25:<autosummary>:1
+msgid ":py:obj:`path_arc <manim.animation.transform.CounterclockwiseTransform.path_arc>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.CounterclockwiseTransform.rst:25:<autosummary>:1
+msgid ":py:obj:`path_func <manim.animation.transform.CounterclockwiseTransform.path_func>`\\"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.CounterclockwiseTransform:0
+msgid "Parameters"
 msgstr ""
 
 
