@@ -4,7 +4,6 @@ __all__ = [
     "sigmoid",
     "choose",
     "get_parameters",
-    "clip_in_place",
     "binary_search",
 ]
 
