@@ -327,7 +327,11 @@ class Camera:
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(self, coords_to_colors_func):
-        """Make a pixel array for the background by using coords_to_colors_func to determine each pixel's color. Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in space (in ordinary space coordinates; not pixel coordinates), and each output is expected to be an RGBA array of 4 floats.
+        """Make a pixel array for the background by using coords_to_colors_func to determine each pixel's color. 
+        
+        Each input pixel's color. Each input to coords_to_colors_func is an (x, y) pair in 
+        space (in ordinary space coordinates; not pixel coordinates), and each output is 
+        expected to be an RGBA array of 4 floats.
 
         Parameters
         ----------
