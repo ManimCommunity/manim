@@ -9,7 +9,7 @@ from colour import Color
 
 from ... import config
 from ...constants import *
-from ...mobject.opengl_mobject import Mobject, OpenGLPoint
+from ...mobject.opengl_mobject import Mobject, Point
 from ...utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -39,7 +39,7 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLVMobject(Mobject):
+class VMobject(Mobject):
     """A vectorized mobject."""
 
     fill_dtype = [
@@ -128,7 +128,7 @@ class OpenGLVMobject(Mobject):
         self.refresh_unit_normal()
 
     def get_group_class(self):
-        return OpenGLVGroup
+        return VGroup
 
     def init_data(self):
         super().init_data()
@@ -159,21 +159,21 @@ class OpenGLVMobject(Mobject):
         color: Optional[Color] = None,
         opacity: Optional[float] = None,
         recurse: bool = True,
-    ) -> "OpenGLVMobject":
-        """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
+    ) -> "VMobject":
+        """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
         ----------
         color
-            Fill color of the :class:`OpenGLVMobject`.
+            Fill color of the :class:`VMobject`.
         opacity
-            Fill opacity of the :class:`OpenGLVMobject`.
+            Fill opacity of the :class:`VMobject`.
         family
             If ``True``, the fill color of all submobjects is also set.
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             self. For chaining purposes.
 
         Examples
@@ -193,7 +193,7 @@ class OpenGLVMobject(Mobject):
 
         See Also
         --------
-        :meth:`~.OpenGLVMobject.set_style`
+        :meth:`~.VMobject.set_style`
         """
         if color is not None:
             if isinstance(color, str):
@@ -448,8 +448,8 @@ class OpenGLVMobject(Mobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float]) -> "OpenGLVMobject":
-        """Add a straight line from the last point of OpenGLVMobject to the given point.
+    def add_line_to(self, point: Sequence[float]) -> "VMobject":
+        """Add a straight line from the last point of VMobject to the given point.
 
         Parameters
         ----------
@@ -527,7 +527,7 @@ class OpenGLVMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> "OpenGLVMobject":
+    def set_points_as_corners(self, points: Iterable[float]) -> "VMobject":
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -540,7 +540,7 @@ class OpenGLVMobject(Mobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             self. For chaining purposes.
         """
         nppc = self.n_points_per_curve
@@ -562,7 +562,7 @@ class OpenGLVMobject(Mobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             For chaining purposes.
         """
         assert mode in ("jagged", "approx_smooth", "true_smooth")
@@ -659,7 +659,7 @@ class OpenGLVMobject(Mobject):
 
         Returns
         -------
-        :class:`OpenGLVMobject`
+        :class:`VMobject`
             Returns self.
 
         Examples
@@ -706,7 +706,7 @@ class OpenGLVMobject(Mobject):
         ]
 
     def get_subpaths(self):
-        """Returns subpaths formed by the curves of the OpenGLVMobject.
+        """Returns subpaths formed by the curves of the VMobject.
 
         Subpaths are ranges of curves with each pair of consecutive
         curves having their end/start points coincident.
@@ -892,24 +892,24 @@ class OpenGLVMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
+        """Gets the point at a proportion along the path of the :class:`VMobject`.
 
         Parameters
         ----------
         alpha
-            The proportion along the the path of the :class:`OpenGLVMobject`.
+            The proportion along the the path of the :class:`VMobject`.
 
         Returns
         -------
         :class:`numpy.ndarray`
-            The point on the :class:`OpenGLVMobject`.
+            The point on the :class:`VMobject`.
 
         Raises
         ------
         :exc:`ValueError`
             If ``alpha`` is not between 0 and 1.
         :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
+            If the :class:`VMobject` has no points.
         """
 
         if alpha < 0 or alpha > 1:
@@ -939,25 +939,25 @@ class OpenGLVMobject(Mobject):
         self,
         point: Iterable[Union[float, int]],
     ) -> float:
-        """Returns the proportion along the path of the :class:`OpenGLVMobject`
+        """Returns the proportion along the path of the :class:`VMobject`
         a particular given point is at.
 
         Parameters
         ----------
         point
-            The Cartesian coordinates of the point which may or may not lie on the :class:`OpenGLVMobject`
+            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
 
         Returns
         -------
         float
-            The proportion along the path of the :class:`OpenGLVMobject`.
+            The proportion along the path of the :class:`VMobject`.
 
         Raises
         ------
         :exc:`ValueError`
             If ``point`` does not lie on the curve.
         :exc:`Exception`
-            If the :class:`OpenGLVMobject` has no points.
+            If the :class:`VMobject` has no points.
         """
         self.throw_error_if_no_points()
 
@@ -1024,7 +1024,7 @@ class OpenGLVMobject(Mobject):
         return self.points[nppc - 1 :: nppc]
 
     def get_anchors(self) -> np.ndarray:
-        """Returns the anchors of the curves forming the OpenGLVMobject.
+        """Returns the anchors of the curves forming the VMobject.
 
         Returns
         -------
@@ -1068,7 +1068,7 @@ class OpenGLVMobject(Mobject):
         Returns
         -------
         float
-            The length of the :class:`OpenGLVMobject`.
+            The length of the :class:`VMobject`.
         """
 
         return np.sum(
@@ -1203,7 +1203,7 @@ class OpenGLVMobject(Mobject):
         vmobject.set_points(np.vstack(new_subpaths2))
         return self
 
-    def insert_n_curves(self, n: int, recurse=True) -> "OpenGLVMobject":
+    def insert_n_curves(self, n: int, recurse=True) -> "VMobject":
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1213,7 +1213,7 @@ class OpenGLVMobject(Mobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             for chaining.
         """
         for mob in self.get_family(recurse):
@@ -1285,23 +1285,23 @@ class OpenGLVMobject(Mobject):
 
     def pointwise_become_partial(
         self,
-        vmobject: "OpenGLVMobject",
+        vmobject: "VMobject",
         a: float,
         b: float,
-    ) -> "OpenGLVMobject":
+    ) -> "VMobject":
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
         Parameters
         ----------
-        vmobject : OpenGLVMobject
+        vmobject : VMobject
             The vmobject that will serve as a model.
         a : float
             upper-bound.
         b : float
             lower-bound
         """
-        assert isinstance(vmobject, OpenGLVMobject)
+        assert isinstance(vmobject, VMobject)
         if a <= 0 and b >= 1:
             self.become(vmobject)
             return self
@@ -1354,9 +1354,9 @@ class OpenGLVMobject(Mobject):
         self.set_points(new_points)
         return self
 
-    def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
-        """Returns the subcurve of the OpenGLVMobject between the interval [a, b].
-        The curve is a OpenGLVMobject itself.
+    def get_subcurve(self, a: float, b: float) -> "VMobject":
+        """Returns the subcurve of the VMobject between the interval [a, b].
+        The curve is a VMobject itself.
 
         Parameters
         ----------
@@ -1368,7 +1368,7 @@ class OpenGLVMobject(Mobject):
 
         Returns
         -------
-        OpenGLVMobject
+        VMobject
             The subcurve between of [a, b]
         """
         vmob = self.copy()
@@ -1579,7 +1579,7 @@ class OpenGLVMobject(Mobject):
 
     def get_stroke_shader_data(self):
         points = self.points
-        stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
+        stroke_data = np.zeros(len(points), dtype=VMobject.stroke_dtype)
 
         nppc = self.n_points_per_curve
         stroke_data["point"] = points
@@ -1596,7 +1596,7 @@ class OpenGLVMobject(Mobject):
 
     def get_fill_shader_data(self):
         points = self.points
-        fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
+        fill_data = np.zeros(len(points), dtype=VMobject.fill_dtype)
         fill_data["vert_index"][:, 0] = range(len(points))
 
         self.read_data_to_shader(fill_data, "point", "points")
@@ -1613,39 +1613,39 @@ class OpenGLVMobject(Mobject):
         return self.get_triangulation()
 
 
-class OpenGLVGroup(OpenGLVMobject):
+class VGroup(VMobject):
     """A group of vectorized mobjects.
 
-    This can be used to group multiple :class:`~.OpenGLVMobject` instances together
+    This can be used to group multiple :class:`~.VMobject` instances together
     in order to scale, move, ... them together.
 
     Examples
     --------
 
-    To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
-    :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
-    can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
+    To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
+    :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you
+    can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, OpenGLVGroup
-        >>> vg = OpenGLVGroup()
+        >>> from manim import Triangle, Square, VGroup
+        >>> vg = VGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
-        OpenGLVGroup(Triangle)
-        >>> vg + square   # a new OpenGLVGroup is constructed
-        OpenGLVGroup(Triangle, Square)
+        VGroup(Triangle)
+        >>> vg + square   # a new VGroup is constructed
+        VGroup(Triangle, Square)
         >>> vg            # not modified
-        OpenGLVGroup(Triangle)
+        VGroup(Triangle)
         >>> vg += square; vg  # modifies vg
-        OpenGLVGroup(Triangle, Square)
+        VGroup(Triangle, Square)
         >>> vg.remove(triangle)
-        OpenGLVGroup(Square)
-        >>> vg - square; # a new OpenGLVGroup is constructed
-        OpenGLVGroup()
+        VGroup(Square)
+        >>> vg - square; # a new VGroup is constructed
+        VGroup()
         >>> vg   # not modified
-        OpenGLVGroup(Square)
+        VGroup(Square)
         >>> vg -= square; vg # modifies vg
-        OpenGLVGroup()
+        VGroup()
 
     .. manim:: ArcShapeIris
         :save_last_frame:
@@ -1655,7 +1655,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
                 radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
-                circles_group = OpenGLVGroup()
+                circles_group = VGroup()
 
                 # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
                 circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
@@ -1664,8 +1664,8 @@ class OpenGLVGroup(OpenGLVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        if not all([isinstance(m, OpenGLVMobject) for m in vmobjects]):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
+        if not all([isinstance(m, VMobject) for m in vmobjects]):
+            raise Exception("All submobjects must be of type VMobject")
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1684,35 +1684,35 @@ class OpenGLVGroup(OpenGLVMobject):
         )
 
     def add(self, *vmobjects):
-        """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
+        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
         Parameters
         ----------
-        vmobjects : :class:`~.OpenGLVMobject`
-            List of OpenGLVMobject to add
+        vmobjects : :class:`~.VMobject`
+            List of VMobject to add
 
         Returns
         -------
-        :class:`OpenGLVGroup`
+        :class:`VGroup`
 
         Raises
         ------
         TypeError
-            If one element of the list is not an instance of OpenGLVMobject
+            If one element of the list is not an instance of VMobject
 
         Examples
         --------
-        .. manim:: AddToOpenGLVGroup
+        .. manim:: AddToVGroup
 
-            class AddToOpenGLVGroup(Scene):
+            class AddToVGroup(Scene):
                 def construct(self):
                     circle_red = Circle(color=RED)
                     circle_green = Circle(color=GREEN)
                     circle_blue = Circle(color=BLUE)
                     circle_red.shift(LEFT)
                     circle_blue.shift(RIGHT)
-                    gr = OpenGLVGroup(circle_red, circle_green)
-                    gr2 = OpenGLVGroup(circle_blue) # Constructor uses add directly
+                    gr = VGroup(circle_red, circle_green)
+                    gr2 = VGroup(circle_blue) # Constructor uses add directly
                     self.add(gr,gr2)
                     self.wait()
                     gr += gr2 # Add group to another
@@ -1731,18 +1731,18 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        if not all(isinstance(m, VMobject) for m in vmobjects):
+            raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
-        return OpenGLVGroup(*self.submobjects, vmobject)
+        return VGroup(*self.submobjects, vmobject)
 
     def __iadd__(self, vmobject):
         return self.add(vmobject)
 
     def __sub__(self, vmobject):
-        copy = OpenGLVGroup(*self.submobjects)
+        copy = VGroup(*self.submobjects)
         copy.remove(vmobject)
         return copy
 
@@ -1750,7 +1750,7 @@ class OpenGLVGroup(OpenGLVMobject):
         return self.remove(vmobject)
 
     def __setitem__(
-        self, key: int, value: Union[OpenGLVMobject, Sequence[OpenGLVMobject]]
+        self, key: int, value: Union[VMobject, Sequence[VMobject]]
     ):
         """Override the [] operator for item assignment.
 
@@ -1769,16 +1769,16 @@ class OpenGLVGroup(OpenGLVMobject):
         --------
         Normal usage::
 
-            >>> vgroup = OpenGLVGroup(OpenGLVMobject())
-            >>> new_obj = OpenGLVMobject()
+            >>> vgroup = VGroup(VMobject())
+            >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in value):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        if not all(isinstance(m, VMobject) for m in value):
+            raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
 
-class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
+class VectorizedPoint(Point, VMobject):
     def __init__(
         self,
         location=ORIGIN,
@@ -1798,7 +1798,7 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         self.set_points(np.array([location]))
 
 
-class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
+class CurvesAsSubmobjects(VGroup):
     """Convert a curve's elements to submobjects.
 
     Examples
@@ -1818,14 +1818,14 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
     def __init__(self, vmobject, **kwargs):
         super().__init__(**kwargs)
         for tup in vmobject.get_bezier_tuples():
-            part = OpenGLVMobject()
+            part = VMobject()
             part.set_points(tup)
             part.match_style(vmobject)
             self.add(part)
 
 
-class OpenGLDashedVMobject(OpenGLVMobject):
-    """A :class:`OpenGLVMobject` composed of dashes instead of lines.
+class DashedVMobject(VMobject):
+    """A :class:`VMobject` composed of dashes instead of lines.
 
     Examples
     --------
@@ -1836,12 +1836,12 @@ class OpenGLDashedVMobject(OpenGLVMobject):
             def construct(self):
                 r = 0.5
 
-                top_row = OpenGLVGroup()  # Increasing num_dashes
+                top_row = VGroup()  # Increasing num_dashes
                 for dashes in range(2, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
-                middle_row = OpenGLVGroup()  # Increasing dashed_ratio
+                middle_row = VGroup()  # Increasing dashed_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
                         Circle(radius=r, color=WHITE), dashed_ratio=ratio
@@ -1850,18 +1850,18 @@ class OpenGLDashedVMobject(OpenGLVMobject):
 
                 sq = DashedVMobject(Square(1.5, color=RED))
                 penta = DashedVMobject(RegularPolygon(5, color=BLUE))
-                bottom_row = OpenGLVGroup(sq, penta)
+                bottom_row = VGroup(sq, penta)
 
                 top_row.arrange(buff=0.4)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
-                everything = OpenGLVGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
+                everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
                 self.add(everything)
     """
 
     def __init__(
         self,
-        vmobject: "OpenGLVMobject",
+        vmobject: "VMobject",
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
         color: Color = WHITE,

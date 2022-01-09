@@ -49,7 +49,7 @@ class Mobject:
 
         .. seealso::
 
-            :class:`~.OpenGLVMobject`
+            :class:`~.VMobject`
 
     """
 
@@ -865,7 +865,7 @@ class Mobject:
                     s2 = Square()
                     s3 = Square()
                     s4 = Square()
-                    x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
         for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
@@ -1130,7 +1130,7 @@ class Mobject:
         return grid
 
     def duplicate(self, n: int):
-        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
+        """Returns an :class:`~.VGroup` containing ``n`` copies of the mobject."""
         return self.get_group_class()(*[self.copy() for _ in range(n)])
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
@@ -1151,7 +1151,7 @@ class Mobject:
 
             class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
-                    s= OpenGLVGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2= s.copy()
                     s2.shuffle()
                     s2.shift(DOWN)
@@ -2147,7 +2147,7 @@ class Mobject:
         template = self.copy()
         template.submobjects = []
         alphas = np.linspace(0, 1, n_pieces + 1)
-        return OpenGLGroup(
+        return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
@@ -2226,7 +2226,7 @@ class Mobject:
         return self
 
     def get_group_class(self):
-        return OpenGLGroup
+        return Group
 
     # Alignment
 
@@ -2323,7 +2323,7 @@ class Mobject:
                     dotL = Dot(color=WHITE)
                     dotL.shift(2 * LEFT)
 
-                    dotMiddle = OpenGLVMobject().interpolate(dotL, dotR, alpha=0.3)
+                    dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
 
                     self.add(dotL, dotR, dotMiddle)
         """
@@ -2635,7 +2635,7 @@ class Mobject:
             raise Exception(message.format(caller_name))
 
 
-class OpenGLGroup(Mobject):
+class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, Mobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
@@ -2643,7 +2643,7 @@ class OpenGLGroup(Mobject):
         self.add(*mobjects)
 
 
-class OpenGLPoint(Mobject):
+class Point(Mobject):
     def __init__(
         self, location=ORIGIN, artificial_width=1e-6, artificial_height=1e-6, **kwargs
     ):
