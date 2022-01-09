@@ -79,27 +79,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], np.ndarray],
-        u_range: Optional[Sequence[float]] = None,
-        v_range: Optional[Sequence[float]] = None,
+        u_range: Sequence[float] = (0, 1),
+        v_range: Optional[Sequence[float]] = (0, 1),
         resolution: Sequence[int] = 32,
         surface_piece_config: Optional[dict] = None,
         fill_color: Color = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Optional[Sequence[Color]] = None,
+        checkerboard_colors: Optional[Sequence[Color]] = (BLUE_D, BLUE_E),
         stroke_color: Color = LIGHT_GREY,
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs
     ) -> None:
-        if u_range is None:
-            u_range = [0, 1]
-        if v_range is None:
-            v_range = [0, 1]
         if surface_piece_config is None:
             surface_piece_config = {}
-        if checkerboard_colors is None:
-            checkerboard_colors = [BLUE_D, BLUE_E]
 
         self.u_range = u_range
         self.v_range = v_range
@@ -476,12 +470,11 @@ class Cone(Surface):
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        v_range: Optional[List] = None,
+        v_range: Iterable = (0, TAU),
         u_min=0,
         checkerboard_colors=False,
         **kwargs
     ):
-        v_range = [0, TAU] if v_range is None else v_range
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
@@ -603,12 +596,11 @@ class Cylinder(Surface):
         radius=1,
         height=2,
         direction=Z_AXIS,
-        v_range: Optional[List] = None,
+        v_range: Iterable = (0, TAU),
         show_ends=True,
         resolution=(24, 24),
         **kwargs
     ):
-        v_range = [0, TAU] if v_range is None else v_range
         self._height = height
         self.radius = radius
         super().__init__(

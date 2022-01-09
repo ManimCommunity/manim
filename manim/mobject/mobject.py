@@ -1326,7 +1326,7 @@ class Mobject:
         aligned_edge=ORIGIN,
         submobject_to_align=None,
         index_of_submobject_to_align=None,
-        coor_mask: Optional[np.array] = None,  # TODO: Is that supposed to be color?
+        coor_mask: Optional[np.array] = None,
     ):
         """Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or coordinate.
 

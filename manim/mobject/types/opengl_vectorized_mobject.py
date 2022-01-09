@@ -979,8 +979,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         return target_length / total_length
 
-        return alpha
-
     def get_anchors_and_handles(self):
         """Return anchors1, handles, anchors2, where (anchors1[i], handles[i], anchors2[i]) will be three points defining a quadratic bezier curve for any i in range(0, len(anchors1))."""
         nppc = self.n_points_per_curve

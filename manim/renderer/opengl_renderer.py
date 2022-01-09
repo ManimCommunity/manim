@@ -49,8 +49,7 @@ class OpenGLCamera(OpenGLMobject):
         model_matrix=None,
         **kwargs,
     ):
-        if light_source_position is None:
-            light_source_position = [-10, 10, 10]
+        # TODO: Make this more readable
         self.use_z_index = True
         self.frame_rate = 60
         self.orthographic = orthographic
@@ -93,6 +92,7 @@ class OpenGLCamera(OpenGLMobject):
 
         if euler_angles is None:
             euler_angles = [0, 0, 0]
+
         euler_angles = np.array(euler_angles, dtype=float)
 
         self.euler_angles = euler_angles

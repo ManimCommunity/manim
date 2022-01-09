@@ -255,7 +255,7 @@ class BarChart(VGroup):
         label_y_axis: bool = True,
         y_axis_label_height: float = 0.25,
         max_value: float = 1,
-        bar_colors=None,
+        bar_colors=(BLUE, YELLOW),
         bar_fill_opacity: float = 0.8,
         bar_stroke_width: float = 3,
         bar_names: List[str] = None,
@@ -268,7 +268,7 @@ class BarChart(VGroup):
         self.label_y_axis = label_y_axis
         self.y_axis_label_height = y_axis_label_height
         self.max_value = max_value
-        self.bar_colors = [BLUE, YELLOW] if bar_colors is None else bar_colors
+        self.bar_colors = bar_colors
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
         self.bar_names = [] if bar_names is None else bar_names

@@ -90,7 +90,7 @@ from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
-classnamedict = {}
+classnamedict = {}  # type: ignore
 
 
 class skip_manim_node(nodes.Admonition, nodes.Element):
