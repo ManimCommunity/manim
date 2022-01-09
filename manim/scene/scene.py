@@ -33,7 +33,7 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
-from ..mobject.opengl_mobject import OpenGLPoint
+from ..mobject.mobject import Point
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
@@ -121,8 +121,8 @@ class Scene:
         self.interactive_mode = False
 
         # Items associated with interaction
-        self.mouse_point = OpenGLPoint()
-        self.mouse_drag_point = OpenGLPoint()
+        self.mouse_point = Point()
+        self.mouse_drag_point = Point()
         if renderer is None:
             renderer = OpenGLRenderer()
 
@@ -1064,14 +1064,12 @@ class Scene:
 
         def ipython(shell, namespace):
             import manim
-            import manim.opengl
 
             def load_module_into_namespace(module, namespace):
                 for name in dir(module):
                     namespace[name] = getattr(module, name)
 
             load_module_into_namespace(manim, namespace)
-            load_module_into_namespace(manim.opengl, namespace)
 
             def embedded_rerun(*args, **kwargs):
                 self.queue.put(("rerun_keyboard", args, kwargs))

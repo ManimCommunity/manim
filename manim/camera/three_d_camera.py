@@ -14,7 +14,7 @@ from ..mobject.three_d_utils import (
     get_3d_vmob_start_corner,
     get_3d_vmob_start_corner_unit_normal,
 )
-from ..mobject.types.point_cloud_mobject import Point
+from ..mobject.mobject import Point
 from ..mobject.value_tracker import ValueTracker
 from ..utils.color import get_shaded_rgb
 from ..utils.family import extract_mobject_family_members

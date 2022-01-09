@@ -12,8 +12,8 @@ from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
-from ..mobject.opengl_mobject import Mobject, Point
-from ..mobject.types.opengl_vectorized_mobject import VMobject
+from ..mobject.mobject import Mobject, Point
+from ..mobject.types.vectorized_mobject import VMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.config_ops import _Data

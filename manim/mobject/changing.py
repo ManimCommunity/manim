@@ -11,7 +11,6 @@ from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
-from .opengl_compatibility import 
 
 
 class AnimatedBoundary(VGroup):
