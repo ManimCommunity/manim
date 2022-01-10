@@ -229,7 +229,7 @@ class TransformFromCopy(Transform):
 class ClockwiseTransform(Transform):
     """
     Transfroms Mobjects while moving them in Clockwise direction.
-    
+
     Examples
     --------
 
@@ -239,7 +239,7 @@ class ClockwiseTransform(Transform):
         class ClockwiseTransform1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
-                
+
     .. manim:: ClockwiseTransform2
         :quality: low
 
@@ -250,6 +250,7 @@ class ClockwiseTransform(Transform):
                 self.add(t1, t2)
                 self.play(ClockwiseTransform(t1, t2))
     """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -263,7 +264,7 @@ class ClockwiseTransform(Transform):
 class CounterclockwiseTransform(Transform):
     """
     Transforms Mobjects while moving them in Counter-Clockwise direction.
-    
+
     Examples
     --------
 
@@ -273,7 +274,7 @@ class CounterclockwiseTransform(Transform):
         class CounterclockwiseTransform1(Scene):
             def construct(self):
                 self.play(CounterclockwiseTransform(Square(), Circle()))
-                
+
     .. manim:: CounterlockwiseTransform2
         :quality: low
 
@@ -284,6 +285,7 @@ class CounterclockwiseTransform(Transform):
                 self.add(t1, t2)
                 self.play(CounterclockwiseTransform(t1, t2))
     """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -305,14 +307,15 @@ class MoveToTarget(Transform):
         class MoveToTarget(Scene):
             def construct(self):
                 c = Circle()
-        
+
                 c.generate_target()
                 c.target.set_fill(color=GREEN, opacity=0.5)
                 c.target.shift(2*RIGHT + UP).scale(0.5)
-        
+
                 self.add(c)
                 self.play(MoveToTarget(c))
     """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
@@ -434,6 +437,7 @@ class FadeToColor(ApplyMethod):
                 self.play(FadeToColor(Text("Hello World!"), color=RED))
 
     """
+
     def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
         super().__init__(mobject.set_color, color, **kwargs)
 
@@ -452,6 +456,7 @@ class ScaleInPlace(ApplyMethod):
                 self.play(ScaleInPlace(Text("Hello World!"), 2))
 
     """
+
     def __init__(self, mobject: Mobject, scale_factor: float, **kwargs) -> None:
         super().__init__(mobject.scale, scale_factor, **kwargs)
 
@@ -470,6 +475,7 @@ class ShrinkToCenter(ScaleInPlace):
                 self.play(ShrinkToCenter(Text("Hello World!")))
 
     """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject, 0, **kwargs)
 
@@ -477,7 +483,7 @@ class ShrinkToCenter(ScaleInPlace):
 class Restore(ApplyMethod):
     """
     This functions restores a transformed mobject to its 'last saved state' of the mobject.
-    
+
     Examples
     --------
 
@@ -494,6 +500,7 @@ class Restore(ApplyMethod):
                 self.wait()
                 self.play(Restore(s), run_time=2)
     """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject.restore, **kwargs)
 
@@ -525,7 +532,7 @@ class ApplyMatrix(ApplyPointwiseFunction):
         The origin point for the transform. Defaults to ``ORIGIN``.
     kwargs
         Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
-        
+
     Examples
     --------
 
