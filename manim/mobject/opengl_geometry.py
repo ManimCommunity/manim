@@ -10,7 +10,7 @@ from ..mobject.types.opengl_vectorized_mobject import (
 )
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import clip, fdiv
+from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
@@ -616,13 +616,13 @@ class OpenGLArrow(OpenGLLine):
         vect = end - start
         length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
-        w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
+        w_ratio = self.max_width_to_length_ratio / (thickness / length)
         if w_ratio < 1:
             thickness *= w_ratio
 
         tip_width = self.tip_width_ratio * thickness
         tip_length = tip_width / (2 * np.tan(self.tip_angle / 2))
-        t_ratio = fdiv(self.max_tip_length_to_length_ratio, fdiv(tip_length, length))
+        t_ratio = self.max_tip_length_to_length_ratio / (tip_length / length)
         if t_ratio < 1:
             tip_length *= t_ratio
             tip_width *= t_ratio
