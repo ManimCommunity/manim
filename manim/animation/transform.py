@@ -227,6 +227,29 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
+    """
+    Transfroms Mobjects while moving them in Clockwise direction.
+    
+    Examples
+    --------
+
+    .. manim:: ClockwiseTransform1
+        :quality: low
+
+        class ClockwiseTransform1(Scene):
+            def construct(self):
+                self.play(ClockwiseTransform(Square(), Circle()))
+                
+    .. manim:: ClockwiseTransform2
+        :quality: low
+
+        class ClockwiseTransform2(Scene):
+            def construct(self):
+                t1 = Text("1").shift(UP)
+                t2 = Text("2").shift(DOWN)
+                self.add(t1, t2)
+                self.play(ClockwiseTransform(t1, t2))
+    """
     def __init__(
         self,
         mobject: Mobject,
@@ -238,6 +261,29 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
+    """
+    Transforms Mobjects while moving them in Counter-Clockwise direction.
+    
+    Examples
+    --------
+
+    .. manim:: CounterclockwiseTransform1
+        :quality: low
+
+        class CounterclockwiseTransform1(Scene):
+            def construct(self):
+                self.play(CounterclockwiseTransform(Square(), Circle()))
+                
+    .. manim:: CounterlockwiseTransform2
+        :quality: low
+
+        class CounterclockwiseTransform2(Scene):
+            def construct(self):
+                t1 = Text("1").shift(UP)
+                t2 = Text("2").shift(DOWN)
+                self.add(t1, t2)
+                self.play(CounterclockwiseTransform(t1, t2))
+    """
     def __init__(
         self,
         mobject: Mobject,
@@ -249,6 +295,24 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
+    """
+    Examples
+    --------
+
+    .. manim:: MoveToTarget
+        :quality: low
+
+        class MoveToTarget(Scene):
+            def construct(self):
+                c = Circle()
+        
+                c.generate_target()
+                c.target.set_fill(color=GREEN, opacity=0.5)
+                c.target.shift(2*RIGHT + UP).scale(0.5)
+        
+                self.add(c)
+                self.play(MoveToTarget(c))
+    """
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
@@ -357,21 +421,79 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 
 class FadeToColor(ApplyMethod):
+    """Animation that changes color of a mobject.
+
+    Examples
+    --------
+
+    .. manim:: FadeToColor
+        :quality: low
+
+        class FadeToColor(Scene):
+            def construct(self):
+                self.play(FadeToColor(Text("Hello World!"), color=RED))
+
+    """
     def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
         super().__init__(mobject.set_color, color, **kwargs)
 
 
 class ScaleInPlace(ApplyMethod):
+    """Animation that scales a mobject by a certain factor.
+
+    Examples
+    --------
+
+    .. manim:: FadeToColor
+        :quality: low
+
+        class FadeToColor(Scene):
+            def construct(self):
+                self.play(ScaleInPlace(Text("Hello World!"), 2))
+
+    """
     def __init__(self, mobject: Mobject, scale_factor: float, **kwargs) -> None:
         super().__init__(mobject.scale, scale_factor, **kwargs)
 
 
 class ShrinkToCenter(ScaleInPlace):
+    """Animation that makes a mobject shrink to center.
+
+    Examples
+    --------
+
+    .. manim:: FadeToColor
+        :quality: low
+
+        class FadeToColor(Scene):
+            def construct(self):
+                self.play(ShrinkToCenter(Text("Hello World!")))
+
+    """
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject, 0, **kwargs)
 
 
 class Restore(ApplyMethod):
+    """
+    This functions restores a transformed mobject to its 'last saved state' of the mobject.
+    
+    Examples
+    --------
+
+    .. manim:: Restore
+        :quality: low
+
+        class Restore(Scene):
+            def construct(self):
+                s = Square()
+                s.save_state()
+                self.play(FadeIn(s))
+                self.play(s.animate.set_color(PURPLE).set_opacity(0.5).shift(2*LEFT).scale(3))
+                self.play(s.animate.shift(5*DOWN).rotate(PI/4))
+                self.wait()
+                self.play(Restore(s), run_time=2)
+    """
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject.restore, **kwargs)
 
@@ -403,6 +525,17 @@ class ApplyMatrix(ApplyPointwiseFunction):
         The origin point for the transform. Defaults to ``ORIGIN``.
     kwargs
         Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+        
+    Examples
+    --------
+
+    .. manim:: ApplyMatrix
+        :quality: low
+
+        class ApplyMatrix(Scene):
+            def construct(self):
+                matrix = [[1, 2], [3, 4]]
+                self.play(ApplyMatrix(matrix, Text("Hello World!")))
     """
 
     def __init__(
