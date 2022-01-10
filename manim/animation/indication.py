@@ -343,6 +343,17 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Deprecate?
 #   Keep and add docs?
 class ShowCreationThenFadeOut(Succession):
+    """Creates mobject first, then fades out.
+    
+    Examples
+    --------
+    .. manim:: Create_FadeOut
+
+        class Create_FadeOut(Scene):
+            def construct(self):
+                text1 = Text("CREATE THEN FADE OUT", color=RED)
+                self.play(ShowCreationThenFadeOut(text1))
+    """
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
