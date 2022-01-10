@@ -228,7 +228,7 @@ class TransformFromCopy(Transform):
 
 class ClockwiseTransform(Transform):
     """
-    Transfroms Mobjects while moving them in Clockwise direction.
+    Transforms Mobjects while moving them in Clockwise direction.
 
     Examples
     --------
