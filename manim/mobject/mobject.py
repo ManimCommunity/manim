@@ -1137,7 +1137,7 @@ class Mobject:
         )
         return self
 
-    def rotate_about_origin(self, angle, axis=OUT, axes: None = None):
+    def rotate_about_origin(self, angle, axis=OUT):
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
