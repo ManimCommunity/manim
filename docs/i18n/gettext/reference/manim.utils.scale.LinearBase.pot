@@ -37,16 +37,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1
-msgid ":py:obj:`function <manim.utils.scale.LinearBase.function>`"
-msgstr ""
-
-#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1
 msgid "Multiplies the value by the scale factor."
-msgstr ""
-
-#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1
-msgid ":py:obj:`inverse_function <manim.utils.scale.LinearBase.inverse_function>`"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1

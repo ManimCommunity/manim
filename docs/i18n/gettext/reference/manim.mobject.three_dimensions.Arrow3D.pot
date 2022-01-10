@@ -59,19 +59,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.three_dimensions.Arrow3D.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Arrow3D.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.three_dimensions.Arrow3D.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
@@ -79,15 +67,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.three_dimensions.Arrow3D.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Arrow3D.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.three_dimensions.Arrow3D.width>`\\"
 msgstr ""
 
 

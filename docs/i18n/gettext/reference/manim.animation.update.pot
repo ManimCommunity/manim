@@ -18,16 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.update.rst:24:<autosummary>:1
-msgid ":py:obj:`MaintainPositionRelativeTo <manim.animation.update.MaintainPositionRelativeTo>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.update.rst:24:<autosummary>:1
-msgid ":py:obj:`UpdateFromAlphaFunc <manim.animation.update.UpdateFromAlphaFunc>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.update.rst:24:<autosummary>:1
-msgid ":py:obj:`UpdateFromFunc <manim.animation.update.UpdateFromFunc>`"
-msgstr ""
-
 

@@ -26,7 +26,6 @@ from ..utils.color import color_to_int_rgba
 from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
-from ..utils.simple_functions import fdiv
 from ..utils.space_ops import angle_of_vector
 
 
@@ -223,7 +222,7 @@ class Camera:
         pixel_width = self.pixel_width
         frame_height = self.frame_height
         frame_width = self.frame_width
-        aspect_ratio = fdiv(pixel_width, pixel_height)
+        aspect_ratio = pixel_width / pixel_height
         if fixed_dimension == 0:
             frame_height = frame_width / aspect_ratio
         else:
@@ -574,12 +573,12 @@ class Camera:
         ctx.scale(pw, ph)
         ctx.set_matrix(
             cairo.Matrix(
-                fdiv(pw, fw),
+                (pw / fw),
                 0,
                 0,
-                -fdiv(ph, fh),
-                (pw / 2) - fc[0] * fdiv(pw, fw),
-                (ph / 2) + fc[1] * fdiv(ph, fh),
+                -(ph / fh),
+                (pw / 2) - fc[0] * (pw / fw),
+                (ph / 2) + fc[1] * (ph / fh),
             ),
         )
         self.cache_cairo_context(pixel_array, ctx)
@@ -1105,7 +1104,7 @@ class Camera:
         # TODO: This seems...unsystematic
         big_sum = op.add(config["pixel_height"], config["pixel_width"])
         this_sum = op.add(self.pixel_height, self.pixel_width)
-        factor = fdiv(big_sum, this_sum)
+        factor = big_sum / this_sum
         return 1 + (thickness - 1) * factor
 
     def get_thickening_nudges(self, thickness):
@@ -1163,16 +1162,15 @@ class Camera:
         uncentered_pixel_coords = np.indices([self.pixel_height, self.pixel_width])[
             ::-1
         ].transpose(1, 2, 0)
-        uncentered_space_coords = fdiv(
-            uncentered_pixel_coords * full_space_dims,
-            full_pixel_dims,
-        )
+        uncentered_space_coords = (
+            uncentered_pixel_coords * full_space_dims
+        ) / full_pixel_dims
         # Could structure above line's computation slightly differently, but figured (without much
         # thought) multiplying by frame_shape first, THEN dividing by pixel_shape, is probably
         # better than the other order, for avoiding underflow quantization in the division (whereas
         # overflow is unlikely to be a problem)
 
-        centered_space_coords = uncentered_space_coords - fdiv(full_space_dims, 2)
+        centered_space_coords = uncentered_space_coords - (full_space_dims / 2)
 
         # Have to also flip the y coordinates to account for pixel array being listed in
         # top-to-bottom order, opposite of screen coordinate convention

@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.rst:22:<autosummary>:1
-msgid ":py:obj:`BarChart <manim.mobject.probability.BarChart>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.rst:22:<autosummary>:1
 msgid "This is a class for Bar Charts."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.rst:22:<autosummary>:1
-msgid ":py:obj:`SampleSpace <manim.mobject.probability.SampleSpace>`"
 msgstr ""
 
 
