@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.fading.rst:22:<autosummary>:1
-msgid ":py:obj:`FadeIn <manim.animation.fading.FadeIn>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.rst:22:<autosummary>:1
 msgid "Fade in :class:`~.Mobject` s."
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.rst:22:<autosummary>:1
-msgid ":py:obj:`FadeOut <manim.animation.fading.FadeOut>`"
 msgstr ""
 
 

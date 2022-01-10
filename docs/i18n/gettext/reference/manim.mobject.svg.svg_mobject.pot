@@ -18,8 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:20:<autosummary>:1
-msgid ":py:obj:`SVGMobject <manim.mobject.svg.svg_mobject.SVGMobject>`"
-msgstr ""
-
 

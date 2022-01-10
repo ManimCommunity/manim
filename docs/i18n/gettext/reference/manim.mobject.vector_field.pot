@@ -19,23 +19,11 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.vector_field.rst:24:<autosummary>:1
-msgid ":py:obj:`ArrowVectorField <manim.mobject.vector_field.ArrowVectorField>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.rst:24:<autosummary>:1
 msgid "A :class:`VectorField` represented by a set of change vectors."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.vector_field.rst:24:<autosummary>:1
-msgid ":py:obj:`StreamLines <manim.mobject.vector_field.StreamLines>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.rst:24:<autosummary>:1
 msgid "StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.rst:24:<autosummary>:1
-msgid ":py:obj:`VectorField <manim.mobject.vector_field.VectorField>`"
 msgstr ""
 
 

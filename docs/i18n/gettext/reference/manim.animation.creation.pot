@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`AddTextLetterByLetter <manim.animation.creation.AddTextLetterByLetter>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
 msgid "Show a :class:`~.Text` letter by letter on the scene."
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`AddTextWordByWord <manim.animation.creation.AddTextWordByWord>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
@@ -35,15 +27,7 @@ msgid "Show a :class:`~.Text` word by word on the scene."
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`Create <manim.animation.creation.Create>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
 msgid "Incrementally show a VMobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`DrawBorderThenFill <manim.animation.creation.DrawBorderThenFill>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
@@ -51,15 +35,7 @@ msgid "Draw the border first and then show the fill."
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`ShowIncreasingSubsets <manim.animation.creation.ShowIncreasingSubsets>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
 msgid "Show one submobject at a time, leaving all previous ones displayed on screen."
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`ShowPartial <manim.animation.creation.ShowPartial>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
@@ -67,15 +43,7 @@ msgid "Abstract class for Animations that show the VMobject partially."
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`ShowSubmobjectsOneByOne <manim.animation.creation.ShowSubmobjectsOneByOne>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
 msgid "Show one submobject at a time, removing all previously displayed ones from screen."
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`Uncreate <manim.animation.creation.Uncreate>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
@@ -83,15 +51,7 @@ msgid "Like :class:`Create` but in reverse."
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`Unwrite <manim.animation.creation.Unwrite>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
 msgid "Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`."
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.rst:38:<autosummary>:1
-msgid ":py:obj:`Write <manim.animation.creation.Write>`"
 msgstr ""
 
 

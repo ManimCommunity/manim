@@ -31,16 +31,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`add_coordinates <manim.mobject.coordinate_systems.ComplexPlane.add_coordinates>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1
 msgid "Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`get_coordinate_labels <manim.mobject.coordinate_systems.ComplexPlane.get_coordinate_labels>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
@@ -49,16 +41,8 @@ msgid "Generates the :class:`~.DecimalNumber` mobjects for the coordinates of th
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`n2p <manim.mobject.coordinate_systems.ComplexPlane.n2p>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.n2p:1
 msgid "Abbreviation for :meth:`number_to_point`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`number_to_point <manim.mobject.coordinate_systems.ComplexPlane.number_to_point>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
@@ -67,16 +51,8 @@ msgid "Accepts a float/complex number and returns the equivalent point on the pl
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`p2n <manim.mobject.coordinate_systems.ComplexPlane.p2n>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.p2n:1
 msgid "Abbreviation for :meth:`point_to_number`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
-msgid ":py:obj:`point_to_number <manim.mobject.coordinate_systems.ComplexPlane.point_to_number>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ComplexPlane.rst:25:<autosummary>:1
@@ -89,19 +65,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.coordinate_systems.ComplexPlane.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.coordinate_systems.ComplexPlane.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.coordinate_systems.ComplexPlane.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
@@ -109,15 +73,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.coordinate_systems.ComplexPlane.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.coordinate_systems.ComplexPlane.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1

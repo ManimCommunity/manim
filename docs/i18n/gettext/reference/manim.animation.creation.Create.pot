@@ -38,10 +38,6 @@ msgstr ""
 msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Create:9
 msgid "Examples"
 msgstr ""

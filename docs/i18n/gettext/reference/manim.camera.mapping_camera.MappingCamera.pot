@@ -44,28 +44,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.MappingCamera.rst:21:<autosummary>:1
-msgid ":py:obj:`capture_mobjects <manim.camera.mapping_camera.MappingCamera.capture_mobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.camera.mapping_camera.MappingCamera.rst:21:<autosummary>:1
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:1
 msgid "Capture mobjects by printing them on :attr:`pixel_array`."
 msgstr ""
 
-#: ../../source/reference/manim.camera.mapping_camera.MappingCamera.rst:21:<autosummary>:1
-msgid ":py:obj:`points_to_pixel_coords <manim.camera.mapping_camera.MappingCamera.points_to_pixel_coords>`"
-msgstr ""
-
 #: ../../source/reference/manim.camera.mapping_camera.MappingCamera.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
-msgid ":py:obj:`background_color <manim.camera.mapping_camera.MappingCamera.background_color>`\\"
-msgstr ""
-
-#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
-msgid ":py:obj:`background_opacity <manim.camera.mapping_camera.MappingCamera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:3

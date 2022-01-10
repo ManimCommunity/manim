@@ -26,64 +26,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`add_braces_and_labels <manim.mobject.probability.SampleSpace.add_braces_and_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`add_label <manim.mobject.probability.SampleSpace.add_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`add_title <manim.mobject.probability.SampleSpace.add_title>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`complete_p_list <manim.mobject.probability.SampleSpace.complete_p_list>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`divide_horizontally <manim.mobject.probability.SampleSpace.divide_horizontally>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`divide_vertically <manim.mobject.probability.SampleSpace.divide_vertically>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_bottom_braces_and_labels <manim.mobject.probability.SampleSpace.get_bottom_braces_and_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_division_along_dimension <manim.mobject.probability.SampleSpace.get_division_along_dimension>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_horizontal_division <manim.mobject.probability.SampleSpace.get_horizontal_division>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_side_braces_and_labels <manim.mobject.probability.SampleSpace.get_side_braces_and_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_subdivision_braces_and_labels <manim.mobject.probability.SampleSpace.get_subdivision_braces_and_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_top_braces_and_labels <manim.mobject.probability.SampleSpace.get_top_braces_and_labels>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:32:<autosummary>:1
-msgid ":py:obj:`get_vertical_division <manim.mobject.probability.SampleSpace.get_vertical_division>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.probability.SampleSpace.rst:34
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.probability.SampleSpace.animate>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
@@ -91,27 +35,11 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.probability.SampleSpace.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.probability.SampleSpace.depth>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.probability.SampleSpace.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.probability.SampleSpace.rst:41:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.probability.SampleSpace.width>`\\"
 msgstr ""
 
 

@@ -34,16 +34,4 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.ApplyPointwiseFunction.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ApplyPointwiseFunction.path_arc>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ApplyPointwiseFunction.rst:25:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.ApplyPointwiseFunction.path_func>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunction:0
-msgid "Parameters"
-msgstr ""
-
 
