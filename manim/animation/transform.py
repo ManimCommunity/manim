@@ -536,10 +536,10 @@ class ApplyMatrix(ApplyPointwiseFunction):
     Examples
     --------
 
-    .. manim:: ApplyMatrix
+    .. manim:: ApplyMatrixExample
         :quality: low
 
-        class ApplyMatrix(Scene):
+        class ApplyMatrixExample(Scene):
             def construct(self):
                 matrix = [[1, 2], [3, 4]]
                 self.play(ApplyMatrix(matrix, Text("Hello World!")))
