@@ -237,7 +237,7 @@ class ClockwiseTransform(Transform):
         class ClockwiseTransform1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
-    
+
     .. manim:: ClockwiseTransform2
         :quality: low
 
@@ -247,8 +247,9 @@ class ClockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(ClockwiseTransform(t1, t2))
-                
+
     """
+
     def __init__(
         self,
         mobject: Mobject,
