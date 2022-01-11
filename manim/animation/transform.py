@@ -227,6 +227,28 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
+    """Transforms Mobjects while moving them in Clockwise direction.
+
+    Examples
+    --------
+    .. manim:: ClockwiseTransform1
+        :quality: low
+
+        class ClockwiseTransform1(Scene):
+            def construct(self):
+                self.play(ClockwiseTransform(Square(), Circle()))
+    
+    .. manim:: ClockwiseTransform2
+        :quality: low
+
+        class ClockwiseTransform2(Scene):
+            def construct(self):
+                t1 = Text("1").shift(UP)
+                t2 = Text("2").shift(DOWN)
+                self.add(t1, t2)
+                self.play(ClockwiseTransform(t1, t2))
+                
+    """
     def __init__(
         self,
         mobject: Mobject,
