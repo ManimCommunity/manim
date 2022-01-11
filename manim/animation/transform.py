@@ -429,10 +429,10 @@ class FadeToColor(ApplyMethod):
     Examples
     --------
 
-    .. manim:: FadeToColor
+    .. manim:: FadeToColorExample
         :quality: low
 
-        class FadeToColor(Scene):
+        class FadeToColorExample(Scene):
             def construct(self):
                 self.play(FadeToColor(Text("Hello World!"), color=RED))
 
