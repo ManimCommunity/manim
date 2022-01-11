@@ -301,10 +301,10 @@ class MoveToTarget(Transform):
     Examples
     --------
 
-    .. manim:: MoveToTarget
+    .. manim:: MoveToTargetExample
         :quality: low
 
-        class MoveToTarget(Scene):
+        class MoveToTargetExample(Scene):
             def construct(self):
                 c = Circle()
 
