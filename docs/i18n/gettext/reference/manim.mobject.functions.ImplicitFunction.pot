@@ -71,18 +71,10 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
-msgid ":py:obj:`generate_points <manim.mobject.functions.ImplicitFunction.generate_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
 #: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1
 msgid "Initializes :attr:`points` and therefore the shape."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:21:<autosummary>:1
-msgid ":py:obj:`init_points <manim.mobject.functions.ImplicitFunction.init_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.ImplicitFunction.rst:23
@@ -90,19 +82,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.functions.ImplicitFunction.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.functions.ImplicitFunction.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.functions.ImplicitFunction.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
@@ -110,15 +90,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.functions.ImplicitFunction.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.functions.ImplicitFunction.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ImplicitFunction.generate_points:1:<autosummary>:1

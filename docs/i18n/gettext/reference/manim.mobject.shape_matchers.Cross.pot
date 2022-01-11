@@ -55,19 +55,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.shape_matchers.Cross.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.shape_matchers.Cross.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.shape_matchers.Cross.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
@@ -75,15 +63,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.shape_matchers.Cross.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.shape_matchers.Cross.width>`\\"
 msgstr ""
 
 

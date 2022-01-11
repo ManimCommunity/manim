@@ -23,10 +23,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformAnimations.rst:20:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.transform.TransformAnimations.interpolate>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.TransformAnimations.rst:20:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1
 msgid "Set the animation progress."
 msgstr ""
@@ -35,26 +31,16 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.TransformAnimations.path_arc>`\\"
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:3
+msgid "This method gets called for every frame during an animation."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.TransformAnimations.path_func>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations:0
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:0
 msgid "Parameters"
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations:0
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:0
-msgid "Return type"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:3
-msgid "This method gets called for every frame during an animation."
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:5
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 

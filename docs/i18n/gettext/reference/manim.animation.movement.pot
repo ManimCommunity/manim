@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-msgid ":py:obj:`ComplexHomotopy <manim.animation.movement.ComplexHomotopy>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
 msgid "Complex Homotopy a function Cx[0, 1] to C"
-msgstr ""
-
-#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-msgid ":py:obj:`Homotopy <manim.animation.movement.Homotopy>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
@@ -36,15 +28,7 @@ msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
 msgstr ""
 
 #: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-msgid ":py:obj:`MoveAlongPath <manim.animation.movement.MoveAlongPath>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
 msgid "Make one mobject move along the path of another mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
-msgid ":py:obj:`PhaseFlow <manim.animation.movement.PhaseFlow>`"
 msgstr ""
 
 

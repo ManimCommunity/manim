@@ -327,6 +327,10 @@ msgstr ""
 msgid "`#1598 <https://github.com/ManimCommunity/manim/pull/1598>`__: Update examples to use :class:`~.Axes` and deprecate :class:`~.GraphScene`"
 msgstr ""
 
+#: ../../source/changelog/0.7.0-changelog.rst:123
+msgid ":class:`~.GraphScene` has been deprecated and its functionality has been shifted to :class:`~.Axes`. See the updated example gallery for sample usage."
+msgstr ""
+
 #: ../../source/changelog/0.7.0-changelog.rst:126
 msgid "`#1454 <https://github.com/ManimCommunity/manim/pull/1454>`__: Fading module enhancements"
 msgstr ""

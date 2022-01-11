@@ -31,24 +31,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22:<autosummary>:1
-msgid ":py:obj:`get_fill_color <manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22:<autosummary>:1
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1
 msgid "If there are multiple colors (for gradient) this returns the first one"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22:<autosummary>:1
-msgid ":py:obj:`pointwise_become_partial <manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22:<autosummary>:1
 msgid "Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22:<autosummary>:1
-msgid ":py:obj:`set_style <manim.mobject.shape_matchers.BackgroundRectangle.set_style>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:24
@@ -56,19 +44,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.shape_matchers.BackgroundRectangle.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.shape_matchers.BackgroundRectangle.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.shape_matchers.BackgroundRectangle.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
@@ -76,15 +52,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.shape_matchers.BackgroundRectangle.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.shape_matchers.BackgroundRectangle.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1

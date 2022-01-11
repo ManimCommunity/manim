@@ -23,16 +23,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.animation.Wait.begin>`"
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1
 msgid "Begin the animation."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
-msgid ":py:obj:`clean_up_from_scene <manim.animation.animation.Wait.clean_up_from_scene>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
@@ -41,16 +33,8 @@ msgid "Clean up the :class:`~.Scene` after finishing the animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
-msgid ":py:obj:`finish <manim.animation.animation.Wait.finish>`"
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.finish:1
 msgid "Finish the animation."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.animation.Wait.interpolate>`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
@@ -59,18 +43,7 @@ msgid "Set the animation progress."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
-msgid ":py:obj:`update_mobjects <manim.animation.animation.Wait.update_mobjects>`"
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:1:<autosummary>:1
 msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.interpolate:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.update_mobjects:0
-msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.begin:3
@@ -87,6 +60,12 @@ msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.interpolate:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.update_mobjects:0
+msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:6

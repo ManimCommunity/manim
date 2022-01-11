@@ -19,15 +19,7 @@ msgid "Module Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`ORIGIN <manim.constants.ORIGIN>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "The center of the coordinate system."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`UP <manim.constants.UP>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -35,15 +27,7 @@ msgid "One unit step in the positive Y direction."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`DOWN <manim.constants.DOWN>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "One unit step in the negative Y direction."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`RIGHT <manim.constants.RIGHT>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -51,15 +35,7 @@ msgid "One unit step in the positive X direction."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`LEFT <manim.constants.LEFT>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "One unit step in the negative X direction."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`IN <manim.constants.IN>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -67,15 +43,7 @@ msgid "One unit step in the negative Z direction."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`OUT <manim.constants.OUT>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "One unit step in the positive Z direction."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`UL <manim.constants.UL>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -83,15 +51,7 @@ msgid "One step up plus one step left."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`UR <manim.constants.UR>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "One step up plus one step right."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`DL <manim.constants.DL>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -99,15 +59,7 @@ msgid "One step down plus one step left."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`DR <manim.constants.DR>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "One step down plus one step right."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`PI <manim.constants.PI>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
@@ -115,15 +67,7 @@ msgid "The ratio of the circumference of a circle to its diameter."
 msgstr ""
 
 #: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`TAU <manim.constants.TAU>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
 msgid "The ratio of the circumference of a circle to its radius."
-msgstr ""
-
-#: ../../source/reference/manim.constants.rst:27:<autosummary>:1
-msgid ":py:obj:`DEGREES <manim.constants.DEGREES>`\\"
 msgstr ""
 
 

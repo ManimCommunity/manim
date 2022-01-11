@@ -50,20 +50,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.fading.FadeIn.rst:21:<autosummary>:1
-msgid ":py:obj:`create_starting_mobject <manim.animation.fading.FadeIn.create_starting_mobject>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.FadeIn.rst:21:<autosummary>:1
-msgid ":py:obj:`create_target <manim.animation.fading.FadeIn.create_target>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.fading.FadeIn.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.FadeIn.rst:27:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.fading.FadeIn.path_arc>`\\"
 msgstr ""
 
 

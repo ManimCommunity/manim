@@ -27,19 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.camera.moving_camera.CameraFrame.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.camera.moving_camera.CameraFrame.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.camera.moving_camera.CameraFrame.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
@@ -47,15 +35,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.camera.moving_camera.CameraFrame.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.camera.moving_camera.CameraFrame.width>`\\"
 msgstr ""
 
 

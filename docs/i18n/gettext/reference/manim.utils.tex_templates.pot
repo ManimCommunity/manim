@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex_templates.rst:22:<autosummary>:1
-msgid ":py:obj:`TexFontTemplates <manim.utils.tex_templates.TexFontTemplates>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex_templates.rst:22:<autosummary>:1
 msgid "A collection of TeX templates for the fonts described at http://jf.burnol.free.fr/showcase.html"
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex_templates.rst:22:<autosummary>:1
-msgid ":py:obj:`TexTemplateLibrary <manim.utils.tex_templates.TexTemplateLibrary>`"
 msgstr ""
 
 

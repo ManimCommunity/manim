@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`CurvesAsSubmobjects <manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
 msgid "Convert a curve's elements to submobjects."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`DashedVMobject <manim.mobject.types.vectorized_mobject.DashedVMobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
@@ -35,23 +27,11 @@ msgid "A :class:`VMobject` composed of dashes instead of lines."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`VDict <manim.mobject.types.vectorized_mobject.VDict>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
 msgid "A VGroup-like class, also offering submobject access by key, like a python dict"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`VGroup <manim.mobject.types.vectorized_mobject.VGroup>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
 msgid "A group of vectorized mobjects."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`VMobject <manim.mobject.types.vectorized_mobject.VMobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.rst:30:<autosummary>:1

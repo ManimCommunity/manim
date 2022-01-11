@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Arrow3D <manim.mobject.three_dimensions.Arrow3D>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "An arrow made out of a cylindrical line and a conical tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Cone <manim.mobject.three_dimensions.Cone>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
@@ -35,19 +27,7 @@ msgid "A circular cone."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Cube <manim.mobject.three_dimensions.Cube>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Cylinder <manim.mobject.three_dimensions.Cylinder>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "A cylinder, defined by its height, radius and direction,"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Dot3D <manim.mobject.three_dimensions.Dot3D>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
@@ -55,15 +35,7 @@ msgid "A spherical dot."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Line3D <manim.mobject.three_dimensions.Line3D>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "A cylindrical line, for use in ThreeDScene."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`ParametricSurface <manim.mobject.three_dimensions.ParametricSurface>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
@@ -71,15 +43,7 @@ msgid "Creates a parametric surface"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Prism <manim.mobject.three_dimensions.Prism>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "A cuboid."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Sphere <manim.mobject.three_dimensions.Sphere>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
@@ -87,19 +51,7 @@ msgid "A mobject representing a three-dimensional sphere."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Surface <manim.mobject.three_dimensions.Surface>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
 msgid "Creates a Parametric Surface using a checkerboard pattern."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`ThreeDVMobject <manim.mobject.three_dimensions.ThreeDVMobject>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.rst:42:<autosummary>:1
-msgid ":py:obj:`Torus <manim.mobject.three_dimensions.Torus>`"
 msgstr ""
 
 
