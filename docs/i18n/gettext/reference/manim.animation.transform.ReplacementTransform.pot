@@ -38,10 +38,6 @@ msgstr ""
 msgid "Further keyword arguments that are passed to :class:`Transform`."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:8
 msgid "Examples"
 msgstr ""
@@ -52,10 +48,6 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:21
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:25:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ReplacementTransform.path_arc>`\\"
 msgstr ""
 
 

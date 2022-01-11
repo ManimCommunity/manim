@@ -50,10 +50,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Vector.rst:20:<autosummary>:1
-msgid ":py:obj:`coordinate_label <manim.mobject.geometry.Vector.coordinate_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Vector.rst:20:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1
 msgid "Creates a label based on the coordinates of the vector."
 msgstr ""
@@ -63,19 +59,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.Vector.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Vector.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.Vector.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
@@ -83,15 +67,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.Vector.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.Vector.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1

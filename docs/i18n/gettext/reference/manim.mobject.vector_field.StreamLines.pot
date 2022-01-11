@@ -116,26 +116,14 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
-msgid ":py:obj:`create <manim.mobject.vector_field.StreamLines.create>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:10
 msgid "The creation animation of the stream lines."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
-msgid ":py:obj:`end_animation <manim.mobject.vector_field.StreamLines.end_animation>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.end_animation:1
 msgid "End the stream line animation smoothly."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
-msgid ":py:obj:`start_animation <manim.mobject.vector_field.StreamLines.start_animation>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.vector_field.StreamLines.rst:22:<autosummary>:1
@@ -148,19 +136,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.vector_field.StreamLines.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.vector_field.StreamLines.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.vector_field.StreamLines.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
@@ -168,15 +144,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.vector_field.StreamLines.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.vector_field.StreamLines.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1

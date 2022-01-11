@@ -15,15 +15,7 @@ msgid "Module Index"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`constants <manim.constants>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Constant definitions."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`bezier <manim.utils.bezier>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -31,19 +23,7 @@ msgid "Utility functions related to Bézier curves."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`color <manim.utils.color>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Colors and utility functions for conversion between different color models."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`commands <manim.utils.commands>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`config_ops <manim.utils.config_ops>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -51,15 +31,7 @@ msgid "Utilities that might be useful for configuration dictionaries."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`deprecation <manim.utils.deprecation>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Decorators for deprecating classes, functions and function parameters."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`hashing <manim.utils.hashing>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -67,15 +39,7 @@ msgid "Utilities for scene caching."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`ipython_magic <manim.utils.ipython_magic>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Utilities for using Manim with IPython (in particular: Jupyter notebooks)"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`images <manim.utils.images>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -83,15 +47,7 @@ msgid "Image manipulation utilities."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`iterables <manim.utils.iterables>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Operations on iterables."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`paths <manim.utils.paths>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -99,19 +55,7 @@ msgid "Functions determining transformation paths between sets of points."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`rate_functions <manim.utils.rate_functions>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "A selection of rate functions, i.e., *speed curves* for animations."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`scale <manim.utils.scale>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`simple_functions <manim.utils.simple_functions>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -119,15 +63,7 @@ msgid "A collection of simple functions."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`sounds <manim.utils.sounds>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Sound-related utility functions."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`space_ops <manim.utils.space_ops>`\\"
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
@@ -135,23 +71,11 @@ msgid "Utility functions for two- and three-dimensional vectors."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`tex <manim.utils.tex>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Utilities for processing LaTeX templates."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`tex_templates <manim.utils.tex_templates>`\\"
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "A library of LaTeX templates."
-msgstr ""
-
-#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
-msgid ":py:obj:`tex_file_writing <manim.utils.tex_file_writing>`\\"
 msgstr ""
 
 

@@ -34,11 +34,6 @@ msgstr ""
 msgid "The length of the sliver relative to the length of the stroke."
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:0
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:7
 msgid "Examples"
 msgstr ""
@@ -48,12 +43,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:1:<autosummary>:1
-msgid ":py:obj:`finish <manim.animation.indication.ShowPassingFlash.finish>`"
-msgstr ""
-
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:1:<autosummary>:1
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:1
 msgid "Finish the animation."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:3
+msgid "This method gets called when the animation is over."
 msgstr ""
 
 

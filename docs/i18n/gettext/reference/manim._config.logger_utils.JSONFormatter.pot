@@ -47,24 +47,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim._config.logger_utils.JSONFormatter.rst:20:<autosummary>:1
-msgid ":py:obj:`format <manim._config.logger_utils.JSONFormatter.format>`"
-msgstr ""
-
-#: ../../source/reference/manim._config.logger_utils.JSONFormatter.rst:20:<autosummary>:1
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter.format:1
 msgid "Format the record in a custom JSON format."
 msgstr ""
 
 #: ../../source/reference/manim._config.logger_utils.JSONFormatter.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter.format:1:<autosummary>:1
-msgid ":py:obj:`default_msec_format <manim._config.logger_utils.JSONFormatter.default_msec_format>`\\"
-msgstr ""
-
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter.format:1:<autosummary>:1
-msgid ":py:obj:`default_time_format <manim._config.logger_utils.JSONFormatter.default_time_format>`\\"
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter.format:0

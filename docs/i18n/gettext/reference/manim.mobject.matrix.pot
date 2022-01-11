@@ -24,15 +24,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
-msgid ":py:obj:`DecimalMatrix <manim.mobject.matrix.DecimalMatrix>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
 msgid "A mobject that displays a matrix with decimal entries on the screen."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
-msgid ":py:obj:`IntegerMatrix <manim.mobject.matrix.IntegerMatrix>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
@@ -40,15 +32,7 @@ msgid "A mobject that displays a matrix with integer entries on the screen."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
-msgid ":py:obj:`Matrix <manim.mobject.matrix.Matrix>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
 msgid "A mobject that displays a matrix on the screen."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1
-msgid ":py:obj:`MobjectMatrix <manim.mobject.matrix.MobjectMatrix>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.rst:32:<autosummary>:1

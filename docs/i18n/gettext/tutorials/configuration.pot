@@ -78,6 +78,10 @@ msgstr ""
 msgid "Most classes, including :class:`.Camera`, :class:`.Mobject`, and :class:`.Animation`, read some of their default configuration from the global ``config``."
 msgstr ""
 
+#: ../../source/tutorials/configuration.rst:103
+msgid ":class:`.ManimConfig` is designed to keep internal consistency.  For example, setting ``frame_y_radius`` will affect ``frame_height``:"
+msgstr ""
+
 #: ../../source/tutorials/configuration.rst:114
 msgid "The global ``config`` object is meant to be the single source of truth for all config options.  All of the other ways of setting config options ultimately change the values of the global ``config`` object."
 msgstr ""
