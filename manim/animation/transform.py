@@ -487,10 +487,10 @@ class Restore(ApplyMethod):
     Examples
     --------
 
-    .. manim:: Restore
+    .. manim:: RestoreExample
         :quality: low
 
-        class Restore(Scene):
+        class RestoreExample(Scene):
             def construct(self):
                 s = Square()
                 s.save_state()
