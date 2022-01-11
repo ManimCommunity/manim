@@ -448,10 +448,10 @@ class ScaleInPlace(ApplyMethod):
     Examples
     --------
 
-    .. manim:: FadeToColor
+    .. manim:: ScaleInPlaceExample
         :quality: low
 
-        class FadeToColor(Scene):
+        class ScaleInPlaceExample(Scene):
             def construct(self):
                 self.play(ScaleInPlace(Text("Hello World!"), 2))
 
