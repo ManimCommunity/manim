@@ -232,14 +232,14 @@ class ClockwiseTransform(Transform):
     Examples
     --------
     .. manim:: ClockwiseTransform1
-        :quality: low
+        :quality: medium
 
         class ClockwiseTransform1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
 
     .. manim:: ClockwiseTransform2
-        :quality: low
+        :quality: medium
 
         class ClockwiseTransform2(Scene):
             def construct(self):
