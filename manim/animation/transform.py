@@ -233,14 +233,14 @@ class ClockwiseTransform(Transform):
     --------
 
     .. manim:: ClockwiseTransform1
-        :quality: low
+        :quality: medium
 
         class ClockwiseTransform1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
 
     .. manim:: ClockwiseTransform2
-        :quality: low
+        :quality: medium
 
         class ClockwiseTransform2(Scene):
             def construct(self):
@@ -268,14 +268,14 @@ class CounterclockwiseTransform(Transform):
     --------
 
     .. manim:: CounterclockwiseTransform1
-        :quality: low
+        :quality: medium
 
         class CounterclockwiseTransform1(Scene):
             def construct(self):
                 self.play(CounterclockwiseTransform(Square(), Circle()))
 
     .. manim:: CounterclockwiseTransform2
-        :quality: low
+        :quality: medium
 
         class CounterclockwiseTransform2(Scene):
             def construct(self):
@@ -301,7 +301,7 @@ class MoveToTarget(Transform):
     --------
 
     .. manim:: MoveToTargetExample
-        :quality: low
+        :quality: medium
 
         class MoveToTargetExample(Scene):
             def construct(self):
@@ -449,7 +449,7 @@ class ScaleInPlace(ApplyMethod):
     --------
 
     .. manim:: ScaleInPlaceExample
-        :quality: low
+        :quality: medium
 
         class ScaleInPlaceExample(Scene):
             def construct(self):
@@ -468,7 +468,7 @@ class ShrinkToCenter(ScaleInPlace):
     --------
 
     .. manim:: ShrinkToCenterExample
-        :quality: low
+        :quality: medium
 
         class ShrinkToCenterExample(Scene):
             def construct(self):
@@ -487,7 +487,7 @@ class Restore(ApplyMethod):
     --------
 
     .. manim:: RestoreExample
-        :quality: low
+        :quality: medium
 
         class RestoreExample(Scene):
             def construct(self):
@@ -537,12 +537,12 @@ class ApplyMatrix(ApplyPointwiseFunction):
     --------
 
     .. manim:: ApplyMatrixExample
-        :quality: low
+        :quality: medium
 
         class ApplyMatrixExample(Scene):
             def construct(self):
                 matrix = [[1, 2], [3, 4]]
-                self.play(ApplyMatrix(matrix, Text("Hello World!")))
+                self.play(ApplyMatrix(matrix, Text("Hello World!")), ApplyMatrix(matrix, NumberPlane()))
 
     """
 
