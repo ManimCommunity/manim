@@ -342,8 +342,12 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Remove?
 #   Deprecate?
 #   Keep and add docs?
+@deprecated(message="Use 'Create' and 'FadeOut' separately.")
 class ShowCreationThenFadeOut(Succession):
     """Creates mobject first, then fades out.
+    
+    .. attention::
+       This animation method will be removed in the upcoming versions. Use Create and FadeOut separately.
 
     Examples
     --------
