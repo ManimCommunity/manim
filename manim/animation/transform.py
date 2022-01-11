@@ -467,10 +467,10 @@ class ShrinkToCenter(ScaleInPlace):
     Examples
     --------
 
-    .. manim:: FadeToColor
+    .. manim:: ShrinkToCenterExample
         :quality: low
 
-        class FadeToColor(Scene):
+        class ShrinkToCenterExample(Scene):
             def construct(self):
                 self.play(ShrinkToCenter(Text("Hello World!")))
 
