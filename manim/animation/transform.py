@@ -227,8 +227,7 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
-    """
-    Transforms Mobjects while moving them in Clockwise direction.
+    """Transforms Mobjects while moving them in Clockwise direction.
 
     Examples
     --------
@@ -249,6 +248,7 @@ class ClockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(ClockwiseTransform(t1, t2))
+                
     """
 
     def __init__(
@@ -262,8 +262,7 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
-    """
-    Transforms Mobjects while moving them in Counter-Clockwise direction.
+    """Transforms Mobjects while moving them in Counter-Clockwise direction.
 
     Examples
     --------
@@ -284,6 +283,7 @@ class CounterclockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(CounterclockwiseTransform(t1, t2))
+                
     """
 
     def __init__(
@@ -297,8 +297,7 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
-    """
-    Examples
+    """Examples
     --------
 
     .. manim:: MoveToTargetExample
@@ -314,6 +313,7 @@ class MoveToTarget(Transform):
 
                 self.add(c)
                 self.play(MoveToTarget(c))
+                
     """
 
     def __init__(self, mobject: Mobject, **kwargs) -> None:
@@ -481,8 +481,7 @@ class ShrinkToCenter(ScaleInPlace):
 
 
 class Restore(ApplyMethod):
-    """
-    This functions restores a transformed mobject to its 'last saved state' of the mobject.
+    """This functions restores a transformed mobject to its 'last saved state' of the mobject.
 
     Examples
     --------
@@ -499,6 +498,7 @@ class Restore(ApplyMethod):
                 self.play(s.animate.shift(5*DOWN).rotate(PI/4))
                 self.wait()
                 self.play(Restore(s), run_time=2)
+                
     """
 
     def __init__(self, mobject: Mobject, **kwargs) -> None:
@@ -543,6 +543,7 @@ class ApplyMatrix(ApplyPointwiseFunction):
             def construct(self):
                 matrix = [[1, 2], [3, 4]]
                 self.play(ApplyMatrix(matrix, Text("Hello World!")))
+                
     """
 
     def __init__(
