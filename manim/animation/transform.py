@@ -274,7 +274,7 @@ class CounterclockwiseTransform(Transform):
             def construct(self):
                 self.play(CounterclockwiseTransform(Square(), Circle()))
 
-    .. manim:: CounterlockwiseTransform2
+    .. manim:: CounterclockwiseTransform2
         :quality: low
 
         class CounterclockwiseTransform2(Scene):
