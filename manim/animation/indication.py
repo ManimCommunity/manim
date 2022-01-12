@@ -343,12 +343,12 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Remove?
 #   Deprecate?
 #   Keep and add docs?
-@deprecated(reason="Use Create then FadeOut to achieve this effect.")
+@deprecated(message="Use Create then FadeOut to achieve this effect.")
 class ShowCreationThenFadeOut(Succession):
-    """Applies :class:`~.Create`s on a mobject, then :class:`~.FadeOut`.
+    """Applies :class:`~.Create` on a mobject, then :class:`~.FadeOut`.
 
     .. attention::
-       This animation method will be removed in the upcoming versions. Use Create and FadeOut separately.
+       This animation method will be removed in the upcoming versions. Use :class:`~.Create` and :class:`~.FadeOut` separately.
 
     Examples
     --------
