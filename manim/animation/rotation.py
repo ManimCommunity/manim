@@ -26,7 +26,11 @@ class Rotating(Animation):
         class UsingRotating(Scene):
             def construct(self):
                 self.add(Dot(ORIGIN))
-                self.play(Rotating(Square(side_length=0.5).shift(UP*2), about_point=ORIGIN), run_time=5)
+                self.play(
+                    Rotating(Square(side_length=0.5).shift(UP * 2), about_point=ORIGIN),
+                    run_time=5,
+                )
+
 
     """
 
