@@ -232,15 +232,15 @@ class ClockwiseTransform(Transform):
     Examples
     --------
 
-    .. manim:: ClockwiseTransform1
+    .. manim:: ClockwiseTransformExample1
 
-        class ClockwiseTransform1(Scene):
+        class ClockwiseTransformExample1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
 
-    .. manim:: ClockwiseTransform2
+    .. manim:: ClockwiseTransformExample2
 
-        class ClockwiseTransform2(Scene):
+        class ClockwiseTransformExample2(Scene):
             def construct(self):
                 t1 = Text("1").shift(UP)
                 t2 = Text("2").shift(DOWN)
@@ -265,16 +265,16 @@ class CounterclockwiseTransform(Transform):
     Examples
     --------
 
-    .. manim:: CounterclockwiseTransform1
+    .. manim:: CounterclockwiseTransformExample1
         :quality: medium
 
-        class CounterclockwiseTransform1(Scene):
+        class CounterclockwiseTransformExample1(Scene):
             def construct(self):
                 self.play(CounterclockwiseTransform(Square(), Circle()))
 
-    .. manim:: CounterclockwiseTransform2
+    .. manim:: CounterclockwiseTransformExample2
 
-        class CounterclockwiseTransform2(Scene):
+        class CounterclockwiseTransformExample2(Scene):
             def construct(self):
                 t1 = Text("1").shift(UP)
                 t2 = Text("2").shift(DOWN)
@@ -541,7 +541,7 @@ class ApplyMatrix(ApplyPointwiseFunction):
 
         class ApplyMatrixExample(Scene):
             def construct(self):
-                matrix = [[1, 2], [3, 4]]
+                matrix = [[1, 1], [0, 2/3]]
                 self.play(ApplyMatrix(matrix, Text("Hello World!")), ApplyMatrix(matrix, NumberPlane()))
 
     """
