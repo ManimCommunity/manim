@@ -246,7 +246,7 @@ class ClockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(ClockwiseTransform(t1, t2))
-                
+
     .. manim:: ClockwiseTransform_vs_Transform
 
         class ClockwiseTransform_vs_Transform(Scene):
@@ -310,7 +310,7 @@ class CounterclockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(CounterclockwiseTransform(t1, t2))
-                
+
     .. manim:: CounterclockwiseTransform_vs_Transform
 
         class CounterclockwiseTransform_vs_Transform(Scene):
