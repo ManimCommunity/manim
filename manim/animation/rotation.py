@@ -31,7 +31,6 @@ class Rotating(Animation):
                     run_time=5,
                 )
 
-
     """
 
     def __init__(
