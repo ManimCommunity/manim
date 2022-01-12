@@ -41,7 +41,7 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
-from deprecated import deprecated
+from ..utils.deprecation import deprecated
 
 from .. import config
 from ..animation.animation import Animation
