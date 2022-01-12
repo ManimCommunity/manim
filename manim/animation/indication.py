@@ -41,6 +41,7 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
+from deprecated import deprecated
 
 from .. import config
 from ..animation.animation import Animation
@@ -342,6 +343,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Remove?
 #   Deprecate?
 #   Keep and add docs?
+@deprecated(reason="Use Create then FadeOut to achieve this effect.")
 class ShowCreationThenFadeOut(Succession):
     """Creates mobject first, then fades out.
 
