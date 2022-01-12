@@ -356,7 +356,7 @@ class ShowCreationThenFadeOut(Succession):
 
         class ShowCreationThenFadeOutExample(Scene):
             def construct(self):
-                text1 = Text("CREATE THEN FADE OUT", color=RED)
+                text1 = Text("Create Then Fade Out", color=RED)
                 self.play(ShowCreationThenFadeOut(text1))
     """
 
