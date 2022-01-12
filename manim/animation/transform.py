@@ -233,14 +233,12 @@ class ClockwiseTransform(Transform):
     --------
 
     .. manim:: ClockwiseTransform1
-        :quality: medium
 
         class ClockwiseTransform1(Scene):
             def construct(self):
                 self.play(ClockwiseTransform(Square(), Circle()))
 
     .. manim:: ClockwiseTransform2
-        :quality: medium
 
         class ClockwiseTransform2(Scene):
             def construct(self):
@@ -275,7 +273,6 @@ class CounterclockwiseTransform(Transform):
                 self.play(CounterclockwiseTransform(Square(), Circle()))
 
     .. manim:: CounterclockwiseTransform2
-        :quality: medium
 
         class CounterclockwiseTransform2(Scene):
             def construct(self):
@@ -297,11 +294,17 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
-    """Examples
+    """Transforms a mobject to the mobject stored in its ``target`` attribute.
+    
+    After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target`
+    attribute of the mobject is populated with a copy of it. After modifying the attribute,
+    playing the :class:`.MoveToTarget` animation transforms the original mobject
+    into the modified one stored in the :attr:`target` attribute.
+
+    Examples
     --------
 
     .. manim:: MoveToTargetExample
-        :quality: medium
 
         class MoveToTargetExample(Scene):
             def construct(self):
@@ -430,7 +433,6 @@ class FadeToColor(ApplyMethod):
     --------
 
     .. manim:: FadeToColorExample
-        :quality: low
 
         class FadeToColorExample(Scene):
             def construct(self):
@@ -449,7 +451,6 @@ class ScaleInPlace(ApplyMethod):
     --------
 
     .. manim:: ScaleInPlaceExample
-        :quality: medium
 
         class ScaleInPlaceExample(Scene):
             def construct(self):
@@ -468,7 +469,6 @@ class ShrinkToCenter(ScaleInPlace):
     --------
 
     .. manim:: ShrinkToCenterExample
-        :quality: medium
 
         class ShrinkToCenterExample(Scene):
             def construct(self):
@@ -481,13 +481,14 @@ class ShrinkToCenter(ScaleInPlace):
 
 
 class Restore(ApplyMethod):
-    """This functions restores a transformed mobject to its 'last saved state' of the mobject.
+    """Transforms a mobject to its last saved state.
+
+    To save the state of a mobject, use the :meth:`~.Mobject.save_state` method.
 
     Examples
     --------
 
     .. manim:: RestoreExample
-        :quality: medium
 
         class RestoreExample(Scene):
             def construct(self):
@@ -537,7 +538,6 @@ class ApplyMatrix(ApplyPointwiseFunction):
     --------
 
     .. manim:: ApplyMatrixExample
-        :quality: medium
 
         class ApplyMatrixExample(Scene):
             def construct(self):
