@@ -295,7 +295,7 @@ class CounterclockwiseTransform(Transform):
 
 class MoveToTarget(Transform):
     """Transforms a mobject to the mobject stored in its ``target`` attribute.
-    
+
     After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target`
     attribute of the mobject is populated with a copy of it. After modifying the attribute,
     playing the :class:`.MoveToTarget` animation transforms the original mobject
