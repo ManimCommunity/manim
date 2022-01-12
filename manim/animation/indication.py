@@ -41,7 +41,6 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 from colour import Color
-from ..utils.deprecation import deprecated
 
 from .. import config
 from ..animation.animation import Animation
@@ -57,6 +56,7 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
