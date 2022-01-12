@@ -352,9 +352,9 @@ class ShowCreationThenFadeOut(Succession):
 
     Examples
     --------
-    .. manim:: Create_FadeOut
+    .. manim:: ShowCreationThenFadeOutExample
 
-        class Create_FadeOut(Scene):
+        class ShowCreationThenFadeOutExample(Scene):
             def construct(self):
                 text1 = Text("CREATE THEN FADE OUT", color=RED)
                 self.play(ShowCreationThenFadeOut(text1))
