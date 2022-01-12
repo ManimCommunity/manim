@@ -246,6 +246,36 @@ class ClockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(ClockwiseTransform(t1, t2))
+                
+    .. manim:: ClockwiseTransform_vs_Transform
+
+        class ClockwiseTransform_vs_Transform(Scene):
+            def construct(self):
+                # set up the numbers
+                c_transform = VGroup(*[Integer(i) for i in range(1,4)])
+                text_1 = Text("ClockwiseTransform", color=RED)
+                c_transform.add(text_1)
+
+                transform = VGroup(*[Integer(i) for i in range(4,7)])
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(c_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                c_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs move in clockwise direction for ClockwiseTransform()
+                self.play(ClockwiseTransform(c_transform[0], c_transform[1]))
+                self.play(ClockwiseTransform(c_transform[1], c_transform[2]))
+
+                # The mobs move straight up for Transform()
+                self.play(Transform(transform[0], transform[1]))
+                self.play(Transform(transform[1], transform[2]))
+                self.wait()
 
     """
 
@@ -280,6 +310,36 @@ class CounterclockwiseTransform(Transform):
                 t2 = Text("2").shift(DOWN)
                 self.add(t1, t2)
                 self.play(CounterclockwiseTransform(t1, t2))
+                
+    .. manim:: CounterclockwiseTransform_vs_Transform
+
+        class CounterclockwiseTransform_vs_Transform(Scene):
+            def construct(self):
+                # set up the numbers
+                c_transform = VGroup(*[Integer(i) for i in range(1,4)])
+                text_1 = Text("CounterclockwiseTransform", color=RED)
+                c_transform.add(text_1)
+
+                transform = VGroup(*[Integer(i) for i in range(4,7)])
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(c_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                c_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs move in clockwise direction for ClockwiseTransform()
+                self.play(CounterclockwiseTransform(c_transform[0], c_transform[1]))
+                self.play(CounterclockwiseTransform(c_transform[1], c_transform[2]))
+
+                # The mobs move straight up for Transform()
+                self.play(Transform(transform[0], transform[1]))
+                self.play(Transform(transform[1], transform[2]))
+                self.wait()
 
     """
 
