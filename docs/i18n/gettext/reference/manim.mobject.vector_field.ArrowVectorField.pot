@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.vector\\_field.ArrowVectorField``"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.ArrowVectorField:1
-msgid "Bases: :class:`manim.mobject.vector_field.VectorField`"
+msgid "Bases: :py:class:`manim.mobject.vector_field.VectorField`"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.ArrowVectorField:1
@@ -106,7 +106,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.ArrowVectorField.get_vector:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.ArrowVectorField.get_vector:1:<autosummary>:1

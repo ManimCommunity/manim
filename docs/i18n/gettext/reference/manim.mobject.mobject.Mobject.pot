@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.mobject.Mobject``"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject:1
@@ -41,10 +41,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject:15
 msgid "The points of the objects."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject:21
-msgid ":class:`numpy.ndarray`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:14
@@ -514,7 +510,7 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:1:<autosummary>:1
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:1:<autosummary>:1
@@ -603,6 +599,7 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.has_time_based_updater:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:0
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.null_point_align:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove_updater:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.resume_updating:0
@@ -626,14 +623,17 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:8
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:17
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.apply_to_family:6
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:20
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.clear_updaters:5
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:5
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.null_point_align:6
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove:9
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove_updater:7
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.resume_updating:5
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale:11
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_height:3
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_width:3
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:31
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:33
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.shift:6
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_height:3
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_width:3
@@ -644,7 +644,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_background_rectangle:0
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animation_override_for:0
@@ -692,30 +691,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:10
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_background_rectangle:12
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:9
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:18
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.apply_to_family:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.clear_updaters:6
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.copy:5
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:6
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove:10
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove_updater:8
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.resume_updating:6
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_height:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_width:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:32
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set_z_index:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set_z_index_by_z_coordinate:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.shift:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_height:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_width:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.suspend_updating:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.update:10
-msgid ":class:`Mobject`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_animation_override:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:0
@@ -744,13 +719,9 @@ msgstr ""
 msgid "A mobject cannot contain itself, and it cannot contain a submobject more than once.  If the parent mobject is displayed, the newly-added submobjects will also be displayed (i.e. they are automatically added to the parent Scene)."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:22
-msgid ":meth:`remove`, :meth:`add_to_back`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:25
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:21
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:36
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:46
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange:4
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:36
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_submobjects:4
@@ -765,7 +736,7 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale:15
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_height:7
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale_to_fit_width:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:35
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:37
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set_default:12
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set_z_index:10
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.shuffle_submobjects:4
@@ -819,20 +790,12 @@ msgstr ""
 msgid "Additional keyword arguments passed to the BackgroundRectangle constructor"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_background_rectangle:14
-msgid ":meth:`add_to_back`, :class:`~.BackgroundRectangle`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:3
 msgid "If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:13
 msgid "Technically, this is done by adding (or moving) the mobjects to the head of :attr:`submobjects`. The head of this list is rendered first, which places the corresponding mobjects behind the subsequent list members."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:28
-msgid ":meth:`remove`, :meth:`add`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:3
@@ -851,10 +814,6 @@ msgstr ""
 msgid "Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:48
-msgid ":meth:`get_updaters`, :meth:`remove_updater`, :class:`~.UpdateFromFunc`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_to:3
 msgid "Examples: mob1.align_to(mob2, UP) moves mob1 vertically so that its top edge lines ups with mob2's top edge."
 msgstr ""
@@ -863,31 +822,39 @@ msgstr ""
 msgid "mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1 horizontally so that it's center is directly above/below the center of mob2"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:5
-msgid "Passing multiple animations for the same :class:`Mobject` in one call to :meth:`~.Scene.play` is discouraged and will most likely not work properly. Instead of writing an animation like"
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:3
+msgid "Any method called on :code:`animate` is converted to an animation of applying that method on the mobject itself."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:13
-msgid "make use of method chaining for ``animate``, meaning::"
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:6
+msgid "For example, :code:`square.set_fill(WHITE)` sets the fill color of a square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:9
+msgid "Multiple methods can be put in a single animation once via chaining:"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:17
+msgid "Passing multiple animations for the same :class:`Mobject` in one call to :meth:`~.Scene.play` is discouraged and will most likely not work properly. Instead of writing an animation like"
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:25
+msgid "make use of method chaining."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:27
 msgid "Keyword arguments that can be passed to :meth:`.Scene.play` can be passed directly after accessing ``.animate``, like so::"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:22
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:32
 msgid "This is especially useful when animating simultaneous ``.animate`` calls that you want to behave differently::"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:32
-msgid ":func:`override_animate`"
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:79
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:89
 msgid "``.animate``"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:75
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:85
 msgid "will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations. If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead."
 msgstr ""
 
@@ -909,10 +876,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.apply_to_family:3
 msgid "The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.apply_to_family:9
-msgid ":meth:`family_members_with_points`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:3
@@ -949,10 +912,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:17
 msgid "The order in which submobjects fill the grid. Can be one of the following values: \"rd\", \"dr\", \"ld\", \"dl\", \"ru\", \"ur\", \"lu\", \"ul\". (\"rd\" -> fill rightwards then downwards)"
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:20
-msgid "The mobject."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:23
@@ -999,28 +958,12 @@ msgstr ""
 msgid "Whether to recursively call ``clear_updaters`` on all submobjects."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.clear_updaters:8
-msgid ":meth:`remove_updater`, :meth:`add_updater`, :meth:`get_updaters`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.copy:4
 msgid "The copy."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.copy:7
 msgid "The clone is initially not visible in the Scene, even if the original was."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.depth:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.width:4
-msgid ":class:`float`"
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.depth:6
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:22
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.width:22
-msgid ":meth:`length_over_dim`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.generate_points:3
@@ -1049,16 +992,8 @@ msgstr ""
 msgid "List[:class:`Callable`]"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_time_based_updaters:8
-msgid ":meth:`get_updaters`, :meth:`has_time_based_updater`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_updaters:3
 msgid "The list of updaters."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_updaters:6
-msgid ":meth:`add_updater`, :meth:`get_time_based_updaters`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.has_time_based_updater:3
@@ -1067,10 +1002,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.has_time_based_updater:5
 msgid "`bool`"
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.has_time_based_updater:7
-msgid ":meth:`get_time_based_updaters`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.invert:3
@@ -1083,10 +1014,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:10
 msgid "All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:13
-msgid ":meth:`add_updater`, :meth:`clear_updaters`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_x:1
@@ -1113,10 +1040,6 @@ msgstr ""
 msgid "The mobjects to remove."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove:12
-msgid ":meth:`add`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove_updater:3
 msgid "If the same updater is applied multiple times, every instance gets removed."
 msgstr ""
@@ -1125,16 +1048,8 @@ msgstr ""
 msgid "The update function to be removed."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove_updater:10
-msgid ":meth:`clear_updaters`, :meth:`add_updater`, :meth:`get_updaters`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.resume_updating:3
 msgid "Whether to recursively enable updating on all submobjects."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.resume_updating:8
-msgid ":meth:`suspend_updating`, :meth:`add_updater`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.save_state:1
@@ -1153,32 +1068,27 @@ msgstr ""
 msgid "Additional keyword arguments passed to :meth:`apply_points_function_about_point`."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale:11
-msgid "The scaled mobject."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.scale:29
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.shift:9
-msgid ":meth:`move_to`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:3
-msgid "Mainly to be used along with :attr:`animate` to animate setting attributes."
+msgid "I.e. ``my_mobject.set(foo=1)`` applies ``my_mobject.foo = 1``."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:6
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:5
+msgid "This is a convenience to be used along with :attr:`animate` to animate setting attributes."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:8
 msgid "In addition to this method, there is a compatibility layer that allows ``get_*`` and ``set_*`` methods to get and set generic attributes. For instance::"
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:18
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:20
 msgid "This compatibility layer does not interfere with any ``get_*`` or ``set_*`` methods that are explicitly defined."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:24
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:26
 msgid "This compatibility layer is for backwards compatibility and is not guaranteed to stay around. Where applicable, please prefer getting/setting attributes normally or with the :meth:`set` method."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:29
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.set:31
 msgid "The attributes and corresponding values to set."
 msgstr ""
 
@@ -1216,10 +1126,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.suspend_updating:4
 msgid "Whether to recursively suspend updating on all submobjects."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.suspend_updating:9
-msgid ":meth:`resume_updating`, :meth:`add_updater`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.update:3

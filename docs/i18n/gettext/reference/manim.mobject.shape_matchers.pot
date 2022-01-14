@@ -19,7 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1
-msgid "A background rectangle"
+msgid "A background rectangle."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.rst:26:<autosummary>:1

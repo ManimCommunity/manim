@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.code\\_mobject.Code``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code:1
@@ -191,7 +191,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1
@@ -224,10 +224,6 @@ msgstr ""
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.gen_colored_lines:0
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.gen_line_numbers:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.correct_non_span:7
-msgid ":class:`str`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/code_mobject.py:docstring of manim.mobject.svg.code_mobject.Code.gen_code_json:1

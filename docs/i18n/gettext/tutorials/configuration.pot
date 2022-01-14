@@ -14,284 +14,288 @@ msgstr ""
 msgid "Manim provides an extensive configuration system that allows it to adapt to many different use cases.  There are many configuration options that can be configured at different times during the scene rendering process.  Each option can be configured programmatically via `the ManimConfig class`_, at the time of command invocation via `command-line arguments`_, or at the time the library is first imported via `the config files`_."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:13
-msgid "The ManimConfig class"
+#: ../../source/tutorials/configuration.rst:11
+msgid "The most common, simplest and recommended way to set the configure Manim is via the command-line interface (CLI), which is described directly below."
 msgstr ""
 
 #: ../../source/tutorials/configuration.rst:15
-msgid "The most direct way of configuring manim is through the global ``config`` object, which is an instance of :class:`.ManimConfig`.  Each property of this class is a config option that can be accessed either with standard attribute syntax or with dict-like syntax:"
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:26
-msgid "The former is preferred; the latter is provided for backwards compatibility."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:29
-msgid "Most classes, including :class:`.Camera`, :class:`.Mobject`, and :class:`.Animation`, read some of their default configuration from the global ``config``."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:52
-msgid "The global ``config`` object is meant to be the single source of truth for all config options.  All of the other ways of setting config options ultimately change the values of the global ``config`` object."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:56
-msgid "The following example illustrates the video resolution chosen for examples rendered in our documentation with a reference frame."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:78
 msgid "Command-line arguments"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:80
-msgid "Usually, manim is run from the command-line by executing"
+#: ../../source/tutorials/configuration.rst:17
+msgid "By far the most commonly used command in the CLI is the ``render`` command, which is used to render scene(s) to an output file. It is used with the following arguments:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:86
-msgid "This asks manim to search for a Scene class called :code:`SceneName` inside the file <file.py> and render it.  One can also specify the render quality by using the flags :code:`-ql`, :code:`-qm`, :code:`-qh`, or :code:`-qk`, for low, medium, high, and 4k quality, respectively."
+#: ../../source/tutorials/configuration.rst:24
+msgid "However, since manim defaults to the :code:`render` command whenever no command is specified, the following form is far more common and can be used instead:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:95
-msgid "These flags set the values of the config options ``config.pixel_width``, ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``."
+#: ../../source/tutorials/configuration.rst:31
+msgid "An example of using the above form is:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:98
-msgid "Another frequent flag is ``-p`` (\"preview\"), which makes manim show the rendered video right after it's done rendering."
+#: ../../source/tutorials/configuration.rst:37
+msgid "This asks manim to search for a Scene class called :code:`SceneOne` inside the file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag)."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:101
+#: ../../source/tutorials/configuration.rst:40
+msgid "Another frequently used flag is ``-p`` (\"preview\"), which makes manim open the rendered video after it's done rendering."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:43
 msgid "The ``-p`` flag does not change any properties of the global ``config`` dict.  The ``-p`` flag is only a command-line convenience."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:105
-msgid "Examples"
+#: ../../source/tutorials/configuration.rst:47
+msgid "Advanced examples"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:107
+#: ../../source/tutorials/configuration.rst:49
 msgid "To render a scene in high quality, but only output the last frame of the scene instead of the whole video, you can execute"
 msgstr ""
 
+#: ../../source/tutorials/configuration.rst:56
+msgid "The following example specifies the output file name (with the :code:`-o` flag), renders only the first ten animations (:code:`-n` flag) with a white background (:code:`-c` flag), and saves the animation as a ``.gif`` instead of as a ``.mp4`` file (``--format=gif`` flag).  It uses the default quality and does not try to open the file after it is rendered."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:67
+msgid "A list of all CLI flags"
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:75
+msgid "The ManimConfig class"
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:77
+msgid "The most direct way of configuring manim is through the global ``config`` object, which is an instance of :class:`.ManimConfig`.  Each property of this class is a config option that can be accessed either with standard attribute syntax or with dict-like syntax:"
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:88
+msgid "The former is preferred; the latter is provided for backwards compatibility."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:91
+msgid "Most classes, including :class:`.Camera`, :class:`.Mobject`, and :class:`.Animation`, read some of their default configuration from the global ``config``."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:103
+msgid ":class:`.ManimConfig` is designed to keep internal consistency.  For example, setting ``frame_y_radius`` will affect ``frame_height``:"
+msgstr ""
+
 #: ../../source/tutorials/configuration.rst:114
-msgid "The following example specifies the output file name (with the :code:`-o` flag), renders only the first ten animations (:code:`-n` flag) with a white background (:code:`-c` flag), and saves the animation as a .gif instead of as a .mp4 file (:code:`-i` flag).  It uses the default quality and does not try to open the file after it is rendered."
+msgid "The global ``config`` object is meant to be the single source of truth for all config options.  All of the other ways of setting config options ultimately change the values of the global ``config`` object."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:124
-msgid "There are many more command-line flags that manim accepts.  All the possible flags are shown by executing ``manim render --help``.  A complete list of CLI flags is at the end of this document."
+#: ../../source/tutorials/configuration.rst:118
+msgid "The following example illustrates the video resolution chosen for examples rendered in our documentation with a reference frame."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:130
+#: ../../source/tutorials/configuration.rst:140
 msgid "The config files"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:132
-msgid "As the last example shows, executing manim from the command-line may involve using many flags at the same time.  This may become a nuisance if you must execute the same script many times in a short time period, for example when making small incremental tweaks to your scene script.  For this purpose, manim can also be configured using a configuration file.  A configuration file is a file ending with the suffix ``.cfg``."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:139
-msgid "To use a configuration file when rendering your scene, you must create a file with name ``manim.cfg`` in the same directory as your scene code."
-msgstr ""
-
 #: ../../source/tutorials/configuration.rst:142
+msgid "As the last example shows, executing manim from the command-line may involve using many flags at the same time.  This may become a nuisance if you must execute the same script many times in a short time period, for example when making small incremental tweaks to your scene script.  For this reason, manim can also be configured using a configuration file.  A configuration file is a file ending with the suffix ``.cfg``."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:149
+msgid "To use a local configuration file when rendering your scene, you must create a file with name ``manim.cfg`` in the same directory as your scene code."
+msgstr ""
+
+#: ../../source/tutorials/configuration.rst:152
 msgid "The config file **must** be named ``manim.cfg``. Currently, manim does not support config files with any other name."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:145
+#: ../../source/tutorials/configuration.rst:155
 msgid "The config file must start with the section header ``[CLI]``.  The configuration options under this header have the same name as the CLI flags, and serve the same purpose.  Take for example the following config file."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:157
-msgid "Config files are read with the standard python library ``configparser``. In particular, they will ignore any line that starts with a pound symbol ``#``."
+#: ../../source/tutorials/configuration.rst:167
+msgid "Config files are parsed with the standard python library ``configparser``. In particular, they will ignore any line that starts with a pound symbol ``#``."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:160
+#: ../../source/tutorials/configuration.rst:170
 msgid "Now, executing the following command"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:166
+#: ../../source/tutorials/configuration.rst:176
 msgid "is equivalent to executing the following command, provided that ``manim.cfg`` is in the same directory as <file.py>,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:173
+#: ../../source/tutorials/configuration.rst:183
 msgid "The names of the configuration options admissible in config files are exactly the same as the **long names** of the corresponding command- line flags.  For example, the ``-c`` and ``--background_color`` flags are interchangeable, but the config file only accepts :code:`background_color` as an admissible option."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:179
+#: ../../source/tutorials/configuration.rst:189
 msgid "Since config files are meant to replace CLI flags, all CLI flags can be set via a config file.  Moreover, any config option can be set via a config file, whether or not it has an associated CLI flag.  For a list of all CLI flags and all config options, see the bottom of this document."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:184
+#: ../../source/tutorials/configuration.rst:194
 msgid "Manim will look for a ``manim.cfg`` config file in the same directory as the file being rendered, and **not** in the directory of execution.  For example,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:191
+#: ../../source/tutorials/configuration.rst:201
 msgid "will use the config file found in ``path/to/file.py``, if any.  It will **not** use the config file found in the current working directory, even if it exists. In this way, the user may keep different config files for different scenes or projects, and execute them with the right configuration from anywhere in the system."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:197
+#: ../../source/tutorials/configuration.rst:207
 msgid "The file described here is called the **folder-wide** config file because it affects all scene scripts found in the same folder."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:202
+#: ../../source/tutorials/configuration.rst:212
 msgid "The user config file"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:204
+#: ../../source/tutorials/configuration.rst:214
 msgid "As explained in the previous section, a :code:`manim.cfg` config file only affects the scene scripts in its same folder.  However, the user may also create a special config file that will apply to all scenes rendered by that user. This is referred to as the **user-wide** config file, and it will apply regardless of where manim is executed from, and regardless of where the scene script is stored."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:211
+#: ../../source/tutorials/configuration.rst:221
 msgid "The user-wide config file lives in a special folder, depending on the operating system."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:214
+#: ../../source/tutorials/configuration.rst:224
 msgid "Windows: :code:`UserDirectory`/AppData/Roaming/Manim/manim.cfg"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:215
+#: ../../source/tutorials/configuration.rst:225
 msgid "MacOS: :code:`UserDirectory`/.config/manim/manim.cfg"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:216
+#: ../../source/tutorials/configuration.rst:226
 msgid "Linux: :code:`UserDirectory`/.config/manim/manim.cfg"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:218
+#: ../../source/tutorials/configuration.rst:228
 msgid "Here, :code:`UserDirectory` is the user's home folder."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:221
+#: ../../source/tutorials/configuration.rst:231
 msgid "A user may have many **folder-wide** config files, one per folder, but only one **user-wide** config file.  Different users in the same computer may each have their own user-wide config file."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:225
+#: ../../source/tutorials/configuration.rst:235
 msgid "Do not store scene scripts in the same folder as the user-wide config file.  In this case, the behavior is undefined."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:228
+#: ../../source/tutorials/configuration.rst:238
 msgid "Whenever you use manim from anywhere in the system, manim will look for a user-wide config file and read its configuration."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:233
+#: ../../source/tutorials/configuration.rst:243
 msgid "Cascading config files"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:235
+#: ../../source/tutorials/configuration.rst:245
 msgid "What happens if you execute manim and it finds both a folder-wide config file and a user-wide config file?  Manim will read both files, but if they are incompatible, **the folder-wide file takes precedence**."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:239
+#: ../../source/tutorials/configuration.rst:249
 msgid "For example, take the following user-wide config file"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:249
+#: ../../source/tutorials/configuration.rst:259
 msgid "and the following folder-wide file"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:257
+#: ../../source/tutorials/configuration.rst:267
 msgid "Then, executing :code:`manim <file.py> SceneName` will be equivalent to not using any config files and executing"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:264
+#: ../../source/tutorials/configuration.rst:274
 msgid "Any command-line flags have precedence over any config file.  For example, using the previous two config files and executing :code:`manim -c RED <file.py> SceneName` is equivalent to not using any config files and executing"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:273
+#: ../../source/tutorials/configuration.rst:283
 msgid "There is also a **library-wide** config file that determines manim's default behavior and applies to every user of the library.  It has the least precedence, so any config options in the user-wide and any folder-wide files will override the library-wide file.  This is referred to as the *cascading* config file system."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:279
+#: ../../source/tutorials/configuration.rst:289
 msgid "**The user should not try to modify the library-wide file**. Contributors should receive explicit confirmation from the core developer team before modifying it."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:285
+#: ../../source/tutorials/configuration.rst:295
 msgid "Order of operations"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:294
+#: ../../source/tutorials/configuration.rst:304
 msgid "With so many different ways of configuring manim, it can be difficult to know when each config option is being set.  In fact, this will depend on how manim is being used."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:298
+#: ../../source/tutorials/configuration.rst:308
 msgid "If manim is imported from a module, then the configuration system will follow these steps:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:301
+#: ../../source/tutorials/configuration.rst:311
 msgid "The library-wide config file is loaded."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:302
+#: ../../source/tutorials/configuration.rst:312
 msgid "The user-wide and folder-wide files are loaded, if they exist."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:303
+#: ../../source/tutorials/configuration.rst:313
 msgid "All files found in the previous two steps are parsed in a single :class:`ConfigParser` object, called ``parser``.  This is where *cascading* happens."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:306
+#: ../../source/tutorials/configuration.rst:316
 msgid ":class:`logging.Logger` is instantiated to create manim's global ``logger`` object. It is configured using the \"logger\" section of the parser, i.e. ``parser['logger']``."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:309
+#: ../../source/tutorials/configuration.rst:319
 msgid ":class:`ManimConfig` is instantiated to create the global ``config`` object."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:310
+#: ../../source/tutorials/configuration.rst:320
 msgid "The ``parser`` from step 3 is fed into the ``config`` from step 5 via :meth:`ManimConfig.digest_parser`."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:312
+#: ../../source/tutorials/configuration.rst:322
 msgid "Both ``logger`` and ``config`` are exposed to the user."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:314
+#: ../../source/tutorials/configuration.rst:324
 msgid "If manim is being invoked from the command-line, all of the previous steps happen, and are complemented by:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:317
+#: ../../source/tutorials/configuration.rst:327
 msgid "The CLI flags are parsed and fed into ``config`` via :meth:`~ManimConfig.digest_args`."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:319
+#: ../../source/tutorials/configuration.rst:329
 msgid "If the ``--config_file`` flag was used, a new :class:`ConfigParser` object is created with the contents of the library-wide file, the user-wide file if it exists, and the file passed via ``--config_file``.  In this case, the folder-wide file, if it exists, is ignored."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:323
+#: ../../source/tutorials/configuration.rst:333
 msgid "The new parser is fed into ``config``."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:324
+#: ../../source/tutorials/configuration.rst:334
 msgid "The rest of the CLI flags are processed."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:326
+#: ../../source/tutorials/configuration.rst:336
 msgid "To summarize, the order of precedence for configuration options, from lowest to highest precedence is:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:329
+#: ../../source/tutorials/configuration.rst:339
 msgid "Library-wide config file,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:330
+#: ../../source/tutorials/configuration.rst:340
 msgid "user-wide config file, if it exists,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:331
+#: ../../source/tutorials/configuration.rst:341
 msgid "folder-wide config file, if it exists OR custom config file, if passed via ``--config_file``,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:333
+#: ../../source/tutorials/configuration.rst:343
 msgid "other CLI flags, and"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:334
+#: ../../source/tutorials/configuration.rst:344
 msgid "any programmatic changes made after the config system is set."
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:338
-msgid "A list of all config options"
-msgstr ""
-
-#: ../../source/tutorials/configuration.rst:360
-msgid "A list of all CLI flags"
 msgstr ""
 
 

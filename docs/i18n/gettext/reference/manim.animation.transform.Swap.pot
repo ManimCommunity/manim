@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.Swap``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Swap:1
-msgid "Bases: :class:`manim.animation.transform.CyclicReplace`"
+msgid "Bases: :py:class:`manim.animation.transform.CyclicReplace`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.Swap.rst:14

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.three\\_d\\_camera.ThreeDCamera``"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1
-msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgid "Bases: :py:class:`manim.camera.camera.Camera`"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1

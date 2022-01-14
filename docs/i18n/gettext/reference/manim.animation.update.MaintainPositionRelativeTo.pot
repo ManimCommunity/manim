@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.update.MaintainPositionRelativeTo``"
 msgstr ""
 
 #: ../../../manim/animation/update.py:docstring of manim.animation.update.MaintainPositionRelativeTo:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.update.MaintainPositionRelativeTo.rst:14

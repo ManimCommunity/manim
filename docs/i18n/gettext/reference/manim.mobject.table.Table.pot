@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.table.Table``"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table:1
@@ -214,7 +214,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
@@ -321,6 +321,14 @@ msgstr ""
 msgid "VGroup containing the column labels of the table."
 msgstr ""
 
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_columns:3
+msgid ":class:`~.VGroup` containing each column in a :class:`~.VGroup`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries:7
+msgid ":class:`~.VGroup` containing all entries of the table (including labels) or the :class:`~.VMobject` at the given position if ``pos`` is set."
+msgstr ""
+
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries:9
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries_without_labels:9
 msgid "Union[:class:`~.VMobject`, :class:`~.VGroup`]"
@@ -328,6 +336,30 @@ msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries_without_labels:4
 msgid "The position of a specific entry on the table. ``(1,1)`` being the top left entry of the table (without labels)."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_entries_without_labels:7
+msgid ":class:`~.VGroup` containing all entries of the table (without labels) or the :class:`~.VMobject` at the given position if ``pos`` is set."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_horizontal_lines:3
+msgid ":class:`~.VGroup` containing all the horizontal lines of the table."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_labels:3
+msgid ":class:`~.VGroup` containing all the labels of the table."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_row_labels:3
+msgid ":class:`~.VGroup` containing the row labels of the table."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_rows:3
+msgid ":class:`~.VGroup` containing each row in a :class:`~.VGroup`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.get_vertical_lines:3
+msgid ":class:`~.VGroup` containing all the vertical lines of the table."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:3
@@ -343,11 +375,7 @@ msgid "Additional keyword arguments passed to :meth:`apply_points_function_about
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:11
-msgid "The scaled mobject."
-msgstr ""
-
-#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.scale:29
-msgid ":meth:`move_to`"
+msgid "``self``"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.set_column_colors:3

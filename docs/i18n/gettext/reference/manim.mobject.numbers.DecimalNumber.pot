@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.numbers.DecimalNumber``"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber:1
@@ -44,7 +44,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.DecimalNumber.font_size:1:<autosummary>:1

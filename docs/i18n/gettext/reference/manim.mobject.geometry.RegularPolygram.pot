@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.RegularPolygram``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.RegularPolygram:1
-msgid "Bases: :class:`manim.mobject.geometry.Polygram`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Polygram`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.RegularPolygram:1
@@ -67,7 +67,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.RegularPolygram.rst:28:<autosummary>:1

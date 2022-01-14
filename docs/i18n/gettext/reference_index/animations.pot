@@ -27,7 +27,7 @@ msgid "Fading in and out of view."
 msgstr ""
 
 #: ../../source/reference_index/animations.rst:21:<autosummary>:1
-msgid "Animations that grow mobjects."
+msgid "Animations that introduce mobjects to scene by growing them from points."
 msgstr ""
 
 #: ../../source/reference_index/animations.rst:21:<autosummary>:1

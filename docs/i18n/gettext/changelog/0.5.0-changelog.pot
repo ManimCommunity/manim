@@ -255,6 +255,10 @@ msgstr ""
 msgid "`#1085 <https://github.com/ManimCommunity/manim/pull/1085>`__: Added :class:`~.Angle` and :class:`~.RightAngle` for intersecting lines"
 msgstr ""
 
+#: ../../source/changelog/0.5.0-changelog.rst:103
+msgid ":class:`~.Angle` and :class:`~.RightAngle` both take two lines as input. If they intersect, or share a common vertex, an angle is drawn between them. Users can customize the look of the angle and also use a dotted right angle."
+msgstr ""
+
 #: ../../source/changelog/0.5.0-changelog.rst:106
 msgid "Enhancements"
 msgstr ""

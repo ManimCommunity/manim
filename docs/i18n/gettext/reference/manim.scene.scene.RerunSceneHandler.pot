@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.scene.RerunSceneHandler``"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler:1
-msgid "Bases: :class:`watchdog.events.FileSystemEventHandler`"
+msgid "Bases: :py:class:`watchdog.events.FileSystemEventHandler`"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.RerunSceneHandler:1

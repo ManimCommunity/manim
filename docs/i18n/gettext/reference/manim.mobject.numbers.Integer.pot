@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.numbers.Integer``"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Integer:1
-msgid "Bases: :class:`manim.mobject.numbers.DecimalNumber`"
+msgid "Bases: :py:class:`manim.mobject.numbers.DecimalNumber`"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Integer:1
@@ -35,7 +35,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Integer.rst:30:<autosummary>:1
