@@ -429,6 +429,24 @@ will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``.
 This makes transformations between similar text fragments easy
 to write using :class:`~.TransformMatchingTex`.
 
+Using ``index_labels`` to work with complicated strings
+=======================================================
+
+You might sometimes be working with a very complicated ``MathTex`` mobject
+that makes it difficult to work with its individual components. This is 
+where a debugging function :class:`~.index_labels` is very useful.
+
+`index_labels` shows the index of a mobject's submobjects, allowing you
+to easily find which components of the mobject you'd like to alter.
+
+.. manim:: IndexLabelsMathTex
+    :save_last_frame:
+
+    class IndexLabelsMathTex(Scene):
+        def construct(self):
+            
+
+
 LaTeX Maths Fonts - The Template Library
 ========================================
 
