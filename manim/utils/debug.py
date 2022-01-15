@@ -25,7 +25,7 @@ def index_labels(
     stroke_color: Color = BLACK,
     **kwargs
 ):
-    """Returns a :class:`~.VGroup` of :class:`~.Integer`s
+    r"""Returns a :class:`~.VGroup` of :class:`~.Integer`s
     that shows the index of each submobject.
 
     Useful for working with parts of complicated mobjects.
