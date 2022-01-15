@@ -81,10 +81,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
-msgid ":py:obj:`get_z_axis_label <manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1
 msgid "Generate a z-axis label."
 msgstr ""
@@ -94,19 +90,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.coordinate_systems.ThreeDAxes.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.coordinate_systems.ThreeDAxes.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.coordinate_systems.ThreeDAxes.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
@@ -114,15 +98,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.coordinate_systems.ThreeDAxes.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.coordinate_systems.ThreeDAxes.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1

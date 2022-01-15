@@ -63,12 +63,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.cascade_element_style:16
-#: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.fill_default_values:8
-#: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.parse_style:7
-msgid ":class:`dict`"
-msgstr ""
-
 #: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.fill_default_values:1
 msgid "Fill in the default values for properties of SVG elements, if they are not currently set in the style dictionary."
 msgstr ""
@@ -91,10 +85,6 @@ msgstr ""
 
 #: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.parse_color_string:6
 msgid "Hexadecimal color string in the format `#rrggbb`"
-msgstr ""
-
-#: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.parse_color_string:7
-msgid ":class:`str`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/style_utils.py:docstring of manim.mobject.svg.style_utils.parse_style:1

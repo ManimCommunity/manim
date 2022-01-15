@@ -100,16 +100,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`add_background_to_entries <manim.mobject.matrix.Matrix.add_background_to_entries>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1
 msgid "Add a black background rectangle to the matrix, see above for an example."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`add_brackets <manim.mobject.matrix.Matrix.add_brackets>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
@@ -121,16 +113,8 @@ msgid "Used internally."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`get_brackets <manim.mobject.matrix.Matrix.get_brackets>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_brackets:1
 msgid "Return the bracket mobjects."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`get_columns <manim.mobject.matrix.Matrix.get_columns>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
@@ -139,16 +123,8 @@ msgid "Return columns of the matrix as VGroups."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`get_entries <manim.mobject.matrix.Matrix.get_entries>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_entries:1
 msgid "Return the individual entries of the matrix."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`get_mob_matrix <manim.mobject.matrix.Matrix.get_mob_matrix>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
@@ -157,33 +133,13 @@ msgid "Return the underlying mob matrix mobjects."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`get_rows <manim.mobject.matrix.Matrix.get_rows>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1
 msgid "Return rows of the matrix as VGroups."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`matrix_to_mob_matrix <manim.mobject.matrix.Matrix.matrix_to_mob_matrix>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`organize_mob_matrix <manim.mobject.matrix.Matrix.organize_mob_matrix>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`set_column_colors <manim.mobject.matrix.Matrix.set_column_colors>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:1
 msgid "Set individual colors for each columns of the matrix."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
-msgid ":py:obj:`set_row_colors <manim.mobject.matrix.Matrix.set_row_colors>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:30:<autosummary>:1
@@ -196,19 +152,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.matrix.Matrix.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.matrix.Matrix.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.matrix.Matrix.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
@@ -216,15 +160,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.matrix.Matrix.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.matrix.Matrix.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
@@ -260,13 +196,6 @@ msgstr ""
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:0
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:5
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:11
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:7
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:7
-msgid ":class:`Matrix`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:1

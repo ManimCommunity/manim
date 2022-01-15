@@ -31,36 +31,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`add_points <manim.mobject.types.point_cloud_mobject.PMobject.add_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1
 msgid "Add points."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`align_points_with_larger <manim.mobject.types.point_cloud_mobject.PMobject.align_points_with_larger>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`fade_to <manim.mobject.types.point_cloud_mobject.PMobject.fade_to>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`filter_out <manim.mobject.types.point_cloud_mobject.PMobject.filter_out>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`get_all_rgbas <manim.mobject.types.point_cloud_mobject.PMobject.get_all_rgbas>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`get_array_attrs <manim.mobject.types.point_cloud_mobject.PMobject.get_array_attrs>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`get_color <manim.mobject.types.point_cloud_mobject.PMobject.get_color>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
@@ -69,39 +41,7 @@ msgid "Returns the color of the :class:`~.Mobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`get_point_mobject <manim.mobject.types.point_cloud_mobject.PMobject.get_point_mobject>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
 msgid "The simplest :class:`~.Mobject` to be transformed to or from self."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`get_stroke_width <manim.mobject.types.point_cloud_mobject.PMobject.get_stroke_width>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`ingest_submobjects <manim.mobject.types.point_cloud_mobject.PMobject.ingest_submobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`interpolate_color <manim.mobject.types.point_cloud_mobject.PMobject.interpolate_color>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`match_colors <manim.mobject.types.point_cloud_mobject.PMobject.match_colors>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`point_from_proportion <manim.mobject.types.point_cloud_mobject.PMobject.point_from_proportion>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`pointwise_become_partial <manim.mobject.types.point_cloud_mobject.PMobject.pointwise_become_partial>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`reset_points <manim.mobject.types.point_cloud_mobject.PMobject.reset_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
@@ -110,36 +50,12 @@ msgid "Sets :attr:`points` to be an empty array."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`set_color <manim.mobject.types.point_cloud_mobject.PMobject.set_color>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
 msgid "Condition is function which takes in one arguments, (x, y, z)."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`set_color_by_gradient <manim.mobject.types.point_cloud_mobject.PMobject.set_color_by_gradient>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`set_colors_by_radial_gradient <manim.mobject.types.point_cloud_mobject.PMobject.set_colors_by_radial_gradient>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`set_stroke_width <manim.mobject.types.point_cloud_mobject.PMobject.set_stroke_width>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`sort_points <manim.mobject.types.point_cloud_mobject.PMobject.sort_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.sort_points:1
 msgid "Function is any map from R^3 to R"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
-msgid ":py:obj:`thin_out <manim.mobject.types.point_cloud_mobject.PMobject.thin_out>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
@@ -152,19 +68,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.point_cloud_mobject.PMobject.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.point_cloud_mobject.PMobject.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.point_cloud_mobject.PMobject.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
@@ -172,15 +76,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.point_cloud_mobject.PMobject.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.point_cloud_mobject.PMobject.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1

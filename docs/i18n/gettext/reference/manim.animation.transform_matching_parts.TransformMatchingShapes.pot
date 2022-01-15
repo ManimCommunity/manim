@@ -34,12 +34,4 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingShapes.rst:19:<autosummary>:1
-msgid ":py:obj:`get_mobject_key <manim.animation.transform_matching_parts.TransformMatchingShapes.get_mobject_key>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingShapes.rst:19:<autosummary>:1
-msgid ":py:obj:`get_mobject_parts <manim.animation.transform_matching_parts.TransformMatchingShapes.get_mobject_parts>`"
-msgstr ""
-
 

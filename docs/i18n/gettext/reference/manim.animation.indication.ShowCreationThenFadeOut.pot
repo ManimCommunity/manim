@@ -18,12 +18,4 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.composition.Succession`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.indication.ShowCreationThenFadeOut.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowCreationThenFadeOut:0
-msgid "Parameters"
-msgstr ""
-
 

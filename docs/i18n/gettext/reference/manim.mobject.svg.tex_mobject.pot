@@ -26,17 +26,9 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`BulletedList <manim.mobject.svg.tex_mobject.BulletedList>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:0
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:0
 msgid "Examples"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`MathTex <manim.mobject.svg.tex_mobject.MathTex>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
@@ -44,23 +36,11 @@ msgid "A string compiled with LaTeX in math mode."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`SingleStringMathTex <manim.mobject.svg.tex_mobject.SingleStringMathTex>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
 msgid "Elementary building block for rendering text with LaTeX."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`Tex <manim.mobject.svg.tex_mobject.Tex>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
 msgid "A string compiled with LaTeX in normal mode."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1
-msgid ":py:obj:`TexSymbol <manim.mobject.svg.tex_mobject.TexSymbol>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.rst:30:<autosummary>:1

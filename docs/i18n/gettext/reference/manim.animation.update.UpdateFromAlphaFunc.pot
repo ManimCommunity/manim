@@ -23,10 +23,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/update.py:docstring of manim.animation.update.UpdateFromAlphaFunc.interpolate_mobject:1:<autosummary>:1
-msgid ":py:obj:`interpolate_mobject <manim.animation.update.UpdateFromAlphaFunc.interpolate_mobject>`"
-msgstr ""
-
-#: ../../../manim/animation/update.py:docstring of manim.animation.update.UpdateFromAlphaFunc.interpolate_mobject:1:<autosummary>:1
 #: ../../../manim/animation/update.py:docstring of manim.animation.update.UpdateFromAlphaFunc.interpolate_mobject:1
 msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
 msgstr ""

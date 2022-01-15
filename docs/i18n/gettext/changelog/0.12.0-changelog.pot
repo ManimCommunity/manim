@@ -286,6 +286,10 @@ msgstr ""
 msgid "Additional keyword arguments for :meth:`~.Vector.coordinate_label` are passed to the constructed matrix."
 msgstr ""
 
+#: ../../source/changelog/0.12.0-changelog.rst:128
+msgid ":class:`~.Matrix` now accepts a ``bracket_config`` keyword argument."
+msgstr ""
+
 #: ../../source/changelog/0.12.0-changelog.rst:130
 msgid "`#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Changed the color of :class:`~.NumberLine` from ``LIGHT_GREY`` to ``WHITE``"
 msgstr ""

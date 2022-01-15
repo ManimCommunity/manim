@@ -38,10 +38,6 @@ msgstr ""
 msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
 msgstr ""
 
-#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromPoint:8
 msgid "Examples"
 msgstr ""
@@ -50,20 +46,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:21:<autosummary>:1
-msgid ":py:obj:`create_starting_mobject <manim.animation.growing.GrowFromPoint.create_starting_mobject>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:21:<autosummary>:1
-msgid ":py:obj:`create_target <manim.animation.growing.GrowFromPoint.create_target>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.growing.GrowFromPoint.rst:27:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.growing.GrowFromPoint.path_arc>`\\"
 msgstr ""
 
 
