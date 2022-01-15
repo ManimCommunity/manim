@@ -7,8 +7,8 @@ __all__ = ["print_family", "index_labels"]
 from manim.mobject.mobject import Mobject
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
-from .color import BLACK, Colors
-
+from .color import BLACK
+from colour import Color
 
 def print_family(mobject, n_tabs=0):
     """For debugging purposes"""
@@ -17,7 +17,9 @@ def print_family(mobject, n_tabs=0):
         print_family(submob, n_tabs + 1)
 
 
-def index_labels(mobject: "Mobject", font_size:float=7.2, stroke_color: Colors = BLACK):
+def index_labels(
+    mobject: "Mobject", font_size: float = 7.2, stroke_color: Color = BLACK, **kwargs
+):
     """Returns a :class:`~.VGroup` of :class:`~.Integer`s
     that shows the index of each submobject.
 
@@ -25,10 +27,21 @@ def index_labels(mobject: "Mobject", font_size:float=7.2, stroke_color: Colors =
 
     Parameters
     ----------
+    mobject
+        The mobject that will have its submobjects labelled.
+    font_size
+        The font size of the labels, by default 7.2.
+    stroke_color
+        The stroke color of the labels.
+    kwargs
+        Additional parameters to be passed into the :class`~.Integer`
+        mobjects used to construct the labels.
 
+    Examples
+    --------
     .. manim:: IndexLabelsExample
         :save_last_frame:
-        
+
         class IndexLabelsExample(Scene):
             def construct(self):
                 text = MathTex(
@@ -49,7 +62,7 @@ def index_labels(mobject: "Mobject", font_size:float=7.2, stroke_color: Colors =
 
     labels = VGroup()
     for n, submob in enumerate(mobject):
-        label = Integer(n, font_size=font_size)
+        label = Integer(n, font_size=font_size, **kwargs)
         label.move_to(submob)
         label.set_stroke(stroke_color, 5, background=True)
         labels.add(label)
