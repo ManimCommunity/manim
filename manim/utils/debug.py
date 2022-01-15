@@ -10,6 +10,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
 from colour import Color
 
+
 def print_family(mobject, n_tabs=0):
     """For debugging purposes"""
     print("\t" * n_tabs, mobject, id(mobject))
@@ -18,7 +19,11 @@ def print_family(mobject, n_tabs=0):
 
 
 def index_labels(
-    mobject: "Mobject", font_size: float = 7.2, stroke_color: Color = BLACK, **kwargs
+    mobject: "Mobject",
+    font_size: float = 7.2,
+    stroke_width: float = 5,
+    stroke_color: Color = BLACK,
+    **kwargs
 ):
     """Returns a :class:`~.VGroup` of :class:`~.Integer`s
     that shows the index of each submobject.
@@ -62,8 +67,13 @@ def index_labels(
 
     labels = VGroup()
     for n, submob in enumerate(mobject):
-        label = Integer(n, font_size=font_size, **kwargs)
+        label = Integer(
+            n,
+            font_size=font_size,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            **kwargs
+        )
         label.move_to(submob)
-        label.set_stroke(stroke_color, 5, background=True)
         labels.add(label)
     return labels
