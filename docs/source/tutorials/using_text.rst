@@ -437,14 +437,21 @@ that makes it difficult to work with its individual components. This is
 where a debugging function :class:`~.index_labels` is very useful.
 
 `index_labels` shows the index of a mobject's submobjects, allowing you
-to easily find which components of the mobject you'd like to alter.
+to easily find the components of the mobject you'd like to change.
 
-.. manim:: IndexLabelsMathTex
+.. manim:: IndexLabelsMathTex 
     :save_last_frame:
-
+    
     class IndexLabelsMathTex(Scene):
         def construct(self):
-            
+            text = MathTex(r"\binom{2n}{n+2}", font_size=96)
+
+            # index the first (and only) term of the MathTex mob
+            self.add(index_labels(text[0]))
+
+            text[0][1:3].set_color(YELLOW)
+            text[0][3:6].set_color(RED)
+            self.add(text)
 
 
 LaTeX Maths Fonts - The Template Library
@@ -455,12 +462,16 @@ trickier than regular text. It requires changing the template that is used
 to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates`
 ready for you to use. These templates will all work in math mode:
 
-.. manim:: LaTeXMathFonts
-    :save_last_frame:
+.. manim:: LaTeXMathFonts 
+   :save_last_frame:
 
     class LaTeXMathFonts(Scene):
         def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive, font_size=144)
+            tex = Tex(
+                r"$x^2 + y^2 = z^2$",
+                tex_template=TexFontTemplates.french_cursive,
+                font_size=144,
+            )
             self.add(tex)
 
 Manim also has a :class:`~.TexTemplateLibrary` containing the TeX
