@@ -60,24 +60,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`change_alignment_for_a_line <manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1
 msgid "Function to change one line's alignment to a specific value."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`gen_chars <manim.mobject.svg.text_mobject.Paragraph.gen_chars>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
 msgid "Function to convert plain string to 2d-VGroup of chars."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`set_all_lines_alignments <manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
@@ -86,25 +74,13 @@ msgid "Function to set all line's alignment to a specific value."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`set_all_lines_to_initial_positions <manim.mobject.svg.text_mobject.Paragraph.set_all_lines_to_initial_positions>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_all_lines_to_initial_positions:1
 msgid "Set all lines to their initial positions."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`set_line_alignment <manim.mobject.svg.text_mobject.Paragraph.set_line_alignment>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:1
 msgid "Function to set one line's alignment to a specific value."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
-msgid ":py:obj:`set_line_to_initial_position <manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25:<autosummary>:1
@@ -117,19 +93,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.svg.text_mobject.Paragraph.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.svg.text_mobject.Paragraph.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.svg.text_mobject.Paragraph.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
@@ -137,15 +101,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.svg.text_mobject.Paragraph.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.svg.text_mobject.Paragraph.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1

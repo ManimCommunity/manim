@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
-msgid ":py:obj:`Animation <manim.animation.animation.Animation>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
 msgid "An animation."
-msgstr ""
-
-#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
-msgid ":py:obj:`Wait <manim.animation.animation.Wait>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.animation.rst:31
@@ -40,10 +32,6 @@ msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:3
 msgid "Should only be used to decorate methods of classes derived from :class:`~.Mobject`. ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined them. They don't override subclasses of the ``Animation`` they override."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:7
-msgid ":meth:`~.Mobject.add_animation_override`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:0

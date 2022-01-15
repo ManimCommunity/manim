@@ -30,20 +30,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:21:<autosummary>:1
-msgid ":py:obj:`get_function <manim.mobject.functions.FunctionGraph.get_function>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:21:<autosummary>:1
-msgid ":py:obj:`get_point_from_function <manim.mobject.functions.FunctionGraph.get_point_from_function>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.functions.FunctionGraph.animate>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
@@ -51,27 +39,11 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.functions.FunctionGraph.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.functions.FunctionGraph.depth>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.functions.FunctionGraph.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.functions.FunctionGraph.width>`\\"
 msgstr ""
 
 

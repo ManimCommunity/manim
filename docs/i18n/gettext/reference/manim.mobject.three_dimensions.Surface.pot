@@ -58,24 +58,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
-msgid ":py:obj:`get_u_values_and_v_values <manim.mobject.three_dimensions.Surface.get_u_values_and_v_values>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
-msgid ":py:obj:`set_fill_by_checkerboard <manim.mobject.three_dimensions.Surface.set_fill_by_checkerboard>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
-msgid ":py:obj:`set_fill_by_value <manim.mobject.three_dimensions.Surface.set_fill_by_value>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1
 msgid "Sets the color of each mobject of a parametric surface to a color relative to its axis-value"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
-msgid ":py:obj:`setup_in_uv_space <manim.mobject.three_dimensions.Surface.setup_in_uv_space>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:25
@@ -83,19 +67,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.three_dimensions.Surface.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Surface.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.three_dimensions.Surface.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
@@ -103,15 +75,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.three_dimensions.Surface.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.three_dimensions.Surface.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1

@@ -27,19 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.CurvedDoubleArrow.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.CurvedDoubleArrow.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.CurvedDoubleArrow.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
@@ -47,15 +35,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.CurvedDoubleArrow.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.CurvedDoubleArrow.width>`\\"
 msgstr ""
 
 

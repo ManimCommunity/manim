@@ -22,12 +22,4 @@ msgstr ""
 msgid "Show a :class:`~.Text` word by word on the scene. Note: currently broken."
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.AddTextWordByWord.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextWordByWord:0
-msgid "Parameters"
-msgstr ""
-
 

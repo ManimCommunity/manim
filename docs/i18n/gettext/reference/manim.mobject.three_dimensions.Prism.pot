@@ -31,10 +31,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Prism.rst:20:<autosummary>:1
-msgid ":py:obj:`generate_points <manim.mobject.three_dimensions.Prism.generate_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Prism.rst:20:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1
 msgid "Initializes :attr:`points` and therefore the shape."
 msgstr ""
@@ -44,19 +40,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.three_dimensions.Prism.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Prism.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.three_dimensions.Prism.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
@@ -64,15 +48,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.three_dimensions.Prism.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.three_dimensions.Prism.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Prism.generate_points:1:<autosummary>:1

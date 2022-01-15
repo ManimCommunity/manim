@@ -15,15 +15,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.utils.scale.rst:22:<autosummary>:1
-msgid ":py:obj:`LinearBase <manim.utils.scale.LinearBase>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.scale.rst:22:<autosummary>:1
 msgid "The default scaling class."
-msgstr ""
-
-#: ../../source/reference/manim.utils.scale.rst:22:<autosummary>:1
-msgid ":py:obj:`LogBase <manim.utils.scale.LogBase>`"
 msgstr ""
 
 

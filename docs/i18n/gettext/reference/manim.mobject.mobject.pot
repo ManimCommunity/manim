@@ -19,15 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
-msgid ":py:obj:`Group <manim.mobject.mobject.Group>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
 msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
-msgid ":py:obj:`Mobject <manim.mobject.mobject.Mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.rst:28:<autosummary>:1
@@ -44,10 +36,6 @@ msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.override_animate:3
 msgid "This allows to specify a method (returning an :class:`~.Animation`) which is called when the decorated method is used with the ``.animate`` syntax for animating the application of a method."
-msgstr ""
-
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.override_animate:9
-msgid ":attr:`Mobject.animate`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.override_animate:13
