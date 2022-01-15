@@ -2534,7 +2534,7 @@ class Mobject:
         mobject2 : Mobject
             End Mobject
         alpha : float
-            TODO: Write Description 
+            TODO: Write Description
         path_func : Optional[Callable], optional
             Determines the speed at which it transforms, by default straight_path()
 
