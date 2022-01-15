@@ -143,16 +143,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`add_edges <manim.mobject.graph.Graph.add_edges>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1
 msgid "Add new edges to the graph."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`add_vertices <manim.mobject.graph.Graph.add_vertices>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
@@ -161,16 +153,8 @@ msgid "Add a list of vertices to the graph."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`change_layout <manim.mobject.graph.Graph.change_layout>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.change_layout:1
 msgid "Change the layout of this graph."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`from_networkx <manim.mobject.graph.Graph.from_networkx>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
@@ -179,16 +163,8 @@ msgid "Build a :class:`~.Graph` from a given ``networkx`` graph."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`remove_edges <manim.mobject.graph.Graph.remove_edges>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.remove_edges:1
 msgid "Remove several edges from the graph."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
-msgid ":py:obj:`remove_vertices <manim.mobject.graph.Graph.remove_vertices>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:25:<autosummary>:1
@@ -201,19 +177,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.graph.Graph.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.graph.Graph.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.graph.Graph.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
@@ -221,15 +185,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.graph.Graph.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.graph.Graph.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1

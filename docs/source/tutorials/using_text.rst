@@ -99,7 +99,7 @@ Weight specifies the boldness of a font. You can see a list of weights in
             a = Text("Italic", slant=ITALIC)
             self.add(a)
 
-.. manim:: DifferentWeight 
+.. manim:: DifferentWeight
     :save_last_frame:
 
     class DifferentWeight(Scene):
@@ -370,7 +370,7 @@ For example, to use the ``mathscr`` script, we need to add the ``mathrsfs``
 package. Since this package isn't loaded into Manim's tex template by default,
 we have to add it manually.
 
-.. manim:: AddPackageLatex 
+.. manim:: AddPackageLatex
     :save_last_frame:
 
     class AddPackageLatex(Scene):
@@ -447,15 +447,15 @@ Using ``index_labels`` to work with complicated strings
 =======================================================
 
 You might sometimes be working with a very complicated ``MathTex`` mobject
-that makes it difficult to work with its individual components. This is 
+that makes it difficult to work with its individual components. This is
 where a debugging function :class:`~.index_labels` is very useful.
 
 `index_labels` shows the index of a mobject's submobjects, allowing you
 to easily find the components of the mobject you'd like to change.
 
-.. manim:: IndexLabelsMathTex 
+.. manim:: IndexLabelsMathTex
     :save_last_frame:
-    
+
     class IndexLabelsMathTex(Scene):
         def construct(self):
             text = MathTex(r"\binom{2n}{n+2}", font_size=96)
@@ -476,7 +476,7 @@ trickier than regular text. It requires changing the template that is used
 to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates`
 ready for you to use. These templates will all work in math mode:
 
-.. manim:: LaTeXMathFonts 
+.. manim:: LaTeXMathFonts
    :save_last_frame:
 
     class LaTeXMathFonts(Scene):

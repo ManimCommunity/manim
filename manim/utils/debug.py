@@ -4,11 +4,13 @@
 __all__ = ["print_family", "index_labels"]
 
 
+from colour import Color
+
 from manim.mobject.mobject import Mobject
+
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
-from colour import Color
 
 
 def print_family(mobject, n_tabs=0):

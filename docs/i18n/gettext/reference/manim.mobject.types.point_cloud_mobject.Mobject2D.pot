@@ -27,19 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.point_cloud_mobject.Mobject2D.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.point_cloud_mobject.Mobject2D.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.point_cloud_mobject.Mobject2D.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
@@ -47,15 +35,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.point_cloud_mobject.Mobject2D.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject2D.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.point_cloud_mobject.Mobject2D.width>`\\"
 msgstr ""
 
 

@@ -69,23 +69,8 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:20
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:26
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:32
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:38
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:44
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:50
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression:7
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:9
-msgid ":class:`str`"
-msgstr ""
-
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:14
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
-msgid ":py:obj:`add_to_document <manim.utils.tex.TexTemplate.add_to_document>`"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
@@ -93,28 +78,12 @@ msgid "Adds txt to the TeX template just after \\begin{document}, e.g."
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
-msgid ":py:obj:`add_to_preamble <manim.utils.tex.TexTemplate.add_to_preamble>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
 msgid "Adds stuff to the TeX template's preamble (e.g."
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
-msgid ":py:obj:`copy <manim.utils.tex.TexTemplate.copy>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
-msgid ":py:obj:`get_texcode_for_expression <manim.utils.tex.TexTemplate.get_texcode_for_expression>`"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression:1
 msgid "Inserts expression verbatim into TeX template."
-msgstr ""
-
-#: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
-msgid ":py:obj:`get_texcode_for_expression_in_env <manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env>`"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:24:<autosummary>:1
@@ -124,30 +93,6 @@ msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:26
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_documentclass <manim.utils.tex.TexTemplate.default_documentclass>`\\"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_output_format <manim.utils.tex.TexTemplate.default_output_format>`\\"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_placeholder_text <manim.utils.tex.TexTemplate.default_placeholder_text>`\\"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_post_doc_commands <manim.utils.tex.TexTemplate.default_post_doc_commands>`\\"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_preamble <manim.utils.tex.TexTemplate.default_preamble>`\\"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1:<autosummary>:1
-msgid ":py:obj:`default_tex_compiler <manim.utils.tex.TexTemplate.default_tex_compiler>`\\"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.add_to_document:1

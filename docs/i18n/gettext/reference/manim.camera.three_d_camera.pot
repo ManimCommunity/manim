@@ -18,8 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.rst:20:<autosummary>:1
-msgid ":py:obj:`ThreeDCamera <manim.camera.three_d_camera.ThreeDCamera>`"
-msgstr ""
-
 

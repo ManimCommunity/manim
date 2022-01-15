@@ -31,16 +31,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransformPieces.rst:21:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.transform.FadeTransformPieces.begin>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.FadeTransformPieces.rst:21:<autosummary>:1
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransformPieces.begin:1
 msgid "Initial setup for the animation."
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.FadeTransformPieces.rst:21:<autosummary>:1
-msgid ":py:obj:`ghost_to <manim.animation.transform.FadeTransformPieces.ghost_to>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransformPieces.rst:21:<autosummary>:1
@@ -50,14 +42,6 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeTransformPieces.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransformPieces.begin:1:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.FadeTransformPieces.path_arc>`\\"
-msgstr ""
-
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransformPieces.begin:1:<autosummary>:1
-msgid ":py:obj:`path_func <manim.animation.transform.FadeTransformPieces.path_func>`\\"
 msgstr ""
 
 

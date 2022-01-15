@@ -147,10 +147,6 @@ msgid "Use the :mod:`manim directive for Sphinx <manim.utils.docbuild.manim_dire
 msgstr ""
 
 #: ../../source/contributing/development.rst:156:<autosummary>:1
-msgid ":py:obj:`manim.utils.docbuild.manim_directive <manim.utils.docbuild.manim_directive>`\\"
-msgstr ""
-
-#: ../../source/contributing/development.rst:156:<autosummary>:1
 msgid "A directive for including Manim videos in a Sphinx document"
 msgstr ""
 

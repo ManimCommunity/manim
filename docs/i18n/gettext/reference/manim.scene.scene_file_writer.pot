@@ -18,8 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.scene.scene_file_writer.rst:20:<autosummary>:1
-msgid ":py:obj:`SceneFileWriter <manim.scene.scene_file_writer.SceneFileWriter>`"
-msgstr ""
-
 

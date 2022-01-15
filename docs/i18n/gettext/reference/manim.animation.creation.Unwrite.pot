@@ -30,10 +30,6 @@ msgstr ""
 msgid "Set True to have the animation start erasing from the last submobject first."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:7
 msgid "Examples"
 msgstr ""

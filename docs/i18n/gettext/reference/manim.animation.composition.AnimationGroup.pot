@@ -23,16 +23,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`begin <manim.animation.composition.AnimationGroup.begin>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1
 msgid "Begin the animation."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`build_animations_with_timings <manim.animation.composition.AnimationGroup.build_animations_with_timings>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
@@ -41,16 +33,8 @@ msgid "Creates a list of triplets of the form (anim, start_time, end_time)"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`clean_up_from_scene <manim.animation.composition.AnimationGroup.clean_up_from_scene>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:1
 msgid "Clean up the :class:`~.Scene` after finishing the animation."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`finish <manim.animation.composition.AnimationGroup.finish>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
@@ -59,20 +43,8 @@ msgid "Finish the animation."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`get_all_mobjects <manim.animation.composition.AnimationGroup.get_all_mobjects>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.get_all_mobjects:1
 msgid "Get all mobjects involved in the animation."
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`init_run_time <manim.animation.composition.AnimationGroup.init_run_time>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`interpolate <manim.animation.composition.AnimationGroup.interpolate>`"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
@@ -81,21 +53,13 @@ msgid "Set the animation progress."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
-msgid ":py:obj:`update_mobjects <manim.animation.composition.AnimationGroup.update_mobjects>`"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:1:<autosummary>:1
 msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:0
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.update_mobjects:0
-msgid "Parameters"
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.build_animations_with_timings:0
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
@@ -106,12 +70,14 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.begin:3
-msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
-msgstr ""
-
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:0
+#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.update_mobjects:0
+msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.clean_up_from_scene:6

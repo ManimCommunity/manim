@@ -15,7 +15,7 @@ msgid "Date"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:5
-msgid "January 06, 2022"
+msgid "January 07, 2022"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:8
@@ -159,7 +159,7 @@ msgid "Pull requests merged"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:60
-msgid "A total of 28 pull requests were merged for this release."
+msgid "A total of 29 pull requests were merged for this release."
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:63
@@ -194,6 +194,10 @@ msgstr ""
 msgid "`#2341 <https://github.com/ManimCommunity/manim/pull/2341>`__: Update :class:`~.Text` to use new ``ManimPango`` color setting"
 msgstr ""
 
+#: ../../source/changelog/0.14.0-changelog.rst:75
+msgid ":class:`~.Text` class now uses color setting introduced in ``ManimPango 0.4.0`` for color and gradient."
+msgstr ""
+
 #: ../../source/changelog/0.14.0-changelog.rst:78
 msgid "`#2397 <https://github.com/ManimCommunity/manim/pull/2397>`__: Added ``label_constructor`` parameter for :class:`~.NumberLine`"
 msgstr ""
@@ -222,6 +226,10 @@ msgstr ""
 msgid "`#2372 <https://github.com/ManimCommunity/manim/pull/2372>`__: Improved :class:`~.DashedVMobject`"
 msgstr ""
 
+#: ../../source/changelog/0.14.0-changelog.rst:93
+msgid ":class:`~.DashedVMobject` used to create stretched and uneven dashes on most plotted curves. Now the dash lengths are equalized. An option is reserved to use the old method. New keyword argument: ``dash_offset``. This parameter shifts the starting point."
+msgstr ""
+
 #: ../../source/changelog/0.14.0-changelog.rst:97
 msgid "Fixed bugs"
 msgstr ""
@@ -243,78 +251,82 @@ msgid "Documentation-related changes"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:111
-msgid "`#2414 <https://github.com/ManimCommunity/manim/pull/2414>`__: Made improvements to the :doc:`configuration` tutorial"
+msgid "`#2415 <https://github.com/ManimCommunity/manim/pull/2415>`__: Removed instructions on using and installing Docker in README"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:114
-msgid "`#2423 <https://github.com/ManimCommunity/manim/pull/2423>`__: Changed recommendation to ``mactex-no-gui`` from ``mactex`` for macOS install"
+msgid "`#2414 <https://github.com/ManimCommunity/manim/pull/2414>`__: Made improvements to the :doc:`configuration` tutorial"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:117
-msgid "`#2407 <https://github.com/ManimCommunity/manim/pull/2407>`__: Clarified docstrings of :meth:`.Mobject.animate`, :meth:`.Mobject.set` and :class:`~.Variable`"
+msgid "`#2423 <https://github.com/ManimCommunity/manim/pull/2423>`__: Changed recommendation to ``mactex-no-gui`` from ``mactex`` for macOS install"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:120
-msgid "`#2352 <https://github.com/ManimCommunity/manim/pull/2352>`__: Added Crowdin badge"
+msgid "`#2407 <https://github.com/ManimCommunity/manim/pull/2407>`__: Clarified docstrings of :meth:`.Mobject.animate`, :meth:`.Mobject.set` and :class:`~.Variable`"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:123
-msgid "`#2371 <https://github.com/ManimCommunity/manim/pull/2371>`__: Added ``dvips`` to list of required LaTeX packages on Linux"
+msgid "`#2352 <https://github.com/ManimCommunity/manim/pull/2352>`__: Added Crowdin badge"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:126
-msgid "`#2403 <https://github.com/ManimCommunity/manim/pull/2403>`__: Improved docstring of :class:`~.ApplyMethod` and removed propagated ``__init__`` docstring"
+msgid "`#2371 <https://github.com/ManimCommunity/manim/pull/2371>`__: Added ``dvips`` to list of required LaTeX packages on Linux"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:129
-msgid "`#2391 <https://github.com/ManimCommunity/manim/pull/2391>`__: Fixed typo in parameter name in documentation of :class:`~.NumberLine`"
+msgid "`#2403 <https://github.com/ManimCommunity/manim/pull/2403>`__: Improved docstring of :class:`~.ApplyMethod` and removed propagated ``__init__`` docstring"
 msgstr ""
 
 #: ../../source/changelog/0.14.0-changelog.rst:132
+msgid "`#2391 <https://github.com/ManimCommunity/manim/pull/2391>`__: Fixed typo in parameter name in documentation of :class:`~.NumberLine`"
+msgstr ""
+
+#: ../../source/changelog/0.14.0-changelog.rst:135
 msgid "`#2368 <https://github.com/ManimCommunity/manim/pull/2368>`__: Added note in Internationalization"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:136
+#: ../../source/changelog/0.14.0-changelog.rst:139
 msgid "Code quality improvements and similar refactors"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:138
+#: ../../source/changelog/0.14.0-changelog.rst:141
 msgid "`#2408 <https://github.com/ManimCommunity/manim/pull/2408>`__: Removed various return annotations that were stifling type inference"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:141
+#: ../../source/changelog/0.14.0-changelog.rst:144
 msgid "`#2424 <https://github.com/ManimCommunity/manim/pull/2424>`__: Removed ``strings.py``"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:144
+#: ../../source/changelog/0.14.0-changelog.rst:147
 msgid "`#1972 <https://github.com/ManimCommunity/manim/pull/1972>`__: Added support for MyPy"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:147
+#: ../../source/changelog/0.14.0-changelog.rst:150
 msgid "`#2410 <https://github.com/ManimCommunity/manim/pull/2410>`__: Fixed Flake8"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:150
+#: ../../source/changelog/0.14.0-changelog.rst:153
 msgid "`#2401 <https://github.com/ManimCommunity/manim/pull/2401>`__: Fixed type annotations in :mod:`.mobject.three_dimensions`"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:153
+#: ../../source/changelog/0.14.0-changelog.rst:156
 msgid "`#2405 <https://github.com/ManimCommunity/manim/pull/2405>`__: Removed some unused OpenGL files"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:156
+#: ../../source/changelog/0.14.0-changelog.rst:159
 msgid "`#2399 <https://github.com/ManimCommunity/manim/pull/2399>`__: Fixed type annotations in :mod:`~.mobject.table`"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:159
+#: ../../source/changelog/0.14.0-changelog.rst:162
 msgid "`#2385 <https://github.com/ManimCommunity/manim/pull/2385>`__: Made comments in quickstart tutorial more precise"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:162
+#: ../../source/changelog/0.14.0-changelog.rst:165
 msgid "`#2377 <https://github.com/ManimCommunity/manim/pull/2377>`__: Fixed type hint for an argument of :class:`~.MoveAlongPath`"
 msgstr ""
 
-#: ../../source/changelog/0.14.0-changelog.rst:166
+#: ../../source/changelog/0.14.0-changelog.rst:169
 msgid "New releases"
 msgstr ""
 
