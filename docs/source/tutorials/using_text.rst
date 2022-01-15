@@ -477,7 +477,7 @@ to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates`
 ready for you to use. These templates will all work in math mode:
 
 .. manim:: LaTeXMathFonts
-   :save_last_frame:
+    :save_last_frame:
 
     class LaTeXMathFonts(Scene):
         def construct(self):
