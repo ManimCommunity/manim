@@ -45,7 +45,9 @@ For example:
 
     class SingleLineColor(Scene):
         def construct(self):
-            text = MarkupText(f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED)
+            text = MarkupText(
+                f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED
+            )
             self.add(text)
 
 .. _Pango library: https://pango.gnome.org
@@ -97,7 +99,7 @@ Weight specifies the boldness of a font. You can see a list of weights in
             a = Text("Italic", slant=ITALIC)
             self.add(a)
 
-.. manim:: DifferentWeight
+.. manim:: DifferentWeight 
     :save_last_frame:
 
     class DifferentWeight(Scene):
@@ -105,7 +107,15 @@ Weight specifies the boldness of a font. You can see a list of weights in
             import manimpango
 
             g = VGroup()
-            weight_list = dict(sorted({weight: manimpango.Weight(weight).value for weight in manimpango.Weight}.items(), key=lambda x: x[1]))
+            weight_list = dict(
+                sorted(
+                    {
+                        weight: manimpango.Weight(weight).value
+                        for weight in manimpango.Weight
+                    }.items(),
+                    key=lambda x: x[1],
+                )
+            )
             for weight in weight_list:
                 g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
@@ -360,14 +370,18 @@ For example, to use the ``mathscr`` script, we need to add the ``mathrsfs``
 package. Since this package isn't loaded into Manim's tex template by default,
 we have to add it manually.
 
-.. manim:: AddPackageLatex
+.. manim:: AddPackageLatex 
     :save_last_frame:
 
     class AddPackageLatex(Scene):
         def construct(self):
             myTemplate = TexTemplate()
             myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate, font_size=144)
+            tex = Tex(
+                r"$\mathscr{H} \rightarrow \mathbb{H}$}",
+                tex_template=myTemplate,
+                font_size=144,
+            )
             self.add(tex)
 
 Substrings and parts
