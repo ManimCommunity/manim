@@ -2530,18 +2530,18 @@ class Mobject:
         Parameters
         ----------
         mobject1 : Mobject
-            [description]
+            Start Mobject
         mobject2 : Mobject
-            [description]
+            End Mobject
         alpha : float
-            [description]
+            TODO: Write Description 
         path_func : Optional[Callable], optional
-            [description], by default straight_path()
+            Determines the speed at which it transforms, by default straight_path()
 
         Returns
         -------
         Mobject
-            [description]
+            Final Mobject
 
         Examples
         --------
