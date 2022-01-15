@@ -22,9 +22,9 @@ def print_family(mobject, n_tabs=0):
 
 def index_labels(
     mobject: "Mobject",
-    font_size: float = 7.2,
-    stroke_width: float = 5,
-    stroke_color: Color = BLACK,
+    label_height: float = 0.15,
+    background_stroke_width=5,
+    background_stroke_color=BLACK,
     **kwargs
 ):
     r"""Returns a :class:`~.VGroup` of :class:`~.Integer`s
@@ -36,10 +36,12 @@ def index_labels(
     ----------
     mobject
         The mobject that will have its submobjects labelled.
-    font_size
-        The font size of the labels, by default 7.2.
-    stroke_color
-        The stroke color of the labels.
+    label_height
+        The height of the labels, by default 0.15.
+    background_stroke_width
+        The stroke width of the outline of the labels, by default 5.
+    background_stroke_color
+        The stroke color of the outline of labels.
     kwargs
         Additional parameters to be passed into the :class`~.Integer`
         mobjects used to construct the labels.
@@ -69,13 +71,11 @@ def index_labels(
 
     labels = VGroup()
     for n, submob in enumerate(mobject):
-        label = Integer(
-            n,
-            font_size=font_size,
-            stroke_color=stroke_color,
-            stroke_width=stroke_width,
-            **kwargs
+        label = Integer(n, **kwargs)
+        label.set_stroke(
+            background_stroke_color, background_stroke_width, background=True
         )
+        label.height = label_height
         label.move_to(submob)
         labels.add(label)
     return labels
