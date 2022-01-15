@@ -36,28 +36,12 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
-msgid ":py:obj:`get_pixel_array <manim.mobject.types.image_mobject.AbstractImageMobject.get_pixel_array>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
-msgid ":py:obj:`reset_points <manim.mobject.types.image_mobject.AbstractImageMobject.reset_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1
 msgid "Sets :attr:`points` to be an empty array."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
-msgid ":py:obj:`set_color <manim.mobject.types.image_mobject.AbstractImageMobject.set_color>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
 msgid "Condition is function which takes in one arguments, (x, y, z)."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
-msgid ":py:obj:`set_resampling_algorithm <manim.mobject.types.image_mobject.AbstractImageMobject.set_resampling_algorithm>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:23:<autosummary>:1
@@ -69,19 +53,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.image_mobject.AbstractImageMobject.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.image_mobject.AbstractImageMobject.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.image_mobject.AbstractImageMobject.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
@@ -89,15 +61,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.image_mobject.AbstractImageMobject.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.image_mobject.AbstractImageMobject.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.reset_points:1:<autosummary>:1

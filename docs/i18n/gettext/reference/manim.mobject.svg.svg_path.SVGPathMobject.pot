@@ -23,18 +23,10 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`generate_points <manim.mobject.svg.svg_path.SVGPathMobject.generate_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1
 msgid "Generates points from a given an SVG ``d`` attribute."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`get_original_path_string <manim.mobject.svg.svg_path.SVGPathMobject.get_original_path_string>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
@@ -43,33 +35,13 @@ msgid "A simple getter for the path's ``d`` attribute."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`get_path_commands <manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:1
 msgid "Returns a list of possible path commands used within an SVG ``d`` attribute."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`handle_command <manim.mobject.svg.svg_path.SVGPathMobject.handle_command>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.handle_command:1
 msgid "Core logic for handling each of the various path commands."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`init_points <manim.mobject.svg.svg_path.SVGPathMobject.init_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`start_new_path <manim.mobject.svg.svg_path.SVGPathMobject.start_new_path>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
-msgid ":py:obj:`string_to_points <manim.mobject.svg.svg_path.SVGPathMobject.string_to_points>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
@@ -82,19 +54,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.svg.svg_path.SVGPathMobject.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.svg.svg_path.SVGPathMobject.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.svg.svg_path.SVGPathMobject.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
@@ -102,15 +62,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.svg.svg_path.SVGPathMobject.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.svg.svg_path.SVGPathMobject.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1

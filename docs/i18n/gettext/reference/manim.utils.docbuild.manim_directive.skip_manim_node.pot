@@ -27,15 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`basic_attributes <manim.utils.docbuild.manim_directive.skip_manim_node.basic_attributes>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
 msgid "List attributes which are defined for every Element-derived class instance and can be safely transferred to a different node."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`child_text_separator <manim.utils.docbuild.manim_directive.skip_manim_node.child_text_separator>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
@@ -43,15 +35,7 @@ msgid "Separator for child nodes, used by `astext()` method."
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`document <manim.utils.docbuild.manim_directive.skip_manim_node.document>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
 msgid "Return the `document` node at the root of the tree containing this Node."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`known_attributes <manim.utils.docbuild.manim_directive.skip_manim_node.known_attributes>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
@@ -59,15 +43,7 @@ msgid "List attributes that are known to the Element base class."
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`line <manim.utils.docbuild.manim_directive.skip_manim_node.line>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
 msgid "The line number (1-based) of the beginning of this Node in `source`."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`list_attributes <manim.utils.docbuild.manim_directive.skip_manim_node.list_attributes>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
@@ -75,15 +51,7 @@ msgid "List attributes, automatically initialized to empty lists for all nodes."
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`local_attributes <manim.utils.docbuild.manim_directive.skip_manim_node.local_attributes>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
 msgid "A list of class-specific attributes that should not be copied with the standard attributes when replacing a node."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`parent <manim.utils.docbuild.manim_directive.skip_manim_node.parent>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
@@ -91,15 +59,7 @@ msgid "Back-reference to the Node immediately containing this Node."
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`source <manim.utils.docbuild.manim_directive.skip_manim_node.source>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
 msgid "Path or description of the input source which generated this Node."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.skip_manim_node.rst:36:<autosummary>:1
-msgid ":py:obj:`tagname <manim.utils.docbuild.manim_directive.skip_manim_node.tagname>`\\"
 msgstr ""
 
 

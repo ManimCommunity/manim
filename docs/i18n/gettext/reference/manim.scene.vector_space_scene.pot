@@ -19,10 +19,6 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.rst:22:<autosummary>:1
-msgid ":py:obj:`LinearTransformationScene <manim.scene.vector_space_scene.LinearTransformationScene>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.rst:22:<autosummary>:1
 msgid "This scene contains special methods that make it especially suitable for showing linear transformations."
 msgstr ""
 

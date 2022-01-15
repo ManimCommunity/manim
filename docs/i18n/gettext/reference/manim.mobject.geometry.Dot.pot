@@ -63,19 +63,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.Dot.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Dot.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.Dot.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
@@ -83,15 +71,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.Dot.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Dot.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.Dot.width>`\\"
 msgstr ""
 
 

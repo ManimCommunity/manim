@@ -51,16 +51,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`get_end <manim.mobject.three_dimensions.Line3D.get_end>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1
 msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`get_start <manim.mobject.three_dimensions.Line3D.get_start>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
@@ -69,29 +61,13 @@ msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject`
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`parallel_to <manim.mobject.three_dimensions.Line3D.parallel_to>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.parallel_to:1
 msgid "Returns a line parallel to another line going through a given point."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`perpendicular_to <manim.mobject.three_dimensions.Line3D.perpendicular_to>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.perpendicular_to:1
 msgid "Returns a line perpendicular to another line going through a given point."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`pointify <manim.mobject.three_dimensions.Line3D.pointify>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
-msgid ":py:obj:`set_start_and_end_attrs <manim.mobject.three_dimensions.Line3D.set_start_and_end_attrs>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Line3D.rst:25:<autosummary>:1
@@ -104,19 +80,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.three_dimensions.Line3D.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.three_dimensions.Line3D.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.three_dimensions.Line3D.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
@@ -124,15 +88,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.three_dimensions.Line3D.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.three_dimensions.Line3D.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1

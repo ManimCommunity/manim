@@ -22,20 +22,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
-msgid ":py:obj:`get_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_location>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
-msgid ":py:obj:`set_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.set_location>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:23
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.vectorized_mobject.VectorizedPoint.animate>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
@@ -43,28 +31,12 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.vectorized_mobject.VectorizedPoint.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.vectorized_mobject.VectorizedPoint.depth>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
 msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.vectorized_mobject.VectorizedPoint.height>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.vectorized_mobject.VectorizedPoint.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
@@ -80,11 +52,6 @@ msgstr ""
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:0
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:4
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:4
-msgid ":class:`float`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:7

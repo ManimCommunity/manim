@@ -23,26 +23,10 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`account_for_buff <manim.mobject.geometry.Line.account_for_buff>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`generate_points <manim.mobject.geometry.Line.generate_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
 #: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1
 msgid "Initializes :attr:`points` and therefore the shape."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`get_angle <manim.mobject.geometry.Line.get_angle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`get_projection <manim.mobject.geometry.Line.get_projection>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
@@ -51,51 +35,7 @@ msgid "Returns the projection of a point onto a line."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`get_slope <manim.mobject.geometry.Line.get_slope>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`get_unit_vector <manim.mobject.geometry.Line.get_unit_vector>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`get_vector <manim.mobject.geometry.Line.get_vector>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`init_points <manim.mobject.geometry.Line.init_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`pointify <manim.mobject.geometry.Line.pointify>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`put_start_and_end_on <manim.mobject.geometry.Line.put_start_and_end_on>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
 msgid "Sets starts and end coordinates of a line."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`set_angle <manim.mobject.geometry.Line.set_angle>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`set_length <manim.mobject.geometry.Line.set_length>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`set_path_arc <manim.mobject.geometry.Line.set_path_arc>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`set_points_by_ends <manim.mobject.geometry.Line.set_points_by_ends>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Line.rst:34:<autosummary>:1
-msgid ":py:obj:`set_start_and_end_attrs <manim.mobject.geometry.Line.set_start_and_end_attrs>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Line.rst:36
@@ -103,19 +43,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.Line.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Line.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.Line.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
@@ -123,15 +51,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.Line.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.Line.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Line.generate_points:1:<autosummary>:1

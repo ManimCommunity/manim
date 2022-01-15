@@ -72,7 +72,7 @@ repos:
           flake8-return,
         ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.930'
+    rev: 'v0.931'
     hooks:
       - id: mypy
         additional_dependencies: [types-decorator, types-docutils, types-requests, types-setuptools]

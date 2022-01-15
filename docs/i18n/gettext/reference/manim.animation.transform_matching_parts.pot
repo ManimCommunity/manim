@@ -19,23 +19,11 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform_matching_parts.rst:24:<autosummary>:1
-msgid ":py:obj:`TransformMatchingAbstractBase <manim.animation.transform_matching_parts.TransformMatchingAbstractBase>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform_matching_parts.rst:24:<autosummary>:1
 msgid "Abstract base class for transformations that keep track of matching parts."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform_matching_parts.rst:24:<autosummary>:1
-msgid ":py:obj:`TransformMatchingShapes <manim.animation.transform_matching_parts.TransformMatchingShapes>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform_matching_parts.rst:24:<autosummary>:1
 msgid "An animation trying to transform groups by matching the shape of their submobjects."
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform_matching_parts.rst:24:<autosummary>:1
-msgid ":py:obj:`TransformMatchingTex <manim.animation.transform_matching_parts.TransformMatchingTex>`"
 msgstr ""
 
 

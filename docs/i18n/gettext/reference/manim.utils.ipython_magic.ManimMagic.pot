@@ -35,11 +35,6 @@ msgstr ""
 msgid "The parent Configurable instance of this object."
 msgstr ""
 
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:0
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:0
-msgid "Return type"
-msgstr ""
-
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:11
 msgid "Notes"
 msgstr ""
@@ -57,14 +52,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.utils.ipython_magic.ManimMagic.rst:21:<autosummary>:1
-msgid ":py:obj:`add_additional_args <manim.utils.ipython_magic.ManimMagic.add_additional_args>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.ipython_magic.ManimMagic.rst:21:<autosummary>:1
-msgid ":py:obj:`manim <manim.utils.ipython_magic.ManimMagic.manim>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.ipython_magic.ManimMagic.rst:21:<autosummary>:1
 msgid "Render Manim scenes contained in IPython cells."
 msgstr ""
 
@@ -73,40 +60,12 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`config <manim.utils.ipython_magic.ManimMagic.config>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
 msgid "A trait whose value must be an instance of a specified class."
 msgstr ""
 
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`cross_validation_lock <manim.utils.ipython_magic.ManimMagic.cross_validation_lock>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
 msgid "A contextmanager for running a block with our cross validation lock set to True."
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`magics <manim.utils.ipython_magic.ManimMagic.magics>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`options_table <manim.utils.ipython_magic.ManimMagic.options_table>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`parent <manim.utils.ipython_magic.ManimMagic.parent>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`registered <manim.utils.ipython_magic.ManimMagic.registered>`\\"
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1:<autosummary>:1
-msgid ":py:obj:`shell <manim.utils.ipython_magic.ManimMagic.shell>`\\"
 msgstr ""
 
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:1
@@ -151,6 +110,10 @@ msgstr ""
 
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:55
 msgid "Evaluating this cell will render and display the ``BannerExample`` scene defined in the body of the cell."
+msgstr ""
+
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:59
+msgid "In case you want to hide the red box containing the output progress bar, the ``progress_bar`` config option should be set to ``None``. This can also be done by passing ``--progress_bar None`` as a CLI flag."
 msgstr ""
 
 

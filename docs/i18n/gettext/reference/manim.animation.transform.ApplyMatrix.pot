@@ -42,24 +42,12 @@ msgstr ""
 msgid "Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:0
-msgid "Return type"
-msgstr ""
-
 #: ../../source/reference/manim.animation.transform.ApplyMatrix.rst:14
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.ApplyMatrix.rst:20:<autosummary>:1
-msgid ":py:obj:`initialize_matrix <manim.animation.transform.ApplyMatrix.initialize_matrix>`"
-msgstr ""
-
 #: ../../source/reference/manim.animation.transform.ApplyMatrix.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.ApplyMatrix.rst:26:<autosummary>:1
-msgid ":py:obj:`path_arc <manim.animation.transform.ApplyMatrix.path_arc>`\\"
 msgstr ""
 
 

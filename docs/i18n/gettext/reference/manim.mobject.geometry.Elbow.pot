@@ -42,10 +42,6 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Elbow:24
-msgid ":class:`RightAngle`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:14
 msgid "Methods"
 msgstr ""
@@ -55,19 +51,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.Elbow.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.Elbow.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.Elbow.depth>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
@@ -75,15 +59,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.Elbow.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.Elbow.width>`\\"
 msgstr ""
 
 

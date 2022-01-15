@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: [3.7, 3.8, 3.9]
+        python: ['3.7', '3.8', '3.9', '3.10']
 
     steps:
       - name: Checkout the repository
@@ -36,14 +36,17 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install wheel
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+          pip install --user poetry
+
+      - name: Setup macOS PATH
+        if: runner.os == 'macOS'
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Setup cache variables
         shell: bash
         id: cache-vars
         run: |
-          export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
@@ -64,8 +67,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-          # start xvfb in the background
+          # start xvfb in background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup macOS cache
@@ -158,13 +160,16 @@ jobs:
           poetry install -E webgl_renderer
 
       - name: Run tests
-        run: poetry run pytest
+        run: |
+          poetry run pytest
 
       - name: Run module doctests
-        run: poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
+        run: |
+          poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
 
       - name: Run doctests in rst files
-        run: cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+        run: |
+          cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1

@@ -47,10 +47,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:10
-msgid ":class:`Text`"
-msgstr ""
-
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:13
 msgid "Examples"
 msgstr ""
@@ -72,22 +68,10 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`find_indexes <manim.mobject.svg.text_mobject.Text.find_indexes>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
 msgid "Internally used function."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`gen_chars <manim.mobject.svg.text_mobject.Text.gen_chars>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`init_colors <manim.mobject.svg.text_mobject.Text.init_colors>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
@@ -96,28 +80,8 @@ msgid "Initializes the colors."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`set_color_by_t2c <manim.mobject.svg.text_mobject.Text.set_color_by_t2c>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`set_color_by_t2g <manim.mobject.svg.text_mobject.Text.set_color_by_t2g>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:2
 msgid "Internally used. Sets gradient colors for specified"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`text2hash <manim.mobject.svg.text_mobject.Text.text2hash>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`text2settings <manim.mobject.svg.text_mobject.Text.text2settings>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":py:obj:`text2svg <manim.mobject.svg.text_mobject.Text.text2svg>`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
@@ -130,19 +94,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.svg.text_mobject.Text.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.svg.text_mobject.Text.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.svg.text_mobject.Text.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
@@ -150,19 +102,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`font_size <manim.mobject.svg.text_mobject.Text.font_size>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.svg.text_mobject.Text.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.svg.text_mobject.Text.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
