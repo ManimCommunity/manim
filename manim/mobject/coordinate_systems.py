@@ -48,6 +48,7 @@ from ..utils.color import (
     BLUE_D,
     GREEN,
     YELLOW,
+    WHITE,
     color_gradient,
     invert_color,
 )
@@ -977,7 +978,7 @@ class CoordinateSystem:
         if dot_config is None:
             dot_config = {}
         color = color or graph.get_color()
-        label = self.x_axis._create_label_tex(label, color=color)
+        label = self.x_axis._create_label_tex(label).set_color(color)
 
         if x_val is None:
             # Search from right to left
@@ -1632,7 +1633,7 @@ class CoordinateSystem:
         label: Optional[Union[float, str, "Mobject"]] = None,
         label_color: Optional[Color] = None,
         triangle_size: float = MED_SMALL_BUFF,
-        triangle_color: Optional[Color] = None,
+        triangle_color: Optional[Color] = WHITE,
         line_func: "Line" = Line,
         line_color: Color = YELLOW,
     ) -> VGroup:

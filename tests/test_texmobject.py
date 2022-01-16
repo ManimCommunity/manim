@@ -174,6 +174,8 @@ def test_color_inheritance():
     vmob = VMobject()
     tex = Tex("test_color_inheritance")
     mathtex = MathTex("test_color_inheritance")
+    VMobject.set_default()
+
     
     assert tex.color==vmob.color
     assert mathtex.color==vmob.color

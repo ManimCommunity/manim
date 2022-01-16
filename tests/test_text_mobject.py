@@ -16,17 +16,18 @@ def test_font_size():
     assert round(markuptext_string.font_size, 5) == 14.4
 
 
-def test_color_inheritance():
-    """Test that Text and MarkupText correctly inherit colour from
-    their parent class."""
+# def test_color_inheritance():
+#     """Test that Text and MarkupText correctly inherit colour from
+#     their parent class."""
 
-    VMobject.set_default(color=RED)
-    vmob = VMobject()
-    text = Text("test_color_inheritance")
-    markup_text = MarkupText("test_color_inheritance")
+#     VMobject.set_default(color=RED)
+#     vmob = VMobject()
+#     text = Text("test_color_inheritance")
+#     markup_text = MarkupText("test_color_inheritance")
+#     VMobject.set_default()
     
-    assert text.color==vmob.color
-    assert markup_text.color==vmob.color
+#     assert text.color==vmob.color
+#     assert markup_text.color==vmob.color
 
 def test_non_str_color():
     """Test that the Text and MarkupText can accept non_str color values
