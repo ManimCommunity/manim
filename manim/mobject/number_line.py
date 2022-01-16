@@ -381,7 +381,7 @@ class NumberLine(Line):
         buff: Optional[float] = None,
         font_size: Optional[float] = None,
         label_constructor: Optional[VMobject] = None,
-        **number_config,Internally used
+        **number_config,
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
         generated according to ``label_constructor``.
