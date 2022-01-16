@@ -592,7 +592,7 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def text2hash(self):
+    def _text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
             "PANGO" + self.font + self.slant + self.weight + self.color
@@ -741,7 +741,7 @@ class Text(SVGMobject):
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        hash_name = self.text2hash()
+        hash_name = self._text2hash()
         file_name = os.path.join(dir_name, hash_name) + ".svg"
 
         if os.path.exists(file_name):
