@@ -1426,7 +1426,7 @@ class Arrow(Line):
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
         self.add_tip(tip_shape=tip_shape)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
