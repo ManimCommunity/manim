@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.Write``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:1
-msgid "Bases: :class:`manim.animation.creation.DrawBorderThenFill`"
+msgid "Bases: :py:class:`manim.animation.creation.DrawBorderThenFill`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:1

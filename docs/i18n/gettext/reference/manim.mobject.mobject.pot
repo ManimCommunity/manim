@@ -38,10 +38,6 @@ msgstr ""
 msgid "This allows to specify a method (returning an :class:`~.Animation`) which is called when the decorated method is used with the ``.animate`` syntax for animating the application of a method."
 msgstr ""
 
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.override_animate:9
-msgid ":attr:`Mobject.animate`"
-msgstr ""
-
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.override_animate:13
 msgid "Overridden methods cannot be combined with normal or other overridden methods using method chaining with the ``.animate`` syntax."
 msgstr ""

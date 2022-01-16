@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.matrix.Matrix``"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:1
@@ -152,7 +152,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
@@ -196,13 +196,6 @@ msgstr ""
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:0
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:5
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:11
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:7
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:7
-msgid ":class:`Matrix`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:1

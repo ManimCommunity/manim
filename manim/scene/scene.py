@@ -747,12 +747,14 @@ class Scene:
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
+
         Parameters
         ----------
         *args : Tuple[:class:`Animation`]
             Animations to be played.
         **kwargs
             Configuration for the call to play().
+
         Returns
         -------
         Tuple[:class:`Animation`]

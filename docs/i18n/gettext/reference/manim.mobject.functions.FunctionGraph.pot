@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.functions.FunctionGraph``"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.FunctionGraph:1
-msgid "Bases: :class:`manim.mobject.functions.ParametricFunction`"
+msgid "Bases: :py:class:`manim.mobject.functions.ParametricFunction`"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.FunctionGraph:1
@@ -35,7 +35,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.FunctionGraph.rst:30:<autosummary>:1

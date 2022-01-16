@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Polygram``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram:1
@@ -78,7 +78,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:1:<autosummary>:1
@@ -105,11 +105,6 @@ msgstr ""
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:0
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertex_groups:4
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:4
-msgid ":class:`numpy.ndarray`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Polygram.get_vertices:3

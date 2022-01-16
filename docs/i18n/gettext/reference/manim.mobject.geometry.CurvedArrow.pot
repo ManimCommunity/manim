@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.CurvedArrow``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.CurvedArrow:1
-msgid "Bases: :class:`manim.mobject.geometry.ArcBetweenPoints`"
+msgid "Bases: :py:class:`manim.mobject.geometry.ArcBetweenPoints`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedArrow.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedArrow.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedArrow.rst:28:<autosummary>:1

@@ -50,6 +50,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self,
         number: float = 0,
         num_decimal_places: int = 2,
+        mob_class: VMobject = MathTex,
         include_sign: bool = False,
         group_with_commas: bool = True,
         digit_buff_per_font_unit: float = 0.001,
@@ -66,6 +67,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.number = number
         self.num_decimal_places = num_decimal_places
         self.include_sign = include_sign
+        self.mob_class = mob_class
         self.group_with_commas = group_with_commas
         self.digit_buff_per_font_unit = digit_buff_per_font_unit
         self.show_ellipsis = show_ellipsis
@@ -168,9 +170,14 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         return num_string
 
-    def string_to_mob(self, string, mob_class=MathTex, **kwargs):
+    def string_to_mob(
+        self, string: str, mob_class: Optional[VMobject] = None, **kwargs
+    ):
+        if mob_class is None:
+            mob_class = self.mob_class
+
         if string not in string_to_mob_map:
-            string_to_mob_map[string] = mob_class(string, font_size=1.0, **kwargs)
+            string_to_mob_map[string] = mob_class(string, **kwargs)
         mob = string_to_mob_map[string].copy()
         mob.font_size = self._font_size
         return mob
@@ -286,17 +293,15 @@ class Integer(DecimalNumber):
 
 
 class Variable(VMobject, metaclass=ConvertToOpenGL):
-    """A class for displaying text that continuously updates to reflect the value of a python variable.
-
-    Automatically adds the text for the label and the value when instantiated and added to the screen.
+    """A class for displaying text that shows "label = value" with
+    the value continuously updated from a :class:`~.ValueTracker`.
 
     Parameters
     ----------
     var : Union[:class:`int`, :class:`float`]
-        The python variable you need to keep track of and display.
+        The initial value you need to keep track of and display.
     label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
-        The label for your variable, for example ``x = ...``. To use math mode, for e.g.
-        subscripts, superscripts, etc. simply pass in a raw string.
+        The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
     num_decimal_places : :class:`int`, optional

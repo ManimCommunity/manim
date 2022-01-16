@@ -15,7 +15,27 @@ msgid "Qualified name: ``manim.animation.growing.GrowFromCenter``"
 msgstr ""
 
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:1
-msgid "Bases: :class:`manim.animation.growing.GrowFromPoint`"
+msgid "Bases: :py:class:`manim.animation.growing.GrowFromPoint`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:1
+msgid "Introduce an :class:`~.Mobject` by growing it from its center."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:3
+msgid "The mobjects to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:4
+msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowFromCenter:7
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.growing.GrowFromCenter.rst:14

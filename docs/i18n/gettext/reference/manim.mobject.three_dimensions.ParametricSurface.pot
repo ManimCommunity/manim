@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.ParametricSurface``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.ParametricSurface:1
-msgid "Bases: :class:`manim.mobject.three_dimensions.Surface`"
+msgid "Bases: :py:class:`manim.mobject.three_dimensions.Surface`"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.ParametricSurface:1
@@ -39,7 +39,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:28:<autosummary>:1

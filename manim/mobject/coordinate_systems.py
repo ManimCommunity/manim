@@ -52,7 +52,6 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
-from ..utils.deprecation import deprecated, deprecated_params
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
@@ -338,25 +337,6 @@ class CoordinateSystem:
             label, self.get_y_axis(), edge, direction, buff=buff, **kwargs
         )
 
-    # move to a util_file, or Mobject()??
-    @staticmethod
-    def _create_label_tex(label_tex, color=None) -> "Mobject":
-        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
-
-        Parameters
-        ----------
-        label_tex : The label to be compared against the above types.
-
-        Returns
-        -------
-        :class:`~.Mobject`p
-            The label.
-        """
-
-        if isinstance(label_tex, (float, int, str)):
-            label_tex = MathTex(label_tex, color=color)
-        return label_tex
-
     def _get_axis_label(
         self,
         label: Union[float, str, "Mobject"],
@@ -386,7 +366,7 @@ class CoordinateSystem:
             The positioned label along the given axis.
         """
 
-        label = self._create_label_tex(label)
+        label = self.x_axis._create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction=direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
@@ -752,19 +732,6 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot",
-    )
-    def get_graph(
-        self,
-        function: Callable[[float], float],
-        x_range: Optional[Sequence[float]] = None,
-        **kwargs,
-    ) -> ParametricFunction:
-        return self.plot(function, x_range, **kwargs)
-
     def plot_implicit_curve(
         self,
         func: Callable,
@@ -813,20 +780,6 @@ class CoordinateSystem:
         )
         return graph
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_implicit_curve",
-    )
-    def get_implicit_curve(
-        self,
-        func: Callable,
-        min_depth: int = 5,
-        max_quads: int = 1500,
-        **kwargs,
-    ) -> ImplicitFunction:
-        return self.plot_implicit_curve(func, min_depth, max_quads, **kwargs)
-
     def plot_parametric_curve(self, function, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
@@ -834,14 +787,6 @@ class CoordinateSystem:
         )
         graph.underlying_function = function
         return graph
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_parametric_curve",
-    )
-    def get_parametric_curve(self, function, **kwargs):
-        return self.plot_parametric_curve(function, **kwargs)
 
     def plot_polar_graph(
         self,
@@ -1032,7 +977,7 @@ class CoordinateSystem:
         if dot_config is None:
             dot_config = {}
         color = color or graph.get_color()
-        label = self._create_label_tex(label, color)
+        label = self.x_axis._create_label_tex(label, color=color)
 
         if x_val is None:
             # Search from right to left
@@ -1434,16 +1379,6 @@ class CoordinateSystem:
 
         return self.plot(deriv, color=color, **kwargs)
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_derivative_graph",
-    )
-    def get_derivative_graph(
-        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
-    ) -> ParametricFunction:
-        return self.plot_derivative_graph(graph, color, **kwargs)
-
     def plot_antiderivative_graph(
         self,
         graph: ParametricFunction,
@@ -1593,11 +1528,11 @@ class CoordinateSystem:
 
         labels = VGroup()
         if dx_label is not None:
-            group.dx_label = self._create_label_tex(dx_label)
+            group.dx_label = self.x_axis._create_label_tex(dx_label)
             labels.add(group.dx_label)
             group.add(group.dx_label)
         if dy_label is not None:
-            group.df_label = self._create_label_tex(dy_label)
+            group.df_label = self.x_axis._create_label_tex(dy_label)
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -1753,7 +1688,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self._create_label_tex(label, label_color)
+            t_label = self.x_axis._create_label_tex(label, color=label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
@@ -2102,33 +2037,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             line_graph["vertex_dots"] = vertex_dots
 
         return line_graph
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.13.0",
-        replacement="plot_line_graph",
-    )
-    def get_line_graph(
-        self,
-        x_values: Iterable[float],
-        y_values: Iterable[float],
-        z_values: Optional[Iterable[float]] = None,
-        line_color: Color = YELLOW,
-        add_vertex_dots: bool = True,
-        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
-        vertex_dot_style: Optional[dict] = None,
-        **kwargs,
-    ) -> VDict:
-        return self.plot_line_graph(
-            x_values,
-            y_values,
-            z_values,
-            line_color,
-            add_vertex_dots,
-            vertex_dot_radius,
-            vertex_dot_style,
-            **kwargs,
-        )
 
     @staticmethod
     def _origin_shift(axis_range: Sequence[float]) -> float:

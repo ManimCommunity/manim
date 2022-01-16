@@ -86,7 +86,7 @@ class GraphicalUnitTester:
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generated and the one expected."""
-        import matplotlib.gridspec as gridspec
+        import matplotlib.gridspec as gridspec  # type: ignore
         import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)

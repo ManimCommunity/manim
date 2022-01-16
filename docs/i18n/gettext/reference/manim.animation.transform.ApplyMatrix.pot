@@ -15,15 +15,31 @@ msgid "Qualified name: ``manim.animation.transform.ApplyMatrix``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:1
-msgid "Bases: :class:`manim.animation.transform.ApplyPointwiseFunction`"
+msgid "Bases: :py:class:`manim.animation.transform.ApplyPointwiseFunction`"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:1
-msgid "Method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
+msgid "Applies a matrix transform to an mobject."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:3
+msgid "The transformation matrix."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:4
+msgid "The :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:5
+msgid "The origin point for the transform. Defaults to ``ORIGIN``."
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMatrix:6
-msgid "Relies on the fact that mobject methods return the mobject"
+msgid "Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyMatrix.rst:14

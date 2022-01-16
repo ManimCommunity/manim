@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.CurvedDoubleArrow``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.CurvedDoubleArrow:1
-msgid "Bases: :class:`manim.mobject.geometry.CurvedArrow`"
+msgid "Bases: :py:class:`manim.mobject.geometry.CurvedArrow`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.CurvedDoubleArrow.rst:28:<autosummary>:1

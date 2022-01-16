@@ -86,6 +86,10 @@ msgstr ""
 msgid "The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``."
 msgstr ""
 
+#: ../../source/changelog/0.1.1-changelog.rst:51
+msgid ":class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`."
+msgstr ""
+
 #: ../../source/changelog/0.1.1-changelog.rst:52
 msgid "Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot` (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a label)."
 msgstr ""

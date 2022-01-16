@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.Transform``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Transform:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.Transform.rst:14

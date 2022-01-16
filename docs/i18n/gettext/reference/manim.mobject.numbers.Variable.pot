@@ -15,42 +15,38 @@ msgid "Qualified name: ``manim.mobject.numbers.Variable``"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:1
-msgid "A class for displaying text that continuously updates to reflect the value of a python variable."
-msgstr ""
-
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:3
-msgid "Automatically adds the text for the label and the value when instantiated and added to the screen."
+msgid "A class for displaying text that shows \"label = value\" with the value continuously updated from a :class:`~.ValueTracker`."
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:0
 msgid "Parameters"
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:5
-msgid "The python variable you need to keep track of and display."
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:4
+msgid "The initial value you need to keep track of and display."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:7
-msgid "The label for your variable, for example ``x = ...``. To use math mode, for e.g. subscripts, superscripts, etc. simply pass in a raw string."
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:6
+msgid "The label for your variable. Raw strings are convertex to :class:`~.MathTex` objects."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:10
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:8
 msgid "The class used for displaying the number. Defaults to :class:`DecimalNumber`."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:12
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:10
 msgid "The number of decimal places to display in your variable. Defaults to 2. If `var_type` is an :class:`Integer`, this parameter is ignored."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:15
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:13
 msgid "Other arguments to be passed to `~.Mobject`."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:20
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:18
 msgid "The label for your variable, for example ``x = ...``."
 msgstr ""
 
@@ -60,27 +56,27 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:22
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:20
 msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:26
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:24
 msgid "Useful in updating the value of your variable on-screen."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:32
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:30
 msgid "The tex for the value of your variable."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:34
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:32
 msgid "Union[:class:`DecimalNumber`, :class:`Integer`]"
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:37
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:35
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:38
+#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:36
 msgid "Normal usage::"
 msgstr ""
 
@@ -93,7 +89,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Variable.rst:28:<autosummary>:1
