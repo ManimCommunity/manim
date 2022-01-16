@@ -36,7 +36,7 @@ from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VMobject, VectorizedPoint, VGroup
+from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 

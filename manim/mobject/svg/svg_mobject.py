@@ -79,7 +79,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         **kwargs,
     ):
 
-
         self.def_map = {}
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()

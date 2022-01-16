@@ -57,7 +57,7 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
+from typing import Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import manimpango
 import numpy as np
@@ -69,8 +69,8 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup, VMobject
-from ...utils.color import WHITE, Colors, color_gradient
-from ...utils.deprecation import deprecated, deprecated_params
+from ...utils.color import Colors, color_gradient
+from ...utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -732,7 +732,7 @@ class Text(SVGMobject):
                         settings.sort(key=lambda setting: setting.start)
                         break
         for setting in settings:
-            
+
             if setting.line_num == -1:
                 setting.line_num = 0
         return settings
