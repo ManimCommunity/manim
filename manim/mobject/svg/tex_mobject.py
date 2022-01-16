@@ -21,12 +21,14 @@ __all__ = [
 
 
 import itertools as it
-from lib2to3.pgen2.token import OP
 import operator as op
 import re
 from functools import reduce
+from lib2to3.pgen2.token import OP
 from textwrap import dedent
 from typing import Dict, Iterable, Optional
+
+from colour import Color
 
 from manim.utils.tex import TexTemplate
 
@@ -38,8 +40,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
-from colour import Color
-
 
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
@@ -65,14 +65,14 @@ class SingleStringMathTex(SVGMobject):
 
     def __init__(
         self,
-        tex_string:str,
-        stroke_width:float=0,
-        should_center:bool=True,
-        height:Optional[float]=None,
-        organize_left_to_right:bool=False,
-        tex_environment:str="align*",
-        tex_template:Optional[TexTemplate]=None,
-        font_size:float=DEFAULT_FONT_SIZE,
+        tex_string: str,
+        stroke_width: float = 0,
+        should_center: bool = True,
+        height: Optional[float] = None,
+        organize_left_to_right: bool = False,
+        tex_environment: str = "align*",
+        tex_template: Optional[TexTemplate] = None,
+        font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
 
@@ -256,10 +256,10 @@ class MathTex(SingleStringMathTex):
     def __init__(
         self,
         *tex_strings,
-        arg_separator:str=" ",
-        substrings_to_isolate:Optional[Iterable[str]]=None,
-        tex_to_color_map:Dict[str, Color]=None,
-        tex_environment:str="align*",
+        arg_separator: str = " ",
+        substrings_to_isolate: Optional[Iterable[str]] = None,
+        tex_to_color_map: Dict[str, Color] = None,
+        tex_environment: str = "align*",
         **kwargs,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
