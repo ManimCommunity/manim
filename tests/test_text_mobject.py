@@ -1,6 +1,9 @@
+from turtle import color
 import pytest
 
 from manim.mobject.svg.text_mobject import MarkupText, Text
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import RED
 
 
 def test_font_size():
@@ -11,3 +14,17 @@ def test_font_size():
 
     assert round(text_string.font_size, 5) == 14.4
     assert round(markuptext_string.font_size, 5) == 14.4
+
+def test_color_inheritance():
+    """Test that Text and MarkupText correctly inherit colour from
+    their parent class
+    """
+
+    VMobject.set_default(color=RED)
+    vmob = VMobject()
+    text = Text("test_color_inheritance")
+    markup_text = MarkupText("test_color_inheritance")
+    
+    assert(text.color, vmob.color)
+    assert(markup_text.color, vmob.color)
+
