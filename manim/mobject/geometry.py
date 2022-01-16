@@ -1461,7 +1461,7 @@ class Arrow(Line):
 
         if scale_tips:
             super().scale(factor, **kwargs)
-            self.set_stroke_width_from_length()
+            self._set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -1470,7 +1470,7 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(factor, **kwargs)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
         if has_tip:
             self.add_tip(tip=old_tips[0])
