@@ -15,7 +15,9 @@ def test_font_size():
     assert round(text_string.font_size, 5) == 14.4
     assert round(markuptext_string.font_size, 5) == 14.4
 
-
+# TODO: Text doesn't have its colour stored properly, this test fails
+# despite passing visually.
+ 
 # def test_color_inheritance():
 #     """Test that Text and MarkupText correctly inherit colour from
 #     their parent class."""
