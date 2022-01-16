@@ -766,7 +766,7 @@ class Text(SVGMobject):
 
         return svg_file
 
-    def _init_colors(self, propagate_colors=True):
+    def init_colors(self, propagate_colors=True):
         super().init_colors(propagate_colors=propagate_colors)
 
 
