@@ -47,8 +47,8 @@ from ..utils.color import (
     BLUE,
     BLUE_D,
     GREEN,
-    YELLOW,
     WHITE,
+    YELLOW,
     color_gradient,
     invert_color,
 )
