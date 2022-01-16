@@ -12,7 +12,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
@@ -1827,7 +1827,34 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self.shift(-self.coords_to_point(*lines_center_point))
 
     @staticmethod
-    def _update_default_configs(default_configs, passed_configs):
+    def _update_default_configs(
+        default_configs: Tuple[Dict[Any, Any]], passed_configs: Tuple[Dict[Any, Any]]
+    ):
+        """Takes in two tuples of dicts and return modifies the first such that values from
+        ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist
+        in default_configs, it is added to the dict.
+
+        This method is useful for having defaults in a class and being able to overwrite
+        them with user-defined input.
+
+        To create a tuple with one dictionary, add a comma after the element:
+
+        .. code-block:: python
+
+            self._update_default_configs(
+                (dict_1,)(
+                    dict_2,
+                )
+            )
+
+        Parameters
+        ----------
+        default_configs
+            The dict that will be updated.
+        passed_configs
+            The dict that will be used to update.
+        """
+
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
