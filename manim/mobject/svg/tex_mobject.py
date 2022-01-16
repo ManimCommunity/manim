@@ -26,6 +26,7 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
+from typing import Dict, Iterable, Optional
 
 from manim.utils.tex import TexTemplate
 
@@ -37,7 +38,7 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
-from typing import Optional
+from colour import Color
 
 
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
@@ -94,7 +95,6 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
-            fill_opacity=fill_opacity,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
             **kwargs,
@@ -256,10 +256,10 @@ class MathTex(SingleStringMathTex):
     def __init__(
         self,
         *tex_strings,
-        arg_separator=" ",
-        substrings_to_isolate=None,
-        tex_to_color_map=None,
-        tex_environment="align*",
+        arg_separator:str=" ",
+        substrings_to_isolate:Optional[Iterable[str]]=None,
+        tex_to_color_map:Dict[str, Color]=None,
+        tex_environment:str="align*",
         **kwargs,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
@@ -280,7 +280,7 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            self.break_up_by_substrings()
+            self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
@@ -330,7 +330,7 @@ class MathTex(SingleStringMathTex):
             pieces = tex_strings
         return [p for p in pieces if p]
 
-    def break_up_by_substrings(self):
+    def _break_up_by_substrings(self):
         """
         Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
