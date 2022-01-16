@@ -1,7 +1,7 @@
 """Mobjects generated from an SVG file."""
 
 
-__all__ = ["SVGMobject", "string_to_numbers"]
+__all__ = ["SVGMobject"]
 
 
 import itertools as it
@@ -21,7 +21,7 @@ from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VMobject
 from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
-from .svg_path import SVGPathMobject, string_to_numbers
+from .svg_path import SVGPathMobject
 
 
 class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
