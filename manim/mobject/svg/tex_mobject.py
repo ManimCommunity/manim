@@ -280,7 +280,7 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            self._break_up_by_substrings()
+            self.break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
@@ -330,7 +330,7 @@ class MathTex(SingleStringMathTex):
             pieces = tex_strings
         return [p for p in pieces if p]
 
-    def _break_up_by_substrings(self):
+    def break_up_by_substrings(self):
         """
         Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
