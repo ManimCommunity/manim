@@ -175,5 +175,5 @@ def test_color_inheritance():
     tex = Tex("test_color_inheritance")
     mathtex = MathTex("test_color_inheritance")
     
-    assert(tex.color, vmob.color)
-    assert(mathtex.color, vmob.color)
+    assert tex.color==vmob.color
+    assert mathtex.color==vmob.color

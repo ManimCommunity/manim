@@ -76,7 +76,7 @@ class SingleStringMathTex(SVGMobject):
     ):
 
         if kwargs.get("color") is None:
-            # makes it so that color isn't explictly passed for these mobs,
+            # makes it so that color isn't explicitly passed for these mobs,
             # and can instead inherit from the parent
             kwargs["color"] = VMobject().color
 

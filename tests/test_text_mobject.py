@@ -23,8 +23,8 @@ def test_color_inheritance():
     text = Text("test_color_inheritance")
     markup_text = MarkupText("test_color_inheritance")
     
-    assert(text.color, vmob.color)
-    assert(markup_text.color, vmob.color)
+    assert text.color=e=vmob.color
+    assert markup_text.color==vmob.color
 
 def test_non_str_color():
     """Test that the Text and MarkupText can accept non_str color values
