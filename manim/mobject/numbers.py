@@ -95,7 +95,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             },
         )
 
-        self.set_submobjects_from_number(number)
+        self._set_submobjects_from_number(number)
         self.init_colors()
 
     @property
@@ -115,21 +115,21 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             # font_size does not depend on current size.
             self.scale(font_val / self.font_size)
 
-    def set_submobjects_from_number(self, number):
+    def _set_submobjects_from_number(self, number):
         self.number = number
         self.submobjects = []
 
-        num_string = self.get_num_string(number)
-        self.add(*(map(self.string_to_mob, num_string)))
+        num_string = self._get_num_string(number)
+        self.add(*(map(self._string_to_mob, num_string)))
 
         # Add non-numerical bits
         if self.show_ellipsis:
             self.add(
-                self.string_to_mob("\\dots", SingleStringMathTex, color=self.color),
+                self._string_to_mob("\\dots", SingleStringMathTex, color=self.color),
             )
 
         if self.unit is not None:
-            self.unit_sign = self.string_to_mob(self.unit, SingleStringMathTex)
+            self.unit_sign = self._string_to_mob(self.unit, SingleStringMathTex)
             self.add(self.unit_sign)
 
         self.arrange(
@@ -154,11 +154,11 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def get_num_string(self, number):
+    def _get_num_string(self, number):
         if isinstance(number, complex):
-            formatter = self.get_complex_formatter()
+            formatter = self._get_complex_formatter()
         else:
-            formatter = self.get_formatter()
+            formatter = self._get_formatter()
         num_string = formatter.format(number)
 
         rounded_num = np.round(number, self.num_decimal_places)
@@ -170,7 +170,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         return num_string
 
-    def string_to_mob(
+    def _string_to_mob(
         self, string: str, mob_class: Optional[VMobject] = None, **kwargs
     ):
         if mob_class is None:
@@ -182,7 +182,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         mob.font_size = self._font_size
         return mob
 
-    def get_formatter(self, **kwargs):
+    def _get_formatter(self, **kwargs):
         """
         Configuration is based first off instance attributes,
         but overwritten by any kew word argument.  Relevant
@@ -215,11 +215,11 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
             ],
         )
 
-    def get_complex_formatter(self):
+    def _get_complex_formatter(self):
         return "".join(
             [
-                self.get_formatter(field_name="0.real"),
-                self.get_formatter(field_name="0.imag", include_sign=True),
+                self._get_formatter(field_name="0.real"),
+                self._get_formatter(field_name="0.imag", include_sign=True),
                 "i",
             ],
         )
@@ -244,7 +244,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         move_to_point = self.get_edge_center(self.edge_to_fix)
         old_submobjects = self.submobjects
 
-        self.set_submobjects_from_number(number)
+        self._set_submobjects_from_number(number)
         self.font_size = old_font_size
         self.move_to(move_to_point, self.edge_to_fix)
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
