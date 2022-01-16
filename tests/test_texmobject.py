@@ -165,6 +165,7 @@ def test_error_in_nested_context(capsys):
     # validate useless context is not included
     assert r"\begin{frame}" not in stdout
 
+
 # TODO: ValueError: max() arg is an empty sequence error for some reason
 
 # def test_color_inheritance():
@@ -177,6 +178,6 @@ def test_error_in_nested_context(capsys):
 #     mathtex = MathTex("test_color_inheritance")
 #     VMobject.set_default()
 
-    
+
 #     assert tex.color == vmob.color
 #     assert mathtex.color == vmob.color
