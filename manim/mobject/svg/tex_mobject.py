@@ -272,7 +272,7 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        self.tex_strings = self._break_up_tex_strings(tex_strings)
+        self.tex_strings = self.break_up_tex_strings(tex_strings)
         try:
             super().__init__(
                 self.arg_separator.join(self.tex_strings),
@@ -301,7 +301,7 @@ class MathTex(SingleStringMathTex):
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
-    def _break_up_tex_strings(self, tex_strings):
+    def break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
         tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
