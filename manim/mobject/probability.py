@@ -366,7 +366,7 @@ class BarChart(Axes):
         buff: float = MED_SMALL_BUFF,
         label_constructor: "VMobject" = Tex,
     ):
-        """Annotates each bar with its corresponding value. Use `self.bar_labels` to access the
+        """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
         labels after creation.
 
         Parameters
