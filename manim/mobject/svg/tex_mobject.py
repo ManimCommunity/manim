@@ -24,7 +24,6 @@ import itertools as it
 import operator as op
 import re
 from functools import reduce
-from lib2to3.pgen2.token import OP
 from textwrap import dedent
 from typing import Dict, Iterable, Optional
 
