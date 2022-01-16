@@ -78,8 +78,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         color=None,
         **kwargs,
     ):
-        tex_mobs = ["SingleStringMathTex", "MathTex", "Tex", "Text"]
-        if color is None and self.__class__.__name__ in tex_mobs:
+
+        # to avoid circular imports
+        from .tex_mobject import SingleStringMathTex
+        from .text_mobject import Text
+        if color is None and isinstance(self, (SingleStringMathTex, Text)):
             # makes it so that color isn't explictly passed for these mobs,
             # and can instead inherit from the parent
             color = VMobject().color
