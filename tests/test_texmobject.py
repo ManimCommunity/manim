@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import RED
 
 
 def test_MathTex():
@@ -162,3 +164,16 @@ def test_error_in_nested_context(capsys):
     stdout = str(capsys.readouterr().out)
     # validate useless context is not included
     assert r"\begin{frame}" not in stdout
+
+
+def test_color_inheritance():
+    """Test that Text and MarkupText correctly inherit colour from
+    their parent class."""
+
+    VMobject.set_default(color=RED)
+    vmob = VMobject()
+    tex = Tex("test_color_inheritance")
+    mathtex = MathTex("test_color_inheritance")
+    
+    assert(tex.color, vmob.color)
+    assert(mathtex.color, vmob.color)
