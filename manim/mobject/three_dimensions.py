@@ -156,9 +156,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         )
         self.add(*faces)
         if self.checkerboard_colors:
-            self._set_fill_by_checkerboard(*self.checkerboard_colors)
+            self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
-    def _set_fill_by_checkerboard(self, *colors, opacity=None):
+    def set_fill_by_checkerboard(self, *colors, opacity=None):
         n_colors = len(colors)
         for face in self:
             c_index = (face.u_index + face.v_index) % n_colors
