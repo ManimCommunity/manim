@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.mobject.Group``"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:1
-msgid "Bases: :class:`manim.mobject.mobject.Mobject`"
+msgid "Bases: :py:class:`manim.mobject.mobject.Mobject`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:1
@@ -31,7 +31,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Group.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Group.rst:28:<autosummary>:1

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.ShowPartial``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:1
@@ -28,10 +28,6 @@ msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:3
 msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:5
-msgid ":class:`Create`, :class:`~.ShowPassingFlash`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.ShowPartial.rst:14

@@ -25,7 +25,6 @@ Module Index
    ~utils.simple_functions
    ~utils.sounds
    ~utils.space_ops
-   ~utils.strings
    ~utils.tex
    ~utils.tex_templates
    ~utils.tex_file_writing

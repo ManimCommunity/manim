@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.polyhedra.Tetrahedron``"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Tetrahedron:1
-msgid "Bases: :class:`manim.mobject.polyhedra.Polyhedron`"
+msgid "Bases: :py:class:`manim.mobject.polyhedra.Polyhedron`"
 msgstr ""
 
 #: ../../../manim/mobject/polyhedra.py:docstring of manim.mobject.polyhedra.Tetrahedron:1
@@ -43,7 +43,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Tetrahedron.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.polyhedra.Tetrahedron.rst:28:<autosummary>:1

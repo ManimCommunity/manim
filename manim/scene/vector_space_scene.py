@@ -78,7 +78,7 @@ class VectorScene(Scene):
         color : bool, optional
             The color of the axes. Defaults to WHITE.
         """
-        axes = Axes(color=color, tick_frequency=1)
+        axes = Axes(color=color, axis_config={"unit_size": 1})
         if animate:
             self.play(Create(axes))
         self.add(axes)

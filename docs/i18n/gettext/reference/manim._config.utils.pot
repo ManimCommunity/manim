@@ -68,10 +68,6 @@ msgstr ""
 msgid "List[:class:`Path`]"
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.config_file_paths:22
-msgid ":func:`make_config_parser`, :meth:`ManimConfig.digest_file`, :meth:`ManimConfig.digest_parser`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.config_file_paths:25
 msgid "Notes"
 msgstr ""
@@ -102,10 +98,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.make_config_parser:14
 msgid "A parser containing the config options found in the .cfg files that were found.  It is guaranteed to contain at least the config options found in the library-wide file."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.make_config_parser:17
-msgid ":class:`ConfigParser`"
 msgstr ""
 
 

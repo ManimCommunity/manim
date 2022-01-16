@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.indication.Wiggle``"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1

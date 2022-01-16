@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.boolean\\_ops.Union``"
 msgstr ""
 
 #: ../../../manim/mobject/boolean_ops.py:docstring of manim.mobject.boolean_ops.Union:1
-msgid "Bases: :class:`manim.mobject.boolean_ops._BooleanOps`"
+msgid "Bases: :py:class:`manim.mobject.boolean_ops._BooleanOps`"
 msgstr ""
 
 #: ../../../manim/mobject/boolean_ops.py:docstring of manim.mobject.boolean_ops.Union:1
@@ -55,7 +55,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.boolean_ops.Union.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.boolean_ops.Union.rst:28:<autosummary>:1

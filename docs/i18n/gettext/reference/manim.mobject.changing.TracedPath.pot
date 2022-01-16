@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.changing.TracedPath``"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.TracedPath:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.TracedPath:1
@@ -55,7 +55,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.TracedPath.rst:29:<autosummary>:1

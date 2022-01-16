@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.changing.AnimatedBoundary``"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.AnimatedBoundary:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/changing.py:docstring of manim.mobject.changing.AnimatedBoundary:1
@@ -35,7 +35,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:30:<autosummary>:1

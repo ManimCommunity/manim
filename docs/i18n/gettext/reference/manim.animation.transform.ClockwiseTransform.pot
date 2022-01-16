@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.ClockwiseTransform``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:14

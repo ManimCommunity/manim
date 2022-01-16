@@ -10,44 +10,4 @@ msgstr ""
 msgid "ManimDirective"
 msgstr ""
 
-#: ../../source/reference/manim_directive.ManimDirective.rst:4
-msgid "Qualified name: ``manim\\_directive.ManimDirective``"
-msgstr ""
-
-#: ../../source/manim_directive.py:docstring of manim_directive.ManimDirective:1
-msgid "Bases: :class:`docutils.parsers.rst.Directive`"
-msgstr ""
-
-#: ../../source/manim_directive.py:docstring of manim_directive.ManimDirective:1
-msgid "The manim directive, rendering videos while building the documentation."
-msgstr ""
-
-#: ../../source/manim_directive.py:docstring of manim_directive.ManimDirective:4
-msgid "See the module docstring for documentation."
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:22
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid "May the final argument contain whitespace?"
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid "May the directive have content?"
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid "Mapping of option names to validator functions."
-msgstr ""
-
-#: ../../source/reference/manim_directive.ManimDirective.rst:29:<autosummary>:1
-msgid "Number of optional arguments after the required arguments."
-msgstr ""
-
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.brace.Brace``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
-msgid "Bases: :class:`manim.mobject.svg.svg_path.SVGPathMobject`"
+msgid "Bases: :py:class:`manim.mobject.svg.svg_path.SVGPathMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
@@ -38,10 +38,6 @@ msgstr ""
 msgid "The direction from which the brace faces the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:10
-msgid ":class:`BraceBetweenPoints`"
-msgstr ""
-
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:13
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:6
 msgid "Examples"
@@ -60,7 +56,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
