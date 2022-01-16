@@ -681,7 +681,7 @@ class Text(SVGMobject):
             (self.t2w, "weight"),
             (self.t2c, "color"),
         ]
-        setting_args = {arg: getattr(self, arg) for _, arg in t2xs}
+        setting_args = {arg: str(getattr(self, arg)) for _, arg in t2xs}
 
         settings = self._get_settings_from_t2xs(t2xs)
         settings.extend(self._get_settings_from_gradient(setting_args))
