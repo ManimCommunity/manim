@@ -57,7 +57,7 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Callable, Dict, Iterable, Sequence, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple, Union
 
 import manimpango
 import numpy as np
@@ -68,7 +68,7 @@ from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.types.vectorized_mobject import VGroup
+from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from ...utils.color import WHITE, Colors, color_gradient
 from ...utils.deprecation import deprecated, deprecated_params
 
@@ -404,6 +404,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
+        color: Optional[Color] = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -424,6 +425,8 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
+
+        self.color = VMobject().color if color is None else color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -595,7 +598,7 @@ class Text(SVGMobject):
         Generates ``sha256`` hash for file name.
         """
         settings = (
-            "PANGO" + self.font + self.slant + self.weight + self.color
+            "PANGO" + self.font + self.slant + self.weight + str(self.color)
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -708,6 +711,7 @@ class Text(SVGMobject):
             if setting.start != start:
                 temp_settings.append(TextSetting(start, setting.start, **setting_args))
             start = setting.end
+        # import ipdb; ipdb.set_trace(context=7)
         if start != len(self.text):
             temp_settings.append(TextSetting(start, len(self.text), **setting_args))
         settings = sorted(temp_settings, key=lambda setting: setting.start)
@@ -728,6 +732,7 @@ class Text(SVGMobject):
                         settings.sort(key=lambda setting: setting.start)
                         break
         for setting in settings:
+            
             if setting.line_num == -1:
                 setting.line_num = 0
         return settings
@@ -1080,7 +1085,7 @@ class MarkupText(SVGMobject):
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        color: Color = WHITE,
+        color: Optional[Color] = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1096,8 +1101,9 @@ class MarkupText(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
+
         self.text = text
-        self.color = color
+        self.color = VMobject().color if color is None else color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -1212,7 +1218,7 @@ class MarkupText(SVGMobject):
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
+            "MARKUPPANGO" + self.font + self.slant + self.weight + str(self.color)
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)

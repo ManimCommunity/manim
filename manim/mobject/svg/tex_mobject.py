@@ -36,7 +36,7 @@ from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
+from ...mobject.types.vectorized_mobject import VMobject, VectorizedPoint, VGroup
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
@@ -74,6 +74,11 @@ class SingleStringMathTex(SVGMobject):
         font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
+
+        if kwargs.get("color") is None:
+            # makes it so that color isn't explictly passed for these mobs,
+            # and can instead inherit from the parent
+            kwargs["color"] = VMobject().color
 
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
