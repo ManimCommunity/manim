@@ -21,12 +21,13 @@ __all__ = [
 
 
 import itertools as it
+from lib2to3.pgen2.token import OP
 import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
 
-from colour import Color
+from manim.utils.tex import TexTemplate
 
 from ... import config, logger
 from ...constants import *
@@ -34,10 +35,10 @@ from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ...utils.color import BLACK, WHITE
-from ...utils.deprecation import deprecated_params
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
+from typing import Optional
+
 
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
@@ -63,18 +64,14 @@ class SingleStringMathTex(SVGMobject):
 
     def __init__(
         self,
-        tex_string,
-        stroke_width=0,
-        fill_opacity=1.0,
-        background_stroke_width=0,
-        # background_stroke_color=BLACK,
-        should_center=True,
-        height=None,
-        organize_left_to_right=False,
-        tex_environment="align*",
-        tex_template=None,
-        font_size=DEFAULT_FONT_SIZE,
-        # color=Color(WHITE),
+        tex_string:str,
+        stroke_width:float=0,
+        should_center:bool=True,
+        height:Optional[float]=None,
+        organize_left_to_right:bool=False,
+        tex_environment:str="align*",
+        tex_template:Optional[TexTemplate]=None,
+        font_size:float=DEFAULT_FONT_SIZE,
         **kwargs,
     ):
 
@@ -98,11 +95,8 @@ class SingleStringMathTex(SVGMobject):
             stroke_width=stroke_width,
             height=height,
             fill_opacity=fill_opacity,
-            background_stroke_width=background_stroke_width,
-            # background_stroke_color=background_stroke_color,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
-            # color=color,
             **kwargs,
         )
         # used for scaling via font_size.setter
