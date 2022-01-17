@@ -205,6 +205,7 @@ class NumberLine(Line):
             stroke_width=stroke_width,
             **kwargs,
         )
+
         if self.length:
             self.set_length(self.length)
             self.unit_size = self.get_unit_size()

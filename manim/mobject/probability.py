@@ -3,19 +3,21 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, List
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
+from colour import Color
 
+from .. import config
 from ..constants import *
-from ..mobject.geometry import Line, Rectangle
+from ..mobject.coordinate_systems import Axes
+from ..mobject.geometry import Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import (
-    BLUE,
     BLUE_E,
     DARK_GREY,
     GREEN_E,
@@ -181,37 +183,35 @@ class SampleSpace(Rectangle):
         return self.split()[index]
 
 
-class BarChart(VGroup):
-    """This is a class for Bar Charts.
+class BarChart(Axes):
+    """Creates a bar chart. Inherits from :class:`~.Axes`, so it shares its methods
+    and attributes. Each axis inherits from :class:`~.NumberLine`, so pass in ``x_axis_config``/``y_axis_config``
+    to control their attributes.
 
     Parameters
     ----------
     values
-        The values for the bar chart.
-    height
-        The height of the axes.
-    width
-        The width of the axes.
-    n_ticks
-        Number of ticks.
-    tick_width
-        Width of the ticks.
-    label_y_axis
-        Y axis label
-    y_axis_label_height
-        Height of the label.
-    max_value
-        Maximum value of the data.
+        An iterable of values that determines the height of each bar. Accepts negative values.
+    bar_names
+        An iterable of names for each bar. Does not have to match the length of ``values``.
+    y_range
+        The y_axis range of values. If ``None``, the range will be calculated based on the
+        min/max of ``values`` and the step will be calculated based on ``y_length``.
+    x_length
+        The length of the x-axis. If ``None``, it is automatically calculated based on
+        the number of values and the width of the screen.
+    y_length
+        The length of the y-axis.
     bar_colors
-        The colors of the bars.
+        The color for the bars. Accepts a single color or an iterable of colors.
+        If the length of``bar_colors`` does not match that of ``values``,
+        intermediate colors will be automatically determined.
+    bar_width
+        The length of a bar. Must be between 0 and 1.
     bar_fill_opacity
-        The opacity of the bars.
+        The fill opacity of the bars.
     bar_stroke_width
         The stroke width of the bars.
-    bar_names
-        The names of each bar.
-    bar_label_scale_val
-        The label size.
 
     Examples
     --------
@@ -220,119 +220,258 @@ class BarChart(VGroup):
 
         class BarChartExample(Scene):
             def construct(self):
-                pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
-                versions = [
-                    "v0.1.0",
-                    "v0.1.1",
-                    "v0.2.0",
-                    "v0.3.0",
-                    "v0.4.0",
-                    "v0.5.0",
-                    "v0.6.0",
-                    "v0.7.0",
-                ]
-                colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
-                bar = BarChart(
-                    pull_req,
-                    max_value=max(pull_req),
-                    bar_colors=colors,
-                    bar_names=versions,
-                    bar_label_scale_val=0.3,
+                chart = BarChart(
+                    values=[-5, 40, -10, 20, -3],
+                    bar_names=["one", "two", "three", "four", "five"],
+                    y_range=[-20, 50, 10],
+                    y_length=6,
+                    x_length=10,
+                    x_axis_config={"font_size": 36},
                 )
-                self.add(bar)
+
+                c_bar_lbls = chart.get_bar_labels(font_size=48)
+
+                self.add(chart, c_bar_lbls)
     """
 
     def __init__(
         self,
         values: Iterable[float],
-        height: float = 4,
-        width: float = 6,
-        n_ticks: int = 4,
-        tick_width: float = 0.2,
-        label_y_axis: bool = True,
-        y_axis_label_height: float = 0.25,
-        max_value: float = 1,
-        bar_colors=[BLUE, YELLOW],
-        bar_fill_opacity: float = 0.8,
+        bar_names: Optional[Iterable[str]] = None,
+        y_range: Optional[Sequence[float]] = None,
+        x_length: Optional[float] = None,
+        y_length: Optional[float] = config.frame_height - 4,
+        bar_colors: Optional[Union[str, Iterable[str]]] = [
+            "#003f5c",
+            "#58508d",
+            "#bc5090",
+            "#ff6361",
+            "#ffa600",
+        ],
+        bar_width: float = 0.6,
+        bar_fill_opacity: float = 0.7,
         bar_stroke_width: float = 3,
-        bar_names: List[str] = [],
-        bar_label_scale_val: float = 0.75,
-        **kwargs
-    ):  # What's the return type?
-        super().__init__(**kwargs)
-        self.n_ticks = n_ticks
-        self.tick_width = tick_width
-        self.label_y_axis = label_y_axis
-        self.y_axis_label_height = y_axis_label_height
-        self.max_value = max_value
+        **kwargs,
+    ):
+
+        self.values = values
+        self.bar_names = bar_names
         self.bar_colors = bar_colors
+        self.bar_width = bar_width
         self.bar_fill_opacity = bar_fill_opacity
         self.bar_stroke_width = bar_stroke_width
-        self.bar_names = bar_names
-        self.bar_label_scale_val = bar_label_scale_val
-        self.total_bar_width = width
-        self.total_bar_height = height
 
-        if self.max_value is None:
-            self.max_value = max(values)
+        x_range = [0, len(self.values), 1]
 
-        self.add_axes()
-        self.add_bars(values)
-        self.center()
+        if y_range is None:
+            y_range = [
+                min(0, min(self.values)),
+                max(0, max(self.values)),
+                round(max(self.values) / y_length, 2),
+            ]
+        elif len(y_range) == 2:
+            y_range = [*y_range, round(max(self.values) / y_length, 2)]
 
-    def add_axes(self):
-        x_axis = Line(self.tick_width * LEFT / 2, self.total_bar_width * RIGHT)
-        y_axis = Line(MED_LARGE_BUFF * DOWN, self.total_bar_height * UP)
-        ticks = VGroup()
-        heights = np.linspace(0, self.total_bar_height, self.n_ticks + 1)
-        values = np.linspace(0, self.max_value, self.n_ticks + 1)
-        for y, _value in zip(heights, values):
-            tick = Line(LEFT, RIGHT)
-            tick.width = self.tick_width
-            tick.move_to(y * UP)
-            ticks.add(tick)
-        y_axis.add(ticks)
+        if x_length is None:
+            x_length = min(len(self.values), config.frame_width - 2)
 
-        self.add(x_axis, y_axis)
-        self.x_axis, self.y_axis = x_axis, y_axis
+        x_axis_config = {"font_size": 24, "label_constructor": Tex}
+        self._update_default_configs(
+            (x_axis_config,), (kwargs.pop("x_axis_config", None),)
+        )
 
-        if self.label_y_axis:
-            labels = VGroup()
-            for tick, value in zip(ticks, values):
-                label = MathTex(str(np.round(value, 2)))
-                label.height = self.y_axis_label_height
-                label.next_to(tick, LEFT, SMALL_BUFF)
-                labels.add(label)
-            self.y_axis_labels = labels
-            self.add(labels)
+        self.bars = None
+        self.x_labels = None
+        self.bar_labels = None
 
-    def add_bars(self, values):
-        buff = float(self.total_bar_width) / (2 * len(values) + 1)
-        bars = VGroup()
-        for i, value in enumerate(values):
+        super().__init__(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
+            x_axis_config=x_axis_config,
+            tips=kwargs.pop("tips", False),
+            **kwargs,
+        )
+
+        self._add_bars()
+
+        if self.bar_names is not None:
+            self._add_x_axis_labels()
+
+        self.y_axis.add_numbers()
+
+    def _add_x_axis_labels(self):
+        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
+        the direction of the label with respect to the x_axis changes to UP or DOWN
+        depending on the value.
+
+        UP for negative values and DOWN for positive values.
+        """
+
+        val_range = np.arange(
+            0.5, len(self.bar_names), 1
+        )  # 0.5 shifted so that labels are centered, not on ticks
+
+        labels = VGroup()
+
+        for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
+            # to accommodate negative bars, the label may need to be
+            # below or above the x_axis depending on the value of the bar
+            if self.values[i] < 0:
+                direction = UP
+            else:
+                direction = DOWN
+            bar_name_label = self.x_axis.label_constructor(bar_name)
+
+            bar_name_label.font_size = self.x_axis.font_size
+            bar_name_label.next_to(
+                self.x_axis.number_to_point(value),
+                direction=direction,
+                buff=self.x_axis.line_to_number_buff,
+            )
+
+            labels.add(bar_name_label)
+
+        self.x_axis.labels = labels
+        self.x_axis.add(labels)
+
+    def _add_bars(self):
+        self.bars = VGroup()
+
+        for i, value in enumerate(self.values):
+            bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
+            bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
             bar = Rectangle(
-                height=(value / self.max_value) * self.total_bar_height,
-                width=buff,
+                height=bar_h,
+                width=bar_w,
                 stroke_width=self.bar_stroke_width,
                 fill_opacity=self.bar_fill_opacity,
             )
-            bar.move_to((2 * i + 1) * buff * RIGHT, DOWN + LEFT)
-            bars.add(bar)
-        bars.set_color_by_gradient(*self.bar_colors)
+
+            pos = UP if (value >= 0) else DOWN
+            bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
+            self.bars.add(bar)
+        if isinstance(self.bar_colors, str):
+            self.bars.set_color_by_gradient(self.bar_colors)
+        else:
+            self.bars.set_color_by_gradient(*self.bar_colors)
+
+        self.add_to_back(self.bars)
+
+    def get_bar_labels(
+        self,
+        color: Optional[Color] = None,
+        font_size: float = 24,
+        buff: float = MED_SMALL_BUFF,
+        label_constructor: "VMobject" = Tex,
+    ):
+        """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
+        labels after creation.
+
+        Parameters
+        ----------
+        color
+            The color of each label. By default ``None`` and is based on the parent's bar color.
+        font_size
+            The font size of each label.
+        buff
+            The distance from each label to its bar. By default 0.4.
+        label_constructor
+            The Mobject class to construct the labels, by default :class:`~.Tex`.
+
+        Examples
+        --------
+        .. manim:: GetBarLabelsExample
+            :save_last_frame:
+
+            class GetBarLabelsExample(Scene):
+                def construct(self):
+                    chart = BarChart(values=[10, 9, 8, 7, 6, 5, 4, 3, 2, 1], y_range=[0, 10, 1])
+
+                    c_bar_lbls = chart.get_bar_labels(
+                        color=WHITE, label_constructor=MathTex, font_size=36
+                    )
+
+                    self.add(chart, c_bar_lbls)
+
+        """
 
         bar_labels = VGroup()
-        for bar, name in zip(bars, self.bar_names):
-            label = MathTex(str(name))
-            label.scale(self.bar_label_scale_val)
-            label.next_to(bar, DOWN, SMALL_BUFF)
-            bar_labels.add(label)
+        for bar, value in zip(self.bars, self.values):
+            bar_lbl = label_constructor(str(value))
 
-        self.add(bars, bar_labels)
-        self.bars = bars
-        self.bar_labels = bar_labels
+            if color is None:
+                bar_lbl.set_color(bar.get_fill_color())
+            else:
+                bar_lbl.set_color(color)
 
-    def change_bar_values(self, values):
-        for bar, value in zip(self.bars, values):
-            bar_bottom = bar.get_bottom()
-            bar.stretch_to_fit_height((value / self.max_value) * self.total_bar_height)
-            bar.move_to(bar_bottom, DOWN)
+            bar_lbl.font_size = font_size
+
+            pos = UP if (value >= 0) else DOWN
+            bar_lbl.next_to(bar, pos, buff=buff)
+            bar_labels.add(bar_lbl)
+
+        return bar_labels
+
+    def change_bar_values(self, values: Iterable[float]):
+        """Updates the height of the bars of the chart.
+
+        Parameters
+        ----------
+        values
+            The values that will be used to update the height of the bars.
+            Does not have to match the number of bars.
+
+        Examples
+        --------
+
+        .. manim:: ChangeBarValuesExample
+            :save_last_frame:
+
+            class ChangeBarValuesExample(Scene):
+                def construct(self):
+                    values=[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+
+                    chart = BarChart(
+                        values,
+                        y_range=[-10, 10, 2],
+                        y_axis_config={"font_size": 24},
+                    )
+                    self.add(chart)
+
+                    chart.change_bar_values(list(reversed(values)))
+                    self.add(chart.get_bar_labels(font_size=24))
+        """
+
+        for i, (bar, value) in enumerate(zip(self.bars, values)):
+            chart_val = self.values[i]
+
+            if chart_val > 0:
+                bar_lim = bar.get_bottom()
+                aligned_edge = DOWN
+            else:
+                bar_lim = bar.get_top()
+                aligned_edge = UP
+
+            try:
+                quotient = value / chart_val
+                if quotient < 0:
+
+                    aligned_edge = UP if chart_val > 0 else DOWN
+
+                    # if the bar is already positive, then we now want to move it
+                    # so that it is negative. So, we move the top edge of the bar
+                    # to the location of the previous bottom
+
+                    # if already negative, then we move the bottom edge of the bar
+                    # to the location of the previous top
+
+                bar.stretch_to_fit_height(quotient * bar.height)
+
+            except ZeroDivisionError:
+                bar.height = 0
+
+            bar.move_to(bar_lim, aligned_edge)
+
+        self.values[: len(values)] = values
