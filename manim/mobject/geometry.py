@@ -68,7 +68,7 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -316,7 +316,7 @@ class Arc(TipableVMobject):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        self.set_pre_positioned_points()
+        self._set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
@@ -325,7 +325,7 @@ class Arc(TipableVMobject):
     # has to be used.
     def init_points(self):
         self.set_points(
-            Arc.create_quadratic_bezier_points(
+            Arc._create_quadratic_bezier_points(
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.num_components,
@@ -335,7 +335,7 @@ class Arc(TipableVMobject):
         self.shift(self.arc_center)
 
     @staticmethod
-    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
+    def _create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -355,7 +355,7 @@ class Arc(TipableVMobject):
         points[2::3] = samples[2::2]
         return points
 
-    def set_pre_positioned_points(self):
+    def _set_pre_positioned_points(self):
         anchors = np.array(
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
@@ -956,7 +956,7 @@ class Line(TipableVMobject):
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
-        self.set_start_and_end_attrs(start, end)
+        self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
     def generate_points(self):
@@ -974,15 +974,11 @@ class Line(TipableVMobject):
         else:
             self.set_points_as_corners([start, end])
 
-        self.account_for_buff(buff)
+        self._account_for_buff(buff)
 
     init_points = generate_points
 
-    def set_path_arc(self, new_value):
-        self.path_arc = new_value
-        self.init_points()
-
-    def account_for_buff(self, buff):
+    def _account_for_buff(self, buff):
         if buff == 0:
             return
         #
@@ -997,19 +993,34 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def set_start_and_end_attrs(self, start, end):
+    def _set_start_and_end_attrs(self, start, end):
         # If either start or end are Mobjects, this
         # gives their centers
-        rough_start = self.pointify(start)
-        rough_end = self.pointify(end)
+        rough_start = self._pointify(start)
+        rough_end = self._pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
         # start and end, if they're mobjects
-        self.start = self.pointify(start, vect)
-        self.end = self.pointify(end, -vect)
+        self.start = self._pointify(start, vect)
+        self.end = self._pointify(end, -vect)
 
-    def pointify(self, mob_or_point, direction=None):
+    def _pointify(
+        self,
+        mob_or_point: Union["Mobject", Sequence[float]],
+        direction: Optional[Sequence[float]] = None,
+    ) -> np.ndarray:
+        """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
+
+        ``direction`` determines the location of the point along its bounding box in that direction.
+
+        Parameters
+        ----------
+        mob_or_point
+            The mobject or point.
+        direction
+            The direction.
+        """
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
@@ -1017,6 +1028,10 @@ class Line(TipableVMobject):
             else:
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
+
+    def set_path_arc(self, new_value):
+        self.path_arc = new_value
+        self.init_points()
 
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
         """Sets starts and end coordinates of a line.
@@ -1136,20 +1151,20 @@ class DashedLine(Line):
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(),
+            num_dashes=self._calculate_num_dashes(),
             dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self) -> int:
+    def _calculate_num_dashes(self) -> int:
         """Returns the number of dashes in the dashed line.
 
         Examples
         --------
         ::
 
-            >>> DashedLine().calculate_num_dashes()
+            >>> DashedLine()._calculate_num_dashes()
             20
         """
 
@@ -1411,7 +1426,7 @@ class Arrow(Line):
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
         self.add_tip(tip_shape=tip_shape)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
@@ -1446,7 +1461,7 @@ class Arrow(Line):
 
         if scale_tips:
             super().scale(factor, **kwargs)
-            self.set_stroke_width_from_length()
+            self._set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -1455,7 +1470,7 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(factor, **kwargs)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
         if has_tip:
             self.add_tip(tip=old_tips[0])
@@ -1497,8 +1512,8 @@ class Arrow(Line):
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
-    def set_stroke_width_from_length(self):
-        """Used internally. Sets stroke width based on length."""
+    def _set_stroke_width_from_length(self):
+        """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
             self.set_stroke(
@@ -1586,9 +1601,9 @@ class Vector(Arrow):
         Returns
         -------
         :class:`~.Matrix`
-
             The label.
         """
+
         # avoiding circular imports
         from .matrix import Matrix
 

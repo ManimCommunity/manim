@@ -189,11 +189,11 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
         super().__init__(**kwargs)
-        mob_matrix = self.matrix_to_mob_matrix(matrix)
-        self.organize_mob_matrix(mob_matrix)
+        mob_matrix = self._matrix_to_mob_matrix(matrix)
+        self._organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*it.chain(*mob_matrix))
         self.add(self.elements)
-        self.add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
+        self._add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
         self.center()
         self.mob_matrix = mob_matrix
         if self.add_background_rectangles_to_entries:
@@ -202,8 +202,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def matrix_to_mob_matrix(self, matrix):
-        """Used internally."""
+    def _matrix_to_mob_matrix(self, matrix):
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -212,8 +211,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             for row in matrix
         ]
 
-    def organize_mob_matrix(self, matrix):
-        """Used internally."""
+    def _organize_mob_matrix(self, matrix):
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -223,8 +221,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def add_brackets(self, left="[", right="]", **kwargs):
-        """Used internally. Adds the brackets to the Matrix mobject.
+    def _add_brackets(self, left="[", right="]", **kwargs):
+        """Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
 
