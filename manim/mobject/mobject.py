@@ -1677,7 +1677,7 @@ class Mobject:
 
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from ..mobject.shape_matchers import BackgroundRectangle
+        from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
@@ -2238,7 +2238,7 @@ class Mobject:
 
 
         """
-        from .geometry import Line
+        from manim.mobject.geometry.geometry import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()

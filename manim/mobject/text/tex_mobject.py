@@ -33,7 +33,7 @@ from colour import Color
 
 from manim import config, logger
 from manim.constants import *
-from manim.mobject.geometry import Line
+from manim.mobject.geometry.geometry import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.svg.svg_path import SVGPathMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup

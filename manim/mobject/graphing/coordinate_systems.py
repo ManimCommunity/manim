@@ -25,7 +25,7 @@ from manim.mobject.graphing.scale import LinearBase
 from manim import config
 from manim.constants import *
 from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
-from manim.mobject.geometry import (
+from manim.mobject.geometry.geometry import (
     Arrow,
     Circle,
     DashedLine,

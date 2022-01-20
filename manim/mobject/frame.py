@@ -9,7 +9,7 @@ __all__ = [
 
 
 from .. import config
-from ..mobject.geometry import Rectangle
+from manim.mobject.geometry.geometry import Rectangle
 
 
 class ScreenRectangle(Rectangle):

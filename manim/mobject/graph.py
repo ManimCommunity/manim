@@ -18,7 +18,7 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
-from .geometry import Dot, LabeledDot, Line
+from manim.mobject.geometry.geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex

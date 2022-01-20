@@ -77,13 +77,13 @@ from colour import Color
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .. import config
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
-from ..utils.color import *
-from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.space_ops import (
+from manim import config
+from manim.constants import *
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
+from manim.utils.color import *
+from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
+from manim.utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     cartesian_to_spherical,

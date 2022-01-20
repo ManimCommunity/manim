@@ -13,7 +13,7 @@ from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 
 from manim import config
 from manim.constants import *
-from manim.mobject.geometry import Line
+from manim.mobject.geometry.geometry import Line
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate

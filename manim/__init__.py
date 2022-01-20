@@ -52,12 +52,12 @@ from .camera.moving_camera import *
 from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
-from .mobject.boolean_ops import *
+from manim.mobject.geometry.boolean_ops import *
 from .mobject.changing import *
 from manim.mobject.graphing.coordinate_systems import *
 from .mobject.frame import *
 from manim.mobject.graphing.functions import *
-from .mobject.geometry import *
+from manim.mobject.geometry.geometry import *
 from .mobject.graph import *
 from .mobject.logo import *
 from .mobject.matrix import *
@@ -67,7 +67,7 @@ from manim.mobject.graphing.number_line import *
 from manim.mobject.text.numbers import *
 from manim.mobject.three_d.polyhedra import *
 from manim.mobject.graphing.probability import *
-from .mobject.shape_matchers import *
+from manim.mobject.geometry.shape_matchers import *
 from .mobject.svg.brace import *
 from manim.mobject.text.code_mobject import *
 from .mobject.svg.svg_mobject import *

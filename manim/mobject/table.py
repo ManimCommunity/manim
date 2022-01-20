@@ -75,9 +75,9 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..constants import *
-from ..mobject.geometry import Line, Polygon
+from manim.mobject.geometry.geometry import Line, Polygon
 from manim.mobject.text.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
+from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject

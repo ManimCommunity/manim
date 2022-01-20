@@ -17,7 +17,7 @@ from colour import Color
 
 from ... import config, logger
 from ...constants import *
-from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
+from manim.mobject.geometry.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VMobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style

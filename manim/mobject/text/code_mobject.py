@@ -17,8 +17,8 @@ from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
 from pygments.styles import get_all_styles
 
 from manim.constants import *
-from manim.mobject.geometry import Dot, RoundedRectangle
-from manim.mobject.shape_matchers import SurroundingRectangle
+from manim.mobject.geometry.geometry import Dot, RoundedRectangle
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE

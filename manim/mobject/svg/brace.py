@@ -15,7 +15,7 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.geometry import Arc, Line
+from manim.mobject.geometry.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject

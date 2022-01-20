@@ -17,7 +17,7 @@ from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
-from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
+from manim.mobject.geometry.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject

@@ -10,7 +10,7 @@ from ..animation.creation import Create
 from ..animation.fading import FadeIn
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
-from ..mobject.geometry import Circle, Square, Triangle
+from manim.mobject.geometry.geometry import Circle, Square, Triangle
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth

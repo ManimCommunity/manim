@@ -23,7 +23,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import OUT, RIGHT, UP
-from ..mobject.geometry import Vector
+from manim.mobject.geometry.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
