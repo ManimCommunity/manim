@@ -14,19 +14,23 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Any, Callable, Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence, TYPE_CHECKING
 
 import numpy as np
 from colour import Color
 
 from manim import config
 from manim.constants import *
-from manim.mobject.geometry.geometry import (
-    Arrow,
+from manim.mobject.geometry.arc import (
     Circle,
-    DashedLine,
     Dot,
+)
+from manim.mobject.geometry.line import (
+    Arrow,
+    DashedLine,
     Line,
+)
+from manim.mobject.geometry.polygram import (
     Polygon,
     Rectangle,
     RegularPolygon,
@@ -37,7 +41,6 @@ from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import (
-    Mobject,
     VDict,
     VectorizedPoint,
     VGroup,
@@ -57,6 +60,8 @@ from manim.utils.config_ops import merge_dicts_recursively, update_dict_recursiv
 from manim.utils.simple_functions import binary_search
 from manim.utils.space_ops import angle_of_vector
 
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
 
 class CoordinateSystem:
     r"""

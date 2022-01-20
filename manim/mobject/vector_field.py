@@ -18,7 +18,7 @@ from colour import Color
 from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
-from manim.mobject.geometry.geometry import Vector
+from manim.mobject.geometry.line import Vector
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from .. import config

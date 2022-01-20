@@ -5,7 +5,9 @@ from __future__ import annotations
 __all__ = ["ManimBanner"]
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
-from manim.mobject.geometry.geometry import Circle, Square, Triangle
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import  Square, Triangle
+
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
 from ..animation.animation import override_animation

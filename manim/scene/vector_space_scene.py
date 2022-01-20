@@ -7,7 +7,10 @@ __all__ = ["VectorScene", "LinearTransformationScene"]
 import numpy as np
 from colour import Color
 
-from manim.mobject.geometry.geometry import Arrow, Dot, Line, Rectangle, Vector
+from manim.mobject.geometry.arc import Dot
+from manim.mobject.geometry.line import Arrow, Line, Vector
+from manim.mobject.geometry.polygram import Rectangle
+
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex

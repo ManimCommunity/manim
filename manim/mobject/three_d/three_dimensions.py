@@ -24,7 +24,8 @@ from colour import Color
 
 from manim import config
 from manim.constants import *
-from manim.mobject.geometry.geometry import Circle, Square
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject

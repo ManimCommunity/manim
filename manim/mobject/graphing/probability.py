@@ -12,7 +12,7 @@ from colour import Color
 
 from manim import config
 from manim.constants import *
-from manim.mobject.geometry.geometry import Rectangle
+from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject

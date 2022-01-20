@@ -11,7 +11,7 @@ from typing import Iterable, Sequence
 import numpy as np
 
 from manim.animation.updaters.value_tracker import ValueTracker
-from manim.mobject.geometry.geometry import Line
+from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.three_d.three_dimensions import Sphere

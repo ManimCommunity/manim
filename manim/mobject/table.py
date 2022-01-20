@@ -69,7 +69,9 @@ from typing import Callable, Iterable, Sequence
 
 from colour import Color
 
-from manim.mobject.geometry.geometry import Line, Polygon
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon
+
 from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex

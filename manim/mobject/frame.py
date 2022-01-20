@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-from manim.mobject.geometry.geometry import Rectangle
+from manim.mobject.geometry.polygram import Rectangle
 
 from .. import config
 
