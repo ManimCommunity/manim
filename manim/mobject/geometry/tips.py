@@ -3,6 +3,7 @@ from __future__ import annotations
 r"""A collection of tip mobjects for use with :class:`~.TipableVMobject`."""
 
 __all__ = [
+    "ArrowTip",
     "ArrowCircleFilledTip",
     "ArrowCircleTip",
     "ArrowSquareTip",
