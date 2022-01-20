@@ -1,5 +1,6 @@
 """Mobjects generated from an SVG file."""
 
+from __future__ import annotations
 
 __all__ = ["SVGMobject"]
 
