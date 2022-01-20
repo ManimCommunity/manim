@@ -20,12 +20,12 @@ import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
-from manim.utils.scale import LinearBase
+from manim.mobject.graphing.scale import LinearBase
 
-from .. import config
-from ..constants import *
-from ..mobject.functions import ImplicitFunction, ParametricFunction
-from ..mobject.geometry import (
+from manim import config
+from manim.constants import *
+from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
+from manim.mobject.geometry import (
     Arrow,
     Circle,
     DashedLine,
@@ -35,16 +35,16 @@ from ..mobject.geometry import (
     Rectangle,
     RegularPolygon,
 )
-from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import (
+from manim.mobject.graphing.number_line import NumberLine
+from manim.mobject.svg.tex_mobject import MathTex
+from manim.mobject.types.vectorized_mobject import (
     Mobject,
     VDict,
     VectorizedPoint,
     VGroup,
     VMobject,
 )
-from ..utils.color import (
+from manim.utils.color import (
     BLACK,
     BLUE,
     BLUE_D,
@@ -54,9 +54,9 @@ from ..utils.color import (
     color_gradient,
     invert_color,
 )
-from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
-from ..utils.simple_functions import binary_search
-from ..utils.space_ops import angle_of_vector
+from manim.utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from manim.utils.simple_functions import binary_search
+from manim.utils.space_ops import angle_of_vector
 
 
 class CoordinateSystem:

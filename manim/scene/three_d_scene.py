@@ -15,7 +15,7 @@ from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
-from ..mobject.coordinate_systems import ThreeDAxes
+from manim.mobject.graphing.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject

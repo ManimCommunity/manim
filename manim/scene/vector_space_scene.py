@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-
 import numpy as np
 from colour import Color
 
@@ -17,7 +16,7 @@ from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
-from ..mobject.coordinate_systems import Axes, NumberPlane
+from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject

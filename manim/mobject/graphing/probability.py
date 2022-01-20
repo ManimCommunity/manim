@@ -10,16 +10,16 @@ from typing import Iterable, Sequence
 import numpy as np
 from colour import Color
 
-from .. import config
-from ..constants import *
-from ..mobject.coordinate_systems import Axes
-from ..mobject.geometry import Rectangle
-from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
-from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import MathTex, Tex
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import (
+from manim import config
+from manim.constants import *
+from manim.mobject.graphing.coordinate_systems import Axes
+from manim.mobject.geometry import Rectangle
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.svg.brace import Brace
+from manim.mobject.svg.tex_mobject import MathTex, Tex
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import (
     BLUE_E,
     DARK_GREY,
     GREEN_E,
@@ -28,7 +28,7 @@ from ..utils.color import (
     YELLOW,
     color_gradient,
 )
-from ..utils.iterables import tuplify
+from manim.utils.iterables import tuplify
 
 EPSILON = 0.0001
 

@@ -10,11 +10,11 @@ from typing import Callable, Iterable, Sequence
 import numpy as np
 from isosurfaces import plot_isoline
 
-from .. import config
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import YELLOW
-from ..utils.scale import LinearBase, _ScaleBase
-from .opengl_compatibility import ConvertToOpenGL
+from manim import config
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import YELLOW
+from manim.mobject.graphing.scale import LinearBase, _ScaleBase
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):

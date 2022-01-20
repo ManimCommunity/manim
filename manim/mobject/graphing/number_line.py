@@ -9,16 +9,16 @@ from typing import Iterable, Sequence
 import numpy as np
 
 from manim.mobject.svg.tex_mobject import MathTex, Tex
-from manim.utils.scale import LinearBase, _ScaleBase
+from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 
-from .. import config
-from ..constants import *
-from ..mobject.geometry import Line
-from ..mobject.numbers import DecimalNumber
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate
-from ..utils.config_ops import merge_dicts_recursively
-from ..utils.space_ops import normalize
+from manim import config
+from manim.constants import *
+from manim.mobject.geometry import Line
+from manim.mobject.numbers import DecimalNumber
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.bezier import interpolate
+from manim.utils.config_ops import merge_dicts_recursively
+from manim.utils.space_ops import normalize
 
 
 class NumberLine(Line):
