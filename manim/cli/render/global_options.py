@@ -4,8 +4,12 @@ import re
 
 import click
 from cloup import option, option_group
+from typing import TYPE_CHECKING
 
 from ... import logger
+
+if TYPE_CHECKING:
+    from cloup._option_groups import OptionGroupDecorator
 
 
 def validate_gui_location(ctx, param, value):
@@ -18,7 +22,7 @@ def validate_gui_location(ctx, param, value):
             exit()
 
 
-global_options = option_group(
+global_options: OptionGroupDecorator = option_group(
     "Global options",
     option(
         "-c",
