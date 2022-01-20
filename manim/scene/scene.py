@@ -1024,7 +1024,7 @@ class Scene:
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
         for animation in self.animations:
-            animation.setup_scene(self)
+            animation._setup_scene(self)
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:

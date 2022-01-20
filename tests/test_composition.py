@@ -19,7 +19,7 @@ def test_succession_timing():
     animation_4s = FadeOut(line, shift=DOWN, run_time=4.0)
     succession = Succession(animation_1s, animation_4s)
     assert succession.get_run_time() == 5.0
-    succession.setup_scene(Mock())
+    succession._setup_scene(Mock())
     succession.begin()
     assert succession.active_index == 0
     # The first animation takes 20% of the total run time.
@@ -51,7 +51,7 @@ def test_succession_in_succession_timing():
     )
     assert nested_succession.get_run_time() == 5.0
     assert succession.get_run_time() == 10.0
-    succession.setup_scene(Mock())
+    succession._setup_scene(Mock())
     succession.begin()
     succession.interpolate(0.1)
     assert succession.active_index == 0

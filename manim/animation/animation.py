@@ -228,7 +228,7 @@ class Animation:
         if self.is_remover():
             scene.remove(self.mobject)
 
-    def setup_scene(self, scene: "Scene") -> None:
+    def _setup_scene(self, scene: "Scene") -> None:
         """Setup up the :class:`~.Scene` before starting the animation.
 
         This includes to :meth:`~.Scene.add` the Animation's
