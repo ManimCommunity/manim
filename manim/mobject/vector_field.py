@@ -30,7 +30,7 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
-from .types.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 

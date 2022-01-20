@@ -9,7 +9,7 @@ import numpy as np
 
 from ..mobject.mobject import Mobject
 from ..utils.paths import straight_path
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):

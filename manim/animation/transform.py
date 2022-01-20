@@ -36,7 +36,7 @@ from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 

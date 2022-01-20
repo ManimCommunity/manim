@@ -7,7 +7,7 @@ from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
 from .. import config
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from .types.vectorized_mobject import VMobject
 
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]

@@ -9,10 +9,10 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from ... import config
-from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ...utils.bezier import (
+from manim import config
+from manim.constants import *
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
@@ -21,10 +21,10 @@ from ...utils.bezier import (
     partial_quadratic_bezier_points,
     proportions_along_bezier_curve_for_point,
 )
-from ...utils.color import *
-from ...utils.config_ops import _Data
-from ...utils.iterables import listify, make_even, resize_with_interpolation
-from ...utils.space_ops import (
+from manim.utils.color import *
+from manim.utils.config_ops import _Data
+from manim.utils.iterables import listify, make_even, resize_with_interpolation
+from manim.utils.space_ops import (
     angle_between_vectors,
     cross2d,
     earclip_triangulation,
@@ -1534,7 +1534,6 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_shader_wrapper_list(self):
-        from ...renderer.shader_wrapper import ShaderWrapper
 
         # Build up data lists
         fill_shader_wrappers = []

@@ -20,7 +20,7 @@ from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene

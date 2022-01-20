@@ -13,14 +13,14 @@ from typing import Hashable, Iterable
 import networkx as nx
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 

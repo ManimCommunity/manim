@@ -9,7 +9,7 @@ from typing import Sequence
 import numpy as np
 
 from manim._config import config
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn

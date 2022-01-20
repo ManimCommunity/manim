@@ -14,7 +14,7 @@ from manim import config
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import YELLOW
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):

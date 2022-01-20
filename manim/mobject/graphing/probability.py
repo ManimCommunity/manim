@@ -15,7 +15,7 @@ from manim.constants import *
 from manim.mobject.graphing.coordinate_systems import Axes
 from manim.mobject.geometry import Rectangle
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.svg.brace import Brace
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject

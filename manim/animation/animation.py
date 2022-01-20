@@ -4,9 +4,10 @@
 from __future__ import annotations
 
 from .. import config, logger
-from ..mobject import mobject, opengl_mobject
+from ..mobject import mobject
+from ..mobject.opengl import opengl_mobject
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..utils.rate_functions import smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]

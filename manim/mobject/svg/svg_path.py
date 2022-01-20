@@ -13,7 +13,7 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ..opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VMobject
 
 

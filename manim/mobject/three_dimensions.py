@@ -22,13 +22,13 @@ from typing import *
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
-from ..mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import tuplify

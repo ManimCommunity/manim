@@ -19,8 +19,8 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
-from ..opengl_compatibility import ConvertToOpenGL
-from ..types.opengl_point_cloud_mobject import OpenGLPMobject
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):

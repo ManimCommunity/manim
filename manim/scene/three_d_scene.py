@@ -18,7 +18,7 @@ from ..constants import DEGREES
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..mobject.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker

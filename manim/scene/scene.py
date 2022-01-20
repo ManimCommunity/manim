@@ -35,7 +35,7 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
-from ..mobject.opengl_mobject import OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
@@ -1167,7 +1167,6 @@ class Scene:
         self.interactive_mode = True
 
         def ipython(shell, namespace):
-            import manim
             import manim.opengl
 
             def load_module_into_namespace(module, namespace):

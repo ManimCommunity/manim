@@ -75,7 +75,7 @@ from typing import Iterable, Sequence
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from .. import config
 from ..constants import *
@@ -93,7 +93,7 @@ from ..utils.space_ops import (
     regular_vertices,
     rotate_vector,
 )
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):

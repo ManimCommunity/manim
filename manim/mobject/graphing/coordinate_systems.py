@@ -19,7 +19,7 @@ from typing import Any, Callable, Iterable, Sequence
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.graphing.scale import LinearBase
 
 from manim import config

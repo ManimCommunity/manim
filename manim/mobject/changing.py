@@ -12,7 +12,7 @@ from .._config import config
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class AnimatedBoundary(VGroup):

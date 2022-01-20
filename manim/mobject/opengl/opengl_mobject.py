@@ -12,15 +12,15 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from .. import config
-from ..constants import *
-from ..utils.bezier import integer_interpolate, interpolate
-from ..utils.color import *
-from ..utils.color import Colors
-from ..utils.config_ops import _Data, _Uniforms
+from manim import config
+from manim.constants import *
+from manim.utils.bezier import integer_interpolate, interpolate
+from manim.utils.color import *
+from manim.utils.color import Colors
+from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
-from ..utils.iterables import (
+from manim.utils.iterables import (
     batch_by_property,
     list_update,
     listify,
@@ -30,9 +30,9 @@ from ..utils.iterables import (
     resize_with_interpolation,
     uniq_chain,
 )
-from ..utils.paths import straight_path
-from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import (
+from manim.utils.paths import straight_path
+from manim.utils.simple_functions import get_parameters
+from manim.utils.space_ops import (
     angle_between_vectors,
     normalize,
     rotation_matrix_transpose,

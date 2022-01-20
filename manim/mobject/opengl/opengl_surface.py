@@ -3,14 +3,14 @@ from __future__ import annotations
 import moderngl
 import numpy as np
 
-from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject
-from ...utils.bezier import integer_interpolate, interpolate
-from ...utils.color import *
-from ...utils.config_ops import _Data, _Uniforms
-from ...utils.images import get_full_raster_image_path
-from ...utils.iterables import listify
-from ...utils.space_ops import normalize_along_axis
+from manim.constants import *
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.utils.bezier import integer_interpolate, interpolate
+from manim.utils.color import *
+from manim.utils.config_ops import _Data, _Uniforms
+from manim.utils.images import get_full_raster_image_path
+from manim.utils.iterables import listify
+from manim.utils.space_ops import normalize_along_axis
 
 
 class OpenGLSurface(OpenGLMobject):
