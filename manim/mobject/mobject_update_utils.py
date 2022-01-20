@@ -1,5 +1,7 @@
 """Utility functions for continuous animation of mobjects."""
 
+from __future__ import annotations
+
 __all__ = [
     "assert_is_mobject_method",
     "always",

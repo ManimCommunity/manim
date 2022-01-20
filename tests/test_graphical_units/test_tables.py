@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 

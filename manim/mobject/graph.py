@@ -1,5 +1,7 @@
 """Mobjects used to represent mathematical graphs (think graph theory, not plotting)."""
 
+from __future__ import annotations
+
 __all__ = [
     "Graph",
 ]
@@ -24,11 +26,11 @@ from .types.vectorized_mobject import VMobject
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph,
-    layout: Union[str, dict] = "spring",
+    layout: str | dict = "spring",
     layout_scale: float = 2,
-    layout_config: Union[dict, None] = None,
-    partitions: Union[List[List[Hashable]], None] = None,
-    root_vertex: Union[Hashable, None] = None,
+    layout_config: dict | None = None,
+    partitions: list[list[Hashable]] | None = None,
+    root_vertex: Hashable | None = None,
 ) -> dict:
     automatic_layouts = {
         "circular": nx.layout.circular_layout,
@@ -99,8 +101,8 @@ def _determine_graph_layout(
 
 def _tree_layout(
     T: nx.classes.graph.Graph,
-    root_vertex: Union[Hashable, None],
-    scale: Union[float, tuple] = 2,
+    root_vertex: Hashable | None,
+    scale: float | tuple = 2,
     orientation: str = "down",
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
@@ -385,20 +387,20 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        vertices: List[Hashable],
-        edges: List[Tuple[Hashable, Hashable]],
-        labels: Union[bool, dict] = False,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: Union[str, dict] = "spring",
-        layout_scale: Union[float, tuple] = 2,
-        layout_config: Union[dict, None] = None,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Union[dict, None] = None,
-        vertex_mobjects: Optional[dict] = None,
-        edge_type: Type["Mobject"] = Line,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-        edge_config: Union[dict, None] = None,
+        layout: str | dict = "spring",
+        layout_scale: float | tuple = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
     ) -> None:
         super().__init__()
 
@@ -491,22 +493,22 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         self.add_updater(update_edges)
 
-    def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
+    def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
 
-    def __repr__(self: "Graph") -> str:
+    def __repr__(self: Graph) -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
     def _add_vertex(
         self,
         vertex: Hashable,
-        position: Optional[np.ndarray] = None,
+        position: np.ndarray | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobject: Optional[dict] = None,
-    ) -> "Mobject":
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> Mobject:
         """Add a vertex to the graph.
 
         Parameters
@@ -575,14 +577,14 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return self.vertices[vertex]
 
     def add_vertices(
-        self: "Graph",
+        self: Graph,
         *vertices: Hashable,
-        positions: Optional[dict] = None,
+        positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobjects: Optional[dict] = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
     ):
         """Add a list of vertices to the graph.
 
@@ -743,9 +745,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def _add_edge(
         self,
-        edge: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        edge: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
     ):
         """Add a new edge to the graph.
 
@@ -794,9 +796,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        *edges: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
     ):
         """Add new edges to the graph.
 
@@ -856,7 +858,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             *(animation(mobj, **anim_args) for mobj in mobjects), group=self
         )
 
-    def _remove_edge(self, edge: Tuple[Hashable]):
+    def _remove_edge(self, edge: tuple[Hashable]):
         """Remove an edge from the graph.
 
         Parameters
@@ -885,7 +887,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: Tuple[Hashable]):
+    def remove_edges(self, *edges: tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
@@ -915,7 +917,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         )
 
     @staticmethod
-    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
+    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> Graph:
         """Build a :class:`~.Graph` from a given ``networkx`` graph.
 
         Parameters
@@ -949,12 +951,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: Union[str, dict] = "spring",
+        layout: str | dict = "spring",
         layout_scale: float = 2,
-        layout_config: Union[dict, None] = None,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-    ) -> "Graph":
+        layout_config: dict | None = None,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+    ) -> Graph:
         """Change the layout of this graph.
 
         See the documentation of :class:`~.Graph` for details about the

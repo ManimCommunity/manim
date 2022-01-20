@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim.mobject.value_tracker import ComplexValueTracker, ValueTracker
 
 

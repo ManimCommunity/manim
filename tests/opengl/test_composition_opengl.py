@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.fading import FadeIn, FadeOut

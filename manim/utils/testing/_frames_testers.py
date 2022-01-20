@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 from pathlib import Path
 from typing import Tuple
@@ -53,7 +55,7 @@ class _FramesTester:
 
 
 class _ControlDataWriter(_FramesTester):
-    def __init__(self, file_path: Path, size_frame: Tuple) -> None:
+    def __init__(self, file_path: Path, size_frame: tuple) -> None:
         self.file_path = file_path
         self.frames = np.empty((0, *size_frame, 4))
         self._number_frames_written: int = 0
