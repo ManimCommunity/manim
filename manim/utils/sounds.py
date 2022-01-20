@@ -1,5 +1,7 @@
 """Sound-related utility functions."""
 
+from __future__ import annotations
+
 __all__ = [
     "get_full_sound_file_path",
 ]

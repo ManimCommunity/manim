@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Mobjects that are simple geometric shapes.
 
 Examples
@@ -924,8 +926,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius: Optional[float] = 1,
-        outer_radius: Optional[float] = 2,
+        inner_radius: float | None = 1,
+        outer_radius: float | None = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
@@ -1007,8 +1009,8 @@ class Line(TipableVMobject):
 
     def _pointify(
         self,
-        mob_or_point: Union["Mobject", Sequence[float]],
-        direction: Optional[Sequence[float]] = None,
+        mob_or_point: Mobject | Sequence[float],
+        direction: Sequence[float] | None = None,
     ) -> np.ndarray:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
@@ -1565,7 +1567,7 @@ class Vector(Arrow):
         self,
         integer_labels: bool = True,
         n_dim: int = 2,
-        color: Optional[Color] = None,
+        color: Color | None = None,
         **kwargs,
     ):
         """Creates a label based on the coordinates of the vector.
@@ -1966,7 +1968,7 @@ class RegularPolygram(Polygram):
         *,
         density: int = 2,
         radius: float = 1,
-        start_angle: Optional[float] = None,
+        start_angle: float | None = None,
         **kwargs,
     ):
         # Regular polygrams can be expressed by the number of their vertices
@@ -2113,9 +2115,9 @@ class Star(Polygon):
         n: int = 5,
         *,
         outer_radius: float = 1,
-        inner_radius: Optional[float] = None,
+        inner_radius: float | None = None,
         density: int = 2,
-        start_angle: Optional[float] = TAU / 4,
+        start_angle: float | None = TAU / 4,
         **kwargs,
     ):
         inner_angle = TAU / (2 * n)
@@ -2461,8 +2463,8 @@ class Rectangle(Polygon):
         color: Color = WHITE,
         height: float = 2.0,
         width: float = 4.0,
-        grid_xstep: Optional[float] = None,
-        grid_ystep: Optional[float] = None,
+        grid_xstep: float | None = None,
+        grid_ystep: float | None = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,

@@ -1,5 +1,7 @@
 """Mobjects representing objects from probability theory and statistics."""
 
+from __future__ import annotations
+
 __all__ = ["SampleSpace", "BarChart"]
 
 
@@ -237,11 +239,13 @@ class BarChart(Axes):
     def __init__(
         self,
         values: Iterable[float],
-        bar_names: Optional[Iterable[str]] = None,
-        y_range: Optional[Sequence[float]] = None,
-        x_length: Optional[float] = None,
-        y_length: Optional[float] = config.frame_height - 4,
-        bar_colors: Optional[Union[str, Iterable[str]]] = [
+        bar_names: Iterable[str] | None = None,
+        y_range: Sequence[float] | None = None,
+        x_length: float | None = None,
+        y_length: float | None = config.frame_height - 4,
+        bar_colors: str
+        | Iterable[str]
+        | None = [
             "#003f5c",
             "#58508d",
             "#bc5090",
@@ -361,10 +365,10 @@ class BarChart(Axes):
 
     def get_bar_labels(
         self,
-        color: Optional[Color] = None,
+        color: Color | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
-        label_constructor: "VMobject" = Tex,
+        label_constructor: VMobject = Tex,
     ):
         """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
         labels after creation.

@@ -1,5 +1,7 @@
 """Utility functions related to Bézier curves."""
 
+from __future__ import annotations
+
 __all__ = [
     "bezier",
     "partial_bezier_points",
@@ -30,7 +32,7 @@ from ..utils.space_ops import cross2d, find_intersection
 
 def bezier(
     points: np.ndarray,
-) -> typing.Callable[[float], typing.Union[int, typing.Iterable]]:
+) -> typing.Callable[[float], int | typing.Iterable]:
     """Classic implementation of a bezier curve.
 
     Parameters
@@ -111,7 +113,7 @@ def integer_interpolate(
     start: float,
     end: float,
     alpha: float,
-) -> typing.Tuple[int, float]:
+) -> tuple[int, float]:
     """
     Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
@@ -217,7 +219,7 @@ def get_smooth_cubic_bezier_handle_points(points):
 
 def get_smooth_handle_points(
     points: np.ndarray,
-) -> typing.Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Given some anchors (points), compute handles so the resulting bezier curve is smooth.
 
     Parameters
@@ -288,7 +290,7 @@ def get_smooth_handle_points(
     return handle_pairs[0::2], handle_pairs[1::2]
 
 
-def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndarray:
+def diag_to_matrix(l_and_u: tuple[int, int], diag: np.ndarray) -> np.ndarray:
     """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
@@ -375,14 +377,14 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
     return result
 
 
-def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
+def is_closed(points: tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
 
 def proportions_along_bezier_curve_for_point(
-    point: typing.Iterable[typing.Union[float, int]],
-    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
-    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+    point: typing.Iterable[float | int],
+    control_points: typing.Iterable[typing.Iterable[float | int]],
+    round_to: float | int | None = 1e-6,
 ) -> np.ndarray:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
@@ -464,9 +466,9 @@ def proportions_along_bezier_curve_for_point(
 
 
 def point_lies_on_bezier(
-    point: typing.Iterable[typing.Union[float, int]],
-    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
-    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
+    point: typing.Iterable[float | int],
+    control_points: typing.Iterable[typing.Iterable[float | int]],
+    round_to: float | int | None = 1e-6,
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.
 

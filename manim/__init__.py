@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 
+from __future__ import annotations
+
 import pkg_resources
 
 __version__: str = pkg_resources.get_distribution(__name__).version

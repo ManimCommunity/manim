@@ -47,6 +47,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -410,11 +412,11 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
+        t2c: dict[str, str] = None,
+        t2f: dict[str, str] = None,
+        t2g: dict[str, tuple] = None,
+        t2s: dict[str, str] = None,
+        t2w: dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
@@ -629,7 +631,7 @@ class Text(SVGMobject):
         return new_setting
 
     def _get_settings_from_t2xs(
-        self, t2xs: Sequence[Tuple[Dict[str, str], str]]
+        self, t2xs: Sequence[tuple[dict[str, str], str]]
     ) -> Sequence[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
@@ -644,7 +646,7 @@ class Text(SVGMobject):
         return settings
 
     def _get_settings_from_gradient(
-        self, setting_args: Dict[str, Iterable[str]]
+        self, setting_args: dict[str, Iterable[str]]
     ) -> Sequence[TextSetting]:
         settings = []
         args = copy.copy(setting_args)
@@ -1354,7 +1356,7 @@ class MarkupText(SVGMobject):
 
 
 @contextmanager
-def register_font(font_file: Union[str, Path]):
+def register_font(font_file: str | Path):
     """Temporarily add a font file to Pango's search path.
 
     This searches for the font_file at various places. The order it searches it described below.

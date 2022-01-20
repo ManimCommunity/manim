@@ -1,5 +1,7 @@
 """A collection of simple functions."""
 
+from __future__ import annotations
+
 __all__ = [
     "sigmoid",
     "choose",

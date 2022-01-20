@@ -1,5 +1,7 @@
 """Utilities that might be useful for configuration dictionaries."""
 
+from __future__ import annotations
+
 __all__ = [
     "merge_dicts_recursively",
     "update_dict_recursively",

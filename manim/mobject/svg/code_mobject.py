@@ -1,5 +1,7 @@
 """Mobject representing highlighted source code listings."""
 
+from __future__ import annotations
+
 __all__ = [
     "Code",
 ]

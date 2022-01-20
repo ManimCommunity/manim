@@ -3,6 +3,8 @@
 This is intended to be run from manim/grpc
 """
 
+from __future__ import annotations
+
 import os
 
 CMD_STRING = """
