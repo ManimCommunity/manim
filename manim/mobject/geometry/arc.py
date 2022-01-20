@@ -51,8 +51,6 @@ from typing import Sequence
 import numpy as np
 
 from manim.constants import *
-from manim.mobject.geometry.line import Line
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import *
@@ -129,6 +127,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
+        from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
         if tip_length is None:
@@ -437,6 +437,8 @@ class ArcBetweenPoints(Arc):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
+        from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip(tip_shape=tip_shape)
@@ -446,6 +448,8 @@ class CurvedDoubleArrow(CurvedArrow):
     def __init__(self, start_point, end_point, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
+        from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
@@ -1179,6 +1183,8 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         # This enables the use of ArcPolygonFromArcs.arcs as a convenience
         # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
         self.arcs = [*arcs]
+        from .line import Line
+
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())

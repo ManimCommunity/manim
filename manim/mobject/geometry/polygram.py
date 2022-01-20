@@ -22,7 +22,6 @@ from colour import Color
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.geometry.line import Line
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
@@ -198,6 +197,8 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
+            from manim.mobject.geometry.line import Line
+
             for arc1, arc2 in adjacent_pairs(arcs):
                 new_points.extend(arc1.points)
 
@@ -556,6 +557,8 @@ class Rectangle(Polygon):
         self.stretch_to_fit_height(height)
         v = self.get_vertices()
         if grid_xstep is not None:
+            from manim.mobject.geometry.line import Line
+
             grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
