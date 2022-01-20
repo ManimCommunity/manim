@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 
+from __future__ import annotations
+
 import pkg_resources
 
 __version__: str = pkg_resources.get_distribution(__name__).version
@@ -68,9 +70,7 @@ from .mobject.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
 from .mobject.svg.code_mobject import *
-from .mobject.svg.style_utils import *
 from .mobject.svg.svg_mobject import *
-from .mobject.svg.svg_path import *
 from .mobject.svg.tex_mobject import *
 from .mobject.svg.text_mobject import *
 from .mobject.table import *

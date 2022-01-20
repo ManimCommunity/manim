@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import Graph, Scene, Text, tempconfig
 
 

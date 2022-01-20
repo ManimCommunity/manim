@@ -69,8 +69,6 @@ Mobjects
    manim.mobject.vector_field
    manim.mobject.svg.brace
    manim.mobject.svg.code_mobject
-   manim.mobject.svg.style_utils
-   manim.mobject.svg.svg_path
    manim.mobject.svg.svg_mobject
    manim.mobject.svg.tex_mobject
    manim.mobject.svg.text_mobject

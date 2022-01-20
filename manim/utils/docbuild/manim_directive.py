@@ -73,6 +73,8 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+from __future__ import annotations
+
 import csv
 import itertools as it
 import os
@@ -105,7 +107,7 @@ def depart(self, node):
     self.depart_admonition(node)
 
 
-def process_name_list(option_input: str, reference_type: str) -> List[str]:
+def process_name_list(option_input: str, reference_type: str) -> list[str]:
     r"""Reformats a string of space separated class names
     as a list of strings containing valid Sphinx references.
 

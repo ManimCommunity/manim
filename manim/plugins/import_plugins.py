@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import types
 from importlib import import_module
 
