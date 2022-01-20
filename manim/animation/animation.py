@@ -147,7 +147,7 @@ class Animation:
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self._on_finish: Callable[["Scene"], None] = _on_finish
+        self._on_finish: Callable[[Scene], None] = _on_finish
         if config["renderer"] == "opengl":
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
@@ -228,7 +228,7 @@ class Animation:
         if self.is_remover():
             scene.remove(self.mobject)
 
-    def _setup_scene(self, scene: "Scene") -> None:
+    def _setup_scene(self, scene: Scene) -> None:
         """Setup up the :class:`~.Scene` before starting the animation.
 
         This includes to :meth:`~.Scene.add` the Animation's

@@ -502,13 +502,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
     def _create_vertex(
         self,
         vertex: Hashable,
-        position: Optional[np.ndarray] = None,
+        position: np.ndarray | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobject: Optional[dict] = None,
-    ) -> Tuple[Hashable, np.ndarray, dict, "Mobject"]:
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> tuple[Hashable, np.ndarray, dict, Mobject]:
         if position is None:
             position = self.get_center()
 
@@ -550,8 +550,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         vertex: Hashable,
         position: np.ndarray,
         vertex_config: dict,
-        vertex_mobject: "Mobject",
-    ) -> "Mobject":
+        vertex_mobject: Mobject,
+    ) -> Mobject:
         if vertex in self.vertices:
             raise ValueError(
                 f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
@@ -621,15 +621,15 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def _create_vertices(
-        self: "Graph",
+        self: Graph,
         *vertices: Hashable,
-        positions: Optional[dict] = None,
+        positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobjects: Optional[dict] = None,
-    ) -> Iterable[Tuple[Hashable, np.ndarray, dict, "Mobject"]]:
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+    ) -> Iterable[tuple[Hashable, np.ndarray, dict, Mobject]]:
         if positions is None:
             positions = {}
         if vertex_mobjects is None:
@@ -734,7 +734,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         vertex_mobjects = self._create_vertices(*args, **kwargs)
 
-        def on_finish(scene: "Scene"):
+        def on_finish(scene: Scene):
             for v in vertex_mobjects:
                 scene.remove(v[-1])
                 self._add_created_vertex(*v)
