@@ -34,13 +34,12 @@ __all__ = [
 import numpy as np
 
 from manim.constants import *
-from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.space_ops import (
-    angle_of_vector,
-)
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.geometry.polygram import Triangle, Square
 from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Square, Triangle
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.space_ops import angle_of_vector
+
 
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     r"""Base class for arrow tips.

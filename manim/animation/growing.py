@@ -41,6 +41,7 @@ from ..utils.paths import spiral_path
 
 if typing.TYPE_CHECKING:
     from manim.mobject.geometry.geometry import Arrow
+
     from ..mobject.mobject import Mobject
 
 

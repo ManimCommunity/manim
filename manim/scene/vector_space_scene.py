@@ -7,6 +7,10 @@ __all__ = ["VectorScene", "LinearTransformationScene"]
 import numpy as np
 from colour import Color
 
+from manim.mobject.geometry.geometry import Arrow, Dot, Line, Rectangle, Vector
+from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.utils.config_ops import update_dict_recursively
 
 from .. import config
@@ -16,12 +20,8 @@ from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
-from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
-from manim.mobject.geometry.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.text.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
 from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW

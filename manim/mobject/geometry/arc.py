@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 r"""Mobjects that are simple geometric shapes.
 
 Examples
@@ -52,6 +51,9 @@ from typing import Sequence
 import numpy as np
 
 from manim.constants import *
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_pairs
@@ -62,9 +64,7 @@ from manim.utils.space_ops import (
     perpendicular_bisector,
     rotate_vector,
 )
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-from manim.mobject.geometry.line import Line
+
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     """

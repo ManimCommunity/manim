@@ -43,17 +43,14 @@ import numpy as np
 from colour import Color
 
 from manim.constants import *
+from manim.mobject.geometry.arc import ArcBetweenPoints
+from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
-from manim.utils.space_ops import (
-    angle_between_vectors,
-    normalize,
-    regular_vertices,
-)
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.geometry.line import Line
+from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
+
 
 class Polygram(VMobject, metaclass=ConvertToOpenGL):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
@@ -502,7 +499,6 @@ class Star(Polygon):
         super().__init__(*vertices, **kwargs)
 
 
-
 class Triangle(RegularPolygon):
     """An equilateral triangle.
 
@@ -715,4 +711,3 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
             sub_direction = "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).points)
-

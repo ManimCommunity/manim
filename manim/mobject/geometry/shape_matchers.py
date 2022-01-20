@@ -4,14 +4,12 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from manim.utils.color import Color
-
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.geometry import Line, RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, Colors
+from manim.utils.color import BLACK, RED, YELLOW, Color, Colors
 
 
 class SurroundingRectangle(RoundedRectangle):

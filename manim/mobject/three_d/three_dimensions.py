@@ -22,12 +22,11 @@ from typing import *
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.geometry import Circle, Square
 from manim.mobject.mobject import *
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import *

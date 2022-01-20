@@ -19,12 +19,8 @@ from typing import Any, Callable, Iterable, Sequence
 import numpy as np
 from colour import Color
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.graphing.scale import LinearBase
-
 from manim import config
 from manim.constants import *
-from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
 from manim.mobject.geometry.geometry import (
     Arrow,
     Circle,
@@ -35,7 +31,10 @@ from manim.mobject.geometry.geometry import (
     Rectangle,
     RegularPolygon,
 )
+from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
 from manim.mobject.graphing.number_line import NumberLine
+from manim.mobject.graphing.scale import LinearBase
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import (
     Mobject,

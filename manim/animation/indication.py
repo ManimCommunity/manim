@@ -42,6 +42,9 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.geometry.geometry import Circle, Dot, Line, Rectangle
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
@@ -50,9 +53,7 @@ from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
-from manim.mobject.geometry.geometry import Circle, Dot, Line, Rectangle
 from ..mobject.mobject import Mobject
-from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW

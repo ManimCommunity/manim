@@ -4,4 +4,3 @@ try:
     from dearpygui import dearpygui as dpg
 except ImportError:
     pass
-

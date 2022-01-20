@@ -8,6 +8,7 @@ __all__ = ["print_family", "index_labels"]
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.text.numbers import Integer
+
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
 

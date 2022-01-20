@@ -15,11 +15,12 @@ from xml.dom.minidom import parse as minidom_parse
 import numpy as np
 from colour import Color
 
+from manim.mobject.geometry.geometry import Circle, Line, Rectangle, RoundedRectangle
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+
 from ... import config, logger
 from ...constants import *
-from manim.mobject.geometry.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VMobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject
 

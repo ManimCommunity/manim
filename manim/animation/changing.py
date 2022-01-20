@@ -9,10 +9,10 @@ from typing import Callable
 from colour import Color
 
 from manim._config import config
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from manim.utils.rate_functions import smooth
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
 class AnimatedBoundary(VGroup):
