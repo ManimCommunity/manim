@@ -2239,7 +2239,7 @@ class Mobject:
 
 
         """
-        from manim.mobject.geometry.geometry import Line
+        from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()

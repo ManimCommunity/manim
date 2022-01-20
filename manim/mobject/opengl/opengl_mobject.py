@@ -983,7 +983,7 @@ class OpenGLMobject:
 
 
         """
-        from .geometry import Line
+        from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()
@@ -2014,7 +2014,7 @@ class OpenGLMobject:
         :class:`~.BackgroundRectangle`
 
         """
-        from ..mobject.shape_matchers import BackgroundRectangle
+        from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
@@ -2581,7 +2581,7 @@ class OpenGLMobject:
     #     return self
 
     def get_shader_wrapper(self):
-        from ..renderer.shader_wrapper import ShaderWrapper
+        from manim.renderer.shader_wrapper import ShaderWrapper
 
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
@@ -2756,7 +2756,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self):
-        from ..animation.transform import _MethodAnimation
+        from manim.animation.transform import _MethodAnimation
 
         if self.overridden_animation:
             anim = self.overridden_animation
