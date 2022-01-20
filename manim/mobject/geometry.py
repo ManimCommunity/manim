@@ -1009,7 +1009,7 @@ class Line(TipableVMobject):
 
     def _pointify(
         self,
-        mob_or_point: Union[Mobject, Sequence[float]],
+        mob_or_point: Mobject | Sequence[float],
         direction: Sequence[float] | None = None,
     ) -> np.ndarray:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
