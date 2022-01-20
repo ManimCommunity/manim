@@ -1,10 +1,7 @@
 """Mobjects generated from an SVG file."""
 
 
-from __future__ import annotations
-
-__all__ = ["SVGMobject", "string_to_numbers"]
-
+__all__ = ["SVGMobject"]
 
 import itertools as it
 import os
@@ -23,7 +20,7 @@ from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VMobject
 from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
-from .svg_path import SVGPathMobject, string_to_numbers
+from .svg_path import SVGPathMobject
 
 
 class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -82,7 +79,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     ):
         self.def_map = {}
         self.file_name = file_name or self.file_name
-        self.ensure_valid_file()
+        self._ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
         self.path_string_config = (
@@ -96,9 +93,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(
             color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
-        self.move_into_position(width, height)
+        self._move_into_position(width, height)
 
-    def ensure_valid_file(self):
+    def _ensure_valid_file(self):
         """Reads self.file_name and determines whether the given input file_name
         is valid.
         """
@@ -136,7 +133,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, self.generate_style())
+            mobjects = self._get_mobjects_from(svg, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -145,7 +142,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     init_points = generate_points
 
-    def get_mobjects_from(
+    def _get_mobjects_from(
         self,
         element: MinidomElement,
         inherited_style: dict[str, str],
@@ -185,7 +182,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
                 *(
-                    self.get_mobjects_from(
+                    self._get_mobjects_from(
                         child,
                         style,
                         within_defs=within_defs or is_defs,
@@ -196,27 +193,27 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         elif element.tagName == "path":
             temp = element.getAttribute("d")
             if temp != "":
-                result.append(self.path_string_to_mobject(temp, style))
+                result.append(self._path_string_to_mobject(temp, style))
         elif element.tagName == "use":
             # note, style is calcuated in a different way for `use` elements.
-            result += self.use_to_mobjects(element, style)
+            result += self._use_to_mobjects(element, style)
         elif element.tagName in ["line"]:
-            result.append(self.line_to_mobject(element, style))
+            result.append(self._line_to_mobject(element, style))
         elif element.tagName == "rect":
-            result.append(self.rect_to_mobject(element, style))
+            result.append(self._rect_to_mobject(element, style))
         elif element.tagName == "circle":
-            result.append(self.circle_to_mobject(element, style))
+            result.append(self._circle_to_mobject(element, style))
         elif element.tagName == "ellipse":
-            result.append(self.ellipse_to_mobject(element, style))
+            result.append(self._ellipse_to_mobject(element, style))
         elif element.tagName in ["polygon", "polyline"]:
-            result.append(self.polygon_to_mobject(element, style))
+            result.append(self._polygon_to_mobject(element, style))
         else:
             pass  # TODO
 
         result = [m for m in result if m is not None]
         group_cls = self.get_group_class()
 
-        self.handle_transforms(element, group_cls(*result))
+        self._handle_transforms(element, group_cls(*result))
         if len(result) > 1 and not self.unpack_groups:
             result = [group_cls(*result)]
 
@@ -243,7 +240,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             style["stroke"] = self.stroke_color
         return style
 
-    def path_string_to_mobject(self, path_string: str, style: dict):
+    def _path_string_to_mobject(self, path_string: str, style: dict):
         """Converts a SVG path element's ``d`` attribute to a mobject.
 
         Parameters
@@ -263,7 +260,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             path_string, **self.path_string_config, **parse_style(style)
         )
 
-    def attribute_to_float(self, attr):
+    def _attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
 
         Parameters
@@ -281,7 +278,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
         return float(stripped_attr)
 
-    def use_to_mobjects(
+    def _use_to_mobjects(
         self,
         use_element: MinidomElement,
         local_style: dict,
@@ -320,9 +317,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         style = local_style.copy()
         style.update(def_style)
 
-        return self.get_mobjects_from(def_element, style)
+        return self._get_mobjects_from(def_element, style)
 
-    def line_to_mobject(self, line_element: MinidomElement, style: dict):
+    def _line_to_mobject(self, line_element: MinidomElement, style: dict):
         """Creates a Line VMobject from an SVG <line> element.
 
         Parameters
@@ -339,14 +336,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             A Line VMobject
         """
         x1, y1, x2, y2 = (
-            self.attribute_to_float(line_element.getAttribute(key))
+            self._attribute_to_float(line_element.getAttribute(key))
             if line_element.hasAttribute(key)
             else 0.0
             for key in ("x1", "y1", "x2", "y2")
         )
         return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
 
-    def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
+    def _rect_to_mobject(self, rect_element: MinidomElement, style: dict):
         """Converts a SVG <rect> command to a VMobject.
 
         Parameters
@@ -380,14 +377,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         if corner_radius == 0:
             mob = Rectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                width=self._attribute_to_float(rect_element.getAttribute("width")),
+                height=self._attribute_to_float(rect_element.getAttribute("height")),
                 **parsed_style,
             )
         else:
             mob = RoundedRectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                width=self._attribute_to_float(rect_element.getAttribute("width")),
+                height=self._attribute_to_float(rect_element.getAttribute("height")),
                 corner_radius=corner_radius,
                 **parsed_style,
             )
@@ -395,7 +392,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
 
-    def circle_to_mobject(self, circle_element: MinidomElement, style: dict):
+    def _circle_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a Circle VMobject from a SVG <circle> command.
 
         Parameters
@@ -412,14 +409,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             A Circle VMobject
         """
         x, y, r = (
-            self.attribute_to_float(circle_element.getAttribute(key))
+            self._attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "r")
         )
         return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
-    def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
+    def _ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a stretched Circle VMobject from a SVG <circle> path
         command.
 
@@ -437,7 +434,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             A Circle VMobject
         """
         x, y, rx, ry = (
-            self.attribute_to_float(circle_element.getAttribute(key))
+            self._attribute_to_float(circle_element.getAttribute(key))
             if circle_element.hasAttribute(key)
             else 0.0
             for key in ("cx", "cy", "rx", "ry")
@@ -448,7 +445,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             .shift(x * RIGHT + y * DOWN)
         )
 
-    def polygon_to_mobject(self, polygon_element: MinidomElement, style: dict):
+    def _polygon_to_mobject(self, polygon_element: MinidomElement, style: dict):
         """Constructs a VMobject from a SVG <polygon> element.
 
         Parameters
@@ -471,9 +468,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         path_string = "M" + path_string
         if polygon_element.tagName == "polygon":
             path_string = path_string + "Z"
-        return self.path_string_to_mobject(path_string, style)
+        return self._path_string_to_mobject(path_string, style)
 
-    def handle_transforms(self, element, mobject):
+    def _handle_transforms(self, element, mobject):
         """Applies the SVG transform to the specified mobject. Transforms include:
         ``matrix``, ``translate``, and ``scale``.
 
@@ -487,9 +484,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         """
 
         if element.hasAttribute("x") and element.hasAttribute("y"):
-            x = self.attribute_to_float(element.getAttribute("x"))
+            x = self._attribute_to_float(element.getAttribute("x"))
             # Flip y
-            y = -self.attribute_to_float(element.getAttribute("y"))
+            y = -self._attribute_to_float(element.getAttribute("y"))
             mobject.shift(x * RIGHT + y * UP)
 
         transform_attr_value = element.getAttribute("transform")
@@ -554,17 +551,17 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                     op_name,
                 )
 
-    def flatten(self, input_list):
+    def _flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""
         output_list = []
         for i in input_list:
             if isinstance(i, list):
-                output_list.extend(self.flatten(i))
+                output_list.extend(self._flatten(i))
             else:
                 output_list.append(i)
         return output_list
 
-    def move_into_position(self, width, height):
+    def _move_into_position(self, width, height):
         """Uses the SVGMobject's config dictionary to set the Mobject's
         width, height, and/or center it. Use ``width``, ``height``, and
         ``should_center`` respectively to modify this.
