@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.ComplexPlane``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane:1
-msgid "Bases: :class:`manim.mobject.coordinate_systems.NumberPlane`"
+msgid "Bases: :py:class:`manim.mobject.coordinate_systems.NumberPlane`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane:1
@@ -65,7 +65,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ComplexPlane.add_coordinates:1:<autosummary>:1

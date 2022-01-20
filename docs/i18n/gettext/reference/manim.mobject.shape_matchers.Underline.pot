@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.shape\\_matchers.Underline``"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.Underline:1
-msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Line`"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.Underline:1
@@ -43,7 +43,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Underline.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Underline.rst:28:<autosummary>:1

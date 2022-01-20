@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.Uncreate``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:1
-msgid "Bases: :class:`manim.animation.creation.Create`"
+msgid "Bases: :py:class:`manim.animation.creation.Create`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:1
@@ -24,10 +24,6 @@ msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:4
 msgid "Examples"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:11
-msgid ":class:`Create`"
 msgstr ""
 
 

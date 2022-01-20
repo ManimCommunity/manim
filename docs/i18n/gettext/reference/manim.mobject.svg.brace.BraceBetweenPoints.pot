@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.brace.BraceBetweenPoints``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.BraceBetweenPoints:1
-msgid "Bases: :class:`manim.mobject.svg.brace.Brace`"
+msgid "Bases: :py:class:`manim.mobject.svg.brace.Brace`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.BraceBetweenPoints:1
@@ -55,7 +55,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceBetweenPoints.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceBetweenPoints.rst:28:<autosummary>:1

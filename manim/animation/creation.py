@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Animate the display or removal of a mobject from a scene.
 
 .. manim:: CreationModule
@@ -113,7 +115,7 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+        self, mobject: VMobject | OpenGLVMobject | OpenGLSurface | None, **kwargs
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
@@ -163,13 +165,13 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface],
+        mobject: VMobject | OpenGLVMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> tuple[int, float]:
         return (0, alpha)
 
 
@@ -192,7 +194,7 @@ class Uncreate(Create):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject],
+        mobject: VMobject | OpenGLVMobject,
         rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
         remover: bool = True,
         **kwargs,
@@ -214,13 +216,13 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject | OpenGLVMobject,
         run_time: float = 2,
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: Dict = {},  # what does this dict accept?
-        fill_animation_config: Dict = {},
+        draw_border_animation_config: dict = {},  # what does this dict accept?
+        fill_animation_config: dict = {},
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
@@ -231,7 +233,7 @@ class DrawBorderThenFill(Animation):
         self.fill_animation_config = fill_animation_config
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: Union[VMobject, OpenGLVMobject]) -> None:
+    def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
             raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
@@ -246,7 +248,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: Union[VMobject, OpenGLVMobject]) -> Color:
+    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -293,13 +295,13 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject | OpenGLVMobject,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
         **kwargs,
     ) -> None:
-        run_time: Optional[float] = kwargs.pop("run_time", None)
-        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time: float | None = kwargs.pop("run_time", None)
+        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
             vmobject,
             run_time,
@@ -316,10 +318,10 @@ class Write(DrawBorderThenFill):
 
     def _set_default_config_from_length(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
-        run_time: Optional[float],
-        lag_ratio: Optional[float],
-    ) -> Tuple[float, float]:
+        vmobject: VMobject | OpenGLVMobject,
+        run_time: float | None,
+        lag_ratio: float | None,
+    ) -> tuple[float, float]:
         length = len(vmobject.family_members_with_points())
         if run_time is None:
             if length < 15:
@@ -380,8 +382,8 @@ class Unwrite(Write):
         **kwargs,
     ) -> None:
 
-        run_time: Optional[float] = kwargs.pop("run_time", None)
-        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time: float | None = kwargs.pop("run_time", None)
+        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
             vmobject,
             run_time,
@@ -454,12 +456,12 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        text: "Text",
+        text: Text,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
-        run_time: Optional[float] = None,
+        run_time: float | None = None,
         **kwargs,
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
@@ -503,7 +505,7 @@ class AddTextWordByWord(Succession):
 
     def __init__(
         self,
-        text_mobject: "Text",
+        text_mobject: Text,
         run_time: float = None,
         time_per_char: float = 0.06,
         **kwargs,

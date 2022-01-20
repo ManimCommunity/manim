@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.\\_config.utils.ManimConfig``"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:1
-msgid "Bases: :class:`collections.abc.MutableMapping`"
+msgid "Bases: :py:class:`collections.abc.MutableMapping`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig:1
@@ -367,8 +367,17 @@ msgid "Whether to save all frames in the scene as images files (-g)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.save_sections:1
+msgid "Whether to save single videos for each section in addition to the movie file."
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.scene_names:1
 msgid "Scenes to play from file."
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
+msgid "Directory to place section videos (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -490,17 +499,6 @@ msgstr ""
 msgid "A copy of this object containing no shared references."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:4
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:7
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:11
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:13
-msgid ":class:`ManimConfig`"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:6
-msgid ":func:`tempconfig`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:10
 msgid "This is the main mechanism behind :func:`tempconfig`."
 msgstr ""
@@ -522,10 +520,6 @@ msgstr ""
 msgid "**self** -- This object, after processing the contents of ``parser``."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:11
-msgid ":func:`.main_utils.parse_args()`, :meth:`~.ManimConfig.digest_parser`, :meth:`~.ManimConfig.digest_file`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:16
 msgid "If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the contents of said file with :meth:`~ManimConfig.digest_file` before digesting any other CLI arguments."
 msgstr ""
@@ -542,10 +536,6 @@ msgstr ""
 msgid "**self** -- This object, after processing the contents of ``filename``."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:13
-msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :func:`make_config_parser`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:17
 msgid "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first and digesting them with one call to :meth:`~ManimConfig.digest_parser`, instead of calling this method multiple times."
 msgstr ""
@@ -556,10 +546,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:7
 msgid "An object reflecting the contents of one or many ``.cfg`` files.  In particular, it may reflect the contents of multiple files that have been parsed in a cascading fashion."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:15
-msgid ":func:`make_config_parser`, :meth:`~.ManimConfig.digest_file`, :meth:`~.ManimConfig.digest_args`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:19
@@ -588,10 +574,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:12
 msgid "Path to the requested directory.  If the path resolves to the empty string, return ``None`` instead."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:14
-msgid ":class:`pathlib.Path`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:0
@@ -659,6 +641,10 @@ msgstr ""
 msgid "Renderer"
 msgstr ""
 
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.sections_dir:1
+msgid "Directory to place section videos (no flag).  See :meth:`ManimConfig.get_dir`."
+msgstr ""
+
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.tex_dir:1
 msgid "Directory to place tex (no flag).  See :meth:`ManimConfig.get_dir`."
 msgstr ""
@@ -685,10 +671,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:12
 msgid "If ``obj`` is a dict but contains keys that do not belong to any     config options."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:14
-msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :meth:`~ManimConfig.digest_parser`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.upto_animation_number:1

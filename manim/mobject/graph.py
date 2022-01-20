@@ -1,5 +1,7 @@
 """Mobjects used to represent mathematical graphs (think graph theory, not plotting)."""
 
+from __future__ import annotations
+
 __all__ = [
     "Graph",
 ]
@@ -24,11 +26,11 @@ from .types.vectorized_mobject import VMobject
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph,
-    layout: Union[str, dict] = "spring",
+    layout: str | dict = "spring",
     layout_scale: float = 2,
-    layout_config: Union[dict, None] = None,
-    partitions: Union[List[List[Hashable]], None] = None,
-    root_vertex: Union[Hashable, None] = None,
+    layout_config: dict | None = None,
+    partitions: list[list[Hashable]] | None = None,
+    root_vertex: Hashable | None = None,
 ) -> dict:
     automatic_layouts = {
         "circular": nx.layout.circular_layout,
@@ -98,65 +100,94 @@ def _determine_graph_layout(
 
 
 def _tree_layout(
-    G: nx.classes.graph.Graph,
-    root_vertex: Union[Hashable, None],
-    scale: float,
-) -> dict:
-    result = {root_vertex: np.array([0, 0, 0])}
+    T: nx.classes.graph.Graph,
+    root_vertex: Hashable | None,
+    scale: float | tuple = 2,
+    orientation: str = "down",
+):
+    children = {root_vertex: list(T.neighbors(root_vertex))}
 
-    if not nx.is_tree(G):
+    if not nx.is_tree(T):
         raise ValueError("The tree layout must be used with trees")
     if root_vertex is None:
         raise ValueError("The tree layout requires the root_vertex parameter")
 
-    def _recursive_position_for_row(
-        G: nx.classes.graph.Graph,
-        result: dict,
-        two_rows_before: List[Hashable],
-        last_row: List[Hashable],
-        current_height: float,
-    ):
-        new_row = []
-        for v in last_row:
-            for x in G.neighbors(v):
-                if x not in two_rows_before:
-                    new_row.append(x)
+    # The following code is SageMath's tree layout implementation, taken from
+    # https://github.com/sagemath/sage/blob/cc60cfebc4576fed8b01f0fc487271bdee3cefed/src/sage/graphs/graph_plot.py#L1447
 
-        new_row_length = len(new_row)
+    # Always make a copy of the children because they get eaten
+    stack = [list(children[root_vertex]).copy()]
+    stick = [root_vertex]
+    parent = {u: root_vertex for u in children[root_vertex]}
+    pos = {}
+    obstruction = [0.0] * len(T)
+    if orientation == "down":
+        o = -1
+    else:
+        o = 1
 
-        if new_row_length == 0:
-            return
+    def slide(v, dx):
+        """
+        Shift the vertex v and its descendants to the right by dx.
+        Precondition: v and its descendents have already had their
+        positions computed.
+        """
+        level = [v]
+        while level:
+            nextlevel = []
+            for u in level:
+                x, y = pos[u]
+                x += dx
+                obstruction[y] = max(x + 1, obstruction[y])
+                pos[u] = x, y
+                nextlevel += children[u]
+            level = nextlevel
 
-        if new_row_length == 1:
-            result[new_row[0]] = np.array([0, current_height, 0])
-        else:
-            for i in range(new_row_length):
-                result[new_row[i]] = np.array(
-                    [-1 + 2 * i / (new_row_length - 1), current_height, 0],
-                )
+    while stack:
+        C = stack[-1]
+        if not C:
+            p = stick.pop()
+            stack.pop()
+            cp = children[p]
+            y = o * len(stack)
+            if not cp:
+                x = obstruction[y]
+                pos[p] = x, y
+            else:
+                x = sum(pos[c][0] for c in cp) / float(len(cp))
+                pos[p] = x, y
+                ox = obstruction[y]
+                if x < ox:
+                    slide(p, ox - x)
+                    x = ox
+            obstruction[y] = x + 1
+            continue
 
-        _recursive_position_for_row(
-            G,
-            result,
-            two_rows_before=last_row,
-            last_row=new_row,
-            current_height=current_height + 1,
-        )
+        t = C.pop()
+        pt = parent[t]
 
-    _recursive_position_for_row(
-        G,
-        result,
-        two_rows_before=[],
-        last_row=[root_vertex],
-        current_height=1,
-    )
+        ct = [u for u in list(T.neighbors(t)) if u != pt]
+        for c in ct:
+            parent[c] = t
+        children[t] = copy(ct)
 
-    height = max(map(lambda v: result[v][1], result))
+        stack.append(ct)
+        stick.append(t)
 
-    return {
-        v: np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]) * scale / 2
-        for v, pos in result.items()
-    }
+    # the resulting layout is then rescaled again to fit on Manim's canvas
+
+    x_min = min(pos.values(), key=lambda t: t[0])[0]
+    x_max = max(pos.values(), key=lambda t: t[0])[0]
+    y_min = min(pos.values(), key=lambda t: t[1])[1]
+    y_max = max(pos.values(), key=lambda t: t[1])[1]
+    center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
+    height = y_max - y_min
+    width = x_max - x_min
+    if isinstance(scale, (float, int)):
+        sf = 2 * scale / max(width, height)
+    else:
+        sf = np.array([2 * scale[0] / width, 2 * scale[1] / height, 0])
+    return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
 class Graph(VMobject, metaclass=ConvertToOpenGL):
@@ -199,7 +230,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
     layout_scale
         The scale of automatically generated layouts: the vertices will
         be arranged such that the coordinates are located within the
-        interval ``[-scale, scale]``. Default: 2.
+        interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)``
+        causing the first coordinate to be in the interval ``[-scale_x, scale_x]``,
+        and the second in ``[-scale_y, scale_y]``. Default: 2.
     layout_config
         Only for automatically generated layouts. A dictionary whose entries
         are passed as keyword arguments to the automatic layout algorithm
@@ -354,20 +387,20 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        vertices: List[Hashable],
-        edges: List[Tuple[Hashable, Hashable]],
-        labels: bool = False,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: Union[str, dict] = "spring",
-        layout_scale: float = 2,
-        layout_config: Union[dict, None] = None,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Union[dict, None] = None,
-        vertex_mobjects: Optional[dict] = None,
-        edge_type: Type["Mobject"] = Line,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-        edge_config: Union[dict, None] = None,
+        layout: str | dict = "spring",
+        layout_scale: float | tuple = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
     ) -> None:
         super().__init__()
 
@@ -460,22 +493,22 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         self.add_updater(update_edges)
 
-    def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
+    def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
 
-    def __repr__(self: "Graph") -> str:
+    def __repr__(self: Graph) -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
     def _add_vertex(
         self,
         vertex: Hashable,
-        position: Optional[np.ndarray] = None,
+        position: np.ndarray | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobject: Optional[dict] = None,
-    ) -> "Mobject":
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> Mobject:
         """Add a vertex to the graph.
 
         Parameters
@@ -544,14 +577,14 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return self.vertices[vertex]
 
     def add_vertices(
-        self: "Graph",
+        self: Graph,
         *vertices: Hashable,
-        positions: Optional[dict] = None,
+        positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobjects: Optional[dict] = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
     ):
         """Add a list of vertices to the graph.
 
@@ -712,9 +745,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def _add_edge(
         self,
-        edge: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        edge: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
     ):
         """Add a new edge to the graph.
 
@@ -763,9 +796,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        *edges: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
     ):
         """Add new edges to the graph.
 
@@ -825,7 +858,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             *(animation(mobj, **anim_args) for mobj in mobjects), group=self
         )
 
-    def _remove_edge(self, edge: Tuple[Hashable]):
+    def _remove_edge(self, edge: tuple[Hashable]):
         """Remove an edge from the graph.
 
         Parameters
@@ -854,7 +887,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: Tuple[Hashable]):
+    def remove_edges(self, *edges: tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
@@ -884,7 +917,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         )
 
     @staticmethod
-    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
+    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> Graph:
         """Build a :class:`~.Graph` from a given ``networkx`` graph.
 
         Parameters
@@ -918,12 +951,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: Union[str, dict] = "spring",
+        layout: str | dict = "spring",
         layout_scale: float = 2,
-        layout_config: Union[dict, None] = None,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-    ) -> "Graph":
+        layout_config: dict | None = None,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+    ) -> Graph:
         """Change the layout of this graph.
 
         See the documentation of :class:`~.Graph` for details about the

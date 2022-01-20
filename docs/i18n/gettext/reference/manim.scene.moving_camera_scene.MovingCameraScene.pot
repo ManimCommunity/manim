@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.moving\\_camera\\_scene.MovingCameraScene``
 msgstr ""
 
 #: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene.MovingCameraScene:1
-msgid "Bases: :class:`manim.scene.scene.Scene`"
+msgid "Bases: :py:class:`manim.scene.scene.Scene`"
 msgstr ""
 
 #: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene.MovingCameraScene:1

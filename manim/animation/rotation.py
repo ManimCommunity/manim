@@ -1,5 +1,7 @@
 """Animations related to rotation."""
 
+from __future__ import annotations
+
 __all__ = ["Rotating", "Rotate"]
 
 import typing
@@ -19,11 +21,11 @@ if typing.TYPE_CHECKING:
 class Rotating(Animation):
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         axis: np.ndarray = OUT,
         radians: np.ndarray = TAU,
-        about_point: Optional[np.ndarray] = None,
-        about_edge: Optional[np.ndarray] = None,
+        about_point: np.ndarray | None = None,
+        about_edge: np.ndarray | None = None,
         run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
         **kwargs
@@ -47,11 +49,11 @@ class Rotating(Animation):
 class Rotate(Transform):
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: Mobject,
         angle: np.ndarray = PI,
         axis: np.ndarray = OUT,
-        about_point: Optional[Sequence[float]] = None,
-        about_edge: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
+        about_edge: Sequence[float] | None = None,
         **kwargs
     ) -> None:
         if "path_arc" not in kwargs:
@@ -66,7 +68,7 @@ class Rotate(Transform):
             self.about_point = mobject.get_center()
         super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
 
-    def create_target(self) -> "Mobject":
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.rotate(
             self.angle,

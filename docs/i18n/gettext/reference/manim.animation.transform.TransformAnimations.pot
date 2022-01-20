@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.TransformAnimations``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.TransformAnimations.rst:14
@@ -40,7 +40,7 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.TransformAnimations.interpolate:5
-msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 

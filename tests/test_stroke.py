@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import manim.utils.color as C
 from manim import VMobject
 

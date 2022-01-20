@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.camera.Camera``"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:1
@@ -64,6 +64,7 @@ msgstr ""
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_fill:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_stroke:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.cache_cairo_context:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobject:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.convert_pixel_array:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_image_mobject:0
@@ -132,6 +133,11 @@ msgstr ""
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.cache_cairo_context:1
 msgid "Caches the passed Pixel array into a Cairo Context"
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobject:1
+msgid "Capture mobjects by storing it in :attr:`pixel_array`."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:63:<autosummary>:1
@@ -402,16 +408,25 @@ msgstr ""
 msgid "The context to cache it into."
 msgstr ""
 
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobject:3
+msgid "This is a single-mobject version of :meth:`capture_mobjects`."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobject:5
+msgid "Mobject to capture."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobject:6
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:8
+msgid "Keyword arguments to be passed to :meth:`get_mobjects_to_display`."
+msgstr ""
+
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:3
 msgid "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:6
 msgid "Mobjects to capture."
-msgstr ""
-
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:8
-msgid "Keyword arguments to be passed to :meth:`get_mobjects_to_display`."
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:12

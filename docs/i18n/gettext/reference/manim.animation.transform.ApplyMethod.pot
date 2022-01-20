@@ -15,15 +15,31 @@ msgid "Qualified name: ``manim.animation.transform.ApplyMethod``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:1
-msgid "Method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
+msgid "Animates a mobject by applying a method."
 msgstr ""
 
-#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:6
-msgid "Relies on the fact that mobject methods return the mobject"
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:3
+msgid "Note that only the method needs to be passed to this animation, it is not required to pass the corresponding mobject. Furthermore, this animation class only works if the method returns the modified mobject."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:8
+msgid "The method that will be applied in the animation."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:9
+msgid "Any positional arguments to be passed when applying the method."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyMethod:10
+msgid "Any keyword arguments passed to :class:`~.Transform`."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ApplyMethod.rst:14

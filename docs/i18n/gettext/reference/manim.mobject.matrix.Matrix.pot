@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.matrix.Matrix``"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:1
@@ -44,51 +44,55 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:56
-msgid "A numpy 2d array or list of lists"
+msgid "A numpy 2d array or list of lists."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:57
+msgid "Vertical distance between elements, by default 0.8."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:58
-msgid "vertical buffer, by default 0.8"
+msgid "Horizontal distance between elements, by default 1.3."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:59
+msgid "Distance of the brackets from the matrix, by default ``MED_SMALL_BUFF``."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:60
-msgid "horizontal buffer, by default 1.3"
+msgid "Height of the brackets, by default ``MED_SMALL_BUFF``."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:61
+msgid "``True`` if should add backgraound rectangles to entries, by default ``False``."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:62
-msgid "bracket horizontal buffer, by default MED_SMALL_BUFF"
+msgid "``True`` if should include background rectangle, by default ``False``."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:63
+msgid "The mobject class used to construct the elements, by default :class:`~.MathTex`."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:64
-msgid "bracket vertical buffer, by default MED_SMALL_BUFF"
+msgid "Additional arguments to be passed to the constructor in ``element_to_mobject``, by default ``{}``."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:66
-msgid "`True` if should add backgraound rectangles to entries, by default False"
+msgid "The corner to which elements are aligned, by default ``DR``."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:67
+msgid "The left bracket type, by default ``\"[\"``."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:68
-msgid "`True` if should include background rectangle, by default False"
+msgid "The right bracket type, by default ``\"]\"``."
 msgstr ""
 
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:70
-msgid "element to mobject, by default MathTex"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:72
-msgid "element to mobject config, by default {}"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:74
-msgid "the element alignment corner, by default DR"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:76
-msgid "the left bracket type, by default \"[\""
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:78
-msgid "the right bracket type, by default \"]\""
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix:69
+msgid "Additional arguments to be passed to :class:`~.MathTex` when constructing the brackets."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.Matrix.rst:14
@@ -148,7 +152,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:1:<autosummary>:1
@@ -192,13 +196,6 @@ msgstr ""
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:0
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_background_to_entries:5
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:11
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_column_colors:7
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:7
-msgid ":class:`Matrix`"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.add_brackets:1

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.ThreeDAxes``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:1
-msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgid "Bases: :py:class:`manim.mobject.coordinate_systems.Axes`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:1
@@ -28,15 +28,15 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:3
-msgid "The :code:`[x_min, x_max, x_step]` values of the x-axis."
+msgid "The ``[x_min, x_max, x_step]`` values of the x-axis."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:4
-msgid "The :code:`[y_min, y_max, y_step]` values of the y-axis."
+msgid "The ``[y_min, y_max, y_step]`` values of the y-axis."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:5
-msgid "The :code:`[z_min, z_max, z_step]` values of the z-axis."
+msgid "The ``[z_min, z_max, z_step]`` values of the z-axis."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes:6
@@ -82,7 +82,7 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:20:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1
-msgid "Generate an x-axis label."
+msgid "Generate a z-axis label."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.ThreeDAxes.rst:22
@@ -90,7 +90,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.ThreeDAxes.get_z_axis_label:1:<autosummary>:1

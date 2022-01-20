@@ -15,15 +15,11 @@ msgid "Qualified name: ``manim.mobject.geometry.ArrowTip``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:1
 msgid "Base class for arrow tips."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:3
-msgid ":class:`ArrowTriangleTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareTip`, :class:`ArrowSquareFilledTip`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:6
@@ -60,7 +56,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1

@@ -11,35 +11,11 @@ msgid "Manim Community Overview"
 msgstr ""
 
 #: ../../source/index.rst:9
-msgid "Animating technical concepts is traditionally pretty tedious since it can be difficult to make the animations precise enough to convey them accurately. ``Manim`` uses Python to generate animations programmatically, making it possible to specify exactly how each one should run."
+msgid "Animating technical concepts is traditionally pretty tedious since it can be difficult to make the animations precise enough to convey them accurately. Manim relies on Python's simplicity to generate animations programmatically, making it convenient to specify exactly how each one should run. Take a look at the :doc:`Example Gallery <../examples>` for some inspiration on how to create beautiful images and videos with Manim."
 msgstr ""
 
-#: ../../source/index.rst:14
-msgid "This project is still very much a work in progress, but we hope that the information here will make it easier for newcomers to get started using ``Manim``."
-msgstr ""
-
-#: ../../source/index.rst:20
-msgid "All content of the docs is licensed under the MIT license. Especially for the examples you encounter: Feel free to use this code in your own projects!"
-msgstr ""
-
-#: ../../source/index.rst:23
-msgid "We are curious to see the awesome projects you build using this library, feel free to share your projects with us `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_, or via `Discord <https://www.manim.community/discord/>`_."
-msgstr ""
-
-#: ../../source/index.rst:27
-msgid "In case you publish your work made with Manim, we would appreciate if you add a link to `our homepage <https://www.manim.community>`_ or `our GitHub repository <https://github.com/ManimCommunity/manim>`_. If you use Manim in a scientific context, instructions on how to cite a particular release can be found `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_."
-msgstr ""
-
-#: ../../source/index.rst:36
-msgid "As a quick reference, here are some often used modules, classes and methods:"
-msgstr ""
-
-#: ../../source/index.rst:38
-msgid "Modules: :mod:`~.moving_camera_scene`, :mod:`~.tex_mobject`, :mod:`~.geometry`,"
-msgstr ""
-
-#: ../../source/index.rst:43
-msgid "Classes: :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Angle`, :class:`~.Tex`, :class:`~.Text`,"
+#: ../../source/index.rst:16
+msgid "We'd love to hear from you and see your manimations `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_, or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a scientific context, instructions on how to cite a particular release can be found `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_."
 msgstr ""
 
 

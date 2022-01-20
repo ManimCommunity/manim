@@ -11,7 +11,7 @@ msgid "Windows"
 msgstr ""
 
 #: ../../source/installation/windows.rst:4
-msgid "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7 or newer), it might be the easiest way to get everything up and running."
+msgid "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7-3.9), it might be the easiest way to get everything up and running."
 msgstr ""
 
 #: ../../source/installation/windows.rst:12
@@ -23,7 +23,7 @@ msgid "Required Dependencies"
 msgstr ""
 
 #: ../../source/installation/windows.rst:22
-msgid "Manim requires a recent version of Python (3.7 or above) and ``ffmpeg`` in order to work."
+msgid "Manim requires a recent version of Python (3.7–3.9) and ``ffmpeg`` in order to work."
 msgstr ""
 
 #: ../../source/installation/windows.rst:26
@@ -59,11 +59,11 @@ msgid "Manual Installation"
 msgstr ""
 
 #: ../../source/installation/windows.rst:60
-msgid "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7 or above) and FFmpeg."
+msgid "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7–3.9) and FFmpeg."
 msgstr ""
 
 #: ../../source/installation/windows.rst:63
-msgid "**Python:** Head over to https://www.python.org, download an installer for Python 3.7 (or newer), and follow its instructions to get Python installed on your system."
+msgid "**Python:** Head over to https://www.python.org, download an installer for Python (3.7–3.9), and follow its instructions to get Python installed on your system."
 msgstr ""
 
 #: ../../source/installation/windows.rst:69

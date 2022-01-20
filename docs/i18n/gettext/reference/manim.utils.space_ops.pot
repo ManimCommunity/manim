@@ -453,20 +453,12 @@ msgstr ""
 msgid "Returns signed area."
 msgstr ""
 
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.shoelace:4
-msgid ":class:`float`"
-msgstr ""
-
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.shoelace_direction:1
 msgid "Uses the area determined by the shoelace method to determine whether the input set of points is directed clockwise or counterclockwise."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.shoelace_direction:4
 msgid "Either ``\"CW\"`` or ``\"CCW\"``."
-msgstr ""
-
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.shoelace_direction:5
-msgid ":class:`str`"
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.spherical_to_cartesian:1

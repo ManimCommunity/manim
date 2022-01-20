@@ -1,5 +1,7 @@
 """Mobject representing curly braces."""
 
+from __future__ import annotations
+
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
 from typing import Optional, Sequence
@@ -18,7 +20,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
-from ...utils.deprecation import deprecated_params
 
 
 class Brace(SVGPathMobject):
@@ -59,7 +60,7 @@ class Brace(SVGPathMobject):
     def __init__(
         self,
         mobject,
-        direction: Optional[Sequence[float]] = DOWN,
+        direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,
         stroke_width=0,
@@ -237,9 +238,9 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Optional[Sequence[float]],
-        point_2: Optional[Sequence[float]],
-        direction: Optional[Sequence[float]] = ORIGIN,
+        point_1: Sequence[float] | None,
+        point_2: Sequence[float] | None,
+        direction: Sequence[float] | None = ORIGIN,
         **kwargs
     ):
         if all(direction == ORIGIN):

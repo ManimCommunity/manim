@@ -1,5 +1,7 @@
 """Mobjects representing function graphs."""
 
+from __future__ import annotations
+
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
@@ -30,6 +32,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     use_smoothing
         Whether to interpolate between the points of the function after they have been created.
         (Will have odd behaviour with a low number of points)
+    discontinuities
+        Values of t at which the function experiences discontinuity.
+    dt
+        The left and right tolerance for the discontinuities.
 
 
     Examples
@@ -62,15 +68,37 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.add(axes, curve1)
                 self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
+
+    .. attention::
+        If your function has discontinuities, you'll have to specify the location
+        of the discontinuities manually. See the following example for guidance.
+
+    .. manim:: DiscontinuousExample
+        :save_last_frame:
+
+        class DiscontinuousExample(Scene):
+            def construct(self):
+                ax1 = NumberPlane((-3, 3), (-4, 4))
+                ax2 = NumberPlane((-3, 3), (-4, 4))
+                VGroup(ax1, ax2).arrange()
+                discontinuous_function = lambda x: (x ** 2 - 2) / (x ** 2 - 4)
+                incorrect = ax1.plot(discontinuous_function, color=RED)
+                correct = ax2.plot(
+                    discontinuous_function,
+                    discontinuities=[-2, 2],  # discontinuous points
+                    dt=0.1,  # left and right tolerance of discontinuity
+                    color=GREEN,
+                )
+                self.add(ax1, ax2, incorrect, correct)
     """
 
     def __init__(
         self,
         function: Callable[[float, float], float],
-        t_range: Optional[Sequence[float]] = None,
+        t_range: Sequence[float] | None = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: Optional[Iterable[float]] = None,
+        discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
         **kwargs
     ):
@@ -82,7 +110,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self.scaling = scaling
 
         self.dt = dt
-        self.discontinuities = [] if discontinuities is None else discontinuities
+        self.discontinuities = discontinuities
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
@@ -96,7 +124,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_points(self):
 
-        if self.discontinuities:
+        if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
                 self.discontinuities,
@@ -179,8 +207,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], float],
-        x_range: Optional[Sequence[float]] = None,
-        y_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.numbers.ChangingDecimal``"
 msgstr ""
 
 #: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangingDecimal:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:14

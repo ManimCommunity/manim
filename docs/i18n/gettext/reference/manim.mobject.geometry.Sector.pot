@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Sector``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Sector:1
-msgid "Bases: :class:`manim.mobject.geometry.AnnularSector`"
+msgid "Bases: :py:class:`manim.mobject.geometry.AnnularSector`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Sector:2
@@ -31,7 +31,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Sector.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Sector.rst:28:<autosummary>:1

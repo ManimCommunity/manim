@@ -42,43 +42,55 @@ msgstr ""
 msgid "Manim is a Python library, and it can be `installed via pip <https://pypi.org/project/manim/>`__. However, in order for Manim to work properly, some additional system dependencies need to be installed first. The following pages have operating system specific instructions for you to follow."
 msgstr ""
 
-#: ../../source/installation.rst:41
+#: ../../source/installation.rst:39
+msgid "Manim is **only** compatible with Python versions `3.7–3.9`, but not `3.10` for now."
+msgstr ""
+
+#: ../../source/installation.rst:43
 msgid "Depending on your particular setup, the installation process might be slightly different. Make sure that you have tried to follow the steps on the following pages carefully, but in case you hit a wall we are happy to help: either `join our Discord <https://www.manim.community/discord/>`__, or start a new Discussion `directly on GitHub <https://github.com/ManimCommunity/manim/discussions>`__."
 msgstr ""
 
-#: ../../source/installation.rst:57
+#: ../../source/installation.rst:59
 msgid "Once Manim is installed locally, you can proceed to our :doc:`quickstart guide <tutorials/quickstart>` which walks you through rendering a first simple scene."
 msgstr ""
 
-#: ../../source/installation.rst:61
+#: ../../source/installation.rst:63
 msgid "As mentioned above, do not worry if there are errors or other problems: consult our :doc:`troubleshooting guide <installation/troubleshooting>` for help, or get in touch with the community via `GitHub discussions <https://github.com/ManimCommunity/manim/discussions>`__ or `Discord <https://www.manim.community/discord/>`__."
 msgstr ""
 
-#: ../../source/installation.rst:73
+#: ../../source/installation.rst:75
 msgid "Using Manim via Docker"
 msgstr ""
 
-#: ../../source/installation.rst:75
+#: ../../source/installation.rst:77
 msgid "`Docker <https://www.docker.com>`__ is a virtualization tool that allows the distribution of encapsulated software environments (containers)."
 msgstr ""
 
-#: ../../source/installation.rst:78
+#: ../../source/installation.rst:80
 msgid "The following pages contain more information about the docker image maintained by the community, ``manimcommunity/manim``:"
 msgstr ""
 
-#: ../../source/installation.rst:89
+#: ../../source/installation.rst:91
 msgid "Interactive Jupyter notebooks for your browser"
 msgstr ""
 
-#: ../../source/installation.rst:91
+#: ../../source/installation.rst:93
 msgid "Manim ships with a built-in ``%%manim`` IPython magic command designed for the use within `Jupyter notebooks <https://jupyter.org>`__. Our interactive tutorial over at https://try.manim.community illustrates how Manim can be used from within a Jupyter notebook."
 msgstr ""
 
-#: ../../source/installation.rst:96
+#: ../../source/installation.rst:98
 msgid "The following pages explain how you can setup interactive environments like that yourself:"
 msgstr ""
 
-#: ../../source/installation.rst:105
+#: ../../source/installation.rst:108
+msgid "Editors"
+msgstr ""
+
+#: ../../source/installation.rst:110
+msgid "If you're using Visual Studio Code you can install an extension called *Manim Sideview* which provides automated rendering and an integrated preview of the animation inside the editor. The extension can be installed through the `marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__."
+msgstr ""
+
+#: ../../source/installation.rst:117
 msgid "Installation for developers"
 msgstr ""
 

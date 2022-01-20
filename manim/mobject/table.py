@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Mobjects representing tables.
 
 Examples
@@ -146,10 +148,10 @@ class Table(VGroup):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
-        row_labels: Optional[Iterable["VMobject"]] = None,
-        col_labels: Optional[Iterable["VMobject"]] = None,
-        top_left_entry: Optional["VMobject"] = None,
+        table: Iterable[Iterable[float | str | VMobject]],
+        row_labels: Iterable[VMobject] | None = None,
+        col_labels: Iterable[VMobject] | None = None,
+        top_left_entry: VMobject | None = None,
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
@@ -158,8 +160,8 @@ class Table(VGroup):
         include_background_rectangle: bool = False,
         background_rectangle_color: Color = BLACK,
         element_to_mobject: Callable[
-            [Union[float, str, "VMobject"]],
-            "VMobject",
+            [float | str | VMobject],
+            VMobject,
         ] = Paragraph,
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
@@ -250,8 +252,8 @@ class Table(VGroup):
 
     def _table_to_mob_table(
         self,
-        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
-    ) -> List:
+        table: Iterable[Iterable[float | str | VMobject]],
+    ) -> list:
         """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
@@ -273,7 +275,7 @@ class Table(VGroup):
             for row in table
         ]
 
-    def _organize_mob_table(self, table: Iterable[Iterable["VMobject"]]) -> VGroup:
+    def _organize_mob_table(self, table: Iterable[Iterable[VMobject]]) -> VGroup:
         """Arranges the :class:`~.VMobject` of ``table`` in a grid.
 
         Parameters
@@ -299,7 +301,7 @@ class Table(VGroup):
         )
         return help_table
 
-    def _add_labels(self, mob_table: "VGroup") -> VGroup:
+    def _add_labels(self, mob_table: VGroup) -> VGroup:
         """Adds labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
@@ -336,7 +338,7 @@ class Table(VGroup):
                 mob_table.insert(0, self.col_labels)
         return mob_table
 
-    def _add_horizontal_lines(self) -> "Table":
+    def _add_horizontal_lines(self) -> Table:
         """Adds the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
@@ -366,7 +368,7 @@ class Table(VGroup):
         self.horizontal_lines = line_group
         return self
 
-    def _add_vertical_lines(self) -> "Table":
+    def _add_vertical_lines(self) -> Table:
         """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
@@ -506,7 +508,7 @@ class Table(VGroup):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_table))
 
-    def set_column_colors(self, *colors: Iterable[Color]) -> "Table":
+    def set_column_colors(self, *colors: Iterable[Color]) -> Table:
         """Set individual colors for each column of the table.
 
         Parameters
@@ -535,7 +537,7 @@ class Table(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: Iterable[Color]) -> "Table":
+    def set_row_colors(self, *colors: Iterable[Color]) -> Table:
         """Set individual colors for each row of the table.
 
         Parameters
@@ -566,8 +568,8 @@ class Table(VGroup):
 
     def get_entries(
         self,
-        pos: Optional[Sequence[int]] = None,
-    ) -> Union[VMobject, VGroup]:
+        pos: Sequence[int] | None = None,
+    ) -> VMobject | VGroup:
         """Return the individual entries of the table (including labels) or one specific entry
         if the parameter, ``pos``,  is set.
 
@@ -618,8 +620,8 @@ class Table(VGroup):
 
     def get_entries_without_labels(
         self,
-        pos: Optional[Sequence[int]] = None,
-    ) -> Union[VMobject, VGroup]:
+        pos: Sequence[int] | None = None,
+    ) -> VMobject | VGroup:
         """Return the individual entries of the table (without labels) or one specific entry
         if the parameter, ``pos``, is set.
 
@@ -754,7 +756,7 @@ class Table(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: Color = BLACK) -> "Table":
+    def add_background_to_entries(self, color: Color = BLACK) -> Table:
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=color)
@@ -819,7 +821,7 @@ class Table(VGroup):
 
     def get_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
-    ) -> "BackgroundRectangle":
+    ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
         Parameters
@@ -855,7 +857,7 @@ class Table(VGroup):
 
     def add_highlighted_cell(
         self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
-    ) -> "Table":
+    ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
@@ -884,7 +886,7 @@ class Table(VGroup):
                     table.add_highlighted_cell((2,2), color=GREEN)
                     self.add(table)
         """
-        bg_cell = self.get_highlighted_cell(pos, color=color)
+        bg_cell = self.get_highlighted_cell(pos, color=color, **kwargs)
         self.add_to_back(bg_cell)
         entry = self.get_entries(pos)
         entry.background_rectangle = bg_cell
@@ -894,9 +896,9 @@ class Table(VGroup):
         self,
         run_time: float = 1,
         lag_ratio: float = 1,
-        line_animation: Callable[["VGroup"], None] = Create,
-        label_animation: Callable[["VGroup"], None] = Write,
-        element_animation: Callable[["VGroup"], None] = Create,
+        line_animation: Callable[[VGroup], None] = Create,
+        label_animation: Callable[[VGroup], None] = Write,
+        element_animation: Callable[[VGroup], None] = Create,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -991,8 +993,8 @@ class MathTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = MathTex,
+        table: Iterable[Iterable[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject] = MathTex,
         **kwargs,
     ):
         """
@@ -1046,8 +1048,8 @@ class MobjectTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable["VMobject"]],
-        element_to_mobject: Callable[["VMobject"], "VMobject"] = lambda m: m,
+        table: Iterable[Iterable[VMobject]],
+        element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
         **kwargs,
     ):
         """
@@ -1094,8 +1096,8 @@ class IntegerTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = Integer,
+        table: Iterable[Iterable[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject] = Integer,
         **kwargs,
     ):
         """
@@ -1138,8 +1140,8 @@ class DecimalTable(Table):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str]]],
-        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = DecimalNumber,
+        table: Iterable[Iterable[float | str]],
+        element_to_mobject: Callable[[float | str], VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
         **kwargs,
     ):

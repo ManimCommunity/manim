@@ -10,4 +10,12 @@ msgstr ""
 msgid "ipython\\_magic"
 msgstr ""
 
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic:1
+msgid "Utilities for using Manim with IPython (in particular: Jupyter notebooks)"
+msgstr ""
+
+#: ../../source/reference/manim.utils.ipython_magic.rst:15
+msgid "Classes"
+msgstr ""
+
 

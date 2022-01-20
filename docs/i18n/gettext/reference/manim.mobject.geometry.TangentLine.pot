@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.TangentLine``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TangentLine:1
-msgid "Bases: :class:`manim.mobject.geometry.Line`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Line`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TangentLine:1
@@ -50,10 +50,6 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TangentLine:26
-msgid ":meth:`~.VMobject.point_from_proportion`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.geometry.TangentLine.rst:14
 msgid "Methods"
 msgstr ""
@@ -63,7 +59,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.TangentLine.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.TangentLine.rst:28:<autosummary>:1

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VectorizedPoin
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
@@ -52,11 +52,6 @@ msgstr ""
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:0
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:4
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:4
-msgid ":class:`float`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:7
