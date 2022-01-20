@@ -18,8 +18,8 @@ import inspect
 
 import numpy as np
 
-from ..constants import DEGREES, RIGHT
-from ..mobject.mobject import Mobject
+from manim.constants import DEGREES, RIGHT
+from manim.mobject.mobject import Mobject
 
 
 def assert_is_mobject_method(method):

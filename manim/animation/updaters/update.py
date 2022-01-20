@@ -8,10 +8,10 @@ __all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"
 import operator as op
 import typing
 
-from ..animation.animation import Animation
+from manim.animation.animation import Animation
 
 if typing.TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
+    from manim.mobject.mobject import Mobject
 
 
 class UpdateFromFunc(Animation):

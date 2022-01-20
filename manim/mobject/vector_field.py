@@ -21,7 +21,7 @@ from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..animation.update import UpdateFromAlphaFunc
+from manim.animation.updaters.update import UpdateFromAlphaFunc
 from ..constants import OUT, RIGHT, UP
 from manim.mobject.geometry.geometry import Vector
 from ..mobject.mobject import Mobject

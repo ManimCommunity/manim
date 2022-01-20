@@ -8,7 +8,7 @@ from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.fading import FadeIn
-from ..animation.update import UpdateFromAlphaFunc
+from manim.animation.updaters.update import UpdateFromAlphaFunc
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from manim.mobject.geometry.geometry import Circle, Square, Triangle
 from manim.mobject.text.tex_mobject import MathTex, Tex

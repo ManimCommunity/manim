@@ -21,7 +21,7 @@ from ..mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.three_d.three_dimensions import Sphere
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..mobject.value_tracker import ValueTracker
+from manim.animation.updaters.value_tracker import ValueTracker
 from ..renderer.opengl_renderer import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively

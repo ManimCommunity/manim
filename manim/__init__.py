@@ -45,7 +45,7 @@ from .animation.rotation import *
 from .animation.specialized import *
 from .animation.transform import *
 from .animation.transform_matching_parts import *
-from .animation.update import *
+from manim.animation.updaters.update import *
 from .camera.camera import *
 from .camera.mapping_camera import *
 from .camera.moving_camera import *
@@ -53,7 +53,7 @@ from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
 from manim.mobject.geometry.boolean_ops import *
-from .mobject.changing import *
+from manim.animation.changing import *
 from manim.mobject.graphing.coordinate_systems import *
 from .mobject.frame import *
 from manim.mobject.graphing.functions import *
@@ -62,7 +62,7 @@ from .mobject.graph import *
 from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
-from .mobject.mobject_update_utils import *
+from manim.animation.updaters.mobject_update_utils import *
 from manim.mobject.graphing.number_line import *
 from manim.mobject.text.numbers import *
 from manim.mobject.three_d.polyhedra import *
@@ -81,7 +81,7 @@ from .mobject.types.image_mobject import *
 from manim.mobject.opengl.opengl_point_cloud_mobject import *
 from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
-from .mobject.value_tracker import *
+from manim.animation.updaters.value_tracker import *
 from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
 from .scene.moving_camera_scene import *

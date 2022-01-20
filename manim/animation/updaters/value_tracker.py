@@ -7,8 +7,8 @@ __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 import numpy as np
 
-from ..mobject.mobject import Mobject
-from ..utils.paths import straight_path
+from manim.mobject.mobject import Mobject
+from manim.utils.paths import straight_path
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 
