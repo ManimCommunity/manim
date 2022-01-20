@@ -79,7 +79,7 @@ import numpy as np
 from colour import Color
 
 if TYPE_CHECKING:
-    from manim.mobject.svg.text_mobject import Text
+    from manim.mobject.text.text_mobject import Text
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession

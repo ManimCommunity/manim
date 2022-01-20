@@ -21,7 +21,7 @@ from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
 from .opengl_compatibility import ConvertToOpenGL
-from .svg.tex_mobject import MathTex
+from manim.mobject.text.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
 

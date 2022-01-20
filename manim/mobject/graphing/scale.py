@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 __all__ = ["LogBase", "LinearBase"]
 
-from manim.mobject.numbers import Integer
+from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject

@@ -21,7 +21,7 @@ from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
-from ..mobject.svg.tex_mobject import MathTex, Tex
+from manim.mobject.text.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
 from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW

@@ -66,13 +66,13 @@ import numpy as np
 from colour import Color
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
-from ... import config, logger
-from ...constants import *
-from ...mobject.geometry import Dot
-from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.types.vectorized_mobject import VGroup, VMobject
-from ...utils.color import Colors, color_gradient
-from ...utils.deprecation import deprecated
+from manim import config, logger
+from manim.constants import *
+from manim.mobject.geometry import Dot
+from manim.mobject.svg.svg_mobject import SVGMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import Colors, color_gradient
+from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3

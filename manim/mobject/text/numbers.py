@@ -8,12 +8,12 @@ from typing import Sequence
 
 import numpy as np
 
-from .. import config
-from ..constants import *
-from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.value_tracker import ValueTracker
-from .opengl_compatibility import ConvertToOpenGL
+from manim import config
+from manim.constants import *
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.value_tracker import ValueTracker
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 

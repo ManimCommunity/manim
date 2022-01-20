@@ -36,7 +36,7 @@ from manim.mobject.geometry import (
     RegularPolygon,
 )
 from manim.mobject.graphing.number_line import NumberLine
-from manim.mobject.svg.tex_mobject import MathTex
+from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.types.vectorized_mobject import (
     Mobject,
     VDict,

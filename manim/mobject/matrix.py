@@ -45,8 +45,8 @@ from typing import Iterable, Sequence
 import numpy as np
 
 from ..constants import *
-from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.svg.tex_mobject import MathTex, Tex
+from manim.mobject.text.numbers import DecimalNumber, Integer
+from manim.mobject.text.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .opengl_compatibility import ConvertToOpenGL
 
