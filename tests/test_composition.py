@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from unittest.mock import Mock
 
 import pytest
@@ -90,12 +91,8 @@ def test_succession_in_succession_timing():
 def test_animationbuilder_in_group():
     sqr = Square()
     circ = Circle()
-    animation_group = AnimationGroup(
-        sqr.animate.shift(DOWN).scale(2), FadeIn(circ)
-    )
-    assert all(
-        isinstance(anim, Animation) for anim in animation_group.animations
-    )
+    animation_group = AnimationGroup(sqr.animate.shift(DOWN).scale(2), FadeIn(circ))
+    assert all(isinstance(anim, Animation) for anim in animation_group.animations)
     succession = Succession(sqr.animate.shift(DOWN).scale(2), FadeIn(circ))
     assert all(isinstance(anim, Animation) for anim in succession.animations)
 

@@ -121,9 +121,7 @@ class ShowPartial(Animation):
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
-            raise NotImplementedError(
-                "This animation is not defined for this Mobject."
-            )
+            raise NotImplementedError("This animation is not defined for this Mobject.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -174,9 +172,7 @@ class Create(ShowPartial):
         introducer: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(
-            mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs
-        )
+        super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
     def _get_bounds(self, alpha: float) -> tuple[int, float]:
         return (0, alpha)
@@ -255,9 +251,7 @@ class DrawBorderThenFill(Animation):
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError(
-                "DrawBorderThenFill only works for vectorized Mobjects"
-            )
+            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -267,9 +261,7 @@ class DrawBorderThenFill(Animation):
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
         for sm in outline.family_members_with_points():
-            sm.set_stroke(
-                color=self.get_stroke_color(sm), width=self.stroke_width
-            )
+            sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
     def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
