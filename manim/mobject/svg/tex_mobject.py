@@ -69,10 +69,10 @@ class SingleStringMathTex(SVGMobject):
         tex_string: str,
         stroke_width: float = 0,
         should_center: bool = True,
-        height: Optional[float] = None,
+        height: float | None = None,
         organize_left_to_right: bool = False,
         tex_environment: str = "align*",
-        tex_template: Optional[TexTemplate] = None,
+        tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
@@ -263,8 +263,8 @@ class MathTex(SingleStringMathTex):
         self,
         *tex_strings,
         arg_separator: str = " ",
-        substrings_to_isolate: Optional[Iterable[str]] = None,
-        tex_to_color_map: Dict[str, Color] = None,
+        substrings_to_isolate: Iterable[str] | None = None,
+        tex_to_color_map: dict[str, Color] = None,
         tex_environment: str = "align*",
         **kwargs,
     ):
