@@ -1,5 +1,7 @@
 """Basic canvas for animations."""
 
+from __future__ import annotations
+
 __all__ = ["Scene"]
 
 import copy

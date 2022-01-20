@@ -1,5 +1,7 @@
 """Three-dimensional mobjects."""
 
+from __future__ import annotations
+
 __all__ = [
     "ThreeDVMobject",
     "Surface",
@@ -107,12 +109,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             pre_function_handle_to_anchor_scale_factor
         )
         self.func = func
-        self.setup_in_uv_space()
+        self._setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
         if self.should_make_jagged:
             self.make_jagged()
 
-    def get_u_values_and_v_values(self):
+    def _get_u_values_and_v_values(self):
         res = tuplify(self.resolution)
         if len(res) == 1:
             u_res = v_res = res[0]
@@ -124,8 +126,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         return u_values, v_values
 
-    def setup_in_uv_space(self):
-        u_values, v_values = self.get_u_values_and_v_values()
+    def _setup_in_uv_space(self):
+        u_values, v_values = self._get_u_values_and_v_values()
         faces = VGroup()
         for i in range(len(u_values) - 1):
             for j in range(len(v_values) - 1):
@@ -767,11 +769,7 @@ class Line3D(Cylinder):
 
     @classmethod
     def parallel_to(
-        cls,
-        line: "Line3D",
-        point: Sequence[float] = ORIGIN,
-        length: float = 5,
-        **kwargs
+        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
     ):
         """Returns a line parallel to another line going through
         a given point.
@@ -808,11 +806,7 @@ class Line3D(Cylinder):
 
     @classmethod
     def perpendicular_to(
-        cls,
-        line: "Line3D",
-        point: Sequence[float] = ORIGIN,
-        length: float = 5,
-        **kwargs
+        cls, line: Line3D, point: Sequence[float] = ORIGIN, length: float = 5, **kwargs
     ):
         """Returns a line perpendicular to another line going through
         a given point.

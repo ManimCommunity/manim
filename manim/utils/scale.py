@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List
 
@@ -54,7 +56,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Iterable["Mobject"]:
+    ) -> Iterable[Mobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -151,8 +153,8 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: Dict[str, Any],
-    ) -> List["Mobject"]:
+        **base_config: dict[str, Any],
+    ) -> list[Mobject]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters

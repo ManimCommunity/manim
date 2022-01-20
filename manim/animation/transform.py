@@ -1,5 +1,7 @@
 """Animations transforming one mobject into another."""
 
+from __future__ import annotations
+
 __all__ = [
     "Transform",
     "ReplacementTransform",
@@ -45,9 +47,9 @@ if TYPE_CHECKING:
 class Transform(Animation):
     def __init__(
         self,
-        mobject: Optional[Mobject],
-        target_mobject: Optional[Mobject] = None,
-        path_func: Optional[Callable] = None,
+        mobject: Mobject | None,
+        target_mobject: Mobject | None = None,
+        path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         path_arc_centers: np.ndarray = None,
@@ -65,7 +67,7 @@ class Transform(Animation):
                 self.path_arc_axis,
             )
 
-        self.path_func: Optional[Callable] = path_func
+        self.path_func: Callable | None = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
@@ -125,7 +127,7 @@ class Transform(Animation):
         # in subclasses
         return self.target_mobject
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         if self.replace_mobject_with_target_in_scene:
             scene.remove(self.mobject)
@@ -155,7 +157,7 @@ class Transform(Animation):
         starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> "Transform":
+    ) -> Transform:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 

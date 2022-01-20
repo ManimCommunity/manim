@@ -6,6 +6,8 @@
 
 """
 
+from __future__ import annotations
+
 __all__ = ["CameraFrame", "MovingCamera"]
 
 from .. import config
