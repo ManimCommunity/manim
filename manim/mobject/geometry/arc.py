@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-r"""Mobjects that are simple geometric shapes.
+r"""Mobjects that are curved.
 
 Examples
 --------

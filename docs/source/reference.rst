@@ -31,8 +31,6 @@ Animations
    manim.animation.updaters.mobject_update_utils
    manim.animation.updaters.update
    manim.animation.updaters.value_tracker
-
-
    :parts: 1
    :top-classes: manim.animation.animation.Animation
 

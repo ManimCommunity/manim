@@ -162,7 +162,7 @@ class LogBase(_ScaleBase):
 
         val_range
             The iterable of values used to create the labels. Determines the exponent.
-        units_decimal_places
+        unit_decimal_places
             The number of decimal places to include in the exponent
         base_config
             Additional arguments to be passed to :class:`~.Integer`.
