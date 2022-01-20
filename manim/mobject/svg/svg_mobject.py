@@ -17,8 +17,7 @@ from colour import Color
 
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.line import Line
-from manim.mobject.geometry.polygram import  Rectangle, RoundedRectangle
-
+from manim.mobject.geometry.polygram import Rectangle, RoundedRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from ... import config, logger

@@ -6,8 +6,8 @@ from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
-from manim.mobject.geometry.line import  Line
 from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Square
 
 
