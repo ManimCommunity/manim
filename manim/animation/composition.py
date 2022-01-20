@@ -1,6 +1,8 @@
 """Tools for displaying multiple animations at once."""
 
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable, Optional, Sequence, Union
 
 import numpy as np
@@ -27,8 +29,8 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: Union[Group, "VGroup", OpenGLGroup, "OpenGLVGroup"] = None,
-        run_time: Optional[float] = None,
+        group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
+        run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs
@@ -128,9 +130,9 @@ class Succession(AnimationGroup):
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
         if index >= len(self.animations):
-            self.active_animation: Optional[Animation] = None
-            self.active_start_time: Optional[float] = None
-            self.active_end_time: Optional[float] = None
+            self.active_animation: Animation | None = None
+            self.active_start_time: float | None = None
+            self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
             self.active_animation.begin()

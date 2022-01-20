@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import itertools as it
 import random
@@ -228,7 +230,7 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set(self, **kwargs) -> "OpenGLMobject":
+    def set(self, **kwargs) -> OpenGLMobject:
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -653,8 +655,8 @@ class OpenGLMobject:
         return [m for m in self.get_family() if m.has_points()]
 
     def add(
-        self, *mobjects: "OpenGLMobject", update_parent: bool = False
-    ) -> "OpenGLMobject":
+        self, *mobjects: OpenGLMobject, update_parent: bool = False
+    ) -> OpenGLMobject:
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -730,8 +732,8 @@ class OpenGLMobject:
         return self
 
     def remove(
-        self, *mobjects: "OpenGLMobject", update_parent: bool = False
-    ) -> "OpenGLMobject":
+        self, *mobjects: OpenGLMobject, update_parent: bool = False
+    ) -> OpenGLMobject:
         """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -765,7 +767,7 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def add_to_back(self, *mobjects: "OpenGLMobject") -> "OpenGLMobject":
+    def add_to_back(self, *mobjects: OpenGLMobject) -> OpenGLMobject:
         # NOTE: is the note true OpenGLMobjects?
         """Add all passed mobjects to the back of the submobjects.
 
@@ -876,17 +878,17 @@ class OpenGLMobject:
 
     def arrange_in_grid(
         self,
-        rows: Optional[int] = None,
-        cols: Optional[int] = None,
-        buff: Union[float, Tuple[float, float]] = MED_SMALL_BUFF,
+        rows: int | None = None,
+        cols: int | None = None,
+        buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: np.ndarray = ORIGIN,
-        row_alignments: Optional[str] = None,  # "ucd"
-        col_alignments: Optional[str] = None,  # "lcr"
-        row_heights: Optional[Iterable[Optional[float]]] = None,
-        col_widths: Optional[Iterable[Optional[float]]] = None,
+        row_alignments: str | None = None,  # "ucd"
+        col_alignments: str | None = None,  # "lcr"
+        row_heights: Iterable[float | None] | None = None,
+        col_widths: Iterable[float | None] | None = None,
         flow_order: str = "rd",
         **kwargs,
-    ) -> "OpenGLMobject":
+    ) -> OpenGLMobject:
         """Arrange submobjects in a grid.
 
         Parameters
@@ -1388,10 +1390,10 @@ class OpenGLMobject:
     def scale(
         self,
         scale_factor: float,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         about_edge: Sequence[float] = ORIGIN,
         **kwargs,
-    ) -> "OpenGLMobject":
+    ) -> OpenGLMobject:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1462,7 +1464,7 @@ class OpenGLMobject:
         self,
         angle,
         axis=OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         """Rotates the :class:`~.OpenGLMobject` about a certain point."""
@@ -1828,7 +1830,7 @@ class OpenGLMobject:
 
     def surround(
         self,
-        mobject: "OpenGLMobject",
+        mobject: OpenGLMobject,
         dim_to_match: int = 0,
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
@@ -1971,7 +1973,7 @@ class OpenGLMobject:
     # Background rectangle
 
     def add_background_rectangle(
-        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
+        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
@@ -2161,27 +2163,27 @@ class OpenGLMobject:
 
     # Match other mobject properties
 
-    def match_color(self, mobject: "OpenGLMobject"):
+    def match_color(self, mobject: OpenGLMobject):
         """Match the color with the color of another :class:`~.OpenGLMobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject: "OpenGLMobject", dim, **kwargs):
+    def match_dim_size(self, mobject: OpenGLMobject, dim, **kwargs):
         """Match the specified dimension with the dimension of another :class:`~.OpenGLMobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject: "OpenGLMobject", **kwargs):
+    def match_width(self, mobject: OpenGLMobject, **kwargs):
         """Match the width with the width of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject: "OpenGLMobject", **kwargs):
+    def match_height(self, mobject: OpenGLMobject, **kwargs):
         """Match the height with the height of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: "OpenGLMobject", **kwargs):
+    def match_depth(self, mobject: OpenGLMobject, **kwargs):
         """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_coord(self, mobject: "OpenGLMobject", dim, direction=ORIGIN):
+    def match_coord(self, mobject: OpenGLMobject, dim, direction=ORIGIN):
         """Match the coordinates with the coordinates of another :class:`~.OpenGLMobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
@@ -2203,7 +2205,7 @@ class OpenGLMobject:
 
     def align_to(
         self,
-        mobject_or_point: Union["OpenGLMobject", Sequence[float]],
+        mobject_or_point: OpenGLMobject | Sequence[float],
         direction=ORIGIN,
     ):
         """
@@ -2360,7 +2362,7 @@ class OpenGLMobject:
 
     def become(
         self,
-        mobject: "OpenGLMobject",
+        mobject: OpenGLMobject,
         match_height: bool = False,
         match_width: bool = False,
         match_depth: bool = False,

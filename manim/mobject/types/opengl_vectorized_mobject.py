@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 import operator as op
 from functools import reduce, wraps
@@ -66,9 +68,9 @@ class OpenGLVMobject(OpenGLMobject):
 
     def __init__(
         self,
-        fill_color: Optional[Color] = None,
+        fill_color: Color | None = None,
         fill_opacity: float = 0.0,
-        stroke_color: Optional[Color] = None,
+        stroke_color: Color | None = None,
         stroke_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
@@ -76,7 +78,7 @@ class OpenGLVMobject(OpenGLMobject):
         # that it should count in parent mobject's path
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: float = False,
-        background_image_file: Optional[str] = None,
+        background_image_file: str | None = None,
         # This is within a pixel
         # TODO, do we care about accounting for
         # varying zoom levels?
@@ -156,10 +158,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_fill(
         self,
-        color: Optional[Color] = None,
-        opacity: Optional[float] = None,
+        color: Color | None = None,
+        opacity: float | None = None,
         recurse: bool = True,
-    ) -> "OpenGLVMobject":
+    ) -> OpenGLVMobject:
         """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
 
         Parameters
@@ -448,7 +450,7 @@ class OpenGLVMobject(OpenGLMobject):
         else:
             self.append_points([self.get_last_point(), handle, anchor])
 
-    def add_line_to(self, point: Sequence[float]) -> "OpenGLVMobject":
+    def add_line_to(self, point: Sequence[float]) -> OpenGLVMobject:
         """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
@@ -527,7 +529,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> "OpenGLVMobject":
+    def set_points_as_corners(self, points: Iterable[float]) -> OpenGLVMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -753,8 +755,8 @@ class OpenGLVMobject(OpenGLMobject):
     def get_nth_curve_function_with_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
-    ) -> Tuple[Callable[[float], np.ndarray], float]:
+        sample_points: int | None = None,
+    ) -> tuple[Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -798,7 +800,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_nth_curve_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
+        sample_points: int | None = None,
     ) -> float:
         """Returns the (approximate) length of the nth curve.
 
@@ -822,8 +824,8 @@ class OpenGLVMobject(OpenGLMobject):
     def get_nth_curve_function_with_length(
         self,
         n: int,
-        sample_points: Optional[int] = None,
-    ) -> Tuple[Callable[[float], np.ndarray], float]:
+        sample_points: int | None = None,
+    ) -> tuple[Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -872,7 +874,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_curve_functions_with_lengths(
         self, **kwargs
-    ) -> Iterable[Tuple[Callable[[float], np.ndarray], float]]:
+    ) -> Iterable[tuple[Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -937,7 +939,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def proportion_from_point(
         self,
-        point: Iterable[Union[float, int]],
+        point: Iterable[float | int],
     ) -> float:
         """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
@@ -1057,7 +1059,7 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return points[distinct_curves.repeat(nppc)]
 
-    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+    def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1203,7 +1205,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject.set_points(np.vstack(new_subpaths2))
         return self
 
-    def insert_n_curves(self, n: int, recurse=True) -> "OpenGLVMobject":
+    def insert_n_curves(self, n: int, recurse=True) -> OpenGLVMobject:
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1285,10 +1287,10 @@ class OpenGLVMobject(OpenGLMobject):
 
     def pointwise_become_partial(
         self,
-        vmobject: "OpenGLVMobject",
+        vmobject: OpenGLVMobject,
         a: float,
         b: float,
-    ) -> "OpenGLVMobject":
+    ) -> OpenGLVMobject:
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
@@ -1354,7 +1356,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_points(new_points)
         return self
 
-    def get_subcurve(self, a: float, b: float) -> "OpenGLVMobject":
+    def get_subcurve(self, a: float, b: float) -> OpenGLVMobject:
         """Returns the subcurve of the OpenGLVMobject between the interval [a, b].
         The curve is a OpenGLVMobject itself.
 
@@ -1749,9 +1751,7 @@ class OpenGLVGroup(OpenGLVMobject):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
-    def __setitem__(
-        self, key: int, value: Union[OpenGLVMobject, Sequence[OpenGLVMobject]]
-    ):
+    def __setitem__(self, key: int, value: OpenGLVMobject | Sequence[OpenGLVMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -1861,7 +1861,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
 
     def __init__(
         self,
-        vmobject: "OpenGLVMobject",
+        vmobject: OpenGLVMobject,
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
         color: Color = WHITE,

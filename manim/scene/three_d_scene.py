@@ -1,5 +1,7 @@
 """A scene suitable for rendering three-dimensional objects and animations."""
 
+from __future__ import annotations
+
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
@@ -51,12 +53,12 @@ class ThreeDScene(Scene):
 
     def set_camera_orientation(
         self,
-        phi: Optional[float] = None,
-        theta: Optional[float] = None,
-        gamma: Optional[float] = None,
-        zoom: Optional[float] = None,
-        focal_distance: Optional[float] = None,
-        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
+        phi: float | None = None,
+        theta: float | None = None,
+        gamma: float | None = None,
+        zoom: float | None = None,
+        focal_distance: float | None = None,
+        frame_center: Mobject | Sequence[float] | None = None,
         **kwargs,
     ):
         """
@@ -158,8 +160,8 @@ class ThreeDScene(Scene):
     def begin_3dillusion_camera_rotation(
         self,
         rate: float = 1,
-        origin_phi: Optional[float] = None,
-        origin_theta: Optional[float] = None,
+        origin_phi: float | None = None,
+        origin_theta: float | None = None,
     ):
         """
         This method creates a 3D camera rotation illusion around
@@ -212,13 +214,13 @@ class ThreeDScene(Scene):
 
     def move_camera(
         self,
-        phi: Optional[float] = None,
-        theta: Optional[float] = None,
-        gamma: Optional[float] = None,
-        zoom: Optional[float] = None,
-        focal_distance: Optional[float] = None,
-        frame_center: Optional[Union["Mobject", Sequence[float]]] = None,
-        added_anims: Iterable["Animation"] = [],
+        phi: float | None = None,
+        theta: float | None = None,
+        gamma: float | None = None,
+        zoom: float | None = None,
+        focal_distance: float | None = None,
+        frame_center: Mobject | Sequence[float] | None = None,
+        added_anims: Iterable[Animation] = [],
         **kwargs,
     ):
         """

@@ -1,6 +1,8 @@
 """Mobjects that represent coordinate systems."""
 
 
+from __future__ import annotations
+
 __all__ = [
     "CoordinateSystem",
     "Axes",
@@ -183,7 +185,7 @@ class CoordinateSystem:
         """
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
-    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
+    def point_to_polar(self, point: np.ndarray) -> tuple[float, float]:
         r"""Gets polar coordinates from a point.
 
         Parameters
@@ -211,7 +213,7 @@ class CoordinateSystem:
         """Abbreviation for :meth:`polar_to_point`"""
         return self.polar_to_point(radius, azimuth)
 
-    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
+    def pt2pr(self, point: np.ndarray) -> tuple[float, float]:
         """Abbreviation for :meth:`point_to_polar`"""
         return self.point_to_polar(point)
 
@@ -248,12 +250,12 @@ class CoordinateSystem:
 
     def get_x_axis_label(
         self,
-        label: Union[float, str, "Mobject"],
+        label: float | str | Mobject,
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UR,
         buff: float = SMALL_BUFF,
         **kwargs,
-    ) -> "Mobject":
+    ) -> Mobject:
         """Generate an x-axis label.
 
         Examples
@@ -292,7 +294,7 @@ class CoordinateSystem:
 
     def get_y_axis_label(
         self,
-        label: Union[float, str, "Mobject"],
+        label: float | str | Mobject,
         edge: Sequence[float] = UR,
         direction: Sequence[float] = UP * 0.5 + RIGHT,
         buff: float = SMALL_BUFF,
@@ -340,12 +342,12 @@ class CoordinateSystem:
 
     def _get_axis_label(
         self,
-        label: Union[float, str, "Mobject"],
-        axis: "Mobject",
+        label: float | str | Mobject,
+        axis: Mobject,
         edge: Sequence[float],
         direction: Sequence[float],
         buff: float = SMALL_BUFF,
-    ) -> "Mobject":
+    ) -> Mobject:
         """Gets the label for an axis.
 
         Parameters
@@ -374,8 +376,8 @@ class CoordinateSystem:
 
     def get_axis_labels(
         self,
-        x_label: Union[float, str, "Mobject"] = "x",
-        y_label: Union[float, str, "Mobject"] = "y",
+        x_label: float | str | Mobject = "x",
+        y_label: float | str | Mobject = "y",
     ) -> VGroup:
         """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
@@ -420,10 +422,7 @@ class CoordinateSystem:
 
     def add_coordinates(
         self,
-        *axes_numbers: Union[
-            Optional[Iterable[float]],
-            Union[Dict[float, Union[str, float, "Mobject"]]],
-        ],
+        *axes_numbers: (Iterable[float] | None | dict[float, str | float | Mobject]),
         **kwargs,
     ):
         """Adds labels to the axes. Use ``Axes.coordinate_labels`` to
@@ -486,10 +485,10 @@ class CoordinateSystem:
         index: int,
         point: Sequence[float],
         line_func: Line = DashedLine,
-        line_config: Optional[Dict] = None,
-        color: Optional[Color] = None,
+        line_config: dict | None = None,
+        color: Color | None = None,
         stroke_width: float = 2,
-    ) -> "Line":
+    ) -> Line:
         """Returns a straight line from a given axis to a point in the scene.
 
         Parameters
@@ -524,7 +523,7 @@ class CoordinateSystem:
         line = line_func(axis.get_projection(point), point, **line_config)
         return line
 
-    def get_vertical_line(self, point: Sequence[float], **kwargs) -> "Line":
+    def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
         """A vertical line from the x-axis to a given point in the scene.
 
         Examples
@@ -558,7 +557,7 @@ class CoordinateSystem:
         """
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
-    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> "Line":
+    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> Line:
         """A horizontal line from the y-axis to a given point in the scene.
 
         Examples
@@ -639,7 +638,7 @@ class CoordinateSystem:
     def plot(
         self,
         function: Callable[[float], float],
-        x_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -830,7 +829,7 @@ class CoordinateSystem:
     def input_to_graph_point(
         self,
         x: float,
-        graph: Union["ParametricFunction", VMobject],
+        graph: ParametricFunction | VMobject,
     ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
@@ -887,7 +886,7 @@ class CoordinateSystem:
                     f"x={x} not located in the range of the graph ([{self.p2c(graph.get_start())[0]}, {self.p2c(graph.get_end())[0]}])",
                 )
 
-    def input_to_graph_coords(self, x: float, graph: "ParametricFunction") -> Tuple:
+    def input_to_graph_coords(self, x: float, graph: ParametricFunction) -> tuple:
         """
         Returns a tuple of the axis relative coordinates of the point
         on the graph based on the x-value given.
@@ -905,13 +904,13 @@ class CoordinateSystem:
         """
         return x, graph.underlying_function(x)
 
-    def i2gc(self, x: float, graph: "ParametricFunction") -> Tuple:
+    def i2gc(self, x: float, graph: ParametricFunction) -> tuple:
         """
         Alias for :meth:`input_to_graph_coords`.
         """
         return self.input_to_graph_coords(x, graph)
 
-    def i2gp(self, x: float, graph: "ParametricFunction") -> np.ndarray:
+    def i2gp(self, x: float, graph: ParametricFunction) -> np.ndarray:
         """
         Alias for :meth:`input_to_graph_point`.
         """
@@ -919,14 +918,14 @@ class CoordinateSystem:
 
     def get_graph_label(
         self,
-        graph: "ParametricFunction",
-        label: Union[float, str, "Mobject"] = "f(x)",
-        x_val: Optional[float] = None,
+        graph: ParametricFunction,
+        label: float | str | Mobject = "f(x)",
+        x_val: float | None = None,
         direction: Sequence[float] = RIGHT,
         buff: float = MED_SMALL_BUFF,
-        color: Optional[Color] = None,
+        color: Color | None = None,
         dot: bool = False,
-        dot_config: Optional[dict] = None,
+        dot_config: dict | None = None,
     ) -> Mobject:
         """Creates a properly positioned label for the passed graph, with an optional dot.
 
@@ -1002,16 +1001,16 @@ class CoordinateSystem:
 
     def get_riemann_rectangles(
         self,
-        graph: "ParametricFunction",
-        x_range: Optional[Sequence[float]] = None,
-        dx: Optional[float] = 0.1,
+        graph: ParametricFunction,
+        x_range: Sequence[float] | None = None,
+        dx: float | None = 0.1,
         input_sample_type: str = "left",
         stroke_width: float = 1,
         stroke_color: Color = BLACK,
         fill_opacity: float = 1,
-        color: Union[Iterable[Color], Color] = np.array((BLUE, GREEN)),
+        color: Iterable[Color] | Color = np.array((BLUE, GREEN)),
         show_signed_area: bool = True,
-        bounded_graph: "ParametricFunction" = None,
+        bounded_graph: ParametricFunction = None,
         blend: bool = False,
         width_scale_factor: float = 1.001,
     ) -> VGroup:
@@ -1177,11 +1176,11 @@ class CoordinateSystem:
 
     def get_area(
         self,
-        graph: "ParametricFunction",
-        x_range: Optional[Tuple[float, float]] = None,
-        color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
+        graph: ParametricFunction,
+        x_range: tuple[float, float] | None = None,
+        color: Color | Iterable[Color] = [BLUE, GREEN],
         opacity: float = 0.3,
-        bounded_graph: "ParametricFunction" = None,
+        bounded_graph: ParametricFunction = None,
         **kwargs,
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
@@ -1266,7 +1265,7 @@ class CoordinateSystem:
     def angle_of_tangent(
         self,
         x: float,
-        graph: "ParametricFunction",
+        graph: ParametricFunction,
         dx: float = 1e-8,
     ) -> float:
         """Returns the angle to the x-axis of the tangent
@@ -1302,9 +1301,7 @@ class CoordinateSystem:
         p1 = np.array([*self.input_to_graph_coords(x + dx, graph)])
         return angle_of_vector(p1 - p0)
 
-    def slope_of_tangent(
-        self, x: float, graph: "ParametricFunction", **kwargs
-    ) -> float:
+    def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs) -> float:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
@@ -1334,7 +1331,7 @@ class CoordinateSystem:
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
     def plot_derivative_graph(
-        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
+        self, graph: ParametricFunction, color: Color = GREEN, **kwargs
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
 
@@ -1438,11 +1435,11 @@ class CoordinateSystem:
         self,
         x: float,
         graph: ParametricFunction,
-        dx: Optional[float] = None,
+        dx: float | None = None,
         dx_line_color: Color = YELLOW,
-        dy_line_color: Optional[Color] = None,
-        dx_label: Optional[Union[float, str]] = None,
-        dy_label: Optional[Union[float, str]] = None,
+        dy_line_color: Color | None = None,
+        dx_label: float | str | None = None,
+        dy_label: float | str | None = None,
         include_secant_line: bool = True,
         secant_line_color: Color = GREEN,
         secant_line_length: float = 10,
@@ -1572,7 +1569,7 @@ class CoordinateSystem:
     def get_vertical_lines_to_graph(
         self,
         graph: ParametricFunction,
-        x_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
         num_lines: int = 20,
         **kwargs,
     ) -> VGroup:
@@ -1629,12 +1626,12 @@ class CoordinateSystem:
     def get_T_label(
         self,
         x_val: float,
-        graph: "ParametricFunction",
-        label: Optional[Union[float, str, "Mobject"]] = None,
-        label_color: Optional[Color] = None,
+        graph: ParametricFunction,
+        label: float, str, Mobject | None = None,
+        label_color: Color | None = None,
         triangle_size: float = MED_SMALL_BUFF,
-        triangle_color: Optional[Color] = WHITE,
-        line_func: "Line" = Line,
+        triangle_color: Color | None = WHITE,
+        line_func: Line = Line,
         line_color: Color = YELLOW,
     ) -> VGroup:
         """Creates a labelled triangle marker with a vertical line from the x-axis
@@ -1751,13 +1748,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        x_range: Optional[Sequence[float]] = None,
-        y_range: Optional[Sequence[float]] = None,
-        x_length: Optional[float] = round(config.frame_width) - 2,
-        y_length: Optional[float] = round(config.frame_height) - 2,
-        axis_config: Optional[dict] = None,
-        x_axis_config: Optional[dict] = None,
-        y_axis_config: Optional[dict] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        x_length: float | None = round(config.frame_width) - 2,
+        y_length: float | None = round(config.frame_height) - 2,
+        axis_config: dict | None = None,
+        x_axis_config: dict | None = None,
+        y_axis_config: dict | None = None,
         tips: bool = True,
         **kwargs,
     ):
@@ -1826,7 +1823,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def _update_default_configs(
-        default_configs: Tuple[Dict[Any, Any]], passed_configs: Tuple[Dict[Any, Any]]
+        default_configs: tuple[dict[Any, Any]], passed_configs: tuple[dict[Any, Any]]
     ):
         """Takes in two tuples of dicts and return modifies the first such that values from
         ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist
@@ -1929,7 +1926,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             result += axis.number_to_point(coord) - origin
         return result
 
-    def point_to_coords(self, point: Sequence[float]) -> Tuple[float]:
+    def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Examples
@@ -1978,11 +1975,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self,
         x_values: Iterable[float],
         y_values: Iterable[float],
-        z_values: Optional[Iterable[float]] = None,
+        z_values: Iterable[float] | None = None,
         line_color: Color = YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
-        vertex_dot_style: Optional[dict] = None,
+        vertex_dot_style: dict | None = None,
         **kwargs,
     ) -> VDict:
         """Draws a line graph.
@@ -2120,13 +2117,13 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Sequence[float]] = (-6, 6, 1),
-        y_range: Optional[Sequence[float]] = (-5, 5, 1),
-        z_range: Optional[Sequence[float]] = (-4, 4, 1),
-        x_length: Optional[float] = config.frame_height + 2.5,
-        y_length: Optional[float] = config.frame_height + 2.5,
-        z_length: Optional[float] = config.frame_height - 1.5,
-        z_axis_config: Optional[dict] = None,
+        x_range: Sequence[float] | None = (-6, 6, 1),
+        y_range: Sequence[float] | None = (-5, 5, 1),
+        z_range: Sequence[float] | None = (-4, 4, 1),
+        x_length: float | None = config.frame_height + 2.5,
+        y_length: float | None = config.frame_height + 2.5,
+        z_length: float | None = config.frame_height - 1.5,
+        z_axis_config: dict | None = None,
         z_normal: Sequence[float] = DOWN,
         num_axis_pieces: int = 20,
         light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
@@ -2214,14 +2211,14 @@ class ThreeDAxes(Axes):
 
     def get_z_axis_label(
         self,
-        label: Union[float, str, "Mobject"],
+        label: float | str | Mobject,
         edge: Sequence[float] = OUT,
         direction: Sequence[float] = RIGHT,
         buff: float = SMALL_BUFF,
         rotation=PI / 2,
         rotation_axis=RIGHT,
         **kwargs,
-    ) -> "Mobject":
+    ) -> Mobject:
         """Generate a z-axis label.
 
         Examples
@@ -2316,20 +2313,22 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Sequence[float]] = (
+        x_range: Sequence[float]
+        | None = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Optional[Sequence[float]] = (
+        y_range: Sequence[float]
+        | None = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,
         ),
-        x_length: Optional[float] = None,
-        y_length: Optional[float] = None,
-        background_line_style: Optional[dict] = None,
-        faded_line_style: Optional[dict] = None,
+        x_length: float | None = None,
+        y_length: float | None = None,
+        background_line_style: dict | None = None,
+        faded_line_style: dict | None = None,
         faded_line_ratio: int = 1,
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
@@ -2402,7 +2401,7 @@ class NumberPlane(Axes):
             self.background_lines,
         )
 
-    def _get_lines(self) -> Tuple[VGroup, VGroup]:
+    def _get_lines(self) -> tuple[VGroup, VGroup]:
         """Generate all the lines, faded and not faded.
          Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
@@ -2443,7 +2442,7 @@ class NumberPlane(Axes):
         axis_perpendicular_to: NumberLine,
         freq: float,
         ratio_faded_lines: int,
-    ) -> Tuple[VGroup, VGroup]:
+    ) -> tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
         Parameters
@@ -2593,18 +2592,18 @@ class PolarPlane(Axes):
     def __init__(
         self,
         radius_max: float = config["frame_y_radius"],
-        size: Optional[float] = None,
+        size: float | None = None,
         radius_step: float = 1,
-        azimuth_step: Optional[float] = None,
-        azimuth_units: Optional[str] = "PI radians",
+        azimuth_step: float | None = None,
+        azimuth_units: str | None = "PI radians",
         azimuth_compact_fraction: bool = True,
         azimuth_offset: float = 0,
         azimuth_direction: str = "CCW",
         azimuth_label_buff: float = SMALL_BUFF,
         azimuth_label_font_size: float = 24,
-        radius_config: Optional[dict] = None,
-        background_line_style: Optional[dict] = None,
-        faded_line_style: Optional[dict] = None,
+        radius_config: dict | None = None,
+        background_line_style: dict | None = None,
+        faded_line_style: dict | None = None,
         faded_line_ratio: int = 1,
         make_smooth_after_applying_functions: bool = True,
         **kwargs,
@@ -2702,7 +2701,7 @@ class PolarPlane(Axes):
             self.background_lines,
         )
 
-    def _get_lines(self) -> Tuple[VGroup, VGroup]:
+    def _get_lines(self) -> tuple[VGroup, VGroup]:
         """Generate all the lines and circles, faded and not faded.
 
         Returns
@@ -2773,8 +2772,8 @@ class PolarPlane(Axes):
 
     def get_coordinate_labels(
         self,
-        r_values: Optional[Iterable[float]] = None,
-        a_values: Optional[Iterable[float]] = None,
+        r_values: Iterable[float] | None = None,
+        a_values: Iterable[float] | None = None,
         **kwargs,
     ) -> VDict:
         """Gets labels for the coordinates
@@ -2873,8 +2872,8 @@ class PolarPlane(Axes):
 
     def add_coordinates(
         self,
-        r_values: Optional[Iterable[float]] = None,
-        a_values: Optional[Iterable[float]] = None,
+        r_values: Iterable[float] | None = None,
+        a_values: Iterable[float] | None = None,
     ):
         """Adds the coordinates.
         Parameters
@@ -2962,7 +2961,7 @@ class ComplexPlane(NumberPlane):
             **kwargs,
         )
 
-    def number_to_point(self, number: Union[float, complex]) -> np.ndarray:
+    def number_to_point(self, number: float | complex) -> np.ndarray:
         """Accepts a float/complex number and returns the equivalent point on the plane.
 
         Parameters
@@ -2979,7 +2978,7 @@ class ComplexPlane(NumberPlane):
         number = complex(number)
         return self.coords_to_point(number.real, number.imag)
 
-    def n2p(self, number: Union[float, complex]) -> np.ndarray:
+    def n2p(self, number: float | complex) -> np.ndarray:
         """Abbreviation for :meth:`number_to_point`."""
         return self.number_to_point(number)
 
@@ -3004,7 +3003,7 @@ class ComplexPlane(NumberPlane):
         """Abbreviation for :meth:`point_to_number`."""
         return self.point_to_number(point)
 
-    def _get_default_coordinate_values(self) -> List[Union[float, complex]]:
+    def _get_default_coordinate_values(self) -> list[float | complex]:
         """Generate a list containing the numerical values of the plane's labels.
 
         Returns
@@ -3018,7 +3017,7 @@ class ComplexPlane(NumberPlane):
         return [*x_numbers, *y_numbers]
 
     def get_coordinate_labels(
-        self, *numbers: Iterable[Union[float, complex]], **kwargs
+        self, *numbers: Iterable[float | complex], **kwargs
     ) -> VGroup:
         """Generates the :class:`~.DecimalNumber` mobjects for the coordinates of the plane.
 
@@ -3053,7 +3052,7 @@ class ComplexPlane(NumberPlane):
             self.coordinate_labels.add(number_mob)
         return self.coordinate_labels
 
-    def add_coordinates(self, *numbers: Iterable[Union[float, complex]], **kwargs):
+    def add_coordinates(self, *numbers: Iterable[float | complex], **kwargs):
         """Adds the labels produced from :meth:`~.NumberPlane.get_coordinate_labels` to the plane.
 
         Parameters

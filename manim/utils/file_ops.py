@@ -1,5 +1,7 @@
 """Utility functions for interacting with the file system."""
 
+from __future__ import annotations
+
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",

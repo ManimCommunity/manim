@@ -1,5 +1,7 @@
 """Utility functions for two- and three-dimensional vectors."""
 
+from __future__ import annotations
+
 __all__ = [
     "quaternion_mult",
     "quaternion_from_angle_axis",
@@ -56,7 +58,7 @@ def norm_squared(v: float) -> float:
 
 def quaternion_mult(
     *quats: Sequence[float],
-) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
+) -> np.ndarray | list[float | np.ndarray]:
     """Gets the Hamilton product of the quaternions provided.
     For more information, check `this Wikipedia page
     <https://en.wikipedia.org/wiki/Quaternion>`__.
@@ -100,7 +102,7 @@ def quaternion_from_angle_axis(
     angle: float,
     axis: np.ndarray,
     axis_normalized: bool = False,
-) -> List[float]:
+) -> list[float]:
     """Gets a quaternion from an angle and an axis.
     For more information, check `this Wikipedia page
     <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
@@ -208,7 +210,7 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
 
 
-def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
+def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list[np.ndarray]:
     """Converts the quaternion, quat, to an equivalent rotation matrix representation.
     For more information, check `this page
     <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
@@ -275,7 +277,7 @@ def rotation_matrix(
         return rotation_matrix
 
 
-def rotation_about_z(angle: float) -> List[List[float]]:
+def rotation_about_z(angle: float) -> list[list[float]]:
     """Returns a rotation matrix for a given angle.
 
     Parameters
@@ -383,7 +385,7 @@ def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
     return np.dot(point, matrix.T)
 
 
-def normalize(vect: Union[np.ndarray, Tuple[float]], fall_back=None) -> np.ndarray:
+def normalize(vect: np.ndarray | tuple[float], fall_back=None) -> np.ndarray:
     norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
@@ -473,8 +475,8 @@ def compass_directions(n: int = 4, start_vect: np.ndarray = RIGHT) -> np.ndarray
 
 
 def regular_vertices(
-    n: int, *, radius: float = 1, start_angle: Optional[float] = None
-) -> Tuple[np.ndarray, float]:
+    n: int, *, radius: float = 1, start_angle: float | None = None
+) -> tuple[np.ndarray, float]:
     """Generates regularly spaced vertices around a circle centered at the origin.
 
     Parameters
@@ -541,7 +543,7 @@ def center_of_mass(points: Sequence[float]) -> np.ndarray:
 def midpoint(
     point1: Sequence[float],
     point2: Sequence[float],
-) -> Union[float, np.ndarray]:
+) -> float | np.ndarray:
     """Gets the midpoint of two points.
 
     Parameters

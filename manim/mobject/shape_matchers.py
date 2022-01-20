@@ -1,5 +1,7 @@
 """Mobjects used to mark and annotate other mobjects."""
 
+from __future__ import annotations
+
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 from typing import Optional
@@ -83,7 +85,7 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color: Optional[Colors] = None,
+        color: Colors | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
@@ -156,7 +158,7 @@ class Cross(VGroup):
 
     def __init__(
         self,
-        mobject: Optional["Mobject"] = None,
+        mobject: Mobject | None = None,
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
