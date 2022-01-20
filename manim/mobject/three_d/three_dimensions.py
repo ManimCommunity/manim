@@ -24,15 +24,15 @@ from colour import Color
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config
-from ..constants import *
-from ..mobject.geometry import Circle, Square
-from ..mobject.mobject import *
+from manim import config
+from manim.constants import *
+from manim.mobject.geometry import Circle, Square
+from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import *
-from ..utils.iterables import tuplify
-from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import *
+from manim.utils.iterables import tuplify
+from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 
 class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):

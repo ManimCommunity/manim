@@ -23,7 +23,7 @@ from PIL.Image import Image
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
+from manim.mobject.three_d.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,

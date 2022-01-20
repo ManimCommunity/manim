@@ -16,8 +16,8 @@ __all__ = [
 
 import numpy as np
 
-from ..constants import ORIGIN, UP
-from ..utils.space_ops import get_unit_normal
+from manim.constants import ORIGIN, UP
+from manim.utils.space_ops import get_unit_normal
 
 
 def get_3d_vmob_gradient_start_and_end_points(vmob):

@@ -65,7 +65,7 @@ from .mobject.mobject import *
 from .mobject.mobject_update_utils import *
 from manim.mobject.graphing.number_line import *
 from manim.mobject.text.numbers import *
-from .mobject.polyhedra import *
+from manim.mobject.three_d.polyhedra import *
 from manim.mobject.graphing.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
@@ -74,8 +74,8 @@ from .mobject.svg.svg_mobject import *
 from manim.mobject.text.tex_mobject import *
 from manim.mobject.text.text_mobject import *
 from .mobject.table import *
-from .mobject.three_d_utils import *
-from .mobject.three_dimensions import *
+from manim.mobject.three_d.three_d_utils import *
+from manim.mobject.three_d.three_dimensions import *
 from manim.mobject.opengl.dot_cloud import *
 from .mobject.types.image_mobject import *
 from manim.mobject.opengl.opengl_point_cloud_mobject import *
