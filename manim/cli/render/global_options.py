@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 import click
 from cloup import option, option_group
-from typing import TYPE_CHECKING
 
 from ... import logger
 
