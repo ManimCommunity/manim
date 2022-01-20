@@ -37,9 +37,12 @@ from manim.animation.changing import *
 from manim.animation.updaters.mobject_update_utils import *
 from manim.animation.updaters.update import *
 from manim.animation.updaters.value_tracker import *
+from manim.mobject.geometry.arc import *
 from manim.mobject.geometry.boolean_ops import *
-from manim.mobject.geometry.geometry import *
+from manim.mobject.geometry.line import *
+from manim.mobject.geometry.polygram import *
 from manim.mobject.geometry.shape_matchers import *
+from manim.mobject.geometry.tips import *
 from manim.mobject.graphing.coordinate_systems import *
 from manim.mobject.graphing.functions import *
 from manim.mobject.graphing.number_line import *
