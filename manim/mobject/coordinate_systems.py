@@ -14,7 +14,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Iterable, List, Sequence, Tuple
 
 import numpy as np
 from colour import Color
@@ -1627,7 +1627,7 @@ class CoordinateSystem:
         self,
         x_val: float,
         graph: ParametricFunction,
-        label: float, str, Mobject | None = None,
+        label: float | str | Mobject | None = None,
         label_color: Color | None = None,
         triangle_size: float = MED_SMALL_BUFF,
         triangle_color: Color | None = WHITE,
@@ -3008,7 +3008,7 @@ class ComplexPlane(NumberPlane):
 
         Returns
         -------
-        List[Union[float, complex]]
+        List[float | complex]
             A list of floats representing the x-axis and complex numbers representing the y-axis.
         """
         x_numbers = self.get_x_axis().get_tick_range()
