@@ -381,6 +381,20 @@ class MobjectBase:
         of. Basically self plus (recursively) all submobjects."""
         pass
 
+    def copy(self: T) -> T:
+        """Creates a copy of this mobject.
+
+        The created copy is almost a full deep copy, with the exception
+        of the mobject's parents: the copied mobject is considered to
+        be a separate and new mobject; in particular the copy is not considered
+        to be included in the same parent mobjects as the original mobject.
+        """
+        parents = self.parents
+        self.parents = []
+        result = copy.deepcopy(self)
+        self.parents = parents
+        return result
+
     
     ### Mobject points and related methods ###
 
@@ -466,3 +480,15 @@ class MobjectBase:
         box of this mobject.
         """
         return self.bounding_box[1]
+
+    def get_pieces(self, n_pieces):
+        template = self.copy()
+        template.submobjects = []
+        alphas = np.linspace(0, 1, n_pieces + 1)
+        Group = self.get_group_class()
+        return Group(
+            *(
+                template.copy().pointwise_become_partial(self, a1, a2)
+                for a1, a2 in zip(alphas[:-1], alphas[1:])
+            )
+        )

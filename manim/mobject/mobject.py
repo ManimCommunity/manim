@@ -450,21 +450,6 @@ class Mobject(MobjectBase):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png"),
         )
 
-    def copy(self: T) -> T:
-        """Create and return an identical copy of the :class:`Mobject` including all
-        :attr:`submobjects`.
-
-        Returns
-        -------
-        :class:`Mobject`
-            The copy.
-
-        Note
-        ----
-        The clone is initially not visible in the Scene, even if the original was.
-        """
-        return copy.deepcopy(self)
-
     def generate_target(self, use_deepcopy=False):
         self.target = None  # Prevent unbounded linear recursion
         if use_deepcopy:
@@ -1653,16 +1638,6 @@ class Mobject(MobjectBase):
     def proportion_from_point(self, point):
         raise NotImplementedError("Please override in a child class.")
 
-    def get_pieces(self, n_pieces):
-        template = self.copy()
-        template.submobjects = []
-        alphas = np.linspace(0, 1, n_pieces + 1)
-        return Group(
-            *(
-                template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
-            )
-        )
 
     def get_z_index_reference_point(self):
         # TODO, better place to define default z_index_group?

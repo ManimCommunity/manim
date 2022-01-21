@@ -963,77 +963,9 @@ class OpenGLMobject(MobjectBase):
 
     # Copying
 
-    def copy(self, shallow: bool = False):
-        """Create and return an identical copy of the :class:`OpenGLMobject` including all
-        :attr:`submobjects`.
-
-        Returns
-        -------
-        :class:`OpenGLMobject`
-            The copy.
-
-        Parameters
-        ----------
-        shallow
-            Controls whether a shallow copy is returned.
-
-        Note
-        ----
-        The clone is initially not visible in the Scene, even if the original was.
-        """
-        if not shallow:
-            return self.deepcopy()
-
-        # TODO, either justify reason for shallow copy, or
-        # remove this redundancy everywhere
-        # return self.deepcopy()
-
-        parents = self.parents
-        self.parents = []
-        copy_mobject = copy.copy(self)
-        self.parents = parents
-
-        copy_mobject.data = dict(self.data)
-        for key in self.data:
-            copy_mobject.data[key] = self.data[key].copy()
-
-        # TODO, are uniforms ever numpy arrays?
-        copy_mobject.uniforms = dict(self.uniforms)
-
-        copy_mobject.submobjects = []
-        copy_mobject.add(*(sm.copy() for sm in self.submobjects))
-        copy_mobject.match_updaters(self)
-
-        copy_mobject.needs_new_bounding_box = self.needs_new_bounding_box
-
-        # Make sure any mobject or numpy array attributes are copied
-        family = self.get_family()
-        for attr, value in list(self.__dict__.items()):
-            if (
-                isinstance(value, OpenGLMobject)
-                and value in family
-                and value is not self
-            ):
-                setattr(copy_mobject, attr, value.copy())
-            if isinstance(value, np.ndarray):
-                setattr(copy_mobject, attr, value.copy())
-            # if isinstance(value, ShaderWrapper):
-            #     setattr(copy_mobject, attr, value.copy())
-        return copy_mobject
-
-    def deepcopy(self):
-        parents = self.parents
-        self.parents = []
-        result = copy.deepcopy(self)
-        self.parents = parents
-        return result
-
     def generate_target(self, use_deepcopy: bool = False):
         self.target = None  # Prevent exponential explosion
-        if use_deepcopy:
-            self.target = self.deepcopy()
-        else:
-            self.target = self.copy()
+        self.target = self.copy()
         return self.target
 
     def save_state(self, use_deepcopy: bool = False):
@@ -1041,10 +973,7 @@ class OpenGLMobject(MobjectBase):
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
-        if use_deepcopy:
-            self.saved_state = self.deepcopy()
-        else:
-            self.saved_state = self.copy()
+        self.saved_state = self.copy()
         return self
 
     def restore(self):
@@ -1896,17 +1825,6 @@ class OpenGLMobject(MobjectBase):
     def pfp(self, alpha):
         """Abbreviation for point_from_proportion"""
         return self.point_from_proportion(alpha)
-
-    def get_pieces(self, n_pieces):
-        template = self.copy()
-        template.submobjects = []
-        alphas = np.linspace(0, 1, n_pieces + 1)
-        return OpenGLGroup(
-            *(
-                template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
-            )
-        )
 
     def get_z_index_reference_point(self):
         # TODO, better place to define default z_index_group?
