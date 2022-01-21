@@ -161,7 +161,7 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest
+          poetry run pytest --durations=25
 
       - name: Run module doctests
         run: |
