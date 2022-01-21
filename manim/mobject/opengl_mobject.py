@@ -132,7 +132,9 @@ class OpenGLMobject(MobjectBase):
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.data["points"] = self._points  # TODO: this workaround should be fixed at some point
+        self.data[
+            "points"
+        ] = self._points  # TODO: this workaround should be fixed at some point
         self.init_colors()
 
         self.shader_indices = None
@@ -976,9 +978,6 @@ class OpenGLMobject(MobjectBase):
 
     # Transforming operations
 
-
-
-
     def flip(self, axis=UP, **kwargs):
         """Flips/Mirrors an mobject about its center.
 
@@ -1192,7 +1191,6 @@ class OpenGLMobject(MobjectBase):
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
-
 
     def stretch_to_fit_width(self, width, **kwargs):
         """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.

@@ -58,9 +58,9 @@ class MobjectBase:
         Required for the ``set_default`` mechanism.
         """
         super().__init_subclass__(**kwargs)
-        cls.animation_overrides: Dict[
-            Type["Animation"],
-            Callable[["MobjectBase"], "Animation"],
+        cls.animation_overrides: dict[
+            type[Animation],
+            Callable[[MobjectBase], Animation],
         ] = {}
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
@@ -134,8 +134,8 @@ class MobjectBase:
     @classmethod
     def animation_override_for(
         cls,
-        animation_class: Type["Animation"],
-    ) -> "Optional[Callable[[Mobject, ...], Animation]]":
+        animation_class: type[Animation],
+    ) -> Optional[Callable[[Mobject, ...], Animation]]:
         """Returns the function defining a specific animation override for this class.
 
         Parameters
@@ -157,8 +157,8 @@ class MobjectBase:
     @classmethod
     def add_animation_override(
         cls,
-        animation_class: Type["Animation"],
-        override_func: "Callable[[Mobject, ...], Animation]",
+        animation_class: type[Animation],
+        override_func: Callable[[Mobject, ...], Animation],
     ):
         """Add an animation override.
 
@@ -513,7 +513,7 @@ class MobjectBase:
     @property
     def width(self):
         """The width of the mobject.
-        
+
         Returns
         -------
         :class:`float`
@@ -537,7 +537,7 @@ class MobjectBase:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(width=7))
                     self.wait()
-        
+
         """
         return self.length_over_dim(0)
 
@@ -548,7 +548,7 @@ class MobjectBase:
     @property
     def height(self):
         """The height of the mobject.
-        
+
         Returns
         -------
         :class:`float`
@@ -572,7 +572,7 @@ class MobjectBase:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(height=5))
                     self.wait()
-        
+
         """
         return self.length_over_dim(1)
 
@@ -583,7 +583,7 @@ class MobjectBase:
     @property
     def depth(self):
         """The depth of the mobject.
-        
+
         Returns
         -------
         :class:`float`
@@ -638,13 +638,19 @@ class MobjectBase:
                 about_point = self.get_bounding_box_point(about_edge)
             else:
                 about_point = ORIGIN
-        
+
         for mob in self.get_family():
             if not mob.has_points():
                 if works_on_bounding_box and mob._bounding_box is not None:
-                    mob._bounding_box[:] = func(mob._bounding_box - about_point) + about_point
+                    mob._bounding_box[:] = (
+                        func(mob._bounding_box - about_point) + about_point
+                    )
                 continue
-            point_lists = [mob._bounding_box, mob._points] if works_on_bounding_box and mob._bounding_box is not None else [mob.points]
+            point_lists = (
+                [mob._bounding_box, mob._points]
+                if works_on_bounding_box and mob._bounding_box is not None
+                else [mob.points]
+            )
             for points in point_lists:
                 points[:] = func(points - about_point) + about_point
             # TODO: check that the bounding box is still valid, i.e.,
@@ -665,7 +671,7 @@ class MobjectBase:
         **kwargs,
     ):
         """Rotates this mobject about a certain point.
-        
+
         Parameters
         ----------
         angle
@@ -687,7 +693,7 @@ class MobjectBase:
 
     def rotate_about_origin(self, angle, axis=OUT):
         """Rotates this mobject about the origin of the scene.
-        
+
         .. seealso::
 
             :meth:`rotate`
@@ -715,13 +721,13 @@ class MobjectBase:
 
     def shift(self, vector):
         """Shifts this mobject along a given vector.
-        
+
         Parameters
         ----------
 
         vector
             The vector along which the mobject is shifted.
-        
+
         """
         self.apply_points_function(
             lambda points: points + vector,
@@ -732,7 +738,7 @@ class MobjectBase:
 
     def stretch(self, factor, dimension, **kwargs):
         """Stretches this mobject along the specified dimension.
-        
+
         Parameters
         ----------
         factor
@@ -742,6 +748,7 @@ class MobjectBase:
             is the index of the point arrays, i.e., 0 corresponds
             to stretching along the :math:`x`-axis, etc.
         """
+
         def func(points):
             points[:, dimension] *= factor
             return points
