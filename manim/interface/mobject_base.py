@@ -4,6 +4,8 @@ from typing import Callable, Dict, Iterable, Type, TypeVar
 
 import numpy as np
 
+from manim.constants import ORIGIN
+
 from ..animation.animation_utils import _AnimationBuilder
 from ..utils.exceptions import MultiAnimationOverrideException
 
@@ -407,6 +409,54 @@ class MobjectBase:
     def points(self, pts):
         self._points = pts
         self.invalidate_bounding_box()
+
+    def apply_points_function(
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
+    ):
+        """Apply a function to the points of this mobject.
+
+        Parameters
+        ----------
+
+        func
+            The function being applied to this mobject's points.
+        about_point
+            Specifies where the origin of the (shifted) coordinate
+            system used to compute the images of the points under the
+            function should be located. If ``None`` (the default), then
+            the origin is determined via the ``about_edge`` keyword
+            argument.
+        about_edge
+            If ``about_point`` is ``None``, this parameter allows to
+            determine the origin of the (shifted) coordinate system
+            of the transformation relative to the mobject by returning
+            the corresponding bounding box point. Defaults to ``ORIGIN``,
+            which results in the mobject's center. If set to ``None``,
+            the coordinate system is not shifted before applying the
+            transformation.
+        works_on_bounding_box
+            If set to ``True``, the function will also be applied to the
+            currently cached bounding box points. The bounding box then
+            does not need to be invalidated and recomputed.
+        """
+        if about_point is None:
+            if about_edge is None:
+                about_point = self.get_bounding_box_point(about_edge)
+            else:
+                about_point = ORIGIN
+        
+        for mob in self.get_family():
+            if not mob.has_points():
+                continue
+            point_lists = [mob._bounding_box, mob._points] if works_on_bounding_box and mob._bounding_box is not None else [mob.points]
+            for points in point_lists:
+                points[:] = func(points - about_point) + about_point
+
+
 
     def has_points(self):
         """Checks whether this mobject has any points set."""

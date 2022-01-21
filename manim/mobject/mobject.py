@@ -868,8 +868,8 @@ class Mobject(MobjectBase):
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
         rot_matrix = rotation_matrix(angle, axis)
-        self.apply_points_function_about_point(
-            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+        self.apply_points_function(
+            lambda points: np.dot(points, rot_matrix.T), about_point, works_on_bounding_box=True,**kwargs
         )
         return self
 
