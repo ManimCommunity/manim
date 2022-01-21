@@ -61,7 +61,7 @@ def _determine_graph_layout(
         return _tree_layout(
             nx_graph,
             root_vertex=root_vertex,
-            scale=layout_scale,
+            scale=layout_scale, **layout_config
         )
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
@@ -102,8 +102,9 @@ def _determine_graph_layout(
 def _tree_layout(
     T: nx.classes.graph.Graph,
     root_vertex: Hashable | None,
-    scale: float | tuple = 2,
+    scale: float | tuple | None = 2,
     orientation: str = "down",
+    scaling_type: str ="relative"
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
 
@@ -183,10 +184,30 @@ def _tree_layout(
     center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
     height = y_max - y_min
     width = x_max - x_min
-    if isinstance(scale, (float, int)):
-        sf = 2 * scale / max(width, height)
-    else:
-        sf = np.array([2 * scale[0] / width, 2 * scale[1] / height, 0])
+    if scaling_type == "relative":
+        if isinstance(scale, (float, int)) and (width > 0 or height > 0):
+            sf = 2 * scale / max(width, height)
+        elif isinstance(scale, tuple):
+            if scale[0] is not None and width > 0:
+                sw = 2 * scale[0] / width
+            else:
+                sw = 1
+
+            if scale[1] is not None and height > 0:
+                sh = 2 * scale[1] / height
+            else:
+                sh = 1
+
+            sf = np.array([sw, sh, 0])
+        else:
+            sf = 1
+    elif scaling_type == "absolute":
+        if isinstance(scale, (float, int)):
+            sf = scale
+        elif isinstance(scale, tuple):
+            sf = np.array([scale[0], scale[1], 0])
+        else:
+            sf = 1
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
