@@ -612,7 +612,7 @@ class VMobject(Mobject):
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
-        self.points = np.zeros((total_len, self.dim))
+        points = np.zeros((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
         # self.points = [
         #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
@@ -620,7 +620,8 @@ class VMobject(Mobject):
         # ]
         arrays = [anchors1, handles1, handles2, anchors2]
         for index, array in enumerate(arrays):
-            self.points[index::nppcc] = array
+            points[index::nppcc] = array
+        self.points = points
         return self
 
     def clear_points(self):
