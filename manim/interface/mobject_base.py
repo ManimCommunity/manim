@@ -1,11 +1,14 @@
 
+import copy
 import numpy as np
 
 from functools import partialmethod
-from typing import Callable, Dict, Iterable, Type
+from typing import Callable, Dict, Iterable, Type, TypeVar
 
 from ..animation.animation_utils import _AnimationBuilder
 from ..utils.exceptions import MultiAnimationOverrideException
+
+T = TypeVar("T", bound="MobjectBase")
 
 class MobjectBase:
     """Base class for mobjects.
