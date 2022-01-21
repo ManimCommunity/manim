@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import inspect
 from pathlib import Path
@@ -155,13 +157,13 @@ def frames_comparison(
 
 def _make_test_comparing_frames(
     file_path: Path,
-    base_scene: Type[Scene],
+    base_scene: type[Scene],
     construct: Callable[[Scene], None],
     renderer_class,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
-    size_frame: Tuple,
+    size_frame: tuple,
 ) -> Callable[[], None]:
     """Create the real pytest test that will fail if the frames mismatch.
 
@@ -221,7 +223,7 @@ def _make_test_comparing_frames(
 
 
 def _control_data_path(
-    test_file_path: Optional[str], module_name: str, test_name: str, setting_test: bool
+    test_file_path: str | None, module_name: str, test_name: str, setting_test: bool
 ) -> Path:
     if test_file_path is None:
         # For some reason, path to test file containing @frames_comparison could not

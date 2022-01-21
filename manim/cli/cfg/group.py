@@ -5,6 +5,8 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+from __future__ import annotations
+
 import os
 from ast import literal_eval
 from typing import Union
@@ -26,7 +28,7 @@ If left empty, the default colour will be used.[/red]
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
 
-def value_from_string(value: str) -> Union[str, int, bool]:
+def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
     Parameters
     ----------

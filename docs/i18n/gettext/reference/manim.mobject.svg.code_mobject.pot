@@ -19,10 +19,6 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.code_mobject.rst:26:<autosummary>:1
-msgid ":py:obj:`Code <manim.mobject.svg.code_mobject.Code>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.code_mobject.rst:26:<autosummary>:1
 msgid "A highlighted source code listing."
 msgstr ""
 

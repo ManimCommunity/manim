@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import Scene, tempconfig
 from manim.mobject.opengl_mobject import OpenGLMobject
 

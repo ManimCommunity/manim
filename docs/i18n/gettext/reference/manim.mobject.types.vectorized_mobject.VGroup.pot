@@ -40,10 +40,6 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:20:<autosummary>:1
-msgid ":py:obj:`add <manim.mobject.types.vectorized_mobject.VGroup.add>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:20:<autosummary>:1
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1
 msgid "Checks if all passed elements are an instance of VMobject and then add them to submobjects"
 msgstr ""
@@ -53,19 +49,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.vectorized_mobject.VGroup.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.vectorized_mobject.VGroup.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.vectorized_mobject.VGroup.depth>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
@@ -73,15 +57,7 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.vectorized_mobject.VGroup.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.vectorized_mobject.VGroup.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
@@ -102,10 +78,6 @@ msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:7
-msgid ":class:`VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0

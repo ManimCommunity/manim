@@ -26,12 +26,4 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.ShowSubmobjectsOneByOne.rst:18:<autosummary>:1
-msgid ":py:obj:`update_submobject_list <manim.animation.creation.ShowSubmobjectsOneByOne.update_submobject_list>`"
-msgstr ""
-
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowSubmobjectsOneByOne:0
-msgid "Parameters"
-msgstr ""
-
 

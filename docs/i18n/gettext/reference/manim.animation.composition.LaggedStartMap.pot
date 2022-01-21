@@ -18,12 +18,4 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.composition.LaggedStart`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.LaggedStartMap.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/composition.py:docstring of manim.animation.composition.LaggedStartMap:0
-msgid "Parameters"
-msgstr ""
-
 

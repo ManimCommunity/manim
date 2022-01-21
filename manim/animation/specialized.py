@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["Broadcast"]
 
 from typing import Any, Sequence

@@ -23,16 +23,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`add_axes <manim.scene.vector_space_scene.VectorScene.add_axes>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:1
 msgid "Adds a pair of Axes to the Scene."
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`add_plane <manim.scene.vector_space_scene.VectorScene.add_plane>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -41,24 +33,12 @@ msgid "Adds a NumberPlane object to the background."
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`add_vector <manim.scene.vector_space_scene.VectorScene.add_vector>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:1
 msgid "Returns the Vector after adding it to the Plane."
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`coords_to_vector <manim.scene.vector_space_scene.VectorScene.coords_to_vector>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 msgid "This method writes the vector as a column matrix (henceforth called the label), takes the values in it one by one, and form the corresponding lines that make up the x and y components of the vector."
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`get_basis_vector_labels <manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -67,16 +47,8 @@ msgid "Returns naming labels for the basis vectors."
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`get_basis_vectors <manim.scene.vector_space_scene.VectorScene.get_basis_vectors>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:1
 msgid "Returns a VGroup of the Basis Vectors (1,0) and (0,1)"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`get_vector <manim.scene.vector_space_scene.VectorScene.get_vector>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -85,16 +57,8 @@ msgid "Returns an arrow on the Plane given an input numerical vector."
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`get_vector_label <manim.scene.vector_space_scene.VectorScene.get_vector_label>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:1
 msgid "Returns naming labels for the passed vector."
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`label_vector <manim.scene.vector_space_scene.VectorScene.label_vector>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -103,24 +67,8 @@ msgid "Shortcut method for creating, and animating the addition of a label for t
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`lock_in_faded_grid <manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid:1
 msgid "This method freezes the NumberPlane and Axes that were already in the background, and adds new, manipulatable ones to the foreground."
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`position_x_coordinate <manim.scene.vector_space_scene.VectorScene.position_x_coordinate>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`position_y_coordinate <manim.scene.vector_space_scene.VectorScene.position_y_coordinate>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`show_ghost_movement <manim.scene.vector_space_scene.VectorScene.show_ghost_movement>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -128,15 +76,7 @@ msgid "This method plays an animation that partially shows the entire plane movi
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`vector_to_coords <manim.scene.vector_space_scene.VectorScene.vector_to_coords>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
 msgid "This method displays vector as a Vector() based vector, and then shows the corresponding lines that make up the x and y components of the vector."
-msgstr ""
-
-#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
-msgid ":py:obj:`write_vector_coordinates <manim.scene.vector_space_scene.VectorScene.write_vector_coordinates>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
@@ -146,10 +86,6 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:36
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:1:<autosummary>:1
-msgid ":py:obj:`camera <manim.scene.vector_space_scene.VectorScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:0

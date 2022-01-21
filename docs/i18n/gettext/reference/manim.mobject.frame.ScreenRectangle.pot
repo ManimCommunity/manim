@@ -27,19 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.frame.ScreenRectangle.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.frame.ScreenRectangle.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`aspect_ratio <manim.mobject.frame.ScreenRectangle.aspect_ratio>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
@@ -48,23 +36,11 @@ msgid "The aspect ratio."
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.frame.ScreenRectangle.depth>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.frame.ScreenRectangle.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.frame.ScreenRectangle.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1

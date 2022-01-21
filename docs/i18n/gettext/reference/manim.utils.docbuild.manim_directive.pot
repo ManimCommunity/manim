@@ -103,15 +103,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.rst:28:<autosummary>:1
-msgid ":py:obj:`ManimDirective <manim.utils.docbuild.manim_directive.ManimDirective>`"
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.rst:28:<autosummary>:1
 msgid "The manim directive, rendering videos while building the documentation."
-msgstr ""
-
-#: ../../source/reference/manim.utils.docbuild.manim_directive.rst:28:<autosummary>:1
-msgid ":py:obj:`skip_manim_node <manim.utils.docbuild.manim_directive.skip_manim_node>`"
 msgstr ""
 
 #: ../../source/reference/manim.utils.docbuild.manim_directive.rst:31

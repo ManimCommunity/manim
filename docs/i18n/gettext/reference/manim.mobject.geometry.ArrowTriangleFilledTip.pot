@@ -35,19 +35,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.ArrowTriangleFilledTip.animate>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.ArrowTriangleFilledTip.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`base <manim.mobject.geometry.ArrowTriangleFilledTip.base>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
@@ -55,15 +43,7 @@ msgid "The base point of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.ArrowTriangleFilledTip.depth>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
 msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.ArrowTriangleFilledTip.height>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
@@ -71,15 +51,7 @@ msgid "The height of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`length <manim.mobject.geometry.ArrowTriangleFilledTip.length>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
 msgid "The length of the arrow tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`tip_angle <manim.mobject.geometry.ArrowTriangleFilledTip.tip_angle>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
@@ -87,23 +59,11 @@ msgid "The angle of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`tip_point <manim.mobject.geometry.ArrowTriangleFilledTip.tip_point>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
 msgid "The tip point of the arrow tip."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`vector <manim.mobject.geometry.ArrowTriangleFilledTip.vector>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
 msgid "The vector pointing from the base point to the tip point."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.ArrowTriangleFilledTip.width>`\\"
 msgstr ""
 
 

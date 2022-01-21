@@ -19,23 +19,7 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyComplexFunction <manim.animation.transform.ApplyComplexFunction>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyFunction <manim.animation.transform.ApplyFunction>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyMatrix <manim.animation.transform.ApplyMatrix>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Applies a matrix transform to an mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyMethod <manim.animation.transform.ApplyMethod>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
@@ -43,35 +27,7 @@ msgid "Animates a mobject by applying a method."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyPointwiseFunction <manim.animation.transform.ApplyPointwiseFunction>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Animation that applies a pointwise function to a mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ApplyPointwiseFunctionToCenter <manim.animation.transform.ApplyPointwiseFunctionToCenter>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ClockwiseTransform <manim.animation.transform.ClockwiseTransform>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`CounterclockwiseTransform <manim.animation.transform.CounterclockwiseTransform>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`CyclicReplace <manim.animation.transform.CyclicReplace>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`FadeToColor <manim.animation.transform.FadeToColor>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`FadeTransform <manim.animation.transform.FadeTransform>`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
@@ -79,51 +35,11 @@ msgid "Fades one mobject into another."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`FadeTransformPieces <manim.animation.transform.FadeTransformPieces>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Fades submobjects of one mobject into submobjects of another one."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`MoveToTarget <manim.animation.transform.MoveToTarget>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ReplacementTransform <manim.animation.transform.ReplacementTransform>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Replaces and morphs a mobject into a target mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`Restore <manim.animation.transform.Restore>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ScaleInPlace <manim.animation.transform.ScaleInPlace>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`ShrinkToCenter <manim.animation.transform.ShrinkToCenter>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`Swap <manim.animation.transform.Swap>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`Transform <manim.animation.transform.Transform>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`TransformAnimations <manim.animation.transform.TransformAnimations>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid ":py:obj:`TransformFromCopy <manim.animation.transform.TransformFromCopy>`"
 msgstr ""
 
 

@@ -1,5 +1,7 @@
 """Colors and utility functions for conversion between different color models."""
 
+from __future__ import annotations
+
 __all__ = [
     "color_to_rgb",
     "color_to_rgba",
@@ -26,7 +28,6 @@ import numpy as np
 from colour import Color
 
 from ..utils.bezier import interpolate
-from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
 
 
@@ -450,7 +451,7 @@ __all__ += [
 ]
 
 
-def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
+def color_to_rgb(color: Color | str) -> np.ndarray:
     if isinstance(color, str):
         return hex_to_rgb(color)
     elif isinstance(color, Color):
@@ -459,7 +460,7 @@ def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
         raise ValueError("Invalid color type: " + str(color))
 
 
-def color_to_rgba(color: Union[Color, str], alpha: float = 1) -> np.ndarray:
+def color_to_rgba(color: Color | str, alpha: float = 1) -> np.ndarray:
     return np.array([*color_to_rgb(color), alpha])
 
 
@@ -499,7 +500,7 @@ def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
 def color_gradient(
     reference_colors: Iterable[Color],
     length_of_output: int,
-) -> List[Color]:
+) -> list[Color]:
     if length_of_output == 0:
         return reference_colors[0]
     rgbs = list(map(color_to_rgb, reference_colors))
@@ -548,5 +549,4 @@ def get_shaded_rgb(
     if factor < 0:
         factor *= 0.5
     result = rgb + factor
-    clip_in_place(rgb + factor, 0, 1)
     return result

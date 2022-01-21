@@ -54,16 +54,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add <manim.scene.scene.Scene.add>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:1
 msgid "Mobjects will be displayed, from background to foreground in the order with which they are added."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_foreground_mobject <manim.scene.scene.Scene.add_foreground_mobject>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -72,20 +64,8 @@ msgid "Adds a single mobject to the foreground, and internally to the list foreg
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_foreground_mobjects <manim.scene.scene.Scene.add_foreground_mobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:1
 msgid "Adds mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_mobjects_from_animations <manim.scene.scene.Scene.add_mobjects_from_animations>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_sound <manim.scene.scene.Scene.add_sound>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -94,20 +74,8 @@ msgid "This method is used to add a sound to the animation."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_subcaption <manim.scene.scene.Scene.add_subcaption>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:1
 msgid "Adds an entry in the corresponding subcaption file at the current time stamp."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`add_updater <manim.scene.scene.Scene.add_updater>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`begin_animations <manim.scene.scene.Scene.begin_animations>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -116,16 +84,8 @@ msgid "Start the animations of the scene."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`bring_to_back <manim.scene.scene.Scene.bring_to_back>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:1
 msgid "Removes the mobject from the scene and adds them to the back of the scene."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`bring_to_front <manim.scene.scene.Scene.bring_to_front>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -134,20 +94,8 @@ msgid "Adds the passed mobjects to the scene again, pushing them to he front of 
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`check_interactive_embed_is_valid <manim.scene.scene.Scene.check_interactive_embed_is_valid>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`clear <manim.scene.scene.Scene.clear>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.clear:1
 msgid "Removes all mobjects present in self.mobjects and self.foreground_mobjects from the scene."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`compile_animation_data <manim.scene.scene.Scene.compile_animation_data>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -156,16 +104,8 @@ msgid "Given a list of animations, compile the corresponding static and moving m
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`compile_animations <manim.scene.scene.Scene.compile_animations>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:1
 msgid "Creates _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play()."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`construct <manim.scene.scene.Scene.construct>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -174,32 +114,12 @@ msgid "Add content to the Scene."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`embed <manim.scene.scene.Scene.embed>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_attrs <manim.scene.scene.Scene.get_attrs>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:1
 msgid "Gets attributes of a scene given the attribute's identifier/name."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_mobject_family_members <manim.scene.scene.Scene.get_mobject_family_members>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 msgid "Returns list of family-members of all mobjects in scene."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_moving_and_static_mobjects <manim.scene.scene.Scene.get_moving_and_static_mobjects>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_moving_mobjects <manim.scene.scene.Scene.get_moving_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -208,16 +128,8 @@ msgid "Gets all moving mobjects in the passed animation(s)."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_restructured_mobject_list <manim.scene.scene.Scene.get_restructured_mobject_list>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:1
 msgid "Given a list of mobjects and a list of mobjects to be removed, this filters out the removable mobjects from the list of mobjects."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_run_time <manim.scene.scene.Scene.get_run_time>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -226,15 +138,7 @@ msgid "Gets the total run time for a list of animations."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_time_progression <manim.scene.scene.Scene.get_time_progression>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 msgid "You will hardly use this when making your own animations."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`get_top_level_mobjects <manim.scene.scene.Scene.get_top_level_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -243,20 +147,8 @@ msgid "Returns all mobjects which are not submobjects."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`interact <manim.scene.scene.Scene.interact>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`interactive_embed <manim.scene.scene.Scene.interactive_embed>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.interactive_embed:1
 msgid "Like embed(), but allows for screen interaction."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`is_current_animation_frozen_frame <manim.scene.scene.Scene.is_current_animation_frozen_frame>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -265,47 +157,7 @@ msgid "Returns whether the current animation produces a static frame (generally 
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`mouse_drag_orbit_controls <manim.scene.scene.Scene.mouse_drag_orbit_controls>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`mouse_scroll_orbit_controls <manim.scene.scene.Scene.mouse_scroll_orbit_controls>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`next_section <manim.scene.scene.Scene.next_section>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 msgid "Create separation here; the last section gets finished and a new one gets created."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_key_press <manim.scene.scene.Scene.on_key_press>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_key_release <manim.scene.scene.Scene.on_key_release>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_mouse_drag <manim.scene.scene.Scene.on_mouse_drag>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_mouse_motion <manim.scene.scene.Scene.on_mouse_motion>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_mouse_press <manim.scene.scene.Scene.on_mouse_press>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`on_mouse_scroll <manim.scene.scene.Scene.on_mouse_scroll>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`play <manim.scene.scene.Scene.play>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -314,16 +166,8 @@ msgid "Plays an animation in this scene."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`play_internal <manim.scene.scene.Scene.play_internal>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:1
 msgid "This method is used to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`remove <manim.scene.scene.Scene.remove>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -332,16 +176,8 @@ msgid "Removes mobjects in the passed list of mobjects from the scene and the fo
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`remove_foreground_mobject <manim.scene.scene.Scene.remove_foreground_mobject>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:1
 msgid "Removes a single mobject from the foreground, and internally from the list foreground_mobjects."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`remove_foreground_mobjects <manim.scene.scene.Scene.remove_foreground_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -350,20 +186,8 @@ msgid "Removes mobjects from the foreground, and internally from the list foregr
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`remove_updater <manim.scene.scene.Scene.remove_updater>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`render <manim.scene.scene.Scene.render>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:1
 msgid "Renders this Scene."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`restructure_mobjects <manim.scene.scene.Scene.restructure_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -372,20 +196,8 @@ msgid "tl:wr"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`set_key_function <manim.scene.scene.Scene.set_key_function>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`setup <manim.scene.scene.Scene.setup>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.setup:1
 msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common setup involved before the construct method is called."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`should_update_mobjects <manim.scene.scene.Scene.should_update_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -394,20 +206,8 @@ msgid "Returns True if any mobject in Scene is being updated or if the scene has
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`tear_down <manim.scene.scene.Scene.tear_down>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.tear_down:1
 msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common method to be invoked before the scene ends."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`update_meshes <manim.scene.scene.Scene.update_meshes>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`update_mobjects <manim.scene.scene.Scene.update_mobjects>`"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
@@ -416,31 +216,11 @@ msgid "Begins updating all mobjects in the Scene."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`update_self <manim.scene.scene.Scene.update_self>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`update_to_time <manim.scene.scene.Scene.update_to_time>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`wait <manim.scene.scene.Scene.wait>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
-msgid ":py:obj:`wait_until <manim.scene.scene.Scene.wait_until>`"
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene.Scene.rst:73:<autosummary>:1
 msgid "Like a wrapper for wait()."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene.Scene.rst:75
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:1:<autosummary>:1
-msgid ":py:obj:`camera <manim.scene.scene.Scene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:0
@@ -638,10 +418,6 @@ msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:15
 msgid "A typical manim script includes a class derived from :class:`Scene` with an overridden :meth:`Scene.contruct` method:"
-msgstr ""
-
-#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:24
-msgid ":meth:`Scene.setup`, :meth:`Scene.render`, :meth:`Scene.tear_down`"
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:3

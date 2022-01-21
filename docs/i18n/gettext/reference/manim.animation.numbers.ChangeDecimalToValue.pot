@@ -18,12 +18,4 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.numbers.ChangingDecimal`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangeDecimalToValue.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../../manim/animation/numbers.py:docstring of manim.animation.numbers.ChangeDecimalToValue:0
-msgid "Parameters"
-msgstr ""
-
 

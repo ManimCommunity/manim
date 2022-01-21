@@ -22,10 +22,6 @@ msgstr ""
 msgid "Base class for arrow tips."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:3
-msgid ":class:`ArrowTriangleTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareTip`, :class:`ArrowSquareFilledTip`"
-msgstr ""
-
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:6
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:6
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.length:4
@@ -60,19 +56,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.geometry.ArrowTip.animate>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 msgid "Used to animate the application of any method of :code:`self`."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.geometry.ArrowTip.animation_overrides>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`base <manim.mobject.geometry.ArrowTip.base>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
@@ -81,23 +65,11 @@ msgid "The base point of the arrow tip."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.geometry.ArrowTip.depth>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.geometry.ArrowTip.height>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`length <manim.mobject.geometry.ArrowTip.length>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
@@ -106,16 +78,8 @@ msgid "The length of the arrow tip."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`tip_angle <manim.mobject.geometry.ArrowTip.tip_angle>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_angle:1
 msgid "The angle of the arrow tip."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`tip_point <manim.mobject.geometry.ArrowTip.tip_point>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
@@ -124,16 +88,8 @@ msgid "The tip point of the arrow tip."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`vector <manim.mobject.geometry.ArrowTip.vector>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.vector:1
 msgid "The vector pointing from the base point to the tip point."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.geometry.ArrowTip.width>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
