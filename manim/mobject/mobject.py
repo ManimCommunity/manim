@@ -325,101 +325,6 @@ class Mobject(MobjectBase):
         # Unhandled attribute, therefore error
         raise AttributeError(f"{type(self).__name__} object has no attribute '{attr}'")
 
-    @property
-    def width(self):
-        """The width of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: WidthExample
-
-            class WidthExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.width))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(width=7))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the X dimension
-        return self.length_over_dim(0)
-
-    @width.setter
-    def width(self, value):
-        self.scale_to_fit_width(value)
-
-    @property
-    def height(self):
-        """The height of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: HeightExample
-
-            class HeightExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.height))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(height=5))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the Y dimension
-        return self.length_over_dim(1)
-
-    @height.setter
-    def height(self, value):
-        self.scale_to_fit_height(value)
-
-    @property
-    def depth(self):
-        """The depth of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the Z dimension
-        return self.length_over_dim(2)
-
-    @depth.setter
-    def depth(self, value):
-        self.scale_to_fit_depth(value)
-
     def get_array_attrs(self):
         return ["points"]
 
@@ -783,128 +688,11 @@ class Mobject(MobjectBase):
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors: np.ndarray):
-        """Shift by the given vectors.
-
-        Parameters
-        ----------
-        vectors
-            Vectors to shift by. If multiple vectors are given, they are added
-            together.
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        See also
-        --------
-        :meth:`move_to`
-        """
-
-        total_vector = reduce(op.add, vectors)
-        for mob in self.family_members_with_points():
-            mob.points = mob.points.astype("float")
-            mob.points += total_vector
-
-        return self
-
-    def scale(self, scale_factor: float, **kwargs):
-        r"""Scale the size by a factor.
-
-        Default behavior is to scale about the center of the mobject.
-
-        Parameters
-        ----------
-        scale_factor
-            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
-            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
-            if :math:`\alpha < 0`, the mobject is also flipped.
-        kwargs
-            Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        Examples
-        --------
-
-        .. manim:: MobjectScaleExample
-            :save_last_frame:
-
-            class MobjectScaleExample(Scene):
-                def construct(self):
-                    f1 = Text("F")
-                    f2 = Text("F").scale(2)
-                    f3 = Text("F").scale(0.5)
-                    f4 = Text("F").scale(-1)
-
-                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
-                    self.add(vgroup)
-
-        See also
-        --------
-        :meth:`move_to`
-
-        """
-        self.apply_points_function_about_point(
-            lambda points: scale_factor * points, **kwargs
-        )
-        return self
-
-    def rotate_about_origin(self, angle, axis=OUT, axes=[]):
-        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
-        return self.rotate(angle, axis, about_point=ORIGIN)
-
-    def rotate(
-        self,
-        angle,
-        axis=OUT,
-        about_point: Optional[Sequence[float]] = None,
-        **kwargs,
-    ):
-        """Rotates the :class:`~.Mobject` about a certain point."""
-        rot_matrix = rotation_matrix(angle, axis)
-        self.apply_points_function(
-            lambda points: np.dot(points, rot_matrix.T), about_point, works_on_bounding_box=True,**kwargs
-        )
-        return self
-
-    def flip(self, axis=UP, **kwargs):
-        """Flips/Mirrors an mobject about its center.
-
-        Examples
-        --------
-
-        .. manim:: FlipExample
-            :save_last_frame:
-
-            class FlipExample(Scene):
-                def construct(self):
-                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
-                    self.add(s)
-                    s2= s.copy().flip()
-                    self.add(s2)
-
-        """
-        return self.rotate(TAU / 2, axis, **kwargs)
-
-    def stretch(self, factor, dim, **kwargs):
-        def func(points):
-            points[:, dim] *= factor
-            return points
-
-        self.apply_points_function_about_point(func, **kwargs)
-        return self
-
     def apply_function(self, function, **kwargs):
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             lambda points: np.apply_along_axis(function, 1, points), **kwargs
         )
         return self
@@ -925,7 +713,7 @@ class Mobject(MobjectBase):
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             lambda points: np.dot(points, full_matrix.T), **kwargs
         )
         return self
@@ -994,23 +782,6 @@ class Mobject(MobjectBase):
     # In place operations.
     # Note, much of these are now redundant with default behavior of
     # above methods
-
-    def apply_points_function_about_point(
-        self,
-        func,
-        about_point=None,
-        about_edge=None,
-    ):
-        if about_point is None:
-            if about_edge is None:
-                about_edge = ORIGIN
-            about_point = self.get_critical_point(about_edge)
-        for mob in self.family_members_with_points():
-            mob.points -= about_point
-            mob.points = func(mob.points)
-            mob.points += about_point
-        self.invalidate_bounding_box(recurse_down=True)
-        return self
 
     def pose_at_angle(self, **kwargs):
         self.rotate(TAU / 14, RIGHT + UP, **kwargs)
@@ -1116,16 +887,6 @@ class Mobject(MobjectBase):
 
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
-
-    def rescale_to_fit(self, length, dim, stretch=False, **kwargs):
-        old_length = self.length_over_dim(dim)
-        if old_length == 0:
-            return self
-        if stretch:
-            self.stretch(length / old_length, dim, **kwargs)
-        else:
-            self.scale(length / old_length, **kwargs)
-        return self
 
     def scale_to_fit_width(self, width, **kwargs):
         """Scales the :class:`~.Mobject` to fit a width while keeping height/depth proportional.
@@ -1589,17 +1350,6 @@ class Mobject(MobjectBase):
         """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(IN)
 
-    def length_over_dim(self, dim):
-        """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return (
-            self.reduce_across_dimension(
-                np.max,
-                np.max,
-                dim,
-            )
-            - self.reduce_across_dimension(np.min, np.min, dim)
-        )
-
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
@@ -1640,10 +1390,6 @@ class Mobject(MobjectBase):
         # TODO, better place to define default z_index_group?
         z_index_group = getattr(self, "z_index_group", self)
         return z_index_group.get_center()
-
-    def has_points(self) -> bool:
-        """Check if :class:`~.Mobject` contains points."""
-        return len(self.points) > 0
 
     def has_no_points(self) -> bool:
         """Check if :class:`~.Mobject` *does not* contains points."""
@@ -1718,20 +1464,6 @@ class Mobject(MobjectBase):
         return self
 
     # Family matters
-
-    def __getitem__(self, value):
-        self_list = self.split()
-        if isinstance(value, slice):
-            GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        return self_list.__getitem__(value)
-
-    def __iter__(self):
-        return iter(self.split())
-
-    def __len__(self):
-        return len(self.split())
-
     def get_group_class(self):
         return Group
 

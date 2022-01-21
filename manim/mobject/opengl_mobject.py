@@ -63,7 +63,6 @@ class OpenGLMobject(MobjectBase):
     shader_folder = ""
 
     # _Data and _Uniforms are set as class variables to tell manim how to handle setting/getting these attributes later.
-    points = _Data()
     rgbas = _Data()
 
     is_fixed_in_frame = _Uniforms()
@@ -133,6 +132,7 @@ class OpenGLMobject(MobjectBase):
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
+        self.data["points"] = self._points  # TODO: this workaround should be fixed at some point
         self.init_colors()
 
         self.shader_indices = None
@@ -175,102 +175,6 @@ class OpenGLMobject(MobjectBase):
         for key in uniforms:
             self.uniforms[key] = uniforms[key]  # Copy?
         return self
-
-    @property
-    def width(self):
-        """The width of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: WidthExample
-
-            class WidthExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.width))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(width=7))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the X dimension
-        return self.length_over_dim(0)
-
-    # Only these methods should directly affect points
-    @width.setter
-    def width(self, value):
-        self.rescale_to_fit(value, 0, stretch=False)
-
-    @property
-    def height(self):
-        """The height of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: HeightExample
-
-            class HeightExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.height))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(height=5))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the Y dimension
-        return self.length_over_dim(1)
-
-    @height.setter
-    def height(self, value):
-        self.rescale_to_fit(value, 1, stretch=False)
-
-    @property
-    def depth(self):
-        """The depth of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-
-        # Get the length across the Z dimension
-        return self.length_over_dim(2)
-
-    @depth.setter
-    def depth(self, value):
-        self.rescale_to_fit(value, 2, stretch=False)
 
     def resize_points(self, new_length, resize_func=resize_array):
         if new_length != len(self.points):
@@ -391,9 +295,6 @@ class OpenGLMobject(MobjectBase):
             return np.vstack([sm.points for sm in self.get_family()])
         else:
             return self.points
-
-    def has_points(self):
-        return self.get_num_points() > 0
 
     def is_point_touching(self, point, buff=MED_SMALL_BUFF):
         bb = self.bounding_box
@@ -1075,102 +976,8 @@ class OpenGLMobject(MobjectBase):
 
     # Transforming operations
 
-    def shift(self, vector):
-        self.apply_points_function(
-            lambda points: points + vector,
-            about_edge=None,
-            works_on_bounding_box=True,
-        )
-        return self
 
-    def scale(
-        self,
-        scale_factor: float,
-        about_point: Sequence[float] | None = None,
-        about_edge: Sequence[float] = ORIGIN,
-        **kwargs,
-    ) -> OpenGLMobject:
-        r"""Scale the size by a factor.
 
-        Default behavior is to scale about the center of the mobject.
-        The argument about_edge can be a vector, indicating which side of
-        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
-        scales about mob.get_right().
-
-        Otherwise, if about_point is given a value, scaling is done with
-        respect to that point.
-
-        Parameters
-        ----------
-        scale_factor
-            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
-            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
-            if :math:`\alpha < 0`, the mobject is also flipped.
-        kwargs
-            Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
-
-        Returns
-        -------
-        OpenGLMobject
-            The scaled mobject.
-
-        Examples
-        --------
-
-        .. manim:: MobjectScaleExample
-            :save_last_frame:
-
-            class MobjectScaleExample(Scene):
-                def construct(self):
-                    f1 = Text("F")
-                    f2 = Text("F").scale(2)
-                    f3 = Text("F").scale(0.5)
-                    f4 = Text("F").scale(-1)
-
-                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
-                    self.add(vgroup)
-
-        See also
-        --------
-        :meth:`move_to`
-
-        """
-        self.apply_points_function(
-            lambda points: scale_factor * points,
-            about_point=about_point,
-            about_edge=about_edge,
-            works_on_bounding_box=True,
-            **kwargs,
-        )
-        return self
-
-    def stretch(self, factor, dim, **kwargs):
-        def func(points):
-            points[:, dim] *= factor
-            return points
-
-        self.apply_points_function(func, works_on_bounding_box=True, **kwargs)
-        return self
-
-    def rotate_about_origin(self, angle, axis=OUT):
-        return self.rotate(angle, axis, about_point=ORIGIN)
-
-    def rotate(
-        self,
-        angle,
-        axis=OUT,
-        about_point: Sequence[float] | None = None,
-        **kwargs,
-    ):
-        """Rotates the :class:`~.OpenGLMobject` about a certain point."""
-        rot_matrix_T = rotation_matrix_transpose(angle, axis)
-        self.apply_points_function(
-            lambda points: np.dot(points, rot_matrix_T),
-            about_point=about_point,
-            **kwargs,
-        )
-        return self
 
     def flip(self, axis=UP, **kwargs):
         """Flips/Mirrors an mobject about its center.
@@ -1386,15 +1193,6 @@ class OpenGLMobject(MobjectBase):
     def stretch_about_point(self, factor, dim, point):
         return self.stretch(factor, dim, about_point=point)
 
-    def rescale_to_fit(self, length, dim, stretch=False, **kwargs):
-        old_length = self.length_over_dim(dim)
-        if old_length == 0:
-            return self
-        if stretch:
-            self.stretch(length / old_length, dim, **kwargs)
-        else:
-            self.scale(length / old_length, **kwargs)
-        return self
 
     def stretch_to_fit_width(self, width, **kwargs):
         """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.
@@ -1768,10 +1566,6 @@ class OpenGLMobject(MobjectBase):
     def get_nadir(self) -> np.ndarray:
         """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
         return self.get_edge_center(IN)
-
-    def length_over_dim(self, dim):
-        bb = self.bounding_box
-        return abs((bb[2] - bb[0])[dim])
 
     def get_width(self):
         """Returns the width of the mobject."""

@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import copy
 from functools import partialmethod
-from typing import Callable, Dict, Iterable, Type, TypeVar
+from typing import Callable, Dict, Iterable, Optional, Sequence, Type, TypeVar
 
 import numpy as np
 
-from manim.constants import ORIGIN
+from manim.constants import ORIGIN, OUT, TAU, UP
+from manim.utils.space_ops import rotation_matrix, rotation_matrix_transpose
 
 from ..animation.animation_utils import _AnimationBuilder
 from ..utils.exceptions import MultiAnimationOverrideException
@@ -37,6 +40,7 @@ class MobjectBase:
 
         self.parents = []
         self._submobjects = []
+        self._points = []
 
     ### Generic class methods ###
 
@@ -410,54 +414,6 @@ class MobjectBase:
         self._points = pts
         self.invalidate_bounding_box()
 
-    def apply_points_function(
-        self,
-        func,
-        about_point=None,
-        about_edge=ORIGIN,
-        works_on_bounding_box=False,
-    ):
-        """Apply a function to the points of this mobject.
-
-        Parameters
-        ----------
-
-        func
-            The function being applied to this mobject's points.
-        about_point
-            Specifies where the origin of the (shifted) coordinate
-            system used to compute the images of the points under the
-            function should be located. If ``None`` (the default), then
-            the origin is determined via the ``about_edge`` keyword
-            argument.
-        about_edge
-            If ``about_point`` is ``None``, this parameter allows to
-            determine the origin of the (shifted) coordinate system
-            of the transformation relative to the mobject by returning
-            the corresponding bounding box point. Defaults to ``ORIGIN``,
-            which results in the mobject's center. If set to ``None``,
-            the coordinate system is not shifted before applying the
-            transformation.
-        works_on_bounding_box
-            If set to ``True``, the function will also be applied to the
-            currently cached bounding box points. The bounding box then
-            does not need to be invalidated and recomputed.
-        """
-        if about_point is None:
-            if about_edge is None:
-                about_point = self.get_bounding_box_point(about_edge)
-            else:
-                about_point = ORIGIN
-        
-        for mob in self.get_family():
-            if not mob.has_points():
-                continue
-            point_lists = [mob._bounding_box, mob._points] if works_on_bounding_box and mob._bounding_box is not None else [mob.points]
-            for points in point_lists:
-                points[:] = func(points - about_point) + about_point
-
-
-
     def has_points(self):
         """Checks whether this mobject has any points set."""
         return len(self.points) > 0
@@ -528,7 +484,7 @@ class MobjectBase:
         """Returns the coordinates of the center of the bounding
         box of this mobject.
         """
-        return self.bounding_box[1]
+        return self.bounding_box[1].copy()
 
     def get_pieces(self, n_pieces):
         template = self.copy()
@@ -541,3 +497,343 @@ class MobjectBase:
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
             )
         )
+
+    def length_over_dim(self, dimension):
+        """Return the length of the mobject over the given dimension.
+
+        Parameters
+        ----------
+        dimension
+            The dimension as the index of the points, i.e., 0 for
+            the :math:`x`-axis, 1 for the :math:`y`-axis, 2 for the
+            :math:`z`-axis.
+        """
+        return (self.bounding_box[2] - self.bounding_box[0])[dimension]
+
+    @property
+    def width(self):
+        """The width of the mobject.
+        
+        Returns
+        -------
+        :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.width))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(width=7))
+                    self.wait()
+        
+        """
+        return self.length_over_dim(0)
+
+    @width.setter
+    def width(self, value):
+        self.rescale_to_fit(value, 0, stretch=False)
+
+    @property
+    def height(self):
+        """The height of the mobject.
+        
+        Returns
+        -------
+        :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
+        
+        """
+        return self.length_over_dim(1)
+
+    @height.setter
+    def height(self, value):
+        self.rescale_to_fit(value, 1, stretch=False)
+
+    @property
+    def depth(self):
+        """The depth of the mobject.
+        
+        Returns
+        -------
+        :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+        """
+        return self.length_over_dim(2)
+
+    @depth.setter
+    def depth(self, value):
+        self.rescale_to_fit(value, 2, stretch=False)
+
+    ### Mobject transformations ###
+
+    def apply_points_function(
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
+    ):
+        """Apply a function to the points of this mobject.
+
+        Parameters
+        ----------
+
+        func
+            The function being applied to this mobject's points.
+        about_point
+            Specifies where the origin of the (shifted) coordinate
+            system used to compute the images of the points under the
+            function should be located. If ``None`` (the default), then
+            the origin is determined via the ``about_edge`` keyword
+            argument.
+        about_edge
+            If ``about_point`` is ``None``, this parameter allows to
+            determine the origin of the (shifted) coordinate system
+            of the transformation relative to the mobject by returning
+            the corresponding bounding box point. Defaults to ``ORIGIN``,
+            which results in the mobject's center. If set to ``None``,
+            the coordinate system is not shifted before applying the
+            transformation.
+        works_on_bounding_box
+            If set to ``True``, the function will also be applied to the
+            currently cached bounding box points. The bounding box then
+            does not need to be invalidated and recomputed.
+        """
+        if about_point is None:
+            if about_edge is not None:
+                about_point = self.get_bounding_box_point(about_edge)
+            else:
+                about_point = ORIGIN
+        
+        for mob in self.get_family():
+            if not mob.has_points():
+                if works_on_bounding_box and mob._bounding_box is not None:
+                    mob._bounding_box[:] = func(mob._bounding_box - about_point) + about_point
+                continue
+            point_lists = [mob._bounding_box, mob._points] if works_on_bounding_box and mob._bounding_box is not None else [mob.points]
+            for points in point_lists:
+                points[:] = func(points - about_point) + about_point
+            # TODO: check that the bounding box is still valid, i.e.,
+            # first point has to be component-wise <= last point. if not,
+            # reverse entries.
+
+        if works_on_bounding_box:
+            for parent in self.parents:
+                parent.invalidate_bounding_box()
+
+        return self
+
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Sequence[float] | None = None,
+        **kwargs,
+    ):
+        """Rotates this mobject about a certain point.
+        
+        Parameters
+        ----------
+        angle
+            The rotation angle.
+        axis
+            The direction of the rotation axis. Defaults to ``OUT``,
+            which corresponds to rotations in the :math:`(x,y)`-plane.
+        about_point
+            The rotation center.
+        """
+        rot_matrix = rotation_matrix(angle, axis)
+        rot_matrix_T = rotation_matrix_transpose(angle, axis)
+        self.apply_points_function(
+            lambda points: np.dot(points, rot_matrix.T),
+            about_point=about_point,
+            **kwargs,
+        )
+        return self
+
+    def rotate_about_origin(self, angle, axis=OUT):
+        """Rotates this mobject about the origin of the scene.
+        
+        .. seealso::
+
+            :meth:`rotate`
+        """
+        return self.rotate(angle=angle, axis=axis, about_point=ORIGIN)
+
+    def flip(self, axis=UP, **kwargs):
+        """Flips/Mirrors an mobject about its center.
+
+        Examples
+        --------
+
+        .. manim:: FlipExample
+            :save_last_frame:
+
+            class FlipExample(Scene):
+                def construct(self):
+                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                    self.add(s)
+                    s2= s.copy().flip()
+                    self.add(s2)
+
+        """
+        return self.rotate(TAU / 2, axis, **kwargs)
+
+    def shift(self, vector):
+        """Shifts this mobject along a given vector.
+        
+        Parameters
+        ----------
+
+        vector
+            The vector along which the mobject is shifted.
+        
+        """
+        self.apply_points_function(
+            lambda points: points + vector,
+            about_edge=None,
+            works_on_bounding_box=True,
+        )
+        return self
+
+    def stretch(self, factor, dimension, **kwargs):
+        """Stretches this mobject along the specified dimension.
+        
+        Parameters
+        ----------
+        factor
+            The stretch factor.
+        dimension
+            The dimension along which the mobject is stretched. This
+            is the index of the point arrays, i.e., 0 corresponds
+            to stretching along the :math:`x`-axis, etc.
+        """
+        def func(points):
+            points[:, dimension] *= factor
+            return points
+
+        self.apply_points_function(func, works_on_bounding_box=True, **kwargs)
+        return self
+
+    def scale(
+        self,
+        scale_factor: float,
+        about_point: Sequence[float] | None = None,
+        about_edge: Sequence[float] = ORIGIN,
+        **kwargs,
+    ):
+        r"""Scale the size by a factor.
+
+        Default behavior is to scale about the center of the mobject.
+        The argument about_edge can be a vector, indicating which side of
+        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
+        scales about mob.get_right().
+
+        Otherwise, if about_point is given a value, scaling is done with
+        respect to that point.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
+        kwargs
+            Additional keyword arguments passed to
+            :meth:`apply_points_function_about_point`.
+
+        Returns
+        -------
+        MobjectBase
+            The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
+
+        See also
+        --------
+        :meth:`move_to`
+
+        """
+        self.apply_points_function(
+            lambda points: scale_factor * points,
+            about_point=about_point,
+            about_edge=about_edge,
+            works_on_bounding_box=True,
+            **kwargs,
+        )
+        return self
+
+    def rescale_to_fit(self, value, dimension, stretch=False, **kwargs):
+        """Rescale this mobject to have the specified measurements across
+        the given dimension.
+
+        Parameters
+        ----------
+        value
+            The target measurement after rescaling.
+        dimension
+            The dimension across which the mobjects measurement is adjusted.
+        stretch
+            If set to ``True``, the mobject is only stretched along the given
+            dimension. Otherwise (the default behavior), the mobject is scaled
+            along all dimensions.
+        kwargs
+            Further keyword arguments passed to :meth:`scale` or :meth:`stretch`.
+        """
+        old_value = self.length_over_dim(dimension)
+        if old_value == 0:
+            # TODO: logging that mobject could not be stretched / scaled?
+            return self
+        if stretch:
+            self.stretch(value / old_value, dimension=dimension, **kwargs)
+        else:
+            self.scale(value / old_value, **kwargs)
+        return self
