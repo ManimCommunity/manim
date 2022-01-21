@@ -59,9 +59,7 @@ def _determine_graph_layout(
         return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
-            nx_graph,
-            root_vertex=root_vertex,
-            scale=layout_scale, **layout_config
+            nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
         )
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
@@ -104,7 +102,7 @@ def _tree_layout(
     root_vertex: Hashable | None,
     scale: float | tuple | None = 2,
     orientation: str = "down",
-    scaling_type: str ="relative"
+    scaling_type: str = "relative",
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
 
