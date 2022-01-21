@@ -364,7 +364,7 @@ class MobjectBase:
     def __getitem__(self, value):
         if isinstance(value, slice):
             Group = self.get_group_class()
-            return Group(self.submobjects.__getitem__(value))
+            return Group(*self.submobjects.__getitem__(value))
         return self.submobjects.__getitem__(value)
 
     def __iter__(self):
