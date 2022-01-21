@@ -191,7 +191,6 @@ class Mobject(MobjectBase):
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
-
     def add_to_back(self, *mobjects: "Mobject"):
         """Add all passed mobjects to the back of the submobjects.
 
@@ -278,7 +277,6 @@ class Mobject(MobjectBase):
             if self in mobject.parents:
                 mobject.parents.remove(self)
         return self
-
 
     def __getattr__(self, attr):
         # Add automatic compatibility layer
@@ -1637,7 +1635,6 @@ class Mobject(MobjectBase):
 
     def proportion_from_point(self, point):
         raise NotImplementedError("Please override in a child class.")
-
 
     def get_z_index_reference_point(self):
         # TODO, better place to define default z_index_group?

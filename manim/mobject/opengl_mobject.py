@@ -123,7 +123,7 @@ class OpenGLMobject(MobjectBase):
         self.parent = None
         self.family = [self]
         self.locked_data_keys = set()
-        
+
         if model_matrix is None:
             self.model_matrix = np.eye(4)
         else:
@@ -142,10 +142,8 @@ class OpenGLMobject(MobjectBase):
 
         self.should_render = should_render
 
-
     def __str__(self):
         return self.__class__.__name__
-
 
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
@@ -177,7 +175,6 @@ class OpenGLMobject(MobjectBase):
         for key in uniforms:
             self.uniforms[key] = uniforms[key]  # Copy?
         return self
-
 
     @property
     def width(self):
@@ -397,7 +394,6 @@ class OpenGLMobject(MobjectBase):
 
     def has_points(self):
         return self.get_num_points() > 0
-
 
     def is_point_touching(self, point, buff=MED_SMALL_BUFF):
         bb = self.bounding_box
@@ -2340,4 +2336,3 @@ class OpenGLPoint(OpenGLMobject):
 
     def set_location(self, new_loc):
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
-

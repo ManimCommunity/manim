@@ -1,14 +1,14 @@
-
 import copy
-import numpy as np
-
 from functools import partialmethod
 from typing import Callable, Dict, Iterable, Type, TypeVar
+
+import numpy as np
 
 from ..animation.animation_utils import _AnimationBuilder
 from ..utils.exceptions import MultiAnimationOverrideException
 
 T = TypeVar("T", bound="MobjectBase")
+
 
 class MobjectBase:
     """Base class for mobjects.
@@ -19,7 +19,6 @@ class MobjectBase:
     """
 
     animation_overrides = {}
-
 
     ### Mobject initialization ###
 
@@ -59,7 +58,7 @@ class MobjectBase:
         ] = {}
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
-    
+
     @classmethod
     def set_default(cls, **kwargs):
         """Sets the default values of keyword arguments.
@@ -249,7 +248,7 @@ class MobjectBase:
         """
         for attr, value in kwargs.items():
             setattr(self, attr, value)
-        
+
         return self
 
     @property
@@ -349,7 +348,7 @@ class MobjectBase:
 
         """
         return _AnimationBuilder(self)
-    
+
     ### Mobject family related methods ###
 
     def get_group_class(self):
@@ -358,7 +357,7 @@ class MobjectBase:
     @property
     def submobjects(self):
         return self._submobjects
-    
+
     @submobjects.setter
     def submobjects(self, submobject_list):
         self._submobjects = submobject_list
@@ -372,13 +371,13 @@ class MobjectBase:
 
     def __iter__(self):
         return iter(self.submobjects)
-    
+
     def __len__(self):
         return len(self.submobjects)
-    
+
     def has_submobjects(self):
         return len(self.submobjects) > 0
-    
+
     def get_family(self):
         """Return the collection of all mobjects this mobject consists
         of. Basically self plus (recursively) all submobjects."""
@@ -398,7 +397,6 @@ class MobjectBase:
         self.parents = parents
         return result
 
-    
     ### Mobject points and related methods ###
 
     @property
@@ -411,8 +409,7 @@ class MobjectBase:
         self.invalidate_bounding_box()
 
     def has_points(self):
-        """Checks whether this mobject has any points set.
-        """
+        """Checks whether this mobject has any points set."""
         return len(self.points) > 0
 
     @property
@@ -430,7 +427,7 @@ class MobjectBase:
                         mob.bounding_box
                         for mob in self.get_family()[1:]
                         if mob.has_points()
-                    )
+                    ),
                 ]
             )
 
@@ -438,24 +435,24 @@ class MobjectBase:
             points = self.points
 
         if len(points) == 0:
-            points = np.zeros((1,3))
+            points = np.zeros((1, 3))
 
         min_point = points.min(0)
         max_point = points.max(0)
-        mid_point = (min_point + max_point)/2
+        mid_point = (min_point + max_point) / 2
         self._bounding_box = np.array([min_point, mid_point, max_point])
-    
+
     def invalidate_bounding_box(self, recurse_down=False, recurse_up=True):
         for family_member in self.get_family(recurse=recurse_down):
             family_member._bounding_box = None
         if recurse_up:
             for parent in self.parents:
                 parent.invalidate_bounding_box(recurse_up=True)
-    
+
     def get_bounding_box_point(self, direction):
         """Returns the special boundary point of the bounding box
         along the specified direction.
-        
+
         The (three-dimensional) bounding box has 27 special points:
         8 corners, 12 edge midpoints, 6 face midpoints, and one center.
         This method determines the point along the specified direction
@@ -465,7 +462,6 @@ class MobjectBase:
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([self.bounding_box[indices[i]][i] for i in range(3)])
 
-    
     def get_critical_point(self, direction):
         """Alias of :meth:`get_bounding_box_point`."""
         return self.get_bounding_box_point(direction=direction)
