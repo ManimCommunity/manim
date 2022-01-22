@@ -135,7 +135,7 @@ class MobjectBase:
     def animation_override_for(
         cls,
         animation_class: type[Animation],
-    ) -> Optional[Callable[[Mobject, ...], Animation]]:
+    ) -> Callable[[Mobject, ...], Animation] | None:
         """Returns the function defining a specific animation override for this class.
 
         Parameters
