@@ -671,7 +671,7 @@ class OpenGLVMobject(OpenGLMobject):
             class ChangeOfDirection(Scene):
                 def construct(self):
                     ccw = RegularPolygon(5)
-                    ccw.shift(LEFT).rotate
+                    ccw.shift(LEFT)
                     cw = RegularPolygon(5)
                     cw.shift(RIGHT).reverse_direction()
 
