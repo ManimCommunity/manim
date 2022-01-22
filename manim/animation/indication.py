@@ -345,20 +345,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Keep and add docs?
 @deprecated(message="Use Create then FadeOut to achieve this effect.")
 class ShowCreationThenFadeOut(Succession):
-    """Applies :class:`~.Create` on a mobject, then :class:`~.FadeOut`.
-
-    .. attention::
-       This animation method will be removed in the upcoming versions. Use :class:`~.Create` and :class:`~.FadeOut` separately.
-
-    Examples
-    --------
-    .. manim:: ShowCreationThenFadeOutExample
-
-        class ShowCreationThenFadeOutExample(Scene):
-            def construct(self):
-                text1 = Text("Create Then Fade Out", color=RED)
-                self.play(ShowCreationThenFadeOut(text1))
-    """
 
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
