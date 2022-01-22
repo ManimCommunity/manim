@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, Type
 
 from manim.scene.scene import Scene
@@ -7,10 +9,10 @@ from ._frames_testers import _FramesTester
 
 
 def _make_test_scene_class(
-    base_scene: Type[Scene],
+    base_scene: type[Scene],
     construct_test: Callable[[Scene], None],
     test_renderer,
-) -> Type[Scene]:
+) -> type[Scene]:
     class _TestedScene(base_scene):
         def __init__(self, *args, **kwargs):
             super().__init__(renderer=test_renderer, *args, **kwargs)
@@ -66,7 +68,7 @@ class DummySceneFileWriter(SceneFileWriter):
         self.i += 1
 
 
-def _make_scene_file_writer_class(tester: _FramesTester) -> Type[SceneFileWriter]:
+def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
     class TestSceneFileWriter(DummySceneFileWriter):
         def write_frame(self, frame_or_renderer):
             tester.check_frame(self.i, frame_or_renderer)

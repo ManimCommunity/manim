@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from pprint import pformat
 from typing import Dict, List, Union
 
 
-def assert_file_exists(filepath: Union[str, os.PathLike]) -> None:
+def assert_file_exists(filepath: str | os.PathLike) -> None:
     """Assert that filepath points to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
     This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
@@ -26,7 +28,7 @@ def assert_file_exists(filepath: Union[str, os.PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_dir_exists(dirpath: Union[str, os.PathLike]) -> None:
+def assert_dir_exists(dirpath: str | os.PathLike) -> None:
     """Assert that directory exists.
 
     Parameters
@@ -46,7 +48,7 @@ def assert_dir_exists(dirpath: Union[str, os.PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_dir_filled(dirpath: Union[str, os.PathLike]) -> None:
+def assert_dir_filled(dirpath: str | os.PathLike) -> None:
     """Assert that directory exists and contains at least one file or directory (or file like objects like symlinks on Linux).
 
     Parameters
@@ -63,7 +65,7 @@ def assert_dir_filled(dirpath: Union[str, os.PathLike]) -> None:
         raise AssertionError(f"{dirpath} is an empty directory.")
 
 
-def assert_file_not_exists(filepath: Union[str, os.PathLike]) -> None:
+def assert_file_not_exists(filepath: str | os.PathLike) -> None:
     """Assert that filepath does not point to an existing file. Print all the elements (files and dir) of the parent dir of the given filepath.
 
     This is mostly to have better assert message than using a raw assert os.path.isfile(filepath).
@@ -85,7 +87,7 @@ def assert_file_not_exists(filepath: Union[str, os.PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_dir_not_exists(dirpath: Union[str, os.PathLike]) -> None:
+def assert_dir_not_exists(dirpath: str | os.PathLike) -> None:
     """Assert that directory does not exist.
 
     Parameters
@@ -105,13 +107,13 @@ def assert_dir_not_exists(dirpath: Union[str, os.PathLike]) -> None:
         raise AssertionError(message)
 
 
-def assert_shallow_dict_compare(a: Dict, b: Dict, message_start: str) -> None:
+def assert_shallow_dict_compare(a: dict, b: dict, message_start: str) -> None:
     """Assert that Directories ``a`` and ``b`` are the same.
 
     ``b`` is treated as the expected values that ``a`` shall abide by.
     Print helpful error with custom message start.
     """
-    mismatch: List[str] = []
+    mismatch: list[str] = []
 
     for b_key, b_value in b.items():
         if b_key not in a:

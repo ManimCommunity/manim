@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 
 # This module is intended to raise an error.

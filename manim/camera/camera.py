@@ -1,6 +1,8 @@
 """A camera converts the mobjects contained in a Scene into an array of pixels."""
 
 
+from __future__ import annotations
+
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
 import copy
@@ -1246,7 +1248,7 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, image: Union[Image.Image, pathlib.Path, str]):
+    def get_background_array(self, image: Image.Image | pathlib.Path | str):
         """Gets the background array that has the passed file_name.
 
         Parameters

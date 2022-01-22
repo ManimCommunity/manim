@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from manim.animation.animation import Animation, Wait
