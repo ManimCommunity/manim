@@ -426,7 +426,7 @@ class MobjectBase:
 
     def update_bounding_box(self):
         if self.has_submobjects():
-            points = np.concatenate(
+            points = np.vstack(
                 [
                     self.points,
                     *(
