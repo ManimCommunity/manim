@@ -343,7 +343,11 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Remove?
 #   Deprecate?
 #   Keep and add docs?
-@deprecated(since="v0.15.0", until="v0.16.0", message="Use Create then FadeOut to achieve this effect.")
+@deprecated(
+    since="v0.15.0",
+    until="v0.16.0",
+    message="Use Create then FadeOut to achieve this effect.",
+)
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
