@@ -26,7 +26,7 @@ class _FramesTester:
             # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
             if len(self._frames.shape) != 4:
                 self._frames = np.expand_dims(self._frames, axis=0)
-            print(self._frames.shape)
+            logger.debug(self._frames.shape)
             self._number_frames = np.ma.size(self._frames, axis=0)
             yield
             assert self._frames_compared == self._number_frames, (

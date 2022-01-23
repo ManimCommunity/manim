@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 from copy import copy
-from typing import Hashable, List, Optional, Tuple, Type, Union
+from typing import Hashable, Iterable, List, Optional, Tuple, Type, Union
 
 import networkx as nx
 import numpy as np
@@ -499,6 +499,78 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
     def __repr__(self: Graph) -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
+    def _create_vertex(
+        self,
+        vertex: Hashable,
+        position: np.ndarray | None = None,
+        label: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> tuple[Hashable, np.ndarray, dict, Mobject]:
+        if position is None:
+            position = self.get_center()
+
+        if vertex_config is None:
+            vertex_config = {}
+
+        if vertex in self.vertices:
+            raise ValueError(
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
+            )
+
+        if isinstance(label, (Mobject, OpenGLMobject)):
+            label = label
+        elif label is True:
+            label = MathTex(vertex, fill_color=label_fill_color)
+        elif vertex in self._labels:
+            label = self._labels[vertex]
+        else:
+            label = None
+
+        base_vertex_config = copy(self.default_vertex_config)
+        base_vertex_config.update(vertex_config)
+        vertex_config = base_vertex_config
+
+        if label is not None:
+            vertex_config["label"] = label
+            if vertex_type is Dot:
+                vertex_type = LabeledDot
+
+        if vertex_mobject is None:
+            vertex_mobject = vertex_type(**vertex_config)
+
+        vertex_mobject.move_to(position)
+
+        return (vertex, position, vertex_config, vertex_mobject)
+
+    def _add_created_vertex(
+        self,
+        vertex: Hashable,
+        position: np.ndarray,
+        vertex_config: dict,
+        vertex_mobject: Mobject,
+    ) -> Mobject:
+        if vertex in self.vertices:
+            raise ValueError(
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
+            )
+
+        self._graph.add_node(vertex)
+        self._layout[vertex] = position
+
+        if "label" in vertex_config:
+            self._labels[vertex] = vertex_config["label"]
+
+        self._vertex_config[vertex] = vertex_config
+
+        self.vertices[vertex] = vertex_mobject
+        self.vertices[vertex].move_to(position)
+        self.add(self.vertices[vertex])
+
+        return self.vertices[vertex]
+
     def _add_vertex(
         self,
         vertex: Hashable,
@@ -536,45 +608,71 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             The mobject to be used as the vertex. Overrides all other
             vertex customization options.
         """
-        if position is None:
-            position = self.get_center()
+        return self._add_created_vertex(
+            *self._create_vertex(
+                vertex=vertex,
+                position=position,
+                label=label,
+                label_fill_color=label_fill_color,
+                vertex_type=vertex_type,
+                vertex_config=vertex_config,
+                vertex_mobject=vertex_mobject,
+            )
+        )
+
+    def _create_vertices(
+        self: Graph,
+        *vertices: Hashable,
+        positions: dict | None = None,
+        labels: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+    ) -> Iterable[tuple[Hashable, np.ndarray, dict, Mobject]]:
+        if positions is None:
+            positions = {}
+        if vertex_mobjects is None:
+            vertex_mobjects = {}
+
+        graph_center = self.get_center()
+        base_positions = {v: graph_center for v in vertices}
+        base_positions.update(positions)
+        positions = base_positions
+
+        if isinstance(labels, bool):
+            labels = {v: labels for v in vertices}
+        else:
+            assert isinstance(labels, dict)
+            base_labels = {v: False for v in vertices}
+            base_labels.update(labels)
+            labels = base_labels
 
         if vertex_config is None:
-            vertex_config = {}
+            vertex_config = copy(self.default_vertex_config)
 
-        if vertex in self.vertices:
-            raise ValueError(
-                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
-            )
-
-        self._graph.add_node(vertex)
-        self._layout[vertex] = position
-
-        if isinstance(label, (Mobject, OpenGLMobject)):
-            self._labels[vertex] = label
-        elif label is True:
-            self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
-
+        assert isinstance(vertex_config, dict)
         base_vertex_config = copy(self.default_vertex_config)
-        base_vertex_config.update(vertex_config)
-        vertex_config = base_vertex_config
+        base_vertex_config.update(
+            {key: val for key, val in vertex_config.items() if key not in vertices},
+        )
+        vertex_config = {
+            v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
+            for v in vertices
+        }
 
-        if vertex in self._labels:
-            vertex_config["label"] = self._labels[vertex]
-            if vertex_type is Dot:
-                vertex_type = LabeledDot
-
-        self._vertex_config[vertex] = vertex_config
-
-        if vertex_mobject is None:
-            self.vertices[vertex] = vertex_type(**vertex_config)
-        else:
-            self.vertices[vertex] = vertex_mobject
-
-        self.vertices[vertex].move_to(position)
-        self.add(self.vertices[vertex])
-
-        return self.vertices[vertex]
+        return [
+            self._create_vertex(
+                v,
+                position=positions[v],
+                label=labels[v],
+                label_fill_color=label_fill_color,
+                vertex_type=vertex_type,
+                vertex_config=vertex_config[v],
+                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
+            )
+            for v in vertices
+        ]
 
     def add_vertices(
         self: Graph,
@@ -614,48 +712,17 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             values are mobjects that should be used as vertices. Overrides
             all other vertex customization options.
         """
-        if positions is None:
-            positions = {}
-        if vertex_mobjects is None:
-            vertex_mobjects = {}
-
-        graph_center = self.get_center()
-        base_positions = {v: graph_center for v in vertices}
-        base_positions.update(positions)
-        positions = base_positions
-
-        if isinstance(labels, bool):
-            labels = {v: labels for v in vertices}
-        else:
-            assert isinstance(labels, dict)
-            base_labels = {v: False for v in vertices}
-            base_labels.update(labels)
-            labels = base_labels
-
-        if vertex_config is None:
-            vertex_config = copy(self.default_vertex_config)
-
-        assert isinstance(vertex_config, dict)
-        base_vertex_config = copy(self.default_vertex_config)
-        base_vertex_config.update(
-            {key: val for key, val in vertex_config.items() if key not in vertices},
-        )
-        vertex_config = {
-            v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
-            for v in vertices
-        }
-
         return [
-            self._add_vertex(
-                v,
-                position=positions[v],
-                label=labels[v],
+            self._add_created_vertex(*v)
+            for v in self._create_vertices(
+                *vertices,
+                positions=positions,
+                labels=labels,
                 label_fill_color=label_fill_color,
                 vertex_type=vertex_type,
-                vertex_config=vertex_config[v],
-                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
+                vertex_config=vertex_config,
+                vertex_mobjects=vertex_mobjects,
             )
-            for v in vertices
         ]
 
     @override_animate(add_vertices)
@@ -665,9 +732,17 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         animation = anim_args.pop("animation", Create)
 
-        vertex_mobjects = self.add_vertices(*args, **kwargs)
+        vertex_mobjects = self._create_vertices(*args, **kwargs)
+
+        def on_finish(scene: Scene):
+            for v in vertex_mobjects:
+                scene.remove(v[-1])
+                self._add_created_vertex(*v)
+
         return AnimationGroup(
-            *(animation(v, **anim_args) for v in vertex_mobjects), group=self
+            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
+            group=self,
+            _on_finish=on_finish,
         )
 
     def _remove_vertex(self, vertex):

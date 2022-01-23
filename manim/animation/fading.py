@@ -137,6 +137,9 @@ class FadeIn(_Fade):
 
     """
 
+    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+        super().__init__(*mobjects, introducer=True, **kwargs)
+
     def create_target(self):
         return self.mobject
 
