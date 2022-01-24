@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from unittest.mock import Mock
+
 import pytest
 
 from manim.animation.animation import Animation, Wait
@@ -18,6 +20,7 @@ def test_succession_timing():
     animation_4s = FadeOut(line, shift=DOWN, run_time=4.0)
     succession = Succession(animation_1s, animation_4s)
     assert succession.get_run_time() == 5.0
+    succession._setup_scene(Mock())
     succession.begin()
     assert succession.active_index == 0
     # The first animation takes 20% of the total run time.
@@ -49,6 +52,7 @@ def test_succession_in_succession_timing():
     )
     assert nested_succession.get_run_time() == 5.0
     assert succession.get_run_time() == 10.0
+    succession._setup_scene(Mock())
     succession.begin()
     succession.interpolate(0.1)
     assert succession.active_index == 0
@@ -106,7 +110,8 @@ def test_animationgroup_with_wait():
 
 
 @pytest.mark.parametrize(
-    "animation_remover, animation_group_remover", [(False, True), (True, False)]
+    "animation_remover, animation_group_remover",
+    [(False, True), (True, False)],
 )
 def test_animationgroup_is_passing_remover_to_animations(
     animation_remover, animation_group_remover
@@ -131,7 +136,9 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     circ_animation = Write(Circle(), remover=True)
     polygon_animation = Create(RegularPolygon(5))
     animation_group = AnimationGroup(
-        AnimationGroup(sqr_animation, polygon_animation), circ_animation, remover=True
+        AnimationGroup(sqr_animation, polygon_animation),
+        circ_animation,
+        remover=True,
     )
 
     scene.play(animation_group)
