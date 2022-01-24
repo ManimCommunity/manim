@@ -1945,7 +1945,8 @@ class Mobject(MobjectBase):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self._points = path_func(mobject1.points, mobject2.points, alpha)
+        self._bounding_box = path_func(mobject1.bounding_box, mobject2.bounding_box, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
