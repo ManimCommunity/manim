@@ -419,7 +419,7 @@ class ThreeDCamera(Camera):
         """
         for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_orientation_mobjects:
-                self.fixed_orientation_mobjects.remove(mobject)
+                del self.fixed_orientation_mobjects[mobject]
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
         """If a mobject was fixed in frame by passing it through
