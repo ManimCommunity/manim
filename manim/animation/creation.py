@@ -404,7 +404,7 @@ class SpiralIn(Animation):
     Parameters
     ----------
     shapes
-        The MObject on which to be operated.
+        The Mobject on which to be operated.
 
     scale_factor
         The factor used for scaling the effect.
