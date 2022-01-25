@@ -93,13 +93,13 @@ if TYPE_CHECKING:
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession
+from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
-from ..constants import *
 
 
 class ShowPartial(Animation):
