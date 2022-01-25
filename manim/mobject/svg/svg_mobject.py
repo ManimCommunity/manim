@@ -486,11 +486,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The Mobject to transform.
         """
 
-        if element.hasAttribute("x") and element.hasAttribute("y"):
-            x = self._attribute_to_float(element.getAttribute("x"))
-            # Flip y
-            y = -self._attribute_to_float(element.getAttribute("y"))
-            mobject.shift(x * RIGHT + y * UP)
+        x, y = (
+            self._attribute_to_float(element.getAttribute(key))
+            if element.hasAttribute(key)
+            else 0.0
+            for key in ("x", "y")
+        )
+        mobject.shift(x * RIGHT + y * DOWN)
 
         transform_attr_value = element.getAttribute("transform")
 
