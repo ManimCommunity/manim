@@ -99,6 +99,7 @@ from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
+from ..constants import *
 
 
 class ShowPartial(Animation):
@@ -466,7 +467,6 @@ class SpiralIn(Animation):
         super().__init__(shapes, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
-        TAU = 2 * np.pi
         for shape in self.shapes:
             shape.restore()
             shape.shift((shape.final_position - shape.initial_position) * alpha)
