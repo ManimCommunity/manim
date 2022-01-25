@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.tex\\_mobject.TexSymbol``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.TexSymbol:1
-msgid "Bases: :class:`manim.mobject.svg.svg_path.SVGPathMobject`"
+msgid "Bases: :py:class:`manim.mobject.svg.svg_path.SVGPathMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.TexSymbol:1
@@ -31,7 +31,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.TexSymbol.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.tex_mobject.TexSymbol.rst:28:<autosummary>:1

@@ -1,5 +1,7 @@
 """Utilities for Manim's logo and banner."""
 
+from __future__ import annotations
+
 __all__ = ["ManimBanner"]
 
 from ..animation.animation import override_animation
@@ -90,7 +92,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs) -> "ManimBanner":
+    def scale(self, scale_factor: float, **kwargs) -> ManimBanner:
         """Scale the banner by the specified scale factor.
 
         Parameters

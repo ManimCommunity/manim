@@ -4,11 +4,7 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+from __future__ import annotations
 
 import os
 import sys
@@ -16,6 +12,12 @@ from distutils.sysconfig import get_python_lib
 from pathlib import Path
 
 import manim
+
+# -- Path setup --------------------------------------------------------------
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+
 
 sys.path.insert(0, os.path.abspath("."))
 
@@ -45,6 +47,7 @@ extensions = [
     "manim.utils.docbuild.manim_directive",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
+    "sphinxcontrib.programoutput",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
@@ -69,7 +72,7 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # This pattern also affects html_static_path and html_extra_path.
 html_extra_path = ["robots.txt"]
 
-exclude_patterns = []
+exclude_patterns: list = []
 
 # -- Options for internationalization ----------------------------------------
 # Set the destination directory of the localized po files

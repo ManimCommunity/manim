@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Elbow``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Elbow:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Elbow:1
@@ -42,10 +42,6 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Elbow:24
-msgid ":class:`RightAngle`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:14
 msgid "Methods"
 msgstr ""
@@ -55,7 +51,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.Elbow.rst:28:<autosummary>:1

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.Line3D``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D:1
-msgid "Bases: :class:`manim.mobject.three_dimensions.Cylinder`"
+msgid "Bases: :py:class:`manim.mobject.three_dimensions.Cylinder`"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D:1
@@ -80,7 +80,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Line3D.get_end:1:<autosummary>:1

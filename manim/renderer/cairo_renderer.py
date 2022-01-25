@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 import typing
 from typing import Any
@@ -201,7 +203,7 @@ class CairoRenderer:
         self,
         scene,
         static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Iterable[Mobject]:
+    ) -> typing.Iterable[Mobject] | None:
         """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer
         static mobjects.
 
@@ -219,7 +221,7 @@ class CairoRenderer:
         """
         if not static_mobjects:
             self.static_image = None
-            return
+            return None
         self.update_frame(scene, mobjects=static_mobjects)
         self.static_image = self.get_frame()
         return self.static_image

@@ -5,6 +5,8 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, and arguments for the render command.
 
 """
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
@@ -30,7 +32,7 @@ from .render_options import render_options
 @click.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
-@render_options
+@render_options  # type: ignore
 @ease_of_access_options
 def render(
     **args,

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.brace.BraceLabel``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.BraceLabel:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:32:<autosummary>:1

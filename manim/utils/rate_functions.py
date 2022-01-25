@@ -84,6 +84,8 @@ There are primarily 3 kinds of standard easing functions:
 """
 
 
+from __future__ import annotations
+
 __all__ = [
     "linear",
     "smooth",

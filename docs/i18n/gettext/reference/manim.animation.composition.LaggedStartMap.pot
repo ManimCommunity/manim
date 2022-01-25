@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.composition.LaggedStartMap``"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.LaggedStartMap:1
-msgid "Bases: :class:`manim.animation.composition.LaggedStart`"
+msgid "Bases: :py:class:`manim.animation.composition.LaggedStart`"
 msgstr ""
 
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform\\_matching\\_parts.TransformM
 msgstr ""
 
 #: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingTex:1
-msgid "Bases: :class:`manim.animation.transform_matching_parts.TransformMatchingAbstractBase`"
+msgid "Bases: :py:class:`manim.animation.transform_matching_parts.TransformMatchingAbstractBase`"
 msgstr ""
 
 #: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingTex:1

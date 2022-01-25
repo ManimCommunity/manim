@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Arc``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
-msgid "Bases: :class:`manim.mobject.geometry.TipableVMobject`"
+msgid "Bases: :py:class:`manim.mobject.geometry.TipableVMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
@@ -49,7 +49,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1

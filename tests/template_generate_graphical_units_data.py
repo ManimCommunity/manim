@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 from tests.helpers.graphical_units import set_test_scene
 

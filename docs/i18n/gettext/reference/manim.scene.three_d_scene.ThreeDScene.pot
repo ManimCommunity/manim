@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.three\\_d\\_scene.ThreeDScene``"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene:1
-msgid "Bases: :class:`manim.scene.scene.Scene`"
+msgid "Bases: :py:class:`manim.scene.scene.Scene`"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene:1
@@ -32,6 +32,11 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.ThreeDScene.rst:31:<autosummary>:1
 msgid "This method is used to prevent the rotation and tilting of mobjects as the camera moves around."
+msgstr ""
+
+#: ../../source/reference/manim.scene.three_d_scene.ThreeDScene.rst:31:<autosummary>:1
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_3dillusion_camera_rotation:1
+msgid "This method creates a 3D camera rotation illusion around the current camera orientation."
 msgstr ""
 
 #: ../../source/reference/manim.scene.three_d_scene.ThreeDScene.rst:31:<autosummary>:1
@@ -87,6 +92,7 @@ msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:0
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_orientation_mobjects:0
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_3dillusion_camera_rotation:0
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_ambient_camera_rotation:0
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.get_moving_mobjects:0
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.move_camera:0
@@ -119,6 +125,18 @@ msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_orientation_mobjects:11
 msgid "use_static_center_func : bool center_func : function"
+msgstr ""
+
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_3dillusion_camera_rotation:4
+msgid "The rate at which the camera rotation illusion should operate."
+msgstr ""
+
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_3dillusion_camera_rotation:5
+msgid "The polar angle the camera should move around. Defaults to the current phi angle."
+msgstr ""
+
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_3dillusion_camera_rotation:7
+msgid "The azimutal angle the camera should move around. Defaults to the current theta angle."
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.begin_ambient_camera_rotation:4

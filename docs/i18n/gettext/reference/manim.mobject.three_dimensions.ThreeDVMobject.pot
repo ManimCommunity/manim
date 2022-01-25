@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.ThreeDVMobject``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.ThreeDVMobject:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.ThreeDVMobject.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.ThreeDVMobject.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.ThreeDVMobject.rst:28:<autosummary>:1

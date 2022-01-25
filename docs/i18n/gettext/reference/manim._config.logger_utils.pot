@@ -69,10 +69,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.make_logger:11
-msgid ":class:`logging.Logger`, :class:`rich.Console`, :class:`rich.Console`"
-msgstr ""
-
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.make_logger:16
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:11
 msgid "Notes"
@@ -88,14 +84,6 @@ msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.parse_theme:6
 msgid "The rich theme to be used by the manim logger."
-msgstr ""
-
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.parse_theme:7
-msgid ":class:`rich.Theme`"
-msgstr ""
-
-#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.parse_theme:9
-msgid ":func:`make_logger`"
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.set_file_logger:1

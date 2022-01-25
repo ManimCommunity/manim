@@ -65,14 +65,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.compile_tex:11
-#: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.convert_to_svg:11
-#: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.generate_tex_file:12
-#: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.tex_compilation_command:13
-#: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.tex_to_svg_file:11
-msgid ":class:`str`"
-msgstr ""
-
 #: ../../../manim/utils/tex_file_writing.py:docstring of manim.utils.tex_file_writing.convert_to_svg:1
 msgid "Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm."
 msgstr ""

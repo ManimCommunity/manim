@@ -19,14 +19,11 @@ msgid "Classes"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Applies a matrix transform to an mobject."
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
-msgid "Method is a method of Mobject, ``args`` are arguments for that method."
+msgid "Animates a mobject by applying a method."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1

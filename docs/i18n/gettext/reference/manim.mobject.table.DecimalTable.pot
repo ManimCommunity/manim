@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.table.DecimalTable``"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.DecimalTable:1
-msgid "Bases: :class:`manim.mobject.table.Table`"
+msgid "Bases: :py:class:`manim.mobject.table.Table`"
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.DecimalTable:1
@@ -59,7 +59,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.DecimalTable.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.table.DecimalTable.rst:28:<autosummary>:1

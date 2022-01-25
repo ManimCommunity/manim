@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VGroup``"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
@@ -49,7 +49,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
@@ -78,10 +78,6 @@ msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:7
-msgid ":class:`VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0

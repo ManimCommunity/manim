@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.update.UpdateFromAlphaFunc``"
 msgstr ""
 
 #: ../../../manim/animation/update.py:docstring of manim.animation.update.UpdateFromAlphaFunc:1
-msgid "Bases: :class:`manim.animation.update.UpdateFromFunc`"
+msgid "Bases: :py:class:`manim.animation.update.UpdateFromFunc`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.update.UpdateFromAlphaFunc.rst:14

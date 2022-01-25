@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.scale.LinearBase``"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:1
-msgid "Bases: :class:`manim.utils.scale._ScaleBase`"
+msgid "Bases: :py:class:`manim.utils.scale._ScaleBase`"
 msgstr ""
 
 #: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:1

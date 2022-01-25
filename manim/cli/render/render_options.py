@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 import click
@@ -62,7 +64,7 @@ render_options = option_group(
         "--quality",
         default=None,
         type=click.Choice(
-            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),
+            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
             case_sensitive=False,
         ),
         help="Render quality at the follow resolution framerates, respectively: "

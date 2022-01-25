@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.tex.TexTemplate``"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:1
@@ -67,17 +67,6 @@ msgstr ""
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:0
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:0
 msgid "type"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:20
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:26
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:32
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:38
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:44
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate:50
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression:7
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:9
-msgid ":class:`str`"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:14
