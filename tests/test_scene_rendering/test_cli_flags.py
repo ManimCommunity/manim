@@ -323,7 +323,7 @@ def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
     )
 
     expected_gif_path = (
-        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.gif"
+        tmp_path / "videos" / "simple_scenes" / "480p15" / add_version_before_extension("SquareToCircle.gif")
     )
     assert expected_gif_path.exists(), "gif file not found at " + str(expected_gif_path)
 
