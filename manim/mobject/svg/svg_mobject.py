@@ -504,7 +504,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
-        transforms = re.findall(transform_regex, transform_attr_value)
+        transforms = re.findall(transform_regex, transform_attr_value)[::-1]
 
         number_regex = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
 
