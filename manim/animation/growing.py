@@ -79,7 +79,7 @@ class GrowFromPoint(Transform):
     ) -> None:
         self.point = point
         self.point_color = point_color
-        super().__init__(mobject, **kwargs)
+        super().__init__(mobject, introducer=True, **kwargs)
 
     def create_target(self) -> Mobject:
         return self.mobject
