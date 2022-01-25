@@ -179,7 +179,7 @@ def open_file(file_path, in_browser=False):
             file_path = file_path if not in_browser else os.path.dirname(file_path)
         elif current_os == "Darwin":
             if is_gif_format():
-                commands = ["ffplay", "-loglevel", config['ffmpeg_loglevel'].lower()]
+                commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]
             else:
                 commands = ["open"] if not in_browser else ["open", "-R"]
         else:
