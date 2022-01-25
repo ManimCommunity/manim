@@ -133,8 +133,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         any submobjects within self.mobjects.
         """
         doc = minidom_parse(self.file_path)
-        for svg in doc.getElementsByTagName("svg"):
-            mobjects = self._get_mobjects_from(svg, self.generate_style())
+        for node in doc.childNodes:
+            if node.tagName != "svg":
+                continue
+            mobjects = self._get_mobjects_from(node, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
