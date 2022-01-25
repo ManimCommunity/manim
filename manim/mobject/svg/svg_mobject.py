@@ -133,8 +133,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         any submobjects within self.mobjects.
         """
         doc = minidom_parse(self.file_path)
-        for svg in doc.getElementsByTagName("svg"):
-            mobjects = self._get_mobjects_from(svg, self.generate_style())
+        for node in doc.childNodes:
+            if not isinstance(node, MinidomElement) or node.tagName != "svg":
+                continue
+            mobjects = self._get_mobjects_from(node, self.generate_style())
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -484,11 +486,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The Mobject to transform.
         """
 
-        if element.hasAttribute("x") and element.hasAttribute("y"):
-            x = self._attribute_to_float(element.getAttribute("x"))
-            # Flip y
-            y = -self._attribute_to_float(element.getAttribute("y"))
-            mobject.shift(x * RIGHT + y * UP)
+        x, y = (
+            self._attribute_to_float(element.getAttribute(key))
+            if element.hasAttribute(key)
+            else 0.0
+            for key in ("x", "y")
+        )
+        mobject.shift(x * RIGHT + y * DOWN)
 
         transform_attr_value = element.getAttribute("transform")
 
@@ -502,7 +506,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
-        transforms = re.findall(transform_regex, transform_attr_value)
+        transforms = re.findall(transform_regex, transform_attr_value)[::-1]
 
         number_regex = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
 
