@@ -144,7 +144,10 @@ class SceneFileWriter:
             if is_gif_format():
                 self.gif_file_path = os.path.join(
                     movie_dir,
-                    add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
+                    add_extension_if_not_present(
+                        add_extension_if_not_present(self.output_name),
+                        GIF_FILE_EXTENSION,
+                    ),
                 )
 
             self.partial_movie_directory = guarantee_existence(
