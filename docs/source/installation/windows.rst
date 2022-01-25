@@ -123,7 +123,7 @@ smaller distributions of LaTeX like:
 - Using Chocolatey:
 If you used Chocolatey to install manim or are already a chocolatey user,
 then you can simply run ``choco install manim-latex``.
-It is a dedicated package for Manim based on TinyTeX which contains 
+It is a dedicated package for Manim based on TinyTeX which contains
 all the required packages that Manim interacts with.
 
 - Manual Installation:
@@ -133,7 +133,7 @@ then ``scoop install tinytex``) alternative installation instructions can be fou
 Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``.
 Therefore we only recommend this option if you know what you are doing.
 
-The full list of LaTeX packages which Manim interacts with in some way 
+The full list of LaTeX packages which Manim interacts with in some way
 (a subset might be sufficient for your particular application) are::
 
    amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
