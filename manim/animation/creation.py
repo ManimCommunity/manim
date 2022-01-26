@@ -431,6 +431,9 @@ class SpiralIn(Animation):
     scale_factor
         The factor used for scaling the effect.
 
+    fade_in_rate
+        How quickly to fade in sub-Mobjects as they fly inward.
+
     Examples
     --------
     .. manim :: SpiralInExample
@@ -449,11 +452,13 @@ class SpiralIn(Animation):
         self,
         shapes: Mobject,
         scale_factor: float = 8,
+        fade_in_rate = 3,
         **kwargs,
     ) -> None:
         self.shapes = shapes
         self.scale_factor = scale_factor
         self.shape_center = shapes.get_center()
+        self.fade_in_rate = fade_in_rate
         for shape in shapes:
             shape.final_position = shape.get_center()
             shape.initial_position = (
@@ -471,7 +476,7 @@ class SpiralIn(Animation):
             shape.shift((shape.final_position - shape.initial_position) * alpha)
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-            shape.set_opacity(min(1, alpha * 3))
+            shape.set_opacity(min(1, alpha * self.fade_in_rate))
 
 
 class ShowIncreasingSubsets(Animation):
