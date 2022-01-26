@@ -2511,7 +2511,7 @@ class Square(Rectangle):
     side_length : :class:`float`, optional
         The length of the sides of the square.
     kwargs : Any
-        Additional arguments to be passed to :class:`Square`
+        Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
     --------
