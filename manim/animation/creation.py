@@ -448,18 +448,17 @@ class SpiralIn(Animation):
     def __init__(
         self,
         shapes: Mobject,
-        scale_factor: float = 1,
+        scale_factor: float = 8,
         **kwargs,
     ) -> None:
         self.shapes = shapes
         self.scale_factor = scale_factor
-        expansion_factor = 8 * self.scale_factor
         self.shape_center = shapes.get_center()
         for shape in shapes:
             shape.final_position = shape.get_center()
             shape.initial_position = (
                 shape.final_position
-                + (shape.final_position - self.shape_center) * expansion_factor
+                + (shape.final_position - self.shape_center) * self.scale_factor
             )
             shape.move_to(shape.initial_position)
             shape.save_state()
