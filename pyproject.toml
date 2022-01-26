@@ -51,10 +51,10 @@ mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "^2.26.0"
 dearpygui = { version = "^0.8", optional = true }
-screeninfo = "^0.6.7"
 skia-pathops = "^0.7.0"
 isosurfaces = "0.1.0"
 srt = "^3.5.0"
+screeninfo = "^0.8"
 Pygments = "^2.10.0"
 
 [tool.poetry.extras]
