@@ -452,7 +452,7 @@ class SpiralIn(Animation):
         self,
         shapes: Mobject,
         scale_factor: float = 8,
-        fade_in_rate = 3,
+        fade_in_rate=3,
         **kwargs,
     ) -> None:
         self.shapes = shapes
