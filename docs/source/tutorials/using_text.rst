@@ -446,12 +446,12 @@ to write using :class:`~.TransformMatchingTex`.
 Using ``index_labels`` to work with complicated strings
 =======================================================
 
-You might sometimes be working with a very complicated ``MathTex`` mobject
+You might sometimes be working with a very complicated :class:`~.MathTex` mobject
 that makes it difficult to work with its individual components. This is
-where a debugging function :class:`~.index_labels` is very useful.
+where the debugging function :func:`.index_labels` is very useful.
 
-`index_labels` shows the index of a mobject's submobjects, allowing you
-to easily find the components of the mobject you'd like to change.
+The method shows the index of a mobject's submobjects, allowing you
+to easily find the components of the mobject you would like to change.
 
 .. manim:: IndexLabelsMathTex
     :save_last_frame:

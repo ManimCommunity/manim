@@ -21,13 +21,13 @@ def print_family(mobject, n_tabs=0):
 
 
 def index_labels(
-    mobject: "Mobject",
+    mobject: Mobject,
     label_height: float = 0.15,
     background_stroke_width=5,
     background_stroke_color=BLACK,
     **kwargs
 ):
-    r"""Returns a :class:`~.VGroup` of :class:`~.Integer`s
+    r"""Returns a :class:`~.VGroup` of :class:`~.Integer` mobjects
     that shows the index of each submobject.
 
     Useful for working with parts of complicated mobjects.
