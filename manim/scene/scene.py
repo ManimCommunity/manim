@@ -348,18 +348,26 @@ class Scene:
         for func in self.updaters:
             func(dt)
 
-    def should_update_mobjects(self):
+    def should_update_mobjects(self) -> bool:
         """
-        Returns True if any mobject in Scene is being updated
-        or if the scene has always_update_mobjects set to true.
+        Returns True if the mobjects of this scene should be updated.
 
-        Returns
-        -------
-            bool
+        In particular, this checks whether
+
+        - the :attr:`always_update_mobjects` attribute of :class:`.Scene`
+          is set to ``True``,
+        - the :class:`.Scene` itself has time-based updaters attached,
+        - any mobject in this :class:`.Scene` has time-based updaters attached.
+
+        This is only called when a single Wait animation is played.
         """
-        return self.always_update_mobjects or any(
-            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
-        )
+        wait_animation = self.animations[0]
+        if wait_animation.is_static_wait is None:
+            should_update = self.always_update_mobjects or self.updaters or any(
+                [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
+            )
+            wait_animation.is_static_wait = not should_update
+        return not wait_animation.is_static_wait
 
     def get_top_level_mobjects(self):
         """
@@ -953,8 +961,8 @@ class Scene:
                 offset=-run_time + subcaption_offset,
             )
 
-    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.play(Wait(run_time=duration, stop_condition=stop_condition))
+    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None, frozen_frame=None):
+        self.play(Wait(run_time=duration, stop_condition=stop_condition, frozen_frame=frozen_frame))
 
     def wait_until(self, stop_condition, max_time=60):
         """
@@ -1001,23 +1009,23 @@ class Scene:
         self.moving_mobjects = []
         self.static_mobjects = []
 
-        if config.renderer != "opengl":
-            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+            wait_animation = self.animations[0]
+            if self.should_update_mobjects():
                 self.update_mobjects(dt=0)  # Any problems with this?
-                if self.should_update_mobjects():
-                    self.stop_condition = self.animations[0].stop_condition
-                else:
-                    self.duration = self.animations[0].duration
-                    # Static image logic when the wait is static is done by the renderer, not here.
-                    self.animations[0].is_static_wait = True
-                    return None
+                self.stop_condition = self.animations[0].stop_condition
             else:
-                # Paint all non-moving objects onto the screen, so they don't
-                # have to be rendered every frame
-                (
-                    self.moving_mobjects,
-                    self.static_mobjects,
-                ) = self.get_moving_and_static_mobjects(self.animations)
+                self.duration = self.animations[0].duration
+                # Static image logic when the wait is static is done by the renderer, not here.
+                self.animations[0].is_static_wait = True
+                return None
+        elif config.renderer != "opengl":
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
         self.duration = self.get_run_time(self.animations)
         return self
 
