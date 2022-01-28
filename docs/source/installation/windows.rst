@@ -6,7 +6,7 @@ package manager like `Chocolatey <https://chocolatey.org/>`__
 or `Scoop <https://scoop.sh>`__. If you are not afraid of editing
 your System's ``PATH``, a manual installation is also possible.
 In fact, if you already have an existing Python
-installation (3.7 or newer), it might be the easiest way to get
+installation (3.7-3.10), it might be the easiest way to get
 everything up and running.
 
 If you choose to use one of the package managers, please follow
@@ -19,7 +19,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.7 or above) and ``ffmpeg``
+Manim requires a recent version of Python (3.7–3.10) and ``ffmpeg``
 in order to work.
 
 Chocolatey
@@ -58,10 +58,10 @@ Manual Installation
 *******************
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.7 or above) and FFmpeg.
+Python 3 (3.7–3.10) and FFmpeg.
 
 **Python:** Head over to https://www.python.org, download an installer
-for Python 3.7 (or newer), and follow its instructions to get Python
+for Python (3.7–3.10), and follow its instructions to get Python
 installed on your system.
 
 .. note::

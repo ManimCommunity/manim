@@ -69,8 +69,6 @@ Mobjects
    manim.mobject.vector_field
    manim.mobject.svg.brace
    manim.mobject.svg.code_mobject
-   manim.mobject.svg.style_utils
-   manim.mobject.svg.svg_path
    manim.mobject.svg.svg_mobject
    manim.mobject.svg.tex_mobject
    manim.mobject.svg.text_mobject
@@ -85,8 +83,6 @@ Scenes
 
 .. inheritance-diagram::
    manim.scene.moving_camera_scene
-   manim.scene.reconfigurable_scene
-   manim.scene.sample_space_scene
    manim.scene.scene
    manim.scene.scene_file_writer
    manim.scene.three_d_scene

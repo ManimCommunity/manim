@@ -1,0 +1,49 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.color.Colors.rst:2
+msgid "Colors"
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.Colors.rst:4
+msgid "Qualified name: ``manim.utils.color.Colors``"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:1
+msgid "Bases: :py:class:`enum.Enum`"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:1
+msgid "A list of pre-defined colors."
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:119
+msgid "The preferred way of using these colors is by importing their constants from manim:"
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:127
+msgid "Note this way uses the name of the colors in UPPERCASE."
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:129
+msgid "Alternatively, you can also import this Enum directly and use its members directly, through the use of :code:`color.value`.  Note this way uses the name of the colors in lowercase."
+msgstr ""
+
+#: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:141
+msgid "The colors of type \"C\" have an alias equal to the colorname without a letter, e.g. GREEN = GREEN_C"
+msgstr ""
+
+#: ../../source/reference/manim.utils.color.Colors.rst:16
+msgid "Attributes"
+msgstr ""
+
+

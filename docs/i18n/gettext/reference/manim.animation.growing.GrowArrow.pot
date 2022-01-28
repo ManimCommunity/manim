@@ -1,0 +1,49 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.growing.GrowArrow.rst:2
+msgid "GrowArrow"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.GrowArrow.rst:4
+msgid "Qualified name: ``manim.animation.growing.GrowArrow``"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:1
+msgid "Bases: :py:class:`manim.animation.growing.GrowFromPoint`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:1
+msgid "Introduce an :class:`~.Arrow` by growing it from its start toward its tip."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:3
+msgid "The arrow to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:4
+msgid "Initial color of the arrow before growing to its full size. Leave empty to match arrow's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:7
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.GrowArrow.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.GrowArrow.rst:22
+msgid "Attributes"
+msgstr ""
+
+

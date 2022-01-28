@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 import click
@@ -88,6 +90,12 @@ global_options = option_group(
         "--force_window",
         is_flag=True,
         help="Force window to open when using the opengl renderer, intended for debugging as it may impact performance",
+        default=False,
+    ),
+    option(
+        "--dry_run",
+        is_flag=True,
+        help="Renders animations without outputting image or video files and disables the window",
         default=False,
     ),
 )

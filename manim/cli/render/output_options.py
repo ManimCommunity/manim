@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import click
 from cloup import option, option_group
 

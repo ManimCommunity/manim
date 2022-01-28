@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tempfile
 from pathlib import Path
 
@@ -121,7 +123,9 @@ def test_temporary_dry_run(using_opengl_renderer):
 
 def test_dry_run_with_png_format(using_opengl_renderer):
     """Test that there are no exceptions when running a png without output"""
-    with tempconfig({"write_to_movie": False, "disable_caching": True}):
+    with tempconfig(
+        {"dry_run": True, "write_to_movie": False, "disable_caching": True}
+    ):
         assert config["dry_run"] is True
         scene = MyScene()
         scene.render()
@@ -129,7 +133,9 @@ def test_dry_run_with_png_format(using_opengl_renderer):
 
 def test_dry_run_with_png_format_skipped_animations(using_opengl_renderer):
     """Test that there are no exceptions when running a png without output and skipped animations"""
-    with tempconfig({"write_to_movie": False, "disable_caching": True}):
+    with tempconfig(
+        {"dry_run": True, "write_to_movie": False, "disable_caching": True}
+    ):
         assert config["dry_run"] is True
         scene = MyScene(skip_animations=True)
         scene.render()

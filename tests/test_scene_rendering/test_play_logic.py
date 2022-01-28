@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from functools import wraps
 from pathlib import Path
@@ -73,6 +75,7 @@ def test_t_values_with_cached_data(using_temp_config):
     scene = SceneWithMultipleCalls()
     # Mocking the file_writer will skip all the writing process.
     scene.renderer.file_writer = Mock(scene.renderer.file_writer)
+    scene.renderer.update_skipping_status = Mock()
     # Simulate that all animations are cached.
     scene.renderer.file_writer.is_already_cached.return_value = True
     scene.update_to_time = Mock()
