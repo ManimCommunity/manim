@@ -363,8 +363,15 @@ class Scene:
         """
         wait_animation = self.animations[0]
         if wait_animation.is_static_wait is None:
-            should_update = self.always_update_mobjects or self.updaters or any(
-                [mob.has_time_based_updater() for mob in self.get_mobject_family_members()],
+            should_update = (
+                self.always_update_mobjects
+                or self.updaters
+                or any(
+                    [
+                        mob.has_time_based_updater()
+                        for mob in self.get_mobject_family_members()
+                    ],
+                )
             )
             wait_animation.is_static_wait = not should_update
         return not wait_animation.is_static_wait
@@ -962,7 +969,13 @@ class Scene:
             )
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None, frozen_frame=None):
-        self.play(Wait(run_time=duration, stop_condition=stop_condition, frozen_frame=frozen_frame))
+        self.play(
+            Wait(
+                run_time=duration,
+                stop_condition=stop_condition,
+                frozen_frame=frozen_frame,
+            )
+        )
 
     def wait_until(self, stop_condition, max_time=60):
         """

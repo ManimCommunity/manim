@@ -532,12 +532,13 @@ class Wait(Animation):
     kwargs
         Keyword arguments to be passed to the parent class, :class:`.Animation`.
     """
+
     def __init__(
-        self, 
-        run_time: float = 1, 
+        self,
+        run_time: float = 1,
         stop_condition: Callable[[], bool] | None = None,
         frozen_frame: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         if stop_condition and frozen_frame:
             raise ValueError("A static Wait animation cannot have a stop condition.")
