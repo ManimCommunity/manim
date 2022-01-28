@@ -11,7 +11,6 @@ from ..assert_utils import assert_shallow_dict_compare
 from ..helpers.video_utils import (
     get_section_dir_layout,
     get_section_index,
-    save_control_data_from_video,
 )
 
 
