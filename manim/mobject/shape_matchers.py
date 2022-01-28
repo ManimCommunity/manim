@@ -1,14 +1,19 @@
 """Mobjects used to mark and annotate other mobjects."""
 
+from __future__ import annotations
+
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 from typing import Optional
 
+from manim.utils.color import Color
+
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import BLACK, RED, YELLOW, Color
+from ..utils.color import BLACK, RED, YELLOW, Colors
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -52,7 +57,8 @@ class SurroundingRectangle(RoundedRectangle):
 
 
 class BackgroundRectangle(SurroundingRectangle):
-    """A background rectangle
+    """A background rectangle. Its default color is the background color
+    of the scene.
 
     Examples
     --------
@@ -79,13 +85,16 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color=BLACK,
-        stroke_width=0,
-        stroke_opacity=0,
-        fill_opacity=0.75,
-        buff=0,
+        color: Colors | None = None,
+        stroke_width: float = 0,
+        stroke_opacity: float = 0,
+        fill_opacity: float = 0.75,
+        buff: float = 0,
         **kwargs
     ):
+        if color is None:
+            color = config.background_color
+
         super().__init__(
             mobject,
             color=color,
@@ -149,7 +158,7 @@ class Cross(VGroup):
 
     def __init__(
         self,
-        mobject: Optional["Mobject"] = None,
+        mobject: Mobject | None = None,
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,

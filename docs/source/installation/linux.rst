@@ -5,7 +5,7 @@ The installation instructions depend on your particular operating
 system and package manager. If you happen to know exactly what you are doing,
 you can also simply ensure that your system has:
 
-- a reasonably recent version of Python 3 (3.7 or above),
+- a reasonably recent version of Python 3 (3.7–3.10),
 - with working Cairo bindings in the form of
   `pycairo <https://cairographics.org/pycairo/>`__,
 - FFmpeg accessible from the command line as ``ffmpeg``,
@@ -143,7 +143,7 @@ Should you choose to work with some smaller TeX distribution like
 of LaTeX packages which Manim interacts with in some way (a subset might
 be sufficient for your particular application) is::
 
-   amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
-   fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
-   mathastext microtype ms physics preview ragged2e relsize rsfs
+   collection-basic amsmath babel-english cbfonts-fd cm-super ctex doublestroke
+   dvisvgm everysel fontspec frcursive fundus-calligra gnu-freefont jknapltx
+   latex-bin mathastext microtype ms physics preview ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval

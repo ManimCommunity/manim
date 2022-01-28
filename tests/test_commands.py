@@ -1,18 +1,16 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 from textwrap import dedent
 
 from click.testing import CliRunner
 
-from manim import __version__
+from manim import __version__, capture
 from manim.__main__ import main
-
-from .utils.video_tester import *
 
 
 def test_manim_version():
-    command = ["--version"]
-
     command = [
         sys.executable,
         "-m",

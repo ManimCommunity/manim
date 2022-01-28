@@ -25,12 +25,7 @@ cleanall: clean
 	@rm -rf source/media
 	@rm -f rendering_times.csv
 i18n:
-	cd source
-	$(SPHINXBUILD) -M gettext "$(SOURCEDIR)" ../i18n/ -t skip-manim $(SPHINXOPTS) $(O)
-	rm -rf ../i18n/en/
-	sphinx-intl update --language=en -p ../i18n/gettext/
-	cd ../i18n
-	bash stripUntranslatable.sh
+	@(cd source; $(SPHINXBUILD) -M gettext "$(SOURCEDIR)" ../i18n/ -t skip-manim $(SPHINXOPTS) $(O);cd ../i18n;bash stripUntranslatable.sh)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

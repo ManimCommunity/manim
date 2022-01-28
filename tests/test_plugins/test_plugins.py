@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 import string
 import tempfile
@@ -6,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from ..utils.commands import capture
+from manim import capture
 
 plugin_pyproject_template = textwrap.dedent(
     """\

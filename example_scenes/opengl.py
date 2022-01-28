@@ -3,7 +3,7 @@ from pathlib import Path
 
 import manim.utils.opengl as opengl
 from manim import *
-from manim.opengl import *
+from manim.opengl import *  # type: ignore
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
@@ -295,8 +295,8 @@ class InlineShaderExample(Scene):
 
         shader = Shader(
             self.renderer.context,
-            source=dict(
-                vertex_shader="""
+            source={
+                "vertex_shader": """
                 #version 330
 
                 in vec4 in_vert;
@@ -312,7 +312,7 @@ class InlineShaderExample(Scene):
                     gl_Position = clip_space_vertex;
                 }
             """,
-                fragment_shader="""
+                "fragment_shader": """
             #version 330
 
             in vec4 v_color;
@@ -322,7 +322,7 @@ class InlineShaderExample(Scene):
               frag_color = v_color;
             }
             """,
-            ),
+            },
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(

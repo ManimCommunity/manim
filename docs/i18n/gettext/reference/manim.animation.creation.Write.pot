@@ -1,0 +1,52 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.creation.Write.rst:2
+msgid "Write"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Write.rst:4
+msgid "Qualified name: ``manim.animation.creation.Write``"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:1
+msgid "Bases: :py:class:`manim.animation.creation.DrawBorderThenFill`"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:1
+msgid "Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write:4
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Write.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1
+msgid "Begin the animation."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:1:<autosummary>:1
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.finish:1
+msgid "Finish the animation."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:3
+msgid "This method is called right as an animation is being played. As much initialization as possible, especially any mobject copying, should live in this method."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.begin:0
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Write.finish:0
+msgid "Return type"
+msgstr ""
+
+

@@ -1,6 +1,9 @@
 # see more documentation guidelines online here: https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)
 
 
+from __future__ import annotations
+
+
 class SomeClass:
     """A one line description of the Class.
 

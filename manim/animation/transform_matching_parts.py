@@ -1,5 +1,7 @@
 """Animations that try to transform Mobjects while keeping track of identical parts."""
 
+from __future__ import annotations
+
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 from typing import TYPE_CHECKING, List, Optional
@@ -65,11 +67,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
 
     def __init__(
         self,
-        mobject: "Mobject",
-        target_mobject: "Mobject",
+        mobject: Mobject,
+        target_mobject: Mobject,
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
-        key_map: Optional[dict] = None,
+        key_map: dict | None = None,
         **kwargs
     ):
 
@@ -137,7 +139,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         self.to_remove = mobject
         self.to_add = target_mobject
 
-    def get_shape_map(self, mobject: "Mobject") -> dict:
+    def get_shape_map(self, mobject: Mobject) -> dict:
         shape_map = {}
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
@@ -149,7 +151,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
             shape_map[key].add(sm)
         return shape_map
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:
             anim.interpolate(0)
         scene.remove(self.mobject)
@@ -157,11 +159,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
         scene.add(self.to_add)
 
     @staticmethod
-    def get_mobject_parts(mobject: "Mobject"):
+    def get_mobject_parts(mobject: Mobject):
         raise NotImplementedError("To be implemented in subclass.")
 
     @staticmethod
-    def get_mobject_key(mobject: "Mobject"):
+    def get_mobject_key(mobject: Mobject):
         raise NotImplementedError("To be implemented in subclass.")
 
 
@@ -196,11 +198,11 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
 
     def __init__(
         self,
-        mobject: "Mobject",
-        target_mobject: "Mobject",
+        mobject: Mobject,
+        target_mobject: Mobject,
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
-        key_map: Optional[dict] = None,
+        key_map: dict | None = None,
         **kwargs
     ):
         super().__init__(
@@ -213,11 +215,11 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         )
 
     @staticmethod
-    def get_mobject_parts(mobject: "Mobject") -> List["Mobject"]:
+    def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
         return mobject.family_members_with_points()
 
     @staticmethod
-    def get_mobject_key(mobject: "Mobject") -> int:
+    def get_mobject_key(mobject: Mobject) -> int:
         mobject.save_state()
         mobject.center()
         mobject.set_height(1)
@@ -253,11 +255,11 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     def __init__(
         self,
-        mobject: "Mobject",
-        target_mobject: "Mobject",
+        mobject: Mobject,
+        target_mobject: Mobject,
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
-        key_map: Optional[dict] = None,
+        key_map: dict | None = None,
         **kwargs
     ):
         assert hasattr(mobject, "tex_string")
@@ -272,9 +274,9 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         )
 
     @staticmethod
-    def get_mobject_parts(mobject: "Mobject") -> List["Mobject"]:
+    def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
         return mobject.submobjects
 
     @staticmethod
-    def get_mobject_key(mobject: "Mobject") -> str:
+    def get_mobject_key(mobject: Mobject) -> str:
         return mobject.tex_string

@@ -1,0 +1,210 @@
+*******
+v0.13.0
+*******
+
+:Date: December 04, 2021
+
+Contributors
+============
+
+A total of 27 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip +
+* John Ingles +
+* Laith Bahodi
+* Lucas Ricci +
+* Marcin Serwin +
+* Mysaa
+* Naveen M K
+* Ricky +
+* Viicos
+* ask09ok +
+* citrusmunch +
+* icedcoffeeee
+* mostlyaman +
+* vmiezys +
+* zhujisheng +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Laith Bahodi
+* Lucas Ricci
+* Naveen M K
+* Oliver
+* Ryan McCauley
+* Viicos
+* ask09ok
+* icedcoffeeee
+* mostlyaman
+
+Pull requests merged
+====================
+
+A total of 39 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#2313 <https://github.com/ManimCommunity/manim/pull/2313>`__: Finalized translation process and documentation
+
+
+Deprecated classes and functions
+--------------------------------
+
+* `#2331 <https://github.com/ManimCommunity/manim/pull/2331>`__: Removed deprecations up to ``v0.12.0``
+   - Removed ``distance`` parameters from :class:`~.ThreeDCamera` (replacement: ``focal_distance``)
+   - Removed ``min_distance_to_new_point`` parameter from :class:`~.TracedPath`
+   - Removed ``positive_space_ratio`` and ``dash_spacing`` parameters from :class:`~.DashedVMobject`
+   - Removed ``<method>_in_place`` methods from :mod:`.mobject`
+   - Removed ``ReconfigurableScene``
+   - Removed ``SampleSpaceScene``
+
+* `#2312 <https://github.com/ManimCommunity/manim/pull/2312>`__: Replaced all occurrences of ``set_submobjects``
+
+
+New features
+------------
+
+* `#2314 <https://github.com/ManimCommunity/manim/pull/2314>`__: Added basic support for adding subcaptions via :meth:`.Scene.add_subcaption`
+   - New method :meth:`.Scene.add_subcaption`
+   - New keyword arguments ``subcaption``, ``subcaption_duration``, ``subcaption_offset`` for :meth:`.Scene.play`
+
+* `#2267 <https://github.com/ManimCommunity/manim/pull/2267>`__: Implemented :meth:`.CoordinateSystem.plot_antiderivative_graph`
+
+
+Enhancements
+------------
+
+* `#2347 <https://github.com/ManimCommunity/manim/pull/2347>`__: Moved ``manim_directive.py`` to ``manim.utils.docbuild``
+
+
+* `#2340 <https://github.com/ManimCommunity/manim/pull/2340>`__: Added documentation for :mod:`.animation.growing` and improved :class:`.SpinInFromNothing`
+
+
+* `#2343 <https://github.com/ManimCommunity/manim/pull/2343>`__: Replaced current tree layout algorithm with SageMath's for improved layout of large trees
+
+
+* `#2351 <https://github.com/ManimCommunity/manim/pull/2351>`__: Added missing ``**kwargs`` parameter to :meth:`.Table.add_highlighted_cell`
+
+
+* `#2344 <https://github.com/ManimCommunity/manim/pull/2344>`__: Resized SVG logos, fit content to canvas
+
+
+Fixed bugs
+----------
+
+* `#2359 <https://github.com/ManimCommunity/manim/pull/2359>`__: Resolved ``ValueError`` when calling ``manim cfg write``
+
+
+* `#2276 <https://github.com/ManimCommunity/manim/pull/2276>`__: Fixed bug with alignment of z-axis in :class:`~.ThreeDAxes`
+
+
+* `#2325 <https://github.com/ManimCommunity/manim/pull/2325>`__: Several improvements to handling of ``quality`` argument
+
+
+* `#2335 <https://github.com/ManimCommunity/manim/pull/2335>`__: Fixed bug with zooming camera and :class:`~.PointCloud`
+
+
+* `#2328 <https://github.com/ManimCommunity/manim/pull/2328>`__: Fixed bug causing incorrect RGBA values to be passed to cairo
+
+
+* `#2292 <https://github.com/ManimCommunity/manim/pull/2292>`__: Fixed positioning of :class:`~.Flash`
+
+
+* `#2262 <https://github.com/ManimCommunity/manim/pull/2262>`__: Fixed wrong cell coordinates with :meth:`.Table.get_cell` after scaling
+
+
+* `#2280 <https://github.com/ManimCommunity/manim/pull/2280>`__: Fixed :class:`~.DecimalNumber` color when number of displayed digits changes
+
+
+Documentation-related changes
+-----------------------------
+
+* `#2354 <https://github.com/ManimCommunity/manim/pull/2354>`__: Port over docs and typings from ``mobject.py`` and ``vectorized_mobject.py`` to their OpenGL counterparts
+
+
+* `#2350 <https://github.com/ManimCommunity/manim/pull/2350>`__: Added mention of Manim sideview extension for VS Code
+
+
+* `#2342 <https://github.com/ManimCommunity/manim/pull/2342>`__: Removed :meth:`~.CoordinateSystem.get_graph` usage from :class:`~.Axes` example
+
+
+* `#2216 <https://github.com/ManimCommunity/manim/pull/2216>`__: Edited and added new sections to the quickstart tutorial
+
+
+* `#2279 <https://github.com/ManimCommunity/manim/pull/2279>`__: Added documentation for discontinuous functions
+
+
+* `#2319 <https://github.com/ManimCommunity/manim/pull/2319>`__: Swapped ``dotL`` and ``dotR`` in :meth:`.Mobject.interpolate` example
+
+
+* `#2230 <https://github.com/ManimCommunity/manim/pull/2230>`__: Copyedited building blocks tutorial
+
+
+* `#2310 <https://github.com/ManimCommunity/manim/pull/2310>`__: Clarified that Manim does not support Python 3.10 yet in the documentation
+
+
+* `#2294 <https://github.com/ManimCommunity/manim/pull/2294>`__: Made documentation front page more concise and rearranged order of tutorials
+
+
+* `#2287 <https://github.com/ManimCommunity/manim/pull/2287>`__: Replace link to old interactive notebook
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* `#2346 <https://github.com/ManimCommunity/manim/pull/2346>`__: Made ``frames_comparsion`` decorator for frame testing a proper module of the library
+
+
+* `#2318 <https://github.com/ManimCommunity/manim/pull/2318>`__: Added tests for ``remover`` keyword argument of :class:`~.AnimationGroup`
+
+
+* `#2301 <https://github.com/ManimCommunity/manim/pull/2301>`__: Added a test for :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
+
+
+* `#2274 <https://github.com/ManimCommunity/manim/pull/2274>`__: Optimized some tests to reduce duration
+
+
+* `#2272 <https://github.com/ManimCommunity/manim/pull/2272>`__: Added test for :class:`~.Broadcast`
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#2327 <https://github.com/ManimCommunity/manim/pull/2327>`__: Corrected type hint for ``labels`` keyword argument of :class:`~.Graph`
+
+
+* `#2329 <https://github.com/ManimCommunity/manim/pull/2329>`__: Remove unintended line break in README
+
+
+* `#2305 <https://github.com/ManimCommunity/manim/pull/2305>`__: Corrected type hint ``discontinuities`` argument for :class:`~.ParametricFunction`
+
+
+* `#2300 <https://github.com/ManimCommunity/manim/pull/2300>`__: Add contact email for PyPi
+
+
+New releases
+------------
+
+* `#2353 <https://github.com/ManimCommunity/manim/pull/2353>`__: Prepare new release: ``v0.13.0``
+
+
+Unclassified changes
+--------------------
+
+* `#2348 <https://github.com/ManimCommunity/manim/pull/2348>`__: Updated translation source files
