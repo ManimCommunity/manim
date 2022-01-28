@@ -231,7 +231,7 @@ class Mobject:
         that method on the mobject itself.
 
         For example, :code:`square.set_fill(WHITE)` sets the fill color of a square,
-        while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+        while :code:`square.animate.set_fill(WHITE)` animates this action.
 
         Multiple methods can be put in a single animation once via chaining:
 
