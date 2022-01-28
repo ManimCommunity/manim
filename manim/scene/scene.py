@@ -13,7 +13,7 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import srt
 
@@ -968,7 +968,32 @@ class Scene:
                 offset=-run_time + subcaption_offset,
             )
 
-    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None, frozen_frame=None):
+    def wait(
+        self,
+        duration: float = DEFAULT_WAIT_TIME,
+        stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
+    ):
+        """Plays a "no operation" animation.
+
+        Parameters
+        ----------
+        duration
+            The run time of the animation.
+        stop_condition
+            A function without positional arguments that is evaluated every time
+            a frame is rendered. The animation only stops when the return value
+            of the function is truthy. Overrides any value passed to ``duration``.
+        frozen_frame
+            If True, updater functions are not evaluated, and the animation outputs
+            a frozen frame. If False, updater functions are called and frames
+            are rendered as usual. If None (the default), the scene tries to
+            determine whether or not the frame is frozen on its own.
+
+        See also
+        --------
+        :class:`.Wait`, :meth:`.should_mobjects_update`
+        """
         self.play(
             Wait(
                 run_time=duration,
@@ -976,6 +1001,23 @@ class Scene:
                 frozen_frame=frozen_frame,
             )
         )
+
+    def pause(self, duration: float = DEFAULT_WAIT_TIME):
+        """Pauses the scene (i.e., displays a frozen frame).
+
+        This is an alias for :meth:`.wait` with ``frozen_frame``
+        set to ``True``.
+
+        Parameters
+        ----------
+        duration
+            The duration of the pause.
+
+        See also
+        --------
+        :meth:`.wait`, :class:`.Wait`
+        """
+        self.wait(duration=duration, frozen_frame=True)
 
     def wait_until(self, stop_condition, max_time=60):
         """
