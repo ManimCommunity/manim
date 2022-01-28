@@ -1,4 +1,3 @@
-import pytest
 
 from manim.constants import LEFT
 from manim.mobject.probability import BarChart

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 from colour import Color
 
 from manim import RED, DecimalNumber, Integer
