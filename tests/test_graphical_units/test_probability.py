@@ -1,4 +1,3 @@
-
 from manim.constants import LEFT
 from manim.mobject.probability import BarChart
 from manim.mobject.svg.tex_mobject import MathTex
