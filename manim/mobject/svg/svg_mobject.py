@@ -9,7 +9,6 @@ import os
 import re
 import string
 import warnings
-from typing import Dict, List, Optional
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
