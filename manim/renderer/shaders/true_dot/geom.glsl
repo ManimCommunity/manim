@@ -8,6 +8,7 @@ uniform vec2 frame_shape;
 uniform float focal_distance;
 uniform float is_fixed_in_frame;
 uniform float is_fixed_orientation;
+uniform vec3 mob_center;
 uniform float anti_alias_width;
 
 in vec3 v_point[1];

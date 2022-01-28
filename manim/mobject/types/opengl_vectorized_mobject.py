@@ -1195,6 +1195,7 @@ class OpenGLVMobject(OpenGLMobject):
         return {
             "is_fixed_in_frame": float(self.is_fixed_in_frame),
             "is_fixed_orientation": float(self.is_fixed_orientation),
+            "mob_center": self.mob_center,
             "gloss": self.gloss,
             "shadow": self.shadow,
         }

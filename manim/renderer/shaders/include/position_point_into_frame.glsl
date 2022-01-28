@@ -18,7 +18,8 @@ vec3 position_point_into_frame(vec3 point){
         return point;
     }
     if(bool(is_fixed_orientation)){
-        return point + camera_rotation * (mob_center - camera_center) - mob_center;
+        vec3 new_center = rotate_point_into_frame(mob_center);
+        return point + (new_center - mob_center);
     }
     return rotate_point_into_frame(point - camera_center);
 }

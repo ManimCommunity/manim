@@ -99,6 +99,7 @@ class OpenGLMobject:
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
         self.is_fixed_orientation = float(is_fixed_orientation)
+        self.mob_center = (0, 0, 0)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -1768,19 +1769,22 @@ class OpenGLMobject:
         return self
 
     @affects_shader_info_id
+    def fix_orientation(self):
+        self.is_fixed_orientation = 1.0
+        self.mob_center = tuple(self.get_center())
+        self.depth_test = True
+        return self
+
+    @affects_shader_info_id
     def unfix_from_frame(self):
         self.is_fixed_in_frame = 0.0
         return self
 
     @affects_shader_info_id
-    def fix_orientation(self):
-        self.is_fixed_orientation = 1.0
-        self.mob_center = tuple(self.get_center())
-        return self
-
-    @affects_shader_info_id
     def unfix_orientation(self):
         self.is_fixed_orientation = 0.0
+        self.mob_center = (0, 0, 0)
+        self.depth_test = False
         return self
 
     @affects_shader_info_id
