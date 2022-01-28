@@ -2349,11 +2349,20 @@ class OpenGLMobject:
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
-            self.uniforms[key] = interpolate(
-                mobject1.uniforms[key],
-                mobject2.uniforms[key],
-                alpha,
-            )
+            if key != "mob_center":
+                self.uniforms[key] = interpolate(
+                    mobject1.uniforms[key],
+                    mobject2.uniforms[key],
+                    alpha,
+                )
+            else:
+                self.uniforms["mob_center"] = tuple(
+                    interpolate(
+                        np.array(mobject1.uniforms["mob_center"]),
+                        np.array(mobject2.uniforms["mob_center"]),
+                        alpha,
+                    )
+                )
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
