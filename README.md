@@ -114,8 +114,8 @@ Contributions to Manim are always welcome. In particular, there is a dire need f
 
 However, please note that Manim is currently undergoing a major refactor. In general,
 contributions implementing new features will not be accepted in this period.
-The contribution guide may become out of date; we highly recommend joining our 
-[Discord server](https://www.manim.community/discord/) to discuss any potential 
+The contribution guide may become out of date; we highly recommend joining our
+[Discord server](https://www.manim.community/discord/) to discuss any potential
 contributions and keep up to date with the latest developments.
 
 Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
