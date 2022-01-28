@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Iterable
 
 __all__ = ["LogBase", "LinearBase"]
 

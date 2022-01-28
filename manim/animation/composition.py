@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Sequence, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 

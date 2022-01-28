@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
 
-
 import numpy as np
 from colour import Color
 
