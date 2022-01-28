@@ -1010,7 +1010,6 @@ class Scene:
         self.static_mobjects = []
 
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-            wait_animation = self.animations[0]
             if self.should_update_mobjects():
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition

@@ -412,9 +412,9 @@ class OpenGLRenderer:
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
 
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
-            scene.play_internal()
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
         self.time += scene.duration
