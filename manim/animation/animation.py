@@ -17,12 +17,7 @@ from typing import (
     TYPE_CHECKING,
     Callable,
     Iterable,
-    List,
-    Optional,
     Sequence,
-    Tuple,
-    Type,
-    Union,
 )
 
 if TYPE_CHECKING:

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Optional
 
 from manim.utils.color import Color
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 

@@ -70,14 +70,14 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Iterable, Optional, Sequence, Union
+from typing import Iterable, Sequence
 
 import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
+from .. import config
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject

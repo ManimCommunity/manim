@@ -76,12 +76,8 @@ import itertools as it
 from typing import (
     TYPE_CHECKING,
     Callable,
-    Dict,
     Iterable,
-    Optional,
     Sequence,
-    Tuple,
-    Union,
 )
 
 import numpy as np

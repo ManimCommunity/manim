@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from subprocess import run
-from typing import Any, Dict, List
+from typing import Any
 
 __all__ = [
     "capture",

@@ -22,7 +22,7 @@ __all__ = [
 
 import random
 from enum import Enum
-from typing import Iterable, List, Union
+from typing import Iterable
 
 import numpy as np
 from colour import Color

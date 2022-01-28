@@ -30,7 +30,6 @@ from ...utils.bezier import (
     integer_interpolate,
     interpolate,
     partial_bezier_points,
-    point_lies_on_bezier,
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
