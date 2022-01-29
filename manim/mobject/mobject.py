@@ -2471,10 +2471,26 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: "Mobject"):
+    def align_data(self, mobject: "Mobject", skip_point_alignment: bool = False):
+        """Aligns the data of this mobject with another mobject.
+
+        Afterwards, the two mobjects will have the same number of submobjects
+        (see :meth:`.align_submobjects`), the same parent structure (see
+        :meth:`.null_point_align`). If ``skip_point_alignment`` is false,
+        they will also have the same number of points (see :meth:`.align_points`).
+
+        Parameters
+        ----------
+        mobject
+            The other mobject this mobject should be aligned to.
+        skip_point_alignment
+            Controls whether or not the computationally expensive
+            point alignment is skipped (default: False).
+        """
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
-        self.align_points(mobject)
+        if not skip_point_alignment:
+            self.align_points(mobject)
         # Recurse
         for m1, m2 in zip(self.submobjects, mobject.submobjects):
             m1.align_data(m2)
@@ -2644,7 +2660,7 @@ class Mobject:
         if match_center:
             mobject.move_to(self.get_center())
 
-        self.align_data(mobject)
+        self.align_data(mobject, skip_point_alignment=True)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
@@ -2667,7 +2683,6 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
         return self
