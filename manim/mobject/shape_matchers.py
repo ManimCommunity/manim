@@ -44,15 +44,14 @@ class SurroundingRectangle(RoundedRectangle):
     def __init__(
         self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
     ):
-        self.color = color
-        self.buff = buff
         super().__init__(
             color=color,
-            width=mobject.width + 2 * self.buff,
-            height=mobject.height + 2 * self.buff,
+            width=mobject.width + 2 * buff,
+            height=mobject.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs
         )
+        self.buff = buff
         self.move_to(mobject)
 
 

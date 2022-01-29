@@ -58,10 +58,10 @@ class _Data:
         self.name = name
 
     def __get__(self, obj, owner):
-        return obj.__dict__["data"][self.name]
+        return obj.data[self.name]
 
     def __set__(self, obj, array: np.ndarray):
-        obj.__dict__["data"][self.name] = array
+        obj.data[self.name] = array
 
 
 class _Uniforms:

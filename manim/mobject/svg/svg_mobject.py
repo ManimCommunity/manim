@@ -9,11 +9,11 @@ import os
 import re
 import string
 import warnings
-from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
 import numpy as np
+from colour import Color
 
 from ... import config, logger
 from ...constants import *
@@ -76,6 +76,10 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
         color=None,
+        *,
+        fill_color=None,
+        stroke_color=None,
+        stroke_opacity=1.0,
         **kwargs,
     ):
         self.def_map = {}
@@ -91,8 +95,21 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             if config.renderer == "opengl"
             else {}
         )
+        self._initial_svg_style = self.generate_style(
+            Color(color) if color else None,
+            Color(fill_color) if fill_color else None,
+            Color(stroke_color) if stroke_color else None,
+            fill_opacity,
+            stroke_opacity,
+        )
         super().__init__(
-            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            fill_color=fill_color,
+            stroke_opacity=stroke_opacity,
+            stroke_color=stroke_color,
+            **kwargs,
         )
         self._move_into_position(width, height)
 
@@ -136,7 +153,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         for node in doc.childNodes:
             if not isinstance(node, MinidomElement) or node.tagName != "svg":
                 continue
-            mobjects = self._get_mobjects_from(node, self.generate_style())
+            mobjects = self._get_mobjects_from(node, self._initial_svg_style)
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -230,17 +247,25 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         return result
 
-    def generate_style(self):
+    def generate_style(
+        self,
+        color: Color | None,
+        fill_color: Color | None,
+        stroke_color: Color | None,
+        fill_opacity: float,
+        stroke_opacity: float,
+    ):
         style = {
-            "fill-opacity": self.fill_opacity,
-            "stroke-opacity": self.stroke_opacity,
+            "fill-opacity": fill_opacity,
+            "stroke-opacity": stroke_opacity,
         }
-        if self.color:
-            style["fill"] = style["stroke"] = self.color.get_hex_l()
-        if self.fill_color:
-            style["fill"] = self.fill_color
-        if self.stroke_color:
-            style["stroke"] = self.stroke_color
+        if color:
+            style["fill"] = style["stroke"] = color.get_hex_l()
+        if fill_color:
+            style["fill"] = fill_color.hex_l
+        if stroke_color:
+            style["stroke"] = stroke_color.hex_l
+
         return style
 
     def _path_string_to_mobject(self, path_string: str, style: dict):
