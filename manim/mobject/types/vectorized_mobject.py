@@ -1385,7 +1385,7 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, mobject, match_num_points: bool = False):
+    def align_points(self, mobject, match_num_points: bool = True):
         if match_num_points:
             self.align_points_matching_paths(mobject)
         else:
