@@ -2645,6 +2645,7 @@ class Mobject:
             mobject.move_to(self.get_center())
 
         self = mobject.copy()
+        return self
 
     def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, positions, and submobjects to be identical
