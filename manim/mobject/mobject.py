@@ -2471,7 +2471,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: "Mobject", match_num_points = True):
+    def align_data(self, mobject: "Mobject", match_num_points=True):
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
         self.align_points(mobject, match_num_points)
