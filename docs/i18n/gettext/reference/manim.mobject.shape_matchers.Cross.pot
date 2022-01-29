@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.shape\\_matchers.Cross``"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.Cross:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.Cross:1
@@ -55,7 +55,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.shape_matchers.Cross.rst:28:<autosummary>:1

@@ -83,7 +83,7 @@ msgid "Writing examples"
 msgstr ""
 
 #: ../../source/contributing/examples.rst:50
-msgid "When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:"
+msgid "When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`manim.utils.docbuild.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:"
 msgstr ""
 
 #: ../../source/contributing/examples.rst:67
@@ -99,7 +99,7 @@ msgid "The flags are followed in the next line (no blank line here!), with the i
 msgstr ""
 
 #: ../../source/contributing/examples.rst:76
-msgid "All possible flags can be found at :mod:`~.manim_directive`."
+msgid "All possible flags can be found at :mod:`manim.utils.docbuild.manim_directive`."
 msgstr ""
 
 #: ../../source/contributing/examples.rst:78

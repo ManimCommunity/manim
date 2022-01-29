@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.image\\_mobject.ImageMobjectFromCam
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobjectFromCamera:1
-msgid "Bases: :class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:31:<autosummary>:1

@@ -1,5 +1,7 @@
 """Image manipulation utilities."""
 
+from __future__ import annotations
+
 __all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
 
 
@@ -20,7 +22,7 @@ def get_full_raster_image_path(image_file_name: str) -> str:
     )
 
 
-def drag_pixels(frames: List[np.array]) -> List[np.array]:
+def drag_pixels(frames: list[np.array]) -> list[np.array]:
     curr = frames[0]
     new_frames = []
     for frame in frames:

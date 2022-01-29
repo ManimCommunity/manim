@@ -9,6 +9,8 @@ movie vs writing a single frame).
 See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
 
 """
+from __future__ import annotations
+
 import argparse
 import configparser
 import copy
@@ -30,7 +32,7 @@ from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
-def config_file_paths() -> typing.List[Path]:
+def config_file_paths() -> list[Path]:
     """The paths where ``.cfg`` files will be searched for.
 
     When manim is first imported, it processes any ``.cfg`` files it finds.  This
@@ -320,7 +322,7 @@ class ManimConfig(MutableMapping):
     def __setitem__(self, key: str, val: typing.Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: typing.Union["ManimConfig", dict]) -> None:
+    def update(self, obj: ManimConfig | dict) -> None:
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
@@ -369,7 +371,7 @@ class ManimConfig(MutableMapping):
         raise AttributeError("'ManimConfig' object does not support item deletion")
 
     # copy functions
-    def copy(self) -> "ManimConfig":
+    def copy(self) -> ManimConfig:
         """Deepcopy the contents of this ManimConfig.
 
         Returns
@@ -388,11 +390,11 @@ class ManimConfig(MutableMapping):
         """
         return copy.deepcopy(self)
 
-    def __copy__(self) -> "ManimConfig":
+    def __copy__(self) -> ManimConfig:
         """See ManimConfig.copy()."""
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: typing.Dict[str, typing.Any]) -> "ManimConfig":
+    def __deepcopy__(self, memo: dict[str, typing.Any]) -> ManimConfig:
         """See ManimConfig.copy()."""
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
@@ -409,7 +411,7 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"attempted to set {key} to {val}; must be in {values}")
 
-    def _set_boolean(self, key: typing.Union[str, int], val: typing.Any) -> None:
+    def _set_boolean(self, key: str | int, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
         if val in [True, False]:
             self._d[key] = val
@@ -465,7 +467,7 @@ class ManimConfig(MutableMapping):
         return rep
 
     # builders
-    def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
+    def digest_parser(self, parser: configparser.ConfigParser) -> ManimConfig:
         """Process the config options present in a :class:`ConfigParser` object.
 
         This method processes arbitrary parsers, not only those read from a
@@ -635,7 +637,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_args(self, args: argparse.Namespace) -> "ManimConfig":
+    def digest_args(self, args: argparse.Namespace) -> ManimConfig:
         """Process the config options present in CLI arguments.
 
         Parameters
@@ -788,7 +790,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> "ManimConfig":
+    def digest_file(self, filename: str) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -1459,7 +1461,7 @@ class ManimConfig(MutableMapping):
                 ) from exc
         return Path(path) if path else None
 
-    def _set_dir(self, key: str, val: typing.Union[str, Path]):
+    def _set_dir(self, key: str, val: str | Path):
         if isinstance(val, Path):
             self._d.__setitem__(key, str(val))
         else:
@@ -1549,7 +1551,7 @@ class ManimConfig(MutableMapping):
         return self._tex_template
 
     @tex_template.setter
-    def tex_template(self, val: typing.Union[TexTemplateFromFile, TexTemplate]) -> None:
+    def tex_template(self, val: TexTemplateFromFile | TexTemplate) -> None:
         if isinstance(val, (TexTemplateFromFile, TexTemplate)):
             self._tex_template = val
 
@@ -1583,7 +1585,7 @@ class ManimConfig(MutableMapping):
 
 
 class ManimFrame(Mapping):
-    _OPTS: typing.Set[str] = {
+    _OPTS: set[str] = {
         "pixel_width",
         "pixel_height",
         "aspect_ratio",
@@ -1596,7 +1598,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: typing.Dict[str, np.ndarray] = {
+    _CONSTANTS: dict[str, np.ndarray] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),
@@ -1621,7 +1623,7 @@ class ManimFrame(Mapping):
         self.__dict__["_c"] = c
 
     # there are required by parent class Mapping to behave like a dict
-    def __getitem__(self, key: typing.Union[str, int]) -> typing.Any:
+    def __getitem__(self, key: str | int) -> typing.Any:
         if key in self._OPTS:
             return self._c[key]
         elif key in self._CONSTANTS:

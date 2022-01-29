@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.camera.BackgroundColoredVMobjectDisplayer`
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:0

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.indication.ShowCreationThenFadeOut``"
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowCreationThenFadeOut:1
-msgid "Bases: :class:`manim.animation.composition.Succession`"
+msgid "Bases: :py:class:`manim.animation.composition.Succession`"
 msgstr ""
 
 

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.moving\\_camera.CameraFrame``"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.CameraFrame:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.CameraFrame.rst:28:<autosummary>:1

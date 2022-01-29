@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.frame.FullScreenRectangle``"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.FullScreenRectangle:1
-msgid "Bases: :class:`manim.mobject.frame.ScreenRectangle`"
+msgid "Bases: :py:class:`manim.mobject.frame.ScreenRectangle`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.frame.FullScreenRectangle.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.frame.FullScreenRectangle.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.frame.FullScreenRectangle.rst:29:<autosummary>:1

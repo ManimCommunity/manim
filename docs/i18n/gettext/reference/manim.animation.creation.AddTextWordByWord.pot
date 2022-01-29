@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.AddTextWordByWord``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextWordByWord:1
-msgid "Bases: :class:`manim.animation.composition.Succession`"
+msgid "Bases: :py:class:`manim.animation.composition.Succession`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextWordByWord:1

@@ -1,5 +1,7 @@
 """Mobjects representing vector fields."""
 
+from __future__ import annotations
+
 __all__ = [
     "VectorField",
     "ArrowVectorField",
@@ -62,8 +64,8 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -81,7 +83,7 @@ class VectorField(VGroup):
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
-            def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
+            def pos_to_rgb(pos: np.ndarray) -> tuple[float, float, float, float]:
                 vec = self.func(pos)
                 color_value = np.clip(
                     self.color_scheme(vec),
@@ -171,7 +173,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -255,7 +257,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Apply a nudge along the vector field to all submobjects.
 
         Parameters
@@ -306,7 +308,7 @@ class VectorField(VGroup):
         self,
         speed: float = 1,
         pointwise: bool = False,
-    ) -> "VectorField":
+    ) -> VectorField:
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -333,7 +335,7 @@ class VectorField(VGroup):
         self.add_updater(self.submob_movement_updater)
         return self
 
-    def stop_submobject_movement(self) -> "VectorField":
+    def stop_submobject_movement(self) -> VectorField:
         """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
@@ -513,8 +515,8 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -526,7 +528,7 @@ class ArrowVectorField(VectorField):
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
-        vector_config: Optional[dict] = None,
+        vector_config: dict | None = None,
         **kwargs
     ):
         self.x_range = x_range or [
@@ -685,8 +687,8 @@ class StreamLines(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Optional[Color] = None,
-        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
+        color: Color | None = None,
+        color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -695,7 +697,7 @@ class StreamLines(VectorField):
         y_range: Sequence[float] = None,
         z_range: Sequence[float] = None,
         three_dimensions: bool = False,
-        noise_factor: Optional[float] = None,
+        noise_factor: float | None = None,
         n_repeats=1,
         # Determining how lines are drawn
         dt=0.05,
@@ -827,8 +829,8 @@ class StreamLines(VectorField):
 
     def create(
         self,
-        lag_ratio: Optional[float] = None,
-        run_time: Optional[Callable[[float], float]] = None,
+        lag_ratio: float | None = None,
+        run_time: Callable[[float], float] | None = None,
         **kwargs
     ) -> AnimationGroup:
         """The creation animation of the stream lines.
@@ -887,7 +889,7 @@ class StreamLines(VectorField):
         flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
-        line_animation_class: Type[ShowPassingFlash] = ShowPassingFlash,
+        line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs
     ) -> None:
         """Animates the stream lines using an updater.

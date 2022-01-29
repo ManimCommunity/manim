@@ -6,24 +6,4 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/reference/manim.utils.strings.rst:2
-msgid "strings"
-msgstr ""
-
-#: ../../../manim/utils/strings.py:docstring of manim.utils.strings:1
-msgid "String manipulation utilities."
-msgstr ""
-
-#: ../../source/reference/manim.utils.strings.rst:20
-msgid "Functions"
-msgstr ""
-
-#: ../../../manim/utils/strings.py:docstring of manim.utils.strings.split_string_list_to_isolate_substrings:1
-msgid "Similar to split_string_to_isolate_substrings, but the first argument is a list of strings, thought of as something already broken up a bit."
-msgstr ""
-
-#: ../../../manim/utils/strings.py:docstring of manim.utils.strings.split_string_to_isolate_substrings:1
-msgid "Given a string, and an arbitrary number of possible substrings, returns a list of strings which would concatenate to make the full string, and in which these special substrings appear as their own elements."
-msgstr ""
-
 

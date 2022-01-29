@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.ArrowTriangleFilledTip``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTriangleFilledTip:1
-msgid "Bases: :class:`manim.mobject.geometry.ArrowTriangleTip`"
+msgid "Bases: :py:class:`manim.mobject.geometry.ArrowTriangleTip`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTriangleFilledTip:1
@@ -35,7 +35,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowTriangleFilledTip.rst:33:<autosummary>:1

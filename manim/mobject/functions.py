@@ -1,5 +1,7 @@
 """Mobjects representing function graphs."""
 
+from __future__ import annotations
+
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
@@ -93,10 +95,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float, float], float],
-        t_range: Optional[Sequence[float]] = None,
+        t_range: Sequence[float] | None = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: Optional[Iterable[float]] = None,
+        discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
         **kwargs
     ):
@@ -205,8 +207,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], float],
-        x_range: Optional[Sequence[float]] = None,
-        y_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,

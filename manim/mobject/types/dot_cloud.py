@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["TrueDot", "DotCloud"]
 
 import numpy as np

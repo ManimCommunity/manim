@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.value\\_tracker.ComplexValueTracker``"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ComplexValueTracker:1
-msgid "Bases: :class:`manim.mobject.value_tracker.ValueTracker`"
+msgid "Bases: :py:class:`manim.mobject.value_tracker.ValueTracker`"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ComplexValueTracker:1
@@ -49,7 +49,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker.ComplexValueTracker.get_value:1:<autosummary>:1

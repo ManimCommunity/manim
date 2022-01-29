@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.\\_config.utils.ManimFrame``"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimFrame:1
-msgid "Bases: :class:`collections.abc.Mapping`"
+msgid "Bases: :py:class:`collections.abc.Mapping`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimFrame.rst:14

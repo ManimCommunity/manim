@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.mapping\\_camera.SplitScreenCamera``"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.SplitScreenCamera:1
-msgid "Bases: :class:`manim.camera.mapping_camera.OldMultiCamera`"
+msgid "Bases: :py:class:`manim.camera.mapping_camera.OldMultiCamera`"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.SplitScreenCamera:1

@@ -57,11 +57,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_hash_from_play_call:13
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:7
-msgid ":class:`str`"
-msgstr ""
-
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:1
 msgid "Recursively serialize `object` to JSON using the :class:`CustomEncoder` class."
 msgstr ""

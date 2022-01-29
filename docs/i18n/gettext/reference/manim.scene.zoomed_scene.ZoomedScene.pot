@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.zoomed\\_scene.ZoomedScene``"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene:1
-msgid "Bases: :class:`manim.scene.moving_camera_scene.MovingCameraScene`"
+msgid "Bases: :py:class:`manim.scene.moving_camera_scene.MovingCameraScene`"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene:1

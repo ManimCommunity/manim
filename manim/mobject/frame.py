@@ -1,5 +1,7 @@
 """Special rectangles."""
 
+from __future__ import annotations
+
 __all__ = [
     "ScreenRectangle",
     "FullScreenRectangle",

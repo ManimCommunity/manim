@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VDict``"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:1
@@ -51,16 +51,8 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:23
-msgid ":class:`bool`"
-msgstr ""
-
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:27
 msgid "Is the actual python dictionary that is used to bind the keys to the mobjects."
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:30
-msgid ":class:`dict`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:33
@@ -99,7 +91,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
@@ -137,11 +129,6 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:10
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:10
-msgid ":class:`VDict`"
-msgstr ""
-
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:14
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:16
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:8
@@ -171,10 +158,6 @@ msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:3
 msgid "All the submobjects associated with the :class:`VDict` object"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:4
-msgid ":class:`dict_values`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:3
