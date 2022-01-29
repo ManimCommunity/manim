@@ -1385,13 +1385,7 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, mobject, match_num_points: bool = True):
-        if match_num_points:
-            self.align_points_matching_paths(mobject)
-        else:
-            self.points = mobject.points
-
-    def align_points_matching_paths(self, vmobject: "VMobject"):
+    def align_points(self, vmobject: "VMobject"):
         """Adds points to self and vmobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
