@@ -2486,7 +2486,7 @@ class Mobject:
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
         raise NotImplementedError(msg)
 
-    def align_points(self, mobject, match_num_points):
+    def align_points(self, mobject, match_num_points: bool = True):
         if match_num_points:
             count1 = self.get_num_points()
             count2 = mobject.get_num_points()
