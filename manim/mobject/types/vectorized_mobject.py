@@ -70,6 +70,8 @@ class VMobject(Mobject):
         This is within a pixel
     """
 
+    sheen_factor = 0.0
+
     def __init__(
         self,
         fill_color=None,
@@ -92,9 +94,7 @@ class VMobject(Mobject):
         n_points_per_cubic_curve=4,
         **kwargs,
     ):
-        self.fill_color = fill_color
         self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.background_stroke_color = background_stroke_color
@@ -113,18 +113,23 @@ class VMobject(Mobject):
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
         super().__init__(**kwargs)
 
+        if fill_color:
+            self.fill_color = fill_color
+        if stroke_color:
+            self.stroke_color = stroke_color
+
     def get_group_class(self):
         return VGroup
 
     # Colors
     def init_colors(self, propagate_colors=True):
         self.set_fill(
-            color=self.fill_color or self.color,
+            color=self.fill_color,
             opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
-            color=self.stroke_color or self.color,
+            color=self.stroke_color,
             width=self.stroke_width,
             opacity=self.stroke_opacity,
             family=propagate_colors,
@@ -239,8 +244,6 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
-        if color is not None:
-            self.fill_color = color
         return self
 
     def set_stroke(
@@ -258,19 +261,17 @@ class VMobject(Mobject):
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
             opacity_name = "background_stroke_opacity"
-            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
             opacity_name = "stroke_opacity"
-            color_name = "stroke_color"
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
             setattr(self, opacity_name, opacity)
-        if color is not None:
-            setattr(self, color_name, color)
+        if color is not None and background:
+            self.background_stroke_color = color
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -357,12 +358,6 @@ class VMobject(Mobject):
     def set_color(self, color, family=True):
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
-
-        # check if a list of colors is passed to color
-        if isinstance(color, str):
-            self.color = colour.Color(color)
-        else:
-            self.color = color
         return self
 
     def set_opacity(self, opacity, family=True):
@@ -395,6 +390,8 @@ class VMobject(Mobject):
         """
         return self.get_fill_colors()[0]
 
+    fill_color = property(get_fill_color, set_fill)
+
     def get_fill_opacity(self):
         """
         If there are multiple opacities, this returns the
@@ -403,7 +400,10 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     def get_fill_colors(self):
-        return [colour.Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
+        return [
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_fill_rgbas()
+        ]
 
     def get_fill_opacities(self):
         return self.get_fill_rgbas()[:, 3]
@@ -421,6 +421,8 @@ class VMobject(Mobject):
     def get_stroke_color(self, background=False):
         return self.get_stroke_colors(background)[0]
 
+    stroke_color = property(get_stroke_color, set_stroke)
+
     def get_stroke_width(self, background=False):
         if background:
             width = self.background_stroke_width
@@ -435,7 +437,8 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            colour.Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_stroke_rgbas(background)
         ]
 
     def get_stroke_opacities(self, background=False):
@@ -445,6 +448,8 @@ class VMobject(Mobject):
         if np.all(self.get_fill_opacities() == 0):
             return self.get_stroke_color()
         return self.get_fill_color()
+
+    color = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: np.ndarray, family=True):
         """Sets the direction of the applied sheen.

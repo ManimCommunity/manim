@@ -91,7 +91,6 @@ class Mobject:
         cls._original__init__ = cls.__init__
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
-        self.color = Color(color) if color else None
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -100,6 +99,8 @@ class Mobject:
         self.submobjects = []
         self.updaters = []
         self.updating_suspended = False
+        self.color = Color(color) if color else None
+
         self.reset_points()
         self.generate_points()
         self.init_colors()

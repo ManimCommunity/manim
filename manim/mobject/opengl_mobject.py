@@ -96,7 +96,6 @@ class OpenGLMobject:
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.color = Color(color) if color else None
         self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
@@ -129,6 +128,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
+        self.color = Color(color) if color else None
         self.init_colors()
 
         self.shader_indices = None
@@ -646,7 +646,7 @@ class OpenGLMobject:
         return self
 
     def get_family(self, recurse=True):
-        if recurse:
+        if recurse and hasattr(self, "family"):
             return self.family
         else:
             return [self]
@@ -1874,13 +1874,18 @@ class OpenGLMobject:
         # Color only
         if color is not None and opacity is None:
             for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(mob.data[name], len(rgbs))
+                mob.data[name] = resize_array(
+                    mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs)
+                )
                 mob.data[name][:, :3] = rgbs
 
         # Opacity only
         if color is None and opacity is not None:
             for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(mob.data[name], len(opacities))
+                mob.data[name] = resize_array(
+                    mob.data[name] if name in mob.data else np.empty((1, 3)),
+                    len(opacities),
+                )
                 mob.data[name][:, 3] = opacities
 
         # Color and opacity
@@ -2619,7 +2624,7 @@ class OpenGLMobject:
 
     @property
     def submobjects(self):
-        return self._submobjects
+        return self._submobjects if hasattr(self, "_submobjects") else []
 
     @submobjects.setter
     def submobjects(self, submobject_list):
