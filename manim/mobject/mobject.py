@@ -2473,7 +2473,7 @@ class Mobject:
     # Alignment
     def align_data(self, mobject: "Mobject", skip_point_alignment: bool = False):
         """Aligns the data of this mobject with another mobject.
-        
+
         Afterwards, the two mobjects will have the same number of submobjects
         (see :meth:`.align_submobjects`), the same parent structure (see
         :meth:`.null_point_align`). If `skip_point_alignment` is false,
