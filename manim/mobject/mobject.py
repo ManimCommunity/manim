@@ -2472,21 +2472,21 @@ class Mobject:
 
     # Alignment
     def align_data(self, mobject: "Mobject", skip_point_alignment: bool = False):
-    """Aligns the data of this mobject with another mobject.
+        """Aligns the data of this mobject with another mobject.
+        
+        Afterwards, the two mobjects will have the same number of submobjects
+        (see :meth:`.align_submobjects`), the same parent structure (see
+        :meth:`.null_point_align`). If `skip_point_alignment` is false,
+        they will also have the same number of points (see :meth:`.align_points`).
 
-    Afterwards, the two mobjects will have the same number of submobjects
-    (see :meth:`.align_submobjects`), the same parent structure (see
-    :meth:`.null_point_align`). If `skip_point_alignment` is false,
-    they will also have the same number of points (see :meth:`.align_points`).
-
-    Parameters
-    ----------
-    mobject
-        The other mobject this mobject should be aligned to.
-    skip_point_alignment
-        Controls whether or not the computationally expensive
-        point alignment is skipped (default: False).
-    """
+        Parameters
+        ----------
+        mobject
+            The other mobject this mobject should be aligned to.
+        skip_point_alignment
+            Controls whether or not the computationally expensive
+            point alignment is skipped (default: False).
+        """
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
         if not skip_point_alignment:
