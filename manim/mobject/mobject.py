@@ -2476,8 +2476,8 @@ class Mobject:
 
     Afterwards, the two mobjects will have the same number of submobjects
     (see :meth:`.align_submobjects`), the same parent structure (see
-    :meth:`.null_point_align`), and the same number of points
-    (see :meth:`.align_points`).
+    :meth:`.null_point_align`). If `skip_point_alignment` is false,
+    they will also have the same number of points (see :meth:`.align_points`).
 
     Parameters
     ----------
