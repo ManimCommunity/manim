@@ -2644,7 +2644,9 @@ class Mobject:
         if match_center:
             mobject.move_to(self.get_center())
 
-        self = mobject.copy()
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+            sm1.points = np.array(sm2.points)
+            sm1.interpolate_color(sm1, sm2, 1)
         return self
 
     def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
