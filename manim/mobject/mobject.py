@@ -2470,13 +2470,13 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: "Mobject"):
+    def align_data(self, mobject: "Mobject", match_num_points = True):
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
-        self.align_points(mobject)
+        self.align_points(mobject, match_num_points)
         # Recurse
         for m1, m2 in zip(self.submobjects, mobject.submobjects):
-            m1.align_data(m2)
+            m1.align_data(m2, match_num_points)
 
     def get_point_mobject(self, center=None):
         """The simplest :class:`~.Mobject` to be transformed to or from self.
@@ -2485,13 +2485,16 @@ class Mobject:
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
         raise NotImplementedError(msg)
 
-    def align_points(self, mobject):
-        count1 = self.get_num_points()
-        count2 = mobject.get_num_points()
-        if count1 < count2:
-            self.align_points_with_larger(mobject)
-        elif count2 < count1:
-            mobject.align_points_with_larger(self)
+    def align_points(self, mobject, match_num_points):
+        if match_num_points:
+            count1 = self.get_num_points()
+            count2 = mobject.get_num_points()
+            if count1 < count2:
+                self.align_points_with_larger(mobject)
+            elif count2 < count1:
+                mobject.align_points_with_larger(self)
+        else:
+            self.points = mobject.points
         return self
 
     def align_points_with_larger(self, larger_mobject):
@@ -2643,7 +2646,7 @@ class Mobject:
         if match_center:
             mobject.move_to(self.get_center())
 
-        self.align_data(mobject)
+        self.align_data(mobject, match_num_points=False)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
