@@ -2666,7 +2666,8 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        self.points = mobject.points
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+            sm1.points = np.array(sm2.points)
         return self
 
     # Errors
