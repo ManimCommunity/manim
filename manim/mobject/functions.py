@@ -148,6 +148,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
             )
             if self.use_array_function:
+
                 def array_function(t):
                     func_vals = self.function(t)
                     ones = np.full_like(t, 1)
