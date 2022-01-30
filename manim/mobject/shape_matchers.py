@@ -1,8 +1,9 @@
 """Mobjects used to mark and annotate other mobjects."""
 
+from __future__ import annotations
+
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Optional
 
 from manim.utils.color import Color
 
@@ -41,15 +42,14 @@ class SurroundingRectangle(RoundedRectangle):
     def __init__(
         self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
     ):
-        self.color = color
-        self.buff = buff
         super().__init__(
             color=color,
-            width=mobject.width + 2 * self.buff,
-            height=mobject.height + 2 * self.buff,
+            width=mobject.width + 2 * buff,
+            height=mobject.height + 2 * buff,
             corner_radius=corner_radius,
             **kwargs
         )
+        self.buff = buff
         self.move_to(mobject)
 
 
@@ -80,7 +80,7 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color: Optional[Colors] = None,
+        color: Colors | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
@@ -153,7 +153,7 @@ class Cross(VGroup):
 
     def __init__(
         self,
-        mobject: Optional["Mobject"] = None,
+        mobject: Mobject | None = None,
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,

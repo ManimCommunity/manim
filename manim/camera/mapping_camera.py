@@ -1,5 +1,7 @@
 """A camera that allows mapping between objects."""
 
+from __future__ import annotations
+
 __all__ = ["MappingCamera", "OldMultiCamera", "SplitScreenCamera"]
 
 import math

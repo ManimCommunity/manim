@@ -4,6 +4,8 @@ Manim's render subcommand is accessed in the command-line interface via
 ``manim``, but can be more explicitly accessed with ``manim render``.
 Here you can specify options, and arguments for the render command.
 """
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
@@ -21,14 +23,14 @@ from .output_options import output_options
 from .render_options import render_options
 
 
-@cloup.command(
+@cloup.command(  # type: ignore
     context_settings=None,
     epilog=EPILOG,
 )
-@click.argument("file", type=Path, required=True)
-@click.argument("scene_names", required=False, nargs=-1)
-@global_options
-@output_options
+@click.argument("file", type=Path, required=True)  # type: ignore
+@click.argument("scene_names", required=False, nargs=-1)  # type: ignore
+@global_options  # type: ignore
+@output_options  # type: ignore
 @render_options  # type: ignore
 @ease_of_access_options
 def render(

@@ -5,6 +5,8 @@
     :mod:`.mobject.svg.tex_mobject`
 """
 
+from __future__ import annotations
+
 import hashlib
 import os
 import re

@@ -4,6 +4,8 @@ Manim's init subcommand is accessed in the command-line interface via
 ``manim init``. Here you can specify options, subcommands, and subgroups
 for the init group.
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 import click

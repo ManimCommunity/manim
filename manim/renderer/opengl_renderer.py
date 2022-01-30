@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 import time
 from typing import Any, Iterable, List, Optional
@@ -40,9 +42,9 @@ class OpenGLCamera(OpenGLMobject):
         frame_shape=None,
         center_point=None,
         # Theta, phi, gamma
-        euler_angles: Optional[List] = None,
+        euler_angles: list | None = None,
         focal_distance=2,
-        light_source_position: Optional[List] = None,
+        light_source_position: list | None = None,
         orthographic=False,
         minimum_polar_angle=-PI / 2,
         maximum_polar_angle=PI / 2,
@@ -82,7 +84,7 @@ class OpenGLCamera(OpenGLMobject):
         self.focal_distance = focal_distance
 
         if light_source_position is None:
-            self.light_source_position: Optional[Iterable] = [-10, 10, 10]
+            self.light_source_position: Iterable | None = [-10, 10, 10]
         else:
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)

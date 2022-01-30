@@ -1,19 +1,21 @@
 """Decorators for deprecating classes, functions and function parameters."""
 
+from __future__ import annotations
+
 __all__ = ["deprecated", "deprecated_params"]
 
 
 import inspect
 import re
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable
 
 from decorator import decorate, decorator
 
 from .. import logger
 
 
-def _get_callable_info(callable: Callable) -> Tuple[str, str]:
-    """Return type and name of a callable.
+def _get_callable_info(callable: Callable) -> tuple[str, str]:
+    """Returns type and name of a callable.
 
     Parameters
     ----------
@@ -36,11 +38,11 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
 
 
 def _deprecation_text_component(
-    since: Optional[str],
-    until: Optional[str],
+    since: str | None,
+    until: str | None,
     message: str,
 ) -> str:
-    """Generate a text component used in deprecation messages.
+    """Generates a text component used in deprecation messages.
 
     Parameters
     ----------
@@ -68,10 +70,10 @@ def _deprecation_text_component(
 
 def deprecated(
     func: Callable = None,
-    since: Optional[str] = None,
-    until: Optional[str] = None,
-    replacement: Optional[str] = None,
-    message: Optional[str] = "",
+    since: str | None = None,
+    until: str | None = None,
+    replacement: str | None = None,
+    message: str | None = "",
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
@@ -144,6 +146,7 @@ def deprecated(
 
         foo()
         # WARNING  The function foo has been deprecated since 05/01/2021 and is expected to be removed after 06/01/2021.
+
     """
     # If used as factory:
     if func is None:
@@ -220,13 +223,12 @@ def deprecated(
 
 
 def deprecated_params(
-    params: Optional[Union[str, Iterable[str]]] = None,
-    since: Optional[str] = None,
-    until: Optional[str] = None,
-    message: Optional[str] = "",
-    redirections: Optional[
-        "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]"
-    ] = None,
+    params: str | Iterable[str] | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    message: str | None = "",
+    redirections: None
+    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 
@@ -353,6 +355,8 @@ def deprecated_params(
         foo(buff=(1,2))
         # WARNING  The parameter buff of method foo has been deprecated and may be removed in a later version.
         # returns {"buff_x": 1, buff_y: 2}
+
+
     """
     # Check if decorator is used without parenthesis
     if callable(params):
@@ -383,7 +387,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable, used: List[str]):
+    def warning_msg(func: Callable, used: list[str]):
         """Generate the deprecation warning message.
 
         Parameters
@@ -406,7 +410,7 @@ def deprecated_params(
         deprecated = _deprecation_text_component(since, until, message)
         return f"The parameter{parameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
-    def redirect_params(kwargs: dict, used: List[str]):
+    def redirect_params(kwargs: dict, used: list[str]):
         """Adjust the keyword arguments as defined by the redirections.
 
         Parameters
@@ -450,6 +454,7 @@ def deprecated_params(
         Any
             The return value of the given callable when being passed the given
             arguments.
+
         """
         used = []
         for param in params:

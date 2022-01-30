@@ -1,5 +1,7 @@
 """Mobjects that dynamically show the change of a variable."""
 
+from __future__ import annotations
+
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 

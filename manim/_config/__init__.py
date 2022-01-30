@@ -1,8 +1,9 @@
 """Set the global config and logger."""
 
+from __future__ import annotations
+
 import logging
 from contextlib import _GeneratorContextManager, contextmanager
-from typing import Union
 
 from .logger_utils import make_logger
 from .utils import ManimConfig, ManimFrame, make_config_parser
@@ -37,7 +38,7 @@ frame = ManimFrame(config)
 
 # This has to go here because it needs access to this module's config
 @contextmanager
-def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
+def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
     """Context manager that temporarily modifies the global ``config`` object.
 
     Inside the ``with`` statement, the modified config will be used.  After

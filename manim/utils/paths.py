@@ -1,5 +1,7 @@
 """Functions determining transformation paths between sets of points."""
 
+from __future__ import annotations
+
 __all__ = [
     "straight_path",
     "path_along_arc",

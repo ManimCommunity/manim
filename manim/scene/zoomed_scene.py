@@ -42,6 +42,8 @@ Examples
             self.play(self.zoomed_camera.frame.animate.shift(0.5 * DOWN))
 """
 
+from __future__ import annotations
+
 __all__ = ["ZoomedScene"]
 
 

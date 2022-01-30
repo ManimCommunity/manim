@@ -42,6 +42,8 @@ Note
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
+from __future__ import annotations
+
 import datetime
 import os
 import re

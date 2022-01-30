@@ -1,5 +1,7 @@
 """A camera supporting multiple perspectives."""
 
+from __future__ import annotations
+
 __all__ = ["MultiCamera"]
 
 

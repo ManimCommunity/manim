@@ -1,5 +1,7 @@
 """Operations on iterables."""
 
+from __future__ import annotations
+
 __all__ = [
     "remove_list_redundancies",
     "list_update",

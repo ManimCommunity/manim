@@ -1,6 +1,8 @@
 """Animate mobjects."""
 
 
+from __future__ import annotations
+
 from .. import config, logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
@@ -11,17 +13,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -100,6 +92,7 @@ class Animation:
 
                 # lag_ratio also works recursively on nested submobjects:
                 self.play(groups.animate(run_time=1, lag_ratio=0.1).shift(UP * 2))
+
     """
 
     def __new__(
@@ -123,22 +116,27 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Optional[Mobject],
+        mobject: Mobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
+        introducer: bool = False,
+        *,
+        _on_finish: Callable[[], None] = lambda _: None,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
-        self.name: Optional[str] = name
+        self.name: str | None = name
         self.remover: bool = remover
+        self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
+        self._on_finish: Callable[[Scene], None] = _on_finish
         if config["renderer"] == "opengl":
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
@@ -158,7 +156,7 @@ class Animation:
                 ),
             )
 
-    def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
+    def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
         elif not isinstance(mobject, (Mobject, OpenGLMobject)):
@@ -175,9 +173,10 @@ class Animation:
     def begin(self) -> None:
         """Begin the animation.
 
-        This method is called right as an animation is being played. As
-        much initialization as possible, especially any mobject copying,
-        should live in this method.
+        This method is called right as an animation is being played. As much
+        initialization as possible, especially any mobject copying, should live in this
+        method.
+
         """
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
@@ -197,12 +196,13 @@ class Animation:
         """Finish the animation.
 
         This method gets called when the animation is over.
+
         """
         self.interpolate(1)
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         """Clean up the :class:`~.Scene` after finishing the animation.
 
         This includes to :meth:`~.Scene.remove` the Animation's
@@ -213,8 +213,25 @@ class Animation:
         scene
             The scene the animation should be cleaned up from.
         """
+        self._on_finish(scene)
         if self.is_remover():
             scene.remove(self.mobject)
+
+    def _setup_scene(self, scene: Scene) -> None:
+        """Setup up the :class:`~.Scene` before starting the animation.
+
+        This includes to :meth:`~.Scene.add` the Animation's
+        :class:`~.Mobject` if the animation is an introducer.
+
+        Parameters
+        ----------
+        scene
+            The scene the animation should be cleaned up from.
+        """
+        if scene is None:
+            return
+        if self.is_introducer():
+            scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
@@ -232,7 +249,7 @@ class Animation:
         """
         return self.mobject, self.starting_mobject
 
-    def get_all_families_zipped(self) -> Iterable[Tuple]:
+    def get_all_families_zipped(self) -> Iterable[tuple]:
         if config["renderer"] == "opengl":
             return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
         return zip(
@@ -240,16 +257,17 @@ class Animation:
         )
 
     def update_mobjects(self, dt: float) -> None:
-        """Update things like starting_mobject, and (for Transforms) target_mobject.
-
-        Note, since typically (always?) self.mobject will have its
-        updating suspended during the animation, this will do nothing to
-        self.mobject.
+        """
+        Updates things like starting_mobject, and (for
+        Transforms) target_mobject.  Note, since typically
+        (always?) self.mobject will have its updating
+        suspended during the animation, this will do
+        nothing to self.mobject.
         """
         for mob in self.get_all_mobjects_to_update():
             mob.update(dt)
 
-    def get_all_mobjects_to_update(self) -> List[Mobject]:
+    def get_all_mobjects_to_update(self) -> list[Mobject]:
         """Get all mobjects to be updated during the animation.
 
         Returns
@@ -262,7 +280,7 @@ class Animation:
         # most cases its updating is suspended anyway
         return list(filter(lambda m: m is not self.mobject, self.get_all_mobjects()))
 
-    def copy(self) -> "Animation":
+    def copy(self) -> Animation:
         """Create a copy of the animation.
 
         Returns
@@ -309,7 +327,7 @@ class Animation:
         starting_submobject: Mobject,
         # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
-    ) -> "Animation":
+    ) -> Animation:
         # Typically implemented by subclass
         pass
 
@@ -340,7 +358,7 @@ class Animation:
         return self.rate_func(value - lower)
 
     # Getters and setters
-    def set_run_time(self, run_time: float) -> "Animation":
+    def set_run_time(self, run_time: float) -> Animation:
         """Set the run time of the animation.
 
         Parameters
@@ -374,7 +392,7 @@ class Animation:
     def set_rate_func(
         self,
         rate_func: Callable[[float], float],
-    ) -> "Animation":
+    ) -> Animation:
         """Set the rate function of the animation.
 
         Parameters
@@ -403,7 +421,7 @@ class Animation:
         """
         return self.rate_func
 
-    def set_name(self, name: str) -> "Animation":
+    def set_name(self, name: str) -> Animation:
         """Set the name of the animation.
 
         Parameters
@@ -429,11 +447,22 @@ class Animation:
         """
         return self.remover
 
+    def is_introducer(self) -> bool:
+        """Test if a the animation is a remover.
+
+        Returns
+        -------
+        bool
+            ``True`` if the animation is a remover, ``False`` otherwise.
+        """
+        return self.introducer
+
 
 def prepare_animation(
-    anim: Union["Animation", "mobject._AnimationBuilder"],
-) -> "Animation":
-    r"""Return either an unchanged animation, or the animation built from a passed animation factory.
+    anim: Animation | mobject._AnimationBuilder,
+) -> Animation:
+    r"""Returns either an unchanged animation, or the animation built
+    from a passed animation factory.
 
     Examples
     --------
@@ -486,7 +515,7 @@ class Wait(Animation):
     def finish(self) -> None:
         pass
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         pass
 
     def update_mobjects(self, dt: float) -> None:
@@ -497,9 +526,9 @@ class Wait(Animation):
 
 
 def override_animation(
-    animation_class: Type["Animation"],
+    animation_class: type[Animation],
 ) -> Callable[[Callable], Callable]:
-    """Use this decorator mark methods as overrides for specific :class:`~.Animation` types.
+    """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
 
     Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
     ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
@@ -531,6 +560,7 @@ def override_animation(
         class OverrideAnimationExample(Scene):
             def construct(self):
                 self.play(FadeIn(MySquare()))
+
     """
 
     def decorator(func):

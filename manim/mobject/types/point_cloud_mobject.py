@@ -1,5 +1,7 @@
 """Mobjects representing point clouds."""
 
+from __future__ import annotations
+
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 import numpy as np

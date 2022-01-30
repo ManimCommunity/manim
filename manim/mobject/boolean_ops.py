@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 
 import numpy as np
@@ -12,7 +14,10 @@ __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
 class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
-    """This class contains some helper functions which helps to convert to and from skia objects and manim objects (:class:`~.VMobject`)."""
+    """This class contains some helper functions which
+    helps to convert to and from skia objects and manim
+    objects (:class:`~.VMobject`).
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +26,9 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         self,
         points: typing.Iterable,
         z_dim: float = 0.0,
-    ) -> typing.List[np.ndarray]:
-        """Convert an iterable with coordinates in 2d to 3d by adding :attr:`z_dim` as the z coordinate.
+    ) -> list[np.ndarray]:
+        """Converts an iterable with coordinates in 2d to 3d by adding
+        :attr:`z_dim` as the z coordinate.
 
         Parameters
         ----------
@@ -50,7 +56,8 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         return points
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
-        """Convert a :class:`~.VMobject` to SkiaPath. This method only works for cairo renderer because it treats the points as Cubic beizer curves.
+        """Converts a :class:`~.VMobject` to SkiaPath. This method only works for
+        cairo renderer because it treats the points as Cubic beizer curves.
 
         Parameters
         ----------
@@ -79,7 +86,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.get_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for _, p1, p2 in quads:
+                for _p0, p1, p2 in quads:
                     path.quadTo(*p1[:2], *p2[:2])
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
@@ -89,7 +96,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
                 start = subpath[0]
                 path.moveTo(*start[:2])
-                for _, p1, p2, p3 in quads:
+                for _p0, p1, p2, p3 in quads:
                     path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
 
                 if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
@@ -98,7 +105,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         return path
 
     def _convert_skia_path_to_vmobject(self, path: SkiaPath) -> VMobject:
-        """Convert SkiaPath back to VMobject.
+        """Converts SkiaPath back to VMobject.
 
         Parameters
         ----------
@@ -137,7 +144,8 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Union(_BooleanOps):
-    """Union of two or more :class:`~.VMobject` s. This returns the common region of the :class:`~VMobject` s.
+    """Union of two or more :class:`~.VMobject` s. This returns the common region of
+    the :class:`~VMobject` s.
 
     Parameters
     ----------
@@ -151,7 +159,6 @@ class Union(_BooleanOps):
 
     Example
     -------
-
     .. manim:: UnionExample
         :save_last_frame:
 
@@ -164,6 +171,7 @@ class Union(_BooleanOps):
                 un = Union(sq, cr, color=GREEN, fill_opacity=1)
                 un.move_to([1.5, 0.3, 0])
                 self.add(sq, cr, un)
+
     """
 
     def __init__(self, *vmobjects: VMobject, **kwargs) -> None:
@@ -202,6 +210,7 @@ class Difference(_BooleanOps):
                 un = Difference(sq, cr, color=GREEN, fill_opacity=1)
                 un.move_to([1.5, 0, 0])
                 self.add(sq, cr, un)
+
     """
 
     def __init__(self, subject, clip, **kwargs) -> None:
@@ -216,7 +225,8 @@ class Difference(_BooleanOps):
 
 
 class Intersection(_BooleanOps):
-    """Find the intersection of two :class:`~.VMobject` s. This keeps the parts covered by both :class:`~.VMobject` s.
+    """Find the intersection of two :class:`~.VMobject` s.
+    This keeps the parts covered by both :class:`~.VMobject` s.
 
     Parameters
     ----------
@@ -242,6 +252,7 @@ class Intersection(_BooleanOps):
                 un = Intersection(sq, cr, color=GREEN, fill_opacity=1)
                 un.move_to([1.5, 0, 0])
                 self.add(sq, cr, un)
+
     """
 
     def __init__(self, *vmobjects, **kwargs) -> None:
@@ -269,7 +280,9 @@ class Intersection(_BooleanOps):
 
 
 class Exclusion(_BooleanOps):
-    """Find the XOR region between two :class:`~.VMobject` and create a new :class:`~.VMobject` consisting it.
+    """Find the XOR between two :class:`~.VMobject`.
+    This creates a new :class:`~.VMobject` consisting of the region
+    covered by exactly one of them.
 
     Parameters
     ----------
@@ -280,6 +293,7 @@ class Exclusion(_BooleanOps):
 
     Example
     -------
+
     .. manim:: IntersectionExample
         :save_last_frame:
 
@@ -292,6 +306,7 @@ class Exclusion(_BooleanOps):
                 un = Exclusion(sq, cr, color=GREEN, fill_opacity=1)
                 un.move_to([1.5, 0.4, 0])
                 self.add(sq, cr, un)
+
     """
 
     def __init__(self, subject, clip, **kwargs) -> None:

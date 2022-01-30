@@ -1,18 +1,20 @@
 """Manim's cfg subcommand.
 
-Manim's cfg subcommand is accessed in the command-line interface via
-``manim cfg``. Here you can specify options, subcommands, and subgroups
-for the cfg group.
+Manim's cfg subcommand is accessed in the command-line interface via ``manim
+cfg``. Here you can specify options, subcommands, and subgroups for the cfg
+group.
+
 """
+from __future__ import annotations
+
 import os
 from ast import literal_eval
-from typing import Union
 
 import click
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import config, console
+from ... import console
 from ..._config.utils import config_file_paths, make_config_parser
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
@@ -25,8 +27,8 @@ If left empty, the default colour will be used.[/red]
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
 
-def value_from_string(value: str) -> Union[str, int, bool]:
-    """Extract the literal of proper datatype from a string.
+def value_from_string(value: str) -> str | int | bool:
+    """Extracts the literal of proper datatype from a string.
 
     Parameters
     ----------
@@ -36,7 +38,7 @@ def value_from_string(value: str) -> Union[str, int, bool]:
     Returns
     -------
     Union[:class:`str`, :class:`int`, :class:`bool`]
-        Return the literal of appropriate datatype.
+        Returns the literal of appropriate datatype.
     """
     try:
         value = literal_eval(value)
@@ -46,7 +48,8 @@ def value_from_string(value: str) -> Union[str, int, bool]:
 
 
 def _is_expected_datatype(value: str, expected: str, style: bool = False) -> bool:
-    """Check whether `value` is the same datatype as `expected`, and checks if it is a valid `style` if `style` is true.
+    """Checks whether `value` is the same datatype as `expected`,
+    and checks if it is a valid `style` if `style` is true.
 
     Parameters
     ----------
@@ -70,7 +73,7 @@ def _is_expected_datatype(value: str, expected: str, style: bool = False) -> boo
 
 
 def is_valid_style(style: str) -> bool:
-    """Check whether the entered color is a valid color according to rich.
+    """Checks whether the entered color is a valid color according to rich.
 
     Parameters
     ----------
@@ -80,7 +83,7 @@ def is_valid_style(style: str) -> bool:
     Returns
     -------
     Boolean
-        Return whether it is valid style or not according to rich.
+        Returns whether it is valid style or not according to rich.
     """
     try:
         Style.parse(style)
@@ -90,13 +93,11 @@ def is_valid_style(style: str) -> bool:
 
 
 def replace_keys(default: dict) -> dict:
-    """Replace _ to . and vice versa in a dictionary for rich.
-
+    """Replaces _ to . and vice versa in a dictionary for rich
     Parameters
     ----------
     default : :class:`dict`
         The dictionary to check and replace
-
     Returns
     -------
     :class:`dict`
@@ -275,7 +276,7 @@ Are you sure you want to continue? (y/n)""",
         if not os.path.isdir(directory):
             console.print(f"Creating folder: {directory}.", style="red bold")
             os.mkdir(directory)
-        with open(os.path.join(directory, "manim.cfg"), "w"):
+        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:  # noqa: F841
             ctx.invoke(write)
             from_path = os.path.join(os.getcwd(), "manim.cfg")
             to_path = os.path.join(directory, "manim.cfg")

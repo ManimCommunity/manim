@@ -1,4 +1,4 @@
-import pytest
+from __future__ import annotations
 
 from manim.mobject.numbers import DecimalNumber
 

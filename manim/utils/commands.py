@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 import os
 from subprocess import run
-from typing import Any, Dict, List
+from typing import Any
 
 __all__ = [
     "capture",
@@ -16,7 +18,7 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str) -> Dict[str, Any]:
+def get_video_metadata(path_to_video: str) -> dict[str, Any]:
     command = [
         "ffprobe",
         "-v",
@@ -34,10 +36,10 @@ def get_video_metadata(path_to_video: str) -> Dict[str, Any]:
     return json.loads(config)["streams"][0]
 
 
-def get_dir_layout(dirpath: str) -> List[str]:
+def get_dir_layout(dirpath: str) -> list[str]:
     """Get list of paths relative to dirpath of all files in dir and subdirs recursively."""
-    index_files: List[str] = []
-    for root, dirs, files in os.walk(dirpath):  # noqa: B007
+    index_files: list[str] = []
+    for root, _dirs, files in os.walk(dirpath):
         for file in files:
             index_files.append(f"{os.path.relpath(os.path.join(root, file), dirpath)}")
     return index_files

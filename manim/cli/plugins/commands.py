@@ -4,6 +4,8 @@ Manim's plugin subcommand is accessed in the command-line interface via
 ``manim plugin``. Here you can specify options, subcommands, and
 subgroups for the plugin group.
 """
+from __future__ import annotations
+
 import click
 
 from ...constants import CONTEXT_SETTINGS, EPILOG

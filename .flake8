@@ -16,7 +16,7 @@ min_python_version = 3.7.0
 
 # TODO - Add Flake-RST-Docstrings Plugin
 
-select = A,B,B9,C4,C90,D,E,F,PT,R,RST,SIM,W,PIE
+extend-select = B9
 
                 # General Compatibility
 extend-ignore = E203, E501,
@@ -33,7 +33,7 @@ extend-ignore = E203, E501,
                 D107,
 
                 # TODO - Remove when possible
-                F811,
+                F811, B008, B006, D301,
 
                 # FIXME - Waiting for bugfix ( https://github.com/PyCQA/pydocstyle/issues/566 )
                 D401,

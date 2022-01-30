@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 r"""Mobjects that are simple geometric shapes.
 
 Examples
 --------
+
 .. manim:: UsefulAnnotations
     :save_last_frame:
 
@@ -67,14 +70,14 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Sequence
 
 import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
+from .. import config
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
@@ -94,40 +97,45 @@ from .opengl_compatibility import ConvertToOpenGL
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
-    """Meant for shared functionality between :class:`~.Arc` and :class:`~.Line`.
-
+    """
+    Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
 
-    * Adding, Creating, Modifying tips
-        - add_tip calls create_tip, before pushing the new tip
-            into the TipableVMobject's list of submobjects
-        - stylistic and positional configuration
+        * Adding, Creating, Modifying tips
+            - add_tip calls create_tip, before pushing the new tip
+                into the TipableVMobject's list of submobjects
+            - stylistic and positional configuration
 
-    * Checking for tips
-        - Boolean checks for whether the TipableVMobject has a tip
-            and a starting tip
+        * Checking for tips
+            - Boolean checks for whether the TipableVMobject has a tip
+                and a starting tip
 
-    * Getters
-        - Straightforward accessors, returning information pertaining
-            to the TipableVMobject instance's tip(s), its length etc
+        * Getters
+            - Straightforward accessors, returning information pertaining
+                to the TipableVMobject instance's tip(s), its length etc
+
     """
 
     def __init__(
         self,
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
-        tip_style=None,
+        tip_style={},
         **kwargs,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
-        self.tip_style = {} if tip_style is None else tip_style
+        self.tip_style = tip_style
         super().__init__(**kwargs)
 
     # Adding, Creating, Modifying tips
 
     def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
-        """Add a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."""
+        """
+        Adds a tip to the TipableVMobject instance, recognising
+        that the endpoints might need to be switched if it's
+        a 'starting tip' or not.
+        """
         if tip is None:
             tip = self.create_tip(tip_shape, tip_length, at_start)
         else:
@@ -138,13 +146,19 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
-        """Stylises the tip, positions it spatially, and returns the newly instantiated tip to the caller."""
+        """
+        Stylises the tip, positions it spatially, and returns
+        the newly instantiated tip to the caller.
+        """
         tip = self.get_unpositioned_tip(tip_shape, tip_length)
         self.position_tip(tip, at_start)
         return tip
 
     def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
-        """Return a tip that has been stylistically configured, but has not yet been given a position in space."""
+        """
+        Returns a tip that has been stylistically configured,
+        but has not yet been given a position in space.
+        """
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
         if tip_length is None:
@@ -222,7 +236,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tips(self):
-        """Return a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."""
+        """
+        Returns a VGroup (collection of VMobjects) containing
+        the TipableVMObject instance's tips.
+        """
         result = self.get_group_class()()
         if hasattr(self, "tip"):
             result.add(self.tip)
@@ -231,7 +248,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tip(self):
-        """Return the TipableVMobject instance's (first) tip, otherwise throws an exception."""
+        """Returns the TipableVMobject instance's (first) tip,
+        otherwise throws an exception."""
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -299,7 +317,7 @@ class Arc(TipableVMobject):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        self.set_pre_positioned_points()
+        self._set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
@@ -308,7 +326,7 @@ class Arc(TipableVMobject):
     # has to be used.
     def init_points(self):
         self.set_points(
-            Arc.create_quadratic_bezier_points(
+            Arc._create_quadratic_bezier_points(
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.num_components,
@@ -318,7 +336,7 @@ class Arc(TipableVMobject):
         self.shift(self.arc_center)
 
     @staticmethod
-    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
+    def _create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -338,7 +356,7 @@ class Arc(TipableVMobject):
         points[2::3] = samples[2::2]
         return points
 
-    def set_pre_positioned_points(self):
+    def _set_pre_positioned_points(self):
         anchors = np.array(
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
@@ -362,7 +380,10 @@ class Arc(TipableVMobject):
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
-        """Look at the normals to the first two anchors, and find their intersection points."""
+        """
+        Looks at the normals to the first two
+        anchors, and finds their intersection points
+        """
         # First two anchors and handles
         a1, h1, h2, a2 = self.points[:4]
 
@@ -394,7 +415,8 @@ class Arc(TipableVMobject):
 
 
 class ArcBetweenPoints(Arc):
-    """Create an Arc between 2 points.
+    """
+    Inherits from Arc and additionally takes 2 points between which the arc is spanned.
 
     Example
     -------
@@ -498,7 +520,7 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
-        """Modify a circle so that it surrounds a given mobject.
+        """Modifies a circle so that it surrounds a given mobject.
 
         Parameters
         ----------
@@ -545,7 +567,7 @@ class Circle(Arc):
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
-        """Return the position of a point on the circle.
+        """Returns the position of a point on the circle.
 
         Parameters
         ----------
@@ -580,7 +602,8 @@ class Circle(Arc):
     def from_three_points(
         p1: Sequence[float], p2: Sequence[float], p3: Sequence[float], **kwargs
     ):
-        """Return a circle passing through the specified three points.
+        """Returns a circle passing through the specified
+        three points.
 
         Example
         -------
@@ -757,7 +780,7 @@ class Ellipse(Circle):
 
 
 class AnnularSector(Arc):
-    """Create an AnnularSector.
+    """
 
     Parameters
     ----------
@@ -799,6 +822,8 @@ class AnnularSector(Arc):
                 s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
 
                 self.add(s1, s2, s3, s4)
+
+
     """
 
     def __init__(
@@ -843,7 +868,7 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    """Create a Sector.
+    """
 
     Examples
     --------
@@ -889,8 +914,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius: Optional[float] = 1,
-        outer_radius: Optional[float] = 2,
+        inner_radius: float | None = 1,
+        outer_radius: float | None = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
@@ -921,7 +946,7 @@ class Line(TipableVMobject):
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
-        self.set_start_and_end_attrs(start, end)
+        self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
     def generate_points(self):
@@ -939,42 +964,53 @@ class Line(TipableVMobject):
         else:
             self.set_points_as_corners([start, end])
 
-        self.account_for_buff(buff)
+        self._account_for_buff(buff)
 
     init_points = generate_points
 
-    def set_path_arc(self, new_value):
-        self.path_arc = new_value
-        self.init_points()
-
-    def account_for_buff(self, buff):
+    def _account_for_buff(self, buff):
         if buff == 0:
             return None
-
+        #
         if self.path_arc == 0:
             length = self.get_length()
         else:
             length = self.get_arc_length()
-
+        #
         if length < 2 * buff:
             return None
         buff_proportion = buff / length
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def set_start_and_end_attrs(self, start, end):
+    def _set_start_and_end_attrs(self, start, end):
         # If either start or end are Mobjects, this
         # gives their centers
-        rough_start = self.pointify(start)
-        rough_end = self.pointify(end)
+        rough_start = self._pointify(start)
+        rough_end = self._pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
         # start and end, if they're mobjects
-        self.start = self.pointify(start, vect)
-        self.end = self.pointify(end, -vect)
+        self.start = self._pointify(start, vect)
+        self.end = self._pointify(end, -vect)
 
-    def pointify(self, mob_or_point, direction=None):
+    def _pointify(
+        self,
+        mob_or_point: Mobject | Sequence[float],
+        direction: Sequence[float] | None = None,
+    ) -> np.ndarray:
+        """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
+
+        ``direction`` determines the location of the point along its bounding box in that direction.
+
+        Parameters
+        ----------
+        mob_or_point
+            The mobject or point.
+        direction
+            The direction.
+        """
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
@@ -983,8 +1019,12 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
+    def set_path_arc(self, new_value):
+        self.path_arc = new_value
+        self.init_points()
+
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
-        """Set starts and end coordinates of a line.
+        """Sets starts and end coordinates of a line.
 
         Examples
         --------
@@ -1024,12 +1064,13 @@ class Line(TipableVMobject):
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point: Sequence[float]) -> Sequence[float]:
-        """Return the projection of a point onto a line.
+        """Returns the projection of a point onto a line.
 
         Parameters
         ----------
         point
             The point to which the line is projected.
+
         """
 
         start = self.get_start()
@@ -1101,20 +1142,20 @@ class DashedLine(Line):
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(),
+            num_dashes=self._calculate_num_dashes(),
             dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self) -> int:
-        """Return the number of dashes in the dashed line.
+    def _calculate_num_dashes(self) -> int:
+        """Returns the number of dashes in the dashed line.
 
         Examples
         --------
         ::
 
-            >>> DashedLine().calculate_num_dashes()
+            >>> DashedLine()._calculate_num_dashes()
             20
         """
 
@@ -1125,7 +1166,7 @@ class DashedLine(Line):
         )
 
     def get_start(self) -> np.ndarray:
-        """Return the start point of the line.
+        """Returns the start point of the line.
 
         Examples
         --------
@@ -1141,7 +1182,7 @@ class DashedLine(Line):
             return super().get_start()
 
     def get_end(self) -> np.ndarray:
-        """Return the end point of the line.
+        """Returns the end point of the line.
 
         Examples
         --------
@@ -1157,7 +1198,7 @@ class DashedLine(Line):
             return super().get_end()
 
     def get_first_handle(self) -> np.ndarray:
-        """Return the point of the first handle.
+        """Returns the point of the first handle.
 
         Examples
         --------
@@ -1170,7 +1211,7 @@ class DashedLine(Line):
         return self.submobjects[0].points[1]
 
     def get_last_handle(self) -> np.ndarray:
-        """Return the point of the last handle.
+        """Returns the point of the last handle.
 
         Examples
         --------
@@ -1373,7 +1414,7 @@ class Arrow(Line):
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
         self.add_tip(tip_shape=tip_shape)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
@@ -1408,7 +1449,7 @@ class Arrow(Line):
 
         if scale_tips:
             super().scale(factor, **kwargs)
-            self.set_stroke_width_from_length()
+            self._set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -1417,7 +1458,7 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(factor, **kwargs)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
         if has_tip:
             self.add_tip(tip=old_tips[0])
@@ -1426,7 +1467,7 @@ class Arrow(Line):
         return self
 
     def get_normal_vector(self) -> np.ndarray:
-        """Return the normal of a vector.
+        """Returns the normal of a vector.
 
         Examples
         --------
@@ -1440,12 +1481,12 @@ class Arrow(Line):
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
-        """Reset the normal of a vector."""
+        """Resets the normal of a vector"""
         self.normal_vector = self.get_normal_vector()
         return self
 
     def get_default_tip_length(self) -> float:
-        """Return the default tip_length of the arrow.
+        """Returns the default tip_length of the arrow.
 
         Examples
         --------
@@ -1458,11 +1499,8 @@ class Arrow(Line):
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
-    def set_stroke_width_from_length(self):
-        """Use internally.
-
-        Sets stroke width based on length.
-        """
+    def _set_stroke_width_from_length(self):
+        """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
             self.set_stroke(
@@ -1513,10 +1551,10 @@ class Vector(Arrow):
         self,
         integer_labels: bool = True,
         n_dim: int = 2,
-        color: Optional[Color] = None,
+        color: Color | None = None,
         **kwargs,
     ):
-        """Create a label based on the coordinates of the vector.
+        """Creates a label based on the coordinates of the vector.
 
         Parameters
         ----------
@@ -1548,9 +1586,9 @@ class Vector(Arrow):
         Returns
         -------
         :class:`~.Matrix`
-
             The label.
         """
+
         # avoiding circular imports
         from .matrix import Matrix
 
@@ -1627,10 +1665,10 @@ class DoubleArrow(Arrow):
 
 
 class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
-    """Create a CubicBezier curve.
-
+    """
     Example
     -------
+
     .. manim:: BezierSplineExample
         :save_last_frame:
 
@@ -1646,6 +1684,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
                 l2 = Line(p2, p2b)
                 bezier = CubicBezier(p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b)
                 self.add(l1, d1, l2, d2, bezier)
+
     """
 
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
@@ -1686,6 +1725,8 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 self.play(MoveAlongPath(dot, hexagram), run_time=5, rate_func=linear)
                 self.remove(dot)
                 self.wait()
+
+
     """
 
     def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
@@ -1701,7 +1742,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
             )
 
     def get_vertices(self) -> np.ndarray:
-        """Get the vertices of the :class:`Polygram`.
+        """Gets the vertices of the :class:`Polygram`.
 
         Returns
         -------
@@ -1723,7 +1764,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         return self.get_start_anchors()
 
     def get_vertex_groups(self) -> np.ndarray:
-        """Get the vertex groups of the :class:`Polygram`.
+        """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
         -------
@@ -1758,7 +1799,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         return np.array(vertex_groups)
 
     def round_corners(self, radius: float = 0.5):
-        """Round off the corners of the :class:`Polygram`.
+        """Rounds off the corners of the :class:`Polygram`.
 
         Parameters
         ----------
@@ -1907,7 +1948,7 @@ class RegularPolygram(Polygram):
         *,
         density: int = 2,
         radius: float = 1,
-        start_angle: Optional[float] = None,
+        start_angle: float | None = None,
         **kwargs,
     ):
         # Regular polygrams can be expressed by the number of their vertices
@@ -2045,6 +2086,7 @@ class Star(Polygon):
                 density_3 = Star(7, outer_radius=2, density=3, color=PURPLE)
 
                 self.add(VGroup(density_2, density_3).arrange(RIGHT))
+
     """
 
     def __init__(
@@ -2052,9 +2094,9 @@ class Star(Polygon):
         n: int = 5,
         *,
         outer_radius: float = 1,
-        inner_radius: Optional[float] = None,
+        inner_radius: float | None = None,
         density: int = 2,
-        start_angle: Optional[float] = TAU / 4,
+        start_angle: float | None = TAU / 4,
         **kwargs,
     ):
         inner_angle = TAU / (2 * n)
@@ -2305,6 +2347,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
                 reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
+
     """
 
     def __init__(self, *arcs, **kwargs):
@@ -2396,8 +2439,8 @@ class Rectangle(Polygon):
         color: Color = WHITE,
         height: float = 2.0,
         width: float = 4.0,
-        grid_xstep: Optional[float] = None,
-        grid_ystep: Optional[float] = None,
+        grid_xstep: float | None = None,
+        grid_ystep: float | None = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2444,7 +2487,7 @@ class Square(Rectangle):
     side_length : :class:`float`, optional
         The length of the sides of the square.
     kwargs : Any
-        Additional arguments to be passed to :class:`Square`
+        Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
     --------
@@ -2489,8 +2532,8 @@ class RoundedRectangle(Rectangle):
     """
 
     def __init__(self, corner_radius=0.5, **kwargs):
-        self.corner_radius = corner_radius
         super().__init__(**kwargs)
+        self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
 
 
@@ -2885,6 +2928,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
                 self.add(l1, l2)
                 self.add(mfill)
+
     """
 
     def __init__(
@@ -3006,7 +3050,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return VGroup(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
-        r"""Get the value of an angle of the :class:`Angle` class.
+        """Get the value of an angle of the :class:`Angle` class.
 
         Parameters
         ----------
@@ -3030,7 +3074,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
                     angle = Angle(line1, line2, radius=0.4)
 
-                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\circ}")
+                    value = DecimalNumber(angle.get_value(degrees=True), unit="^{\\circ}")
                     value.next_to(angle, UR)
 
                     self.add(line1, line2, angle, value)

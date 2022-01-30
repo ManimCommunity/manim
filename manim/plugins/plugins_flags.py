@@ -5,6 +5,8 @@ plugins_flags.py
 Plugin Managing Utility.
 """
 
+from __future__ import annotations
+
 import pkg_resources
 
 from manim import console

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim.mobject.svg.text_mobject import MarkupText, Text
 
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
 from typing import Callable
@@ -121,7 +123,7 @@ class OpenGLPMobject(OpenGLMobject):
                 mob.data[key] = mob.data[key][to_keep]
         return self
 
-    def sort_points(self, function: Callable = lambda p: p[0]) -> "OpenGLPMobject":
+    def sort_points(self, function: Callable = lambda p: p[0]) -> OpenGLPMobject:
         """Sort Points.
 
         Parameters

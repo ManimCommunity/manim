@@ -1,26 +1,29 @@
+from __future__ import annotations
+
 r"""Mobjects representing matrices.
 
 Examples
 --------
+
 .. manim:: MatrixExamples
     :save_last_frame:
 
     class MatrixExamples(Scene):
         def construct(self):
-            m0 = Matrix([["\pi", 0], [-1, 1]])
+            m0 = Matrix([["\\pi", 0], [-1, 1]])
             m1 = IntegerMatrix([[1.5, 0.], [12, -1.3]],
                 left_bracket="(",
                 right_bracket=")")
             m2 = DecimalMatrix(
                 [[3.456, 2.122], [33.2244, 12.33]],
                 element_to_mobject_config={"num_decimal_places": 2},
-                left_bracket="\{",
-                right_bracket="\}")
+                left_bracket="\\{",
+                right_bracket="\\}")
             m3 = MobjectMatrix(
                 [[Circle().scale(0.3), Square().scale(0.3)],
-                [MathTex("\pi").scale(2), Star().scale(0.3)]],
-                left_bracket="\langle",
-                right_bracket="\rangle")
+                [MathTex("\\pi").scale(2), Star().scale(0.3)]],
+                left_bracket="\\langle",
+                right_bracket="\\rangle")
             g = Group(m0, m1, m2, m3).arrange_in_grid(buff=2)
             self.add(g)
 """
@@ -37,7 +40,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Iterable, Optional, Sequence, Type
+from typing import Iterable, Sequence
 
 import numpy as np
 
@@ -45,7 +48,6 @@ from ..constants import *
 from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import WHITE
 from .opengl_compatibility import ConvertToOpenGL
 
 # TO DO : The following two functions are not used in this file.
@@ -68,7 +70,7 @@ def matrix_to_mobject(matrix):
 
 
 class Matrix(VMobject, metaclass=ConvertToOpenGL):
-    r"""A mobject that displays a matrix on the screen.
+    """A mobject that displays a matrix on the screen.
 
     Examples
     --------
@@ -81,22 +83,22 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
         class MatrixExamples(Scene):
             def construct(self):
-                m0 = Matrix([[2, "\pi"], [-1, 1]])
+                m0 = Matrix([[2, "\\pi"], [-1, 1]])
                 m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
                     v_buff=1.3,
                     h_buff=0.8,
                     bracket_h_buff=SMALL_BUFF,
                     bracket_v_buff=SMALL_BUFF,
-                    left_bracket="\{",
-                    right_bracket="\}")
+                    left_bracket="\\{",
+                    right_bracket="\\}")
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\langle",
-                    right_bracket="\\rangle")
+                    left_bracket="\\\\langle",
+                    right_bracket="\\\\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
@@ -133,12 +135,12 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: Type[MathTex] = MathTex,
-        element_to_mobject_config: Optional[dict] = None,
+        element_to_mobject: type[MathTex] = MathTex,
+        element_to_mobject_config: dict = {},
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
-        bracket_config: Optional[dict] = None,
+        bracket_config: dict = {},
         **kwargs,
     ):
         """
@@ -175,8 +177,6 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             the brackets.
 
         """
-        if bracket_config is None:
-            bracket_config = {}
 
         self.v_buff = v_buff
         self.h_buff = h_buff
@@ -185,18 +185,16 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.include_background_rectangle = include_background_rectangle
         self.element_to_mobject = element_to_mobject
-        self.element_to_mobject_config = (
-            {} if element_to_mobject_config is None else element_to_mobject_config
-        )
+        self.element_to_mobject_config = element_to_mobject_config
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
         super().__init__(**kwargs)
-        mob_matrix = self.matrix_to_mob_matrix(matrix)
-        self.organize_mob_matrix(mob_matrix)
+        mob_matrix = self._matrix_to_mob_matrix(matrix)
+        self._organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*it.chain(*mob_matrix))
         self.add(self.elements)
-        self.add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
+        self._add_brackets(self.left_bracket, self.right_bracket, **bracket_config)
         self.center()
         self.mob_matrix = mob_matrix
         if self.add_background_rectangles_to_entries:
@@ -205,8 +203,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def matrix_to_mob_matrix(self, matrix):
-        """Use internally."""
+    def _matrix_to_mob_matrix(self, matrix):
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -215,8 +212,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             for row in matrix
         ]
 
-    def organize_mob_matrix(self, matrix):
-        """Use internally."""
+    def _organize_mob_matrix(self, matrix):
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -226,8 +222,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 )
         return self
 
-    def add_brackets(self, left="[", right="]", **kwargs):
-        """Use internally. Adds the brackets to the Matrix mobject.
+    def _add_brackets(self, left="[", right="]", **kwargs):
+        """Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
 
@@ -255,7 +251,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_columns(self):
-        r"""Return columns of the matrix as VGroups.
+        """Return columns of the matrix as VGroups.
 
         Returns
         -------
@@ -269,7 +265,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class GetColumnsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\pi", 3], [1, 5]])
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
                     self.add(m0)
         """
@@ -282,7 +278,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         )
 
     def set_column_colors(self, *colors):
-        r"""Set individual colors for each columns of the matrix.
+        """Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
@@ -301,7 +297,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class SetColumnColorsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\pi", 1], [-1, 3]],
+                    m0 = Matrix([["\\pi", 1], [-1, 3]],
                     ).set_column_colors([RED,BLUE], GREEN)
                     self.add(m0)
         """
@@ -311,7 +307,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def get_rows(self):
-        r"""Return rows of the matrix as VGroups.
+        """Return rows of the matrix as VGroups.
 
         Returns
         -------
@@ -325,14 +321,14 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class GetRowsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\pi", 3], [1, 5]])
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_rows()[1]))
                     self.add(m0)
         """
         return VGroup(*(VGroup(*row) for row in self.mob_matrix))
 
     def set_row_colors(self, *colors):
-        r"""Set individual colors for each row of the matrix.
+        """Set individual colors for each row of the matrix.
 
         Parameters
         ----------
@@ -351,7 +347,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class SetRowColorsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\pi", 1], [-1, 3]],
+                    m0 = Matrix([["\\pi", 1], [-1, 3]],
                     ).set_row_colors([RED,BLUE], GREEN)
                     self.add(m0)
         """
@@ -361,7 +357,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def add_background_to_entries(self):
-        """Add a black background rectangle to the matrix, see above for an example.
+        """Add a black background rectangle to the matrix,
+        see above for an example.
 
         Returns
         -------
@@ -407,7 +404,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         return self.elements
 
     def get_brackets(self):
-        r"""Return the bracket mobjects.
+        """Return the bracket mobjects.
 
         Returns
         -------
@@ -421,7 +418,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
             class GetBracketsExample(Scene):
                 def construct(self):
-                    m0 = Matrix([["\pi", 3], [1, 5]])
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
                     bra = m0.get_brackets()
                     colors = [BLUE, GREEN]
                     for k in range(len(colors)):
@@ -432,7 +429,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
 
 
 class DecimalMatrix(Matrix):
-    r"""A mobject that displays a matrix with decimal entries on the screen.
+    """A mobject that displays a matrix with decimal entries on the screen.
 
     Examples
     --------
@@ -444,8 +441,8 @@ class DecimalMatrix(Matrix):
                 m0 = DecimalMatrix(
                     [[3.456, 2.122], [33.2244, 12]],
                     element_to_mobject_config={"num_decimal_places": 2},
-                    left_bracket="\{",
-                    right_bracket="\}")
+                    left_bracket="\\{",
+                    right_bracket="\\}")
                 self.add(m0)
     """
 
@@ -453,10 +450,11 @@ class DecimalMatrix(Matrix):
         self,
         matrix,
         element_to_mobject=DecimalNumber,
-        element_to_mobject_config=None,
+        element_to_mobject_config={"num_decimal_places": 1},
         **kwargs,
     ):
-        """Will round/truncate the decimal places as per the provided config.
+        """
+        Will round/truncate the decimal places as per the provided config.
 
         Parameters
         ----------
@@ -470,9 +468,7 @@ class DecimalMatrix(Matrix):
         super().__init__(
             matrix,
             element_to_mobject=element_to_mobject,
-            element_to_mobject_config={"num_decimal_places": 1}
-            if element_to_mobject_config is None
-            else element_to_mobject_config,
+            element_to_mobject_config=element_to_mobject_config,
             **kwargs,
         )
 
@@ -495,7 +491,8 @@ class IntegerMatrix(Matrix):
     """
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
-        """Will round if there are decimal entries in the matrix.
+        """
+        Will round if there are decimal entries in the matrix.
 
         Parameters
         ----------
@@ -508,7 +505,7 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    r"""A mobject that displays a matrix of mobject entries on the screen.
+    """A mobject that displays a matrix of mobject entries on the screen.
 
     Examples
     --------
@@ -519,7 +516,7 @@ class MobjectMatrix(Matrix):
             def construct(self):
                 a = Circle().scale(0.3)
                 b = Square().scale(0.3)
-                c = MathTex("\pi").scale(2)
+                c = MathTex("\\pi").scale(2)
                 d = Star().scale(0.3)
                 m0 = MobjectMatrix([[a, b], [c, d]])
                 self.add(m0)

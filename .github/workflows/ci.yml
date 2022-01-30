@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/macos-cache
-          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
@@ -87,7 +87,7 @@ jobs:
           oriPath=$PATH
           sudo mkdir -p $PWD/macos-cache
           echo "Install TinyTeX"
-          sudo curl -L -o "/tmp/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
+          sudo curl -L -o "/tmp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.tgz"
           sudo tar zxf "/tmp/TinyTeX.tgz" -C "$PWD/macos-cache"
           export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           sudo tlmgr update --self
@@ -115,7 +115,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
@@ -133,7 +133,7 @@ jobs:
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
-          Invoke-WebRequest "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.zip?job=image:%20Visual%20Studio%202019" -O "$($env:TMP)\TinyTex.zip"
+          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -O "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
           tlmgr update --self

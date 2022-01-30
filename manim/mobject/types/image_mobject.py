@@ -1,5 +1,7 @@
 """Mobjects representing raster images."""
 
+from __future__ import annotations
+
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib

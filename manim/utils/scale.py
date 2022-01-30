@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import math
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List
+from typing import TYPE_CHECKING, Any, Iterable
 
 __all__ = ["LogBase", "LinearBase"]
 
@@ -13,8 +15,7 @@ class _ScaleBase:
     """Scale baseclass for graphing/functions."""
 
     def __init__(self, custom_labels: bool = False):
-        """A base class for scale.
-
+        """
         Parameters
         ----------
         custom_labels
@@ -55,7 +56,7 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Iterable["Mobject"]:
+    ) -> Iterable[Mobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -128,20 +129,18 @@ class LogBase(_ScaleBase):
         .. code-block:: python
 
             func = ParametricFunction(lambda x: x, scaling=LogBase(base=2))
+
         """
         super().__init__()
         self.base = base
         self.custom_labels = custom_labels
 
     def function(self, value: float) -> float:
-        """Scale the value to fit it to a logarithmic scale.``self.function(5)==10**5``."""
+        """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
         return self.base ** value
 
     def inverse_function(self, value: float) -> float:
-        """Inverse of ``function``.
-
-        The value must be greater than 0
-        """
+        """Inverse of ``function``. The value must be greater than 0"""
         if value <= 0:
             raise ValueError(
                 "log(0) is undefined. Make sure the value is in the domain of the function"
@@ -152,9 +151,9 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: Dict[str, Any],
-    ) -> List["Mobject"]:
-        """Produce custom :class:`~.Integer` labels in the form of ``10^2``.
+        **base_config: dict[str, Any],
+    ) -> list[Mobject]:
+        """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
         ----------
