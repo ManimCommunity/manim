@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.coordinate\\_systems.NumberPlane``"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
-msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgid "Bases: :py:class:`manim.mobject.coordinate_systems.Axes`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:1
@@ -27,11 +27,11 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:3
-msgid "The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction."
+msgid "The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:4
-msgid "The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction."
+msgid "The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:5
@@ -62,11 +62,11 @@ msgstr ""
 msgid "Additional arguments to be passed to :class:`Axes`."
 msgstr ""
 
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:16
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:13
 msgid "If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1."
 msgstr ""
 
-#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:20
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane:17
 msgid "Examples"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:30:<autosummary>:1

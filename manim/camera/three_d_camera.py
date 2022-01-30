@@ -1,5 +1,7 @@
 """A camera that can be positioned and oriented in three-dimensional space."""
 
+from __future__ import annotations
+
 __all__ = ["ThreeDCamera"]
 
 
@@ -17,7 +19,6 @@ from ..mobject.three_d_utils import (
 from ..mobject.types.point_cloud_mobject import Point
 from ..mobject.value_tracker import ValueTracker
 from ..utils.color import get_shaded_rgb
-from ..utils.deprecation import deprecated
 from ..utils.family import extract_mobject_family_members
 from ..utils.space_ops import rotation_about_z, rotation_matrix
 
@@ -164,14 +165,6 @@ class ThreeDCamera(Camera):
         """
         return self.theta_tracker.get_value()
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        message="use focal_distance instead.",
-    )
-    def get_distance(self):
-        return self.get_focal_distance()
-
     def get_focal_distance(self):
         """Returns focal_distance of the Camera.
 
@@ -222,14 +215,6 @@ class ThreeDCamera(Camera):
             The new value of the azimuthal angle in radians.
         """
         self.theta_tracker.set_value(value)
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        message="use focal_distance instead.",
-    )
-    def set_distance(self, value):
-        return self.set_focal_distance(value)
 
     def set_focal_distance(self, value):
         """Sets the focal_distance of the Camera.

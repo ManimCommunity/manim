@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Mobjects that are simple geometric shapes.
 
 Examples
@@ -68,19 +70,18 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Sequence
 
 import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
+from .. import config
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
-from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.space_ops import (
     angle_between_vectors,
@@ -179,16 +180,16 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             anchor = self.get_end()
         angles = cartesian_to_spherical(handle - anchor)
         tip.rotate(
-            angles[2] - PI - tip.tip_angle,
+            angles[1] - PI - tip.tip_angle,
         )  # Rotates the tip along the azimuthal
         if not hasattr(self, "_init_positioning_axis"):
             axis = [
-                np.sin(angles[2]),
-                -np.cos(angles[2]),
+                np.sin(angles[1]),
+                -np.cos(angles[1]),
                 0,
             ]  # Obtains the perpendicular of the tip
             tip.rotate(
-                -angles[1] + PI / 2,
+                -angles[2] + PI / 2,
                 axis=axis,
             )  # Rotates the tip along the vertical wrt the axis
             self._init_positioning_axis = axis
@@ -317,7 +318,7 @@ class Arc(TipableVMobject):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        self.set_pre_positioned_points()
+        self._set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
@@ -326,7 +327,7 @@ class Arc(TipableVMobject):
     # has to be used.
     def init_points(self):
         self.set_points(
-            Arc.create_quadratic_bezier_points(
+            Arc._create_quadratic_bezier_points(
                 angle=self.angle,
                 start_angle=self.start_angle,
                 n_components=self.num_components,
@@ -336,7 +337,7 @@ class Arc(TipableVMobject):
         self.shift(self.arc_center)
 
     @staticmethod
-    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
+    def _create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
         samples = np.array(
             [
                 [np.cos(a), np.sin(a), 0]
@@ -356,7 +357,7 @@ class Arc(TipableVMobject):
         points[2::3] = samples[2::2]
         return points
 
-    def set_pre_positioned_points(self):
+    def _set_pre_positioned_points(self):
         anchors = np.array(
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
@@ -925,8 +926,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius: Optional[float] = 1,
-        outer_radius: Optional[float] = 2,
+        inner_radius: float | None = 1,
+        outer_radius: float | None = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
@@ -957,7 +958,7 @@ class Line(TipableVMobject):
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
-        self.set_start_and_end_attrs(start, end)
+        self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
     def generate_points(self):
@@ -975,15 +976,11 @@ class Line(TipableVMobject):
         else:
             self.set_points_as_corners([start, end])
 
-        self.account_for_buff(buff)
+        self._account_for_buff(buff)
 
     init_points = generate_points
 
-    def set_path_arc(self, new_value):
-        self.path_arc = new_value
-        self.init_points()
-
-    def account_for_buff(self, buff):
+    def _account_for_buff(self, buff):
         if buff == 0:
             return
         #
@@ -998,19 +995,34 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def set_start_and_end_attrs(self, start, end):
+    def _set_start_and_end_attrs(self, start, end):
         # If either start or end are Mobjects, this
         # gives their centers
-        rough_start = self.pointify(start)
-        rough_end = self.pointify(end)
+        rough_start = self._pointify(start)
+        rough_end = self._pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
         # start and end, if they're mobjects
-        self.start = self.pointify(start, vect)
-        self.end = self.pointify(end, -vect)
+        self.start = self._pointify(start, vect)
+        self.end = self._pointify(end, -vect)
 
-    def pointify(self, mob_or_point, direction=None):
+    def _pointify(
+        self,
+        mob_or_point: Mobject | Sequence[float],
+        direction: Sequence[float] | None = None,
+    ) -> np.ndarray:
+        """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
+
+        ``direction`` determines the location of the point along its bounding box in that direction.
+
+        Parameters
+        ----------
+        mob_or_point
+            The mobject or point.
+        direction
+            The direction.
+        """
         if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
@@ -1018,6 +1030,10 @@ class Line(TipableVMobject):
             else:
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
+
+    def set_path_arc(self, new_value):
+        self.path_arc = new_value
+        self.init_points()
 
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
         """Sets starts and end coordinates of a line.
@@ -1125,12 +1141,6 @@ class DashedLine(Line):
     :class:`~.DashedVMobject`
     """
 
-    @deprecated_params(
-        params="positive_space_ratio dash_spacing",
-        since="v0.9.0",
-        message="Use dashed_ratio instead of positive_space_ratio.",
-        redirections=[("positive_space_ratio", "dashed_ratio")],
-    )
     def __init__(
         self,
         *args,
@@ -1138,29 +1148,25 @@ class DashedLine(Line):
         dashed_ratio=0.5,
         **kwargs,
     ):
-        self.dash_spacing = kwargs.pop(
-            "dash_spacing",
-            None,
-        )  # Unused param, remove with deprecation warning
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(),
+            num_dashes=self._calculate_num_dashes(),
             dashed_ratio=dashed_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self) -> int:
+    def _calculate_num_dashes(self) -> int:
         """Returns the number of dashes in the dashed line.
 
         Examples
         --------
         ::
 
-            >>> DashedLine().calculate_num_dashes()
+            >>> DashedLine()._calculate_num_dashes()
             20
         """
 
@@ -1422,7 +1428,7 @@ class Arrow(Line):
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
         self.add_tip(tip_shape=tip_shape)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
@@ -1457,7 +1463,7 @@ class Arrow(Line):
 
         if scale_tips:
             super().scale(factor, **kwargs)
-            self.set_stroke_width_from_length()
+            self._set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -1466,7 +1472,7 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(factor, **kwargs)
-        self.set_stroke_width_from_length()
+        self._set_stroke_width_from_length()
 
         if has_tip:
             self.add_tip(tip=old_tips[0])
@@ -1508,8 +1514,8 @@ class Arrow(Line):
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
-    def set_stroke_width_from_length(self):
-        """Used internally. Sets stroke width based on length."""
+    def _set_stroke_width_from_length(self):
+        """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
             self.set_stroke(
@@ -1561,7 +1567,8 @@ class Vector(Arrow):
         self,
         integer_labels: bool = True,
         n_dim: int = 2,
-        color: str = WHITE,
+        color: Color | None = None,
+        **kwargs,
     ):
         """Creates a label based on the coordinates of the vector.
 
@@ -1572,25 +1579,33 @@ class Vector(Arrow):
         n_dim
             The number of dimensions of the vector.
         color
-            The color of the label.
+            Sets the color of label, optional.
+        kwargs
+            Additional arguments to be passed to :class:`~.Matrix`.
 
         Examples
         --------
 
-        .. manim VectorCoordinateLabel
+        .. manim:: VectorCoordinateLabel
             :save_last_frame:
 
             class VectorCoordinateLabel(Scene):
                 def construct(self):
                     plane = NumberPlane()
 
-                    vect_1 = Vector([1, 2])
-                    vect_2 = Vector([-3, -2])
-                    label_1 = vect1.coordinate_label()
-                    label_2 = vect2.coordinate_label(color=YELLOW)
+                    vec_1 = Vector([1, 2])
+                    vec_2 = Vector([-3, -2])
+                    label_1 = vec_1.coordinate_label()
+                    label_2 = vec_2.coordinate_label(color=YELLOW)
 
-                    self.add(plane, vect_1, vect_2, label_1, label_2)
+                    self.add(plane, vec_1, vec_2, label_1, label_2)
+
+        Returns
+        -------
+        :class:`~.Matrix`
+            The label.
         """
+
         # avoiding circular imports
         from .matrix import Matrix
 
@@ -1599,8 +1614,7 @@ class Vector(Arrow):
             vect = np.round(vect).astype(int)
         vect = vect[:n_dim]
         vect = vect.reshape((n_dim, 1))
-
-        label = Matrix(vect)
+        label = Matrix(vect, **kwargs)
         label.scale(LARGE_BUFF - 0.2)
 
         shift_dir = np.array(self.get_end())
@@ -1609,7 +1623,8 @@ class Vector(Arrow):
         else:  # Pointing left
             shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
         label.shift(shift_dir)
-        label.set_color(color)
+        if color is not None:
+            label.set_color(color)
         return label
 
 
@@ -1953,7 +1968,7 @@ class RegularPolygram(Polygram):
         *,
         density: int = 2,
         radius: float = 1,
-        start_angle: Optional[float] = None,
+        start_angle: float | None = None,
         **kwargs,
     ):
         # Regular polygrams can be expressed by the number of their vertices
@@ -2100,9 +2115,9 @@ class Star(Polygon):
         n: int = 5,
         *,
         outer_radius: float = 1,
-        inner_radius: Optional[float] = None,
+        inner_radius: float | None = None,
         density: int = 2,
-        start_angle: Optional[float] = TAU / 4,
+        start_angle: float | None = TAU / 4,
         **kwargs,
     ):
         inner_angle = TAU / (2 * n)
@@ -2448,8 +2463,8 @@ class Rectangle(Polygon):
         color: Color = WHITE,
         height: float = 2.0,
         width: float = 4.0,
-        grid_xstep: Optional[float] = None,
-        grid_ystep: Optional[float] = None,
+        grid_xstep: float | None = None,
+        grid_ystep: float | None = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2496,7 +2511,7 @@ class Square(Rectangle):
     side_length : :class:`float`, optional
         The length of the sides of the square.
     kwargs : Any
-        Additional arguments to be passed to :class:`Square`
+        Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
     --------
@@ -2543,8 +2558,8 @@ class RoundedRectangle(Rectangle):
     """
 
     def __init__(self, corner_radius=0.5, **kwargs):
-        self.corner_radius = corner_radius
         super().__init__(**kwargs)
+        self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
 
 

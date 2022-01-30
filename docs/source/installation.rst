@@ -36,6 +36,8 @@ in order for Manim to work properly, some additional system
 dependencies need to be installed first. The following pages have
 operating system specific instructions for you to follow.
 
+Manim requires Python version ``3.7`` or above to run.
+
 .. hint::
 
    Depending on your particular setup, the installation process
@@ -99,6 +101,16 @@ like that yourself:
 .. toctree::
 
    installation/jupyter
+
+.. _editor-addons:
+
+Editors
+********
+
+If you're using Visual Studio Code you can install an extension called
+*Manim Sideview* which provides automated rendering and an integrated preview
+of the animation inside the editor. The extension can be installed through the
+`marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__.
 
 
 Installation for developers

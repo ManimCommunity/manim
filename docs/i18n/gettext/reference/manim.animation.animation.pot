@@ -34,10 +34,6 @@ msgstr ""
 msgid "Should only be used to decorate methods of classes derived from :class:`~.Mobject`. ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined them. They don't override subclasses of the ``Animation`` they override."
 msgstr ""
 
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:7
-msgid ":meth:`~.Mobject.add_animation_override`"
-msgstr ""
-
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:0
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.prepare_animation:0
 msgid "Parameters"

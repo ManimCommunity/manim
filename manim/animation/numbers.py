@@ -1,5 +1,7 @@
 """Animations for changing numbers."""
 
+from __future__ import annotations
+
 __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 
 
@@ -15,7 +17,7 @@ class ChangingDecimal(Animation):
         self,
         decimal_mob: DecimalNumber,
         number_update_func: typing.Callable[[float], float],
-        suspend_mobject_updating: typing.Optional[bool] = False,
+        suspend_mobject_updating: bool | None = False,
         **kwargs,
     ) -> None:
         self.check_validity_of_input(decimal_mob)
@@ -29,7 +31,7 @@ class ChangingDecimal(Animation):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
     def interpolate_mobject(self, alpha: float) -> None:
-        self.mobject.set_value(self.number_update_func(alpha))
+        self.mobject.set_value(self.number_update_func(self.rate_func(alpha)))
 
 
 class ChangeDecimalToValue(ChangingDecimal):

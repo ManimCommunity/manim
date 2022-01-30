@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.text\\_mobject.Text``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:1
-msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgid "Bases: :py:class:`manim.mobject.svg.svg_mobject.SVGMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:1
@@ -45,10 +45,6 @@ msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:10
-msgid ":class:`Text`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:13
@@ -84,7 +80,8 @@ msgid "Initializes the colors."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid "Internally used."
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:2
+msgid "Internally used. Sets gradient colors for specified"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
@@ -97,7 +94,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
@@ -124,8 +121,21 @@ msgstr ""
 msgid "Internally used function. Sets color for specified strings."
 msgstr ""
 
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:1
-msgid "Internally used. Sets gradient colors for specified strings. Behaves similarly to ``set_color_by_t2c``."
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2c:3
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:4
+msgid "Deprecated"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2c:6
+msgid "The method Text.set_color_by_t2c has been deprecated since v0.14.0 and is expected to be removed after v0.15.0. This was internal function, you shouldn't be using it anyway."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:2
+msgid "strings. Behaves similarly to ``set_color_by_t2c``."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.set_color_by_t2g:7
+msgid "The method Text.set_color_by_t2g has been deprecated since v0.14.0 and is expected to be removed after v0.15.0. This was internal function, you shouldn't be using it anyway."
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.text2hash:1

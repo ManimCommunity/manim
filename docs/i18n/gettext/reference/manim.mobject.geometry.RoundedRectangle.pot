@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.RoundedRectangle``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.RoundedRectangle:1
-msgid "Bases: :class:`manim.mobject.geometry.Rectangle`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Rectangle`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.RoundedRectangle:1
@@ -47,7 +47,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.RoundedRectangle.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.RoundedRectangle.rst:28:<autosummary>:1

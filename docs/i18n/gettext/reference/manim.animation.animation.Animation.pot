@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.animation.Animation``"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:1
@@ -82,7 +82,11 @@ msgstr ""
 msgid "Whether updaters of the mobject should be suspended during the animation."
 msgstr ""
 
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:23
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:24
+msgid "In the current implementation of this class, the specified rate function is applied within :meth:`.Animation.interpolate_mobject` call as part of the call to :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation` that are implemented by overriding :meth:`interpolate_mobject`, the rate function has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead of just ``alpha``)."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation:33
 msgid "Examples"
 msgstr ""
 
@@ -262,7 +266,7 @@ msgid "This method gets called for every frame during an animation."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate:5
-msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Animation.interpolate_mobject:3

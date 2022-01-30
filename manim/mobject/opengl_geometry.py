@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import numpy as np
 
-from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.opengl_vectorized_mobject import (
@@ -9,9 +10,8 @@ from ..mobject.types.opengl_vectorized_mobject import (
     OpenGLVMobject,
 )
 from ..utils.color import *
-from ..utils.deprecation import deprecated_params
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
-from ..utils.simple_functions import clip, fdiv
+from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
@@ -518,17 +518,10 @@ class OpenGLLine(OpenGLTipableVMobject):
 
 
 class OpenGLDashedLine(OpenGLLine):
-    @deprecated_params(
-        params="positive_space_ratio dash_spacing",
-        since="v0.9.0",
-        message="Use dashed_ratio instead of positive_space_ratio.",
-    )
     def __init__(
         self, *args, dash_length=DEFAULT_DASH_LENGTH, dashed_ratio=0.5, **kwargs
     ):
-        # Simplify with removal of deprecation warning
-        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
-        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
+        self.dashed_ratio = dashed_ratio
         self.dash_length = dash_length
         super().__init__(*args, **kwargs)
         dashed_ratio = self.dashed_ratio
@@ -624,13 +617,13 @@ class OpenGLArrow(OpenGLLine):
         vect = end - start
         length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
-        w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
+        w_ratio = self.max_width_to_length_ratio / (thickness / length)
         if w_ratio < 1:
             thickness *= w_ratio
 
         tip_width = self.tip_width_ratio * thickness
         tip_length = tip_width / (2 * np.tan(self.tip_angle / 2))
-        t_ratio = fdiv(self.max_tip_length_to_length_ratio, fdiv(tip_length, length))
+        t_ratio = self.max_tip_length_to_length_ratio / (tip_length / length)
         if t_ratio < 1:
             tip_length *= t_ratio
             tip_width *= t_ratio

@@ -1,0 +1,36 @@
+*******
+v0.13.1
+*******
+
+:Date: December 05, 2021
+
+Contributors
+============
+
+A total of 2 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Laith Bahodi
+
+Pull requests merged
+====================
+
+A total of 2 pull requests were merged for this release.
+
+Fixed bugs
+----------
+
+* `#2363 <https://github.com/ManimCommunity/manim/pull/2363>`__: Fixed broken IPython magic command
+
+
+New releases
+------------
+
+* `#2364 <https://github.com/ManimCommunity/manim/pull/2364>`__: Prepared bugfix release ``v0.13.1``

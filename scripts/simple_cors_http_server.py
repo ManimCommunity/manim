@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import sys
-from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test  # type: ignore
 
 
 class CORSRequestHandler(SimpleHTTPRequestHandler):

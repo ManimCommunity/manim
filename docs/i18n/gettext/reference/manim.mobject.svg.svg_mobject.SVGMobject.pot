@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.svg.svg\\_mobject.SVGMobject``"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
@@ -154,7 +154,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.attribute_to_float:1:<autosummary>:1

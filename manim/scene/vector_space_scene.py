@@ -1,9 +1,9 @@
 """A scene suitable for vector spaces."""
 
+from __future__ import annotations
+
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-
-from typing import Optional
 
 import numpy as np
 from colour import Color
@@ -25,7 +25,7 @@ from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
+from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
@@ -78,7 +78,7 @@ class VectorScene(Scene):
         color : bool, optional
             The color of the axes. Defaults to WHITE.
         """
-        axes = Axes(color=color, tick_frequency=1)
+        axes = Axes(color=color, axis_config={"unit_size": 1})
         if animate:
             self.play(Create(axes))
         self.add(axes)
@@ -561,8 +561,8 @@ class LinearTransformationScene(VectorScene):
         self,
         include_background_plane: bool = True,
         include_foreground_plane: bool = True,
-        background_plane_kwargs: Optional[dict] = None,
-        foreground_plane_kwargs: Optional[dict] = None,
+        background_plane_kwargs: dict | None = None,
+        foreground_plane_kwargs: dict | None = None,
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,

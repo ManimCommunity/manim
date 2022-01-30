@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 
 
@@ -32,7 +34,7 @@ class NoAnimations(Scene):
     def construct(self):
         dot = Dot().set_color(GREEN)
         self.add(dot)
-        self.wait(1)
+        self.wait(0.1)
 
 
 class SceneWithStaticWait(Scene):
@@ -48,6 +50,19 @@ class SceneWithNonStaticWait(Scene):
         s.add_updater(lambda mob, dt: None)
         self.add(s)
         self.wait()
+
+
+class StaticScene(Scene):
+    def construct(self):
+        dot = Dot().set_color(GREEN)
+        self.add(dot)
+
+
+class InteractiveStaticScene(Scene):
+    def construct(self):
+        dot = Dot().set_color(GREEN)
+        self.add(dot)
+        self.interactive_mode = True
 
 
 class SceneWithSections(Scene):
@@ -94,6 +109,12 @@ class ElaborateSceneWithSections(Scene):
         self.wait()
 
         self.next_section("transform to circle")
+        circle = Circle()
+        self.play(Transform(square, circle))
+        self.wait()
+
+        # this section will be entirely skipped
+        self.next_section("skipped animations section", skip_animations=True)
         circle = Circle()
         self.play(Transform(square, circle))
         self.wait()

@@ -15,7 +15,31 @@ msgid "Qualified name: ``manim.animation.growing.SpinInFromNothing``"
 msgstr ""
 
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:1
-msgid "Bases: :class:`manim.animation.growing.GrowFromCenter`"
+msgid "Bases: :py:class:`manim.animation.growing.GrowFromCenter`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:1
+msgid "Introduce an :class:`~.Mobject` spinning and growing it from its center."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:3
+msgid "The mobjects to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:4
+msgid "The amount of spinning before mobject reaches its full size. E.g. 2*PI means that the object will do one full spin before being fully introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:6
+msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:9
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:14

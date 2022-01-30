@@ -10,41 +10,4 @@ msgstr ""
 msgid "PictureInPictureFrame"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.frame.PictureInPictureFrame.rst:4
-msgid "Qualified name: ``manim.mobject.frame.PictureInPictureFrame``"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame:1
-msgid "Bases: :class:`manim.mobject.geometry.Rectangle`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.PictureInPictureFrame.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.PictureInPictureFrame.rst:21
-msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1:<autosummary>:1
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1
-msgid "The aspect ratio."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.PictureInPictureFrame.aspect_ratio:1:<autosummary>:1
-msgid "The width of the mobject."
-msgstr ""
-
 

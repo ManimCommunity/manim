@@ -6,7 +6,7 @@ package manager like `Chocolatey <https://chocolatey.org/>`__
 or `Scoop <https://scoop.sh>`__. If you are not afraid of editing
 your System's ``PATH``, a manual installation is also possible.
 In fact, if you already have an existing Python
-installation (3.7 or newer), it might be the easiest way to get
+installation (3.7-3.10), it might be the easiest way to get
 everything up and running.
 
 If you choose to use one of the package managers, please follow
@@ -19,7 +19,7 @@ to make one of them available on your system.
 Required Dependencies
 ---------------------
 
-Manim requires a recent version of Python (3.7 or above) and ``ffmpeg``
+Manim requires a recent version of Python (3.7–3.10) and ``ffmpeg``
 in order to work.
 
 Chocolatey
@@ -58,10 +58,10 @@ Manual Installation
 *******************
 
 As mentioned above, Manim needs a reasonably recent version of
-Python 3 (3.7 or above) and FFmpeg.
+Python 3 (3.7–3.10) and FFmpeg.
 
 **Python:** Head over to https://www.python.org, download an installer
-for Python 3.7 (or newer), and follow its instructions to get Python
+for Python (3.7–3.10), and follow its instructions to get Python
 installed on your system.
 
 .. note::
@@ -118,25 +118,29 @@ of your choice (Chocolatey: ``choco install miktex.install``,
 Scoop: ``scoop install latex``).
 
 If you are concerned about disk space, there are some alternative,
-smaller distributions of LaTeX like
-`TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
+smaller distributions of LaTeX like:
+
+- Using Chocolatey:
+If you used Chocolatey to install manim or are already a chocolatey user,
+then you can simply run ``choco install manim-latex``.
+It is a dedicated package for Manim based on TinyTeX which contains
+all the required packages that Manim interacts with.
+
+- Manual Installation:
+You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
 Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``,
-then ``scoop install tinytex``). In this case, you will have to manage the
-LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only
-recommend this option if you know what you are doing. The full list
-of LaTeX packages which Manim interacts with in some way (a subset might
-be sufficient for your particular application) is::
+then ``scoop install tinytex``) alternative installation instructions can be found at their website.
+Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``.
+Therefore we only recommend this option if you know what you are doing.
+
+The full list of LaTeX packages which Manim interacts with in some way
+(a subset might be sufficient for your particular application) are::
 
    amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
    fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
    mathastext microtype ms physics preview ragged2e relsize rsfs
    setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
-.. note::
-
-   For Chocolatey there is a dedicated ``manim-latex`` package providing a
-   small LaTeX distribution based on TinyTeX which contains these packages;
-   if you use Chocolatey you can get it with ``choco install manim-latex``.
 
 
 Working with Manim

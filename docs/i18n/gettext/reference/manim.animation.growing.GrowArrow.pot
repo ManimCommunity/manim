@@ -15,7 +15,27 @@ msgid "Qualified name: ``manim.animation.growing.GrowArrow``"
 msgstr ""
 
 #: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:1
-msgid "Bases: :class:`manim.animation.growing.GrowFromPoint`"
+msgid "Bases: :py:class:`manim.animation.growing.GrowFromPoint`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:1
+msgid "Introduce an :class:`~.Arrow` by growing it from its start toward its tip."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:3
+msgid "The arrow to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:4
+msgid "Initial color of the arrow before growing to its full size. Leave empty to match arrow's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.GrowArrow:7
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.animation.growing.GrowArrow.rst:14

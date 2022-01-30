@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.composition.Succession``"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession:1
-msgid "Bases: :class:`manim.animation.composition.AnimationGroup`"
+msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.composition.Succession.rst:14
@@ -66,7 +66,7 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.Succession.interpolate:5
-msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 

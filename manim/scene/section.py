@@ -1,8 +1,10 @@
 """building blocks of segmented video API"""
 
+from __future__ import annotations
+
 import os
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from manim import get_video_metadata
 
@@ -38,25 +40,30 @@ class Section:
     ----------
     type
         Can be used by a third party applications to classify different types of sections.
-    name
-        Human readable, non-unique name for this section.
-    partial_movie_files
-        Animations belonging to this section.
     video
         Path to video file with animations belonging to section relative to sections directory.
         If ``None``, then the section will not be saved.
+    name
+        Human readable, non-unique name for this section.
+    skip_animations
+        Skip rendering the animations in this section when ``True``.
+    partial_movie_files
+        Animations belonging to this section.
 
     See Also
     --------
     :class:`.DefaultSectionType`
+    :meth:`.CairoRenderer.update_skipping_status`
+    :meth:`.OpenGLRenderer.update_skipping_status`
     """
 
-    def __init__(self, type: str, video: Optional[str], name: str):
+    def __init__(self, type: str, video: str | None, name: str, skip_animations: bool):
         self.type = type
         # None when not to be saved -> still keeps section alive
-        self.video: Optional[str] = video
+        self.video: str | None = video
         self.name = name
-        self.partial_movie_files: List[Optional[str]] = []
+        self.skip_animations = skip_animations
+        self.partial_movie_files: list[str | None] = []
 
     def is_empty(self) -> bool:
         """Check whether this section is empty.
@@ -65,11 +72,11 @@ class Section:
         """
         return len(self.partial_movie_files) == 0
 
-    def get_clean_partial_movie_files(self) -> List[str]:
+    def get_clean_partial_movie_files(self) -> list[str]:
         """Return all partial movie files that are not ``None``."""
         return [el for el in self.partial_movie_files if el is not None]
 
-    def get_dict(self, sections_dir: str) -> Dict[str, Any]:
+    def get_dict(self, sections_dir: str) -> dict[str, Any]:
         """Get dictionary representation with metadata of output video.
 
         The output from this function is used from every section to build the sections index file.

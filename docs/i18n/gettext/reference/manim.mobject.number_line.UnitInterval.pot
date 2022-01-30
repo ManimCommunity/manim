@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.number\\_line.UnitInterval``"
 msgstr ""
 
 #: ../../../manim/mobject/number_line.py:docstring of manim.mobject.number_line.UnitInterval:1
-msgid "Bases: :class:`manim.mobject.number_line.NumberLine`"
+msgid "Bases: :py:class:`manim.mobject.number_line.NumberLine`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.UnitInterval.rst:14
@@ -27,7 +27,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.UnitInterval.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.number_line.UnitInterval.rst:28:<autosummary>:1

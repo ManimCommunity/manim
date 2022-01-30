@@ -1,22 +1,41 @@
 """Mobjects representing function graphs."""
 
+from __future__ import annotations
+
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
 
 from .. import config
-from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from ..utils.scale import LinearBase, _ScaleBase
 from .opengl_compatibility import ConvertToOpenGL
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
+
+    Parameters
+    ----------
+    function
+        The function to be plotted in the form of ``(lambda x: x**2)``
+    t_range
+        Determines the length that the function spans. By default ``[0, 1]``
+    scaling
+        Scaling class applied to the points of the function. Default of :class:`~.LinearBase`.
+    use_smoothing
+        Whether to interpolate between the points of the function after they have been created.
+        (Will have odd behaviour with a low number of points)
+    discontinuities
+        Values of t at which the function experiences discontinuity.
+    dt
+        The left and right tolerance for the discontinuities.
+
 
     Examples
     --------
@@ -48,15 +67,38 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.add(axes, curve1)
                 self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
+
+    .. attention::
+        If your function has discontinuities, you'll have to specify the location
+        of the discontinuities manually. See the following example for guidance.
+
+    .. manim:: DiscontinuousExample
+        :save_last_frame:
+
+        class DiscontinuousExample(Scene):
+            def construct(self):
+                ax1 = NumberPlane((-3, 3), (-4, 4))
+                ax2 = NumberPlane((-3, 3), (-4, 4))
+                VGroup(ax1, ax2).arrange()
+                discontinuous_function = lambda x: (x ** 2 - 2) / (x ** 2 - 4)
+                incorrect = ax1.plot(discontinuous_function, color=RED)
+                correct = ax2.plot(
+                    discontinuous_function,
+                    discontinuities=[-2, 2],  # discontinuous points
+                    dt=0.1,  # left and right tolerance of discontinuity
+                    color=GREEN,
+                )
+                self.add(ax1, ax2, incorrect, correct)
     """
 
     def __init__(
         self,
-        function=None,
-        t_range=None,
-        dt=1e-8,
-        discontinuities=None,
-        use_smoothing=True,
+        function: Callable[[float, float], float],
+        t_range: Sequence[float] | None = None,
+        scaling: _ScaleBase = LinearBase(),
+        dt: float = 1e-8,
+        discontinuities: Iterable[float] | None = None,
+        use_smoothing: bool = True,
         **kwargs
     ):
         self.function = function
@@ -64,8 +106,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         if len(t_range) == 2:
             t_range = np.array([*t_range, 0.01])
 
+        self.scaling = scaling
+
         self.dt = dt
-        self.discontinuities = [] if discontinuities is None else discontinuities
+        self.discontinuities = discontinuities
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
@@ -79,22 +123,28 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_points(self):
 
-        discontinuities = filter(
-            lambda t: self.t_min <= t <= self.t_max,
-            self.discontinuities,
-        )
-        discontinuities = np.array(list(discontinuities))
-        boundary_times = np.array(
-            [
-                self.t_min,
-                self.t_max,
-                *(discontinuities - self.dt),
-                *(discontinuities + self.dt),
-            ],
-        )
-        boundary_times.sort()
+        if self.discontinuities is not None:
+            discontinuities = filter(
+                lambda t: self.t_min <= t <= self.t_max,
+                self.discontinuities,
+            )
+            discontinuities = np.array(list(discontinuities))
+            boundary_times = np.array(
+                [
+                    self.t_min,
+                    self.t_max,
+                    *(discontinuities - self.dt),
+                    *(discontinuities + self.dt),
+                ],
+            )
+            boundary_times.sort()
+        else:
+            boundary_times = [self.t_min, self.t_max]
+
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
+            t_range = np.array(
+                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
+            )
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])
@@ -156,8 +206,8 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], float],
-        x_range: Optional[Sequence[float]] = None,
-        y_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,
