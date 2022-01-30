@@ -1,5 +1,7 @@
 """Utilities that might be useful for configuration dictionaries."""
 
+from __future__ import annotations
+
 __all__ = [
     "merge_dicts_recursively",
     "update_dict_recursively",
@@ -23,7 +25,7 @@ def merge_dicts_recursively(*dicts):
     When values are dictionaries, it is applied recursively
     """
     result = {}
-    all_items = it.chain(*[d.items() for d in dicts])
+    all_items = it.chain(*(d.items() for d in dicts))
     for key, value in all_items:
         if key in result and isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = merge_dicts_recursively(result[key], value)
@@ -41,7 +43,7 @@ def update_dict_recursively(current_dict, *others):
 # (and less in keeping with all other attr accesses) dict["x"]
 
 
-class DictAsObject(object):
+class DictAsObject:
     def __init__(self, dictin):
         self.__dict__ = dictin
 
@@ -55,10 +57,10 @@ class _Data:
         self.name = name
 
     def __get__(self, obj, owner):
-        return obj.__dict__["data"][self.name]
+        return obj.data[self.name]
 
     def __set__(self, obj, array: np.ndarray):
-        obj.__dict__["data"][self.name] = array
+        obj.data[self.name] = array
 
 
 class _Uniforms:

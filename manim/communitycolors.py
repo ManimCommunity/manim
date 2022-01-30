@@ -1,5 +1,7 @@
 """The colormap of manim community"""
 
+from __future__ import annotations
+
 LOGO_WHITE = "#ece6e2"
 LOGO_GREEN = "#87c2a5"
 LOGO_BLUE = "#525893"

@@ -5,6 +5,8 @@ plugin``. Here you can specify options, subcommands, and subgroups for the plugi
 group.
 
 """
+from __future__ import annotations
+
 import click
 
 from ...constants import CONTEXT_SETTINGS, EPILOG
@@ -18,7 +20,11 @@ from ...plugins.plugins_flags import list_plugins
     help="Manages Manim plugins.",
 )
 @click.option(
-    "-l", "--list", "list_available", is_flag=True, help="List available plugins."
+    "-l",
+    "--list",
+    "list_available",
+    is_flag=True,
+    help="List available plugins.",
 )
 def plugins(list_available):
     if list_available:

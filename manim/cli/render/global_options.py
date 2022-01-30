@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 import click
@@ -9,7 +11,7 @@ from ... import logger
 def validate_gui_location(ctx, param, value):
     if value:
         try:
-            x_offset, y_offset = map(int, re.split(";|,|-", value))
+            x_offset, y_offset = map(int, re.split(r"[;,\-]", value))
             return (x_offset, y_offset)
         except Exception:
             logger.error("GUI location option is invalid.")
@@ -77,5 +79,23 @@ global_options = option_group(
         is_flag=True,
         help="Expand the window to its maximum possible size.",
         default=None,
+    ),
+    option(
+        "--enable_wireframe",
+        is_flag=True,
+        help="Enable wireframe debugging mode in opengl.",
+        default=None,
+    ),
+    option(
+        "--force_window",
+        is_flag=True,
+        help="Force window to open when using the opengl renderer, intended for debugging as it may impact performance",
+        default=False,
+    ),
+    option(
+        "--dry_run",
+        is_flag=True,
+        help="Renders animations without outputting image or video files and disables the window",
+        default=False,
     ),
 )

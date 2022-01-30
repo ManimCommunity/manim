@@ -332,5 +332,3 @@ New releases
 ------------
 
 * `#1738 <https://github.com/ManimCommunity/manim/pull/1738>`__: Preparation for v0.8.0: added changelog and bumped version number
-
-

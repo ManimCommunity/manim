@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 
@@ -41,7 +43,10 @@ class GraphicalUnitTester:
             scene_class.__name__,
         )
         self.path_control_data = os.path.join(
-            tests_directory, "control_data", "graphical_units_data", module_tested
+            tests_directory,
+            "control_data",
+            "graphical_units_data",
+            module_tested,
         )
         self.rgb_atol = rgb_atol
 
@@ -77,13 +82,13 @@ class GraphicalUnitTester:
             The pre-rendered frame.
         """
         frame_data_path = os.path.join(
-            os.path.join(self.path_control_data, f"{self.scene}.npz")
+            os.path.join(self.path_control_data, f"{self.scene}.npz"),
         )
         return np.load(frame_data_path)["frame_data"]
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generated and the one expected."""
-        import matplotlib.gridspec as gridspec
+        import matplotlib.gridspec as gridspec  # type: ignore
         import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)
@@ -128,7 +133,7 @@ class GraphicalUnitTester:
         )
 
         mismatches = np.logical_not(
-            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0)
+            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0),
         )
         if mismatches.any():
             incorrect_indices = np.argwhere(mismatches)

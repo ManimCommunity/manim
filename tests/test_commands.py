@@ -1,18 +1,16 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 from textwrap import dedent
 
 from click.testing import CliRunner
 
-from manim import __version__
+from manim import __version__, capture
 from manim.__main__ import main
-
-from .utils.video_tester import *
 
 
 def test_manim_version():
-    command = ["--version"]
-
     command = [
         sys.executable,
         "-m",
@@ -73,12 +71,12 @@ def test_manim_init_subcommand():
     expected_main_py = ""
 
     with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg")
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg"),
     ) as f:
         expected_manim_cfg = f.read()
 
     with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp")
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp"),
     ) as f:
         expected_main_py = f.read()
 

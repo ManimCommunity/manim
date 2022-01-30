@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from abc import ABCMeta
 
 from .. import config
 from .opengl_mobject import OpenGLMobject
+from .opengl_three_dimensions import OpenGLSurface
+from .types.opengl_point_cloud_mobject import OpenGLPMobject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 
@@ -24,6 +28,10 @@ class ConvertToOpenGL(ABCMeta):
             base_names_to_opengl = {
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
+                "PMobject": OpenGLPMobject,
+                "Mobject1D": OpenGLPMobject,
+                "Mobject2D": OpenGLPMobject,
+                "Surface": OpenGLSurface,
             }
 
             bases = tuple(

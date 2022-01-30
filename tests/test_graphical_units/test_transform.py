@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "transform"
 
@@ -20,7 +22,7 @@ def test_TransformFromCopy(scene):
 
 @frames_comparison(last_frame=False)
 def test_FullRotation(scene):
-    s = VGroup(*[Square() for _ in range(4)]).arrange()
+    s = VGroup(*(Square() for _ in range(4))).arrange()
     scene.play(
         Rotate(s[0], -2 * TAU),
         Rotate(s[1], -1 * TAU),
@@ -109,8 +111,9 @@ def test_ApplyComplexFunction(scene):
     square = Square()
     scene.play(
         ApplyComplexFunction(
-            lambda complex_num: complex_num + 2 * np.complex(0, 1), square
-        )
+            lambda complex_num: complex_num + 2 * complex(0, 1),
+            square,
+        ),
     )
 
 
@@ -118,7 +121,8 @@ def test_ApplyComplexFunction(scene):
 def test_ApplyMatrix(scene):
     square = Square()
     matrice = [[1.0, 0.5], [1.0, 0.0]]
-    scene.play(ApplyMatrix(matrice, square))
+    about_point = np.asarray((-10.0, 5.0, 0.0))
+    scene.play(ApplyMatrix(matrice, square, about_point))
 
 
 @frames_comparison(last_frame=False)

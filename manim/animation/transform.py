@@ -1,5 +1,7 @@
 """Animations transforming one mobject into another."""
 
+from __future__ import annotations
+
 __all__ = [
     "Transform",
     "ReplacementTransform",
@@ -26,16 +28,16 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
 import numpy as np
 
 from .. import config
 from ..animation.animation import Animation
-from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
+from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, ORIGIN, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..utils.paths import path_along_arc
+from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
@@ -45,9 +47,9 @@ if TYPE_CHECKING:
 class Transform(Animation):
     def __init__(
         self,
-        mobject: Optional[Mobject],
-        target_mobject: Optional[Mobject] = None,
-        path_func: Optional[Callable] = None,
+        mobject: Mobject | None,
+        target_mobject: Mobject | None = None,
+        path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         path_arc_centers: np.ndarray = None,
@@ -57,7 +59,15 @@ class Transform(Animation):
         self.path_arc_axis: np.ndarray = path_arc_axis
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
-        self.path_func: Optional[Callable] = path_func
+
+        if self.path_arc_centers is not None:
+            self.path_func = path_along_circles(
+                path_arc,
+                self.path_arc_centers,
+                self.path_arc_axis,
+            )
+
+        self.path_func: Callable | None = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
@@ -76,14 +86,14 @@ class Transform(Animation):
         self._path_func = path_along_arc(
             arc_angle=self._path_arc,
             axis=self.path_arc_axis,
-            arc_centers=self.path_arc_centers,
         )
 
     @property
     def path_func(
         self,
     ) -> Callable[
-        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        [Iterable[np.ndarray], Iterable[np.ndarray], float],
+        Iterable[np.ndarray],
     ]:
         return self._path_func
 
@@ -91,7 +101,8 @@ class Transform(Animation):
     def path_func(
         self,
         path_func: Callable[
-            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+            [Iterable[np.ndarray], Iterable[np.ndarray], float],
+            Iterable[np.ndarray],
         ],
     ) -> None:
         if path_func is not None:
@@ -116,7 +127,7 @@ class Transform(Animation):
         # in subclasses
         return self.target_mobject
 
-    def clean_up_from_scene(self, scene: "Scene") -> None:
+    def clean_up_from_scene(self, scene: Scene) -> None:
         super().clean_up_from_scene(scene)
         if self.replace_mobject_with_target_in_scene:
             scene.remove(self.mobject)
@@ -136,7 +147,9 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(*[mob.family_members_with_points() for mob in mobs])
+        if config["renderer"] == "opengl":
+            return zip(*(mob.get_family() for mob in mobs))
+        return zip(*(mob.family_members_with_points() for mob in mobs))
 
     def interpolate_submobject(
         self,
@@ -144,7 +157,7 @@ class Transform(Animation):
         starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> "Transform":
+    ) -> Transform:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
@@ -245,7 +258,7 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'"
+                "MoveToTarget called on mobject" "without attribute 'target'",
             )
 
 
@@ -256,17 +269,27 @@ class _MethodAnimation(MoveToTarget):
 
 
 class ApplyMethod(Transform):
+    """Animates a mobject by applying a method.
+
+    Note that only the method needs to be passed to this animation,
+    it is not required to pass the corresponding mobject. Furthermore,
+    this animation class only works if the method returns the modified
+    mobject.
+
+    Parameters
+    ----------
+    method
+        The method that will be applied in the animation.
+    args
+        Any positional arguments to be passed when applying the method.
+    kwargs
+        Any keyword arguments passed to :class:`~.Transform`.
+
+    """
+
     def __init__(
         self, method: Callable, *args, **kwargs
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
-        """
-        Method is a method of Mobject, ``args`` are arguments for
-        that method.  Key word arguments should be passed in
-        as the last arg, as a dict, since ``kwargs`` is for
-        configuration of the transform itself
-
-        Relies on the fact that mobject methods return the mobject
-        """
         self.check_validity_of_input(method)
         self.method = method
         self.method_args = args
@@ -276,7 +299,7 @@ class ApplyMethod(Transform):
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
-                "the method you want to animate"
+                "the method you want to animate",
             )
         assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
@@ -364,17 +387,37 @@ class ApplyFunction(Transform):
         target = self.function(self.mobject.copy())
         if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
-                "Functions passed to ApplyFunction must return object of type Mobject"
+                "Functions passed to ApplyFunction must return object of type Mobject",
             )
         return target
 
 
 class ApplyMatrix(ApplyPointwiseFunction):
-    def __init__(self, matrix: np.ndarray, mobject: Mobject, **kwargs) -> None:
+    """Applies a matrix transform to an mobject.
+
+    Parameters
+    ----------
+    matrix
+        The transformation matrix.
+    mobject
+        The :class:`~.Mobject`.
+    about_point
+        The origin point for the transform. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+    """
+
+    def __init__(
+        self,
+        matrix: np.ndarray,
+        mobject: Mobject,
+        about_point: np.ndarray = ORIGIN,
+        **kwargs,
+    ) -> None:
         matrix = self.initialize_matrix(matrix)
 
         def func(p):
-            return np.dot(p, matrix.T)
+            return np.dot(p - about_point, matrix.T) + about_point
 
         super().__init__(func, mobject, **kwargs)
 
@@ -461,7 +504,7 @@ class TransformAnimations(Transform):
     def interpolate(self, alpha: float) -> None:
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
-        Transform.interpolate(self, alpha)
+        super().interpolate(alpha)
 
 
 class FadeTransform(Transform):

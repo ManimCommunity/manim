@@ -2,7 +2,7 @@
 Constant definitions.
 """
 
-import typing
+from __future__ import annotations
 
 import numpy as np
 from PIL import Image
@@ -59,6 +59,7 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_2D",
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
+    "DEFAULT_FONT_SIZE",
     "PI",
     "TAU",
     "DEGREES",
@@ -189,6 +190,7 @@ DEFAULT_WAIT_TIME: float = 1.0
 DEFAULT_POINT_DENSITY_2D: int = 25
 DEFAULT_POINT_DENSITY_1D: int = 10
 DEFAULT_STROKE_WIDTH: int = 4
+DEFAULT_FONT_SIZE: float = 48
 
 # Mathematical constants
 PI: float = np.pi
@@ -206,7 +208,7 @@ FFMPEG_BIN: str = "ffmpeg"
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"
 
-FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
+FFMPEG_VERBOSITY_MAP: dict[str, str] = {
     "DEBUG": "error",
     "INFO": "error",
     "WARNING": "error",
@@ -222,7 +224,7 @@ WEBGL_RENDERER_INFO: str = (
 )
 
 # Video qualities
-QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
+QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,

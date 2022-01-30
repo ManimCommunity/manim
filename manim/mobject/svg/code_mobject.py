@@ -1,5 +1,7 @@
 """Mobject representing highlighted source code listings."""
 
+from __future__ import annotations
+
 __all__ = [
     "Code",
 ]
@@ -94,8 +96,8 @@ class Code(VGroup):
         Number of space characters corresponding to a tab character. Defaults to 3.
     line_spacing : :class:`float`, optional
         Amount of space between lines in relation to font size. Defaults to 0.3, which means 30% of font size.
-    scale_factor : class:`float`, optional
-        A number which scales displayed code. Defaults to 0.5.
+    font_size : class:`float`, optional
+        A number which scales displayed code. Defaults to 24.
     font : :class:`str`, optional
          The name of the text font to be used. Defaults to ``"Monospac821 BT"``.
     stroke_width : class:`float`, optional
@@ -154,7 +156,7 @@ class Code(VGroup):
         code=None,
         tab_width=3,
         line_spacing=0.3,
-        scale_factor=0.5,
+        font_size=24,
         font="Monospac821 BT",
         stroke_width=0,
         margin=0.3,
@@ -179,8 +181,8 @@ class Code(VGroup):
         self.background_stroke_width = background_stroke_width
         self.tab_width = tab_width
         self.line_spacing = line_spacing
-        self.scale_factor = scale_factor
         self.font = font
+        self.font_size = font_size
         self.margin = margin
         self.indentation_chars = indentation_chars
         self.background = background
@@ -195,25 +197,25 @@ class Code(VGroup):
         self.file_path = None
         self.file_name = file_name
         if self.file_name:
-            self.ensure_valid_file()
-            with open(self.file_path, "r") as f:
+            self._ensure_valid_file()
+            with open(self.file_path) as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
         else:
             raise ValueError(
-                "Neither a code file nor a code string have been specified."
+                "Neither a code file nor a code string have been specified.",
             )
         if isinstance(self.style, str):
             self.style = self.style.lower()
-        self.gen_html_string()
+        self._gen_html_string()
         strati = self.html_string.find("background:")
         self.background_color = self.html_string[strati + 12 : strati + 19]
-        self.gen_code_json()
+        self._gen_code_json()
 
-        self.code = self.gen_colored_lines()
+        self.code = self._gen_colored_lines()
         if self.insert_line_no:
-            self.line_numbers = self.gen_line_numbers()
+            self.line_numbers = self._gen_line_numbers()
             self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
         if self.background == "rectangle":
             if self.insert_line_no:
@@ -230,7 +232,7 @@ class Code(VGroup):
                 fill_opacity=1,
             )
             rect.round_corners(self.corner_radius)
-            self.background_mobject = VGroup(rect)
+            self.background_mobject = rect
         else:
             if self.insert_line_no:
                 foreground = VGroup(self.code, self.line_numbers)
@@ -256,7 +258,7 @@ class Code(VGroup):
             buttons = VGroup(red_button, yellow_button, green_button)
             buttons.shift(
                 UP * (height / 2 - 0.1 * 2 - 0.05)
-                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
+                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05),
             )
 
             self.background_mobject = VGroup(rect, buttons)
@@ -276,7 +278,7 @@ class Code(VGroup):
             )
         self.move_to(np.array([0, 0, 0]))
 
-    def ensure_valid_file(self):
+    def _ensure_valid_file(self):
         """Function to validate file."""
         if self.file_name is None:
             raise Exception("Must specify file for Code")
@@ -292,9 +294,9 @@ class Code(VGroup):
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
             + f"of these locations: {possible_paths}"
         )
-        raise IOError(error)
+        raise OSError(error)
 
-    def gen_line_numbers(self):
+    def _gen_line_numbers(self):
         """Function to generate line_numbers.
 
         Returns
@@ -310,15 +312,16 @@ class Code(VGroup):
             *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
-        ).scale(self.scale_factor)
+        )
         for i in line_numbers:
             i.set_color(self.default_color)
         return line_numbers
 
-    def gen_colored_lines(self):
+    def _gen_colored_lines(self):
         """Function to generate code.
 
         Returns
@@ -336,10 +339,11 @@ class Code(VGroup):
             *list(lines_text),
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
+            font_size=self.font_size,
             font=self.font,
             disable_ligatures=True,
             stroke_width=self.stroke_width,
-        ).scale(self.scale_factor)
+        )
         for line_no in range(code.__len__()):
             line = code.chars[line_no]
             line_char_index = self.tab_spaces[line_no]
@@ -351,9 +355,9 @@ class Code(VGroup):
                 line_char_index += self.code_json[line_no][word_index][0].__len__()
         return code
 
-    def gen_html_string(self):
+    def _gen_html_string(self):
         """Function to generate html string with code highlighted and stores in variable html_string."""
-        self.html_string = hilite_me(
+        self.html_string = _hilite_me(
             self.code_string,
             self.language,
             self.style,
@@ -365,18 +369,21 @@ class Code(VGroup):
 
         if self.generate_html_file:
             os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
+                os.path.join("assets", "codes", "generated_html_files"),
+                exist_ok=True,
             )
-            file = open(
+            with open(
                 os.path.join(
-                    "assets", "codes", "generated_html_files", self.file_name + ".html"
+                    "assets",
+                    "codes",
+                    "generated_html_files",
+                    self.file_name + ".html",
                 ),
                 "w",
-            )
-            file.write(self.html_string)
-            file.close()
+            ) as file:
+                file.write(self.html_string)
 
-    def gen_code_json(self):
+    def _gen_code_json(self):
         """Function to background_color, generate code_json and tab_spaces from html_string.
         background_color is just background color of displayed code.
         code_json is 2d array with rows as line numbers
@@ -398,7 +405,8 @@ class Code(VGroup):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
-                "</span>" + " " * i, " " * i + "</span>"
+                "</span>" + " " * i,
+                " " * i + "</span>",
             )
         self.html_string = self.html_string.replace("background-color:", "background:")
 
@@ -425,7 +433,7 @@ class Code(VGroup):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
                 indentation_chars_count = lines[line_index][:start_point].count(
-                    self.indentation_chars
+                    self.indentation_chars,
                 )
                 if (
                     starting_string.__len__()
@@ -449,7 +457,7 @@ class Code(VGroup):
                     indentation_chars_count = indentation_chars_count + 1
             self.tab_spaces.append(indentation_chars_count)
             # print(lines[line_index])
-            lines[line_index] = self.correct_non_span(lines[line_index])
+            lines[line_index] = self._correct_non_span(lines[line_index])
             # print(lines[line_index])
             words = lines[line_index].split("<span")
             for word_index in range(1, words.__len__()):
@@ -470,7 +478,7 @@ class Code(VGroup):
                     self.code_json[code_json_line_index].append([text, color])
         # print(self.code_json)
 
-    def correct_non_span(self, line_str):
+    def _correct_non_span(self, line_str):
         """Function put text color to those strings that don't have one according to background_color of displayed code.
 
         Parameters
@@ -522,8 +530,14 @@ class Code(VGroup):
         return line_str
 
 
-def hilite_me(
-    code, language, style, insert_line_no, divstyles, file_path, line_no_from
+def _hilite_me(
+    code,
+    language,
+    style,
+    insert_line_no,
+    divstyles,
+    file_path,
+    line_no_from,
 ):
     """Function to highlight code from string to html.
 
@@ -560,17 +574,17 @@ def hilite_me(
         html = highlight(code, lexer, formatter)
     elif language is None:
         raise ValueError(
-            "The code language has to be specified when rendering a code string"
+            "The code language has to be specified when rendering a code string",
         )
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
-        html = insert_line_numbers_in_html(html, line_no_from)
+        html = _insert_line_numbers_in_html(html, line_no_from)
     html = "<!-- HTML generated by Code() -->" + html
     return html
 
 
-def insert_line_numbers_in_html(html, line_no_from):
+def _insert_line_numbers_in_html(html, line_no_from):
     """Function that inserts line numbers in the highlighted HTML code.
 
     Parameters
@@ -597,6 +611,7 @@ def insert_line_numbers_in_html(html, line_no_from):
     format_lines = "%" + str(len(str(numbers[-1]))) + "i"
     lines = "\n".join(format_lines % i for i in numbers)
     html = html.replace(
-        pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
+        pre_open,
+        "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open,
     )
     return html

@@ -1,5 +1,7 @@
 """Utilities for processing LaTeX templates."""
 
+from __future__ import annotations
+
 __all__ = [
     "TexTemplate",
     "TexTemplateFromFile",
@@ -210,7 +212,7 @@ class TexTemplate:
         begin, end = self._texcode_for_environment(environment)
         return self.body.replace(self.placeholder_text, f"{begin}\n{expression}\n{end}")
 
-    def copy(self) -> "TexTemplate":
+    def copy(self) -> TexTemplate:
         return copy.deepcopy(self)
 
 
@@ -256,7 +258,7 @@ class TexTemplateFromFile(TexTemplate):
         super().__init__(**kwargs)
 
     def _rebuild(self):
-        with open(self.template_file, "r") as infile:
+        with open(self.template_file) as infile:
             self.body = infile.read()
 
     def file_not_mutable(self):

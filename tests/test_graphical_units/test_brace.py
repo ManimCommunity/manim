@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "brace"
 
@@ -17,7 +19,7 @@ def test_brace_sharpness(scene):
 def test_braceTip(scene):
     line = Line().shift(LEFT * 3).rotate(PI / 2)
     steps = 8
-    for i in range(steps):
+    for _i in range(steps):
         brace = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
         dot = Dot()
         brace.put_at_tip(dot)

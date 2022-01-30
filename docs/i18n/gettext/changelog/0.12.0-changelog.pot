@@ -1,0 +1,485 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.12.0-changelog.rst:3
+msgid "v0.12.0"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:5
+msgid "November 02, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:10
+msgid "A total of 40 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:14
+msgid "Anima. +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:15
+msgid "Arcstur +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:16
+#: ../../source/changelog/0.12.0-changelog.rst:47
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:17
+#: ../../source/changelog/0.12.0-changelog.rst:48
+msgid "Christopher Besch"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:18
+#: ../../source/changelog/0.12.0-changelog.rst:49
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:19
+msgid "David Yang +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:20
+msgid "Dhananjay Goratela +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:21
+msgid "Ethan Rooke +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:22
+msgid "Eugene Chung +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:23
+msgid "GameDungeon"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:24
+msgid "Gustav-Rixon +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:25
+#: ../../source/changelog/0.12.0-changelog.rst:56
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:26
+msgid "Josiah Winslow +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:27
+#: ../../source/changelog/0.12.0-changelog.rst:58
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:28
+msgid "Martmists +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:29
+msgid "Michael Hill +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:30
+#: ../../source/changelog/0.12.0-changelog.rst:60
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:31
+msgid "Nick +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:32
+msgid "NotWearingPants +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:33
+msgid "Peeter Joot +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:34
+#: ../../source/changelog/0.12.0-changelog.rst:63
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:35
+msgid "Viicos +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:36
+msgid "heitor +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:37
+#: ../../source/changelog/0.12.0-changelog.rst:65
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:38
+msgid "kieran-pringle +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:39
+msgid "Виктор Виктор +"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:42
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:45
+msgid "Alex Lembcke"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:46
+msgid "Anima."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:50
+msgid "David Yang"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:51
+msgid "Dhananjay Goratela"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:52
+msgid "Ethan Rooke"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:53
+msgid "Eugene Chung"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:54
+msgid "Gustav-Rixon"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:55
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:57
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:59
+msgid "Mysaa"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:61
+msgid "Nick"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:62
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:64
+msgid "Viicos"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:66
+msgid "kieran-pringle"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:69
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:71
+msgid "A total of 52 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:74
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:79
+msgid "`#1812 <https://github.com/ManimCommunity/manim/pull/1812>`__: Implemented logarithmic scaling for :class:`~.NumberLine` / :class:`~.Axes`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:77
+msgid "This implements scaling bases that can be passed to the ``scaling`` keyword argument of :class:`.NumberLine`. See :class:`.LogBase` (for a logarithmic scale) and :class:`.LinearBase` (for the default scale) for more details and examples."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:85
+msgid "`#2152 <https://github.com/ManimCommunity/manim/pull/2152>`__: Introduced API for scene sections via :meth:`.Scene.next_section`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:82
+msgid "Sections divide a scene into multiple parts, resulting in multiple output videos (when using the ``--save_sections`` flag). The cuts between two sections are defined by the user in the :meth:`~.Scene.construct` method. Each section has an optional name and type, which can be used by a plugin (`see an example <https://github.com/ManimEditorProject/manim_editor>`__). You can skip rendering specific sections with the ``skip_animations`` keyword argument."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:88
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:90
+msgid "`#1926 <https://github.com/ManimCommunity/manim/pull/1926>`__: OpenGL: changed ``submobjects`` to be a property"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:93
+msgid "`#2245 <https://github.com/ManimCommunity/manim/pull/2245>`__: Removed deprecated method ``get_center_point`` and parameters ``azimuth_label_scale``, ``number_scale_value``, ``label_scale``, ``scale_factor``, ``size``, ``x_min``, ``x_max``, ``delta_x``, ``y_min``, ``y_max``, ``delta_y``"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:96
+msgid "`#2187 <https://github.com/ManimCommunity/manim/pull/2187>`__: Renamed ``get_graph`` and its variants to :meth:`~.CoordinateSystem.plot`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:99
+msgid "`#2065 <https://github.com/ManimCommunity/manim/pull/2065>`__: Deprecated :class:`~.FullScreenFadeRectangle` and :class:`~.PictureInPictureFrame`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:103
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:105
+msgid "`#2025 <https://github.com/ManimCommunity/manim/pull/2025>`__: Implemented :meth:`.CoordinateSystem.input_to_graph_coords` and fixed :meth:`.CoordinateSystem.angle_of_tangent`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:108
+msgid "`#2151 <https://github.com/ManimCommunity/manim/pull/2151>`__: Added option to set the input file from a config file"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:111
+msgid "`#2128 <https://github.com/ManimCommunity/manim/pull/2128>`__: Added keyword arguments ``match_center``, ``match_width`` etc. to :meth:`.Mobject.become`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:114
+msgid "`#2162 <https://github.com/ManimCommunity/manim/pull/2162>`__: Implemented :meth:`.MovingCamera.auto_zoom` for automatically zooming onto specified mobjects"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:117
+msgid "`#2236 <https://github.com/ManimCommunity/manim/pull/2236>`__: Added ``skip_animations`` argument to :meth:`.Scene.next_section`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:120
+msgid "`#2196 <https://github.com/ManimCommunity/manim/pull/2196>`__: Implemented :meth:`.Line3D.parallel_to` and :meth:`.Line3D.perpendicular_to`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:124
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:128
+msgid "`#2138 <https://github.com/ManimCommunity/manim/pull/2138>`__: Fixed example for :meth:`~.Vector.coordinate_label` and added more customization for :class:`~.Matrix`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:127
+msgid "Additional keyword arguments for :meth:`~.Vector.coordinate_label` are passed to the constructed matrix."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:128
+msgid ":class:`~.Matrix` now accepts a ``bracket_config`` keyword argument."
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:130
+msgid "`#2139 <https://github.com/ManimCommunity/manim/pull/2139>`__: Changed the color of :class:`~.NumberLine` from ``LIGHT_GREY`` to ``WHITE``"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:133
+msgid "`#2157 <https://github.com/ManimCommunity/manim/pull/2157>`__: Added :meth:`.CoordinateSystem.plot_polar_graph`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:136
+msgid "`#2243 <https://github.com/ManimCommunity/manim/pull/2243>`__: Fixed wasteful recursion in :meth:`.Mobject.get_merged_array`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:139
+msgid "`#2205 <https://github.com/ManimCommunity/manim/pull/2205>`__: Improved last frame output handling for the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:142
+msgid "`#2172 <https://github.com/ManimCommunity/manim/pull/2172>`__: Added ``should_render`` attribute to disable rendering mobjects"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:145
+msgid "`#2182 <https://github.com/ManimCommunity/manim/pull/2182>`__: Changed the default width of videos in Jupyter notebooks to 60%"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:149
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:151
+msgid "`#2244 <https://github.com/ManimCommunity/manim/pull/2244>`__: Fixed :meth:`.CoordinateSystem.get_area` when using few plot points and a boundary graph"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:154
+msgid "`#2232 <https://github.com/ManimCommunity/manim/pull/2232>`__: Fixed :class:`.Graph` stopping to update after animating additions/deletions of vertices or edges"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:157
+msgid "`#2142 <https://github.com/ManimCommunity/manim/pull/2142>`__: Fixed issue with duplicates in OpenGL family and added tests"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:160
+msgid "`#2168 <https://github.com/ManimCommunity/manim/pull/2168>`__: Fixed order of return values of :func:`.space_ops.cartesian_to_spherical`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:163
+msgid "`#2160 <https://github.com/ManimCommunity/manim/pull/2160>`__: Made projection shaders compatible with :class:`.StreamLines`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:166
+msgid "`#2140 <https://github.com/ManimCommunity/manim/pull/2140>`__: Fixed passing color lists to :meth:`.Mobject.set_color` for the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:169
+msgid "`#2211 <https://github.com/ManimCommunity/manim/pull/2211>`__: Fixed animations not respecting the specified rate function"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:172
+msgid "`#2161 <https://github.com/ManimCommunity/manim/pull/2161>`__: Fixed ``IndexOutOfBoundsError`` in TeX logging"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:175
+msgid "`#2148 <https://github.com/ManimCommunity/manim/pull/2148>`__: Fixed :class:`~.Arrow` tip disorientation with :meth:`.Line.put_start_and_end_on`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:178
+msgid "`#2192 <https://github.com/ManimCommunity/manim/pull/2192>`__: Fixed :func:`.svg_path.string_to_numbers` sometimes returning strings"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:181
+msgid "`#2185 <https://github.com/ManimCommunity/manim/pull/2185>`__: Fixed type mismatch for height and width parameters of :class:`~.Text`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:185
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:187
+msgid "`#2228 <https://github.com/ManimCommunity/manim/pull/2228>`__: Added a new boolean operation example to the gallery"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:190
+msgid "`#2239 <https://github.com/ManimCommunity/manim/pull/2239>`__: Removed erroneous raw string from text tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:193
+msgid "`#2184 <https://github.com/ManimCommunity/manim/pull/2184>`__: Moved comments in :class:`~.VMobject` to documentation"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:196
+msgid "`#2217 <https://github.com/ManimCommunity/manim/pull/2217>`__: Removed superfluous dots in documentation of :class:`.Section`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:199
+msgid "`#2215 <https://github.com/ManimCommunity/manim/pull/2215>`__: Fixed typo in docstring of :meth:`.ThreeDAxes.get_z_axis_label`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:202
+msgid "`#2212 <https://github.com/ManimCommunity/manim/pull/2212>`__: Fixed Documentation for Sections"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:205
+msgid "`#2201 <https://github.com/ManimCommunity/manim/pull/2201>`__: Fixed a typo in the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:208
+msgid "`#2165 <https://github.com/ManimCommunity/manim/pull/2165>`__: Added Crowdin configuration and changed source files to ``.pot`` format"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:211
+msgid "`#2130 <https://github.com/ManimCommunity/manim/pull/2130>`__:  Transferred troubleshooting installation related snippets from Discord to the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:214
+msgid "`#2176 <https://github.com/ManimCommunity/manim/pull/2176>`__: Modified :meth:`.Mobject.set_default` example to prevent leaking across the docs"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:218
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:220
+msgid "`#2197 <https://github.com/ManimCommunity/manim/pull/2197>`__: Added tests for resolution flag"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:223
+msgid "`#2146 <https://github.com/ManimCommunity/manim/pull/2146>`__: Increased test coverage for OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:227
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:229
+msgid "`#2191 <https://github.com/ManimCommunity/manim/pull/2191>`__: Removed ``add-trailing-comma`` pre-commit hook"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:233
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:235
+msgid "`#2136 <https://github.com/ManimCommunity/manim/pull/2136>`__: Added type hints to all colors"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:238
+msgid "`#2220 <https://github.com/ManimCommunity/manim/pull/2220>`__: Cleanup: let ``Scene.renderer.time`` return something that makes sense"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:241
+msgid "`#2222 <https://github.com/ManimCommunity/manim/pull/2222>`__: Updated Classifiers in ``pyproject.toml``: removed Python 3.6, added Python 3.9"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:244
+msgid "`#2213 <https://github.com/ManimCommunity/manim/pull/2213>`__: Removed redundant ``partial_movie_files`` parameter in :meth:`.SceneFileWriter.combine_to_movie`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:251
+msgid "`#2200 <https://github.com/ManimCommunity/manim/pull/2200>`__: Addressed some maintenance TODOs"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:248
+msgid "Changed an `Exception` to `ValueError`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:249
+msgid "Fixed :meth:`.MappingCamera.points_to_pixel_coords` by adding the ``mobject`` argument of the parent"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:250
+msgid "Rounded up width in :class:`.SplitScreenCamera`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:251
+msgid "Added docstring to :meth:`.Camera.capture_mobject`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:253
+msgid "`#2194 <https://github.com/ManimCommunity/manim/pull/2194>`__: Added type hints to :mod:`.utils.images`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:256
+msgid "`#2171 <https://github.com/ManimCommunity/manim/pull/2171>`__: Added type hints to :mod:`.utils.ipython_magic`"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:259
+msgid "`#2164 <https://github.com/ManimCommunity/manim/pull/2164>`__: Improved readability of regular expression"
+msgstr ""
+
+#: ../../source/changelog/0.12.0-changelog.rst:263
+msgid "New releases"
+msgstr ""
+
+

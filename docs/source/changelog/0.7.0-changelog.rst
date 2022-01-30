@@ -140,7 +140,7 @@ New features
 * `#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)
    Support indexed item-assignment for VGroup
 
-* `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation  
+* `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation
 
 
 * `#1422 <https://github.com/ManimCommunity/manim/pull/1422>`__: Added :func:`~.override_animation` decorator
@@ -190,7 +190,7 @@ Enhancements
 
 
 * `#1567 <https://github.com/ManimCommunity/manim/pull/1567>`__: Compatibility Fixes with ManimPango v0.3.0
-   - ManimPango v0.3.0+ is required for Manim now. 
+   - ManimPango v0.3.0+ is required for Manim now.
    - Show errors from Pango when Markup isn't correct
 
 * `#1512 <https://github.com/ManimCommunity/manim/pull/1512>`__: OpenGL compatibility via metaclass: graph
@@ -244,7 +244,7 @@ Fixed bugs
 * `#1560 <https://github.com/ManimCommunity/manim/pull/1560>`__: Declare ``*.npz`` ``*.wav`` ``*.png`` as binary in ``.gitattributes``
 
 
-* `#1211 <https://github.com/ManimCommunity/manim/pull/1211>`__: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene 
+* `#1211 <https://github.com/ManimCommunity/manim/pull/1211>`__: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene
    Refactored internal scene-caching mechanism and fixed bug when an inconsistent hash was produced when copying a mobject.
 
 * `#1527 <https://github.com/ManimCommunity/manim/pull/1527>`__: Improved handling of substring isolation within sqrt, and fixed a bug with transform_mismatch for the matching shape transforms
@@ -342,7 +342,7 @@ Changes to our development infrastructure
 * `#1499 <https://github.com/ManimCommunity/manim/pull/1499>`__: Updated Discord links in the docs to point towards a standardized redirect
 
 
-* `#1461 <https://github.com/ManimCommunity/manim/pull/1461>`__: Build the docs - Logging 
+* `#1461 <https://github.com/ManimCommunity/manim/pull/1461>`__: Build the docs - Logging
 
 
 * `#1481 <https://github.com/ManimCommunity/manim/pull/1481>`__: pyproject.toml: poetry_core -> poetry-core
@@ -397,5 +397,3 @@ New releases
 ------------
 
 * `#1601 <https://github.com/ManimCommunity/manim/pull/1601>`__: Preparation for v0.7.0: added changelog and bumped version number
-
-

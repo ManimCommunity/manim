@@ -1,6 +1,8 @@
 """General polyhedral class and platonic solids."""
 
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -85,12 +87,12 @@ class Polyhedron(VGroup):
 
     def __init__(
         self,
-        vertex_coords: List[Union[List[float], np.ndarray]],
-        faces_list: List[List[int]],
-        faces_config: Dict[str, Union[str, int, float, bool]] = {},
-        graph_config: Dict[str, Union[str, int, float, bool]] = {},
+        vertex_coords: list[list[float] | np.ndarray],
+        faces_list: list[list[int]],
+        faces_config: dict[str, str | int | float | bool] = {},
+        graph_config: dict[str, str | int | float | bool] = {},
     ):
-        VGroup.__init__(self)
+        super().__init__()
         self.faces_config = dict(
             {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
         )
@@ -116,7 +118,7 @@ class Polyhedron(VGroup):
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
 
-    def get_edges(self, faces_list: List[List[int]]) -> List[Tuple[int, int]]:
+    def get_edges(self, faces_list: list[list[int]]) -> list[tuple[int, int]]:
         """Creates list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
@@ -124,20 +126,21 @@ class Polyhedron(VGroup):
         return edges
 
     def create_faces(
-        self, face_coords: List[List[Union[List, np.ndarray]]]
-    ) -> "VGroup":
+        self,
+        face_coords: list[list[list | np.ndarray]],
+    ) -> VGroup:
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m: "Mobject"):
+    def update_faces(self, m: Mobject):
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
 
-    def extract_face_coords(self) -> List[List[Union[np.ndarray]]]:
+    def extract_face_coords(self) -> list[list[np.ndarray]]:
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
@@ -171,8 +174,7 @@ class Tetrahedron(Polyhedron):
 
     def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 4
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit, unit, unit]),
                 np.array([unit, -unit, -unit]),
@@ -207,8 +209,7 @@ class Octahedron(Polyhedron):
 
     def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 2
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit, 0, 0]),
                 np.array([-unit, 0, 0]),
@@ -255,8 +256,7 @@ class Icosahedron(Polyhedron):
     def __init__(self, edge_length: float = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * (1 / 2)
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([0, unit_b, unit_a]),
                 np.array([0, -unit_b, unit_a]),
@@ -322,8 +322,7 @@ class Dodecahedron(Polyhedron):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
         unit_c = edge_length * (1 / 2)
-        Polyhedron.__init__(
-            self,
+        super().__init__(
             vertex_coords=[
                 np.array([unit_a, unit_a, unit_a]),
                 np.array([unit_a, unit_a, -unit_a]),

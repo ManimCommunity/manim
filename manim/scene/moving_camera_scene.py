@@ -53,7 +53,7 @@ Examples
             self.camera.frame.save_state()
 
             ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
-            graph = ax.get_graph(lambda x: np.sin(x), color=WHITE, x_range=[0, 3 * PI])
+            graph = ax.plot(lambda x: np.sin(x), color=WHITE, x_range=[0, 3 * PI])
 
             dot_1 = Dot(ax.i2gp(graph.t_min, graph))
             dot_2 = Dot(ax.i2gp(graph.t_max, graph))
@@ -65,6 +65,8 @@ Examples
             self.wait()
 
 """
+
+from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
@@ -85,7 +87,7 @@ class MovingCameraScene(Scene):
     """
 
     def __init__(self, camera_class=MovingCamera, **kwargs):
-        Scene.__init__(self, camera_class=camera_class, **kwargs)
+        super().__init__(camera_class=camera_class, **kwargs)
 
     def get_moving_mobjects(self, *animations):
         """
@@ -97,7 +99,7 @@ class MovingCameraScene(Scene):
         *animations : Animation
             The Animations whose mobjects will be checked.
         """
-        moving_mobjects = Scene.get_moving_mobjects(self, *animations)
+        moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
         movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
         for movement_indicator in movement_indicators:

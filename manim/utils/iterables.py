@@ -1,5 +1,7 @@
 """Operations on iterables."""
 
+from __future__ import annotations
+
 __all__ = [
     "remove_list_redundancies",
     "list_update",
@@ -46,7 +48,7 @@ def resize_with_interpolation(nparray, length):
             (1 - a) * nparray[lh] + a * nparray[rh]
             for ci in cont_indices
             for lh, rh, a in [(int(ci), int(np.ceil(ci)), ci % 1)]
-        ]
+        ],
     )
 
 
@@ -82,7 +84,7 @@ def all_elements_are_instances(iterable, Class):
 
 
 def adjacent_n_tuples(objects, n):
-    return zip(*[[*objects[k:], *objects[:k]] for k in range(n)])
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
 def adjacent_pairs(objects):
@@ -171,3 +173,12 @@ def remove_nones(sequence):
 
 def concatenate_lists(*list_of_lists):
     return [item for lst in list_of_lists for item in lst]
+
+
+def uniq_chain(*args):
+    unique_items = set()
+    for x in it.chain(*args):
+        if x in unique_items:
+            continue
+        unique_items.add(x)
+        yield x

@@ -1,8 +1,10 @@
 """Mobject representing curly braces."""
 
+from __future__ import annotations
+
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -59,7 +61,7 @@ class Brace(SVGPathMobject):
     def __init__(
         self,
         mobject,
-        direction: Optional[Sequence[float]] = DOWN,
+        direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,
         stroke_width=0,
@@ -68,7 +70,21 @@ class Brace(SVGPathMobject):
         background_stroke_color=BLACK,
         **kwargs
     ):
-        path_string_template = "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 0.122 0.1799 0.1455 0.2307 0.1455h{0}c0.03046 3.899e-4 0.07964 0.00449 0.1246 0.02636 0.0537 0.02695 0.07418 0.05816 0.08648 0.07769 0.001562 0.002538 0.004539 0.002563 0.01098 0.002563 0.006444-2e-8 0.009421-2.47e-5 0.01098-0.002563 0.0123-0.01953 0.03278-0.05074 0.08648-0.07769 0.04491-0.02187 0.09409-0.02597 0.1246-0.02636h{0}c0.05077 0 0.1629-0.02346 0.2307-0.1455v-0.007762c-1.78e-6 -0.0125-6.365e-4 -0.01311-0.01216-0.01311-0.006444-3.919e-8 -0.009348 2.448e-5 -0.01091 0.002563-0.0123 0.01953-0.03278 0.05074-0.08648 0.07769-0.04491 0.02187-0.09416 0.02597-0.1246 0.02636h{1}c-0.04786 0-0.1502 0.02094-0.2185 0.1256-0.06833-0.1046-0.1706-0.1256-0.2185-0.1256h{1}c-0.03046-3.899e-4 -0.07972-0.004491-0.1246-0.02636-0.0537-0.02695-0.07418-0.05816-0.08648-0.07769-0.001562-0.002538-0.004467-0.002563-0.01091-0.002563z"
+        path_string_template = (
+            "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 "
+            "0.122 0.1799 0.1455 0.2307 0.1455h{0}c0.03046 3.899e-4 0.07964 0.00449 "
+            "0.1246 0.02636 0.0537 0.02695 0.07418 0.05816 0.08648 0.07769 0.001562 "
+            "0.002538 0.004539 0.002563 0.01098 0.002563 0.006444-2e-8 0.009421-2.47e-"
+            "5 0.01098-0.002563 0.0123-0.01953 0.03278-0.05074 0.08648-0.07769 0.04491"
+            "-0.02187 0.09409-0.02597 0.1246-0.02636h{0}c0.05077 0 0.1629-0.02346 "
+            "0.2307-0.1455v-0.007762c-1.78e-6 -0.0125-6.365e-4 -0.01311-0.01216-0.0131"
+            "1-0.006444-3.919e-8 -0.009348 2.448e-5 -0.01091 0.002563-0.0123 0.01953-"
+            "0.03278 0.05074-0.08648 0.07769-0.04491 0.02187-0.09416 0.02597-0.1246 "
+            "0.02636h{1}c-0.04786 0-0.1502 0.02094-0.2185 0.1256-0.06833-0.1046-0.1706"
+            "-0.1256-0.2185-0.1256h{1}c-0.03046-3.899e-4 -0.07972-0.004491-0.1246-0.02"
+            "636-0.0537-0.02695-0.07418-0.05816-0.08648-0.07769-0.001562-0.002538-"
+            "0.004467-0.002563-0.01091-0.002563z"
+        )
         default_min_width = 0.90552
 
         self.buff = buff
@@ -79,15 +95,16 @@ class Brace(SVGPathMobject):
         right = mobject.get_corner(DOWN + RIGHT)
         target_width = right[0] - left[0]
         linear_section_length = max(
-            0, (target_width * sharpness - default_min_width) / 2
+            0,
+            (target_width * sharpness - default_min_width) / 2,
         )
 
         path = path_string_template.format(
-            linear_section_length, -linear_section_length
+            linear_section_length,
+            -linear_section_length,
         )
 
-        SVGPathMobject.__init__(
-            self,
+        super().__init__(
             path_string=path,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
@@ -130,9 +147,9 @@ class Brace(SVGPathMobject):
     def get_tip(self):
         # Returns the position of the seventh point in the path, which is the tip.
         if config["renderer"] == "opengl":
-            return self.get_points()[34]
+            return self.points[34]
 
-        return self.get_points()[28]  # = 7*4
+        return self.points[28]  # = 7*4
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
@@ -146,15 +163,15 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         text,
         brace_direction=DOWN,
         label_constructor=MathTex,
-        label_scale=1,
+        font_size=DEFAULT_FONT_SIZE,
         label_rotate=False,
         buff=0.2,
         **kwargs
     ):
+        super().__init__(**kwargs)
         self.label_constructor = label_constructor
         self.label_scale = label_scale
         self.label_rotate = label_rotate
-        super().__init__(**kwargs)
 
         self.brace_direction = brace_direction
         self.buff = buff
@@ -162,15 +179,13 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, brace_direction, buff, **kwargs)
 
-        if isinstance(text, tuple) or isinstance(text, list):
-            self.label = self.label_constructor(*text, **kwargs)
+        if isinstance(text, (tuple, list)):
+            self.label = self.label_constructor(font_size=font_size, *text, **kwargs)
         else:
-            self.label = self.label_constructor(str(text))
-        if self.label_scale != 1:
-            self.label.scale(self.label_scale)
+            self.label = self.label_constructor(str(text), font_size=font_size)
 
         self.brace.put_at_tip(self.label, rotate=self.label_rotate)
-        self.submobjects = [self.brace, self.label]
+        self.add(self.brace, self.label)
 
     def creation_anim(self, label_anim=FadeIn, brace_anim=GrowFromCenter):
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
@@ -179,22 +194,18 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         if isinstance(obj, list):
             obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
+
         self.brace.put_at_tip(self.label, rotate=label_rotate)
-        self.submobjects[0] = self.brace
         return self
 
-    def change_label(self, label_rotate=False, *text, **kwargs):
+    def change_label(self, *text, label_rotate=False, **kwargs):
         self.label = self.label_constructor(*text, **kwargs)
-        if self.label_scale != 1:
-            self.label.scale(self.label_scale)
-
         self.brace.put_at_tip(self.label, rotate=label_rotate)
-        self.submobjects[1] = self.label
         return self
 
-    def change_brace_label(self, obj, label_rotate=False, *text):
+    def change_brace_label(self, obj, label_rotate=False, *text, **kwargs):
         self.shift_brace(obj)
-        self.change_label(label_rotate=label_rotate, *text)
+        self.change_label(*text, label_rotate=label_rotate, **kwargs)
         return self
 
 
@@ -245,15 +256,15 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Optional[Sequence[float]],
-        point_2: Optional[Sequence[float]],
-        direction: Optional[Sequence[float]] = ORIGIN,
+        point_1: Sequence[float] | None,
+        point_2: Sequence[float] | None,
+        direction: Sequence[float] | None = ORIGIN,
         **kwargs
     ):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
-        Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+        super().__init__(Line(point_1, point_2), direction=direction, **kwargs)
 
 
 class ArcBrace(Brace):
@@ -266,9 +277,13 @@ class ArcBrace(Brace):
         The :class:`ArcBrace` is smaller for arcs with smaller radii.
 
     .. note::
-        The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the length of the :class:`~.Arc`, but is scaled down to match the start and end angles. An exponential function is then applied after it is shifted based on the radius of the arc.
+        The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the
+        length of the :class:`~.Arc`, but is scaled down to match the start and end
+        angles. An exponential function is then applied after it is shifted based on
+        the radius of the arc.
 
-        The scaling effect is not applied for arcs with radii smaller than 1 to prevent over-scaling.
+        The scaling effect is not applied for arcs with radii smaller than 1 to prevent
+        over-scaling.
 
     Parameters
     ----------
@@ -319,10 +334,10 @@ class ArcBrace(Brace):
 
         if arc.radius >= 1:
             line.scale(arc.radius, about_point=ORIGIN)
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
             self.scale(1 / (arc.radius), about_point=ORIGIN)
         else:
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
 
         if arc.radius >= 0.3:
             self.shift(scale_shift)

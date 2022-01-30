@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 
 from .camera import Camera
@@ -23,7 +25,7 @@ class WebGLCamera(Camera):
                     "style": vmobject.get_style(simple=True),
                     "id": id(vmobject),
                     "needs_redraw": needs_redraw,
-                }
+                },
             )
 
     def reset(self):

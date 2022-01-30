@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import configparser
 from pathlib import Path
 
@@ -32,7 +34,7 @@ def select_resolution():
     resolution_options = []
     for quality in QUALITIES.items():
         resolution_options.append(
-            (quality[1]["pixel_height"], quality[1]["pixel_width"])
+            (quality[1]["pixel_height"], quality[1]["pixel_width"]),
         )
     resolution_options.pop()
     choice = click.prompt(
@@ -100,11 +102,11 @@ def project(default_settings, **args):
 
     if project_name.is_dir():
         console.print(
-            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n"
+            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n",
         )
     else:
         project_name.mkdir()
-        new_cfg = dict()
+        new_cfg = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
         if not default_settings:

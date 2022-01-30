@@ -5,15 +5,16 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+from __future__ import annotations
+
 import os
 from ast import literal_eval
-from typing import Union
 
 import click
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import config, console
+from ... import console
 from ..._config.utils import config_file_paths, make_config_parser
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
@@ -26,7 +27,7 @@ If left empty, the default colour will be used.[/red]
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
 
-def value_from_string(value: str) -> Union[str, int, bool]:
+def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
     Parameters
     ----------
@@ -138,7 +139,8 @@ def cfg(ctx):
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
-        "[yellow bold]Manim Configuration File Writer[/yellow bold]", justify="center"
+        "[yellow bold]Manim Configuration File Writer[/yellow bold]",
+        justify="center",
     )
 
     USER_CONFIG_MSG = f"""A configuration file at [yellow]{config_paths[1]}[/yellow] has been created with your required changes.
@@ -182,25 +184,31 @@ To save your config please save that file and place it in your current working d
                     raise Exception(
                         """Not enough values in input.
 You may have added a new entry to default.cfg, in which case you will have to
-modify write_cfg_subcmd_input to account for it."""
+modify write_cfg_subcmd_input to account for it.""",
                     )
                 if temp:
                     while temp and not _is_expected_datatype(
-                        temp, default[key], bool(style)
+                        temp,
+                        default[key],
+                        bool(style),
                     ):
                         console.print(
-                            f"[red bold]Invalid {desc}. Try again.[/red bold]"
+                            f"[red bold]Invalid {desc}. Try again.[/red bold]",
                         )
                         console.print(
-                            f"Enter the {desc} for {key}:", style=style, end=""
+                            f"Enter the {desc} for {key}:",
+                            style=style,
+                            end="",
                         )
                         temp = input()
-                    else:
-                        default[key] = temp
+
+                    default[key] = temp.replace("%", "%%")
 
             default = replace_keys(default) if category == "logger" else default
 
-            parser[category] = dict(default)
+            parser[category] = {
+                i: v.replace("%", "%%") for i, v in dict(default).items()
+            }
 
     else:
         action = "open"
@@ -259,7 +267,7 @@ Are you sure you want to continue? (y/n)""",
             style="red bold",
             end="",
         )
-        proceed = True if input().lower() == "y" else False
+        proceed = input().lower() == "y"
     else:
         proceed = True
     if proceed:

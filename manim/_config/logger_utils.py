@@ -9,13 +9,14 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+from __future__ import annotations
+
 import configparser
 import copy
 import json
 import logging
 import os
 import sys
-import typing
 from typing import TYPE_CHECKING
 
 from rich import color, errors
@@ -49,8 +50,9 @@ Loading the default color configuration.[/logging.level.error]
 
 
 def make_logger(
-    parser: configparser.ConfigParser, verbosity: str
-) -> typing.Tuple[logging.Logger, Console]:
+    parser: configparser.ConfigParser,
+    verbosity: str,
+) -> tuple[logging.Logger, Console]:
     """Make the manim logger and console.
 
     Parameters
@@ -88,7 +90,8 @@ def make_logger(
     # set the rich handler
     RichHandler.KEYWORDS = HIGHLIGHTED_KEYWORDS
     rich_handler = RichHandler(
-        console=console, show_time=parser.getboolean("log_timestamps")
+        console=console,
+        show_time=parser.getboolean("log_timestamps"),
     )
 
     # finally, the logger
@@ -130,7 +133,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
                 k: v
                 for k, v in theme.items()
                 if k not in ["log.width", "log.height", "log.timestamps"]
-            }
+            },
         )
     except (color.ColorParseError, errors.StyleSyntaxError):
         printf(WRONG_COLOR_CONFIG_MSG)
@@ -139,7 +142,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
     return custom_theme
 
 
-def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
+def set_file_logger(config: ManimConfig, verbosity: str) -> None:
     """Add a file handler to manim logger.
 
     The path to the file is built using ``config.log_dir``.
@@ -201,5 +204,5 @@ class JSONFormatter(logging.Formatter):
                 "levelname": record_c.levelname,
                 "module": record_c.module,
                 "message": super().format(record_c),
-            }
+            },
         )
