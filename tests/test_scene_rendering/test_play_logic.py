@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import sys
-from functools import wraps
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from numpy.core.defchararray import asarray
 
 from manim import *
 from manim import config
