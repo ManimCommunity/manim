@@ -11,7 +11,7 @@ import operator as op
 import pathlib
 import time
 from functools import reduce
-from typing import Any, Union
+from typing import Any
 
 import cairo
 import numpy as np

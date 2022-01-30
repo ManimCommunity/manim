@@ -13,17 +13,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
