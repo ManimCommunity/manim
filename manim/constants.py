@@ -4,8 +4,6 @@ Constant definitions.
 
 from __future__ import annotations
 
-import typing
-
 import numpy as np
 from PIL import Image
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.opengl_vectorized_mobject import (

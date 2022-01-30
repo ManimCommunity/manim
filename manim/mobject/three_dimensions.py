@@ -198,7 +198,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             class FillByValueExample(ThreeDScene):
                 def construct(self):
                     resolution_fa = 42
-                    self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-160 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
                     def param_surface(u, v):
                         x = u
@@ -212,7 +212,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         u_range=[0, 5],
                         )
                     surface_plane.set_style(fill_opacity=1)
-                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis = 1)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.5), (YELLOW, 0), (GREEN, 0.5)], axis=2)
                     self.add(axes, surface_plane)
         """
 
