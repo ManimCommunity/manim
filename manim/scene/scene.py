@@ -1,5 +1,7 @@
 """Basic canvas for animations."""
 
+from __future__ import annotations
+
 __all__ = ["Scene"]
 
 import copy
@@ -11,7 +13,6 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import List, Optional
 
 import srt
 
@@ -433,7 +434,7 @@ class Scene:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
-            if self.moving_mobjects:
+            if self.moving_mobjects is not None:
                 self.restructure_mobjects(
                     to_remove=mobjects,
                     mobject_list_name="moving_mobjects",
@@ -444,6 +445,8 @@ class Scene:
     def add_mobjects_from_animations(self, animations):
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
+            if animation.is_introducer():
+                continue
             # Anything animated that's not already in the
             # scene gets added to the scene
             mob = animation.mobject
@@ -1020,6 +1023,7 @@ class Scene:
     def begin_animations(self) -> None:
         """Start the animations of the scene."""
         for animation in self.animations:
+            animation._setup_scene(self)
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:

@@ -1,5 +1,7 @@
 """Utility functions for three-dimensional mobjects."""
 
+from __future__ import annotations
+
 __all__ = [
     "get_3d_vmob_gradient_start_and_end_points",
     "get_3d_vmob_start_corner_index",

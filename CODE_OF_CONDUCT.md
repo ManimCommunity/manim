@@ -182,7 +182,7 @@ Reports which involve higher risk or higher impact may face more severe conseque
 
 ### Propose consequences
 
-What follows are examples of possible consequences to an incident report. This consequences list is not inclusive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary.
+What follows are examples of possible consequences of an incident report. This list of consequences is not exhaustive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary.
 
 Possible private responses to an incident include:
 
