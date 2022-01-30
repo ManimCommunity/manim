@@ -54,7 +54,11 @@ class AbstractImageMobject(Mobject):
         pass
 
     def set_resampling_algorithm(self, resampling_algorithm):
-        """Set the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it. Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+        """Set the interpolation method for upscaling the image.
+        
+         By default the image is interpolated using bicubic algorithm. This method lets you change it. 
+         Interpolation is done internally using Pillow, and the function besides the string constants
+         describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------

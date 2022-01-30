@@ -356,7 +356,8 @@ class ThreeDCamera(Camera):
     ):
         """Allow the mobject to have a fixed orientation, even when the camera moves around.
 
-        E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. Highly useful when adding labels to graphs and the like.
+        E.G If it was passed through this method, facing the camera, it will continue to face the camera even as the camera moves. 
+        Highly useful when adding labels to graphs and the like.
 
         Parameters
         ----------
@@ -386,7 +387,9 @@ class ThreeDCamera(Camera):
                 self.fixed_orientation_mobjects[submob] = func
 
     def add_fixed_in_frame_mobjects(self, *mobjects):
-        """Allow the mobject to have a fixed position, even when the camera moves around. E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame.
+        """Allow the mobject to have a fixed position, even when the camera moves around. 
+        
+        E.G If it was passed through this method, at the top of the frame, it will continue to be displayed at the top of the frame.
 
         Highly useful when displaying Titles or formulae or the like.
 

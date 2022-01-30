@@ -43,9 +43,7 @@ class TexFontTemplateManual(Scene):
 
 
 class TexFontTemplateLibrary(Scene):
-    """An example scene that uses TexTemplate objects from the TexFontTemplates
-    collection to create sample LaTeX output in every font that will compile on
-    the local system.
+    """An example scene that uses TexTemplate objects from the TexFontTemplates collection to create sample LaTeX output in every font that will compile on the local system.
 
     Please Note:
     Many of the in the TexFontTemplates collection require that specific fonts

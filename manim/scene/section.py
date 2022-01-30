@@ -31,9 +31,10 @@ class DefaultSectionType(str, Enum):
 
 
 class Section:
-    """A :class:`.Scene` can be segmented into multiple Sections. Refer to
-    :doc:`the documentation</tutorials/a_deeper_look>` for more info. It
-    consists of multiple animations.
+    """A :class:`.Scene` can be segmented into multiple Sections. 
+    
+    Refer to :doc:`the documentation</tutorials/a_deeper_look>` for more info. 
+    It consists of multiple animations.
 
     Attributes
     ----------

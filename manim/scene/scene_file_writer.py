@@ -37,7 +37,10 @@ from .section import DefaultSectionType, Section
 
 
 class SceneFileWriter:
-    """SceneFileWriter is the object that actually writes the animations played, into video files, using FFMPEG. This is mostly for Manim's internal use. You will rarely, if ever, have to use the methods for this class, unless tinkering with the very fabric of Manim's reality.
+    """SceneFileWriter is the object that actually writes the animations played, into video files, using FFMPEG. 
+    
+    This is mostly for Manim's internal use. You will rarely, if ever, have to use the methods for this class, 
+    unless tinkering with the very fabric of Manim's reality.
 
     Attributes
     ----------
@@ -184,7 +187,9 @@ class SceneFileWriter:
         )
 
     def add_partial_movie_file(self, hash_animation):
-        """Add a new partial movie file path to `scene.partial_movie_files` and current section from a hash. This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
+        """Add a new partial movie file path to `scene.partial_movie_files` and current section from a hash. 
+        
+        This method will compute the path from the hash. In addition to that it adds the new animation to the current section.
 
         Parameters
         ----------

@@ -435,7 +435,11 @@ class Prism(Cube):
 
 
 class Cone(Surface):
-    """A circular cone. Can be defined using 2 parameters: its height, and its base radius. The polar angle, theta, can be calculated using arctan(base_radius / height) The spherical radius, r, is calculated using the pythagorean theorem.
+    """A circular cone. 
+   
+    Can be defined using 2 parameters: its height, and its base radius. 
+    The polar angle, theta, can be calculated using arctan(base_radius / height) 
+    The spherical radius, r, is calculated using the pythagorean theorem.
 
     Examples
     --------

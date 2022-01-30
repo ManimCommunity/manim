@@ -1532,8 +1532,10 @@ class ManimConfig(MutableMapping):
     @property
     def tex_template(self):
         """Template used when rendering Tex.
-
-        See :class:`.TexTemplate`.
+        
+        See Also
+        ---------
+        :class:`.TexTemplate`.
         """
         if not hasattr(self, "_tex_template") or not self._tex_template:
             fn = self._d["tex_template_file"]

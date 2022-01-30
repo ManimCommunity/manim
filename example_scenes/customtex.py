@@ -18,8 +18,7 @@ class TexTemplateFromCLI(Scene):
 
 
 class InCodeTexTemplate(Scene):
-    """This example scene demonstrates how to modify the tex template for a
-    particular scene from the code for the scene itself."""
+    """This example scene demonstrates how to modify the tex template for a particular scene from the code for the scene itself."""
 
     def construct(self):
         # Create a new template
