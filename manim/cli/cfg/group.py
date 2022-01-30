@@ -9,13 +9,12 @@ from __future__ import annotations
 
 import os
 from ast import literal_eval
-from typing import Union
 
 import click
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import config, console
+from ... import console
 from ..._config.utils import config_file_paths, make_config_parser
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
