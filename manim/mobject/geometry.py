@@ -2558,8 +2558,8 @@ class RoundedRectangle(Rectangle):
     """
 
     def __init__(self, corner_radius=0.5, **kwargs):
-        self.corner_radius = corner_radius
         super().__init__(**kwargs)
+        self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
 
 

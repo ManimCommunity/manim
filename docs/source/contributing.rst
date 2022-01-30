@@ -2,6 +2,13 @@
 Contributing
 ############
 
+.. important:: Manim is currently undergoing a major refactor. In general,
+   contributions implementing new features will not be accepted in this period.
+   Other contributions unrelated to cleaning up the codebase may also take a longer
+   period of time to be reviewed. This guide may quickly become outdated quickly; we
+   highly recommend joining our `Discord server <https://www.manim.community/discord/>`_
+   to discuss any potential contributions and keep up to date with the latest developments.
+
 Thank you for your interest in contributing to Manim! However you have decided to contribute
 or interact with the community, please always be civil and respect other
 members of the community. If you haven't read our :doc:`code of conduct<conduct>`,
