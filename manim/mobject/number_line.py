@@ -340,6 +340,7 @@ class NumberLine(Line):
         """
 
         number = self.scaling.inverse_function(number)
+        print(f"{number=}")
         alpha = float(number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
         val = interpolate(self.get_start(), self.get_end(), alpha)
         return val

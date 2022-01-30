@@ -147,7 +147,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             t_range = np.array(
                 [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
             )
-            if self.use_array_function:
+            if False:
 
                 def array_function(t):
                     func_vals = self.function(t)
