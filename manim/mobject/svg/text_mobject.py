@@ -59,7 +59,7 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Callable, Dict, Iterable, Sequence, Tuple, Union
+from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -72,7 +72,7 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors, color_gradient
-from ...utils.deprecation import deprecated, deprecated_params
+from ...utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3

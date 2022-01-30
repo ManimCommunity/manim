@@ -6,7 +6,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np

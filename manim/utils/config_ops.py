@@ -10,7 +10,6 @@ __all__ = [
 
 
 import itertools as it
-from dataclasses import dataclass
 
 import numpy as np
 

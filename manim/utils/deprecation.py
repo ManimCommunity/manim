@@ -7,7 +7,7 @@ __all__ = ["deprecated", "deprecated_params"]
 
 import inspect
 import re
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable
 
 from decorator import decorate, decorator
 

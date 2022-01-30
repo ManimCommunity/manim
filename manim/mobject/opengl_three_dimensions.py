@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..constants import *
 from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["Rotating", "Rotate"]
 
 import typing
-from typing import Callable, Optional, Sequence
+from typing import Callable, Sequence
 
 import numpy as np
 
