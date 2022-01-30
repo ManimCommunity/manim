@@ -100,6 +100,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         dt: float = 1e-8,
         discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
+        use_array_function: bool = True,
         **kwargs
     ):
         self.function = function
@@ -113,6 +114,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         self.discontinuities = discontinuities
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
+        self.use_array_function = use_array_function
 
         super().__init__(**kwargs)
 
@@ -123,7 +125,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         return self.function(t)
 
     def generate_points(self):
-
         if self.discontinuities is not None:
             discontinuities = filter(
                 lambda t: self.t_min <= t <= self.t_max,
@@ -146,7 +147,14 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             t_range = np.array(
                 [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
             )
-            points = np.array([self.function(t) for t in t_range])
+            if self.use_array_function:
+                def array_function(t):
+                    func_vals = self.function(t)
+                    ones = np.full_like(func_vals, 1)
+                    return np.array([t*func_vals[0], t*func_vals[1], t*func_vals[2]]).transpose()
+                points = array_function(t_range)
+            else:
+                points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])
         if self.use_smoothing:
