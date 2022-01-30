@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
 
 class UpdateFromFunc(Animation):
     """update_function of the form func(mobject).
-    
+
     presumably to be used when the state of one mobject is dependent on another simultaneously animated mobject."""
 
     def __init__(

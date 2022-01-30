@@ -1532,7 +1532,7 @@ class ManimConfig(MutableMapping):
     @property
     def tex_template(self):
         """Template used when rendering Tex.
-        
+
         See Also
         ---------
         :class:`.TexTemplate`.

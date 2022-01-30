@@ -892,10 +892,10 @@ class VMobject(Mobject):
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float):
-        """If the distance between a given handle point H and its associated anchor point A is d, then it changes H to be a distances factor*d away from A, but so that the line from A to H doesn't change. 
-        
-        This is mostly useful in the context of applying a (differentiable) function, to preserve tangency properties.  
-        One would pull all the handles closer to their anchors, apply the function 
+        """If the distance between a given handle point H and its associated anchor point A is d, then it changes H to be a distances factor*d away from A, but so that the line from A to H doesn't change.
+
+        This is mostly useful in the context of applying a (differentiable) function, to preserve tangency properties.
+        One would pull all the handles closer to their anchors, apply the function
         then push them out again.
 
         Parameters
@@ -984,9 +984,9 @@ class VMobject(Mobject):
         points: np.ndarray,
         filter_func: typing.Callable[[int], bool],
     ) -> typing.Tuple:
-        """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points. 
-        
-        Here, Two bezier curves form a path if at least two of their anchors are evaluated True by 
+        """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
+
+        Here, Two bezier curves form a path if at least two of their anchors are evaluated True by
         the relation defined by filter_func.
 
         The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
@@ -1644,7 +1644,7 @@ class VMobject(Mobject):
 
     def get_direction(self):
         """Use :func:`~.space_ops.shoelace_direction` to calculate the direction.
-        
+
          The direction of points determines in which direction the object is drawn, clockwise or counterclockwise.
 
         Examples
@@ -2150,8 +2150,8 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         return self.submob_dict.values()
 
     def add_key_value_pair(self, key, value):
-        """A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`. 
-        
+        """A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`.
+
         Not really meant to be used externally.
 
         Parameters

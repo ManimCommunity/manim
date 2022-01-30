@@ -365,8 +365,8 @@ class Scene:
         return list(filter(is_top_level, self.mobjects))
 
     def get_mobject_family_members(self):
-        """Return list of family-members of all mobjects in scene. 
-        
+        """Return list of family-members of all mobjects in scene.
+
         If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only
         the Circle(), Rectangle() and Triangle(), but also the VGroup() object.
 
@@ -477,8 +477,8 @@ class Scene:
         extract_families=True,
     ):
         """Dissolves a group, and puts the remaining mobjects directly in self.mobjects or self.foreground_mobjects.
-        
-        If your scene has a Group(), and you removed a mobject from the Group, this dissolves the group 
+
+        If your scene has a Group(), and you removed a mobject from the Group, this dissolves the group
         and puts the rest of the mobjects directly in self.mobjects or self.foreground_mobjects.
 
         In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one

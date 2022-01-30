@@ -404,7 +404,7 @@ class VectorScene(Scene):
         """Display vector, then create a column matrix near the head of the Vector.
 
         Display vector as a Vector() based vector, and then show the corresponding lines
-        that make up the x and y components of the vector. 
+        that make up the x and y components of the vector.
         Then, create a column matrix (henceforth called the label) near the head of the Vector.
 
         Parameters
@@ -827,7 +827,7 @@ class LinearTransformationScene(VectorScene):
     def add_title(self, title, scale_factor=1.5, animate=False):
         """Add a title.
 
-        Add a title, after scaling it, adding a background rectangle, moving it to the top 
+        Add a title, after scaling it, adding a background rectangle, moving it to the top
         and adding it to foreground_mobjects adding it as a local variable of self.
 
         Parameters
@@ -887,7 +887,7 @@ class LinearTransformationScene(VectorScene):
         """Return an animation that moves an arbitrary mobject in "pieces" to its corresponding .target value.
 
         This method returns an animation that moves an arbitrary mobject in "pieces" to its
-         corresponding .target value. 
+         corresponding .target value.
          If self.leave_ghost_vectors is True, ghosts of the original positions/mobjects are left on screen.
 
         Parameters
