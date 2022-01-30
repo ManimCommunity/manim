@@ -725,9 +725,10 @@ class CoordinateSystem:
         # sample frequency
 
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)),
+            lambda t: self.coords_array_to_point_array(lambda t: np.array([t, function(t), 0])),
             t_range=t_range,
             scaling=self.x_axis.scaling,
+            use_array_function=False,
             **kwargs,
         )
         graph.underlying_function = function
