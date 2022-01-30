@@ -228,6 +228,7 @@ class OpenGLMobject:
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses."""
         # Typically implemented in subclass, unless purposefully left blank
+        pass
 
     def set(self, **kwargs) -> OpenGLMobject:
         """Sets attributes.

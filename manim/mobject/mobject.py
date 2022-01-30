@@ -346,6 +346,7 @@ class Mobject:
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        pass
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
@@ -353,6 +354,7 @@ class Mobject:
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        pass
 
     def add(self, *mobjects: "Mobject"):
         """Add mobjects as submobjects.

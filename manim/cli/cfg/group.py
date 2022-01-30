@@ -124,6 +124,7 @@ def replace_keys(default: dict) -> dict:
 @click.pass_context
 def cfg(ctx):
     """Responsible for the cfg subcommand."""
+    pass
 
 
 @cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)

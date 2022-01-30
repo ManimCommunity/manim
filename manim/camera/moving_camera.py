@@ -151,6 +151,7 @@ class MovingCamera(Camera):
         context used for updating should be regenerated
         at each frame.  So no caching.
         """
+        pass
 
     # def reset_frame_center(self):
     #     self.frame_center = self.frame.get_center()
