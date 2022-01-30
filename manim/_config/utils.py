@@ -1534,7 +1534,7 @@ class ManimConfig(MutableMapping):
         """Template used when rendering Tex.
 
         See Also
-        ---------
+        --------
         :class:`.TexTemplate`.
         """
         if not hasattr(self, "_tex_template") or not self._tex_template:
