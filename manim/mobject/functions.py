@@ -148,10 +148,14 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
             )
             if self.use_array_function:
+
                 def array_function(t):
                     func_vals = self.function(t)
                     ones = np.full_like(func_vals, 1)
-                    return np.array([t*func_vals[0], t*func_vals[1], t*func_vals[2]]).transpose()
+                    return np.array(
+                        [t * func_vals[0], t * func_vals[1], t * func_vals[2]]
+                    ).transpose()
+
                 points = array_function(t_range)
             else:
                 points = np.array([self.function(t) for t in t_range])
