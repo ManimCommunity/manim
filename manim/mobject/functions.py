@@ -151,7 +151,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 def array_function(t):
                     func_vals = self.function(t)
                     ones = np.full_like(func_vals, 1)
-                    return np.array([t*func_vals[0], t*func_vals[1], t*func_vals[2]]).transpose()
+                    return np.array([ones*func_vals[0], ones*func_vals[1], ones*func_vals[2]]).transpose()
                 points = array_function(t_range)
             else:
                 points = np.array([self.function(t) for t in t_range])
