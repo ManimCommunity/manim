@@ -24,8 +24,8 @@ to the bottom of the file:
 .. code-block:: python
 
    with tempconfig({"quality": "medium_quality", "disable_caching": True}):
-        scene = SceneName()
-        scene.render()
+       scene = SceneName()
+       scene.render()
 
 Where ``SceneName`` is the name of the scene you want to run. You can then run the
 file directly, and can thus follow the instructions for most profilers.
@@ -41,11 +41,12 @@ Install SnakeViz:
 
 cProfile is included with in Python's standard library and does not need to be installed.
 
-Suppose we want to profile ``SquareToCircle``. Then we add and save the following code 
+Suppose we want to profile ``SquareToCircle``. Then we add and save the following code
 to ``square_to_circle.py``:
 
 .. code-block:: python
     from manim import *
+
 
     class SquareToCircle(Scene):
         def construct(self):
@@ -53,6 +54,7 @@ to ``square_to_circle.py``:
             c = Circle()
             self.add(s)
             self.play(Transform(s, c))
+
 
     with tempconfig({"quality": "medium_quality", "disable_caching": True}):
         scene = SquareToCircle()
@@ -76,8 +78,3 @@ A browser window or tab will open with a visualization of the profile, which sho
 look something like this:
 
 .. image:: _static/snakeviz.png
-
-
-
-
-
