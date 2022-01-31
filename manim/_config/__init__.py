@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from contextlib import _GeneratorContextManager, contextmanager
-from typing import Union
 
 from .logger_utils import make_logger
 from .utils import ManimConfig, ManimFrame, make_config_parser

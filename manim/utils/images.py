@@ -5,8 +5,6 @@ from __future__ import annotations
 __all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
 
 
-from typing import List
-
 import numpy as np
 from PIL import Image
 

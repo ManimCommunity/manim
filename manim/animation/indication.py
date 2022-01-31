@@ -56,6 +56,7 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -342,6 +343,11 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
 #   Remove?
 #   Deprecate?
 #   Keep and add docs?
+@deprecated(
+    since="v0.15.0",
+    until="v0.16.0",
+    message="Use Create then FadeOut to achieve this effect.",
+)
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)

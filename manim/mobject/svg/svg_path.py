@@ -8,7 +8,6 @@ __all__ = ["SVGPathMobject", "string_to_numbers"]
 
 import re
 from math import *
-from typing import List
 
 import numpy as np
 

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 import sys
-from distutils.sysconfig import get_python_lib
 from pathlib import Path
 
 import manim

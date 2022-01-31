@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 from colour import Color
 
-from manim import BLACK, BLUE, GREEN, PURE_BLUE, PURE_GREEN, PURE_RED, RED, Scene
+from manim import BLACK, BLUE, GREEN, PURE_BLUE, PURE_GREEN, PURE_RED, Scene
 from manim.mobject.opengl_mobject import OpenGLMobject
 from manim.mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 

@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Mobject, Scene, Square, config, tempconfig
+from manim import Circle, FadeIn, Mobject, Scene, Square, tempconfig
 from manim.animation.animation import Wait
 
 
