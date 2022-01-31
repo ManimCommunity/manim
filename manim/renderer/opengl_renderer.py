@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import itertools as it
 import time
+import sys
 from typing import Any
-from functools import cached_property
+if sys.version_info < (3, 8):
+    from backports.cached-property import cached_property
+else:
+    from functools import cached_property
 
 import moderngl
 import numpy as np
