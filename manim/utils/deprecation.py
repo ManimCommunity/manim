@@ -102,7 +102,7 @@ def deprecated(
     --------
     Basic usage::
 
-        from ..utils.deprecation import deprecated
+        from manim.utils.deprecation import deprecated
 
         @deprecated
         def foo(**kwargs):
