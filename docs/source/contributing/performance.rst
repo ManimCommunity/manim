@@ -77,4 +77,4 @@ Now, we can run SnakeViz on the profile file:
 A browser window or tab will open with a visualization of the profile, which should
 look something like this:
 
-.. image:: _static/snakeviz.png
+.. image:: /_static/snakeviz.png
