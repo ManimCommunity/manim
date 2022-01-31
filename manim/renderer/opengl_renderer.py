@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import itertools as it
-import time
 import sys
+import time
 from typing import Any
+
 if sys.version_info < (3, 8):
     from backports.cached-property import cached_property
 else:
