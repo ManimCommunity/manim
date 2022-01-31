@@ -23,9 +23,9 @@ to the bottom of the file:
 
 .. code-block:: python
 
-   with tempconfig({"quality": "medium_quality", "disable_caching": True}):
-       scene = SceneName()
-       scene.render()
+    with tempconfig({"quality": "medium_quality", "disable_caching": True}):
+        scene = SceneName()
+        scene.render()
 
 Where ``SceneName`` is the name of the scene you want to run. You can then run the
 file directly, and can thus follow the instructions for most profilers.
