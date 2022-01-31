@@ -123,7 +123,7 @@ def test_SurfaceColorscale(scene):
     def param_trig(u, v):
         x = u
         y = v
-        z = y ** 2 / 2 - x ** 2 / 2
+        z = y**2 / 2 - x**2 / 2
         return z
 
     trig_plane = Surface(

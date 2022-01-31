@@ -92,7 +92,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.u_range = u_range
         self.v_range = v_range
@@ -304,7 +304,7 @@ class Sphere(Surface):
         resolution=None,
         u_range=(0, TAU),
         v_range=(0, PI),
-        **kwargs
+        **kwargs,
     ):
         if config.renderer == "opengl":
             res_value = (101, 51)
@@ -366,7 +366,7 @@ class Dot3D(Sphere):
         radius=DEFAULT_DOT_RADIUS,
         color=WHITE,
         resolution=(8, 8),
-        **kwargs
+        **kwargs,
     ):
         super().__init__(center=point, radius=radius, resolution=resolution, **kwargs)
         self.set_color(color)
@@ -379,7 +379,7 @@ class Cube(VGroup):
         fill_opacity=0.75,
         fill_color=BLUE,
         stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         self.side_length = side_length
         super().__init__(
@@ -477,7 +477,7 @@ class Cone(Surface):
         v_range=[0, TAU],
         u_min=0,
         checkerboard_colors=False,
-        **kwargs
+        **kwargs,
     ):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
@@ -485,7 +485,7 @@ class Cone(Surface):
         super().__init__(
             self.func,
             v_range=v_range,
-            u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
+            u_range=[u_min, np.sqrt(base_radius**2 + height**2)],
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -527,7 +527,7 @@ class Cone(Surface):
     def _rotate_to_direction(self):
         x, y, z = self.direction
 
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.sqrt(x**2 + y**2 + z**2)
         if r > 0:
             theta = np.arccos(z / r)
         else:
@@ -602,7 +602,7 @@ class Cylinder(Surface):
         v_range=[0, TAU],
         show_ends=True,
         resolution=(24, 24),
-        **kwargs
+        **kwargs,
     ):
         self._height = height
         self.radius = radius
@@ -658,7 +658,7 @@ class Cylinder(Surface):
     def _rotate_to_direction(self):
         x, y, z = self.direction
 
-        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        r = np.sqrt(x**2 + y**2 + z**2)
         if r > 0:
             theta = np.arccos(z / r)
         else:
@@ -885,7 +885,7 @@ class Arrow3D(Line3D):
         height=0.3,
         base_radius=0.08,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             start=start, end=end, thickness=thickness, color=color, **kwargs
@@ -936,7 +936,7 @@ class Torus(Surface):
         u_range=(0, TAU),
         v_range=(0, TAU),
         resolution=None,
-        **kwargs
+        **kwargs,
     ):
         if config.renderer == "opengl":
             res_value = (101, 101)

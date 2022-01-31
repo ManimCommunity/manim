@@ -67,7 +67,7 @@ class Brace(SVGPathMobject):
         fill_opacity=1.0,
         background_stroke_width=0,
         background_stroke_color=BLACK,
-        **kwargs
+        **kwargs,
     ):
         path_string_template = (
             "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 "
@@ -109,7 +109,7 @@ class Brace(SVGPathMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
-            **kwargs
+            **kwargs,
         )
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
@@ -158,7 +158,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         label_constructor=MathTex,
         font_size=DEFAULT_FONT_SIZE,
         buff=0.2,
-        **kwargs
+        **kwargs,
     ):
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
@@ -241,7 +241,7 @@ class BraceBetweenPoints(Brace):
         point_1: Sequence[float] | None,
         point_2: Sequence[float] | None,
         direction: Sequence[float] | None = ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
@@ -308,7 +308,7 @@ class ArcBrace(Brace):
         self,
         arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
         direction: Sequence[float] = RIGHT,
-        **kwargs
+        **kwargs,
     ):
         arc_end_angle = arc.start_angle + arc.angle
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
