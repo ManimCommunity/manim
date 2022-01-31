@@ -1,7 +1,7 @@
 """Decorators for deprecating classes, functions and function parameters.
 
 .. note::
-   To use deprecation functions, you need to import `deprecation` module. You can import it with `from ..utils.deprecation import deprecated`
+   To use deprecation functions, you need to import `deprecation` module. You can import it with "`from ..utils.deprecation import deprecated`"
 
 """
 
