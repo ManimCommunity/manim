@@ -65,7 +65,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Iterable, List, Optional, Sequence, Union
+from typing import Callable, Iterable, Sequence
 
 from colour import Color
 
@@ -79,7 +79,7 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, WHITE, YELLOW
+from ..utils.color import BLACK, YELLOW
 
 
 class Table(VGroup):

@@ -8,11 +8,7 @@ from functools import wraps
 from manim import get_video_metadata
 
 from ..assert_utils import assert_shallow_dict_compare
-from ..helpers.video_utils import (
-    get_section_dir_layout,
-    get_section_index,
-    save_control_data_from_video,
-)
+from ..helpers.video_utils import get_section_dir_layout, get_section_index
 
 
 def load_control_data(path_to_data):
