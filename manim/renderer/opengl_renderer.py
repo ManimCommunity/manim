@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import itertools as it
 import time
-from typing import Any
 from functools import cached_property
+from typing import Any
 
 import moderngl
 import numpy as np
@@ -347,7 +347,9 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", self.scene.camera.formatted_view_matrix)
+                shader.set_uniform(
+                    "u_view_matrix", self.scene.camera.formatted_view_matrix
+                )
                 shader.set_uniform(
                     "u_projection_matrix",
                     self.scene.camera.projection_matrix,
