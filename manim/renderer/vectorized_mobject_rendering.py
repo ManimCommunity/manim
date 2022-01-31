@@ -4,7 +4,6 @@ import collections
 
 import numpy as np
 
-from ..constants import *
 from ..utils import opengl
 from ..utils.space_ops import cross2d, earclip_triangulation
 from .shader import Shader

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from manim.mobject.coordinate_systems import Axes, ThreeDAxes
 from manim.utils.scale import LogBase

@@ -5,13 +5,12 @@ from __future__ import annotations
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
 
 from .. import config
-from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
 from ..utils.scale import LinearBase, _ScaleBase

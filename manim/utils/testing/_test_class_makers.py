@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Type
+from typing import Callable
 
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter
