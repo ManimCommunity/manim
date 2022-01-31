@@ -129,7 +129,7 @@ def deprecated(
     You can specify additional information for a more precise warning::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated(
             since="v0.2",
             until="v0.4",
@@ -145,7 +145,7 @@ def deprecated(
     You may also use dates instead of versions::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated(since="05/01/2021", until="06/01/2021")
         def foo():
             pass
@@ -284,7 +284,7 @@ def deprecated_params(
     Basic usage::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(params="a, b, c")
         def foo(**kwargs):
             pass
@@ -298,7 +298,7 @@ def deprecated_params(
     You can also specify additional information for a more precise warning::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(
             params="a, b, c",
             since="v0.2",
@@ -314,7 +314,7 @@ def deprecated_params(
     Basic parameter redirection::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(redirections=[
             # Two ways to redirect one parameter to another:
             ("old_param", "new_param"),
@@ -330,7 +330,7 @@ def deprecated_params(
     Redirecting using a calculated value::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(redirections=[
             lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
         ])
@@ -344,7 +344,7 @@ def deprecated_params(
     Redirecting multiple parameter values to one::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(redirections=[
             lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
         ])
@@ -358,7 +358,7 @@ def deprecated_params(
     Redirect one parameter to multiple::
 
         from manim.utils.deprecation import deprecated
-        
+
         @deprecated_params(redirections=[
             lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
                     else {"buff_x": buff,    "buff_y": buff}
