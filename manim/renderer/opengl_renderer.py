@@ -5,7 +5,7 @@ import time
 import sys
 from typing import Any
 if sys.version_info < (3, 8):
-    from backports.cached-property import cached_property
+    from backports.cached_property import cached_property
 else:
     from functools import cached_property
 
