@@ -237,6 +237,8 @@ def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
 
 
 def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
+    if all(np.array(axis)[:2] == np.zeros(2)):
+        return rotation_about_z(angle * np.sign(axis[2])).T
     return rotation_matrix(angle, axis).T
 
 
@@ -272,7 +274,14 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    return rotation_matrix(angle, OUT)
+    c, s = math.cos(angle), math.sin(angle)
+    return np.array(
+        [
+            [c, -s, 0],
+            [s, c, 0],
+            [0, 0, 1],
+        ]
+    )
 
 
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
