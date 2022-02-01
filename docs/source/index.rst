@@ -30,6 +30,7 @@ context, instructions on how to cite a particular release can be found
    plugins
    reporting_bugs
    contributing
+   developer_docs
    conduct
 
 .. image:: _static/crowdin-badge.svg
