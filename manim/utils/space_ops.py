@@ -482,8 +482,7 @@ def center_of_mass(points: Sequence[float]) -> np.ndarray:
     np.ndarray
         The center of mass of the points.
     """
-    points = [np.array(point).astype("float") for point in points]
-    return sum(points) / len(points)
+    return np.average(points, 0, np.ones(len(points)))
 
 
 def midpoint(
