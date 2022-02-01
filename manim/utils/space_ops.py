@@ -590,8 +590,7 @@ def shoelace(x_y: np.ndarray) -> float:
     """
     x = x_y[:, 0]
     y = x_y[:, 1]
-    area = 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-    return area
+    return np.trapz(y, x)
 
 
 def shoelace_direction(x_y: np.ndarray) -> str:
