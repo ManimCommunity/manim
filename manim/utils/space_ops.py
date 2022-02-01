@@ -265,7 +265,7 @@ def rotation_matrix(
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    r = R.from_rotvec(angle * axis)
+    r = R.from_rotvec(angle * np.array(axis))
     inhomogeneous_rotation_matrix = r.as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
