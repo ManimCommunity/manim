@@ -548,33 +548,27 @@ def line_intersection(
     return np.array([x / z, y / z, 0])
 
 
-def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
+def find_intersection(
+    p0s: Sequence[np.ndarray],
+    v0s: Sequence[np.ndarray],
+    p1s: Sequence[np.ndarray],
+    v1s: Sequence[np.ndarray],
+    threshold: float = 1e-5,
+) -> Sequence[np.ndarray]:
     """
     Return the intersection of a line passing through p0 in direction v0
-    with one passing through p1 in direction v1.  (Or array of intersections
+    with one passing through p1 in direction v1 (or array of intersections
     from arrays of such points/directions).
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
     ray p1 + v1 * t
     """
-    p0 = np.array(p0, ndmin=2)
-    v0 = np.array(v0, ndmin=2)
-    p1 = np.array(p1, ndmin=2)
-    v1 = np.array(v1, ndmin=2)
-    m, n = np.shape(p0)
-    assert n in [2, 3]
+    # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
+    result = []
 
-    numerator = np.cross(v1, p1 - p0)
-    denominator = np.cross(v1, v0)
-    if n == 3:
-        d = len(np.shape(numerator))
-        new_numerator = np.multiply(numerator, numerator).sum(d - 1)
-        new_denominator = np.multiply(denominator, numerator).sum(d - 1)
-        numerator, denominator = new_numerator, new_denominator
-
-    denominator[abs(denominator) < threshold] = np.inf  # So that ratio goes to 0 there
-    ratio = numerator / denominator
-    ratio = np.repeat(ratio, n).reshape((m, n))
-    return p0 + ratio * v0
+    for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
+        normal = np.cross(v1, np.cross(v0, v1))
+        result += [p0 + np.dot(p1 - p0, normal) / np.dot(v0, normal) * v0]
+    return result
 
 
 def get_winding_number(points: Sequence[float]) -> float:
