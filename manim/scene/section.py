@@ -10,7 +10,9 @@ from manim import get_video_metadata
 
 
 class DefaultSectionType(str, Enum):
-    """The type of a section can be used for third party applications. A presentation system could for example use the types to created loops.
+    """The type of a section can be used for third party applications. 
+    
+    A presentation system could for example use the types to created loops.
 
     Examples
     --------
