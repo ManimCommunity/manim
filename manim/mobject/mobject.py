@@ -1,8 +1,7 @@
 """Base classes for objects that can be displayed."""
-
+from __future__ import annotations
 
 __all__ = ["Mobject", "Group", "override_animate"]
-
 
 import copy
 import itertools as it
@@ -45,7 +44,7 @@ from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix, rotation_matrix_transpose
 from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
@@ -1176,13 +1175,15 @@ class Mobject:
         self,
         angle,
         axis=OUT,
-        about_point: Optional[Sequence[float]] = None,
+        about_point: Sequence[float] | None = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
-        rot_matrix = rotation_matrix(angle, axis)
+        rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+            lambda points: np.dot(points, rot_matrix_T),
+            about_point=about_point,
+            **kwargs,
         )
         return self
 

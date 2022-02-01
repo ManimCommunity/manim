@@ -265,10 +265,7 @@ def rotation_matrix(
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    about_z = rotation_about_z(angle)
-    z_to_axis = z_to_vector(axis)
-    axis_to_z = np.linalg.inv(z_to_axis)
-    inhomogeneous_rotation_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_rotation_matrix = rotation_matrix_from_quaternion(quaternion_from_angle_axis(angle, axis))
     if not homogeneous:
         return inhomogeneous_rotation_matrix
     else:
