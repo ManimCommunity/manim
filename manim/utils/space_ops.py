@@ -493,7 +493,7 @@ def line_intersection(
     """
     if any(np.array([line1, line2])[:, :, 2].reshape(-1)):
         # checks for z coordinates != 0
-        raise ValueError("Intersection for coords in the xy-plane.")
+        raise ValueError("Coords must be in the xy-plane.")
 
     # algorithm from https://stackoverflow.com/a/42727584
     padded = (
