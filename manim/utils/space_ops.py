@@ -386,21 +386,16 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.nda
     np.ndarray
         The normal of the two vectors.
     """
-    if config.renderer == "opengl":
-        v1 = normalize(v1)
-        v2 = normalize(v2)
-        cp = np.cross(v1, v2)
+    v1, v2 = (normalize(i) for i in (v1, v2))
+    cp = np.cross(v1, v2)
+    cp_norm = np.linalg.norm(cp)
+    if cp_norm < tol:
+        # Vectors align, so find a normal to them in the plane shared with the z-axis
+        cp = np.cross(np.cross(v1, OUT), v1)
         cp_norm = np.linalg.norm(cp)
         if cp_norm < tol:
-            # Vectors align, so find a normal to them in the plane shared with the z-axis
-            new_cp = np.cross(np.cross(v1, OUT), v1)
-            new_cp_norm = np.linalg.norm(new_cp)
-            if new_cp_norm < tol:
-                return DOWN
-            return new_cp / new_cp_norm
-        return cp / cp_norm
-    else:
-        return normalize(np.cross(v1, v2))
+            return DOWN
+    return normalize(cp)
 
 
 ###
