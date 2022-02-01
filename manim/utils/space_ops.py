@@ -14,7 +14,6 @@ __all__ = [
     "z_to_vector",
     "angle_of_vector",
     "angle_between_vectors",
-    "project_along_vector",
     "normalize",
     "get_unit_normal",
     "compass_directions",
@@ -42,9 +41,10 @@ from typing import Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
+from scipy.spatial.transform import Rotation
 
 from .. import config
-from ..constants import DOWN, OUT, PI, RIGHT, TAU
+from ..constants import DOWN, OUT, PI, RIGHT, TAU, UP
 from ..utils.iterables import adjacent_pairs
 
 
@@ -167,7 +167,9 @@ def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
     return result
 
 
-def rotate_vector(vector: np.ndarray, angle: int, axis: np.ndarray = OUT) -> np.ndarray:
+def rotate_vector(
+    vector: np.ndarray, angle: float, axis: np.ndarray = OUT
+) -> np.ndarray:
     """Function for rotating a vector.
 
     Parameters
@@ -190,18 +192,11 @@ def rotate_vector(vector: np.ndarray, angle: int, axis: np.ndarray = OUT) -> np.
         If vector is not of dimension 2 or 3.
     """
 
+    if len(vector) > 3:
+        raise ValueError("Vector must have the correct dimensions.")
     if len(vector) == 2:
-        # Use complex numbers...because why not
-        z = complex(*vector) * np.exp(complex(0, angle))
-        return np.array([z.real, z.imag])
-    elif len(vector) == 3:
-        # Use quaternions...because why not
-        quat = quaternion_from_angle_axis(angle, axis)
-        quat_inv = quaternion_conjugate(quat)
-        product = reduce(quaternion_mult, [quat, np.append(0, vector), quat_inv])
-        return product[1:]
-    else:
-        raise ValueError("vector must be of dimension 2 or 3")
+        vector = np.append(vector, 0)
+    return rotation_matrix(angle, axis) @ vector
 
 
 def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
@@ -265,10 +260,9 @@ def rotation_matrix(
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    about_z = rotation_about_z(angle)
-    z_to_axis = z_to_vector(axis)
-    axis_to_z = np.linalg.inv(z_to_axis)
-    inhomogeneous_rotation_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_rotation_matrix = Rotation.from_euler(
+        "xyz", angle * np.array(axis)
+    ).as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
     else:
@@ -277,7 +271,7 @@ def rotation_matrix(
         return rotation_matrix
 
 
-def rotation_about_z(angle: float) -> list[list[float]]:
+def rotation_about_z(angle: float) -> np.ndarray:
     """Returns a rotation matrix for a given angle.
 
     Parameters
@@ -287,14 +281,10 @@ def rotation_about_z(angle: float) -> list[list[float]]:
 
     Returns
     -------
-    List[float]
+    np.ndarray
         Gives back the rotated matrix.
     """
-    return [
-        [np.cos(angle), -np.sin(angle), 0],
-        [np.sin(angle), np.cos(angle), 0],
-        [0, 0, 1],
-    ]
+    return rotation_matrix(angle, OUT)
 
 
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
@@ -302,23 +292,15 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     Returns some matrix in SO(3) which takes the z-axis to the
     (normalized) vector provided as an argument
     """
-    norm = np.linalg.norm(vector)
-    if norm == 0:
-        return np.identity(3)
-    v = np.array(vector) / norm
-    phi = np.arccos(v[2])
-    if any(v[:2]):
-        # projection of vector to unit circle
-        axis_proj = v[:2] / np.linalg.norm(v[:2])
-        theta = np.arccos(axis_proj[0])
-        if axis_proj[1] < 0:
-            theta = -theta
-    else:
-        theta = 0
-    phi_down = np.array(
-        [[np.cos(phi), 0, np.sin(phi)], [0, 1, 0], [-np.sin(phi), 0, np.cos(phi)]],
-    )
-    return np.dot(rotation_about_z(theta), phi_down)
+    axis_z = normalize(vector)
+    axis_y = normalize(np.cross(axis_z, RIGHT))
+    axis_x = np.cross(axis_y, axis_z)
+    if np.linalg.norm(axis_y) == 0:
+        # the vector passed just so happened to be in the x direction.
+        axis_x = normalize(np.cross(UP, axis_z))
+        axis_y = -np.cross(axis_x, axis_z)
+
+    return np.array([axis_x, axis_y, axis_z]).T
 
 
 def angle_of_vector(vector: Sequence[float]) -> float:
@@ -334,13 +316,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
     float
         The angle of the vector projected.
     """
-    if config.renderer == "opengl":
-        return np.angle(complex(*vector[:2]))
-    else:
-        z = complex(*vector[:2])
-        if z == 0:
-            return 0
-        return np.angle(complex(*vector[:2]))
+    return np.angle(complex(*vector[:2]))
 
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
@@ -366,34 +342,12 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     )
 
 
-def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
-    """Projects a vector along a point.
-
-    Parameters
-    ----------
-    point
-        The point to be project from.
-    vector
-        The vector which has to projected.
-
-    Returns
-    -------
-    np.ndarray
-        A dot product of the point and vector.
-    """
-    matrix = np.identity(3) - np.outer(vector, vector)
-    return np.dot(point, matrix.T)
-
-
 def normalize(vect: np.ndarray | tuple[float], fall_back=None) -> np.ndarray:
     norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
     else:
-        if fall_back is not None:
-            return fall_back
-        else:
-            return np.zeros(len(vect))
+        return fall_back or np.zeros(len(vect))
 
 
 def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
@@ -561,14 +515,17 @@ def midpoint(
     return center_of_mass([point1, point2])
 
 
-def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndarray:
+def line_intersection(
+    line1: Sequence[np.ndarray], line2: Sequence[np.ndarray]
+) -> np.ndarray:
     """Returns intersection point of two lines, each defined with
     a pair of vectors determining the end points.
 
     Parameters
     ----------
     line1
-        The first line.
+        The first line, a list of two points representing the start
+        and end.
     line2
         The second line.
 
@@ -582,19 +539,22 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
     ValueError
         Error is produced if the two lines don't intersect with each other
     """
-    x_diff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    y_diff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+    if any(np.array([line1, line2])[:, :, 2].reshape(-1)):
+        # checks for z coordinates != 0
+        raise ValueError("Intersection for coords in the xy-plane.")
 
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
+    # algorithm from https://stackoverflow.com/a/42727584
+    padded = (
+        np.pad(np.array(i)[:, :2], ((0, 0), (0, 1)), constant_values=1)
+        for i in (line1, line2)
+    )
+    line1, line2 = (np.cross(*i) for i in padded)
+    x, y, z = np.cross(line1, line2)
 
-    div = det(x_diff, y_diff)
-    if div == 0:
-        raise ValueError("Lines do not intersect")
-    d = (det(*line1), det(*line2))
-    x = det(d, x_diff) / div
-    y = det(d, y_diff) / div
-    return np.array([x, y, 0])
+    if z == 0:
+        raise ValueError("Lines do not intersect.")
+
+    return np.array([x / z, y / z, 0])
 
 
 def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
