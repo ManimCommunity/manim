@@ -40,6 +40,7 @@ from functools import reduce
 from typing import Sequence
 
 import numpy as np
+import quaternion as qt
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
@@ -57,8 +58,8 @@ def norm_squared(v: float) -> float:
 
 
 def quaternion_mult(
-    *quats: Sequence[float],
-) -> np.ndarray | list[float | np.ndarray]:
+    *quats: Sequence[Sequence[float]],
+) -> np.ndarray:
     """Gets the Hamilton product of the quaternions provided.
     For more information, check `this Wikipedia page
     <https://en.wikipedia.org/wiki/Quaternion>`__.
@@ -68,41 +69,17 @@ def quaternion_mult(
     Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
-    if config.renderer == "opengl":
-        if len(quats) == 0:
-            return [1, 0, 0, 0]
-        result = quats[0]
-        for next_quat in quats[1:]:
-            w1, x1, y1, z1 = result
-            w2, x2, y2, z2 = next_quat
-            result = [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ]
-        return result
-    else:
-        q1 = quats[0]
-        q2 = quats[1]
-
-        w1, x1, y1, z1 = q1
-        w2, x2, y2, z2 = q2
-        return np.array(
-            [
-                w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-                w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-                w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-                w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            ],
-        )
+    q = np.quaternion(1)
+    for quat in quats:
+        q *= np.quaternion(*quat)
+    return qt.as_float_array(q)
 
 
 def quaternion_from_angle_axis(
     angle: float,
     axis: np.ndarray,
     axis_normalized: bool = False,
-) -> list[float]:
+) -> np.ndarray:
     """Gets a quaternion from an angle and an axis.
     For more information, check `this Wikipedia page
     <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`__.
@@ -121,12 +98,7 @@ def quaternion_from_angle_axis(
     List[float]
         Gives back a quaternion from the angle and axis
     """
-    if config.renderer == "opengl":
-        if not axis_normalized:
-            axis = normalize(axis)
-        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
-    else:
-        return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
+    return qt.as_float_array(qt.from_rotation_vector(angle * normalize(axis)))
 
 
 def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
@@ -142,10 +114,8 @@ def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
     Sequence[float]
         Gives the angle and axis
     """
-    axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
-    angle = 2 * np.arccos(quaternion[0])
-    if angle > TAU / 2:
-        angle = TAU - angle
+    q = qt.as_rotation_vector(np.quaternion(*quaternion))
+    angle, axis = np.linalg.norm(q), normalize(q)
     return angle, axis
 
 
@@ -162,9 +132,7 @@ def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
     np.ndarray
         The conjugate of the quaternion.
     """
-    result = np.array(quaternion)
-    result[1:] *= -1
-    return result
+    return qt.as_float_array(np.quaternion(*quaternion).conj())
 
 
 def rotate_vector(
@@ -222,14 +190,7 @@ def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list[np.ndarr
         matrix or 3-by-3-by-N multidimensional array.
     """
     quat_inv = quaternion_conjugate(quat)
-    return [
-        quaternion_mult(quat, [0, *basis], quat_inv)[1:]
-        for basis in [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1],
-        ]
-    ]
+    return [quaternion_mult(quat, [0, *basis], quat_inv)[1:] for basis in np.eye(3)]
 
 
 def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
