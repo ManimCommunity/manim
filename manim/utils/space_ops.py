@@ -42,6 +42,7 @@ from typing import Sequence
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
+from scipy.spatial.transform import Rotation as R
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
@@ -253,8 +254,7 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
             [-sin_a, cos_a, 0],
             [0, 0, 1],
         ]
-    quat = quaternion_from_angle_axis(angle, axis)
-    return rotation_matrix_transpose_from_quaternion(quat)
+    return rotation_matrix(angle, axis).T
 
 
 def rotation_matrix(
@@ -265,7 +265,8 @@ def rotation_matrix(
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    inhomogeneous_rotation_matrix = rotation_matrix_from_quaternion(quaternion_from_angle_axis(angle, axis))
+    r = R.from_rotvec(angle * axis)
+    inhomogeneous_rotation_matrix = r.as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
     else:
