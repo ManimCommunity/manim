@@ -237,19 +237,7 @@ def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
 
 
 def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
-    if axis[0] == 0 and axis[1] == 0:
-        # axis = [0, 0, z] case is common enough it's worth
-        # having a shortcut
-        sgn = 1 if axis[2] > 0 else -1
-        cos_a = math.cos(angle)
-        sin_a = math.sin(angle) * sgn
-        return [
-            [cos_a, sin_a, 0],
-            [-sin_a, cos_a, 0],
-            [0, 0, 1],
-        ]
-    quat = quaternion_from_angle_axis(angle, axis)
-    return rotation_matrix_transpose_from_quaternion(quat)
+    return rotation_matrix(angle, axis).T
 
 
 def rotation_matrix(
@@ -260,8 +248,8 @@ def rotation_matrix(
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    inhomogeneous_rotation_matrix = Rotation.from_euler(
-        "xyz", angle * np.array(axis)
+    inhomogeneous_rotation_matrix = Rotation.from_rotvec(
+        angle * np.array(axis)
     ).as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
