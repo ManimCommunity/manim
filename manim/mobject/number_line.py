@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-from typing import Dict, Iterable, Optional, Sequence, Union
+from typing import Iterable, Sequence
 
 import numpy as np
 

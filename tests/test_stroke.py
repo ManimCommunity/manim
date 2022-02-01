@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from colour import Color
+
 import manim.utils.color as C
 from manim import VMobject
 
 
 def test_stroke_props_in_ctor():
     m = VMobject(stroke_color=C.ORANGE, stroke_width=10)
-    assert m.stroke_color == C.ORANGE
+    assert m.stroke_color == Color(C.ORANGE)
     assert m.stroke_width == 10
 
 
@@ -15,7 +17,7 @@ def test_set_stroke():
     m.set_stroke(color=C.ORANGE, width=2, opacity=0.8)
     assert m.stroke_width == 2
     assert m.stroke_opacity == 0.8
-    assert m.stroke_color == C.ORANGE
+    assert m.stroke_color == Color(C.ORANGE)
 
 
 def test_set_background_stroke():
