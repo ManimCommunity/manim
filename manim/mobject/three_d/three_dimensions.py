@@ -477,7 +477,7 @@ class Cone(Surface):
         super().__init__(
             self.func,
             v_range=v_range,
-            u_range=[u_min, np.sqrt(base_radius**2 + height**2)],
+            u_range=[u_min, np.sqrt(base_radius ** 2 + height ** 2)],
             checkerboard_colors=checkerboard_colors,
             **kwargs,
         )
@@ -519,7 +519,7 @@ class Cone(Surface):
     def _rotate_to_direction(self):
         x, y, z = self.direction
 
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
         if r > 0:
             theta = np.arccos(z / r)
         else:
@@ -650,7 +650,7 @@ class Cylinder(Surface):
     def _rotate_to_direction(self):
         x, y, z = self.direction
 
-        r = np.sqrt(x**2 + y**2 + z**2)
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
         if r > 0:
             theta = np.arccos(z / r)
         else:

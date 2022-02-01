@@ -637,8 +637,8 @@ class OpenGLArrow(OpenGLLine):
             # Solve for radius so that the tip-to-tail length matches |end - start|
             a = 2 * (1 - np.cos(path_arc))
             b = -2 * tip_length * np.sin(path_arc)
-            c = tip_length**2 - length**2
-            R = (-b + np.sqrt(b**2 - 4 * a * c)) / (2 * a)
+            c = tip_length ** 2 - length ** 2
+            R = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
 
             # Find arc points
             points1 = OpenGLArc.create_quadratic_bezier_points(path_arc)
