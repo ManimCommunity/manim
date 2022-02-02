@@ -20,14 +20,13 @@ __all__ = [
     "FadeIn",
 ]
 
-from typing import Optional, Union
 
 import numpy as np
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
 from ..animation.transform import Transform
-from ..constants import DOWN, ORIGIN
+from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 
@@ -136,6 +135,9 @@ class FadeIn(_Fade):
                 self.play(AnimationGroup(*animations, lag_ratio=0.5))
 
     """
+
+    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+        super().__init__(*mobjects, introducer=True, **kwargs)
 
     def create_target(self):
         return self.mobject

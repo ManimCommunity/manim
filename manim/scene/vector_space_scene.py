@@ -5,8 +5,6 @@ from __future__ import annotations
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
 
-from typing import Optional
-
 import numpy as np
 from colour import Color
 
@@ -27,7 +25,7 @@ from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
+from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 

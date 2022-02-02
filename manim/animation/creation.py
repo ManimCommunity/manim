@@ -73,16 +73,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color
@@ -115,7 +106,9 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: VMobject | OpenGLVMobject | OpenGLSurface | None, **kwargs
+        self,
+        mobject: VMobject | OpenGLVMobject | OpenGLSurface | None,
+        **kwargs,
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
@@ -167,9 +160,10 @@ class Create(ShowPartial):
         self,
         mobject: VMobject | OpenGLVMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
+        introducer: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
     def _get_bounds(self, alpha: float) -> tuple[int, float]:
         return (0, alpha)
@@ -199,7 +193,13 @@ class Uncreate(Create):
         remover: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
+        super().__init__(
+            mobject,
+            rate_func=rate_func,
+            introducer=False,
+            remover=remover,
+            **kwargs,
+        )
 
 
 class DrawBorderThenFill(Animation):
@@ -223,10 +223,17 @@ class DrawBorderThenFill(Animation):
         stroke_color: str = None,
         draw_border_animation_config: dict = {},  # what does this dict accept?
         fill_animation_config: dict = {},
+        introducer: bool = True,
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
-        super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
+        super().__init__(
+            vmobject,
+            run_time=run_time,
+            introducer=introducer,
+            rate_func=rate_func,
+            **kwargs,
+        )
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
         self.draw_border_animation_config = draw_border_animation_config
@@ -308,11 +315,14 @@ class Write(DrawBorderThenFill):
             lag_ratio,
         )
         self.reverse = reverse
+        if "remover" not in kwargs:
+            kwargs["remover"] = reverse
         super().__init__(
             vmobject,
             rate_func=rate_func,
             run_time=run_time,
             lag_ratio=lag_ratio,
+            introducer=not reverse,
             **kwargs,
         )
 

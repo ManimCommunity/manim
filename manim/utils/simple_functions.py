@@ -30,13 +30,6 @@ def get_parameters(function):
     return inspect.signature(function).parameters
 
 
-# Just to have a less heavyweight name for this extremely common operation
-#
-# We may wish to have more fine-grained control over division by zero behavior
-# in the future (separate specifiable values for 0/0 and x/0 with x != 0),
-# but for now, we just allow the option to handle indeterminate 0/0.
-
-
 def clip(a, min_a, max_a):
     if a < min_a:
         return min_a

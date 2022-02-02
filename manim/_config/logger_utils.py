@@ -17,7 +17,6 @@ import json
 import logging
 import os
 import sys
-import typing
 from typing import TYPE_CHECKING
 
 from rich import color, errors

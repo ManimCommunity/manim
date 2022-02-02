@@ -5,7 +5,6 @@ from __future__ import annotations
 
 __all__ = ["cascade_element_style", "parse_style", "parse_color_string"]
 
-from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 
 from colour import web2hex
