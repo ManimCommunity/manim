@@ -45,6 +45,7 @@ Suppose we want to profile ``SquareToCircle``. Then we add and save the followin
 to ``square_to_circle.py``:
 
 .. code-block:: python
+
     from manim import *
 
 
