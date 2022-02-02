@@ -102,6 +102,8 @@ def deprecated(
     --------
     Basic usage::
 
+        from manim.utils.deprecation import deprecated
+
         @deprecated
         def foo(**kwargs):
             pass
@@ -126,6 +128,8 @@ def deprecated(
 
     You can specify additional information for a more precise warning::
 
+        from manim.utils.deprecation import deprecated
+
         @deprecated(
             since="v0.2",
             until="v0.4",
@@ -139,6 +143,8 @@ def deprecated(
         # WARNING  The function foo has been deprecated since v0.2 and is expected to be removed after v0.4. Use bar instead. It is cooler.
 
     You may also use dates instead of versions::
+
+        from manim.utils.deprecation import deprecated
 
         @deprecated(since="05/01/2021", until="06/01/2021")
         def foo():
@@ -277,6 +283,8 @@ def deprecated_params(
     --------
     Basic usage::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(params="a, b, c")
         def foo(**kwargs):
             pass
@@ -288,6 +296,8 @@ def deprecated_params(
         # WARNING  The parameters a and b of method foo have been deprecated and may be removed in a later version.
 
     You can also specify additional information for a more precise warning::
+
+        from manim.utils.deprecation import deprecated_params
 
         @deprecated_params(
             params="a, b, c",
@@ -303,6 +313,8 @@ def deprecated_params(
 
     Basic parameter redirection::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             # Two ways to redirect one parameter to another:
             ("old_param", "new_param"),
@@ -317,6 +329,8 @@ def deprecated_params(
 
     Redirecting using a calculated value::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
         ])
@@ -329,6 +343,8 @@ def deprecated_params(
 
     Redirecting multiple parameter values to one::
 
+        from manim.utils.deprecation import deprecated_params
+
         @deprecated_params(redirections=[
             lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
         ])
@@ -340,6 +356,8 @@ def deprecated_params(
         # returns {"buff": (2, 1)}
 
     Redirect one parameter to multiple::
+
+        from manim.utils.deprecation import deprecated_params
 
         @deprecated_params(redirections=[
             lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
