@@ -26,6 +26,8 @@ __all__ = [
     "find_intersection",
     "line_intersection",
     "get_winding_number",
+    "shoelace",
+    "shoelace_direction",
     "cross2d",
     "earclip_triangulation",
     "cartesian_to_spherical",
@@ -36,7 +38,6 @@ __all__ = [
 
 import itertools as it
 import math
-from functools import reduce
 from typing import Sequence
 
 import numpy as np
@@ -251,7 +252,7 @@ def rotation_matrix(
     Rotation in R^3 about a specified axis of rotation.
     """
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
-        angle * np.array(axis)
+        angle * normalize(np.array(axis))
     ).as_matrix()
     if not homogeneous:
         return inhomogeneous_rotation_matrix
