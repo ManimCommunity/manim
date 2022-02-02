@@ -37,7 +37,7 @@ Install SnakeViz:
 
 .. code-block:: bash
 
-   pip install snakeviz
+    pip install snakeviz
 
 cProfile is included with in Python's standard library and does not need to be installed.
 
