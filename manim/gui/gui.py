@@ -14,6 +14,7 @@ from .. import __version__, config
 from ..utils.module_ops import scene_classes_from_file
 
 if dearpygui_imported:
+    dpg.create_context()
     window = dpg.generate_uuid()
 
 
@@ -23,7 +24,10 @@ def configure_pygui(renderer, widgets, update=True):
     if update:
         dpg.delete_item(window)
     else:
-        dpg.setup_viewport()
+        dpg.create_viewport()
+        dpg.setup_dearpygui()
+        dpg.show_viewport()
+
     dpg.set_viewport_title(title=f"Manim Community v{__version__}")
     dpg.set_viewport_width(1015)
     dpg.set_viewport_height(540)
