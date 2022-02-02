@@ -74,7 +74,7 @@ def configure_pygui(renderer, widgets, update=True):
                     if widget != "separator":
                         del widget_config_copy["name"]
                         del widget_config_copy["widget"]
-                        getattr(dpg, f"add_{widget}")(name, **widget_config_copy)
+                        getattr(dpg, f"add_{widget}")(label=name, **widget_config_copy)
                     else:
                         dpg.add_separator()
 
