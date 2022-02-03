@@ -85,19 +85,6 @@ def test_AmbientCameraMove(scene):
     scene.wait()
 
 
-# TODO: bring test back after introducing testing tolerance
-#  to account for OS-specific differences in numerics.
-
-# class FixedInFrameMObjectTest(ThreeDScene):
-#     def construct(scene):
-#         axes = ThreeDAxes()
-#         scene.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-#         circ = Circle()
-#         scene.add_fixed_in_frame_mobjects(circ)
-#         circ.to_corner(UL)
-#         scene.add(axes)
-
-
 @frames_comparison(base_scene=ThreeDScene)
 def test_MovingVertices(scene):
     scene.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
