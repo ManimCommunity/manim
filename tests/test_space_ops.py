@@ -85,6 +85,11 @@ def test_line_intersection():
             [[0, 0, 3], [3, 3, 3]],
             [[0, 3, 3], [3, 0, 3]],
         )
+    with pytest.raises(ValueError):
+        line_intersection(  # lines are equal
+            [[2, 2, 0], [3, 1, 0]],
+            [[2, 2, 0], [3, 1, 0]],
+        )
     assert np.all(
         line_intersection(  # lines with ends out of bounds
             [[0, 0, 0], [1, 1, 0]],

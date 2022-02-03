@@ -545,7 +545,7 @@ def line_intersection(
     x, y, z = np.cross(line1, line2)
 
     if z == 0:
-        raise ValueError("Lines do not intersect.")
+        raise ValueError("No intersections found. The lines are parallel.")
 
     return np.array([x / z, y / z, 0])
 
