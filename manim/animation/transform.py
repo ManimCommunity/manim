@@ -235,7 +235,7 @@ class ClockwiseTransform(Transform):
     --------
 
     .. manim:: ClockwiseExample
-        
+
         class ClockwiseExample(Scene):
             def construct(self):
                 dl, dr = Dot(), Dot()
@@ -251,7 +251,7 @@ class ClockwiseTransform(Transform):
                     Transform(dr, sr)
                 )
                 self.wait()
-    
+
     .. manim:: ClockwiseTransform_vs_Transform
 
         class ClockwiseTransform_vs_Transform(Scene):
@@ -301,7 +301,7 @@ class CounterclockwiseTransform(Transform):
     --------
 
     .. manim:: CounterclockwiseExample
-        
+
         class CounterclockwiseExample(Scene):
             def construct(self):
                 dl, dr = Dot(), Dot()
@@ -317,7 +317,7 @@ class CounterclockwiseTransform(Transform):
                     Transform(dr, sr)
                 )
                 self.wait()
-    
+
     .. manim:: CounterclockwiseTransform_vs_Transform
 
         class CounterclockwiseTransform_vs_Transform(Scene):
