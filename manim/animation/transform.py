@@ -292,7 +292,7 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
-    """Transforms Mobjects while moving them in Counter-Clockwise direction.
+    """Transforms `Mobject`s by moving each of its points in a counterclockwise path to its target point.
 
     Examples
     --------
