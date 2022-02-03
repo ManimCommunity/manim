@@ -234,21 +234,6 @@ class ClockwiseTransform(Transform):
     Examples
     --------
 
-    .. manim:: ClockwiseTransformExample1
-
-        class ClockwiseTransformExample1(Scene):
-            def construct(self):
-                self.play(ClockwiseTransform(Square(), Circle()))
-
-    .. manim:: ClockwiseTransformExample2
-
-        class ClockwiseTransformExample2(Scene):
-            def construct(self):
-                t1 = Text("1").shift(UP)
-                t2 = Text("2").shift(DOWN)
-                self.add(t1, t2)
-                self.play(ClockwiseTransform(t1, t2))
-
     .. manim:: ClockwiseTransform_vs_Transform
 
         class ClockwiseTransform_vs_Transform(Scene):
@@ -296,22 +281,6 @@ class CounterclockwiseTransform(Transform):
 
     Examples
     --------
-
-    .. manim:: CounterclockwiseTransformExample1
-        :quality: medium
-
-        class CounterclockwiseTransformExample1(Scene):
-            def construct(self):
-                self.play(CounterclockwiseTransform(Square(), Circle()))
-
-    .. manim:: CounterclockwiseTransformExample2
-
-        class CounterclockwiseTransformExample2(Scene):
-            def construct(self):
-                t1 = Text("1").shift(UP)
-                t2 = Text("2").shift(DOWN)
-                self.add(t1, t2)
-                self.play(CounterclockwiseTransform(t1, t2))
 
     .. manim:: CounterclockwiseTransform_vs_Transform
 
