@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from manim.utils.space_ops import *
 from manim.utils.space_ops import shoelace, shoelace_direction
@@ -11,6 +12,7 @@ def test_rotate_vector():
     rotated = rotate_vector(vec, np.pi / 2)
     assert np.round(rotated[0], 5) == -1.0
     assert not np.round(rotated[1:], 5).any()
+    assert np.all(rotate_vector(np.zeros(3), np.pi / 4) == np.zeros(3))
 
 
 def test_rotation_matrices():
@@ -58,6 +60,7 @@ def test_angle_of_vector():
         np.round(angle_between_vectors(np.array([1, 1, 1]), np.array([-1, 1, 1])), 5)
         == 1.23096
     )
+    assert angle_of_vector(np.zeros(3)) == 0.0
 
 
 def test_center_of_mass():
@@ -71,6 +74,23 @@ def test_line_intersection():
             [[0, 3, 0], [3, 0, 0]],
         )
         == np.array([1.5, 1.5, 0.0])
+    )
+    with pytest.raises(ValueError):
+        line_intersection(  # parallel lines
+            [[0, 1, 0], [5, 1, 0]],
+            [[0, 6, 0], [5, 6, 0]],
+        )
+    with pytest.raises(ValueError):
+        line_intersection(  # lines not in xy-plane
+            [[0, 0, 3], [3, 3, 3]],
+            [[0, 3, 3], [3, 0, 3]],
+        )
+    assert np.all(
+        line_intersection(  # lines with ends out of bounds
+            [[0, 0, 0], [1, 1, 0]],
+            [[0, 4, 0], [1, 3, 0]],
+        )
+        == np.array([2, 2, 0])
     )
 
 

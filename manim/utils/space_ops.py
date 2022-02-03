@@ -530,6 +530,7 @@ def line_intersection(
     ------
     ValueError
         Error is produced if the two lines don't intersect with each other
+        or if the coordinates don't lie on the xy-plane.
     """
     if any(np.array([line1, line2])[:, :, 2].reshape(-1)):
         # checks for z coordinates != 0
