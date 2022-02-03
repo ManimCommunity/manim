@@ -231,7 +231,7 @@ class TransformFromCopy(Transform):
 class ClockwiseTransform(Transform):
     """Transforms a mobject by moving each of its points along an arc with
     clockwise orientation to its target point.
-    
+
     See also
     --------
     :class:`.Transform`, :class:`.CounterclockwiseTransform`
