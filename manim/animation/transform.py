@@ -234,6 +234,24 @@ class ClockwiseTransform(Transform):
     Examples
     --------
 
+    .. manim:: ClockwiseExample
+        
+        class ClockwiseExample(Scene):
+            def construct(self):
+                dl, dr = Dot(), Dot()
+                sl, sr = Square(), Square()
+
+                VGroup(dl, sl).arrange(DOWN).shift(2*LEFT)
+                VGroup(dr, sr).arrange(DOWN).shift(2*RIGHT)
+
+                self.add(dl, dr)
+                self.wait()
+                self.play(
+                    ClockwiseTransform(dl, sl),
+                    Transform(dr, sr)
+                )
+                self.wait()
+    
     .. manim:: ClockwiseTransform_vs_Transform
 
         class ClockwiseTransform_vs_Transform(Scene):
@@ -282,6 +300,24 @@ class CounterclockwiseTransform(Transform):
     Examples
     --------
 
+    .. manim:: CounterclockwiseExample
+        
+        class CounterclockwiseExample(Scene):
+            def construct(self):
+                dl, dr = Dot(), Dot()
+                sl, sr = Square(), Square()
+
+                VGroup(dl, sl).arrange(DOWN).shift(2*LEFT)
+                VGroup(dr, sr).arrange(DOWN).shift(2*RIGHT)
+
+                self.add(dl, dr)
+                self.wait()
+                self.play(
+                    CounterclockwiseTransform(dl, sl),
+                    Transform(dr, sr)
+                )
+                self.wait()
+    
     .. manim:: CounterclockwiseTransform_vs_Transform
 
         class CounterclockwiseTransform_vs_Transform(Scene):
