@@ -302,7 +302,7 @@ class ClockwiseTransform(Transform):
 class CounterclockwiseTransform(Transform):
     """Transforms a mobject by moving each of its points along an arc with
     counterclockwise orientation to its target point.
-    
+
     See also
     --------
     :class:`.Transform`, :class:`.ClockwiseTransform`
