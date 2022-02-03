@@ -14,7 +14,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color

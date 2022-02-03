@@ -10,7 +10,7 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 

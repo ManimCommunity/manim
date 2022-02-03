@@ -83,7 +83,6 @@ import shutil
 import sys
 from pathlib import Path
 from timeit import timeit
-from typing import Callable, List
 
 import jinja2
 from docutils import nodes

@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import srt

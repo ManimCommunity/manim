@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 import numpy as np
 

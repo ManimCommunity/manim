@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
-from typing import Any, Dict, List
+from typing import Any
 
 from manim import get_dir_layout, get_video_metadata, logger
 
