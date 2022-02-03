@@ -510,16 +510,16 @@ def midpoint(
 def line_intersection(
     line1: Sequence[np.ndarray], line2: Sequence[np.ndarray]
 ) -> np.ndarray:
-    """Returns intersection point of two lines, each defined with
+    """Returns intersection point of two line segments, each defined with
     a pair of vectors determining the end points.
 
     Parameters
     ----------
     line1
-        The first line, a list of two points representing the start
+        The first line segment, a list of two points representing the start
         and end.
     line2
-        The second line.
+        The second line segment.
 
     Returns
     -------
