@@ -153,7 +153,6 @@ class SceneFileWriter:
 
                 self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
 
-
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
                     "partial_movie_dir",
