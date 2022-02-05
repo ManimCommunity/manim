@@ -2355,6 +2355,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 
 [metadata]
 lock-version = "1.1"
+python-versions = ">=3.7,<3.11"
 content-hash = "6a458a670bbe6bfcc130b95a1a81b2e6d8ef111adfff2927a2264a9a81c384ac"
 
 [metadata.files]
