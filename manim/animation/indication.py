@@ -339,10 +339,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         )
 
 
-# TODO Decide what to do with this class:
-#   Remove?
-#   Deprecate?
-#   Keep and add docs?
 @deprecated(
     since="v0.15.0",
     until="v0.16.0",
