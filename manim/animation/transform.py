@@ -514,7 +514,7 @@ class FadeToColor(ApplyMethod):
 
 
 class ScaleInPlace(ApplyMethod):
-    """Animation that scales a mobject by a certain factor.
+    """Animation that scales an mobject by a certain factor.
 
     Examples
     --------
