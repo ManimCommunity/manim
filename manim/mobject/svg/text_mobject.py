@@ -59,7 +59,7 @@ import re
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, Sequence
 
 import manimpango
 import numpy as np
@@ -427,7 +427,6 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-
         self.color = VMobject().color if color is None else color
         self.line_spacing = line_spacing
         self.font = font
@@ -472,7 +471,7 @@ class Text(SVGMobject):
             )
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
-        file_name = self._text2svg()
+        file_name = self._text2svg(color)
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -595,7 +594,7 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def _text2hash(self):
+    def _text2hash(self, color: Color):
         """Generates ``sha256`` hash for file name."""
         settings = (
             "PANGO" + self.font + self.slant + self.weight + str(self.color)
@@ -672,7 +671,7 @@ class Text(SVGMobject):
                     settings.append(TextSetting(i, i + 1, **args))
         return settings
 
-    def _text2settings(self):
+    def _text2settings(self, color: Color):
         """Converts the texts and styles to a setting for parsing."""
         t2xs = [
             (self.t2f, "font"),
@@ -680,7 +679,9 @@ class Text(SVGMobject):
             (self.t2w, "weight"),
             (self.t2c, "color"),
         ]
-        setting_args = {arg: str(getattr(self, arg)) for _, arg in t2xs}
+        setting_args = {
+            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
+        }
 
         settings = self._get_settings_from_t2xs(t2xs)
         settings.extend(self._get_settings_from_gradient(setting_args))
@@ -731,12 +732,12 @@ class Text(SVGMobject):
                         settings.sort(key=lambda setting: setting.start)
                         break
         for setting in settings:
-
             if setting.line_num == -1:
                 setting.line_num = 0
+
         return settings
 
-    def _text2svg(self):
+    def _text2svg(self, color: Color):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -746,13 +747,13 @@ class Text(SVGMobject):
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        hash_name = self._text2hash()
+        hash_name = self._text2hash(color)
         file_name = os.path.join(dir_name, hash_name) + ".svg"
 
         if os.path.exists(file_name):
             svg_file = file_name
         else:
-            settings = self._text2settings()
+            settings = self._text2settings(color)
             width = config["pixel_width"]
             height = config["pixel_height"]
 
@@ -1135,7 +1136,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        file_name = self._text2svg()
+        file_name = self._text2svg(Color(color) if color else None)
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -1214,10 +1215,10 @@ class MarkupText(SVGMobject):
         else:
             self.scale(font_val / self.font_size)
 
-    def _text2hash(self):
+    def _text2hash(self, color: Color):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight + str(self.color)
+            "MARKUPPANGO" + self.font + self.slant + self.weight + color.hex_l
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
@@ -1227,7 +1228,7 @@ class MarkupText(SVGMobject):
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
 
-    def _text2svg(self):
+    def _text2svg(self, color: Color | None):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
@@ -1237,14 +1238,19 @@ class MarkupText(SVGMobject):
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        hash_name = self._text2hash()
+        hash_name = self._text2hash(color)
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             svg_file = file_name
         else:
+            final_text = (
+                f'<span foreground="{color}">{self.text}</span>'
+                if color is not None
+                else self.text
+            )
             logger.debug(f"Setting Text {self.text}")
             svg_file = MarkupUtils.text2svg(
-                f'<span foreground="{self.color}">{self.text}</span>',
+                final_text,
                 self.font,
                 self.slant,
                 self.weight,

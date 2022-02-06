@@ -15,6 +15,7 @@ Module Index
    ~utils.commands
    ~utils.config_ops
    ~utils.deprecation
+   ~utils.debug
    ~utils.hashing
    ~utils.ipython_magic
    ~utils.images

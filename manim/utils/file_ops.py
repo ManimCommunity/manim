@@ -178,7 +178,10 @@ def open_file(file_path, in_browser=False):
             commands = ["cygstart"]
             file_path = file_path if not in_browser else os.path.dirname(file_path)
         elif current_os == "Darwin":
-            commands = ["open"] if not in_browser else ["open", "-R"]
+            if is_gif_format():
+                commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]
+            else:
+                commands = ["open"] if not in_browser else ["open", "-R"]
         else:
             raise OSError("Unable to identify your operating system...")
         commands.append(file_path)
