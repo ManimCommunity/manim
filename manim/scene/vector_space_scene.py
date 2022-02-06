@@ -348,7 +348,7 @@ class VectorScene(Scene):
         return y_coord
 
     def coords_to_vector(self, vector, coords_start=2 * RIGHT + 2 * UP, clean_up=True):
-        """Write the vector as a column matrix (henceforth called the label), take the values in it one by one, and form the corresponding lines that make up the x and y components of the vector. Then, an Vector() based vector is created between the lines on the Screen.
+        """Animate the making of a vector from coords passed as a (2,1) ndarray
 
         Parameters
         ----------
