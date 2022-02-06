@@ -132,15 +132,11 @@ class MovingCamera(Camera):
     # context used for updating should be regenerated
     # at each frame.  So no caching.
     def get_cached_cairo_context(self, pixel_array):
-        """Since the frame can be moving around, the cairo context used for updating should be regenerated at each frame.
-
-        So no caching.
+        """No caching as the frame can be moving around, the cairo context should be regenerated at each frame.
         """
 
     def cache_cairo_context(self, pixel_array, ctx):
-        """Since the frame can be moving around, the cairo context used for updating should be regenerated at each frame.
-
-        So no caching.
+        """No caching as the frame can be moving around, the cairo context should be regenerated at each frame.
         """
 
     # def reset_frame_center(self):  # TODO: Remove? Grant commented this out.

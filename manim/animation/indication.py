@@ -550,7 +550,7 @@ class Wiggle(Animation):
 
 
 class Circumscribe(Succession):
-    r"""Draw a temporary line surrounding the mobject.
+    """Draw a temporary line surrounding the mobject.
 
     Parameters
     ----------

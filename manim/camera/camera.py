@@ -859,7 +859,7 @@ class Camera:
             )
 
     def display_point_cloud(self, pmobject, points, rgbas, thickness, pixel_array):
-        """Displays a PMobject by modifying the Pixel array suitably..
+        """Displays a PMobject by modifying the Pixel array suitably.
 
         TODO: Write a description for the rgbas argument.
 
