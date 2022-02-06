@@ -496,7 +496,7 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 
 class FadeToColor(ApplyMethod):
-    """Animation that changes color of a mobject.
+    """Animation that changes color of an mobject.
 
     Examples
     --------
