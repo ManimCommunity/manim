@@ -230,7 +230,6 @@ class TransformFromCopy(Transform):
 
 class ClockwiseTransform(Transform):
     """Transforms an mobject along an arc while interpolating it clockwise
-    clockwise orientation to its target point.
 
     See also
     --------
