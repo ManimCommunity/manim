@@ -580,7 +580,7 @@ class Circumscribe(Succession):
 
         class UsingCircumscribe(Scene):
             def construct(self):
-                lbl = Tex(r"Circum-\\scribe").scale(2)
+                lbl = Tex(r"Circum-scribe").scale(2)
                 self.add(lbl)
                 self.play(Circumscribe(lbl))
                 self.play(Circumscribe(lbl, Circle))
