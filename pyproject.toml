@@ -56,6 +56,7 @@ isosurfaces = "0.1.0"
 srt = "^3.5.0"
 screeninfo = "^0.8"
 Pygments = "^2.10.0"
+"backports.cached-property" = "^1.0.1"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
