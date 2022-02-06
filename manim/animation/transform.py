@@ -296,7 +296,7 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
-    """Transforms a mobject by moving each of its points along an arc with
+    """Transforms an mobject along an arc while interpolating it counterclockwise
     counterclockwise orientation to its target point.
 
     See also
