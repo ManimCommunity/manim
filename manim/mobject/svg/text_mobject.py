@@ -427,7 +427,7 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
-        self.color = VMobject().color if color is None else color
+
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -471,6 +471,9 @@ class Text(SVGMobject):
             )
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
+
+
+        color = Color(color) if color else VMobject().color
         file_name = self._text2svg(color)
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -597,7 +600,7 @@ class Text(SVGMobject):
     def _text2hash(self, color: Color):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "PANGO" + self.font + self.slant + self.weight + str(self.color)
+            "PANGO" + self.font + self.slant + self.weight + color.hex_l
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -679,8 +682,10 @@ class Text(SVGMobject):
             (self.t2w, "weight"),
             (self.t2c, "color"),
         ]
+
+        # setting_args requires values to be strings
         setting_args = {
-            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else str(color) for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs)
@@ -711,7 +716,6 @@ class Text(SVGMobject):
             if setting.start != start:
                 temp_settings.append(TextSetting(start, setting.start, **setting_args))
             start = setting.end
-        # import ipdb; ipdb.set_trace(context=7)
         if start != len(self.text):
             temp_settings.append(TextSetting(start, len(self.text), **setting_args))
         settings = sorted(temp_settings, key=lambda setting: setting.start)
@@ -1103,7 +1107,6 @@ class MarkupText(SVGMobject):
     ):
 
         self.text = text
-        self.color = VMobject().color if color is None else color
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -1136,7 +1139,9 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        file_name = self._text2svg(Color(color) if color else None)
+        color = Color(color) if color else VMobject().color
+        file_name = self._text2svg(color)
+
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -1148,6 +1153,7 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
+
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
