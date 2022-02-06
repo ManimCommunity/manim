@@ -1300,7 +1300,7 @@ class VMobject(Mobject):
         return target_length / total_length
 
     def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
-        """Return anchors1, handles1, handles2, anchors2, where (anchors1[i], handles1[i], handles2[i], anchors2[i]) will be four points defining a cubic bezier curve for any i in range(0, len(anchors1))
+        """Return anchors and handles of bezeir curves; four points per curve as (anchor1, handle1, handle2, anchor2)
 
         Returns
         -------
