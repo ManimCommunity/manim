@@ -665,7 +665,7 @@ class LinearTransformationScene(VectorScene):
         self.add_special_mobjects(self.transformable_mobjects, *mobjects)
 
     def add_moving_mobject(self, mobject, target_mobject=None):
-        """Add the mobject to the special list self.moving_mobject, and adds a property to the mobject called mobject.target, which keeps track of what the mobject will move to or become etc.
+        """Add mobject to a list for tracking interpolation to target_mobject.
 
         Parameters
         ----------
