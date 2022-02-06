@@ -510,16 +510,15 @@ def midpoint(
 def line_intersection(
     line1: Sequence[np.ndarray], line2: Sequence[np.ndarray]
 ) -> np.ndarray:
-    """Returns intersection point of two line segments, each defined with
-    a pair of vectors determining the end points.
+    """Returns the intersection point of two lines, each defined by
+    a pair of distinct points lying on the line.
 
     Parameters
     ----------
     line1
-        The first line segment, a list of two points representing the start
-        and end.
+        A list of two points that determine the first line.
     line2
-        The second line segment.
+        A list of two points that determine the second line.
 
     Returns
     -------
@@ -545,7 +544,7 @@ def line_intersection(
     x, y, z = np.cross(line1, line2)
 
     if z == 0:
-        raise ValueError("No intersections found. The lines are parallel.")
+        raise ValueError("The lines are parallel, there is no unique intersection point.")
 
     return np.array([x / z, y / z, 0])
 
