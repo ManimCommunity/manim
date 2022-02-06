@@ -532,7 +532,7 @@ class ScaleInPlace(ApplyMethod):
 
 
 class ShrinkToCenter(ScaleInPlace):
-    """Animation that makes a mobject shrink to center.
+    """Animation that makes an mobject shrink to center.
 
     Examples
     --------
