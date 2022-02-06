@@ -98,7 +98,7 @@ def tuplify(obj):
 
 def batch_by_property(items, property_func):
     """Group all items in the list with their properties into tuples (batch, property)
-    
+
     Takes in a list, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
     put into property_func, and such that chaining all these
