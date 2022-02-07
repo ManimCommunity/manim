@@ -19,21 +19,6 @@ if typing.TYPE_CHECKING:
 
 
 class Rotating(Animation):
-    """A mobject revolves about a certain point.
-
-    Examples
-    --------
-    .. manim:: UsingRotating
-
-        class UsingRotating(Scene):
-            def construct(self):
-                self.add(Dot(ORIGIN))
-                self.play(
-                    Rotating(Square(side_length=0.5).shift(UP * 2), about_point=ORIGIN),
-                    run_time=5,
-                )
-
-    """
 
     def __init__(
         self,
@@ -71,7 +56,15 @@ class Rotate(Transform):
 
         class UsingRotate(Scene):
             def construct(self):
-                self.play(Rotate(Square(), PI/2))
+                self.play(
+                    Rotate(
+                        Square(side_length=0.5).shift(UP * 2),
+                        angle=2 * PI,
+                        about_point=ORIGIN,
+                        rate_func=linear,
+                    ),
+                    Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear), 
+                    run_time=1)
 
     """
 
