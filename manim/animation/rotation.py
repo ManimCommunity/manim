@@ -62,7 +62,7 @@ class Rotate(Transform):
                         about_point=ORIGIN,
                         rate_func=linear,
                     ),
-                    Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear), 
+                    Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
                     run_time=1)
 
     """
