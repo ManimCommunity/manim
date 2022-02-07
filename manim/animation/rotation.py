@@ -19,7 +19,6 @@ if typing.TYPE_CHECKING:
 
 
 class Rotating(Animation):
-
     def __init__(
         self,
         mobject: Mobject,
