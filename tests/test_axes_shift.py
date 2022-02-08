@@ -20,10 +20,10 @@ def test_axes_origin_shift_logbase():
         y_axis_config={"scaling": LogBase()},
     )
     assert np.allclose(
-        ax.coords_to_point(10 ** 5, 10 ** 3), ax.x_axis.number_to_point(10 ** 5)
+        ax.coords_to_point(10**5, 10**3), ax.x_axis.number_to_point(10**5)
     )
     assert np.allclose(
-        ax.coords_to_point(10 ** 5, 10 ** 3), ax.y_axis.number_to_point(10 ** 3)
+        ax.coords_to_point(10**5, 10**3), ax.y_axis.number_to_point(10**3)
     )
 
 
@@ -44,14 +44,14 @@ def test_3daxes_origin_shift_logbase():
         z_axis_config={"scaling": LogBase()},
     )
     assert np.allclose(
-        ax.coords_to_point(10 ** 3, 10 ** 6, 10 ** 2),
-        ax.x_axis.number_to_point(10 ** 3),
+        ax.coords_to_point(10**3, 10**6, 10**2),
+        ax.x_axis.number_to_point(10**3),
     )
     assert np.allclose(
-        ax.coords_to_point(10 ** 3, 10 ** 6, 10 ** 2),
-        ax.y_axis.number_to_point(10 ** 6),
+        ax.coords_to_point(10**3, 10**6, 10**2),
+        ax.y_axis.number_to_point(10**6),
     )
     assert np.allclose(
-        ax.coords_to_point(10 ** 3, 10 ** 6, 10 ** 2),
-        ax.z_axis.number_to_point(10 ** 2),
+        ax.coords_to_point(10**3, 10**6, 10**2),
+        ax.z_axis.number_to_point(10**2),
     )

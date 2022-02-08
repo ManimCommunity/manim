@@ -1575,7 +1575,7 @@ class OpenGLMobject:
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas ** wag_factor
+            alphas = alphas**wag_factor
             mob.set_points(
                 mob.points
                 + np.dot(

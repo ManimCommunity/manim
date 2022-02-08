@@ -138,7 +138,7 @@ class LogBase(_ScaleBase):
 
     def function(self, value: float) -> float:
         """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
-        return self.base ** value
+        return self.base**value
 
     def inverse_function(self, value: float) -> float:
         """Inverse of ``function``. The value must be greater than 0"""
