@@ -1,0 +1,51 @@
+import numpy as np
+from PIL import Image
+
+from ...utils.images import change_to_rgba_array, get_full_raster_image_path
+from ..opengl_three_dimensions import OpenGLSurface, OpenGLTexturedSurface
+
+
+class OpenGLImageMobject(OpenGLTexturedSurface):
+    def __init__(
+        self,
+        filename_or_array,
+        width=None,
+        height=None,
+        opacity=1,
+        gloss=0,
+        shadow=0,
+        **kwargs,
+    ):
+        if type(filename_or_array) == str:
+            path = get_full_raster_image_path(filename_or_array)
+            self.image = Image.open(path)
+            self.size = self.image.size
+        else:
+            self.image = filename_or_array
+            self.size = self.image.shape[1::-1]
+
+        if width is None and height is None:
+            width = self.size[0] / self.size[1]
+            height = 1
+        if height is None:
+            height = width * self.size[1] / self.size[0]
+        if width is None:
+            width = height * self.size[0] / self.size[1]
+
+        surface = OpenGLSurface(
+            lambda u, v: np.array([u, v, 0]),
+            [-width / 2, width / 2],
+            [-height / 2, height / 2],
+            opacity=opacity,
+            gloss=gloss,
+            shadow=shadow,
+        )
+
+        super().__init__(
+            surface,
+            filename_or_array,
+            opacity=opacity,
+            gloss=gloss,
+            shadow=shadow,
+            **kwargs,
+        )

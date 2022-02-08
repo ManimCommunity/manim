@@ -8,7 +8,7 @@ from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate, interpolate
 from ...utils.color import *
 from ...utils.config_ops import _Data, _Uniforms
-from ...utils.images import get_full_raster_image_path
+from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 from ...utils.iterables import listify
 from ...utils.space_ops import normalize_along_axis
 
@@ -330,11 +330,16 @@ class OpenGLTexturedSurface(OpenGLSurface):
 
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
+        if type(image_file) == np.ndarray:
+            image_file = change_to_rgba_array(image_file)
+
         # Set texture information
         if dark_image_file is None:
             dark_image_file = image_file
             self.num_textures = 1
         else:
+            if type(dark_image_file) == np.ndarray:
+                dark_image_file = change_to_rgba_array(dark_image_file)
             self.num_textures = 2
         texture_paths = {
             "LightTexture": get_full_raster_image_path(image_file),

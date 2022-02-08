@@ -380,18 +380,27 @@ class OpenGLRenderer:
             mesh.render()
 
     def get_texture_id(self, path):
-        if path not in self.path_to_texture_id:
-            # A way to increase tid's sequentially
-            tid = len(self.path_to_texture_id)
-            im = Image.open(path)
-            texture = self.context.texture(
-                size=im.size,
-                components=len(im.getbands()),
-                data=im.tobytes(),
-            )
-            texture.use(location=tid)
-            self.path_to_texture_id[path] = tid
-        return self.path_to_texture_id[path]
+        if str(path) not in self.path_to_texture_id:
+            if type(path) == str:
+                # A way to increase tid's sequentially
+                tid = len(self.path_to_texture_id)
+                im = Image.open(path)
+                texture = self.context.texture(
+                    size=im.size,
+                    components=len(im.getbands()),
+                    data=im.tobytes(),
+                )
+                texture.use(location=tid)
+            elif type(path) == np.ndarray:
+                tid = len(self.path_to_texture_id)
+                texture = self.context.texture(
+                    size=path.shape[1::-1],
+                    components=path.shape[2],
+                    data=path,
+                )
+                texture.use(location=tid)
+            self.path_to_texture_id[str(path)] = tid
+        return self.path_to_texture_id[str(path)]
 
     def update_skipping_status(self):
         """
