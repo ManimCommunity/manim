@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from PIL import Image
 
@@ -8,12 +10,12 @@ from ..opengl_three_dimensions import OpenGLSurface, OpenGLTexturedSurface
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
         self,
-        filename_or_array,
-        width=None,
-        height=None,
-        opacity=1,
-        gloss=0,
-        shadow=0,
+        filename_or_array: Union[str, np.ndarray],
+        width: float = None,
+        height: float = None,
+        opacity: float = 1,
+        gloss: float = 0,
+        shadow: float = 0,
         **kwargs,
     ):
         if type(filename_or_array) == str:
