@@ -607,7 +607,10 @@ class Text(SVGMobject):
         return hasher.hexdigest()[:16]
 
     def _merge_settings(
-        self, left_setting: TextSetting, right_setting: TextSetting, args: Sequence[str]
+        self,
+        left_setting: TextSetting,
+        right_setting: TextSetting,
+        default_args: dict[str, Iterable[str]],
     ) -> TextSetting:
         contained = right_setting.end < left_setting.end
         new_setting = copy.copy(left_setting) if contained else copy.copy(right_setting)
@@ -617,10 +620,10 @@ class Text(SVGMobject):
         if not contained:
             right_setting.end = new_setting.start
 
-        for arg in args:
+        for arg in default_args:
             left = getattr(left_setting, arg)
             right = getattr(right_setting, arg)
-            default = getattr(self, arg)
+            default = default_args[arg]
             if left != default and getattr(right_setting, arg) != default:
                 raise ValueError(
                     f"Ambiguous style for text '{self.text[right_setting.start:right_setting.end]}':"
@@ -630,13 +633,15 @@ class Text(SVGMobject):
         return new_setting
 
     def _get_settings_from_t2xs(
-        self, t2xs: Sequence[tuple[dict[str, str], str]]
+        self,
+        t2xs: Sequence[tuple[dict[str, str], str]],
+        default_args: dict[str, Iterable[str]],
     ) -> Sequence[TextSetting]:
         settings = []
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
-                arg: t2x[word] if word in t2x else getattr(self, arg)
+                arg: t2x[word] if word in t2x else default_args[arg]
                 for t2x, arg in t2xs
             }
 
@@ -645,10 +650,10 @@ class Text(SVGMobject):
         return settings
 
     def _get_settings_from_gradient(
-        self, setting_args: dict[str, Iterable[str]]
+        self, default_args: dict[str, Iterable[str]]
     ) -> Sequence[TextSetting]:
         settings = []
-        args = copy.copy(setting_args)
+        args = copy.copy(default_args)
         if self.gradient:
             colors = color_gradient(self.gradient, len(self.text))
             for i in range(len(self.text)):
@@ -678,12 +683,12 @@ class Text(SVGMobject):
             (self.t2w, "weight"),
             (self.t2c, "color"),
         ]
-        setting_args = {
+        default_args = {
             arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
         }
 
-        settings = self._get_settings_from_t2xs(t2xs)
-        settings.extend(self._get_settings_from_gradient(setting_args))
+        settings = self._get_settings_from_t2xs(t2xs, default_args)
+        settings.extend(self._get_settings_from_gradient(default_args))
 
         # Handle overlaps
 
@@ -694,7 +699,7 @@ class Text(SVGMobject):
 
             next_setting = settings[index + 1]
             if setting.end > next_setting.start:
-                new_setting = self._merge_settings(setting, next_setting, setting_args)
+                new_setting = self._merge_settings(setting, next_setting, default_args)
                 new_index = index + 1
                 while (
                     new_index < len(settings)
@@ -708,10 +713,10 @@ class Text(SVGMobject):
         start = 0
         for setting in settings:
             if setting.start != start:
-                temp_settings.append(TextSetting(start, setting.start, **setting_args))
+                temp_settings.append(TextSetting(start, setting.start, **default_args))
             start = setting.end
         if start != len(self.text):
-            temp_settings.append(TextSetting(start, len(self.text), **setting_args))
+            temp_settings.append(TextSetting(start, len(self.text), **default_args))
         settings = sorted(temp_settings, key=lambda setting: setting.start)
 
         if re.search(r"\n", self.text):
