@@ -3,7 +3,7 @@ from typing import Union
 import numpy as np
 from PIL import Image
 
-from ...utils.images import change_to_rgba_array, get_full_raster_image_path
+from ...utils.images import get_full_raster_image_path
 from ..opengl_three_dimensions import OpenGLSurface, OpenGLTexturedSurface
 
 
