@@ -28,7 +28,7 @@ class Homotopy(Animation):
         mobject: Mobject,
         run_time: float = 3,
         apply_function_kwargs: dict[str, Any] | None = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """
         Homotopy is a function from
@@ -94,7 +94,7 @@ class PhaseFlow(Animation):
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
         rate_func: Callable[[float], float] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
@@ -102,7 +102,7 @@ class PhaseFlow(Animation):
             mobject,
             suspend_mobject_updating=suspend_mobject_updating,
             rate_func=rate_func,
-            **kwargs
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -135,7 +135,7 @@ class MoveAlongPath(Animation):
         mobject: Mobject,
         path: VMobject,
         suspend_mobject_updating: bool | None = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.path = path
         super().__init__(
