@@ -1,4 +1,4 @@
-from typing import Union
+from __future__ import annotations
 
 import numpy as np
 from PIL import Image
@@ -10,7 +10,7 @@ from ..types.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
         self,
-        filename_or_array: Union[str, np.ndarray],
+        filename_or_array: str | np.ndarray,
         width: float = None,
         height: float = None,
         opacity: float = 1,
