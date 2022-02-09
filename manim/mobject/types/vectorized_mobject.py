@@ -1510,8 +1510,12 @@ class VMobject(Mobject):
 
         # If the nth term of this list is k, it means
         # that the nth curve of our path should be split
-        # into k pieces.  In the above example, this would
-        # be [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
         split_factors = np.zeros(curr_num, dtype="i")
         for val in repeat_indices:
             split_factors[val] += 1
