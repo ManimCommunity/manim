@@ -10,13 +10,13 @@ from tests.helpers.path_utils import get_svg_resource
 def test_set_fill_color():
     expected_color = "#FF862F"
     svg = SVGMobject(get_svg_resource("heart.svg"), fill_color=expected_color)
-    assert svg.fill_color == expected_color
+    assert svg.fill_color == Color(expected_color)
 
 
 def test_set_stroke_color():
     expected_color = "#FFFDDD"
     svg = SVGMobject(get_svg_resource("heart.svg"), stroke_color=expected_color)
-    assert svg.stroke_color == expected_color
+    assert svg.stroke_color == Color(expected_color)
 
 
 def test_set_color_sets_fill_and_stroke():
@@ -46,7 +46,7 @@ def test_fill_overrides_color():
         color="#123123",
         fill_color=expected_color,
     )
-    assert svg.fill_color == expected_color
+    assert svg.fill_color == Color(expected_color)
 
 
 def test_stroke_overrides_color():
@@ -56,7 +56,7 @@ def test_stroke_overrides_color():
         color="#334433",
         stroke_color=expected_color,
     )
-    assert svg.stroke_color == expected_color
+    assert svg.stroke_color == Color(expected_color)
 
 
 def test_string_to_numbers():

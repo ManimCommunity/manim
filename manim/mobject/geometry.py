@@ -70,14 +70,14 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Iterable, Optional, Sequence, Union
+from typing import Iterable, Sequence
 
 import numpy as np
 from colour import Color
 
 from manim.mobject.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
+from .. import config
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
@@ -449,7 +449,7 @@ class ArcBetweenPoints(Arc):
                     """ArcBetweenPoints called with a radius that is
                             smaller than half the distance between the points.""",
                 )
-            arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
+            arc_height = radius - math.sqrt(radius**2 - halfdist**2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
         super().__init__(radius=radius, angle=angle, **kwargs)
@@ -566,7 +566,7 @@ class Circle(Arc):
         # TODO: Figure out and fix
         self.replace(mobject, dim_to_match, stretch)
 
-        self.width = np.sqrt(mobject.width ** 2 + mobject.height ** 2)
+        self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
@@ -2511,7 +2511,7 @@ class Square(Rectangle):
     side_length : :class:`float`, optional
         The length of the sides of the square.
     kwargs : Any
-        Additional arguments to be passed to :class:`Square`
+        Additional arguments to be passed to :class:`Rectangle`.
 
     Examples
     --------
@@ -2558,8 +2558,8 @@ class RoundedRectangle(Rectangle):
     """
 
     def __init__(self, corner_radius=0.5, **kwargs):
-        self.corner_radius = corner_radius
         super().__init__(**kwargs)
+        self.corner_radius = corner_radius
         self.round_corners(self.corner_radius)
 
 

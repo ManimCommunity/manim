@@ -40,7 +40,7 @@ def test_line_graph(scene):
 @frames_comparison
 def test_implicit_graph(scene):
     ax = Axes()
-    graph = ax.plot_implicit_curve(lambda x, y: x ** 2 + y ** 2 - 4)
+    graph = ax.plot_implicit_curve(lambda x, y: x**2 + y**2 - 4)
     scene.add(ax, graph)
 
 

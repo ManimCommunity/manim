@@ -3,7 +3,7 @@ from math import cos, sin
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
+from manim import Circle, Line, Mobject, RegularPolygon, Square, VDict, VGroup, VMobject
 from manim.constants import PI
 
 
@@ -265,3 +265,27 @@ def test_bounded_become():
 
     # The number of points should be similar to the size of a and b
     assert len(o.points) <= (20 + 15 + 15) * 4
+
+
+def test_vmobject_same_points_become():
+    a = Square()
+    b = Circle()
+    a.become(b)
+    assert np.array_equal(a.points, b.points)
+    assert len(a.submobjects) == len(b.submobjects)
+
+
+def test_vmobject_same_num_submobjects_become():
+    a = Square()
+    b = RegularPolygon(n=6)
+    a.become(b)
+    assert np.array_equal(a.points, b.points)
+    assert len(a.submobjects) == len(b.submobjects)
+
+
+def test_vmobject_different_num_points_and_submobjects_become():
+    a = Square()
+    b = VGroup(Circle(), Square())
+    a.become(b)
+    assert np.array_equal(a.points, b.points)
+    assert len(a.submobjects) == len(b.submobjects)
