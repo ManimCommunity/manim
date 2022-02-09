@@ -69,7 +69,7 @@ class VectorField(VGroup):
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.func = func
@@ -529,7 +529,7 @@ class ArrowVectorField(VectorField):
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
         vector_config: dict | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.x_range = x_range or [
             floor(-config["frame_width"] / 2),
@@ -707,7 +707,7 @@ class StreamLines(VectorField):
         # Determining stream line appearance:
         stroke_width=1,
         opacity=1,
-        **kwargs
+        **kwargs,
     ):
         self.x_range = x_range or [
             floor(-config["frame_width"] / 2),
@@ -831,7 +831,7 @@ class StreamLines(VectorField):
         self,
         lag_ratio: float | None = None,
         run_time: Callable[[float], float] | None = None,
-        **kwargs
+        **kwargs,
     ) -> AnimationGroup:
         """The creation animation of the stream lines.
 
@@ -890,7 +890,7 @@ class StreamLines(VectorField):
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Animates the stream lines using an updater.
 
