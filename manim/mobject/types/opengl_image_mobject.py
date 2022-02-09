@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 from ...utils.images import get_full_raster_image_path
-from ..opengl_three_dimensions import OpenGLSurface, OpenGLTexturedSurface
+from ..types.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
