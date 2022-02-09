@@ -1,5 +1,6 @@
 from manim import Circle, Square, ThreeDScene
 
+
 def test_fixed_mobjects():
     scene = ThreeDScene()
     s = Square()
