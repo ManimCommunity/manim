@@ -396,7 +396,7 @@ class OpenGLRenderer:
                 texture = self.context.texture(
                     size=path.shape[1::-1],
                     components=path.shape[2],
-                    data=path,
+                    data=path.astype("uint8"),
                 )
                 texture.use(location=tid)
             self.path_to_texture_id[str(path)] = tid
