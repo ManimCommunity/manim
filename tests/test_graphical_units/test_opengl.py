@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from manim import *
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.utils.testing.frames_comparison import frames_comparison

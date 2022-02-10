@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..constants import *
 from ..mobject.types.opengl_surface import OpenGLSurface
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
@@ -16,7 +15,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
         normal_nudge=1e-2,
         depth_test=True,
         flat_stroke=False,
-        **kwargs
+        **kwargs,
     ):
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
@@ -27,7 +26,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             stroke_width=stroke_width,
             depth_test=depth_test,
             flat_stroke=flat_stroke,
-            **kwargs
+            **kwargs,
         )
 
     def init_points(self):

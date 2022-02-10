@@ -13,7 +13,6 @@ from manim import (
 )
 
 # not exported by default, so directly import
-from manim.mobject.boolean_ops import _BooleanOps
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "boolean_ops"

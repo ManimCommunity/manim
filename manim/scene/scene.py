@@ -13,7 +13,7 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable, List, Optional
+from typing import Callable
 
 import srt
 

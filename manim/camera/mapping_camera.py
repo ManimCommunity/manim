@@ -26,7 +26,7 @@ class MappingCamera(Camera):
         mapping_func=lambda p: p,
         min_num_curves=50,
         allow_object_intrusion=False,
-        **kwargs
+        **kwargs,
     ):
         self.mapping_func = mapping_func
         self.min_num_curves = min_num_curves

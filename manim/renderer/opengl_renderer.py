@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import itertools as it
+import sys
 import time
 from typing import Any
+
+if sys.version_info < (3, 8):
+    from backports.cached_property import cached_property
+else:
+    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -105,11 +111,13 @@ class OpenGLCamera(OpenGLMobject):
         self.model_matrix[:, 3][:3] = position
         return self
 
-    def get_view_matrix(self, format=True):
-        if format:
-            return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
-        else:
-            return np.linalg.inv(self.model_matrix)
+    @cached_property
+    def formatted_view_matrix(self):
+        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+
+    @cached_property
+    def unformatted_view_matrix(self):
+        return np.linalg.inv(self.model_matrix)
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -344,7 +352,9 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
+                shader.set_uniform(
+                    "u_view_matrix", self.scene.camera.formatted_view_matrix
+                )
                 shader.set_uniform(
                     "u_projection_matrix",
                     self.scene.camera.projection_matrix,

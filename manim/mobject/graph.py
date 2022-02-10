@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 from copy import copy
-from typing import Hashable, Iterable, List, Optional, Tuple, Type, Union
+from typing import Hashable, Iterable
 
 import networkx as nx
 import numpy as np
