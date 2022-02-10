@@ -432,8 +432,9 @@ class OpenGLRenderer:
                     self.file_writer.write_frame(self)
 
             if self.window is not None:
+                self.window.swap_buffers()
                 while time.time() - self.animation_start_time < scene.duration:
-                    self.window.swap_buffers()
+                    pass
             self.animation_elapsed_time = scene.duration
 
         else:
