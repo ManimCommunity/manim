@@ -422,8 +422,21 @@ class OpenGLRenderer:
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
 
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            self.update_frame(scene)
+
+            if not self.skip_animations:
+                for _ in range(int(config.frame_rate * scene.duration)):
+                    self.file_writer.write_frame(self)
+
+            if self.window is not None:
+                while time.time() - self.animation_start_time < scene.duration:
+                    self.window.swap_buffers()
+            self.animation_elapsed_time = scene.duration
+
+        else:
             scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
