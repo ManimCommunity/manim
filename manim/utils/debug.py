@@ -27,7 +27,7 @@ def index_labels(
     label_height: float = 0.15,
     background_stroke_width=5,
     background_stroke_color=BLACK,
-    **kwargs
+    **kwargs,
 ):
     r"""Returns a :class:`~.VGroup` of :class:`~.Integer` mobjects
     that shows the index of each submobject.
