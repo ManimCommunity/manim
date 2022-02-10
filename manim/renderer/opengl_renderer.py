@@ -410,7 +410,6 @@ class OpenGLRenderer:
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
-        print(self.skip_animations)
         self.file_writer.begin_animation(not self.skip_animations)
 
         scene.compile_animation_data(*args, **kwargs)
