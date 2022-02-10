@@ -8,8 +8,10 @@ from manim import *
 from manim import config
 
 from ..simple_scenes import (
+    SceneForFrozenFrameTests,
     SceneWithMultipleCalls,
     SceneWithNonStaticWait,
+    SceneWithSceneUpdater,
     SceneWithStaticWait,
     SquareToCircle,
 )
@@ -50,7 +52,6 @@ def test_t_values_with_skip_animations(using_temp_opengl_config, disabling_cachi
     )
 
 
-@pytest.mark.xfail(reason="Not currently implemented for opengl")
 def test_static_wait_detection(using_temp_opengl_config, disabling_caching):
     """Test if a static wait (wait that freeze the frame) is correctly detected"""
     scene = SceneWithStaticWait()
@@ -65,6 +66,17 @@ def test_non_static_wait_detection(using_temp_opengl_config, disabling_caching):
     scene.render()
     assert not scene.animations[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame()
+    scene = SceneWithSceneUpdater()
+    scene.render()
+    assert not scene.animations[0].is_static_wait
+    assert not scene.is_current_animation_frozen_frame()
+
+
+def test_frozen_frame(using_temp_opengl_config, disabling_caching):
+    scene = SceneForFrozenFrameTests()
+    scene.render()
+    assert scene.mobject_update_count == 0
+    assert scene.scene_update_count == 0
 
 
 @pytest.mark.xfail(reason="Should be fixed in #2133")
