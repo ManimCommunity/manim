@@ -42,7 +42,7 @@ class OpenGLSurface(OpenGLMobject):
         render_primitive=moderngl.TRIANGLES,
         depth_test=True,
         shader_folder=None,
-        **kwargs
+        **kwargs,
     ):
         self.passed_uv_func = uv_func
         self.u_range = u_range if u_range is not None else (0, 1)
@@ -64,7 +64,7 @@ class OpenGLSurface(OpenGLMobject):
             shader_folder=shader_folder if shader_folder is not None else "surface",
             render_primitive=render_primitive,
             depth_test=depth_test,
-            **kwargs
+            **kwargs,
         )
         self.compute_triangle_indices()
 

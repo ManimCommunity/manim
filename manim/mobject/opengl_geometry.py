@@ -55,7 +55,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
         tip_config={},
-        **kwargs
+        **kwargs,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
@@ -203,7 +203,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         radius=1.0,
         n_components=8,
         arc_center=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         self.start_angle = start_angle
         self.angle = angle
@@ -319,7 +319,7 @@ class OpenGLDot(OpenGLCircle):
         stroke_width=0,
         fill_opacity=1.0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             arc_center=point,
@@ -327,7 +327,7 @@ class OpenGLDot(OpenGLCircle):
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -348,7 +348,7 @@ class OpenGLAnnularSector(OpenGLArc):
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -358,7 +358,7 @@ class OpenGLAnnularSector(OpenGLArc):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
     def init_points(self):
@@ -392,7 +392,7 @@ class OpenGLAnnulus(OpenGLCircle):
         stroke_width=0,
         color=WHITE,
         mark_paths_closed=False,
-        **kwargs
+        **kwargs,
     ):
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
@@ -594,7 +594,7 @@ class OpenGLArrow(OpenGLLine):
         tip_angle=PI / 3,
         max_tip_length_to_length_ratio=0.5,
         max_width_to_length_ratio=0.1,
-        **kwargs
+        **kwargs,
     ):
         self.thickness = thickness
         self.tip_width_ratio = tip_width_ratio
@@ -609,7 +609,7 @@ class OpenGLArrow(OpenGLLine):
             fill_color=fill_color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
-            **kwargs
+            **kwargs,
         )
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
@@ -637,8 +637,8 @@ class OpenGLArrow(OpenGLLine):
             # Solve for radius so that the tip-to-tail length matches |end - start|
             a = 2 * (1 - np.cos(path_arc))
             b = -2 * tip_length * np.sin(path_arc)
-            c = tip_length ** 2 - length ** 2
-            R = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
+            c = tip_length**2 - length**2
+            R = (-b + np.sqrt(b**2 - 4 * a * c)) / (2 * a)
 
             # Find arc points
             points1 = OpenGLArc.create_quadratic_bezier_points(path_arc)
@@ -806,14 +806,14 @@ class OpenGLArrowTip(OpenGLTriangle):
         width=DEFAULT_ARROW_TIP_WIDTH,
         length=DEFAULT_ARROW_TIP_LENGTH,
         angle=0,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             start_angle=0,
             fill_opacity=fill_opacity,
             fill_color=fill_color,
             stroke_width=stroke_width,
-            **kwargs
+            **kwargs,
         )
         self.set_width(width, stretch=True)
         self.set_height(length, stretch=True)

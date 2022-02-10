@@ -142,15 +142,16 @@ class SceneFileWriter:
                 )
 
             if is_gif_format():
-                self.gif_file_path = os.path.join(
-                    movie_dir,
-                    add_version_before_extension(
-                        add_extension_if_not_present(
-                            self.output_name,
-                            GIF_FILE_EXTENSION,
-                        ),
-                    ),
+                self.gif_file_path = add_extension_if_not_present(
+                    self.output_name, GIF_FILE_EXTENSION
                 )
+
+                if not config["output_file"]:
+                    self.gif_file_path = add_version_before_extension(
+                        self.gif_file_path
+                    )
+
+                self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
 
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
@@ -610,7 +611,7 @@ class SceneFileWriter:
 
         # determine output path
         movie_file_path = self.movie_file_path
-        if is_gif_format() and not config["output_file"]:
+        if is_gif_format():
             movie_file_path = self.gif_file_path
         logger.info("Combining to Movie file.")
         self.combine_files(

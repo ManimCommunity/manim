@@ -271,6 +271,98 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_custom_output_name_gif(tmp_path, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    custom_name = "custom_name"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format=gif",
+        "-o",
+        custom_name,
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    wrong_gif_path = (
+        tmp_path
+        / "videos"
+        / "simple_scenes"
+        / "480p15"
+        / add_version_before_extension(scene_name + ".gif")
+    )
+
+    assert not wrong_gif_path.exists(), (
+        "The gif file does not respect the custom name: " + custom_name + ".gif"
+    )
+
+    unexpected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(custom_name + ".mp4")
+    )
+
+    assert not unexpected_mp4_path.exists(), "Found an unexpected mp4 file at " + str(
+        unexpected_mp4_path
+    )
+
+    expected_gif_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(custom_name + ".gif")
+    )
+
+    assert expected_gif_path.exists(), "gif file not found at " + str(expected_gif_path)
+
+
+@pytest.mark.slow
+def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
+    scene_name = "SquareToCircle"
+    custom_name = "custom_name"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "-o",
+        custom_name,
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    wrong_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(scene_name + ".mp4")
+    )
+
+    assert not wrong_mp4_path.exists(), (
+        "The mp4 file does not respect the custom name: " + custom_name + ".mp4"
+    )
+
+    unexpected_gif_path = (
+        tmp_path
+        / "videos"
+        / "simple_scenes"
+        / "480p15"
+        / add_version_before_extension(custom_name + ".gif")
+    )
+    assert not unexpected_gif_path.exists(), "Found an unexpected gif file at " + str(
+        unexpected_gif_path
+    )
+
+    expected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(custom_name + ".mp4")
+    )
+
+    assert expected_mp4_path.exists(), "mp4 file not found at " + str(expected_mp4_path)
+
+
+@pytest.mark.slow
 def test_dash_as_filename(tmp_path):
     code = (
         "class Test(Scene):\n"

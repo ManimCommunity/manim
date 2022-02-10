@@ -1322,7 +1322,7 @@ class OpenGLMobject:
     def get_family_updaters(self):
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
-    def add_updater(self, update_function, index=None, call_updater=True):
+    def add_updater(self, update_function, index=None, call_updater=False):
         if "dt" in get_parameters(update_function):
             updater_list = self.time_based_updaters
         else:
@@ -1580,7 +1580,7 @@ class OpenGLMobject:
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas ** wag_factor
+            alphas = alphas**wag_factor
             mob.set_points(
                 mob.points
                 + np.dot(

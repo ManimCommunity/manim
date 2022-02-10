@@ -103,7 +103,7 @@ class Polyhedron(VGroup):
                     "stroke_opacity": 0,  # I find that having the edges visible makes the polyhedra look weird
                 },
             },
-            **graph_config
+            **graph_config,
         )
         self.vertex_coords = vertex_coords
         self.vertex_indices = list(range(len(self.vertex_coords)))
@@ -182,7 +182,7 @@ class Tetrahedron(Polyhedron):
                 np.array([-unit, -unit, unit]),
             ],
             faces_list=[[0, 1, 2], [3, 0, 2], [0, 1, 3], [3, 1, 2]],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -228,7 +228,7 @@ class Octahedron(Polyhedron):
                 [2, 5, 1],
                 [0, 5, 2],
             ],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -293,7 +293,7 @@ class Icosahedron(Polyhedron):
                 [10, 11, 7],
                 [10, 11, 6],
             ],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -359,5 +359,5 @@ class Dodecahedron(Polyhedron):
                 [19, 5, 9, 10, 7],
                 [7, 10, 3, 14, 15],
             ],
-            **kwargs
+            **kwargs,
         )
