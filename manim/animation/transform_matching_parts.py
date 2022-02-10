@@ -72,7 +72,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs
+        **kwargs,
     ):
 
         if isinstance(mobject, OpenGLVMobject):
@@ -203,7 +203,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             mobject,
@@ -211,7 +211,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
             transform_mismatches=transform_mismatches,
             fade_transform_mismatches=fade_transform_mismatches,
             key_map=key_map,
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -260,7 +260,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs
+        **kwargs,
     ):
         assert hasattr(mobject, "tex_string")
         assert hasattr(target_mobject, "tex_string")
@@ -270,7 +270,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
             transform_mismatches=transform_mismatches,
             fade_transform_mismatches=fade_transform_mismatches,
             key_map=key_map,
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod

@@ -449,7 +449,7 @@ class ArcBetweenPoints(Arc):
                     """ArcBetweenPoints called with a radius that is
                             smaller than half the distance between the points.""",
                 )
-            arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
+            arc_height = radius - math.sqrt(radius**2 - halfdist**2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
         super().__init__(radius=radius, angle=angle, **kwargs)
@@ -566,7 +566,7 @@ class Circle(Arc):
         # TODO: Figure out and fix
         self.replace(mobject, dim_to_match, stretch)
 
-        self.width = np.sqrt(mobject.width ** 2 + mobject.height ** 2)
+        self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
