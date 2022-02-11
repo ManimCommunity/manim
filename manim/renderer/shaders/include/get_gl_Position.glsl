@@ -3,7 +3,7 @@
 // uniform float focal_distance;
 // uniform float is_fixed_in_frame;
 // uniform float is_fixed_orientation;
-// uniform vec3 mob_center;
+// uniform vec3 fixed_orientation_center;
 
 const vec2 DEFAULT_FRAME_SHAPE = vec2(8.0 * 16.0 / 9.0, 8.0);
 

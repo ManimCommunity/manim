@@ -67,7 +67,7 @@ class OpenGLMobject:
 
     is_fixed_in_frame = _Uniforms()
     is_fixed_orientation = _Uniforms()
-    mob_center = _Uniforms()  # for fixed orientation reference
+    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
     gloss = _Uniforms()
     shadow = _Uniforms()
 
@@ -113,7 +113,7 @@ class OpenGLMobject:
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
         self.is_fixed_orientation = float(is_fixed_orientation)
-        self.mob_center = (0, 0, 0)
+        self.fixed_orientation_center = (0, 0, 0)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -2354,17 +2354,17 @@ class OpenGLMobject:
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
-            if key != "mob_center":
+            if key != "fixed_orientation_center":
                 self.uniforms[key] = interpolate(
                     mobject1.uniforms[key],
                     mobject2.uniforms[key],
                     alpha,
                 )
             else:
-                self.uniforms["mob_center"] = tuple(
+                self.uniforms["fixed_orientation_center"] = tuple(
                     interpolate(
-                        np.array(mobject1.uniforms["mob_center"]),
-                        np.array(mobject2.uniforms["mob_center"]),
+                        np.array(mobject1.uniforms["fixed_orientation_center"]),
+                        np.array(mobject2.uniforms["fixed_orientation_center"]),
                         alpha,
                     )
                 )
@@ -2502,7 +2502,7 @@ class OpenGLMobject:
     @affects_shader_info_id
     def fix_orientation(self):
         self.is_fixed_orientation = 1.0
-        self.mob_center = tuple(self.get_center())
+        self.fixed_orientation_center = tuple(self.get_center())
         self.depth_test = True
         return self
 
@@ -2514,7 +2514,7 @@ class OpenGLMobject:
     @affects_shader_info_id
     def unfix_orientation(self):
         self.is_fixed_orientation = 0.0
-        self.mob_center = (0, 0, 0)
+        self.fixed_orientation_center = (0, 0, 0)
         self.depth_test = False
         return self
 

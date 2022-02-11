@@ -10,7 +10,7 @@ uniform vec2 frame_shape;
 uniform float focal_distance;
 uniform float is_fixed_in_frame;
 uniform float is_fixed_orientation;
-uniform vec3 mob_center;
+uniform vec3 fixed_orientation_center;
 // Needed for finalize_color
 uniform vec3 light_source_position;
 uniform float gloss;
