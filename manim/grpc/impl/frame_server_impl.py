@@ -391,10 +391,10 @@ def serialize_mobject(mobject):
             )
         mob_proto.image_mobject_data.height = mobject.height
         mob_proto.image_mobject_data.width = mobject.width
-        fixed_orientation_center = mobject.get_center()
-        mob_proto.image_mobject_data.center.x = fixed_orientation_center[0]
-        mob_proto.image_mobject_data.center.y = fixed_orientation_center[1]
-        mob_proto.image_mobject_data.center.z = fixed_orientation_center[2]
+        mob_center = mobject.get_center()
+        mob_proto.image_mobject_data.center.x = mob_center[0]
+        mob_proto.image_mobject_data.center.y = mob_center[1]
+        mob_proto.image_mobject_data.center.z = mob_center[2]
     return mob_proto
 
 
