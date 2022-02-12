@@ -40,10 +40,10 @@ def test_Cylinder(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_Line3D(scene):
-    line = Line3D()
-    perp_line = Line3D.perpendicular_to(line, UP)
-    parallel_line = Line3D.parallel_to(line, UP)
-    scene.add(line, perp_line, parallel_line)
+    line1, line2 = Line3D().shift(LEFT * 2), Line3D().shift(RIGHT * 2)
+    perp_line = Line3D.perpendicular_to(line1, UP + OUT)
+    parallel_line = Line3D.parallel_to(line2, DOWN + IN)
+    scene.add(line1, line2, perp_line, parallel_line)
 
 
 @frames_comparison(base_scene=ThreeDScene)
@@ -85,19 +85,6 @@ def test_AmbientCameraMove(scene):
     scene.wait()
 
 
-# TODO: bring test back after introducing testing tolerance
-#  to account for OS-specific differences in numerics.
-
-# class FixedInFrameMObjectTest(ThreeDScene):
-#     def construct(scene):
-#         axes = ThreeDAxes()
-#         scene.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-#         circ = Circle()
-#         scene.add_fixed_in_frame_mobjects(circ)
-#         circ.to_corner(UL)
-#         scene.add(axes)
-
-
 @frames_comparison(base_scene=ThreeDScene)
 def test_MovingVertices(scene):
     scene.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
@@ -123,7 +110,7 @@ def test_SurfaceColorscale(scene):
     def param_trig(u, v):
         x = u
         y = v
-        z = y ** 2 / 2 - x ** 2 / 2
+        z = y**2 / 2 - x**2 / 2
         return z
 
     trig_plane = Surface(

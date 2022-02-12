@@ -15,11 +15,8 @@ def test_zoom():
         scene.add(s1, s2)
         scene.play(scene.camera.auto_zoom([s1, s2]))
 
-    assert (
-        scene.camera.frame_width
-        == abs(
-            s1.get_left()[0] - s2.get_right()[0],
-        )
-        and scene.camera.frame.get_center()[0]
-        == (abs(s1.get_center()[0] + s2.get_center()[0]) / 2)
+    assert scene.camera.frame_width == abs(
+        s1.get_left()[0] - s2.get_right()[0],
+    ) and scene.camera.frame.get_center()[0] == (
+        abs(s1.get_center()[0] + s2.get_center()[0]) / 2
     )

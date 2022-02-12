@@ -569,7 +569,7 @@ class LinearTransformationScene(VectorScene):
         i_hat_color: Color = X_COLOR,
         j_hat_color: Color = Y_COLOR,
         leave_ghost_vectors: bool = False,
-        **kwargs
+        **kwargs,
     ):
 
         super().__init__(**kwargs)
