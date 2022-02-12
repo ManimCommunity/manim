@@ -9,13 +9,14 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+from __future__ import annotations
+
 import configparser
 import copy
 import json
 import logging
 import os
 import sys
-import typing
 from typing import TYPE_CHECKING
 
 from rich import color, errors
@@ -51,7 +52,7 @@ Loading the default color configuration.[/logging.level.error]
 def make_logger(
     parser: configparser.ConfigParser,
     verbosity: str,
-) -> typing.Tuple[logging.Logger, Console]:
+) -> tuple[logging.Logger, Console]:
     """Make the manim logger and console.
 
     Parameters
@@ -141,7 +142,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
     return custom_theme
 
 
-def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
+def set_file_logger(config: ManimConfig, verbosity: str) -> None:
     """Add a file handler to manim logger.
 
     The path to the file is built using ``config.log_dir``.

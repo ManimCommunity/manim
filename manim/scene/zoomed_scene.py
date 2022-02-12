@@ -45,6 +45,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = ["ZoomedScene"]
 
 
@@ -54,7 +56,6 @@ from ..camera.multi_camera import MultiCamera
 from ..constants import *
 from ..mobject.types.image_mobject import ImageMobjectFromCamera
 from ..scene.moving_camera_scene import MovingCameraScene
-from ..utils.simple_functions import fdiv
 
 # Note, any scenes from old videos using ZoomedScene will almost certainly
 # break, as it was restructured.
@@ -84,7 +85,7 @@ class ZoomedScene(MovingCameraScene):
         zoom_factor=0.15,
         image_frame_stroke_width=3,
         zoom_activated=False,
-        **kwargs
+        **kwargs,
     ):
         self.zoomed_display_height = zoomed_display_height
         self.zoomed_display_width = zoomed_display_width
@@ -205,4 +206,4 @@ class ZoomedScene(MovingCameraScene):
         float
             The zoom factor.
         """
-        return fdiv(self.zoomed_camera.frame.height, self.zoomed_display.height)
+        return self.zoomed_camera.frame.height / self.zoomed_display.height

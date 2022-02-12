@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.ArcPolygonFromArcs``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:1
@@ -42,10 +42,6 @@ msgstr ""
 msgid "There is an alternative version (:class:`ArcPolygon`) that can be instantiated with points."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:26
-msgid ":class:`ArcPolygon`"
-msgstr ""
-
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:0
 msgid "Parameters"
 msgstr ""
@@ -64,10 +60,6 @@ msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:0
 msgid "type"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:45
-msgid ":class:`list`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArcPolygonFromArcs:48
@@ -99,7 +91,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArcPolygonFromArcs.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArcPolygonFromArcs.rst:28:<autosummary>:1

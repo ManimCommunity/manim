@@ -1,12 +1,20 @@
+from __future__ import annotations
+
 import itertools as it
+import sys
 import time
+from typing import Any
+
+if sys.version_info < (3, 8):
+    from backports.cached_property import cached_property
+else:
+    from functools import cached_property
 
 import moderngl
 import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -103,11 +111,13 @@ class OpenGLCamera(OpenGLMobject):
         self.model_matrix[:, 3][:3] = position
         return self
 
-    def get_view_matrix(self, format=True):
-        if format:
-            return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
-        else:
-            return np.linalg.inv(self.model_matrix)
+    @cached_property
+    def formatted_view_matrix(self):
+        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+
+    @cached_property
+    def unformatted_view_matrix(self):
+        return np.linalg.inv(self.model_matrix)
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -225,6 +235,8 @@ class OpenGLRenderer:
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animation_start_time = 0
+        self.animation_elapsed_time = 0
+        self.time = 0
         self.animations_hashes = []
         self.num_plays = 0
 
@@ -238,7 +250,7 @@ class OpenGLRenderer:
 
     def init_scene(self, scene):
         self.partial_movie_files = []
-        self.file_writer = self._file_writer_class(
+        self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
         )
@@ -340,7 +352,9 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
+                shader.set_uniform(
+                    "u_view_matrix", self.scene.camera.formatted_view_matrix
+                )
                 shader.set_uniform(
                     "u_projection_matrix",
                     self.scene.camera.projection_matrix,
@@ -387,6 +401,9 @@ class OpenGLRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
+        # there is always at least one section -> no out of bounds here
+        if self.file_writer.sections[-1].skip_animations:
+            self.skip_animations = True
         if (
             config["from_animation_number"]
             and self.num_plays < config["from_animation_number"]
@@ -400,12 +417,32 @@ class OpenGLRenderer:
             raise EndSceneEarlyException()
 
     @handle_caching_play
-    @handle_play_like_call
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
+        self.animation_start_time = time.time()
+        self.file_writer.begin_animation(not self.skip_animations)
+
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            self.update_frame(scene)
+
+            if not self.skip_animations:
+                for _ in range(int(config.frame_rate * scene.duration)):
+                    self.file_writer.write_frame(self)
+
+            if self.window is not None:
+                self.window.swap_buffers()
+                while time.time() - self.animation_start_time < scene.duration:
+                    pass
+            self.animation_elapsed_time = scene.duration
+
+        else:
             scene.play_internal()
+
+        self.file_writer.end_animation(not self.skip_animations)
+        self.time += scene.duration
+        self.num_plays += 1
 
     def clear_screen(self):
         self.frame_buffer_object.clear(*self.background_color)

@@ -9,6 +9,8 @@ movie vs writing a single frame).
 See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
 
 """
+from __future__ import annotations
+
 import argparse
 import configparser
 import copy
@@ -30,7 +32,7 @@ from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
-def config_file_paths() -> typing.List[Path]:
+def config_file_paths() -> list[Path]:
     """The paths where ``.cfg`` files will be searched for.
 
     When manim is first imported, it processes any ``.cfg`` files it finds.  This
@@ -116,19 +118,12 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
     return parser
 
 
-def _determine_quality(args: argparse.Namespace) -> str:
-    for quality in constants.QUALITIES:
-        if quality == constants.DEFAULT_QUALITY:
-            # Skip so we prioritize anything that overwrites the default quality.
-            pass
-        elif getattr(args, quality, None) or (
-            hasattr(args, "quality")
-            and args.quality is not None
-            and args.quality == constants.QUALITIES[quality]["flag"]
-        ):
+def _determine_quality(qual: str) -> str:
+    for quality, values in constants.QUALITIES.items():
+        if values["flag"] is not None and values["flag"] == qual:
             return quality
 
-    return constants.DEFAULT_QUALITY
+    return qual
 
 
 class ManimConfig(MutableMapping):
@@ -273,6 +268,7 @@ class ManimConfig(MutableMapping):
         "plugins",
         "preview",
         "progress_bar",
+        "quality",
         "save_as_gif",
         "save_sections",
         "save_last_frame",
@@ -326,7 +322,7 @@ class ManimConfig(MutableMapping):
     def __setitem__(self, key: str, val: typing.Any) -> None:
         getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
 
-    def update(self, obj: typing.Union["ManimConfig", dict]) -> None:
+    def update(self, obj: ManimConfig | dict) -> None:
         """Digest the options found in another :class:`ManimConfig` or in a dict.
 
         Similar to :meth:`dict.update`, replaces the values of this object with
@@ -375,7 +371,7 @@ class ManimConfig(MutableMapping):
         raise AttributeError("'ManimConfig' object does not support item deletion")
 
     # copy functions
-    def copy(self) -> "ManimConfig":
+    def copy(self) -> ManimConfig:
         """Deepcopy the contents of this ManimConfig.
 
         Returns
@@ -394,11 +390,11 @@ class ManimConfig(MutableMapping):
         """
         return copy.deepcopy(self)
 
-    def __copy__(self) -> "ManimConfig":
+    def __copy__(self) -> ManimConfig:
         """See ManimConfig.copy()."""
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: typing.Dict[str, typing.Any]) -> "ManimConfig":
+    def __deepcopy__(self, memo: dict[str, typing.Any]) -> ManimConfig:
         """See ManimConfig.copy()."""
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
@@ -415,7 +411,7 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"attempted to set {key} to {val}; must be in {values}")
 
-    def _set_boolean(self, key: typing.Union[str, int], val: typing.Any) -> None:
+    def _set_boolean(self, key: str | int, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is Boolean."""
         if val in [True, False]:
             self._d[key] = val
@@ -471,7 +467,7 @@ class ManimConfig(MutableMapping):
         return rep
 
     # builders
-    def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
+    def digest_parser(self, parser: configparser.ConfigParser) -> ManimConfig:
         """Process the config options present in a :class:`ConfigParser` object.
 
         This method processes arbitrary parsers, not only those read from a
@@ -635,9 +631,13 @@ class ManimConfig(MutableMapping):
         if val:
             setattr(self, "media_width", val)
 
+        val = parser["CLI"].get("quality", fallback="", raw=True)
+        if val:
+            self.quality = _determine_quality(val)
+
         return self
 
-    def digest_args(self, args: argparse.Namespace) -> "ManimConfig":
+    def digest_args(self, args: argparse.Namespace) -> ManimConfig:
         """Process the config options present in CLI arguments.
 
         Parameters
@@ -662,14 +662,24 @@ class ManimConfig(MutableMapping):
         digesting any other CLI arguments.
 
         """
+        # if the input file is a config file, parse it properly
+        if args.file.suffix == ".cfg":
+            args.config_file = args.file
+
+        # if args.file is `-`, the animation code has to be taken from STDIN, so the
+        # input file path shouldn't be absolute, since that file won't be read.
+        if str(args.file) == "-":
+            self.input_file = args.file
+
         # if a config file has been passed, digest it first so that other CLI
         # flags supersede it
         if args.config_file:
             self.digest_file(args.config_file)
 
-        # If args.file is `-`, the animation code has to be taken from STDIN, so the
-        # input file path shouldn't be absolute, since that file won't be read.
-        self.input_file = Path(args.file).absolute() if args.file != "-" else args.file
+        # read input_file from the args if it wasn't set by the config file
+        if not self.input_file:
+            self.input_file = Path(args.file).absolute()
+
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
@@ -737,7 +747,7 @@ class ManimConfig(MutableMapping):
                 )
 
         # Handle the quality flags
-        self.quality = _determine_quality(args)
+        self.quality = _determine_quality(getattr(args, "quality", None))
 
         # Handle the -r flag.
         rflag = args.resolution
@@ -780,7 +790,7 @@ class ManimConfig(MutableMapping):
 
         return self
 
-    def digest_file(self, filename: str) -> "ManimConfig":
+    def digest_file(self, filename: str) -> ManimConfig:
         """Process the config options present in a ``.cfg`` file.
 
         This method processes a single ``.cfg`` file, whereas
@@ -1124,6 +1134,8 @@ class ManimConfig(MutableMapping):
 
     @quality.setter
     def quality(self, qual: str) -> None:
+        if qual is None:
+            return
         if qual not in constants.QUALITIES:
             raise KeyError(f"quality must be one of {list(constants.QUALITIES.keys())}")
         q = constants.QUALITIES[qual]
@@ -1373,7 +1385,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
             >>> config.get_dir("video_dir", module_name="myfile").as_posix()
-            'my_media_dir/videos/myfile/1080p60.0'
+            'my_media_dir/videos/myfile/1080p60'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1392,7 +1404,7 @@ class ManimConfig(MutableMapping):
             >>> config.get_dir(
             ...     "partial_movie_dir", module_name="myfile", scene_name="myscene"
             ... ).as_posix()
-            'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
+            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
@@ -1435,7 +1447,7 @@ class ManimConfig(MutableMapping):
 
         all_args = {k: self._d[k] for k in dirs}
         all_args.update(kwargs)
-        all_args["quality"] = f"{self.pixel_height}p{self.frame_rate}"
+        all_args["quality"] = f"{self.pixel_height}p{self.frame_rate:g}"
 
         path = self._d[key]
         while "{" in path:
@@ -1449,7 +1461,7 @@ class ManimConfig(MutableMapping):
                 ) from exc
         return Path(path) if path else None
 
-    def _set_dir(self, key: str, val: typing.Union[str, Path]):
+    def _set_dir(self, key: str, val: str | Path):
         if isinstance(val, Path):
             self._d.__setitem__(key, str(val))
         else:
@@ -1539,7 +1551,7 @@ class ManimConfig(MutableMapping):
         return self._tex_template
 
     @tex_template.setter
-    def tex_template(self, val: typing.Union[TexTemplateFromFile, TexTemplate]) -> None:
+    def tex_template(self, val: TexTemplateFromFile | TexTemplate) -> None:
         if isinstance(val, (TexTemplateFromFile, TexTemplate)):
             self._tex_template = val
 
@@ -1573,7 +1585,7 @@ class ManimConfig(MutableMapping):
 
 
 class ManimFrame(Mapping):
-    _OPTS: typing.Set[str] = {
+    _OPTS: set[str] = {
         "pixel_width",
         "pixel_height",
         "aspect_ratio",
@@ -1586,7 +1598,7 @@ class ManimFrame(Mapping):
         "left_side",
         "right_side",
     }
-    _CONSTANTS: typing.Dict[str, np.ndarray] = {
+    _CONSTANTS: dict[str, np.ndarray] = {
         "UP": np.array((0.0, 1.0, 0.0)),
         "DOWN": np.array((0.0, -1.0, 0.0)),
         "RIGHT": np.array((1.0, 0.0, 0.0)),
@@ -1611,7 +1623,7 @@ class ManimFrame(Mapping):
         self.__dict__["_c"] = c
 
     # there are required by parent class Mapping to behave like a dict
-    def __getitem__(self, key: typing.Union[str, int]) -> typing.Any:
+    def __getitem__(self, key: str | int) -> typing.Any:
         if key in self._OPTS:
             return self._c[key]
         elif key in self._CONSTANTS:

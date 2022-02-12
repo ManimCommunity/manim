@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.creation.AddTextLetterByLetter``"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextLetterByLetter:1
-msgid "Bases: :class:`manim.animation.creation.ShowIncreasingSubsets`"
+msgid "Bases: :py:class:`manim.animation.creation.ShowIncreasingSubsets`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextLetterByLetter:1

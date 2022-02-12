@@ -15,14 +15,14 @@ msgid "Qualified name: ``manim.mobject.shape\\_matchers.BackgroundRectangle``"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle:1
-msgid "Bases: :class:`manim.mobject.shape_matchers.SurroundingRectangle`"
+msgid "Bases: :py:class:`manim.mobject.shape_matchers.SurroundingRectangle`"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle:1
-msgid "A background rectangle"
+msgid "A background rectangle. Its default color is the background color of the scene."
 msgstr ""
 
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle:4
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle:5
 msgid "Examples"
 msgstr ""
 
@@ -44,7 +44,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
@@ -59,12 +59,13 @@ msgstr ""
 msgid "The width of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:1
-msgid "Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)"
-msgstr ""
-
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle:0
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:0
 msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:1
+msgid "Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)"
 msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:4
@@ -73,6 +74,22 @@ msgstr ""
 
 #: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:6
 msgid "upper-bound."
+msgstr ""
+
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:8
+msgid "lower-bound"
+msgstr ""
+
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:11
+msgid "``self``"
+msgstr ""
+
+#: ../../../manim/mobject/shape_matchers.py:docstring of manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial:0
+msgid "Return type"
 msgstr ""
 
 

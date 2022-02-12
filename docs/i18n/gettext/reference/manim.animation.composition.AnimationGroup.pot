@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.composition.AnimationGroup``"
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup:1
-msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.composition.AnimationGroup.rst:14
@@ -105,7 +105,7 @@ msgid "This method gets called for every frame during an animation."
 msgstr ""
 
 #: ../../../manim/animation/composition.py:docstring of manim.animation.composition.AnimationGroup.interpolate:5
-msgid "The relative time to set the aniamtion to, 0 meaning the start, 1 meaning the end."
+msgid "The relative time to set the animation to, 0 meaning the start, 1 meaning the end."
 msgstr ""
 
 

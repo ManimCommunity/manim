@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.rotation.Rotate``"
 msgstr ""
 
 #: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:1
-msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.rotation.Rotate.rst:14

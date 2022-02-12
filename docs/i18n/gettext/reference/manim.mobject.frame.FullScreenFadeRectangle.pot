@@ -10,36 +10,4 @@ msgstr ""
 msgid "FullScreenFadeRectangle"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:4
-msgid "Qualified name: ``manim.mobject.frame.FullScreenFadeRectangle``"
-msgstr ""
-
-#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.FullScreenFadeRectangle:1
-msgid "Bases: :class:`manim.mobject.frame.FullScreenRectangle`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:14
-msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:21
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:29:<autosummary>:1
-msgid "The aspect ratio."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:29:<autosummary>:1
-msgid "The depth of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.frame.FullScreenFadeRectangle.rst:29:<autosummary>:1
-msgid "The height of the mobject."
-msgstr ""
-
 

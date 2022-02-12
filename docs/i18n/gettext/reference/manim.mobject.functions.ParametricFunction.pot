@@ -15,15 +15,47 @@ msgid "Qualified name: ``manim.mobject.functions.ParametricFunction``"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:1
 msgid "A parametric curve."
 msgstr ""
 
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:3
+msgid "The function to be plotted in the form of ``(lambda x: x**2)``"
+msgstr ""
+
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:4
+msgid "Determines the length that the function spans. By default ``[0, 1]``"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:5
+msgid "Scaling class applied to the points of the function. Default of :class:`~.LinearBase`."
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:6
+msgid "Whether to interpolate between the points of the function after they have been created. (Will have odd behaviour with a low number of points)"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:8
+msgid "Values of t at which the function experiences discontinuity."
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:9
+msgid "The left and right tolerance for the discontinuities."
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:12
 msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction:42
+msgid "If your function has discontinuities, you'll have to specify the location of the discontinuities manually. See the following example for guidance."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:14
@@ -42,7 +74,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/functions.py:docstring of manim.mobject.functions.ParametricFunction.generate_points:1:<autosummary>:1

@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.transform.FadeTransformPieces``"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransformPieces:1
-msgid "Bases: :class:`manim.animation.transform.FadeTransform`"
+msgid "Bases: :py:class:`manim.animation.transform.FadeTransform`"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransformPieces:1

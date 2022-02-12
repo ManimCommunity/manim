@@ -1,8 +1,16 @@
+from __future__ import annotations
+
+from unittest.mock import Mock
+
+import pytest
+
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
-from manim.mobject.geometry import Circle, Line, Square
+from manim.mobject.geometry import Circle, Line, RegularPolygon, Square
+from manim.scene.scene import Scene
 
 
 def test_succession_timing():
@@ -12,6 +20,7 @@ def test_succession_timing():
     animation_4s = FadeOut(line, shift=DOWN, run_time=4.0)
     succession = Succession(animation_1s, animation_4s)
     assert succession.get_run_time() == 5.0
+    succession._setup_scene(Mock())
     succession.begin()
     assert succession.active_index == 0
     # The first animation takes 20% of the total run time.
@@ -43,6 +52,7 @@ def test_succession_in_succession_timing():
     )
     assert nested_succession.get_run_time() == 5.0
     assert succession.get_run_time() == 10.0
+    succession._setup_scene(Mock())
     succession.begin()
     succession.interpolate(0.1)
     assert succession.active_index == 0
@@ -97,3 +107,43 @@ def test_animationgroup_with_wait():
     timings = animation_group.anims_with_timings
 
     assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
+
+
+@pytest.mark.parametrize(
+    "animation_remover, animation_group_remover",
+    [(False, True), (True, False)],
+)
+def test_animationgroup_is_passing_remover_to_animations(
+    animation_remover, animation_group_remover
+):
+    scene = Scene()
+    sqr_animation = Create(Square(), remover=animation_remover)
+    circ_animation = Write(Circle(), remover=animation_remover)
+    animation_group = AnimationGroup(
+        sqr_animation, circ_animation, remover=animation_group_remover
+    )
+
+    scene.play(animation_group)
+    scene.wait(0.1)
+
+    assert sqr_animation.remover
+    assert circ_animation.remover
+
+
+def test_animationgroup_is_passing_remover_to_nested_animationgroups():
+    scene = Scene()
+    sqr_animation = Create(Square())
+    circ_animation = Write(Circle(), remover=True)
+    polygon_animation = Create(RegularPolygon(5))
+    animation_group = AnimationGroup(
+        AnimationGroup(sqr_animation, polygon_animation),
+        circ_animation,
+        remover=True,
+    )
+
+    scene.play(animation_group)
+    scene.wait(0.1)
+
+    assert sqr_animation.remover
+    assert circ_animation.remover
+    assert polygon_animation.remover

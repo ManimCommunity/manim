@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.specialized.Broadcast``"
 msgstr ""
 
 #: ../../../manim/animation/specialized.py:docstring of manim.animation.specialized.Broadcast:1
-msgid "Bases: :class:`manim.animation.composition.LaggedStart`"
+msgid "Bases: :py:class:`manim.animation.composition.LaggedStart`"
 msgstr ""
 
 #: ../../../manim/animation/specialized.py:docstring of manim.animation.specialized.Broadcast:1

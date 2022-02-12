@@ -1,5 +1,7 @@
 """A camera that can be positioned and oriented in three-dimensional space."""
 
+from __future__ import annotations
+
 __all__ = ["ThreeDCamera"]
 
 
@@ -17,7 +19,6 @@ from ..mobject.three_d_utils import (
 from ..mobject.types.point_cloud_mobject import Point
 from ..mobject.value_tracker import ValueTracker
 from ..utils.color import get_shaded_rgb
-from ..utils.deprecation import deprecated
 from ..utils.family import extract_mobject_family_members
 from ..utils.space_ops import rotation_about_z, rotation_matrix
 
@@ -35,7 +36,7 @@ class ThreeDCamera(Camera):
         theta=-90 * DEGREES,
         gamma=0,
         zoom=1,
-        **kwargs
+        **kwargs,
     ):
         """Initializes the ThreeDCamera
 
@@ -164,14 +165,6 @@ class ThreeDCamera(Camera):
         """
         return self.theta_tracker.get_value()
 
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        message="use focal_distance instead.",
-    )
-    def get_distance(self):
-        return self.get_focal_distance()
-
     def get_focal_distance(self):
         """Returns focal_distance of the Camera.
 
@@ -222,14 +215,6 @@ class ThreeDCamera(Camera):
             The new value of the azimuthal angle in radians.
         """
         self.theta_tracker.set_value(value)
-
-    @deprecated(
-        since="v0.11.0",
-        until="v0.12.0",
-        message="use focal_distance instead.",
-    )
-    def set_distance(self, value):
-        return self.set_focal_distance(value)
 
     def set_focal_distance(self, value):
         """Sets the focal_distance of the Camera.
@@ -331,7 +316,7 @@ class ThreeDCamera(Camera):
                 factor[lt0] = focal_distance / (focal_distance - zs[lt0])
             else:
                 factor = focal_distance / (focal_distance - zs)
-                factor[(focal_distance - zs) < 0] = 10 ** 6
+                factor[(focal_distance - zs) < 0] = 10**6
             points[:, i] *= factor * zoom
         return points
 
@@ -434,7 +419,7 @@ class ThreeDCamera(Camera):
         """
         for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_orientation_mobjects:
-                self.fixed_orientation_mobjects.remove(mobject)
+                del self.fixed_orientation_mobjects[mobject]
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
         """If a mobject was fixed in frame by passing it through

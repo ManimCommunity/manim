@@ -15,7 +15,7 @@ msgid "This document explains the building blocks of manim and will give you all
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:8
-msgid "Essentially, manim puts at your disposal three different concepts that you can orchestrate together to produce mathematical animations: the **mathematical object** (or **mobject** for short) the **animation**, and the **scene**.  As we will see in the following sections, each of these three concepts is implemented in manim as a separate class: the :class:`.Mobject`, :class:`.Animation`, and :class:`.Scene` classes."
+msgid "Essentially, manim puts at your disposal three different concepts that you can orchestrate together to produce mathematical animations: the **mathematical object** (or **mobject** for short), the **animation**, and the **scene**.  As we will see in the following sections, each of these three concepts is implemented in manim as a separate class: the :class:`.Mobject`, :class:`.Animation`, and :class:`.Scene` classes."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:15
@@ -27,7 +27,7 @@ msgid "Mobjects"
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:23
-msgid "Mobjects are the basic building block for all manim animations.  Each class that derives from :class:`.Mobject` represents an object that can be displayed on the screen.  For example, simple shapes such as :class:`.Circle`, :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or :class:`.BarChart` are mobjects as well."
+msgid "Mobjects are the basic building blocks for all manim animations.  Each class that derives from :class:`.Mobject` represents an object that can be displayed on the screen.  For example, simple shapes such as :class:`.Circle`, :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or :class:`.BarChart` are mobjects as well."
 msgstr ""
 
 #: ../../source/tutorials/building_blocks.rst:30
@@ -126,95 +126,95 @@ msgstr ""
 msgid "At the heart of manim is animation.  Generally, you can add an animation to your scene by calling the :meth:`~.Scene.play` method."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:244
+#: ../../source/tutorials/building_blocks.rst:243
 msgid "Put simply, animations are procedures that interpolate between two mobjects. For example, :code:`FadeIn(square)` starts with a fully transparent version of :code:`square` and ends with a fully opaque version, interpolating between them by gradually increasing the opacity.  :class:`.FadeOut` works in the opposite way: it interpolates from fully opaque to fully transparent.  As another example, :class:`.Rotate` starts with the mobject passed to it as argument, and ends with the same object but rotated by a certain amount, this time interpolating the mobject's angle instead of its opacity."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:255
+#: ../../source/tutorials/building_blocks.rst:254
 msgid "Animating methods"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:257
+#: ../../source/tutorials/building_blocks.rst:256
 msgid "Any property of a mobject that can be changed can be animated.  In fact, any method that changes a mobject's property can be used as an animation, through the use of :meth:`.animate`."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:277
-msgid ":meth:`.animate` is a property of all mobjects that animates the methods that come afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action."
+#: ../../source/tutorials/building_blocks.rst:276
+msgid ":meth:`.animate` is a property of all mobjects that animates the methods that come afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of the square, while :code:`square.animate.set_fill(WHITE)` animates this action."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:282
+#: ../../source/tutorials/building_blocks.rst:281
 msgid "Animation run time"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:284
+#: ../../source/tutorials/building_blocks.rst:283
 msgid "By default, any animation passed to :meth:`play` lasts for exactly one second. Use the :code:`run_time` argument to control the duration."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:297
+#: ../../source/tutorials/building_blocks.rst:296
 msgid "Creating a custom animation"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:299
+#: ../../source/tutorials/building_blocks.rst:298
 msgid "Even though Manim has many built-in animations, you will find times when you need to smoothly animate from one state of a :class:`~.Mobject` to another. If you find yourself in that situation, then you can define your own custom animation. You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate_mobject`. The :meth:`~.Animation.interpolate_mobject` method receives alpha as a parameter that starts at 0 and changes throughout the animation. So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate_mobject method. Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:306
+#: ../../source/tutorials/building_blocks.rst:305
 msgid "Let's say you start with a number and want to create a :class:`~.Transform` animation that transforms it to a target number. You can do it using :class:`~.FadeTransform`, which will fade out the starting number and fade in the target number. But when we think about transforming a number from one to another, an intuitive way of doing it is by incrementing or decrementing it smoothly. Manim has a feature that allows you to customize this behavior by defining your own custom animation."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:311
+#: ../../source/tutorials/building_blocks.rst:310
 msgid "You can start by creating your own ``Count`` class that extends :class:`~.Animation`. The class can have a constructor with three arguments, a :class:`~.DecimalNumber` Mobject, start, and end. The constructor will pass the :class:`~.DecimalNumber` Mobject to the super constructor (in this case, the :class:`~.Animation` constructor) and will set start and end."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:315
+#: ../../source/tutorials/building_blocks.rst:314
 msgid "The only thing that you need to do is to define how you want it to look at every step of the animation. Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function, and run time of animation played. The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation. For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:320
+#: ../../source/tutorials/building_blocks.rst:319
 msgid "In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the ``Count`` animation. Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:323
+#: ../../source/tutorials/building_blocks.rst:322
 msgid "If alpha is 0, you want the value to be 50."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:324
+#: ../../source/tutorials/building_blocks.rst:323
 msgid "If alpha is 0.5, you want the value to be 75."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:325
+#: ../../source/tutorials/building_blocks.rst:324
 msgid "If alpha is 1, you want the value to be 100."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:327
-msgid "Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value. So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50). Once you set the calculated value for the :class:`~.DecimalNumber`, you are done."
+#: ../../source/tutorials/building_blocks.rst:326
+msgid "Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value. So, the logic of calculating the number to display at each step will be ``50 + alpha * (100 - 50)``. Once you set the calculated value for the :class:`~.DecimalNumber`, you are done."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:331
+#: ../../source/tutorials/building_blocks.rst:330
 msgid "Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function."
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:368
+#: ../../source/tutorials/building_blocks.rst:367
 msgid "Using coordinates of a mobject"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:370
+#: ../../source/tutorials/building_blocks.rst:369
 msgid "Mobjects contain points that define their boundaries. These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top` and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:402
+#: ../../source/tutorials/building_blocks.rst:401
 msgid "Transforming mobjects into other mobjects"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:403
+#: ../../source/tutorials/building_blocks.rst:402
 msgid "It is also possible to transform a mobject into another mobject like this:"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:414
+#: ../../source/tutorials/building_blocks.rst:413
 msgid "The Transform function maps points of the previous mobject to the points of the next mobject. This might result in strange behaviour, e.g. when the dots of one mobject are arranged clockwise and the other points are arranged counterclockwise. Here it might help to use the `flip` function and reposition the points via the `roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ function of numpy:"
 msgstr ""
 
-#: ../../source/tutorials/building_blocks.rst:440
+#: ../../source/tutorials/building_blocks.rst:439
 msgid "Scenes"
 msgstr ""
 

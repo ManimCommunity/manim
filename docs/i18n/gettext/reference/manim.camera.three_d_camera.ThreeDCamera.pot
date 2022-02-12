@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.three\\_d\\_camera.ThreeDCamera``"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1
-msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgid "Bases: :py:class:`manim.camera.camera.Camera`"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1
@@ -53,123 +53,123 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 msgid "This method allows the mobject to have a fixed position, even when the camera moves around."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 msgid "This method allows the mobject to have a fixed orientation, even when the camera moves around."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.capture_mobjects:1
 msgid "Capture mobjects by printing them on :attr:`pixel_array`."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.generate_rotation_matrix:1
 msgid "Generates a rotation matrix based off the current position of the camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas:1
 msgid "Returns the RGBA array of the fill of the passed VMobject"
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_focal_distance:1
 msgid "Returns focal_distance of the Camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_gamma:1
 msgid "Returns the rotation of the camera about the vector from the ORIGIN to the Camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_mobjects_to_display:1
 msgid "Used to get the list of mobjects to display with the camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_phi:1
 msgid "Returns the Polar angle (the angle off Z_AXIS) phi."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_rotation_matrix:1
 msgid "Returns the matrix corresponding to the current position of the camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_stroke_rgbas:1
 msgid "Gets the RGBA array for the stroke of the passed VMobject."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_theta:1
 msgid "Returns the Azimuthal i.e the angle that spins the camera around the Z_AXIS."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_value_trackers:1
 msgid "Returns list of ValueTrackers of phi, theta, focal_distance and gamma"
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_zoom:1
 msgid "Returns the zoom amount of the camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_point:1
 msgid "Applies the current rotation_matrix as a projection matrix to the passed point."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_points:1
 msgid "Applies the current rotation_matrix as a projection matrix to the passed array of points."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 msgid "If a mobject was fixed in frame by passing it through :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 msgid "If a mobject was fixed in its orientation by passing it through :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.reset_rotation_matrix:1
 msgid "Sets the value of self.rotation_matrix to the matrix corresponding to the current position of the camera"
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_focal_distance:1
 msgid "Sets the focal_distance of the Camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_gamma:1
 msgid "Sets the angle of rotation of the camera about the vector from the ORIGIN to the Camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_phi:1
 msgid "Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_theta:1
 msgid "Sets the azimuthal angle i.e the angle that spins the camera around Z_AXIS in radians."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47:<autosummary>:1
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:45:<autosummary>:1
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_zoom:1
 msgid "Sets the zoom amount of the camera."
 msgstr ""
 
-#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:49
+#: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:47
 msgid "Attributes"
 msgstr ""
 
@@ -256,15 +256,6 @@ msgstr ""
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_point:0
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_points:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_distance:1
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_distance:1
-msgid "Deprecated"
-msgstr ""
-
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_distance:4
-msgid "The method ThreeDCamera.get_distance has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. use focal_distance instead."
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas:3
@@ -355,10 +346,6 @@ msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.remove_fixed_orientation_mobjects:5
 msgid "The mobjects whose orientation need not be fixed any longer."
-msgstr ""
-
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_distance:4
-msgid "The method ThreeDCamera.set_distance has been deprecated since v0.11.0 and is expected to be removed after v0.12.0. use focal_distance instead."
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_focal_distance:3

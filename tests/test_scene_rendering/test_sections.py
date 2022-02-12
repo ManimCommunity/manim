@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 
@@ -67,6 +69,28 @@ def test_sections(tmp_path, manim_cfg_file, simple_scenes_path):
 )
 def test_many_sections(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SceneWithSections"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--save_sections",
+        "--media_dir",
+        str(tmp_path),
+        simple_scenes_path,
+        scene_name,
+    ]
+    _, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+
+@pytest.mark.slow
+@video_comparison(
+    "SceneWithSkipAnimations.json",
+    "videos/simple_scenes/480p15/ElaborateSceneWithSections.mp4",
+)
+def test_skip_animations(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "ElaborateSceneWithSections"
     command = [
         sys.executable,
         "-m",

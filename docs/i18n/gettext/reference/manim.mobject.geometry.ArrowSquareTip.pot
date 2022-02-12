@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.ArrowSquareTip``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowSquareTip:1
-msgid "Bases: :class:`manim.mobject.geometry.ArrowTip`, :class:`manim.mobject.geometry.Square`"
+msgid "Bases: :py:class:`manim.mobject.geometry.ArrowTip`, :py:class:`manim.mobject.geometry.Square`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowSquareTip:1
@@ -31,7 +31,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:33:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:33:<autosummary>:1

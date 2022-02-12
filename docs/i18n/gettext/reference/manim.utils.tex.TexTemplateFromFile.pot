@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.tex.TexTemplateFromFile``"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:1
-msgid "Bases: :class:`manim.utils.tex.TexTemplate`"
+msgid "Bases: :py:class:`manim.utils.tex.TexTemplate`"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:1
@@ -68,13 +68,6 @@ msgstr ""
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:0
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:0
 msgid "type"
-msgstr ""
-
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:25
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:31
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:37
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:43
-msgid ":class:`str`"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplateFromFile:29

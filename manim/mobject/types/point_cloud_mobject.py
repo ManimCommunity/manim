@@ -1,5 +1,7 @@
 """Mobjects representing point clouds."""
 
+from __future__ import annotations
+
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 import numpy as np
@@ -311,7 +313,7 @@ class PointCloudDot(Mobject1D):
         stroke_width=2,
         density=DEFAULT_POINT_DENSITY_1D,
         color=YELLOW,
-        **kwargs
+        **kwargs,
     ):
         self.radius = radius
         self.epsilon = 1.0 / density

@@ -1,5 +1,7 @@
 """The interface between scenes and ffmpeg."""
 
+from __future__ import annotations
+
 __all__ = ["SceneFileWriter"]
 
 import datetime
@@ -9,9 +11,10 @@ import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
+import srt
 from PIL import Image
 from pydub import AudioSegment
 
@@ -70,10 +73,14 @@ class SceneFileWriter:
         self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
-        self.partial_movie_files: List[str] = []
-        self.sections: List[Section] = []
+        self.partial_movie_files: list[str] = []
+        self.subcaptions: list[srt.Subtitle] = []
+        self.sections: list[Section] = []
         # first section gets automatically created for convenience
-        self.next_section("autocreated", DefaultSectionType.NORMAL)
+        # if you need the first section to be skipped, add a first section by hand, it will replace this one
+        self.next_section(
+            name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
+        )
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
@@ -135,10 +142,16 @@ class SceneFileWriter:
                 )
 
             if is_gif_format():
-                self.gif_file_path = os.path.join(
-                    movie_dir,
-                    add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
+                self.gif_file_path = add_extension_if_not_present(
+                    self.output_name, GIF_FILE_EXTENSION
                 )
+
+                if not config["output_file"]:
+                    self.gif_file_path = add_version_before_extension(
+                        self.gif_file_path
+                    )
+
+                self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
 
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
@@ -153,13 +166,19 @@ class SceneFileWriter:
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
-    def next_section(self, name: str, type: str) -> None:
+    def next_section(self, name: str, type: str, skip_animations: bool) -> None:
         """Create segmentation cut here."""
         self.finish_last_section()
 
         # images don't support sections
-        section_video: Optional[str] = None
-        if not config.dry_run and write_to_movie() and config.save_sections:
+        section_video: str | None = None
+        # don't save when None
+        if (
+            not config.dry_run
+            and write_to_movie()
+            and config.save_sections
+            and not skip_animations
+        ):
             # relative to index file
             section_video = f"{self.output_name}_{len(self.sections):04}{config.movie_file_extension}"
 
@@ -168,6 +187,7 @@ class SceneFileWriter:
                 type,
                 section_video,
                 name,
+                skip_animations,
             ),
         )
 
@@ -439,6 +459,8 @@ class SceneFileWriter:
         elif is_png_format() and not config["dry_run"]:
             target_dir, _ = os.path.splitext(self.image_file_path)
             logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
+        if self.subcaptions:
+            self.write_subcaption_file()
 
     def open_movie_pipe(self, file_path=None):
         """
@@ -525,7 +547,7 @@ class SceneFileWriter:
 
     def combine_files(
         self,
-        input_files: List[str],
+        input_files: list[str],
         output_file: str,
         create_gif=False,
         includes_sound=False,
@@ -589,8 +611,8 @@ class SceneFileWriter:
 
         # determine output path
         movie_file_path = self.movie_file_path
-        if is_gif_format() and not config["output_file"]:
-            movie_file_path = str(add_version_before_extension(self.gif_file_path))
+        if is_gif_format():
+            movie_file_path = self.gif_file_path
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
@@ -650,7 +672,7 @@ class SceneFileWriter:
         """Concatenate partial movie files for each section."""
 
         self.finish_last_section()
-        sections_index: List[Dict[str, Any]] = []
+        sections_index: list[dict[str, Any]] = []
         for section in self.sections:
             # only if section does want to be saved
             if section.video is not None:
@@ -660,10 +682,10 @@ class SceneFileWriter:
                     os.path.join(self.sections_output_dir, section.video),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-            with open(
-                os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
-            ) as file:
-                json.dump(sections_index, file, indent=4)
+        with open(
+            os.path.join(self.sections_output_dir, f"{self.output_name}.json"), "w"
+        ) as file:
+            json.dump(sections_index, file, indent=4)
 
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
@@ -701,6 +723,13 @@ class SceneFileWriter:
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},
         )
+
+    def write_subcaption_file(self):
+        """Writes the subcaption file."""
+        subcaption_file = Path(config.output_file).with_suffix(".srt")
+        with open(subcaption_file, "w") as f:
+            f.write(srt.compose(self.subcaptions))
+        logger.info(f"Subcaption file has been written as {subcaption_file}")
 
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""

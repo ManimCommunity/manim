@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import os
 import re
@@ -152,7 +154,7 @@ class ShaderWrapper:
 
 
 # For caching
-filename_to_code_map = {}
+filename_to_code_map: dict = {}
 
 
 def get_shader_code_from_file(filename):

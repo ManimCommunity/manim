@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.tex\\_templates.TexFontTemplates``"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates:1
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: ../../../manim/utils/tex_templates.py:docstring of manim.utils.tex_templates.TexFontTemplates:1

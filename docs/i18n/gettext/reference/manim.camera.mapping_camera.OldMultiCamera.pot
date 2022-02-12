@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.mapping\\_camera.OldMultiCamera``"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera:1
-msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgid "Bases: :py:class:`manim.camera.camera.Camera`"
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.OldMultiCamera:1

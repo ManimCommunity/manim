@@ -111,13 +111,7 @@ $0~/^\"/ {
 # This code is now the part that actually selects lines to be stripped out.
 
 state==1 {
-	if($0~/^(msgid ""|"")$/){
-
-	}else if($0~/^(msgid "|")((:ref:`[a-zA-Z]*`)|(:obj:)|(manim.([a-z._\\]+)"$)|(((:(mod|class|func):`\~?\.[a-zA-Z0-9._]+)`| )+))/ ) {
-		acceptable=(acceptable==-1)?0:acceptable
-	}else{
-		acceptable=1
-	}
+	acceptable=1
 }
 $0~/^msgid ":ref:`[a-zA-Z]*`"/ {
 	acceptable=0
@@ -128,13 +122,15 @@ $0~/^msgid ":obj:/ {
 $0~/^msgid "manim.([a-z._\\]+)"$/ {
 	acceptable=0
 }
-$0~/^msgid "((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
+$0~/^(msgid )?"((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
 	acceptable=0
 }
-$0~/^"((:(mod|class|func):`~\.[a-zA-Z0-9.]+)`| )+"/ {
+$0~/^msgid ":py:obj:`[a-zA-Z0-9_.<> ]+`(\\\\)?"/ {
 	acceptable=0
 }
-
+$0~/^msgid "(:(mod|class|meth|func|attr):`[~A-Za-z_.()]+`(, )?)+"/ {
+	acceptable=0
+}
 # When the parsing is ended, print the last missing endline
 END {
 print ""

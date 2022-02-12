@@ -1,14 +1,18 @@
 """Mobjects used to mark and annotate other mobjects."""
 
+from __future__ import annotations
+
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Optional
 
+from manim.utils.color import Color
+
+from .. import config
 from ..constants import *
 from ..mobject.geometry import Line, RoundedRectangle
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import BLACK, RED, YELLOW, Color
+from ..utils.color import BLACK, RED, YELLOW, Colors
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -39,20 +43,20 @@ class SurroundingRectangle(RoundedRectangle):
     def __init__(
         self, mobject, color=YELLOW, buff=SMALL_BUFF, corner_radius=0.0, **kwargs
     ):
-        self.color = color
-        self.buff = buff
         super().__init__(
             color=color,
-            width=mobject.width + 2 * self.buff,
-            height=mobject.height + 2 * self.buff,
+            width=mobject.width + 2 * buff,
+            height=mobject.height + 2 * buff,
             corner_radius=corner_radius,
-            **kwargs
+            **kwargs,
         )
+        self.buff = buff
         self.move_to(mobject)
 
 
 class BackgroundRectangle(SurroundingRectangle):
-    """A background rectangle
+    """A background rectangle. Its default color is the background color
+    of the scene.
 
     Examples
     --------
@@ -79,13 +83,16 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color=BLACK,
-        stroke_width=0,
-        stroke_opacity=0,
-        fill_opacity=0.75,
-        buff=0,
-        **kwargs
+        color: Colors | None = None,
+        stroke_width: float = 0,
+        stroke_opacity: float = 0,
+        fill_opacity: float = 0.75,
+        buff: float = 0,
+        **kwargs,
     ):
+        if color is None:
+            color = config.background_color
+
         super().__init__(
             mobject,
             color=color,
@@ -93,7 +100,7 @@ class BackgroundRectangle(SurroundingRectangle):
             stroke_opacity=stroke_opacity,
             fill_opacity=fill_opacity,
             buff=buff,
-            **kwargs
+            **kwargs,
         )
         self.original_fill_opacity = self.fill_opacity
 
@@ -149,11 +156,11 @@ class Cross(VGroup):
 
     def __init__(
         self,
-        mobject: Optional["Mobject"] = None,
+        mobject: Mobject | None = None,
         stroke_color: Color = RED,
         stroke_width: float = 6,
         scale_factor: float = 1,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs

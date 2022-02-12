@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 
 import numpy as np
@@ -24,7 +26,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         self,
         points: typing.Iterable,
         z_dim: float = 0.0,
-    ) -> typing.List[np.ndarray]:
+    ) -> list[np.ndarray]:
         """Converts an iterable with coordinates in 2d to 3d by adding
         :attr:`z_dim` as the z coordinate.
 

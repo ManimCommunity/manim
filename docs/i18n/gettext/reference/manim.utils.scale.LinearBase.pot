@@ -1,0 +1,61 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.scale.LinearBase.rst:2
+msgid "LinearBase"
+msgstr ""
+
+#: ../../source/reference/manim.utils.scale.LinearBase.rst:4
+msgid "Qualified name: ``manim.utils.scale.LinearBase``"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:1
+msgid "Bases: :py:class:`manim.utils.scale._ScaleBase`"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:1
+msgid "The default scaling class."
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:0
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:0
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.inverse_function:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase:3
+msgid "The slope of the linear function, by default 1.0"
+msgstr ""
+
+#: ../../source/reference/manim.utils.scale.LinearBase.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1
+msgid "Multiplies the value by the scale factor."
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:1:<autosummary>:1
+msgid "Inverse of function."
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:3
+msgid "Value to be multiplied by the scale factor."
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.function:0
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.inverse_function:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/scale.py:docstring of manim.utils.scale.LinearBase.inverse_function:1
+msgid "Inverse of function. Divides the value by the scale factor."
+msgstr ""
+
+

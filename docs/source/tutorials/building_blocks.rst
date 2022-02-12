@@ -7,7 +7,7 @@ necessary tools to start producing your own videos.
 
 Essentially, manim puts at your disposal three different concepts that you can
 orchestrate together to produce mathematical animations: the
-**mathematical object** (or **mobject** for short) the **animation**, and the
+**mathematical object** (or **mobject** for short), the **animation**, and the
 **scene**.  As we will see in the following sections, each of these three
 concepts is implemented in manim as a separate class: the :class:`.Mobject`,
 :class:`.Animation`, and :class:`.Scene` classes.
@@ -20,7 +20,7 @@ concepts is implemented in manim as a separate class: the :class:`.Mobject`,
 Mobjects
 ********
 
-Mobjects are the basic building block for all manim animations.  Each class
+Mobjects are the basic building blocks for all manim animations.  Each class
 that derives from :class:`.Mobject` represents an object that can be displayed
 on the screen.  For example, simple shapes such as :class:`.Circle`,
 :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated
@@ -228,7 +228,6 @@ your scene by calling the :meth:`~.Scene.play` method.
     class SomeAnimations(Scene):
         def construct(self):
             square = Square()
-            self.add(square)
 
             # some animations display mobjects, ...
             self.play(FadeIn(square))
@@ -276,7 +275,7 @@ the use of :meth:`.animate`.
 
 :meth:`.animate` is a property of all mobjects that animates the methods that come
 afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of
-the square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action.
+the square, while :code:`square.animate.set_fill(WHITE)` animates this action.
 
 Animation run time
 ==================
@@ -325,7 +324,7 @@ Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumbe
 * If alpha is 1, you want the value to be 100.
 
 Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value.
-So, the logic of calculating the number to display at each step will be - 50 + alpha * (100 - 50).
+So, the logic of calculating the number to display at each step will be ``50 + alpha * (100 - 50)``.
 Once you set the calculated value for the :class:`~.DecimalNumber`, you are done.
 
 Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.

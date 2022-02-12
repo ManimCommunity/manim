@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.geometry.Vector``"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:1
-msgid "Bases: :class:`manim.mobject.geometry.Arrow`"
+msgid "Bases: :py:class:`manim.mobject.geometry.Arrow`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:1
@@ -23,6 +23,7 @@ msgid "A vector specialized for use in graphs."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:0
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
 msgid "Parameters"
 msgstr ""
@@ -40,7 +41,7 @@ msgid "Additional arguments to be passed to :class:`Arrow`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector:11
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:8
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:9
 msgid "Examples"
 msgstr ""
 
@@ -58,7 +59,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:1:<autosummary>:1
@@ -79,6 +80,26 @@ msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:4
 msgid "The number of dimensions of the vector."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:5
+msgid "Sets the color of label, optional."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:6
+msgid "Additional arguments to be passed to :class:`~.Matrix`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:24
+msgid "The label."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Vector.coordinate_label:0
+msgid "Return type"
 msgstr ""
 
 

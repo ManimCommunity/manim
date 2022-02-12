@@ -1,6 +1,8 @@
 """General polyhedral class and platonic solids."""
 
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -85,10 +87,10 @@ class Polyhedron(VGroup):
 
     def __init__(
         self,
-        vertex_coords: List[Union[List[float], np.ndarray]],
-        faces_list: List[List[int]],
-        faces_config: Dict[str, Union[str, int, float, bool]] = {},
-        graph_config: Dict[str, Union[str, int, float, bool]] = {},
+        vertex_coords: list[list[float] | np.ndarray],
+        faces_list: list[list[int]],
+        faces_config: dict[str, str | int | float | bool] = {},
+        graph_config: dict[str, str | int | float | bool] = {},
     ):
         super().__init__()
         self.faces_config = dict(
@@ -101,7 +103,7 @@ class Polyhedron(VGroup):
                     "stroke_opacity": 0,  # I find that having the edges visible makes the polyhedra look weird
                 },
             },
-            **graph_config
+            **graph_config,
         )
         self.vertex_coords = vertex_coords
         self.vertex_indices = list(range(len(self.vertex_coords)))
@@ -116,7 +118,7 @@ class Polyhedron(VGroup):
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
 
-    def get_edges(self, faces_list: List[List[int]]) -> List[Tuple[int, int]]:
+    def get_edges(self, faces_list: list[list[int]]) -> list[tuple[int, int]]:
         """Creates list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
@@ -125,20 +127,20 @@ class Polyhedron(VGroup):
 
     def create_faces(
         self,
-        face_coords: List[List[Union[List, np.ndarray]]],
-    ) -> "VGroup":
+        face_coords: list[list[list | np.ndarray]],
+    ) -> VGroup:
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m: "Mobject"):
+    def update_faces(self, m: Mobject):
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
 
-    def extract_face_coords(self) -> List[List[Union[np.ndarray]]]:
+    def extract_face_coords(self) -> list[list[np.ndarray]]:
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
@@ -180,7 +182,7 @@ class Tetrahedron(Polyhedron):
                 np.array([-unit, -unit, unit]),
             ],
             faces_list=[[0, 1, 2], [3, 0, 2], [0, 1, 3], [3, 1, 2]],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -226,7 +228,7 @@ class Octahedron(Polyhedron):
                 [2, 5, 1],
                 [0, 5, 2],
             ],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -291,7 +293,7 @@ class Icosahedron(Polyhedron):
                 [10, 11, 7],
                 [10, 11, 6],
             ],
-            **kwargs
+            **kwargs,
         )
 
 
@@ -357,5 +359,5 @@ class Dodecahedron(Polyhedron):
                 [19, 5, 9, 10, 7],
                 [7, 10, 3, 14, 15],
             ],
-            **kwargs
+            **kwargs,
         )

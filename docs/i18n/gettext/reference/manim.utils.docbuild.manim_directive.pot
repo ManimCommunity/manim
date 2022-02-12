@@ -1,0 +1,125 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:2
+msgid "A directive for including Manim videos in a Sphinx document"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:4
+msgid "When rendering the HTML documentation, the ``.. manim::`` directive implemented here allows to include rendered videos."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:7
+msgid "Its basic usage that allows processing **inline content** looks as follows::"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:16
+msgid "It is required to pass the name of the class representing the scene to be rendered to the directive."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:19
+msgid "As a second application, the directive can also be used to render scenes that are defined within doctests, for example::"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:35
+msgid "Options"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:37
+msgid "Options can be passed as follows::"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:42
+msgid "The following configuration options are supported by the directive:"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:47
+msgid "hide_source"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:46
+msgid "If this flag is present without argument, the source code is not displayed above the rendered video."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:51
+msgid "quality"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:None
+msgid "{'low', 'medium', 'high', 'fourk'}"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:50
+msgid "Controls render quality of the video, in analogy to the corresponding command line flags."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:55
+msgid "save_as_gif"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:54
+msgid "If this flag is present without argument, the scene is rendered as a gif."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:60
+msgid "save_last_frame"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:58
+msgid "If this flag is present without argument, an image representing the last frame of the scene will be rendered and displayed, instead of a video."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:64
+msgid "ref_classes"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:63
+msgid "A list of classes, separated by spaces, that is rendered in a reference block after the source code."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:68
+msgid "ref_functions"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:67
+msgid "A list of functions, separated by spaces, that is rendered in a reference block after the source code."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:72
+msgid "ref_methods"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive:71
+msgid "A list of methods, separated by spaces, that is rendered in a reference block after the source code."
+msgstr ""
+
+#: ../../source/reference/manim.utils.docbuild.manim_directive.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.utils.docbuild.manim_directive.rst:28:<autosummary>:1
+msgid "The manim directive, rendering videos while building the documentation."
+msgstr ""
+
+#: ../../source/reference/manim.utils.docbuild.manim_directive.rst:31
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive.process_name_list:1
+msgid "Reformats a string of space separated class names as a list of strings containing valid Sphinx references."
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive.process_name_list:5
+msgid "Tests"
+msgstr ""
+
+#: ../../../manim/utils/docbuild/manim_directive.py:docstring of manim.utils.docbuild.manim_directive.process_name_list:0
+msgid "Parameters"
+msgstr ""
+
+

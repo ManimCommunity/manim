@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.three\\_dimensions.Surface``"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface:1
@@ -49,7 +49,7 @@ msgid "Return type"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface:11
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:11
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:12
 msgid "Examples"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:23:<autosummary>:1
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1
-msgid "Sets the color of each mobject of a parametric surface to a color relative to its z-value"
+msgid "Sets the color of each mobject of a parametric surface to a color relative to its axis-value"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.three_dimensions.Surface.rst:25
@@ -67,7 +67,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:1:<autosummary>:1
@@ -83,18 +83,22 @@ msgid "The width of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:3
-msgid "The axes for the parametric surface, which will be used to map z-values to colors."
+msgid "The axes for the parametric surface, which will be used to map axis-values to colors."
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:4
-msgid "A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed containing colors paired with numbers, then those numbers will be used as the pivots."
+msgid "A list of colors, ordered from lower axis-values to higher axis-values. If a list of tuples is passed containing colors paired with numbers, then those numbers will be used as the pivots."
+msgstr ""
+
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:6
+msgid "The chosen axis to use for the color mapping. (0 = x, 1 = y, 2 = z)"
 msgstr ""
 
 #: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:0
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:7
+#: ../../../manim/mobject/three_dimensions.py:docstring of manim.mobject.three_dimensions.Surface.set_fill_by_value:8
 msgid "The parametric surface with a gradient applied by value. For chaining."
 msgstr ""
 

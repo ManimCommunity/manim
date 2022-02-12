@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.point\\_cloud\\_mobject.PGroup``"
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PGroup:1
-msgid "Bases: :class:`manim.mobject.types.point_cloud_mobject.PMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.point_cloud_mobject.PMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PGroup:2
@@ -31,7 +31,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1

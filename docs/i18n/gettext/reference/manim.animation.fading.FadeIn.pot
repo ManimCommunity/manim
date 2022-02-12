@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.animation.fading.FadeIn``"
 msgstr ""
 
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeIn:1
-msgid "Bases: :class:`manim.animation.fading._Fade`"
+msgid "Bases: :py:class:`manim.animation.fading._Fade`"
 msgstr ""
 
 #: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeIn:1
