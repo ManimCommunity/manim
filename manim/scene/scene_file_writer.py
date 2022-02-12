@@ -167,7 +167,7 @@ class SceneFileWriter:
         if log_to_file():
             log_dir = guarantee_existence(config.get_dir("log_dir"))
             set_file_logger(
-                scene_name=scene_name, module_name=module_name, log_dir=Path(log_dir)
+                scene_name=scene_name, module_name=module_name, log_dir=log_dir
             )
 
     def finish_last_section(self) -> None:

@@ -130,33 +130,35 @@ def log_to_file() -> bool:
     return config["log_to_file"]
 
 
-def add_extension_if_not_present(file_name, extension):
+def add_extension_if_not_present(file_name: str, extension: str) -> str:
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
 
 
-def add_version_before_extension(file_name) -> Path:
+def add_version_before_extension(file_name: str) -> Path:
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
-def guarantee_existence(path):
+def guarantee_existence(path: Path) -> Path:
     if not os.path.exists(path):
         os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(os.path.abspath(path))
 
 
-def guarantee_empty_existence(path):
+def guarantee_empty_existence(path: Path) -> Path:
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(os.path.abspath(path))
 
 
-def seek_full_path_from_defaults(file_name, default_dir, extensions):
+def seek_full_path_from_defaults(
+    file_name: str, default_dir: str, extensions: list[str]
+) -> Path | OSError:
     possible_paths = [file_name]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
@@ -168,7 +170,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
     raise OSError(error)
 
 
-def modify_atime(file_path):
+def modify_atime(file_path: Path):
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
@@ -179,7 +181,7 @@ def modify_atime(file_path):
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
 
 
-def open_file(file_path, in_browser=False):
+def open_file(file_path: str, in_browser: bool = False):
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else os.path.dirname(file_path))
@@ -201,7 +203,7 @@ def open_file(file_path, in_browser=False):
         sp.Popen(commands)
 
 
-def open_media_file(file_writer):
+def open_media_file(file_writer: SceneFileWriter):
     file_paths = []
 
     if config["save_last_frame"]:
@@ -220,7 +222,7 @@ def open_media_file(file_writer):
             logger.info(f"Previewed File at: '{file_path}'")
 
 
-def get_template_names():
+def get_template_names() -> list[Path]:
     """Returns template names from the templates directory.
 
     Returns
@@ -231,7 +233,7 @@ def get_template_names():
     return [template_name.stem for template_name in template_path.glob("*.mtp")]
 
 
-def get_template_path():
+def get_template_path() -> Path:
     """Returns the Path of templates directory.
 
     Returns
@@ -241,7 +243,7 @@ def get_template_path():
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file):
+def add_import_statement(file: str):
     """Prepends an import statement in a file
 
     Parameters
@@ -255,7 +257,7 @@ def add_import_statement(file):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir=Path("."), template_name="Default"):
+def copy_template_files(project_dir: Path = Path("."), template_name: str = "Default"):
     """Copies template files from templates dir to project_dir.
 
     Parameters
