@@ -1573,6 +1573,8 @@ class OpenGLVMobject(OpenGLMobject):
     def get_fill_uniforms(self):
         return {
             "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "is_fixed_orientation": float(self.is_fixed_orientation),
+            "fixed_orientation_center": self.fixed_orientation_center,
             "gloss": self.gloss,
             "shadow": self.shadow,
         }
