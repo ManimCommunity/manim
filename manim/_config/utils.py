@@ -519,33 +519,6 @@ class ManimConfig(MutableMapping):
         """
         self._parser = parser
 
-        # boolean keys
-        for key in [
-            "notify_outdated_version",
-            "write_to_movie",
-            "save_last_frame",
-            "write_all",
-            "save_pngs",
-            "save_as_gif",
-            "save_sections",
-            "preview",
-            "show_in_file_browser",
-            "log_to_file",
-            "disable_caching",
-            "disable_caching_warning",
-            "flush_cache",
-            "custom_folders",
-            "use_opengl_renderer",
-            "use_webgl_renderer",
-            "enable_gui",
-            "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
-            "enable_wireframe",
-            "force_window",
-        ]:
-            setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
-
         # int keys
         for key in [
             "from_animation_number",
@@ -604,8 +577,6 @@ class ManimConfig(MutableMapping):
             window_size = tuple(map(int, re.split(r"[;,\-]", window_size)))
         setattr(self, "window_size", window_size)
 
-        # plugins
-        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
@@ -613,6 +584,39 @@ class ManimConfig(MutableMapping):
             self["frame_width"] = self["frame_height"] * self["aspect_ratio"]
         else:
             self["frame_width"] = width
+
+        # boolean keys
+        for key in [
+            "notify_outdated_version",
+            "write_to_movie",
+            "save_last_frame",
+            "write_all",
+            "save_pngs",
+            "save_as_gif",
+            "save_sections",
+            "preview",
+            "show_in_file_browser",
+            "log_to_file",
+            "disable_caching",
+            "disable_caching_warning",
+            "flush_cache",
+            "custom_folders",
+            "use_opengl_renderer",
+            "use_webgl_renderer",
+            "enable_gui",
+            "fullscreen",
+            "use_projection_fill_shaders",
+            "use_projection_stroke_shaders",
+            "enable_wireframe",
+            "force_window",
+        ]:
+            print(
+                f"I have set {key} to {parser['CLI'].getboolean(key, fallback=False)}"
+            )
+            setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
+
+        # plugins
+        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
 
         # other logic
         val = parser["CLI"].get("tex_template_file")
