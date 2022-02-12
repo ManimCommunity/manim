@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import sys
-from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test  # type: ignore
 
 
 class CORSRequestHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        SimpleHTTPRequestHandler.end_headers(self)
+        super().end_headers()
 
 
 if __name__ == "__main__":

@@ -43,12 +43,13 @@ Note
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
+from __future__ import annotations
+
 import datetime
 import os
 import re
 from collections import defaultdict
 from pathlib import Path
-from posixpath import dirname
 from textwrap import dedent, indent
 
 import click
@@ -147,7 +148,12 @@ def get_pr_nums(lst, cur):
         f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n")),
+        filter(
+            lambda x: not any(
+                ["pre-commit autoupdate" in x, "New Crowdin updates" in x]
+            ),
+            commits.split("\n"),
+        ),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
@@ -159,10 +165,13 @@ def get_pr_nums(lst, cur):
 
 def get_summary(body):
     pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
-    has_changelog_pattern = re.search(pattern, body)
-    if has_changelog_pattern:
+    try:
+        has_changelog_pattern = re.search(pattern, body)
+        if has_changelog_pattern:
 
-        return has_changelog_pattern.group()[22:-21].strip()
+            return has_changelog_pattern.group()[22:-21].strip()
+    except Exception:
+        print(f"Error parsing body for changelog: {body}")
 
 
 @click.command(

@@ -1,8 +1,10 @@
 """Mobject representing curly braces."""
 
+from __future__ import annotations
+
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -18,7 +20,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
-from ...utils.deprecation import deprecated_params
 
 
 class Brace(SVGPathMobject):
@@ -59,14 +60,14 @@ class Brace(SVGPathMobject):
     def __init__(
         self,
         mobject,
-        direction: Optional[Sequence[float]] = DOWN,
+        direction: Sequence[float] | None = DOWN,
         buff=0.2,
         sharpness=2,
         stroke_width=0,
         fill_opacity=1.0,
         background_stroke_width=0,
         background_stroke_color=BLACK,
-        **kwargs
+        **kwargs,
     ):
         path_string_template = (
             "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 "
@@ -102,14 +103,13 @@ class Brace(SVGPathMobject):
             -linear_section_length,
         )
 
-        SVGPathMobject.__init__(
-            self,
+        super().__init__(
             path_string=path,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
-            **kwargs
+            **kwargs,
         )
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
@@ -150,12 +150,6 @@ class Brace(SVGPathMobject):
 
 
 class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
-    @deprecated_params(
-        params="label_scale",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         obj,
@@ -164,14 +158,8 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         label_constructor=MathTex,
         font_size=DEFAULT_FONT_SIZE,
         buff=0.2,
-        **kwargs
+        **kwargs,
     ):
-        label_scale = kwargs.pop("label_scale", None)
-        if label_scale:
-            self.font_size = label_scale * DEFAULT_FONT_SIZE
-        else:
-            self.font_size = font_size
-
         self.label_constructor = label_constructor
         super().__init__(**kwargs)
 
@@ -250,15 +238,15 @@ class BraceBetweenPoints(Brace):
 
     def __init__(
         self,
-        point_1: Optional[Sequence[float]],
-        point_2: Optional[Sequence[float]],
-        direction: Optional[Sequence[float]] = ORIGIN,
-        **kwargs
+        point_1: Sequence[float] | None,
+        point_2: Sequence[float] | None,
+        direction: Sequence[float] | None = ORIGIN,
+        **kwargs,
     ):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
-        Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+        super().__init__(Line(point_1, point_2), direction=direction, **kwargs)
 
 
 class ArcBrace(Brace):
@@ -320,7 +308,7 @@ class ArcBrace(Brace):
         self,
         arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
         direction: Sequence[float] = RIGHT,
-        **kwargs
+        **kwargs,
     ):
         arc_end_angle = arc.start_angle + arc.angle
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
@@ -328,10 +316,10 @@ class ArcBrace(Brace):
 
         if arc.radius >= 1:
             line.scale(arc.radius, about_point=ORIGIN)
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
             self.scale(1 / (arc.radius), about_point=ORIGIN)
         else:
-            Brace.__init__(self, line, direction=direction, **kwargs)
+            super().__init__(line, direction=direction, **kwargs)
 
         if arc.radius >= 0.3:
             self.shift(scale_shift)

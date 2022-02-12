@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import os
 import re
@@ -152,7 +154,7 @@ class ShaderWrapper:
 
 
 # For caching
-filename_to_code_map = {}
+filename_to_code_map: dict = {}
 
 
 def get_shader_code_from_file(filename):
@@ -183,7 +185,7 @@ def get_shader_code_from_file(filename):
     )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            os.path.join("inserts", line.replace("#include ../include/", "")),
+            os.path.join("include", line.replace("#include ../include/", "")),
         )
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result

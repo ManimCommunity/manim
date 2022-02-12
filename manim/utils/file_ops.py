@@ -1,8 +1,11 @@
 """Utility functions for interacting with the file system."""
 
+from __future__ import annotations
+
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",
+    "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
@@ -16,6 +19,7 @@ __all__ = [
 
 import os
 import platform
+import shutil
 import subprocess as sp
 import time
 from pathlib import Path
@@ -132,6 +136,13 @@ def guarantee_existence(path):
     return os.path.abspath(path)
 
 
+def guarantee_empty_existence(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+    return os.path.abspath(path)
+
+
 def seek_full_path_from_defaults(file_name, default_dir, extensions):
     possible_paths = [file_name]
     possible_paths += [
@@ -167,7 +178,10 @@ def open_file(file_path, in_browser=False):
             commands = ["cygstart"]
             file_path = file_path if not in_browser else os.path.dirname(file_path)
         elif current_os == "Darwin":
-            commands = ["open"] if not in_browser else ["open", "-R"]
+            if is_gif_format():
+                commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]
+            else:
+                commands = ["open"] if not in_browser else ["open", "-R"]
         else:
             raise OSError("Unable to identify your operating system...")
         commands.append(file_path)

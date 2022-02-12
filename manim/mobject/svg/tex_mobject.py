@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 r"""Mobjects representing text rendered using LaTeX.
 
 .. important::
@@ -35,8 +37,6 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK, WHITE
-from ...utils.deprecation import deprecated_params
-from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
@@ -89,7 +89,7 @@ class SingleStringMathTex(SVGMobject):
         assert isinstance(tex_string, str)
         self.tex_string = tex_string
         file_name = tex_to_svg_file(
-            self.get_modified_expression(tex_string),
+            self._get_modified_expression(tex_string),
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
@@ -113,7 +113,7 @@ class SingleStringMathTex(SVGMobject):
             self.font_size = self._font_size
 
         if self.organize_left_to_right:
-            self.organize_submobjects_left_to_right()
+            self._organize_submobjects_left_to_right()
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.tex_string)})"
@@ -135,13 +135,13 @@ class SingleStringMathTex(SVGMobject):
             # font_size does not depend on current size.
             self.scale(font_val / self.font_size)
 
-    def get_modified_expression(self, tex_string):
+    def _get_modified_expression(self, tex_string):
         result = tex_string
         result = result.strip()
-        result = self.modify_special_strings(result)
+        result = self._modify_special_strings(result)
         return result
 
-    def modify_special_strings(self, tex):
+    def _modify_special_strings(self, tex):
         tex = tex.strip()
         should_add_filler = reduce(
             op.or_,
@@ -182,7 +182,7 @@ class SingleStringMathTex(SVGMobject):
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
 
-        tex = self.remove_stray_braces(tex)
+        tex = self._remove_stray_braces(tex)
 
         for context in ["array"]:
             begin_in = ("\\begin{%s}" % context) in tex
@@ -194,7 +194,7 @@ class SingleStringMathTex(SVGMobject):
                 tex = ""
         return tex
 
-    def remove_stray_braces(self, tex):
+    def _remove_stray_braces(self, tex):
         r"""
         Makes :class:`~.MathTex` resilient to unmatched braces.
 
@@ -213,6 +213,10 @@ class SingleStringMathTex(SVGMobject):
             num_rights += 1
         return tex
 
+    def _organize_submobjects_left_to_right(self):
+        self.sort(lambda p: p[0])
+        return self
+
     def get_tex_string(self):
         return self.tex_string
 
@@ -220,10 +224,6 @@ class SingleStringMathTex(SVGMobject):
         # Overwrite superclass default to use
         # specialized path_string mobject
         return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
-
-    def organize_submobjects_left_to_right(self):
-        self.sort(lambda p: p[0])
-        return self
 
     def init_colors(self, propagate_colors=True):
         super().init_colors(propagate_colors=propagate_colors)
@@ -279,7 +279,7 @@ class MathTex(SingleStringMathTex):
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        self.tex_strings = self.break_up_tex_strings(tex_strings)
+        self.tex_strings = self._break_up_tex_strings(tex_strings)
         try:
             super().__init__(
                 self.arg_separator.join(self.tex_strings),
@@ -287,7 +287,7 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
                 **kwargs,
             )
-            self.break_up_by_substrings()
+            self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
@@ -306,9 +306,9 @@ class MathTex(SingleStringMathTex):
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
-            self.organize_submobjects_left_to_right()
+            self._organize_submobjects_left_to_right()
 
-    def break_up_tex_strings(self, tex_strings):
+    def _break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
         tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
@@ -337,7 +337,7 @@ class MathTex(SingleStringMathTex):
             pieces = tex_strings
         return [p for p in pieces if p]
 
-    def break_up_by_substrings(self):
+    def _break_up_by_substrings(self):
         """
         Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
@@ -359,14 +359,14 @@ class MathTex(SingleStringMathTex):
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
-                sub_tex_mob.set_submobjects([VectorizedPoint()])
+                sub_tex_mob.submobjects = [VectorizedPoint()]
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
-                sub_tex_mob.set_submobjects(self.submobjects[curr_index:new_index])
+                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
-        self.set_submobjects(new_submobjects)
+        self.submobjects = new_submobjects
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
@@ -511,12 +511,6 @@ class Title(Tex):
 
     """
 
-    @deprecated_params(
-        params="scale_factor",
-        since="v0.10.0",
-        until="v0.11.0",
-        message="Use font_size instead. To convert old scale factors to font size, multiply by 48.",
-    )
     def __init__(
         self,
         *text_parts,
@@ -525,9 +519,6 @@ class Title(Tex):
         underline_buff=MED_SMALL_BUFF,
         **kwargs,
     ):
-        scale_factor = kwargs.pop("scale_factor", None)
-        if scale_factor:
-            kwargs["font_size"] = DEFAULT_FONT_SIZE * scale_factor
 
         self.include_underline = include_underline
         self.match_underline_width_to_text = match_underline_width_to_text

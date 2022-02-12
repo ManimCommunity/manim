@@ -39,7 +39,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 Manim requires a few dependencies that must be installed prior to using it. If you
 want to try it out first before installing it locally, you can do so
-[in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
+[in our online Jupyter environment](https://try.manim.community/).
 
 For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
@@ -75,7 +75,6 @@ You should see your native video player program pop up and play a simple scene i
 [GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-
 [corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and
 [try it out online](https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb).
 
@@ -101,56 +100,8 @@ Documentation is in progress at [ReadTheDocs](https://docs.manim.community/).
 
 ## Docker
 
-The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim). The following tags are supported:
-
-- `latest` -- the most recent version corresponding to [the main branch](https://github.com/ManimCommunity/manim)
-- `stable` -- the latest released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
-- `vX.Y.Z` -- any particular released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
-
-### Instructions for running the docker image
-
-#### Quick Example
-To render a scene `CircleToSquare` in a file `test_scenes.py` contained in your current working directory while preserving your user and group ID, use
-
-```sh
-docker run --rm -it  --user="$(id -u):$(id -g)" -v "$(pwd)":/manim manimcommunity/manim manim test_scenes.py CircleToSquare -qm
-```
-
-#### Running the image in the background
-
-Instead of using the "throwaway container" approach sketched above, you can also create a named container that you can also modify to your liking. First, run
-
-```sh
-docker run -it --name my-manim-container -v "$(pwd):/manim" manimcommunity/manim /bin/bash
-```
-
-to obtain an interactive shell inside your container allowing you to, e.g., install further dependencies (like texlive packages using `tlmgr`). Exit the container as soon as you are satisfied. Then, before using it, start the container by running
-
-```sh
-docker start my-manim-container
-```
-
-Then, to render a scene `CircleToSquare` in a file `test_scenes.py`, call
-
-```sh
-docker exec -it --user="$(id -u):$(id -g)" my-manim-container manim test.py CircleToSquare -qm
-```
-
-#### Jupyterlab
-
-Another alternative is to use the docker image to spin up a local webserver running
-JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic.
-To use JupyterLab, run
-
-```sh
-docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
-```
-
-and then follow the instructions in the terminal.
-
-#### Important notes
-
-When executing `manim` within a Docker container, several command line flags (in particular `-p` (preview file) and `-f` (show output file in the file browser)) are not supported.
+The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim).
+Instructions on how to install and use it can be found in our [documentation](https://docs.manim.community/en/stable/installation/docker.html).
 
 ## Help with Manim
 
@@ -160,6 +111,12 @@ Server](https://www.manim.community/discord/) or [Reddit Community](https://www.
 ## Contributing
 
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
+
+However, please note that Manim is currently undergoing a major refactor. In general,
+contributions implementing new features will not be accepted in this period.
+The contribution guide may become outdated quickly; we highly recommend joining our
+[Discord server](https://www.manim.community/discord/) to discuss any potential
+contributions and keep up to date with the latest developments.
 
 Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
 Learn more about `poetry` at its [documentation](https://python-poetry.org/docs/) and find out how to install manim with poetry at the [manim dev-installation guide](https://docs.manim.community/en/stable/contributing/development.html) in the manim documentation.

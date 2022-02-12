@@ -1,9 +1,9 @@
 """A scene suitable for vector spaces."""
 
+from __future__ import annotations
+
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-
-from typing import Optional
 
 import numpy as np
 from colour import Color
@@ -25,7 +25,7 @@ from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
+from ..utils.color import BLUE_D, GREEN_C, GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
@@ -42,7 +42,7 @@ Z_COLOR = BLUE_D
 # actually doing a lot of animating.
 class VectorScene(Scene):
     def __init__(self, basis_vector_stroke_width=6, **kwargs):
-        Scene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.basis_vector_stroke_width = basis_vector_stroke_width
 
     def add_plane(self, animate=False, **kwargs):
@@ -78,7 +78,7 @@ class VectorScene(Scene):
         color : bool, optional
             The color of the axes. Defaults to WHITE.
         """
-        axes = Axes(color=color, tick_frequency=1)
+        axes = Axes(color=color, axis_config={"unit_size": 1})
         if animate:
             self.play(Create(axes))
         self.add(axes)
@@ -561,18 +561,18 @@ class LinearTransformationScene(VectorScene):
         self,
         include_background_plane: bool = True,
         include_foreground_plane: bool = True,
-        background_plane_kwargs: Optional[dict] = None,
-        foreground_plane_kwargs: Optional[dict] = None,
+        background_plane_kwargs: dict | None = None,
+        foreground_plane_kwargs: dict | None = None,
         show_coordinates: bool = False,
         show_basis_vectors: bool = True,
         basis_vector_stroke_width: float = 6,
         i_hat_color: Color = X_COLOR,
         j_hat_color: Color = Y_COLOR,
         leave_ghost_vectors: bool = False,
-        **kwargs
+        **kwargs,
     ):
 
-        VectorScene.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.include_background_plane = include_background_plane
         self.include_foreground_plane = include_foreground_plane
@@ -801,7 +801,7 @@ class LinearTransformationScene(VectorScene):
         Arrow
             The arrow representing the vector.
         """
-        vector = VectorScene.add_vector(self, vector, color=color, **kwargs)
+        vector = super().add_vector(vector, color=color, **kwargs)
         self.moving_vectors.append(vector)
         return vector
 
@@ -824,7 +824,7 @@ class LinearTransformationScene(VectorScene):
         Matrix
             The column matrix representing the vector.
         """
-        coords = VectorScene.write_vector_coordinates(self, vector, **kwargs)
+        coords = super().write_vector_coordinates(vector, **kwargs)
         self.add_foreground_mobject(coords)
         return coords
 

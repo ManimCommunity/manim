@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import os
-import re
 from pathlib import Path
 
-from ..utils.commands import capture
+from manim import capture
+
 from ..utils.logging_tester import *
 
 

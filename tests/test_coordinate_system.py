@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 import numpy as np
@@ -86,6 +88,10 @@ def test_NumberPlane():
         assert len(plane.y_lines) == num_y_lines
         assert len(plane.x_lines) == num_x_lines
 
+    plane = NumberPlane((-5, 5, 0.5), (-8, 8, 2))  # <- test for different step values
+    assert len(plane.x_lines) == 8
+    assert len(plane.y_lines) == 20
+
 
 def test_point_to_coords():
     ax = Axes(x_range=[0, 10, 2])
@@ -106,8 +112,8 @@ def test_coords_to_point():
 
 def test_input_to_graph_point():
     ax = Axes()
-    curve = ax.get_graph(lambda x: np.cos(x))
-    line_graph = ax.get_line_graph([1, 3, 5], [-1, 2, -2], add_vertex_dots=False)[
+    curve = ax.plot(lambda x: np.cos(x))
+    line_graph = ax.plot_line_graph([1, 3, 5], [-1, 2, -2], add_vertex_dots=False)[
         "line_graph"
     ]
 

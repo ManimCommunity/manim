@@ -1,5 +1,7 @@
 """Animations that update mobjects."""
 
+from __future__ import annotations
+
 __all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"]
 
 
@@ -21,10 +23,10 @@ class UpdateFromFunc(Animation):
 
     def __init__(
         self,
-        mobject: "Mobject",
-        update_function: typing.Callable[["Mobject"], typing.Any],
+        mobject: Mobject,
+        update_function: typing.Callable[[Mobject], typing.Any],
         suspend_mobject_updating: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.update_function = update_function
         super().__init__(
@@ -37,13 +39,11 @@ class UpdateFromFunc(Animation):
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
     def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject, alpha)
+        self.update_function(self.mobject, self.rate_func(alpha))
 
 
 class MaintainPositionRelativeTo(Animation):
-    def __init__(
-        self, mobject: "Mobject", tracked_mobject: "Mobject", **kwargs
-    ) -> None:
+    def __init__(self, mobject: Mobject, tracked_mobject: Mobject, **kwargs) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(
             mobject.get_center(),
