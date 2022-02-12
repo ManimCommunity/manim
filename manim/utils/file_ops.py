@@ -243,7 +243,7 @@ def get_template_path() -> Path:
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file: str):
+def add_import_statement(file: Path):
     """Prepends an import statement in a file
 
     Parameters
@@ -257,7 +257,9 @@ def add_import_statement(file: str):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir: Path = Path("."), template_name: str = "Default"):
+def copy_template_files(
+    project_dir: Path = Path("."), template_name: str = "Default"
+) -> None | FileNotFoundError:
     """Copies template files from templates dir to project_dir.
 
     Parameters
