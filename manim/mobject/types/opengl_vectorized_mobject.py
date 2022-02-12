@@ -1627,101 +1627,101 @@ class OrderStrategy(Enum):
 class OpenGLVGroup(OpenGLVMobject):
     """A group of vectorized mobjects.
 
-        This can be used to group multiple :class:`~.OpenGLVMobject` instances together
-        in order to scale, move, ... them together.
+    This can be used to group multiple :class:`~.OpenGLVMobject` instances together
+    in order to scale, move, ... them together.
 
-        It also allows a rendering strategy to be set. When objects share
-        the same z-index value, the opengl renderer will render in the order objects are passed.
-        This class allows different strategies to be used for ordering mobjects.
+    It also allows a rendering strategy to be set. When objects share
+    the same z-index value, the opengl renderer will render in the order objects are passed.
+    This class allows different strategies to be used for ordering mobjects.
 
-        MERGE - Merging shaders is prioritized so there will never be more than one instance of a
-        given shader type. For example if multiple mobjects use the surface shader, they will be merged
-        as one shader wrapper. Additionally fill shaders and stroke shaders will be merged into one
-        with fill shaders being rendered before strokes unless the object has the
-        `draw_stroke_behind_fill` flag set.
+    MERGE - Merging shaders is prioritized so there will never be more than one instance of a
+    given shader type. For example if multiple mobjects use the surface shader, they will be merged
+    as one shader wrapper. Additionally fill shaders and stroke shaders will be merged into one
+    with fill shaders being rendered before strokes unless the object has the
+    `draw_stroke_behind_fill` flag set.
 
-        PRIORITY - Orders in the order objects are passed. This means that if more recently added
-        objects share pixels of previously added objects, then the more recent objects will overwrite
-        the previous objects. Shader wrappers will only be merged if it doesn't impact the ordering
+    PRIORITY - Orders in the order objects are passed. This means that if more recently added
+    objects share pixels of previously added objects, then the more recent objects will overwrite
+    the previous objects. Shader wrappers will only be merged if it doesn't impact the ordering
 
-        REVERSE_PRIORITY - Same as PRIORITY but in reverse order, the last element in will be the first
-        rendered and the first will be last.
+    REVERSE_PRIORITY - Same as PRIORITY but in reverse order, the last element in will be the first
+    rendered and the first will be last.
 
-        CUSTOM - Allows you to pass a function as a parameter ``order_func`` into :func:`__init__` that
-        customizes the render order strategy. the function should take in a list of `OpenGLVMobject` and
-        return a list of `ShaderWrapper` objects.
+    CUSTOM - Allows you to pass a function as a parameter ``order_func`` into :func:`__init__` that
+    customizes the render order strategy. the function should take in a list of `OpenGLVMobject` and
+    return a list of `ShaderWrapper` objects.
 
-        Examples
-        --------
+    Examples
+    --------
 
-        To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
-        :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
-        can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
-        `-` and `-=` operators:
+    To add :class:`~.OpenGLVMobject`s to a :class:`~.OpenGLVGroup`, you can either use the
+    :meth:`~.OpenGLVGroup.add` method, or use the `+` and `+=` operators. Similarly, you
+    can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
+    `-` and `-=` operators:
 
-            >>> from manim import Triangle, Square, OpenGLVGroup
-            >>> vg = OpenGLVGroup()
-            >>> triangle, square = Triangle(), Square()
-            >>> vg.add(triangle)
-            OpenGLVGroup(Triangle)
-            >>> vg + square   # a new OpenGLVGroup is constructed
-            OpenGLVGroup(Triangle, Square)
-            >>> vg            # not modified
-            OpenGLVGroup(Triangle)
-            >>> vg += square; vg  # modifies vg
-            OpenGLVGroup(Triangle, Square)
-            >>> vg.remove(triangle)
-            OpenGLVGroup(Square)
-            >>> vg - square; # a new OpenGLVGroup is constructed
-            OpenGLVGroup()
-            >>> vg   # not modified
-            OpenGLVGroup(Square)
-            >>> vg -= square; vg # modifies vg
-            OpenGLVGroup()
+        >>> from manim import Triangle, Square, OpenGLVGroup
+        >>> vg = OpenGLVGroup()
+        >>> triangle, square = Triangle(), Square()
+        >>> vg.add(triangle)
+        OpenGLVGroup(Triangle)
+        >>> vg + square   # a new OpenGLVGroup is constructed
+        OpenGLVGroup(Triangle, Square)
+        >>> vg            # not modified
+        OpenGLVGroup(Triangle)
+        >>> vg += square; vg  # modifies vg
+        OpenGLVGroup(Triangle, Square)
+        >>> vg.remove(triangle)
+        OpenGLVGroup(Square)
+        >>> vg - square; # a new OpenGLVGroup is constructed
+        OpenGLVGroup()
+        >>> vg   # not modified
+        OpenGLVGroup(Square)
+        >>> vg -= square; vg # modifies vg
+        OpenGLVGroup()
 
-        .. manim:: ArcShapeIris
-            :save_last_frame:
+    .. manim:: ArcShapeIris
+        :save_last_frame:
 
-            class ArcShapeIris(Scene):
-                def construct(self):
-                    colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
-                    radius = [1 + rad * 0.1 for rad in range(len(colors))]
+        class ArcShapeIris(Scene):
+            def construct(self):
+                colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
-                    circles_group = OpenGLVGroup()
+                circles_group = OpenGLVGroup()
 
-                    # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
-                    circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
-                                        for rad, col in zip(radius, colors)])
-                    self.add(circles_group)
+                # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
+                circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
+                                    for rad, col in zip(radius, colors)])
+                self.add(circles_group)
 
-        .. manim:: SetFill
-            :save_last_frame:
+    .. manim:: SetFill
+        :save_last_frame:
 
-            class EvenThenOddOrdering(Scene):
-                def construct(self):
-                    a = Circle().set_fill(RED, 1.0).shift(UP)
-                    b = Circle().set_fill(GREEN, 1.0).shift(RIGHT)
-                    c = Circle().set_fill(RED, 1.0).shift(DOWN)
-                    d = Circle().set_fill(GREEN, 1.0).shift(LEFT)
+        class EvenThenOddOrdering(Scene):
+            def construct(self):
+                a = Circle().set_fill(RED, 1.0).shift(UP)
+                b = Circle().set_fill(GREEN, 1.0).shift(RIGHT)
+                c = Circle().set_fill(RED, 1.0).shift(DOWN)
+                d = Circle().set_fill(GREEN, 1.0).shift(LEFT)
 
-                    def even_then_odd(objs):
+                def even_then_odd(objs):
 
-                        all_shader_wrappers = []
-                        for i, obj in enumerate(objs):
-                            if i % 2 == 0:
-                                if obj.has_fill():
-                                    all_shader_wrappers.append(obj.get_fill_shader_wrapper())
-                                all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
-                        for i, obj in enumerate(objs):
-                            if i % 2 == 1:
-                                if obj.has_fill():
-                                    all_shader_wrappers.append(obj.get_fill_shader_wrapper())
-                                all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
-                        return all_shader_wrappers
+                    all_shader_wrappers = []
+                    for i, obj in enumerate(objs):
+                        if i % 2 == 0:
+                            if obj.has_fill():
+                                all_shader_wrappers.append(obj.get_fill_shader_wrapper())
+                            all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
+                    for i, obj in enumerate(objs):
+                        if i % 2 == 1:
+                            if obj.has_fill():
+                                all_shader_wrappers.append(obj.get_fill_shader_wrapper())
+                            all_shader_wrappers.append(obj.get_stroke_shader_wrapper())
+                    return all_shader_wrappers
 
-                    ordered_group = OpenGLVGroup(a, b, c, d, order_strategy=OrderStrategy.CUSTOM, order_func=even_then_odd)
-                    self.add(ordered_group)
-                    self.wait()
+                ordered_group = OpenGLVGroup(a, b, c, d, order_strategy=OrderStrategy.CUSTOM, order_func=even_then_odd)
+                self.add(ordered_group)
+                self.wait()
     """
 
     def __init__(
