@@ -158,7 +158,7 @@ def guarantee_empty_existence(path: Path) -> Path:
 
 def seek_full_path_from_defaults(
     file_name: str, default_dir: str, extensions: list[str]
-) -> Path | OSError:
+) -> Path:
     possible_paths = [file_name]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
@@ -170,7 +170,7 @@ def seek_full_path_from_defaults(
     raise OSError(error)
 
 
-def modify_atime(file_path: Path):
+def modify_atime(file_path: Path) -> None:
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
@@ -181,7 +181,7 @@ def modify_atime(file_path: Path):
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
 
 
-def open_file(file_path: str, in_browser: bool = False):
+def open_file(file_path: str, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path if not in_browser else os.path.dirname(file_path))
@@ -203,7 +203,7 @@ def open_file(file_path: str, in_browser: bool = False):
         sp.Popen(commands)
 
 
-def open_media_file(file_writer: SceneFileWriter):
+def open_media_file(file_writer: SceneFileWriter) -> None:
     file_paths = []
 
     if config["save_last_frame"]:
@@ -243,7 +243,7 @@ def get_template_path() -> Path:
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
-def add_import_statement(file: Path):
+def add_import_statement(file: Path) -> None:
     """Prepends an import statement in a file
 
     Parameters
@@ -259,7 +259,7 @@ def add_import_statement(file: Path):
 
 def copy_template_files(
     project_dir: Path = Path("."), template_name: str = "Default"
-) -> None | FileNotFoundError:
+) -> None:
     """Copies template files from templates dir to project_dir.
 
     Parameters
