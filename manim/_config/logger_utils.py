@@ -158,7 +158,6 @@ def set_file_logger(scene_name: str, module_name: str, log_dir: Path) -> None:
     # can differ from the real name of the scene.  <name_of_scene> would only
     # appear if scene name was provided when manim was called.
     scene_name_suffix = "".join(scene_name)
-    # scene_file_name = os.path.basename(config["input_file"]).split(".")[0]
     scene_file_name = module_name
     log_file_name = (
         f"{scene_file_name}_{scene_name_suffix}.log"
