@@ -585,7 +585,7 @@ class ManimConfig(MutableMapping):
         else:
             self["frame_width"] = width
 
-        # boolean keys
+        # boolean keys, must be set after str keys
         for key in [
             "notify_outdated_version",
             "write_to_movie",
@@ -610,9 +610,6 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
         ]:
-            print(
-                f"I have set {key} to {parser['CLI'].getboolean(key, fallback=False)}"
-            )
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
         # plugins
@@ -858,19 +855,11 @@ class ManimConfig(MutableMapping):
         doc="Whether to show progress bars while rendering animations.",
     )
 
-    @property
-    def log_to_file(self):
-        """Whether to save logs to a file."""
-        return self._d["log_to_file"]
-
-    @log_to_file.setter
-    def log_to_file(self, val: str) -> None:
-        self._set_boolean("log_to_file", val)
-        if val:
-            log_dir = self.get_dir("log_dir")
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            set_file_logger(self, self["verbosity"])
+    log_to_file = property(
+        lambda self: self._d["log_to_file"],
+        lambda self, val: self._set_boolean("log_to_file", val),
+        doc="Whether to save logs to file.",
+    )
 
     notify_outdated_version = property(
         lambda self: self._d["notify_outdated_version"],

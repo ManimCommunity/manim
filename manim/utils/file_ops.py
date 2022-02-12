@@ -15,6 +15,7 @@ __all__ = [
     "is_webm_format",
     "is_mov_format",
     "write_to_movie",
+    "log_to_file",
 ]
 
 import os
@@ -117,6 +118,18 @@ def write_to_movie() -> bool:
     )
 
 
+def log_to_file() -> bool:
+    """
+    Determine whether to turn on file logging
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if file logging is set to true
+    """
+    return config["log_to_file"]
+
+
 def add_extension_if_not_present(file_name, extension):
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
@@ -124,7 +137,7 @@ def add_extension_if_not_present(file_name, extension):
         return file_name
 
 
-def add_version_before_extension(file_name):
+def add_version_before_extension(file_name) -> Path:
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")

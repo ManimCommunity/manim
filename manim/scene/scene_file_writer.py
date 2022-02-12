@@ -21,6 +21,7 @@ from pydub import AudioSegment
 from manim import __version__
 
 from .. import config, logger
+from .._config.logger_utils import set_file_logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
@@ -29,6 +30,7 @@ from ..utils.file_ops import (
     is_gif_format,
     is_png_format,
     is_webm_format,
+    log_to_file,
     modify_atime,
     write_to_movie,
 )
@@ -132,6 +134,7 @@ class SceneFileWriter:
                     config["movie_file_extension"],
                 ),
             )
+
             # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = ""
             if config.save_sections:
@@ -159,6 +162,12 @@ class SceneFileWriter:
                     scene_name=scene_name,
                     module_name=module_name,
                 ),
+            )
+
+        if log_to_file():
+            log_dir = guarantee_existence(config.get_dir("log_dir"))
+            set_file_logger(
+                scene_name=scene_name, module_name=module_name, log_dir=Path(log_dir)
             )
 
     def finish_last_section(self) -> None:
