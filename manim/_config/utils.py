@@ -299,7 +299,7 @@ class ManimConfig(MutableMapping):
         "force_window",
     }
 
-    def __init__(self) -> None:
+    def __init__(self) -> dict[str, None]:
         self._d = {k: None for k in self._OPTS}
 
     # behave like a dict
@@ -316,7 +316,7 @@ class ManimConfig(MutableMapping):
         except AttributeError:
             return False
 
-    def __getitem__(self, key) -> typing.Any:
+    def __getitem__(self, key) -> Any:
         return getattr(self, key)
 
     def __setitem__(self, key: str, val: typing.Any) -> None:
