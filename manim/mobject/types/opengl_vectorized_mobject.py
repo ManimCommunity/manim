@@ -1627,7 +1627,7 @@ class OrderStrategy(Enum):
 class OpenGLVGroup(OpenGLVMobject):
     """A group of vectorized mobjects.
 
-    This can be used to group multiple :class:`~.OpenGLVMobject` instances together
+        This can be used to group multiple :class:`~.OpenGLVMobject` instances together
         in order to scale, move, ... them together.
 
         It also allows a rendering strategy to be set. When objects share
