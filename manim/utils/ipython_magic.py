@@ -71,7 +71,7 @@ else:
 
             The ``--embed`` option will embed the image/video output in the notebook. This is generally
             undesirable as it makes the notebooks very large, but is required on some platforms
-            (notably Google's CoLab, which is automatically enabled unless suppressed by
+            (notably Google's CoLab, where it is automatically enabled unless suppressed by
             ``config.embed = False``) and needed in cases when the notebook (or converted HTML
             file) will be moved relative to the video locations. Use-cases include building
             documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
