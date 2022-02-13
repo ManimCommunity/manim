@@ -57,25 +57,17 @@ else:
 
             Usage in line mode::
 
-                %manim [--embed] [CLI options] MyAwesomeScene
+                %manim [CLI options] MyAwesomeScene
 
             Usage in cell mode::
 
-                %%manim [--embed] [CLI options] MyAwesomeScene
+                %%manim [CLI options] MyAwesomeScene
 
                 class MyAweseomeScene(Scene):
                     def construct(self):
                         ...
 
             Run ``%manim --help`` and ``%manim render --help`` for possible command line interface options.
-
-            The ``--embed`` option will embed the image/video output in the notebook. This is generally
-            undesirable as it makes the notebooks very large, but is required on some platforms
-            (notably Google's CoLab, where it is automatically enabled unless suppressed by
-            ``config.embed = False``) and needed in cases when the notebook (or converted HTML
-            file) will be moved relative to the video locations. Use-cases include building
-            documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
-            <manim.utils.docbuild.manim_directive>`.
 
             .. note::
 
@@ -84,6 +76,14 @@ else:
                 which is 25% of your current viewport width. To allow the output to become as large
                 as possible, set ``config.media_width = "100%"``.
 
+                The ``media_embed`` option will embed the image/video output in the notebook. This is
+                generally undesirable as it makes the notebooks very large, but is required on some
+                platforms (notably Google's CoLab, where it is automatically enabled unless suppressed
+                by ``config.embed = False``) and needed in cases when the notebook (or converted HTML
+                file) will be moved relative to the video locations. Use-cases include building
+                documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
+                <manim.utils.docbuild.manim_directive>`.
+
             Examples
             --------
 
@@ -91,9 +91,10 @@ else:
             in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim
             could look as follows::
 
-                %%manim --embed -v WARNING --disable_caching -qm BannerExample
+                %%manim -v WARNING --disable_caching -qm BannerExample
 
                 config.media_width = "75%"
+                config.media_embed = True
 
                 class BannerExample(Scene):
                     def construct(self):
@@ -118,16 +119,6 @@ else:
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
                 return
-
-            # Allow used to specify `--embed` in magic.  We remove this because it
-            # should not be passed to the CLI.
-            embed = None
-            if "--embed" in args:
-                embed = True
-                args.remove("--embed")
-            elif hasattr(config, "embed"):
-                # Let user override.
-                embed = config.embed
 
             modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
@@ -180,6 +171,7 @@ else:
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
+                embed = config["media_embed"]
                 if file_type.startswith("image"):
                     result = Image(filename=config["output_file"], embed=embed)
                 else:
