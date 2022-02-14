@@ -43,6 +43,32 @@ class SceneWithStaticWait(Scene):
         self.wait()
 
 
+class SceneWithSceneUpdater(Scene):
+    def construct(self):
+        self.add(Square())
+        self.add_updater(lambda dt: 42)
+        self.wait()
+
+
+class SceneForFrozenFrameTests(Scene):
+    def construct(self):
+        self.mobject_update_count = 0
+        self.scene_update_count = 0
+
+        def increment_mobject_update_count(mob, dt):
+            self.mobject_update_count += 1
+
+        def increment_scene_update_count(dt):
+            self.scene_update_count += 1
+
+        s = Square()
+        s.add_updater(increment_mobject_update_count)
+        self.add(s)
+        self.add_updater(increment_scene_update_count)
+
+        self.wait(frozen_frame=True)
+
+
 class SceneWithNonStaticWait(Scene):
     def construct(self):
         s = Square()
