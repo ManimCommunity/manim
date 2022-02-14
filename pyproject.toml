@@ -106,7 +106,7 @@ psutil = {version = "^5.8.0", python = "<3.10"}
 "Discord" = "https://www.manim.community/discord/"
 
 [tool.poetry.dev-dependencies.black]
-version = "^20.8b1"
+version = ">=20.8b1"
 allow-prereleases = false
 python = "^3.6"
 markers = "platform_python_implementation == 'CPython'"
