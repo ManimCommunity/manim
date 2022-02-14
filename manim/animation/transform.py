@@ -229,7 +229,7 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
-    """Transforms an mobject along an arc while interpolating it clockwise
+    """Transforms the points of a mobject along a clockwise oriented arc.
 
     See also
     --------
@@ -269,7 +269,7 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
-    """Transforms an mobject along an arc while interpolating it counterclockwise
+    """Transforms the points of a mobject along a counterclockwise oriented arc.
 
     See also
     --------
@@ -318,7 +318,7 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
-    """Transforms an mobject to the mobject stored in its ``target`` attribute.
+    """Transforms a mobject to the mobject stored in its ``target`` attribute.
 
     After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target`
     attribute of the mobject is populated with a copy of it. After modifying the attribute,
@@ -451,7 +451,7 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 
 class FadeToColor(ApplyMethod):
-    """Animation that changes color of an mobject.
+    """Animation that changes color of a mobject.
 
     Examples
     --------
@@ -469,7 +469,7 @@ class FadeToColor(ApplyMethod):
 
 
 class ScaleInPlace(ApplyMethod):
-    """Animation that scales an mobject by a certain factor.
+    """Animation that scales a mobject by a certain factor.
 
     Examples
     --------
@@ -487,7 +487,7 @@ class ScaleInPlace(ApplyMethod):
 
 
 class ShrinkToCenter(ScaleInPlace):
-    """Animation that makes an mobject shrink to center.
+    """Animation that makes a mobject shrink to center.
 
     Examples
     --------
