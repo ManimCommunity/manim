@@ -47,7 +47,22 @@ class Rotating(Animation):
 
 
 class Rotate(Transform):
-    """Rotates a Mobject by a certain angle.
+    """Animation that rotates a Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be rotated.
+    angle
+        The rotation angle.
+    axis
+        The rotation axis as a numpy vector.
+    about_point
+        The rotation center.
+    about_edge
+        If ``about_point``is ``None``, this argument specifies
+        the direction of the bounding box point to be taken as
+        the rotation center.
 
     Examples
     --------
@@ -58,7 +73,7 @@ class Rotate(Transform):
                 self.play(
                     Rotate(
                         Square(side_length=0.5).shift(UP * 2),
-                        angle=2 * PI,
+                        angle=2*PI,
                         about_point=ORIGIN,
                         rate_func=linear,
                     ),
@@ -70,7 +85,7 @@ class Rotate(Transform):
     def __init__(
         self,
         mobject: Mobject,
-        angle: np.ndarray = PI,
+        angle: float = PI,
         axis: np.ndarray = OUT,
         about_point: Sequence[float] | None = None,
         about_edge: Sequence[float] | None = None,
