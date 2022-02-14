@@ -130,14 +130,14 @@ def log_to_file() -> bool:
     return config["log_to_file"]
 
 
-def add_extension_if_not_present(file_name: str, extension: str) -> str:
+def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
 
 
-def add_version_before_extension(file_name: str) -> Path:
+def add_version_before_extension(file_name: Path) -> Path:
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
@@ -157,7 +157,7 @@ def guarantee_empty_existence(path: Path) -> Path:
 
 
 def seek_full_path_from_defaults(
-    file_name: str, default_dir: str, extensions: list[str]
+    file_name: Path, default_dir: str, extensions: list[str]
 ) -> Path:
     possible_paths = [file_name]
     possible_paths += [
@@ -222,7 +222,7 @@ def open_media_file(file_writer: SceneFileWriter) -> None:
             logger.info(f"Previewed File at: '{file_path}'")
 
 
-def get_template_names() -> list[Path]:
+def get_template_names() -> list[str]:
     """Returns template names from the templates directory.
 
     Returns

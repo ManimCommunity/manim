@@ -329,7 +329,7 @@ class SceneFileWriter:
         """
         file_path = get_full_sound_file_path(sound_file)
         new_segment = AudioSegment.from_file(file_path)
-        if gain:
+        if gain is not None:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
 
