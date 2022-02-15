@@ -25,6 +25,10 @@ import subprocess as sp
 import time
 from pathlib import Path
 from shutil import copyfile
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..scene.scene_file_writer import SceneFileWriter
 
 from manim import __version__, config, logger
 
@@ -125,33 +129,35 @@ def log_to_file() -> bool:
     return config["log_to_file"]
 
 
-def add_extension_if_not_present(file_name, extension):
+def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
 
 
-def add_version_before_extension(file_name):
+def add_version_before_extension(file_name: Path) -> Path:
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
-def guarantee_existence(path):
+def guarantee_existence(path: Path) -> Path:
     if not os.path.exists(path):
         os.makedirs(path)
     return Path(os.path.abspath(path))
 
 
-def guarantee_empty_existence(path):
+def guarantee_empty_existence(path: Path) -> Path:
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
     return Path(os.path.abspath(path))
 
 
-def seek_full_path_from_defaults(file_name, default_dir, extensions):
+def seek_full_path_from_defaults(
+    file_name: Path, default_dir: str, extensions: str
+) -> Path:
     possible_paths = [file_name]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
@@ -163,7 +169,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
     raise OSError(error)
 
 
-def modify_atime(file_path):
+def modify_atime(file_path) -> None:
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
@@ -196,7 +202,7 @@ def open_file(file_path, in_browser=False):
         sp.Popen(commands)
 
 
-def open_media_file(file_writer):
+def open_media_file(file_writer: SceneFileWriter) -> None:
     file_paths = []
 
     if config["save_last_frame"]:
@@ -215,7 +221,7 @@ def open_media_file(file_writer):
             logger.info(f"Previewed File at: '{file_path}'")
 
 
-def get_template_names():
+def get_template_names() -> list[str]:
     """Returns template names from the templates directory.
 
     Returns
@@ -226,7 +232,7 @@ def get_template_names():
     return [template_name.stem for template_name in template_path.glob("*.mtp")]
 
 
-def get_template_path():
+def get_template_path() -> Path:
     """Returns the Path of templates directory.
 
     Returns
@@ -250,7 +256,9 @@ def add_import_statement(file):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir=Path("."), template_name="Default"):
+def copy_template_files(
+    project_dir: Path = Path("."), template_name: str = "Default"
+) -> None:
     """Copies template files from templates dir to project_dir.
 
     Parameters
