@@ -15,6 +15,7 @@ __all__ = [
     "is_webm_format",
     "is_mov_format",
     "write_to_movie",
+    "log_to_file",
 ]
 
 import os
@@ -117,6 +118,13 @@ def write_to_movie() -> bool:
     )
 
 
+def log_to_file() -> bool:
+    """
+    Determines if file logging is set to True.
+    """
+    return config["log_to_file"]
+
+
 def add_extension_if_not_present(file_name, extension):
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
@@ -133,14 +141,14 @@ def add_version_before_extension(file_name):
 def guarantee_existence(path):
     if not os.path.exists(path):
         os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(os.path.abspath(path))
 
 
 def guarantee_empty_existence(path):
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
-    return os.path.abspath(path)
+    return Path(os.path.abspath(path))
 
 
 def seek_full_path_from_defaults(file_name, default_dir, extensions):
