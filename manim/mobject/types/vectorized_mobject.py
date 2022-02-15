@@ -1506,13 +1506,20 @@ class VMobject(Mobject):
         # it's total length is target_num.  For example,
         # with curr_num = 10, target_num = 15, this would
         # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num) * curr_num) // target_num
+        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
 
         # If the nth term of this list is k, it means
         # that the nth curve of our path should be split
-        # into k pieces.  In the above example, this would
-        # be [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = [sum(repeat_indices == i) for i in range(curr_num)]
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        split_factors = np.zeros(curr_num, dtype="i")
+        for val in repeat_indices:
+            split_factors[val] += 1
+
         new_points = np.zeros((0, self.dim))
         for quad, sf in zip(bezier_quads, split_factors):
             # What was once a single cubic curve defined
