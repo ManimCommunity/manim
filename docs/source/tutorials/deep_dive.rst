@@ -188,8 +188,10 @@ configuration options.
 
 Inside the context manager, two things happen: an actual ``ToyExample``-scene
 object is instantiated, and the ``render`` method is called. Every way of using
-manim ultimately does something along of these lines, the library always instantiates
-the scene object and then calls its ``render`` method.
+Manim ultimately does something along of these lines, the library always instantiates
+the scene object and then calls its ``render`` method. To illustrate that this
+really is the case, let us briefly look at the two most common ways of rendering
+scenes:
 
 **Command Line Interface.** When using the CLI and running the command
 ``manim -qm -p toy_example.py ToyExample`` in your terminal, the actual
@@ -207,6 +209,52 @@ is handled by the ``%%manim`` magic command, which is implemented in the
 :meth:`some documentation <.ManimMagic.manim>` available for the magic command,
 and the code creating the scene class and calling its render method is located
 `here <https://github.com/ManimCommunity/manim/blob/ac1ee9a683ce8b92233407351c681f7d71a4f2db/manim/utils/ipython_magic.py#L137-L138>`__.
+
+
+Now that we know that either way, a :class:`.Scene` object is created, let us investigate
+what Manim does when that happens. When instantiating our scene object
+
+::
+
+    scene = ToyExample()
+
+the ``Scene.__init__`` method is called, given that we did not implement our own initialization
+method. Inspecting the corresponding code (see 
+`here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
+reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
+depend on any configuration options set in ``config``. Then the scene inspects the value of
+``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
+``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute. 
+
+The scene then asks its renderer to initialize the scene by calling
+
+::
+
+    self.renderer.init_scene(self)
+
+Inspecting both the default Cairo renderer and the OpenGL renderer shows that the ``init_scene``
+method effectively makes the renderer instantiate a :class:`.SceneFileWriter` object, which
+basically is Manim's interface to ``ffmpeg`` and actually writes the movie file. The Cairo
+renderer (see the implementation `here <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__) does not require any further initialization. The OpenGL renderer
+does some additional setup to enable the realtime rendering preview window, which we do not go
+into detail further here.
+
+.. warning::
+
+    Currently, there is a lot of interplay between a scene and its renderer. This is a flaw
+    in Manim's current architecture, and we are working on reducing this interdependency to
+    achieve a less convoluted code flow.
+
+After the renderer has been instantiated and initialized its file writer, the scene populates
+further initial attributes (notable mention: the ``mobjects`` attribute which keeps track
+of the mobjects that have been added to the scene). It is then done with its instantiation
+and ready to be rendered.  
+
+The rest of this article is concerned with the last line in our toy example script::
+
+    scene.render()
+
+This is where the actual magic happens.
 
 
 Mobject Initialization
