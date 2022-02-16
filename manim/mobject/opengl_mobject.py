@@ -66,6 +66,8 @@ class OpenGLMobject:
     rgbas = _Data()
 
     is_fixed_in_frame = _Uniforms()
+    is_fixed_orientation = _Uniforms()
+    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
     gloss = _Uniforms()
     shadow = _Uniforms()
 
@@ -85,6 +87,7 @@ class OpenGLMobject:
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame=False,
+        is_fixed_orientation=False,
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
@@ -109,6 +112,8 @@ class OpenGLMobject:
         self.depth_test = depth_test
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
+        self.is_fixed_orientation = float(is_fixed_orientation)
+        self.fixed_orientation_center = (0, 0, 0)
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -1317,7 +1322,7 @@ class OpenGLMobject:
     def get_family_updaters(self):
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
-    def add_updater(self, update_function, index=None, call_updater=True):
+    def add_updater(self, update_function, index=None, call_updater=False):
         if "dt" in get_parameters(update_function):
             updater_list = self.time_based_updaters
         else:
@@ -1575,7 +1580,7 @@ class OpenGLMobject:
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas ** wag_factor
+            alphas = alphas**wag_factor
             mob.set_points(
                 mob.points
                 + np.dot(
@@ -2349,11 +2354,20 @@ class OpenGLMobject:
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
-            self.uniforms[key] = interpolate(
-                mobject1.uniforms[key],
-                mobject2.uniforms[key],
-                alpha,
-            )
+            if key != "fixed_orientation_center":
+                self.uniforms[key] = interpolate(
+                    mobject1.uniforms[key],
+                    mobject2.uniforms[key],
+                    alpha,
+                )
+            else:
+                self.uniforms["fixed_orientation_center"] = tuple(
+                    interpolate(
+                        np.array(mobject1.uniforms["fixed_orientation_center"]),
+                        np.array(mobject2.uniforms["fixed_orientation_center"]),
+                        alpha,
+                    )
+                )
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
@@ -2486,8 +2500,22 @@ class OpenGLMobject:
         return self
 
     @affects_shader_info_id
+    def fix_orientation(self):
+        self.is_fixed_orientation = 1.0
+        self.fixed_orientation_center = tuple(self.get_center())
+        self.depth_test = True
+        return self
+
+    @affects_shader_info_id
     def unfix_from_frame(self):
         self.is_fixed_in_frame = 0.0
+        return self
+
+    @affects_shader_info_id
+    def unfix_orientation(self):
+        self.is_fixed_orientation = 0.0
+        self.fixed_orientation_center = (0, 0, 0)
+        self.depth_test = False
         return self
 
     @affects_shader_info_id
