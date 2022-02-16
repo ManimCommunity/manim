@@ -17,7 +17,7 @@ Manim reads your scene code and produces the corresponding animation. Throughout
 this article, we will focus on the following toy example::
 
     from manim import *
-    
+
     class ToyExample(Scene):
         def construct(self):
             s = Square(color=ORANGE, fill_opacity=0.5)
@@ -110,7 +110,7 @@ and all module members that should be exposed to the user upon running the ``*``
 are explicitly declared in the ``__all__`` variable of the module.
 
 Manim also uses this strategy internally: taking a peek at the file that is run when
-the import is called, ``__init__.py`` (see 
+the import is called, ``__init__.py`` (see
 `here <https://github.com/ManimCommunity/manim/blob/main/manim/__init__.py>`__),
 you will notice that most of the code in that module is concerned with importing
 members from various different submodules, again using ``*``-imports.
@@ -155,7 +155,7 @@ To make things a bit clearer, let us first consider the case that you
 have created a file ``toy_example.py`` which looks like this::
 
     from manim import *
-    
+
     class ToyExample(Scene):
         def construct(self):
             s = Square(color=ORANGE, fill_opacity=0.5)
@@ -193,7 +193,7 @@ the scene object and then calls its ``render`` method.
 
 **Command Line Interface.** When using the CLI and running the command
 ``manim -qm -p toy_example.py ToyExample`` in your terminal, the actual
-entry point is Manim's ``__main__.py`` file (located 
+entry point is Manim's ``__main__.py`` file (located
 `here <https://github.com/ManimCommunity/manim/blob/main/manim/__main__.py>`__.
 Manim uses `Click <https://click.palletsprojects.com/en/8.0.x/>`__ to implement
 the command line interface, and the corresponding code is located in Manim's
@@ -215,4 +215,3 @@ Mobject Initialization
 
 Producing Frames: The Render Loop
 ---------------------------------
-
