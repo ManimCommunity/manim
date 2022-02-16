@@ -219,12 +219,12 @@ what Manim does when that happens. When instantiating our scene object
     scene = ToyExample()
 
 the ``Scene.__init__`` method is called, given that we did not implement our own initialization
-method. Inspecting the corresponding code (see 
+method. Inspecting the corresponding code (see
 `here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
 reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
 depend on any configuration options set in ``config``. Then the scene inspects the value of
 ``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
-``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute. 
+``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute.
 
 The scene then asks its renderer to initialize the scene by calling
 
@@ -248,7 +248,7 @@ into detail further here.
 After the renderer has been instantiated and initialized its file writer, the scene populates
 further initial attributes (notable mention: the ``mobjects`` attribute which keeps track
 of the mobjects that have been added to the scene). It is then done with its instantiation
-and ready to be rendered.  
+and ready to be rendered.
 
 The rest of this article is concerned with the last line in our toy example script::
 
