@@ -10,3 +10,4 @@ Tutorials
    tutorials/a_deeper_look
    tutorials/configuration
    tutorials/using_text
+   tutorials/deep_dive
