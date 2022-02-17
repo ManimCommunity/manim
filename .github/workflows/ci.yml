@@ -147,8 +147,6 @@ jobs:
       - name: Add Windows dependencies to PATH
         if: runner.os == 'Windows'
         run: |
-          Remove-Item C:\msys64\mingw64\bin\python.exe -Force
-          Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
