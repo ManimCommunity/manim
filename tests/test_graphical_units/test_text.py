@@ -14,6 +14,7 @@ __module_test__ = "text"
 def test_Text2Color(scene):
     scene.add(Text("this is  a text  with spaces!", t2c={"spaces": RED}))
 
+
 # generated control data does not match control data produced locally on arch linux.
 # possibly due to pango version mismatch?
 
