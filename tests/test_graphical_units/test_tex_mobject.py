@@ -15,7 +15,6 @@ def test_color_inheritance(scene):
     tex = Tex("test color inheritance")
     mathtex = MathTex("test color inheritance")
     vgr = VGroup(tex, mathtex).arrange()
-
     VMobject.set_default()
 
     scene.add(vgr)
