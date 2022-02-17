@@ -17,6 +17,7 @@ def test_font_size():
     assert round(text_string.font_size, 5) == 14.4
     assert round(markuptext_string.font_size, 5) == 14.4
 
+
 def test_non_str_color():
     """Test that the Text and MarkupText can accept non_str color values
     i.e. colour.Color(red)."""
