@@ -22,7 +22,6 @@ def test_Text2Color(scene):
 def test_text_color_inheritance(scene):
     """Test that Text and MarkupText correctly inherit colour from
     their parent class."""
-
     VMobject.set_default(color=RED)
     # set both to a singular font so that the tests agree.
     text = Text("test_color_inheritance", font="Dejavu Sans")
