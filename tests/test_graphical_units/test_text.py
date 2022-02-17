@@ -14,6 +14,7 @@ __module_test__ = "text"
 def test_Text2Color(scene):
     scene.add(Text("this is  a text  with spaces!", t2c={"spaces": RED}))
 
+
 @pytest.mark.skipif(
     not sys.platform.startswith("linux"),
     reason="MacOS and Windows render fonts differently, so they need separate comparison data.",
