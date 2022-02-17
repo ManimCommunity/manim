@@ -229,6 +229,35 @@ class TransformFromCopy(Transform):
 
 
 class ClockwiseTransform(Transform):
+    """Transforms the points of a mobject along a clockwise oriented arc.
+
+    See also
+    --------
+    :class:`.Transform`, :class:`.CounterclockwiseTransform`
+
+    Examples
+    --------
+
+    .. manim:: ClockwiseExample
+
+        class ClockwiseExample(Scene):
+            def construct(self):
+                dl, dr = Dot(), Dot()
+                sl, sr = Square(), Square()
+
+                VGroup(dl, sl).arrange(DOWN).shift(2*LEFT)
+                VGroup(dr, sr).arrange(DOWN).shift(2*RIGHT)
+
+                self.add(dl, dr)
+                self.wait()
+                self.play(
+                    ClockwiseTransform(dl, sl),
+                    Transform(dr, sr)
+                )
+                self.wait()
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -240,6 +269,44 @@ class ClockwiseTransform(Transform):
 
 
 class CounterclockwiseTransform(Transform):
+    """Transforms the points of a mobject along a counterclockwise oriented arc.
+
+    See also
+    --------
+    :class:`.Transform`, :class:`.ClockwiseTransform`
+
+    Examples
+    --------
+
+    .. manim:: CounterclockwiseTransform_vs_Transform
+
+        class CounterclockwiseTransform_vs_Transform(Scene):
+            def construct(self):
+                # set up the numbers
+                c_transform = VGroup(DecimalNumber(number=3.141, num_decimal_places=3), DecimalNumber(number=1.618, num_decimal_places=3))
+                text_1 = Text("CounterclockwiseTransform", color=RED)
+                c_transform.add(text_1)
+
+                transform = VGroup(DecimalNumber(number=1.618, num_decimal_places=3), DecimalNumber(number=3.141, num_decimal_places=3))
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(c_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                c_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs move in clockwise direction for ClockwiseTransform()
+                self.play(CounterclockwiseTransform(c_transform[0], c_transform[1]))
+
+                # The mobs move straight up for Transform()
+                self.play(Transform(transform[0], transform[1]))
+
+    """
+
     def __init__(
         self,
         mobject: Mobject,
@@ -251,6 +318,31 @@ class CounterclockwiseTransform(Transform):
 
 
 class MoveToTarget(Transform):
+    """Transforms a mobject to the mobject stored in its ``target`` attribute.
+
+    After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target`
+    attribute of the mobject is populated with a copy of it. After modifying the attribute,
+    playing the :class:`.MoveToTarget` animation transforms the original mobject
+    into the modified one stored in the :attr:`target` attribute.
+
+    Examples
+    --------
+
+    .. manim:: MoveToTargetExample
+
+        class MoveToTargetExample(Scene):
+            def construct(self):
+                c = Circle()
+
+                c.generate_target()
+                c.target.set_fill(color=GREEN, opacity=0.5)
+                c.target.shift(2*RIGHT + UP).scale(0.5)
+
+                self.add(c)
+                self.play(MoveToTarget(c))
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
@@ -359,21 +451,81 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 
 class FadeToColor(ApplyMethod):
+    """Animation that changes color of a mobject.
+
+    Examples
+    --------
+
+    .. manim:: FadeToColorExample
+
+        class FadeToColorExample(Scene):
+            def construct(self):
+                self.play(FadeToColor(Text("Hello World!"), color=RED))
+
+    """
+
     def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
         super().__init__(mobject.set_color, color, **kwargs)
 
 
 class ScaleInPlace(ApplyMethod):
+    """Animation that scales a mobject by a certain factor.
+
+    Examples
+    --------
+
+    .. manim:: ScaleInPlaceExample
+
+        class ScaleInPlaceExample(Scene):
+            def construct(self):
+                self.play(ScaleInPlace(Text("Hello World!"), 2))
+
+    """
+
     def __init__(self, mobject: Mobject, scale_factor: float, **kwargs) -> None:
         super().__init__(mobject.scale, scale_factor, **kwargs)
 
 
 class ShrinkToCenter(ScaleInPlace):
+    """Animation that makes a mobject shrink to center.
+
+    Examples
+    --------
+
+    .. manim:: ShrinkToCenterExample
+
+        class ShrinkToCenterExample(Scene):
+            def construct(self):
+                self.play(ShrinkToCenter(Text("Hello World!")))
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject, 0, **kwargs)
 
 
 class Restore(ApplyMethod):
+    """Transforms a mobject to its last saved state.
+
+    To save the state of a mobject, use the :meth:`~.Mobject.save_state` method.
+
+    Examples
+    --------
+
+    .. manim:: RestoreExample
+
+        class RestoreExample(Scene):
+            def construct(self):
+                s = Square()
+                s.save_state()
+                self.play(FadeIn(s))
+                self.play(s.animate.set_color(PURPLE).set_opacity(0.5).shift(2*LEFT).scale(3))
+                self.play(s.animate.shift(5*DOWN).rotate(PI/4))
+                self.wait()
+                self.play(Restore(s), run_time=2)
+
+    """
+
     def __init__(self, mobject: Mobject, **kwargs) -> None:
         super().__init__(mobject.restore, **kwargs)
 
@@ -405,6 +557,17 @@ class ApplyMatrix(ApplyPointwiseFunction):
         The origin point for the transform. Defaults to ``ORIGIN``.
     kwargs
         Further keyword arguments that are passed to :class:`ApplyPointwiseFunction`.
+
+    Examples
+    --------
+
+    .. manim:: ApplyMatrixExample
+
+        class ApplyMatrixExample(Scene):
+            def construct(self):
+                matrix = [[1, 1], [0, 2/3]]
+                self.play(ApplyMatrix(matrix, Text("Hello World!")), ApplyMatrix(matrix, NumberPlane()))
+
     """
 
     def __init__(

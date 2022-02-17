@@ -50,7 +50,7 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "^2.26.0"
-dearpygui = { version = "^0.8", optional = true }
+dearpygui = { version = "^1.3.1", optional = true }
 skia-pathops = "^0.7.0"
 isosurfaces = "0.1.0"
 srt = "^3.5.0"
@@ -106,7 +106,7 @@ psutil = {version = "^5.8.0", python = "<3.10"}
 "Discord" = "https://www.manim.community/discord/"
 
 [tool.poetry.dev-dependencies.black]
-version = "^20.8b1"
+version = ">=20.8b1"
 allow-prereleases = false
 python = "^3.6"
 markers = "platform_python_implementation == 'CPython'"

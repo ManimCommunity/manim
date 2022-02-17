@@ -45,6 +45,19 @@ def test_implicit_graph(scene):
 
 
 @frames_comparison
+def test_plot_log_x_axis(scene):
+    ax = Axes(
+        x_range=[-1, 4],
+        y_range=[0, 3],
+        x_axis_config={"scaling": LogBase()},
+    )
+
+    graph = ax.plot(lambda x: 2 if x < 10 else 1, x_range=[-1, 4])
+
+    scene.add(ax, graph)
+
+
+@frames_comparison
 def test_number_plane_log(scene):
     """Test that NumberPlane generates its lines properly with a LogBase"""
     # y_axis log
