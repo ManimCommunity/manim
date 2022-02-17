@@ -179,86 +179,86 @@ class Colors(Enum):
 
     """
 
-    white: str = "#FFFFFF"
-    gray_a: str = "#DDDDDD"
-    gray_b: str = "#BBBBBB"
-    gray_c: str = "#888888"
-    gray_d: str = "#444444"
-    gray_e: str = "#222222"
-    black: str = "#000000"
-    lighter_gray: str = gray_a
-    light_gray: str = gray_b
-    gray: str = gray_c
-    dark_gray: str = gray_d
-    darker_gray: str = gray_e
+    # gray_a: Colors.gray_a = "#DDDDDD"
+    # gray_b: Colors.gray_b = "#BBBBBB"
+    # gray_c: Colors.gray_c = "#888888"
+    # gray_d: Colors.gray_d = "#444444"
+    # gray_e: Colors.gray_e = "#222222"
+    white: Colors.white = "#FFFFFF"
+    black: Colors.black = "#000000"
+    lighter_gray: Colors.lighter_gray = "#DDDDDD"
+    light_gray: Colors.light_gray = "#BBBBBB"
+    gray: Colors.gray = "#888888"
+    dark_gray: Colors.dark_gray = "#444444"
+    darker_gray: Colors.darker_gray = "#222222"
 
-    blue_a: str = "#C7E9F1"
-    blue_b: str = "#9CDCEB"
-    blue_c: str = "#58C4DD"
-    blue_d: str = "#29ABCA"
-    blue_e: str = "#236B8E"
-    pure_blue: str = "#0000FF"
-    blue: str = blue_c
-    dark_blue: str = blue_e
+    # blue_a: Colors.blue_a = "#C7E9F1"
+    # blue_b: Colors.blue_b = "#9CDCEB"
+    # blue_c: Colors.blue_c = "#58C4DD"
+    # blue_d: Colors.blue_d = "#29ABCA"
+    # blue_e: Colors.blue_e = "#236B8E"
+    pure_blue: Colors.pure_blue = "#0000FF"
+    blue: Colors.blue = "#58C4DD"
+    dark_blue: Colors.dark_blue = "#236B8E"
 
-    teal_a: str = "#ACEAD7"
-    teal_b: str = "#76DDC0"
-    teal_c: str = "#5CD0B3"
-    teal_d: str = "#55C1A7"
-    teal_e: str = "#49A88F"
-    teal: str = teal_c
+    # teal_a: Colors.teal_a = "#ACEAD7"
+    # teal_b: Colors.teal_b = "#76DDC0"
+    # teal_c: Colors.teal_c = "#5CD0B3"
+    # teal_d: Colors.teal_d = "#55C1A7"
+    # teal_e: Colors.teal_e = "#49A88F"
+    teal: Colors.teal = "#5CD0B3"
 
-    green_a: str = "#C9E2AE"
-    green_b: str = "#A6CF8C"
-    green_c: str = "#83C167"
-    green_d: str = "#77B05D"
-    green_e: str = "#699C52"
-    pure_green: str = "#00FF00"
-    green: str = green_c
+    # green_a: Colors.green_a = "#C9E2AE"
+    # green_b: Colors.green_b = "#A6CF8C"
+    # green_c: Colors.green_c = "#83C167"
+    # green_d: Colors.green_d = "#77B05D"
+    # green_e: Colors.green_e = "#699C52"
+    pure_green: Colors.pure_green = "#00FF00"
+    green: Colors.green = "#83C167"
 
-    yellow_a: str = "#FFF1B6"
-    yellow_b: str = "#FFEA94"
-    yellow_c: str = "#FFFF00"
-    yellow_d: str = "#F4D345"
-    yellow_e: str = "#E8C11C"
-    yellow: str = yellow_c
+    # yellow_a: Colors.yellow_a = "#FFF1B6"
+    # yellow_b: Colors.yellow_b = "#FFEA94"
+    # yellow_c: Colors.yellow_c = "#FFFF00"
+    # yellow_d: Colors.yellow_d = "#F4D345"
+    # yellow_e: Colors.yellow_e = "#E8C11C"
+    yellow: Colors.yellow = "#FFFF00"
 
-    gold_a: str = "#F7C797"
-    gold_b: str = "#F9B775"
-    gold_c: str = "#F0AC5F"
-    gold_d: str = "#E1A158"
-    gold_e: str = "#C78D46"
-    gold: str = gold_c
+    # gold_a: Colors.gold_a = "#F7C797"
+    # gold_b: Colors.gold_b = "#F9B775"
+    # gold_c: Colors.gold_c = "#F0AC5F"
+    # gold_d: Colors.gold_d = "#E1A158"
+    # gold_e: Colors.gold_e = "#C78D46"
+    gold: Colors.gold = "#F0AC5F"
 
-    red_a: str = "#F7A1A3"
-    red_b: str = "#FF8080"
-    red_c: str = "#FC6255"
-    red_d: str = "#E65A4C"
-    red_e: str = "#CF5044"
-    pure_red: str = "#FF0000"
-    red: str = red_c
+    # red_a: Colors.red_a = "#F7A1A3"
+    # red_b: Colors.red_b = "#FF8080"
+    # red_c: Colors.red_c = "#FC6255"
+    # red_d: Colors.red_d = "#E65A4C"
+    # red_e: Colors.red_e = "#CF5044"
+    pure_red: Colors.pure_red = "#FF0000"
+    red: Colors.red = "#FC6255"
 
-    maroon_a: str = "#ECABC1"
-    maroon_b: str = "#EC92AB"
-    maroon_c: str = "#C55F73"
-    maroon_d: str = "#A24D61"
-    maroon_e: str = "#94424F"
-    maroon: str = maroon_c
+    # maroon_a: Colors.maroon_a = "#ECABC1"
+    # maroon_b: Colors.maroon_b = "#EC92AB"
+    # maroon_c: Colors.maroon_c = "#C55F73"
+    # maroon_d: Colors.maroon_d = "#A24D61"
+    # maroon_e: Colors.maroon_e = "#94424F"
+    maroon: Colors.maroon = "#C55F73"
 
-    purple_a: str = "#CAA3E8"
-    purple_b: str = "#B189C6"
-    purple_c: str = "#9A72AC"
-    purple_d: str = "#715582"
-    purple_e: str = "#644172"
-    purple: str = purple_c
+    # purple_a: Colors.purple_a = "#CAA3E8"
+    # purple_b: Colors.purple_b = "#B189C6"
+    # purple_c: Colors.purple_c = "#9A72AC"
+    # purple_d: Colors.purple_d = "#715582"
+    # purple_e: Colors.purple_e = "#644172"
+    purple: Colors.purple = "#9A72AC"
 
-    pink: str = "#D147BD"
-    light_pink: str = "#DC75CD"
+    pink: Colors.pink = "#D147BD"
+    light_pink: Colors.light_pink = "#DC75CD"
 
-    orange: str = "#FF862F"
-    light_brown: str = "#CD853F"
-    dark_brown: str = "#8B4513"
-    gray_brown: str = "#736357"
+    orange: Colors.orange = "#FF862F"
+    light_brown: Colors.light_brown = "#CD853F"
+    dark_brown: Colors.dark_brown = "#8B4513"
+    gray_brown: Colors.gray_brown = "#736357"
 
 
 def print_constant_definitions():
@@ -468,7 +468,7 @@ def rgb_to_color(rgb: Iterable[float]) -> Color:
     return Color(rgb=rgb)
 
 
-def rgba_to_color(rgba: Iterable[float]) -> Color:
+def rgba_to_color(rgba: np.ndarray) -> Color:
     return rgb_to_color(rgba[:3])
 
 
