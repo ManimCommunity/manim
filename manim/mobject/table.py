@@ -71,7 +71,8 @@ from colour import Color
 
 from .. import config
 from ..animation.composition import AnimationGroup
-from ..animation.creation import *
+from ..animation.creation import Create, Write
+from ..animation.fading import FadeIn
 from ..constants import *
 from ..mobject.geometry import Line, Polygon
 from ..mobject.numbers import DecimalNumber, Integer
@@ -899,6 +900,7 @@ class Table(VGroup):
         line_animation: Callable[[VGroup], None] = Create,
         label_animation: Callable[[VGroup], None] = Write,
         element_animation: Callable[[VGroup], None] = Create,
+        entry_animation: Callable[[VGroup], None] = FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -939,27 +941,31 @@ class Table(VGroup):
                     self.play(table.create())
                     self.wait()
         """
-        if len(self.get_labels()) > 0:
-            animations = [
-                line_animation(
-                    VGroup(self.vertical_lines, self.horizontal_lines),
-                    run_time=run_time,
-                    **kwargs,
-                ),
+        animations = [
+            line_animation(
+                VGroup(self.vertical_lines, self.horizontal_lines),
+                run_time=run_time,
+                **kwargs,
+            ),
+            element_animation(
+                self.elements_without_labels.set_z_index(2), run_time=run_time, **kwargs
+            ),
+        ]
+
+        if self.get_labels():
+            animations += [
                 label_animation(self.get_labels(), run_time=run_time, **kwargs),
-                element_animation(
-                    self.elements_without_labels, run_time=run_time, **kwargs
-                ),
             ]
-        else:
-            animations = [
-                line_animation(
-                    VGroup(self.vertical_lines, self.horizontal_lines),
+
+        if self.get_entries():
+            animations += [
+                entry_animation(
+                    self.get_entries_without_labels((1, 1)).background_rectangle,
                     run_time=run_time,
                     **kwargs,
-                ),
-                element_animation(self.elements, run_time=run_time, **kwargs),
+                )
             ]
+
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
     def scale(self, scale_factor: float, **kwargs):
