@@ -516,9 +516,15 @@ class CoordinateSystem:
         :meth:`~.CoordinateSystem.get_vertical_line`
         :meth:`~.CoordinateSystem.get_horizontal_line`
         """
+
         line_config = line_config if line_config is not None else {}
+
+        if color is None:
+            color = VMobject().color
+
         line_config["color"] = color
         line_config["stroke_width"] = stroke_width
+
         axis = self.get_axis(index)
         line = line_func(axis.get_projection(point), point, **line_config)
         return line
