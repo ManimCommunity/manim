@@ -1,9 +1,10 @@
 import pytest
-from manim import *
 
+from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "tex_mobject"
+
 
 @frames_comparison
 def test_color_inheritance(scene):
