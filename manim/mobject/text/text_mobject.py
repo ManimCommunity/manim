@@ -64,7 +64,8 @@ from typing import Iterable, Sequence
 import manimpango
 import numpy as np
 from colour import Color
-from manimpango import MarkupUtils, PangoUtils, TextSetting
+from manimpango.cmanimpango import MarkupUtils, TextSetting
+from manimpango.utils import PangoUtils
 
 from manim import config, logger
 from manim.constants import *
