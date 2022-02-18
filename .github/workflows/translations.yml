@@ -1,7 +1,7 @@
 name: i18n
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -12,8 +12,8 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
       with:
-        repository: ${{ github.event.pull_request.head.repo.full_name }}
-        ref: ${{ github.event.pull_request.head.ref }}
+        repository: ManimCommunity/manim
+        ref: main
 
     - name: Setup Python
       uses: actions/setup-python@v2
