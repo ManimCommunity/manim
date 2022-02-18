@@ -70,6 +70,7 @@ from typing import Callable, Iterable, Sequence
 from colour import Color
 
 from .. import config
+from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
@@ -895,12 +896,11 @@ class Table(VGroup):
 
     def create(
         self,
-        run_time: float = 1,
         lag_ratio: float = 1,
-        line_animation: Callable[[VGroup], None] = Create,
-        label_animation: Callable[[VGroup], None] = Write,
-        element_animation: Callable[[VGroup], None] = Create,
-        entry_animation: Callable[[VGroup], None] = FadeIn,
+        line_animation: Callable[[VMobject | VGroup], Animation] = Create,
+        label_animation: Callable[[VMobject | VGroup], Animation] = Write,
+        element_animation: Callable[[VMobject | VGroup], Animation] = Create,
+        entry_animation=FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -941,30 +941,30 @@ class Table(VGroup):
                     self.play(table.create())
                     self.wait()
         """
-        animations = [
+        animations: Sequence[Animation] = [
             line_animation(
                 VGroup(self.vertical_lines, self.horizontal_lines),
-                run_time=run_time,
                 **kwargs,
             ),
-            element_animation(
-                self.elements_without_labels.set_z_index(2), run_time=run_time, **kwargs
-            ),
+            element_animation(self.elements_without_labels.set_z_index(2), **kwargs),
         ]
 
         if self.get_labels():
             animations += [
-                label_animation(self.get_labels(), run_time=run_time, **kwargs),
+                label_animation(self.get_labels(), **kwargs),
             ]
 
         if self.get_entries():
-            animations += [
-                entry_animation(
-                    self.get_entries_without_labels((1, 1)).background_rectangle,
-                    run_time=run_time,
-                    **kwargs,
-                )
-            ]
+            for entry in self.elements_without_labels:
+                try:
+                    animations += [
+                        entry_animation(
+                            entry.background_rectangle,
+                            **kwargs,
+                        )
+                    ]
+                except AttributeError:
+                    continue
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
