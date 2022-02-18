@@ -1,70 +1,64 @@
- name: CI
-
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+ name: i18n
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  push_request:
     branches:
       - main
 
 jobs:
-  run:
+  tests:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-      - uses: actions/checkout@v2
+        - name: Checkout the repository
+        - uses: actions/checkout@v2
+            with:
+              repository: ${{ github.event.pull_request.head.repo.full_name }}
+              ref: ${{ github.event.pull_request.head.ref }}
+
+        - name: Setup Python
+          uses: actions/setup-python@v2
+
+        - name: Install Poetry
+          run: |
+            pip install wheel
+            curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+        - name: Setup cache variables
+          shell: bash
+          id: cache-vars
+          run: |
+            export PATH="$HOME/.poetry/bin:$PATH"
+            echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
+            echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
+
+        - name: Setup Poetry cache
+          uses: actions/cache@v2
           with:
-            repository: ${{ github.event.pull_request.head.repo.full_name }}
-            ref: ${{ github.event.pull_request.head.ref }}
+            path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
+            key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+        - name: Install and cache ffmpeg (all OS)
+          uses: FedericoCarboni/setup-ffmpeg@v1
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+          id: setup-ffmpeg
 
-      - name: Install Poetry
-        run: |
-          pip install wheel
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        - name: Install system dependencies (Linux)
+          if: runner.os == 'Linux'
+          run: |
+            sudo apt update
+            sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
+            echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+            # start xvfb in the background
+            sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
-      - name: Setup cache variables
-        shell: bash
-        id: cache-vars
-        run: |
-          export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
+        - name: Install manim
+          run: |
+            poetry config experimental.new-installer false
+            poetry install -E webgl_renderer
 
-      - name: Setup Poetry cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+        - name: Update translations
+          run: cd docs && pip install -r requirements.txt && poetry run make i18n
 
-      - name: Install and cache ffmpeg (all OS)
-        uses: FedericoCarboni/setup-ffmpeg@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        id: setup-ffmpeg
-
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-          # start xvfb in the background
-          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-
-      - name: Install manim
-        run: |
-          poetry config experimental.new-installer false
-          poetry install -E webgl_renderer
-
-      - name: Update translations
-        run: cd docs && pip install -r requirements.txt && poetry run make i18n
-
-      - name: Add & Commit
-        uses: EndBug/add-and-commit@v7.4.0
+        - name: Add & Commit
+          uses: EndBug/add-and-commit@v7.4.0
