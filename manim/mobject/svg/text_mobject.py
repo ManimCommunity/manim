@@ -719,8 +719,8 @@ class Text(SVGMobject):
             temp_settings.append(TextSetting(start, len(self.text), **default_args))
         settings = sorted(temp_settings, key=lambda setting: setting.start)
 
+        line_num = 0
         if re.search(r"\n", self.text):
-            line_num = 0
             for start, end in self._find_indexes("\n", self.text):
                 for setting in settings:
                     if setting.line_num == -1:
@@ -736,7 +736,7 @@ class Text(SVGMobject):
                         break
         for setting in settings:
             if setting.line_num == -1:
-                setting.line_num = 0
+                setting.line_num = line_num
         return settings
 
     def _text2svg(self, color: Color):
