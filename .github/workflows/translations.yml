@@ -62,3 +62,6 @@ jobs:
 
     - name: Add & Commit
       uses: EndBug/add-and-commit@v7.4.0
+      with:
+        message: 'Updated Translations (CI)'
+        push: '--force'
