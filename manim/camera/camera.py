@@ -354,16 +354,10 @@ class Camera:
             The pixel array which can then be passed to set_background.
         """
 
-        logger.info(
-            "Starting set_background; for reference, the current time is ",
-            time.strftime("%H:%M:%S"),
-        )
+        logger.info("Starting set_background")
         coords = self.get_coords_of_all_pixels()
         new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
-        logger.info(
-            "Ending set_background; for reference, the current time is ",
-            time.strftime("%H:%M:%S"),
-        )
+        logger.info("Ending set_background")
 
         return self.convert_pixel_array(new_background, convert_from_floats=True)
 
