@@ -70,8 +70,8 @@ from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE, Colors, color_gradient
+from ...mobject.types.vectorized_mobject import VGroup, VMobject
+from ...utils.color import Colors, color_gradient
 from ...utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -406,7 +406,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color = WHITE,
+        color: Color | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -427,6 +427,7 @@ class Text(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
+
         self.line_spacing = line_spacing
         self.font = font
         self._font_size = float(font_size)
@@ -470,6 +471,8 @@ class Text(SVGMobject):
             )
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
+
+        color = Color(color) if color else VMobject().color
         file_name = self._text2svg(color)
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -596,7 +599,7 @@ class Text(SVGMobject):
     def _text2hash(self, color: Color):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "PANGO" + self.font + self.slant + self.weight + color
+            "PANGO" + self.font + self.slant + self.weight + color.hex_l
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
@@ -683,8 +686,9 @@ class Text(SVGMobject):
             (self.t2w, "weight"),
             (self.t2c, "color"),
         ]
+        # setting_args requires values to be strings
         default_args = {
-            arg: getattr(self, arg) if arg != "color" else color for _, arg in t2xs
+            arg: getattr(self, arg) if arg != "color" else str(color) for _, arg in t2xs
         }
 
         settings = self._get_settings_from_t2xs(t2xs, default_args)
@@ -737,6 +741,7 @@ class Text(SVGMobject):
         for setting in settings:
             if setting.line_num == -1:
                 setting.line_num = line_num
+
         return settings
 
     def _text2svg(self, color: Color):
@@ -896,8 +901,6 @@ class MarkupText(SVGMobject):
         The fill opacity with 1 meaning opaque and 0 meaning transparent.
     stroke_width : :class:`int`
         Stroke width.
-    color : :class:`str`
-        Global color setting for the entire text. Local overrides are possible.
     font_size : :class:`float`
         Font size.
     line_spacing : :class:`int`
@@ -1089,7 +1092,7 @@ class MarkupText(SVGMobject):
         text: str,
         fill_opacity: float = 1,
         stroke_width: float = 0,
-        color: Color = WHITE,
+        color: Color | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: int = -1,
         font: str = "",
@@ -1105,6 +1108,7 @@ class MarkupText(SVGMobject):
         disable_ligatures: bool = False,
         **kwargs,
     ):
+
         self.text = text
         self.line_spacing = line_spacing
         self.font = font
@@ -1138,7 +1142,9 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        file_name = self._text2svg(Color(color) if color else None)
+        color = Color(color) if color else VMobject().color
+        file_name = self._text2svg(color)
+
         PangoUtils.remove_last_M(file_name)
         super().__init__(
             file_name,
@@ -1150,6 +1156,7 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
+
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 

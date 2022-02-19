@@ -27,16 +27,18 @@ import operator as op
 import re
 from functools import reduce
 from textwrap import dedent
+from typing import Dict, Iterable, Optional
 
 from colour import Color
+
+from manim.utils.tex import TexTemplate
 
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ...utils.color import BLACK, WHITE
+from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
@@ -64,20 +66,21 @@ class SingleStringMathTex(SVGMobject):
 
     def __init__(
         self,
-        tex_string,
-        stroke_width=0,
-        fill_opacity=1.0,
-        background_stroke_width=0,
-        background_stroke_color=BLACK,
-        should_center=True,
-        height=None,
-        organize_left_to_right=False,
-        tex_environment="align*",
-        tex_template=None,
-        font_size=DEFAULT_FONT_SIZE,
-        color=Color(WHITE),
+        tex_string: str,
+        stroke_width: float = 0,
+        should_center: bool = True,
+        height: float | None = None,
+        organize_left_to_right: bool = False,
+        tex_environment: str = "align*",
+        tex_template: TexTemplate | None = None,
+        font_size: float = DEFAULT_FONT_SIZE,
         **kwargs,
     ):
+
+        if kwargs.get("color") is None:
+            # makes it so that color isn't explicitly passed for these mobs,
+            # and can instead inherit from the parent
+            kwargs["color"] = VMobject().color
 
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
@@ -98,12 +101,8 @@ class SingleStringMathTex(SVGMobject):
             should_center=should_center,
             stroke_width=stroke_width,
             height=height,
-            fill_opacity=fill_opacity,
-            background_stroke_width=background_stroke_width,
-            background_stroke_color=background_stroke_color,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
-            color=color,
             **kwargs,
         )
         # used for scaling via font_size.setter
@@ -263,10 +262,10 @@ class MathTex(SingleStringMathTex):
     def __init__(
         self,
         *tex_strings,
-        arg_separator=" ",
-        substrings_to_isolate=None,
-        tex_to_color_map=None,
-        tex_environment="align*",
+        arg_separator: str = " ",
+        substrings_to_isolate: Iterable[str] | None = None,
+        tex_to_color_map: dict[str, Color] = None,
+        tex_environment: str = "align*",
         **kwargs,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
