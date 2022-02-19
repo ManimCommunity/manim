@@ -741,7 +741,7 @@ class Text(SVGMobject):
         for setting in settings:
             if setting.line_num == -1:
                 setting.line_num = line_num
-                
+
         return settings
 
     def _text2svg(self, color: Color):
