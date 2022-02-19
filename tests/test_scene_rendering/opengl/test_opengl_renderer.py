@@ -87,7 +87,7 @@ def test_pixel_coords_to_space_coords(use_opengl_renderer):
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
 
-    renderer = scene.renderer 
+    renderer = scene.renderer
     renderer.update_frame(scene)
 
     px, py = 3, 2
@@ -99,5 +99,10 @@ def test_pixel_coords_to_space_coords(use_opengl_renderer):
     ey = fc[1] + (fh / ph) * (py - ph / 2)
     ez = fc[2]
 
-    assert (renderer.pixel_coords_to_space_coords(px, py) == np.array([ex, ey, ez])).all()
-    assert (renderer.pixel_coords_to_space_coords(px, py, top_left=True) == np.array([ex, -ey, ez])).all()
+    assert (
+        renderer.pixel_coords_to_space_coords(px, py) == np.array([ex, ey, ez])
+    ).all()
+    assert (
+        renderer.pixel_coords_to_space_coords(px, py, top_left=True)
+        == np.array([ex, -ey, ez])
+    ).all()
