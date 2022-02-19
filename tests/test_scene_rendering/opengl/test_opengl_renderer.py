@@ -80,3 +80,29 @@ def test_get_frame_with_preview_enabled(use_opengl_renderer):
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
+
+
+@pytest.mark.parametrize("enable_preview", [True])
+def test_pixel_coords_to_space_coords(use_opengl_renderer):
+    scene = SquareToCircle()
+    assert isinstance(scene.renderer, OpenGLRenderer)
+
+    renderer = scene.renderer
+    renderer.update_frame(scene)
+
+    px, py = 3, 2
+    pw, ph = renderer.get_pixel_shape()
+    _, fh = renderer.camera.get_shape()
+    fc = renderer.camera.get_center()
+
+    ex = fc[0] + (fh / ph) * (px - pw / 2)
+    ey = fc[1] + (fh / ph) * (py - ph / 2)
+    ez = fc[2]
+
+    assert (
+        renderer.pixel_coords_to_space_coords(px, py) == np.array([ex, ey, ez])
+    ).all()
+    assert (
+        renderer.pixel_coords_to_space_coords(px, py, top_left=True)
+        == np.array([ex, -ey, ez])
+    ).all()
