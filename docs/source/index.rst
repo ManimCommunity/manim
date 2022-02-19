@@ -29,6 +29,7 @@ context, instructions on how to cite a particular release can be found
    reference
    plugins
    reporting_bugs
+   internals
    contributing
    conduct
 
