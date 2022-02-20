@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import inspect
 from pathlib import Path
-from typing import Callable, Optional, Tuple, Type
+from typing import Callable
 
 from _pytest.fixtures import FixtureRequest
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
+from typing import Callable, Iterable, Sequence
 
 import moderngl
 import numpy as np
@@ -95,9 +95,7 @@ class OpenGLVMobject(OpenGLMobject):
         **kwargs,
     ):
         self.data = {}
-        self.fill_color = fill_color
         self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
@@ -128,6 +126,11 @@ class OpenGLVMobject(OpenGLMobject):
         self.orientation = 1
         super().__init__(**kwargs)
         self.refresh_unit_normal()
+
+        if fill_color:
+            self.fill_color = Color(fill_color)
+        if stroke_color:
+            self.stroke_color = Color(stroke_color)
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -197,11 +200,6 @@ class OpenGLVMobject(OpenGLMobject):
         --------
         :meth:`~.OpenGLVMobject.set_style`
         """
-        if color is not None:
-            if isinstance(color, str):
-                self.fill_color = Color(color)
-            else:
-                self.fill_color = color
         if opacity is not None:
             self.fill_opacity = opacity
         if recurse:
@@ -219,11 +217,6 @@ class OpenGLVMobject(OpenGLMobject):
         background=None,
         recurse=True,
     ):
-        if color is not None:
-            if isinstance(color, str):
-                self.stroke_color = Color(color)
-            else:
-                self.stroke_color = color
         if opacity is not None:
             self.stroke_opacity = opacity
         if recurse:
@@ -309,10 +302,6 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def set_color(self, color, opacity=None, recurse=True):
-        if isinstance(color, str):
-            self.color = Color(color)
-        else:
-            self.color = color
         if opacity is not None:
             self.opacity = opacity
 
@@ -339,13 +328,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_colors(self):
-        return [rgb_to_hex(rgba[:3]) for rgba in self.fill_rgba]
+        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [rgb_to_hex(rgba[:3]) for rgba in self.stroke_rgba]
+        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]
@@ -382,6 +371,15 @@ class OpenGLVMobject(OpenGLMobject):
         if self.has_stroke():
             return self.get_stroke_color()
         return self.get_fill_color()
+
+    def get_colors(self):
+        if self.has_stroke():
+            return self.get_stroke_colors()
+        return self.get_fill_colors()
+
+    stroke_color = property(get_stroke_color, set_stroke)
+    color = property(get_color, set_color)
+    fill_color = property(get_fill_color, set_fill)
 
     def has_stroke(self):
         return any(self.get_stroke_widths()) and any(self.get_stroke_opacities())
@@ -1575,6 +1573,8 @@ class OpenGLVMobject(OpenGLMobject):
     def get_fill_uniforms(self):
         return {
             "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "is_fixed_orientation": float(self.is_fixed_orientation),
+            "fixed_orientation_center": self.fixed_orientation_center,
             "gloss": self.gloss,
             "shadow": self.shadow,
         }

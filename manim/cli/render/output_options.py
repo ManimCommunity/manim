@@ -23,7 +23,7 @@ output_options = option_group(
         "--write_to_movie",
         is_flag=True,
         default=None,
-        help="Write to a file.",
+        help="Write the video rendered with opengl to a file.",
     ),
     option(
         "--media_dir",

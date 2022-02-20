@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -63,7 +63,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         font_size: float = DEFAULT_FONT_SIZE,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.number = number

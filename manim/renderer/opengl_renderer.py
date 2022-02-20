@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import itertools as it
+import sys
 import time
 from typing import Any
+
+if sys.version_info < (3, 8):
+    from backports.cached_property import cached_property
+else:
+    from functools import cached_property
 
 import moderngl
 import numpy as np
@@ -105,11 +111,13 @@ class OpenGLCamera(OpenGLMobject):
         self.model_matrix[:, 3][:3] = position
         return self
 
-    def get_view_matrix(self, format=True):
-        if format:
-            return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
-        else:
-            return np.linalg.inv(self.model_matrix)
+    @cached_property
+    def formatted_view_matrix(self):
+        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+
+    @cached_property
+    def unformatted_view_matrix(self):
+        return np.linalg.inv(self.model_matrix)
 
     def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
@@ -344,7 +352,9 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
+                shader.set_uniform(
+                    "u_view_matrix", self.scene.camera.formatted_view_matrix
+                )
                 shader.set_uniform(
                     "u_projection_matrix",
                     self.scene.camera.projection_matrix,
@@ -412,8 +422,22 @@ class OpenGLRenderer:
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
 
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            self.update_frame(scene)
+
+            if not self.skip_animations:
+                for _ in range(int(config.frame_rate * scene.duration)):
+                    self.file_writer.write_frame(self)
+
+            if self.window is not None:
+                self.window.swap_buffers()
+                while time.time() - self.animation_start_time < scene.duration:
+                    pass
+            self.animation_elapsed_time = scene.duration
+
+        else:
             scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
@@ -544,7 +568,9 @@ class OpenGLRenderer:
         return np_buf
 
     # Returns offset from the bottom left corner in pixels.
-    def pixel_coords_to_space_coords(self, px, py, relative=False):
+    # top_left flag should be set to True when using a GUI framework
+    # where the (0,0) is at the top left: e.g. PySide6
+    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])
@@ -556,7 +582,9 @@ class OpenGLRenderer:
         else:
             # Only scale wrt one axis
             scale = fh / ph
-            return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+            return fc + scale * np.array(
+                [(px - pw / 2), (-1 if top_left else 1) * (py - ph / 2), 0]
+            )
 
     @property
     def background_color(self):
