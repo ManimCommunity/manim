@@ -65,8 +65,8 @@ A total of 58 pull requests were merged for this release.
 Breaking changes
 ----------------
 
-* `#2387 <https://github.com/ManimCommunity/manim/pull/2387>`__: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`.
-   - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use `Axes`' methods. Also improves `BarChart`'s configuration and ease of use.
+* `#2387 <https://github.com/ManimCommunity/manim/pull/2387>`__: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`
+   - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use :class:`Axes`' methods. Also improves :class:`BarChart`'s configuration and ease of use.
    - Added :meth:`~.BarChart.add_bar_labels` to annotate the value of each bar of a :class:`~.BarChart`.
 
 Deprecated classes and functions
@@ -79,95 +79,120 @@ New features
 ------------
 
 * `#2504 <https://github.com/ManimCommunity/manim/pull/2504>`__: Added finer control over :meth:`.Scene.wait` being static (i.e., no updaters) or not
-
+   - Added keyword argument ``frozen_frame`` to :class:`.Wait` and :meth:`.Scene.wait`
+   - New convenience method: :meth:`.Scene.pause` (alias for ``Scene.wait(frozen_frame=True)``)
+   - Changed default behavior for OpenGL updaters: updater functions are now not called by default when they are added
+   - Changed default behavior of :meth:`.Scene.should_mobjects_update`: made it respect the set value of ``Wait.frozen_frame``, changed automatic determination of frozen frame state to also consider Scene updaters
 
 Enhancements
 ------------
 
-* `#2467 <https://github.com/ManimCommunity/manim/pull/2467>`__: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects.
+* `#2467 <https://github.com/ManimCommunity/manim/pull/2467>`__: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects
 
 
 * `#2537 <https://github.com/ManimCommunity/manim/pull/2537>`__: Added support for PySide coordinate system
-   The function `pixel_coords_to_space_coords` is used to find the coordinates of a mouse event on the Manim preview window. However, the coordinate system (where the origin is bottom left) is specific to Pyglet only. To support coordinate systems where the origin is at the top left, such as PySide or PyQT, I have added a parameter to flip between the two.
 
-   `topLeft` defaults to `False` to support existing code without needing any changes.
 
-* `#2158 <https://github.com/ManimCommunity/manim/pull/2158>`__: Added OpenGL compatibility to `ThreeDScene.add_fixed_orientation_mobjects` and  `ThreeDScene.add_fixed_in_frame_mobjects`
+* `#2158 <https://github.com/ManimCommunity/manim/pull/2158>`__: Added OpenGL compatibility to :meth:`.ThreeDScene.add_fixed_orientation_mobjects` and  :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
 
 
 * `#2535 <https://github.com/ManimCommunity/manim/pull/2535>`__: Implemented performance enhancement for :meth:`.VMobject.insert_n_curves_to_point_list`
-   The older method was slow (ran in O(n^2) time), this is an improvement over it (runs in O(n) time)
-   Thanks to `notkev#9458` from the discord server for suggesting this method
 
-* `#2516 <https://github.com/ManimCommunity/manim/pull/2516>`__: Cache view matrix for :class:`~.OpenGLCamera`
+
+* `#2516 <https://github.com/ManimCommunity/manim/pull/2516>`__: Cached view matrix for :class:`~.OpenGLCamera`
+
+
+* `#2508 <https://github.com/ManimCommunity/manim/pull/2508>`__: Improve performance for :meth:`.Mobject.become`
+
+
+* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties 
 
 
 * `#2396 <https://github.com/ManimCommunity/manim/pull/2396>`__: Fixed animations introducing or removing objects
-   * `ShowPassingFlash` now removes objects when the animation is finished
-   * Added `introducer` flag to `Animation` analogous to `remover`
-   * Updated graph vertex addition handling
+   * :class:`.ShowPassingFlash` now removes objects when the animation is finished
+   * Added ``introducer`` keyword argument to :clas:`.Animation` analogous to ``remover``
+   * Updated :class:`.Graph` vertex addition handling
 
 Fixed bugs
 ----------
 
-* `#2556 <https://github.com/ManimCommunity/manim/pull/2556>`__: Show highlights when creating table
+* `#2556 <https://github.com/ManimCommunity/manim/pull/2556>`__: Fixed showing highlighted cells when creating :class:`.Table`
 
 
-* `#2559 <https://github.com/ManimCommunity/manim/pull/2559>`__: Fix setting line numbers in :class:`Text` when using ManimPango settings
-   * Fix setting line numbers in Text when using ManimPango settings
+* `#2559 <https://github.com/ManimCommunity/manim/pull/2559>`__: Fix setting line numbers in :class:`.Text` when using ManimPango settings
 
-* `#2548 <https://github.com/ManimCommunity/manim/pull/2548>`__: Fix axes plotting bug with logarithmic x-axis
+
+* `#2557 <https://github.com/ManimCommunity/manim/pull/2557>`__: Fixed logger bug in :meth:`.Camera.make_background_from_func`
+
+
+* `#2548 <https://github.com/ManimCommunity/manim/pull/2548>`__: Fixed :class:`.Axes` plotting bug with logarithmic x-axis
 
 
 * `#1547 <https://github.com/ManimCommunity/manim/pull/1547>`__: Fixed certain unicode characters in users' paths causing issues on Windows
 
 
-* `#2526 <https://github.com/ManimCommunity/manim/pull/2526>`__: Fix segfault when using `--enable_gui`
+* `#2526 <https://github.com/ManimCommunity/manim/pull/2526>`__: Fixed segfault when using ``--enable_gui``
 
 
 * `#2538 <https://github.com/ManimCommunity/manim/pull/2538>`__: Fixed flickering OpenGL preview when using ``frozen_frame``
 
 
 * `#2528 <https://github.com/ManimCommunity/manim/pull/2528>`__: Fixed custom naming of gifs and added some tests
-   Currently specifying a different name for gifs renders a mp4 file.
-   Fixed that behaviour, and added some tests for the same
+
 
 * `#2487 <https://github.com/ManimCommunity/manim/pull/2487>`__: Fixed :meth:`.ThreeDCamera.remove_fixed_orientation_mobjects`
 
 
 * `#2530 <https://github.com/ManimCommunity/manim/pull/2530>`__: Use single source of truth for default text values
-   * Default values for text are now taken from dictionary instead of from object attributes
-
-* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Change `color`, `stroke_color` and `fill_color` fields to properties
-   - `color`, `stroke_color` and `fill_color` are now properties in `VMobject`, making them synchronized with `set_*` and `get_*` methods
-   - Surrounding code depending on these attributes was also updated to work properly with them
-
-* `#2494 <https://github.com/ManimCommunity/manim/pull/2494>`__: Fixed `.gif` related issues
 
 
-* `#2490 <https://github.com/ManimCommunity/manim/pull/2490>`__: Fixed two issues of :class:`~.SVGMobject`
+* `#2494 <https://github.com/ManimCommunity/manim/pull/2494>`__: Fixed an issue related to previewing gifs
 
 
-* `#2357 <https://github.com/ManimCommunity/manim/pull/2357>`__: Fixed screeninfo.get_monitors returning empty on osx
+* `#2490 <https://github.com/ManimCommunity/manim/pull/2490>`__: Fixed order of transformation application in :class:`~.SVGMobject`
 
 
-* `#2444 <https://github.com/ManimCommunity/manim/pull/2444>`__: Fix `add_axes` in :class:`~.VectorScene`.
+* `#2357 <https://github.com/ManimCommunity/manim/pull/2357>`__: Fixed ``screeninfo.get_monitors`` for MacOS
+
+
+* `#2444 <https://github.com/ManimCommunity/manim/pull/2444>`__: Fixed :meth:`.VectorScene.add_axes`
 
 
 Documentation-related changes
 -----------------------------
 
-* `#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our Github wiki
+* `#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our GitHub wiki
 
 
-* `#2458 <https://github.com/ManimCommunity/manim/pull/2458>`__: Improved documentation for `Rotate`
+* `#2458 <https://github.com/ManimCommunity/manim/pull/2458>`__: Improved documentation for :class:`.Rotate`
 
 
-* `#2465 <https://github.com/ManimCommunity/manim/pull/2465>`__: Added documentation for `index_labels`.
+* `#2459 <https://github.com/ManimCommunity/manim/pull/2459>`__: Added examples to some transform animations
 
 
-* `#2431 <https://github.com/ManimCommunity/manim/pull/2431>`__: Changed example in Surface.set_fill_by_value()
-   This changes the example in the set_fill_by_value() method.
+* `#2517 <https://github.com/ManimCommunity/manim/pull/2517>`__: Added guide on profiling and improving performance
+
+
+* `#2518 <https://github.com/ManimCommunity/manim/pull/2518>`__: Added imports to examples for ``deprecation`` decorator
+
+
+* `#2499 <https://github.com/ManimCommunity/manim/pull/2499>`__: Improved help text for ``--write_to_movie``
+
+
+* `#2465 <https://github.com/ManimCommunity/manim/pull/2465>`__: Added documentation for :func:`.index_labels`
+
+
+* `#2495 <https://github.com/ManimCommunity/manim/pull/2495>`__: Updated minimal LaTeX installation instructions
+
+
+* `#2500 <https://github.com/ManimCommunity/manim/pull/2500>`__: Added note about contributions during refactor period
+
+
+* `#2431 <https://github.com/ManimCommunity/manim/pull/2431>`__: Changed example in :meth:`.Surface.set_fill_by_value`
+
+
+* `#2485 <https://github.com/ManimCommunity/manim/pull/2485>`__: Fixed some typos in documentation
+
 
 * `#2493 <https://github.com/ManimCommunity/manim/pull/2493>`__: Fixed typo in documentation for parameters of :class:`.Square`
 
@@ -175,8 +200,14 @@ Documentation-related changes
 * `#2482 <https://github.com/ManimCommunity/manim/pull/2482>`__: Updated Python version requirement in installation guide
 
 
-* `#2438 <https://github.com/ManimCommunity/manim/pull/2438>`__: Removed unnecessary rotation in example
-   - Add missing parentheses in the files `vectorized_mobject.py` and `opengl_vectorized_mobject.py`
+* `#2438 <https://github.com/ManimCommunity/manim/pull/2438>`__: Removed unnecessary rotation from example
+
+
+* `#2468 <https://github.com/ManimCommunity/manim/pull/2468>`__: Hid more private methods from the docs
+
+
+* `#2466 <https://github.com/ManimCommunity/manim/pull/2466>`__: Fixed a typo in the documentation for plugins
+
 
 * `#2448 <https://github.com/ManimCommunity/manim/pull/2448>`__: Improvements to the ``.pot`` files cleaning system
 
@@ -187,37 +218,46 @@ Documentation-related changes
 Changes to our development infrastructure
 -----------------------------------------
 
-* `#2554 <https://github.com/ManimCommunity/manim/pull/2554>`__: CI: Remove 'Remove-Item' calls for MSYS2 Python
+* `#2554 <https://github.com/ManimCommunity/manim/pull/2554>`__: Removed ``Remove-Item`` calls for MSYS2 Python
 
 
-* `#2531 <https://github.com/ManimCommunity/manim/pull/2531>`__: Added a GitHub Action for automatic validation of your citation metadata
-   - adds a workflow to validate `CITATION.cff` file
+* `#2531 <https://github.com/ManimCommunity/manim/pull/2531>`__: Added a GitHub Action for automatic validation of citation metadata
 
-Code quality improvements and similar refactors
------------------------------------------------
 
 * `#2536 <https://github.com/ManimCommunity/manim/pull/2536>`__: Upgraded version of setup-ffmpeg CI action
 
 
-* `#2524 <https://github.com/ManimCommunity/manim/pull/2524>`__: Reworked `space_ops.py`
+* `#2484 <https://github.com/ManimCommunity/manim/pull/2484>`__: Updated tinytex download URL
 
 
-* `#2519 <https://github.com/ManimCommunity/manim/pull/2519>`__: Removed unnecessary/outdated comment
-   Removed unnecessary/outdated comments. The comments are a 'to-do list' for either deprecating the class or keeping it.
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#2524 <https://github.com/ManimCommunity/manim/pull/2524>`__: Reworked :mod:`.space_ops`
+
+
+* `#2519 <https://github.com/ManimCommunity/manim/pull/2519>`__: Removed outdated comment
+
 
 * `#2503 <https://github.com/ManimCommunity/manim/pull/2503>`__: Removed unused imports
 
 
-* `#2484 <https://github.com/ManimCommunity/manim/pull/2484>`__: CI: update tinytex download url
+* `#2475 <https://github.com/ManimCommunity/manim/pull/2475>`__: Removed setuptools dependency
 
 
-* `#2429 <https://github.com/ManimCommunity/manim/pull/2429>`__: Upgraded typehints
+* `#2472 <https://github.com/ManimCommunity/manim/pull/2472>`__: Removed unnecessary comment in :mod:`.simple_functions`
 
 
-* `#2376 <https://github.com/ManimCommunity/manim/pull/2376>`__: Update Dependencies for Python3.10
+* `#2429 <https://github.com/ManimCommunity/manim/pull/2429>`__: Upgraded to future-style type annotations
 
 
-* `#2437 <https://github.com/ManimCommunity/manim/pull/2437>`__: Cleanup `simple_functions.py`
+* `#2464 <https://github.com/ManimCommunity/manim/pull/2464>`__: Bump pillow from 8.4.0 to 9.0.0
+
+
+* `#2376 <https://github.com/ManimCommunity/manim/pull/2376>`__: Updated dependencies for Python 3.10
+
+
+* `#2437 <https://github.com/ManimCommunity/manim/pull/2437>`__: Cleaned up :mod:`.simple_functions`
    - Removed `fdiv` as in all cases where it was used, it was just doing the same thing as numpy array division.
    - Replaced old implementation of the choose function with scipy's implementation
    - Use `lru_cache` (least recently used cache) for caching the choose function. Since it's only used for beziers, only 2 choose k and 3 choose k will be used, hence a size of 10 should be enough.
@@ -231,50 +271,3 @@ New releases
 ------------
 
 * `#2547 <https://github.com/ManimCommunity/manim/pull/2547>`__: Prepared new release, ``v0.15.0``
-
-
-Unclassified changes
---------------------
-
-* `#2557 <https://github.com/ManimCommunity/manim/pull/2557>`__: Fixed logger bug in `camera.make_background_from_func()`
-   Fixed logger bug in `camera.make_background_from_func()` that crashed Manim.  This PR closes #2488 .
-
-* `#2459 <https://github.com/ManimCommunity/manim/pull/2459>`__: Added examples to some transform animations
-
-
-* `#2517 <https://github.com/ManimCommunity/manim/pull/2517>`__: Added guide on profiling and improving performance
-
-
-* `#2518 <https://github.com/ManimCommunity/manim/pull/2518>`__: Added import lines to examples in `deprecation` docs
-   Updated an example in `deprecation` docs. Added the line `from ..utils.deprecation import deprecated` to a basic usage example.
-
-* `#2499 <https://github.com/ManimCommunity/manim/pull/2499>`__: Make help more descriptive
-
-
-* `#2495 <https://github.com/ManimCommunity/manim/pull/2495>`__: Updated minimal latex installation instructions
-
-
-* `#2500 <https://github.com/ManimCommunity/manim/pull/2500>`__: Add note about contributions during refactor period
-
-
-* `#2508 <https://github.com/ManimCommunity/manim/pull/2508>`__: Improve performance for :meth:`~become`
-   - Added a boolean parameter, `skip_point_alignment` to the `align_data` method. When True, the expensive point alignment method is not called.
-   - Added documentation for the `align_data` method.
-   - Added three tests testing the `become` method.
-
-* `#2485 <https://github.com/ManimCommunity/manim/pull/2485>`__: Fix minor typing mistakes in docs
-
-
-* `#2475 <https://github.com/ManimCommunity/manim/pull/2475>`__: Remove setuptools dependency
-
-
-* `#2472 <https://github.com/ManimCommunity/manim/pull/2472>`__: Remove unnecessary comment in `simple_functions.py`
-
-
-* `#2468 <https://github.com/ManimCommunity/manim/pull/2468>`__: Hide more private methods from the docs.
-
-
-* `#2466 <https://github.com/ManimCommunity/manim/pull/2466>`__: Fixed a typo in the documentation for plugins
-
-
-* `#2464 <https://github.com/ManimCommunity/manim/pull/2464>`__: Bump pillow from 8.4.0 to 9.0.0
