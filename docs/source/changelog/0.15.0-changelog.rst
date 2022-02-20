@@ -105,7 +105,7 @@ Enhancements
 * `#2508 <https://github.com/ManimCommunity/manim/pull/2508>`__: Improve performance for :meth:`.Mobject.become`
 
 
-* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties 
+* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties
 
 
 * `#2396 <https://github.com/ManimCommunity/manim/pull/2396>`__: Fixed animations introducing or removing objects
