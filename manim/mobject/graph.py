@@ -246,16 +246,28 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
         for more details), or a dictionary specifying a coordinate (value)
         for each vertex (key) for manual positioning.
+    layout_config
+        Only for automatically generated layouts. A dictionary whose entries
+        are passed as keyword arguments to the automatic layout algorithm
+        specified via ``layout`` of``networkx``.
+        The ``tree`` layout also accepts a special parameter ``scaling_type``
+        passed as a keyword argument inside the ``layout_config`` dictionary.
+        This parameter changes the meaning of ``layout_scale`` (see below) for
+        trees. Its value can be ``"relative"`` (used by default, matches the
+        usual meaning of ``layout_scale``) or ``"absolute"`` (see
+        ``layout_scale`` below for more details).
     layout_scale
         The scale of automatically generated layouts: the vertices will
         be arranged such that the coordinates are located within the
         interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)``
         causing the first coordinate to be in the interval ``[-scale_x, scale_x]``,
         and the second in ``[-scale_y, scale_y]``. Default: 2.
-    layout_config
-        Only for automatically generated layouts. A dictionary whose entries
-        are passed as keyword arguments to the automatic layout algorithm
-        specified via ``layout`` of``networkx``.
+        For tree layouts, when ``scaling_type`` (see ``layout_config`` above) is
+        ``"absolute"``, the vertices will be arranged such that the centers of two
+        vertices with the same depth are at least ``scale_x`` units away on the horizontal axis.
+        The vertical distance between the center of verdices of adjacent depth will always be
+        ``scale_y``. Specifying a single ``scale`` float has the same effect as using
+        the tuple ``(scale, scale)``
     vertex_type
         The mobject class used for displaying vertices in the scene.
     vertex_config
