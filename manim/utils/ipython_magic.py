@@ -172,14 +172,15 @@ else:
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 embed = config["media_embed"]
+                if embed is None:
+                    # videos need to be embedded when running in google colab.
+                    # do this automatically in case config.media_embed has not been
+                    # set explicitly.
+                    embed = "google.colab" in str(get_ipython())
+
                 if file_type.startswith("image"):
                     result = Image(filename=config["output_file"], embed=embed)
                 else:
-                    if embed is None and "google.colab" in str(get_ipython()):
-                        # videos need to be embedded when running in google colab.  Do
-                        # this unless suppressed explicitly by config.embed
-                        embed = True
-
                     result = Video(
                         tmpfile,
                         html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',

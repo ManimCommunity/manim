@@ -14,6 +14,7 @@ import configparser
 import copy
 import errno
 import logging
+from multiprocessing.sharedctypes import Value
 import os
 import re
 import sys
@@ -626,9 +627,11 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
-        val = parser["jupyter"].get("media_embed", None)
-        if val is not None:
-            setattr(self, "media_embed", val)
+        try:
+            val = parser["jupyter"].getboolean("media_embed")
+        except ValueError:
+            val = None
+        setattr(self, "media_embed", val)
 
         val = parser["jupyter"].get("media_width")
         if val:
