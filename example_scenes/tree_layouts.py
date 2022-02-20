@@ -38,7 +38,7 @@ class TreeAnimationAbsolute(MovingCameraScene):
         )
         self.expand_vertex("ROOT", 1)
 
-    def expand_vertex(self, vertex_id, depth):
+    def expand_vertex(self, vertex_id: str, depth: int):
         new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
         new_edges = [(vertex_id, child_id) for child_id in new_vertices]
         anim = AnimationGroup(
