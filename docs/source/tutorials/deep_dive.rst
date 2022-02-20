@@ -147,8 +147,8 @@ However, with the ``ToyExample`` class created and ready to go, there is a new
 excellent question to answer: how is the code in our ``construct`` method
 actually executed?
 
-Scene initialization and rendering
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Scene instantiation and rendering
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The answer to this question depends on how exactly you are running the code.
 To make things a bit clearer, let us first consider the case that you
