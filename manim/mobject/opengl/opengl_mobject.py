@@ -1922,17 +1922,7 @@ class OpenGLMobject:
         # Recurse to submobjects differently from how set_rgba_array
         # in case they implement set_color differently
         if color is not None:
-            if isinstance(color, (str, Color)):
-                self.color = Color(color)
-            elif isinstance(color, Iterable):
-                self.color = []
-                for item in color:
-                    if isinstance(item, (list, tuple)):
-                        self.color.append(Color(item[0]))
-                    else:
-                        self.color.append(Color(item))
-            else:
-                raise ValueError("Invalid color type: " + str(color))
+            self.color = Color(color)
         if opacity is not None:
             self.opacity = opacity
         if recurse:

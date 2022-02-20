@@ -826,6 +826,96 @@ class CoordinateSystem:
         graph.underlying_function = r_func
         return graph
 
+    def plot_surface(
+        self,
+        function: Callable[[float], float],
+        u_range: Sequence[float] | None = None,
+        v_range: Sequence[float] | None = None,
+        colorscale: Sequence[[color], float] | None = None,
+        axes: Mobject | None = None,
+        **kwargs,
+    ):
+        """Generates a surface based on a function.
+
+        Examples
+        --------
+        .. manim:: PlotExample
+            :save_last_frame:
+            class PlotSurfaceExample(Scene):
+                def construct(self):
+                    # construct the axes
+                    resolution_fa = 100
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+
+                    axes = ThreeDAxes(
+                        x_range=(-3, 3, 1),
+                        y_range=(-3, 3, 1),
+                        z_range=(-5, 5, 1)
+                        )
+
+                def param_trig(u, v):
+                    x = u
+                    y = v
+                    z = 2 * np.sin(x) + 2 * np.cos(y)
+                    return z
+
+                trig_plane = axes.plot_surface(
+                    param_trig,
+                    resolution=(resolution_fa, resolution_fa),
+                    u_range = (-3, 3),
+                    v_range = (-3, 3),
+                    colorscale = [BLUE, GREEN, YELLOW, ORANGE, RED],
+                    axes = axes
+                    )
+
+                self.add(axes, trig_plane)
+
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.Surface`.
+        x_range
+            The range of the curve along the x-axes. ``x_range = [x_min, x_max, x_step]``.
+        y_range
+            The range of the curve along the y-axes. ``y_range = [y_min, y_max, y_step]``.
+        colorscale
+            Colors of the surface. Passing a list of colors will color the surface by z-value.
+            Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
+            where the color transitions.
+        axes
+            The axes for the surface, which will be used to map axis-values to colors.
+        kwargs
+            Additional parameters to be passed to :class:`~.Surface`.
+
+        Returns
+        -------
+        :class:`~.Surface`
+            The plotted surface.
+        """
+        if config.renderer != "opengl":
+            surface = Surface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                v_range=u_range,
+                u_range=v_range,
+                **kwargs,
+            )
+            if colorscale:
+                surface.set_fill_by_value(
+                    axes=axes,
+                    colorscale=colorscale,
+                )
+        else:
+            surface = OpenGLSurface(
+                lambda u, v: self.c2p(u, v, function(u, v)),
+                u_range=u_range,
+                v_range=v_range,
+                axes=axes,
+                colorscale=colorscale,
+                **kwargs,
+            )
+
+        return surface
+
     def input_to_graph_point(
         self,
         x: float,

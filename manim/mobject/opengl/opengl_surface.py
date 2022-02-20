@@ -14,7 +14,7 @@ from manim.utils.space_ops import normalize_along_axis
 
 
 class OpenGLSurface(OpenGLMobject):
-    """Creates a Surface.
+    r"""Creates a Surface.
 
     Parameters
     ----------
@@ -30,12 +30,16 @@ class OpenGLSurface(OpenGLMobject):
         Axes on which the surface is to be drawn. Optional
         parameter used when coloring a surface by z-value.
     color
-        Color of the surface. Passing a list of colors and a
-        axes will color the surface by z-value. Passing a
-        list of tuples in the form ``(color, pivot)`` allows
-        user-defined pivots where the color transitions.
+        Color of the surface. Defaults to grey.
+    colorscale
+        Colors of the surface. Optional parameter used when
+        coloring a surface by z-value. Passing a list of
+        colors and an axes will color the surface by z-value.
+        Passing a list of tuples in the form ``(color, pivot)``
+        allows user-defined pivots where the color transitions.
     opacity
-        Opacity of the surface.
+        Opacity of the surface from 0 being fully transparent
+        to 1 being fully opaque. Defaults to 1.
     """
 
     shader_dtype = [
@@ -57,6 +61,7 @@ class OpenGLSurface(OpenGLMobject):
         resolution=None,
         axes=None,
         color=GREY,
+        colorscale=None,
         opacity=1.0,
         gloss=0.3,
         shadow=0.4,
@@ -77,6 +82,7 @@ class OpenGLSurface(OpenGLMobject):
         # rows/columns of approximating squares
         self.resolution = resolution if resolution is not None else (101, 101)
         self.axes = axes
+        self.colorscale = colorscale
         self.prefered_creation_axis = prefered_creation_axis
         # For du and dv steps.  Much smaller and numerical error
         # can crop up in the shaders.
@@ -228,26 +234,47 @@ class OpenGLSurface(OpenGLMobject):
 
     # For shaders
     def get_shader_data(self):
+        r"""Called by parent Mobject to calculate and return
+        the shader data.
+
+        Returns
+        -------
+        shader_dtype
+            An array containing the shader data (vertices and
+            color of each vertex)
+        """
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
         shader_data = np.zeros(len(s_points), dtype=self.shader_dtype)
         if "points" not in self.locked_data_keys:
             shader_data["point"] = s_points
             shader_data["du_point"] = du_points
             shader_data["dv_point"] = dv_points
-            if isinstance(self.color, Iterable):
+            if self.colorscale:
                 shader_data["color"] = self._get_color_by_value(s_points)
             else:
-                shader_data["color"] = [
-                    color_to_rgba(self.color, self.opacity) for i in s_points
-                ]
+                self.fill_in_shader_color_info(shader_data)
         return shader_data
 
     def fill_in_shader_color_info(self, shader_data):
+        r"""Fills in the shader color data when the surface
+        is all one color.
+
+        Parameters
+        ----------
+        shader_data
+            The vertices of the surface.
+
+        Returns
+        -------
+        shader_dtype
+            An array containing the shader data (vertices and
+            color of each vertex)
+        """
         self.read_data_to_shader(shader_data, "color", "rgbas")
         return shader_data
 
     def _get_color_by_value(self, s_points):
-        """Matches each vertex to a color associated to it's z-value.
+        r"""Matches each vertex to a color associated to it's z-value.
 
         Parameters
         ----------
@@ -259,13 +286,13 @@ class OpenGLSurface(OpenGLMobject):
         List
             A list of colors matching the vertex inputs.
         """
-        if type(self.color[0]) in (list, tuple):
+        if type(self.colorscale[0]) in (list, tuple):
             new_colors, pivots = [
-                [i for i, j in self.color],
-                [j for i, j in self.color],
+                [i for i, j in self.colorscale],
+                [j for i, j in self.colorscale],
             ]
         else:
-            new_colors = self.color
+            new_colors = self.colorscale
 
             pivot_min = self.axes.z_range[0]
             pivot_max = self.axes.z_range[1]
@@ -304,9 +331,8 @@ class OpenGLSurface(OpenGLMobject):
         return self.get_triangle_indices()
 
     @deprecated(
-        since="v0.12.0",
-        until="v0.13.0",
-        message="Pass list of colors into constructor instead.",
+        since="v0.15.0",
+        message="Use colorscale attribute instead.",
     )
     def set_fill_by_value(self, axes, colors):
         # directly copied from three_dimensions.py with some compatibility changes.
