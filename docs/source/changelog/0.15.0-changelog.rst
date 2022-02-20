@@ -138,7 +138,7 @@ Fixed bugs
 * `#2530 <https://github.com/ManimCommunity/manim/pull/2530>`__: Use single source of truth for default text values
    * Default values for text are now taken from dictionary instead of from object attributes
 
-* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Change `color`, `stroke_color` and `fill_color` fields to properties 
+* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Change `color`, `stroke_color` and `fill_color` fields to properties
    - `color`, `stroke_color` and `fill_color` are now properties in `VMobject`, making them synchronized with `set_*` and `get_*` methods
    - Surrounding code depending on these attributes was also updated to work properly with them
 
