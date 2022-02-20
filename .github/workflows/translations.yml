@@ -1,11 +1,10 @@
 name: i18n
 
 on:
-  pull_request:
-    branches:
-      - main
   pull_request_target:
-
+    types:
+      - opened
+      - synchronize
 jobs:
   tests:
     runs-on: ubuntu-latest
