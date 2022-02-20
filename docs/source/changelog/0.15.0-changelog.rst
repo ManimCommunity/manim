@@ -2,32 +2,34 @@
 v0.15.0
 *******
 
-:Date: February 15, 2022
+:Date: February 20, 2022
 
 Contributors
 ============
 
-A total of 28 people contributed to this
+A total of 32 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
+* Alex Lembcke
 * AnonymoZ +
 * Benjamin Hackl
 * Darylgolden
 * Eshaan Naga Venkata +
 * Faruk D. +
 * GameDungeon
-* Kiran-Raj-Dev
+* Kevin Cen +
 * Laith Bahodi
 * Leo Xu
 * Lucas Ricci
 * Marcin Serwin
 * Mysaa
 * Naveen M K
+* Simon Ellmann +
 * Tommy Chu +
 * Viicos
+* ad_chaos
 * betafcc +
-* dependabot[bot] +
 * friedkeenan
 * icedcoffeeee
 * vmoros +
@@ -43,20 +45,22 @@ the following contributors.
 * Eshaan Naga Venkata
 * GameDungeon
 * Jan-Hendrik Müller
-* Kiran-Raj-Dev
 * Laith Bahodi
 * Marcin Kurczewski
 * Marcin Serwin
 * Naveen M K
+* Raghav Goel
+* RomainJMend
 * Ryan McCauley
 * Tommy Chu
+* ad_chaos
 * betafcc
 * icedcoffeeee
 
 Pull requests merged
 ====================
 
-A total of 47 pull requests were merged for this release.
+A total of 58 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -80,6 +84,14 @@ New features
 Enhancements
 ------------
 
+* `#2467 <https://github.com/ManimCommunity/manim/pull/2467>`__: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects.
+
+
+* `#2537 <https://github.com/ManimCommunity/manim/pull/2537>`__: Added support for PySide coordinate system
+   The function `pixel_coords_to_space_coords` is used to find the coordinates of a mouse event on the Manim preview window. However, the coordinate system (where the origin is bottom left) is specific to Pyglet only. To support coordinate systems where the origin is at the top left, such as PySide or PyQT, I have added a parameter to flip between the two.
+
+   `topLeft` defaults to `False` to support existing code without needing any changes.
+
 * `#2158 <https://github.com/ManimCommunity/manim/pull/2158>`__: Added OpenGL compatibility to `ThreeDScene.add_fixed_orientation_mobjects` and  `ThreeDScene.add_fixed_in_frame_mobjects`
 
 
@@ -97,6 +109,15 @@ Enhancements
 
 Fixed bugs
 ----------
+
+* `#2556 <https://github.com/ManimCommunity/manim/pull/2556>`__: Show highlights when creating table
+
+
+* `#2559 <https://github.com/ManimCommunity/manim/pull/2559>`__: Fix setting line numbers in :class:`Text` when using ManimPango settings
+   * Fix setting line numbers in Text when using ManimPango settings
+
+* `#2548 <https://github.com/ManimCommunity/manim/pull/2548>`__: Fix axes plotting bug with logarithmic x-axis
+
 
 * `#1547 <https://github.com/ManimCommunity/manim/pull/1547>`__: Fixed certain unicode characters in users' paths causing issues on Windows
 
@@ -117,7 +138,7 @@ Fixed bugs
 * `#2530 <https://github.com/ManimCommunity/manim/pull/2530>`__: Use single source of truth for default text values
    * Default values for text are now taken from dictionary instead of from object attributes
 
-* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Change `color`, `stroke_color` and `fill_color` fields to properties
+* `#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Change `color`, `stroke_color` and `fill_color` fields to properties 
    - `color`, `stroke_color` and `fill_color` are now properties in `VMobject`, making them synchronized with `set_*` and `get_*` methods
    - Surrounding code depending on these attributes was also updated to work properly with them
 
@@ -135,6 +156,12 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our Github wiki
+
+
+* `#2458 <https://github.com/ManimCommunity/manim/pull/2458>`__: Improved documentation for `Rotate`
+
 
 * `#2465 <https://github.com/ManimCommunity/manim/pull/2465>`__: Added documentation for `index_labels`.
 
@@ -159,6 +186,9 @@ Documentation-related changes
 
 Changes to our development infrastructure
 -----------------------------------------
+
+* `#2554 <https://github.com/ManimCommunity/manim/pull/2554>`__: CI: Remove 'Remove-Item' calls for MSYS2 Python
+
 
 * `#2531 <https://github.com/ManimCommunity/manim/pull/2531>`__: Added a GitHub Action for automatic validation of your citation metadata
    - adds a workflow to validate `CITATION.cff` file
@@ -197,8 +227,20 @@ Code quality improvements and similar refactors
 * `#2439 <https://github.com/ManimCommunity/manim/pull/2439>`__: Removed twitter template from scripts
 
 
+New releases
+------------
+
+* `#2547 <https://github.com/ManimCommunity/manim/pull/2547>`__: Prepared new release, ``v0.15.0``
+
+
 Unclassified changes
 --------------------
+
+* `#2557 <https://github.com/ManimCommunity/manim/pull/2557>`__: Fixed logger bug in `camera.make_background_from_func()`
+   Fixed logger bug in `camera.make_background_from_func()` that crashed Manim.  This PR closes #2488 .
+
+* `#2459 <https://github.com/ManimCommunity/manim/pull/2459>`__: Added examples to some transform animations
+
 
 * `#2517 <https://github.com/ManimCommunity/manim/pull/2517>`__: Added guide on profiling and improving performance
 
