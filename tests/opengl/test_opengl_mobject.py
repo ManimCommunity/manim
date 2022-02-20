@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pytest
 
-from manim import config
 from manim.mobject.opengl_mobject import OpenGLMobject
 
 

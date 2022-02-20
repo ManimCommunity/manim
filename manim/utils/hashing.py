@@ -110,18 +110,15 @@ class _Memoizer:
         obj,
         default_function: typing.Callable[[Any], Any],
     ):
-        if (
-            isinstance(
-                obj,
-                (
-                    int,
-                    float,
-                    str,
-                    complex,
-                ),
-            )
-            and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]
-        ):
+        if isinstance(
+            obj,
+            (
+                int,
+                float,
+                str,
+                complex,
+            ),
+        ) and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]:
             # It makes no sense (and it'd slower) to memoize objects of these primitive
             # types.  Hence, we simply return the object.
             return obj

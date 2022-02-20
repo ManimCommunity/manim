@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from time import sleep
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import srt
@@ -142,10 +142,16 @@ class SceneFileWriter:
                 )
 
             if is_gif_format():
-                self.gif_file_path = os.path.join(
-                    movie_dir,
-                    add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
+                self.gif_file_path = add_extension_if_not_present(
+                    self.output_name, GIF_FILE_EXTENSION
                 )
+
+                if not config["output_file"]:
+                    self.gif_file_path = add_version_before_extension(
+                        self.gif_file_path
+                    )
+
+                self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
 
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
@@ -554,7 +560,7 @@ class SceneFileWriter:
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
         )
-        with open(file_list, "w") as fp:
+        with open(file_list, "w", encoding="utf-8") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
                 if os.name == "nt":
@@ -605,8 +611,8 @@ class SceneFileWriter:
 
         # determine output path
         movie_file_path = self.movie_file_path
-        if is_gif_format() and not config["output_file"]:
-            movie_file_path = str(add_version_before_extension(self.gif_file_path))
+        if is_gif_format():
+            movie_file_path = self.gif_file_path
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,

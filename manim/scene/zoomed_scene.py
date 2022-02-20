@@ -85,7 +85,7 @@ class ZoomedScene(MovingCameraScene):
         zoom_factor=0.15,
         image_frame_stroke_width=3,
         zoom_activated=False,
-        **kwargs
+        **kwargs,
     ):
         self.zoomed_display_height = zoomed_display_height
         self.zoomed_display_width = zoomed_display_width

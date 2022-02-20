@@ -13,17 +13,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -134,6 +124,9 @@ class Animation:
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
+        introducer: bool = False,
+        *,
+        _on_finish: Callable[[], None] = lambda _: None,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
@@ -141,8 +134,10 @@ class Animation:
         self.rate_func: Callable[[float], float] = rate_func
         self.name: str | None = name
         self.remover: bool = remover
+        self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
+        self._on_finish: Callable[[Scene], None] = _on_finish
         if config["renderer"] == "opengl":
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (
@@ -219,8 +214,25 @@ class Animation:
         scene
             The scene the animation should be cleaned up from.
         """
+        self._on_finish(scene)
         if self.is_remover():
             scene.remove(self.mobject)
+
+    def _setup_scene(self, scene: Scene) -> None:
+        """Setup up the :class:`~.Scene` before starting the animation.
+
+        This includes to :meth:`~.Scene.add` the Animation's
+        :class:`~.Mobject` if the animation is an introducer.
+
+        Parameters
+        ----------
+        scene
+            The scene the animation should be cleaned up from.
+        """
+        if scene is None:
+            return
+        if self.is_introducer():
+            scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
@@ -436,6 +448,16 @@ class Animation:
         """
         return self.remover
 
+    def is_introducer(self) -> bool:
+        """Test if a the animation is a remover.
+
+        Returns
+        -------
+        bool
+            ``True`` if the animation is a remover, ``False`` otherwise.
+        """
+        return self.introducer
+
 
 def prepare_animation(
     anim: Animation | mobject._AnimationBuilder,
@@ -479,12 +501,41 @@ def prepare_animation(
 
 
 class Wait(Animation):
+    """A "no operation" animation.
+
+    Parameters
+    ----------
+    run_time
+        The amount of time that should pass.
+    stop_condition
+        A function without positional arguments that evaluates to a boolean.
+        The function is evaluated after every new frame has been rendered.
+        Playing the animation only stops after the return value is truthy.
+        Overrides the specified ``run_time``.
+    frozen_frame
+        Controls whether or not the wait animation is static, i.e., corresponds
+        to a frozen frame. If ``False`` is passed, the render loop still
+        progresses through the animation as usual and (among other things)
+        continues to call updater functions. If ``None`` (the default value),
+        the :meth:`.Scene.play` call tries to determine whether the Wait call
+        can be static or not itself via :meth:`.Scene.should_mobjects_update`.
+    kwargs
+        Keyword arguments to be passed to the parent class, :class:`.Animation`.
+    """
+
     def __init__(
-        self, run_time: float = 1, stop_condition=None, **kwargs
-    ):  # what is stop_condition?
+        self,
+        run_time: float = 1,
+        stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
+        **kwargs,
+    ):
+        if stop_condition and frozen_frame:
+            raise ValueError("A static Wait animation cannot have a stop condition.")
+
         self.duration: float = run_time
         self.stop_condition = stop_condition
-        self.is_static_wait: bool = False
+        self.is_static_wait: bool = frozen_frame
         super().__init__(None, run_time=run_time, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []

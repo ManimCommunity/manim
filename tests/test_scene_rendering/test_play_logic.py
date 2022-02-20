@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import sys
-from functools import wraps
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from numpy.core.defchararray import asarray
 
 from manim import *
 from manim import config
 
 from .simple_scenes import (
+    SceneForFrozenFrameTests,
     SceneWithMultipleCalls,
     SceneWithNonStaticWait,
+    SceneWithSceneUpdater,
     SceneWithStaticWait,
     SquareToCircle,
 )
@@ -68,6 +67,17 @@ def test_non_static_wait_detection(using_temp_config, disabling_caching):
     scene.render()
     assert not scene.animations[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame()
+    scene = SceneWithSceneUpdater()
+    scene.render()
+    assert not scene.animations[0].is_static_wait
+    assert not scene.is_current_animation_frozen_frame()
+
+
+def test_frozen_frame(using_temp_config, disabling_caching):
+    scene = SceneForFrozenFrameTests()
+    scene.render()
+    assert scene.mobject_update_count == 0
+    assert scene.scene_update_count == 0
 
 
 def test_t_values_with_cached_data(using_temp_config):

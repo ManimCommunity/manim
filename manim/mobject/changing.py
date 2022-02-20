@@ -4,12 +4,11 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from typing import Callable, Optional
+from typing import Callable
 
 from colour import Color
 
 from .._config import config
-from ..constants import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
@@ -42,7 +41,7 @@ class AnimatedBoundary(VGroup):
         back_and_forth=True,
         draw_rate_func=smooth,
         fade_rate_func=smooth,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.colors = colors
@@ -143,7 +142,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         stroke_width: float = 2,
         stroke_color: Color = WHITE,
         dissipating_time: float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
         self.traced_point_func = traced_point_func

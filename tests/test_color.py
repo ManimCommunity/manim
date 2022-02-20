@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
-from manim import BLACK, WHITE, Camera, Mobject, Scene, VMobject, config, tempconfig
+from manim import BLACK, Mobject, Scene, VMobject
 
 
 def test_import_color():
