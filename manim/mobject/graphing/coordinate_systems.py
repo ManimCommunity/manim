@@ -875,9 +875,9 @@ class CoordinateSystem:
         function
             The function used to construct the :class:`~.Surface`.
         x_range
-            The range of the curve along the x-axes. ``x_range = [x_min, x_max, x_step]``.
+            The range of the surface along the x-axes. ``x_range = [x_min, x_max, x_step]``.
         y_range
-            The range of the curve along the y-axes. ``y_range = [y_min, y_max, y_step]``.
+            The range of the surface along the y-axes. ``y_range = [y_min, y_max, y_step]``.
         colorscale
             Colors of the surface. Passing a list of colors will color the surface by z-value.
             Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
