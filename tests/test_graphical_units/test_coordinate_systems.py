@@ -39,7 +39,7 @@ def test_line_graph(scene):
 
 @frames_comparison(base_scene=ThreeDScene)
 def test_plot_surface(scene):
-    axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
+    axes = ThreeDAxes(x_range=(-5, 5, 1), y_range=(-5, 5, 1), z_range=(-5, 5, 1))
 
     def param_trig(u, v):
         x = u
