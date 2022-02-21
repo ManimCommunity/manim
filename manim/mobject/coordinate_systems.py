@@ -49,7 +49,6 @@ from ..utils.color import (
     BLUE,
     BLUE_D,
     GREEN,
-    LIGHT_GREY,
     WHITE,
     YELLOW,
     color_gradient,
@@ -487,7 +486,7 @@ class CoordinateSystem:
         point: Sequence[float],
         line_func: Line = DashedLine,
         line_config: dict | None = None,
-        color: Color = LIGHT_GREY,
+        color: Color | None = None,
         stroke_width: float = 2,
     ) -> Line:
         """Returns a straight line from a given axis to a point in the scene.
@@ -517,9 +516,15 @@ class CoordinateSystem:
         :meth:`~.CoordinateSystem.get_vertical_line`
         :meth:`~.CoordinateSystem.get_horizontal_line`
         """
+
         line_config = line_config if line_config is not None else {}
+
+        if color is None:
+            color = VMobject().color
+
         line_config["color"] = color
         line_config["stroke_width"] = stroke_width
+
         axis = self.get_axis(index)
         line = line_func(axis.get_projection(point), point, **line_config)
         return line
@@ -977,9 +982,8 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        label = self.x_axis._create_label_tex(label)
         color = color or graph.get_color()
-        label.set_color(color)
+        label = self.x_axis._create_label_tex(label).set_color(color)
 
         if x_val is None:
             # Search from right to left
@@ -1630,9 +1634,9 @@ class CoordinateSystem:
         x_val: float,
         graph: ParametricFunction,
         label: float | str | Mobject | None = None,
-        label_color: Color = WHITE,
+        label_color: Color | None = None,
         triangle_size: float = MED_SMALL_BUFF,
-        triangle_color: Color = WHITE,
+        triangle_color: Color | None = WHITE,
         line_func: Line = Line,
         line_color: Color = YELLOW,
     ) -> VGroup:
@@ -1688,7 +1692,7 @@ class CoordinateSystem:
         triangle.height = triangle_size
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         if label is not None:
-            t_label = self.x_axis._create_label_tex(label).set_color(label_color)
+            t_label = self.x_axis._create_label_tex(label, color=label_color)
             t_label.next_to(triangle, DOWN)
             T_label_group.add(t_label)
 
@@ -2338,7 +2342,6 @@ class NumberPlane(Axes):
 
         # configs
         self.axis_config = {
-            "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
@@ -2626,7 +2629,6 @@ class PolarPlane(Axes):
 
         # configs
         self.radius_config = {
-            "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
@@ -3012,7 +3014,7 @@ class ComplexPlane(NumberPlane):
 
         Returns
         -------
-        List[Union[float, complex]]
+        List[float | complex]
             A list of floats representing the x-axis and complex numbers representing the y-axis.
         """
         x_numbers = self.get_x_axis().get_tick_range()

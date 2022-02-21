@@ -82,6 +82,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         stroke_opacity=1.0,
         **kwargs,
     ):
+
         self.def_map = {}
         self.file_name = file_name or self.file_name
         self._ensure_valid_file()

@@ -27,7 +27,7 @@ class NumberLine(Line):
     Parameters
     ----------
     x_range
-        The :code:`[x_min, x_max, x_step]` values to create the line.
+        The ``[x_min, x_max, x_step]`` values to create the line.
     length
         The length of the number line.
     unit_size
@@ -559,7 +559,9 @@ class NumberLine(Line):
         self.add(labels)
         return self
 
-    def _create_label_tex(self, label_tex: str | float | VMobject) -> VMobject:
+    def _create_label_tex(
+        self, label_tex: str | float | VMobject, **kwargs
+    ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
         label according to the ``label_constructor``.
 
@@ -579,7 +581,7 @@ class NumberLine(Line):
         if isinstance(label_tex, VMobject):
             return label_tex
         else:
-            return self.label_constructor(label_tex)
+            return self.label_constructor(label_tex, **kwargs)
 
     @staticmethod
     def _decimal_places_from_step(step) -> int:
