@@ -1002,8 +1002,8 @@ class CoordinateSystem:
     def get_riemann_rectangles(
         self,
         graph: ParametricFunction,
-        x_range: Sequence[float] | None = None,
-        dx: float | None = 0.1,
+        x_range: list[float] | None = None,
+        dx: float = 0.1,
         input_sample_type: str = "left",
         stroke_width: float = 1,
         stroke_color: Color = BLACK,
