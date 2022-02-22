@@ -6,10 +6,10 @@ __all__ = [
     "Graph",
 ]
 
+import itertools as it
 from copy import copy
 from typing import Hashable, Iterable
 
-import itertools as it
 import networkx as nx
 import numpy as np
 
