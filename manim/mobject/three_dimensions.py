@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = [
     "ThreeDVMobject",
     "Surface",
-    "ParametricSurface",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -32,7 +31,6 @@ from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
-from ..utils.deprecation import deprecated
 from ..utils.iterables import tuplify
 from ..utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
@@ -257,12 +255,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         break
 
         return self
-
-
-@deprecated(since="v0.10.0", replacement=Surface)
-class ParametricSurface(Surface):
-    # shifts inheritance from Surface/OpenGLSurface depending on the renderer.
-    """Creates a parametric surface"""
 
 
 # Specific shapes
