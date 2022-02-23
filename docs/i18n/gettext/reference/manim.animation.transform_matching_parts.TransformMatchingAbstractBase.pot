@@ -68,24 +68,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`clean_up_from_scene <manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene>`"
-msgstr ""
-
-#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
 #: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1
 msgid "Clean up the :class:`~.Scene` after finishing the animation."
-msgstr ""
-
-#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`get_mobject_key <manim.animation.transform_matching_parts.TransformMatchingAbstractBase.get_mobject_key>`"
-msgstr ""
-
-#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`get_mobject_parts <manim.animation.transform_matching_parts.TransformMatchingAbstractBase.get_mobject_parts>`"
-msgstr ""
-
-#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
-msgid ":py:obj:`get_shape_map <manim.animation.transform_matching_parts.TransformMatchingAbstractBase.get_shape_map>`"
 msgstr ""
 
 #: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:3

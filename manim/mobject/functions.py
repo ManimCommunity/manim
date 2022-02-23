@@ -1,15 +1,16 @@
 """Mobjects representing function graphs."""
 
+from __future__ import annotations
+
 __all__ = ["ParametricFunction", "FunctionGraph", "ImplicitFunction"]
 
 
-from typing import Callable, Iterable, Optional, Sequence
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 from isosurfaces import plot_isoline
 
 from .. import config
-from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
 from ..utils.scale import LinearBase, _ScaleBase
@@ -93,12 +94,12 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         function: Callable[[float, float], float],
-        t_range: Optional[Sequence[float]] = None,
+        t_range: Sequence[float] | None = None,
         scaling: _ScaleBase = LinearBase(),
         dt: float = 1e-8,
-        discontinuities: Optional[Iterable[float]] = None,
+        discontinuities: Iterable[float] | None = None,
         use_smoothing: bool = True,
-        **kwargs
+        **kwargs,
     ):
         self.function = function
         t_range = [0, 1, 0.01] if t_range is None else t_range
@@ -142,7 +143,10 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
             t_range = np.array(
-                [*self.scaling.function(np.arange(t1, t2, self.t_step)), t2],
+                [
+                    *self.scaling.function(np.arange(t1, t2, self.t_step)),
+                    self.scaling.function(t2),
+                ],
             )
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
@@ -205,12 +209,12 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         func: Callable[[float, float], float],
-        x_range: Optional[Sequence[float]] = None,
-        y_range: Optional[Sequence[float]] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
         min_depth: int = 5,
         max_quads: int = 1500,
         use_smoothing: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """An implicit function.
 

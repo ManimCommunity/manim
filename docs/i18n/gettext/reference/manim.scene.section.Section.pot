@@ -52,25 +52,13 @@ msgid "Methods"
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
-msgid ":py:obj:`get_clean_partial_movie_files <manim.scene.section.Section.get_clean_partial_movie_files>`"
-msgstr ""
-
-#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1
 msgid "Return all partial movie files that are not ``None``."
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
-msgid ":py:obj:`get_dict <manim.scene.section.Section.get_dict>`"
-msgstr ""
-
-#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_dict:1
 msgid "Get dictionary representation with metadata of output video."
-msgstr ""
-
-#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
-msgid ":py:obj:`is_empty <manim.scene.section.Section.is_empty>`"
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1

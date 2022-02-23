@@ -106,16 +106,8 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`copy <manim._config.utils.ManimConfig.copy>`"
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:1
 msgid "Deepcopy the contents of this ManimConfig."
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`digest_args <manim._config.utils.ManimConfig.digest_args>`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
@@ -124,16 +116,8 @@ msgid "Process the config options present in CLI arguments."
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`digest_file <manim._config.utils.ManimConfig.digest_file>`"
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:1
 msgid "Process the config options present in a ``.cfg`` file."
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`digest_parser <manim._config.utils.ManimConfig.digest_parser>`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
@@ -142,20 +126,8 @@ msgid "Process the config options present in a :class:`ConfigParser` object."
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`get_dir <manim._config.utils.ManimConfig.get_dir>`"
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:1
 msgid "Resolve a config option that stores a directory."
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`resolve_movie_file_extension <manim._config.utils.ManimConfig.resolve_movie_file_extension>`"
-msgstr ""
-
-#: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
-msgid ":py:obj:`update <manim._config.utils.ManimConfig.update>`"
 msgstr ""
 
 #: ../../source/reference/manim._config.utils.ManimConfig.rst:26:<autosummary>:1
@@ -168,16 +140,8 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`aspect_ratio <manim._config.utils.ManimConfig.aspect_ratio>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1
 msgid "Aspect ratio (width / height) in pixels (--resolution, -r)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`assets_dir <manim._config.utils.ManimConfig.assets_dir>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -186,16 +150,8 @@ msgid "Directory to locate video assets (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`background_color <manim._config.utils.ManimConfig.background_color>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.background_color:1
 msgid "Background color of the scene (-c)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`background_opacity <manim._config.utils.ManimConfig.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -204,16 +160,8 @@ msgid "A number between 0.0 (fully transparent) and 1.0 (fully opaque)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`bottom <manim._config.utils.ManimConfig.bottom>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.bottom:1
 msgid "Coordinate at the center bottom of the frame."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`custom_folders <manim._config.utils.ManimConfig.custom_folders>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -222,16 +170,8 @@ msgid "Whether to use custom folder output."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`disable_caching <manim._config.utils.ManimConfig.disable_caching>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.disable_caching:1
 msgid "Whether to use scene caching."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`disable_caching_warning <manim._config.utils.ManimConfig.disable_caching_warning>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -240,16 +180,8 @@ msgid "Whether a warning is raised if there are too much submobjects to hash."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`dry_run <manim._config.utils.ManimConfig.dry_run>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.dry_run:1
 msgid "Whether dry run is enabled."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`enable_gui <manim._config.utils.ManimConfig.enable_gui>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -260,16 +192,8 @@ msgid "Enable GUI interaction."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`enable_wireframe <manim._config.utils.ManimConfig.enable_wireframe>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.enable_wireframe:1
 msgid "Enable wireframe debugging mode in opengl."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`ffmpeg_loglevel <manim._config.utils.ManimConfig.ffmpeg_loglevel>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -278,16 +202,8 @@ msgid "Verbosity level of ffmpeg (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`flush_cache <manim._config.utils.ManimConfig.flush_cache>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.flush_cache:1
 msgid "Whether to delete all the cached partial movie files."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`force_window <manim._config.utils.ManimConfig.force_window>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -296,16 +212,8 @@ msgid "Set to force window when using the opengl renderer"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`format <manim._config.utils.ManimConfig.format>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.format:1
 msgid "File format; \"png\", \"gif\", \"mp4\", \"webm\" or \"mov\"."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_height <manim._config.utils.ManimConfig.frame_height>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -314,16 +222,8 @@ msgid "Frame height in logical units (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_rate <manim._config.utils.ManimConfig.frame_rate>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.frame_rate:1
 msgid "Frame rate in frames per second."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_size <manim._config.utils.ManimConfig.frame_size>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -332,16 +232,8 @@ msgid "Tuple with (pixel width, pixel height) (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_width <manim._config.utils.ManimConfig.frame_width>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.frame_width:1
 msgid "Frame width in logical units (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_x_radius <manim._config.utils.ManimConfig.frame_x_radius>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -350,16 +242,8 @@ msgid "Half the frame width (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`frame_y_radius <manim._config.utils.ManimConfig.frame_y_radius>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.frame_y_radius:1
 msgid "Half the frame height (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`from_animation_number <manim._config.utils.ManimConfig.from_animation_number>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -368,28 +252,12 @@ msgid "Start rendering animations at this number (-n)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`fullscreen <manim._config.utils.ManimConfig.fullscreen>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.fullscreen:1
 msgid "Expand the window to its maximum possible size."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`gui_location <manim._config.utils.ManimConfig.gui_location>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`images_dir <manim._config.utils.ManimConfig.images_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place images (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`input_file <manim._config.utils.ManimConfig.input_file>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -398,24 +266,12 @@ msgid "Input file name."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`left_side <manim._config.utils.ManimConfig.left_side>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.left_side:1
 msgid "Coordinate at the middle left of the frame."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`log_dir <manim._config.utils.ManimConfig.log_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place logs."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`log_to_file <manim._config.utils.ManimConfig.log_to_file>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -424,23 +280,11 @@ msgid "Whether to save logs to a file."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`max_files_cached <manim._config.utils.ManimConfig.max_files_cached>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Maximum number of files cached."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`media_dir <manim._config.utils.ManimConfig.media_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Main output directory."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`media_width <manim._config.utils.ManimConfig.media_width>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -449,16 +293,8 @@ msgid "Media width in Jupyter notebook"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`movie_file_extension <manim._config.utils.ManimConfig.movie_file_extension>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.movie_file_extension:1
 msgid "Either .mp4, .webm or .mov."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`notify_outdated_version <manim._config.utils.ManimConfig.notify_outdated_version>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -467,24 +303,12 @@ msgid "Whether to notify if there is a version update available."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`output_file <manim._config.utils.ManimConfig.output_file>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.output_file:1
 msgid "Output file name (-o)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`partial_movie_dir <manim._config.utils.ManimConfig.partial_movie_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place partial movie files (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`pixel_height <manim._config.utils.ManimConfig.pixel_height>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -493,16 +317,8 @@ msgid "Frame height in pixels (--resolution, -r)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`pixel_width <manim._config.utils.ManimConfig.pixel_width>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.pixel_width:1
 msgid "Frame width in pixels (--resolution, -r)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`plugins <manim._config.utils.ManimConfig.plugins>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -511,16 +327,8 @@ msgid "List of plugins to enable."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`preview <manim._config.utils.ManimConfig.preview>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.preview:1
 msgid "Whether to play the rendered movie (-p)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`progress_bar <manim._config.utils.ManimConfig.progress_bar>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -529,16 +337,8 @@ msgid "Whether to show progress bars while rendering animations."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`quality <manim._config.utils.ManimConfig.quality>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.quality:1
 msgid "Video quality (-q)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`renderer <manim._config.utils.ManimConfig.renderer>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -547,16 +347,8 @@ msgid "\"cairo\", \"opengl\", \"webgl"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`right_side <manim._config.utils.ManimConfig.right_side>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.right_side:1
 msgid "Coordinate at the middle right of the frame."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`save_as_gif <manim._config.utils.ManimConfig.save_as_gif>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -565,16 +357,8 @@ msgid "Whether to save the rendered scene in .gif format (-i)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`save_last_frame <manim._config.utils.ManimConfig.save_last_frame>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.save_last_frame:1
 msgid "Whether to save the last frame of the scene as an image file (-s)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`save_pngs <manim._config.utils.ManimConfig.save_pngs>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -583,16 +367,8 @@ msgid "Whether to save all frames in the scene as images files (-g)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`save_sections <manim._config.utils.ManimConfig.save_sections>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.save_sections:1
 msgid "Whether to save single videos for each section in addition to the movie file."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`scene_names <manim._config.utils.ManimConfig.scene_names>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -601,15 +377,7 @@ msgid "Scenes to play from file."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`sections_dir <manim._config.utils.ManimConfig.sections_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place section videos (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`show_in_file_browser <manim._config.utils.ManimConfig.show_in_file_browser>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -618,15 +386,7 @@ msgid "Whether to show the output file in the file browser (-f)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`tex_dir <manim._config.utils.ManimConfig.tex_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place tex (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`tex_template <manim._config.utils.ManimConfig.tex_template>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -634,23 +394,11 @@ msgid "Template used when rendering Tex."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`tex_template_file <manim._config.utils.ManimConfig.tex_template_file>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "File to read Tex template from (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`text_dir <manim._config.utils.ManimConfig.text_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place text (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`top <manim._config.utils.ManimConfig.top>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -659,24 +407,12 @@ msgid "Coordinate at the center top of the frame."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`transparent <manim._config.utils.ManimConfig.transparent>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.transparent:1
 msgid "Whether the background opacity is 0.0 (-t)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`upto_animation_number <manim._config.utils.ManimConfig.upto_animation_number>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Stop rendering animations at this nmber."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`use_opengl_renderer <manim._config.utils.ManimConfig.use_opengl_renderer>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -685,16 +421,8 @@ msgid "Whether or not to use the OpenGL renderer."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`use_projection_fill_shaders <manim._config.utils.ManimConfig.use_projection_fill_shaders>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.use_projection_fill_shaders:1
 msgid "Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`use_projection_stroke_shaders <manim._config.utils.ManimConfig.use_projection_stroke_shaders>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -703,16 +431,8 @@ msgid "Use shaders for OpenGLVMobject stroke which are compatible with transform
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`use_webgl_renderer <manim._config.utils.ManimConfig.use_webgl_renderer>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.use_webgl_renderer:1
 msgid "Whether or not to use WebGL renderer."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`verbosity <manim._config.utils.ManimConfig.verbosity>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -721,15 +441,7 @@ msgid "Logger verbosity; \"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", or \"CRITI
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`video_dir <manim._config.utils.ManimConfig.video_dir>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "Directory to place videos (no flag)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`webgl_renderer_path <manim._config.utils.ManimConfig.webgl_renderer_path>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -738,16 +450,8 @@ msgid "Path to WebGL renderer."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`window_monitor <manim._config.utils.ManimConfig.window_monitor>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.window_monitor:1
 msgid "The monitor on which the scene will be rendered"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`window_position <manim._config.utils.ManimConfig.window_position>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -755,15 +459,7 @@ msgid "Set the position of preview window."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`window_size <manim._config.utils.ManimConfig.window_size>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid "The size of the opengl window."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`write_all <manim._config.utils.ManimConfig.write_all>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -772,16 +468,8 @@ msgid "Whether to render all scenes in the input file (-a)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`write_to_movie <manim._config.utils.ManimConfig.write_to_movie>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.write_to_movie:1
 msgid "Whether to render the scene to a movie file (-w)."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":py:obj:`zero_pad <manim._config.utils.ManimConfig.zero_pad>`\\"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
@@ -811,17 +499,6 @@ msgstr ""
 msgid "A copy of this object containing no shared references."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:4
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:7
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:11
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:13
-msgid ":class:`ManimConfig`"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:6
-msgid ":func:`tempconfig`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.copy:10
 msgid "This is the main mechanism behind :func:`tempconfig`."
 msgstr ""
@@ -843,10 +520,6 @@ msgstr ""
 msgid "**self** -- This object, after processing the contents of ``parser``."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:11
-msgid ":func:`.main_utils.parse_args()`, :meth:`~.ManimConfig.digest_parser`, :meth:`~.ManimConfig.digest_file`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_args:16
 msgid "If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the contents of said file with :meth:`~ManimConfig.digest_file` before digesting any other CLI arguments."
 msgstr ""
@@ -863,10 +536,6 @@ msgstr ""
 msgid "**self** -- This object, after processing the contents of ``filename``."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:13
-msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :func:`make_config_parser`"
-msgstr ""
-
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:17
 msgid "If there are multiple ``.cfg`` files to process, it is always more efficient to parse them into a single :class:`ConfigParser` object first and digesting them with one call to :meth:`~ManimConfig.digest_parser`, instead of calling this method multiple times."
 msgstr ""
@@ -877,10 +546,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:7
 msgid "An object reflecting the contents of one or many ``.cfg`` files.  In particular, it may reflect the contents of multiple files that have been parsed in a cascading fashion."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:15
-msgid ":func:`make_config_parser`, :meth:`~.ManimConfig.digest_file`, :meth:`~.ManimConfig.digest_args`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:19
@@ -909,10 +574,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:12
 msgid "Path to the requested directory.  If the path resolves to the empty string, return ``None`` instead."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:14
-msgid ":class:`pathlib.Path`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:0
@@ -1010,10 +671,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:12
 msgid "If ``obj`` is a dict but contains keys that do not belong to any     config options."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:14
-msgid ":meth:`~ManimConfig.digest_file`, :meth:`~ManimConfig.digest_args`, :meth:`~ManimConfig.digest_parser`"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.upto_animation_number:1

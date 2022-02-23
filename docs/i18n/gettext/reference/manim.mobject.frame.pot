@@ -18,8 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.frame.rst:22:<autosummary>:1
-msgid ":py:obj:`FullScreenRectangle <manim.mobject.frame.FullScreenRectangle>`"
-msgstr ""
-
 

@@ -2,7 +2,7 @@
 Constant definitions.
 """
 
-import typing
+from __future__ import annotations
 
 import numpy as np
 from PIL import Image
@@ -208,7 +208,7 @@ FFMPEG_BIN: str = "ffmpeg"
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"
 
-FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
+FFMPEG_VERBOSITY_MAP: dict[str, str] = {
     "DEBUG": "error",
     "INFO": "error",
     "WARNING": "error",
@@ -224,7 +224,7 @@ WEBGL_RENDERER_INFO: str = (
 )
 
 # Video qualities
-QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
+QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,

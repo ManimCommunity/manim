@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
@@ -12,5 +14,5 @@ def test_FunctionGraph(scene):
 
 @frames_comparison
 def test_ImplicitFunction(scene):
-    graph = ImplicitFunction(lambda x, y: x ** 2 + y ** 2 - 9)
+    graph = ImplicitFunction(lambda x, y: x**2 + y**2 - 9)
     scene.add(graph)

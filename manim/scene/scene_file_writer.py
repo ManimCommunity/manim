@@ -1,15 +1,15 @@
 """The interface between scenes and ffmpeg."""
 
+from __future__ import annotations
+
 __all__ = ["SceneFileWriter"]
 
-import datetime
 import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
-from time import sleep
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import srt
@@ -67,13 +67,12 @@ class SceneFileWriter:
 
     def __init__(self, renderer, scene_name, **kwargs):
         self.renderer = renderer
-        self.stream_lock = False
         self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
-        self.partial_movie_files: List[str] = []
-        self.subcaptions: List[srt.Subtitle] = []
-        self.sections: List[Section] = []
+        self.partial_movie_files: list[str] = []
+        self.subcaptions: list[srt.Subtitle] = []
+        self.sections: list[Section] = []
         # first section gets automatically created for convenience
         # if you need the first section to be skipped, add a first section by hand, it will replace this one
         self.next_section(
@@ -140,10 +139,16 @@ class SceneFileWriter:
                 )
 
             if is_gif_format():
-                self.gif_file_path = os.path.join(
-                    movie_dir,
-                    add_extension_if_not_present(self.output_name, GIF_FILE_EXTENSION),
+                self.gif_file_path = add_extension_if_not_present(
+                    self.output_name, GIF_FILE_EXTENSION
                 )
+
+                if not config["output_file"]:
+                    self.gif_file_path = add_version_before_extension(
+                        self.gif_file_path
+                    )
+
+                self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
 
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
@@ -163,7 +168,7 @@ class SceneFileWriter:
         self.finish_last_section()
 
         # images don't support sections
-        section_video: Optional[str] = None
+        section_video: str | None = None
         # don't save when None
         if (
             not config.dry_run
@@ -410,25 +415,6 @@ class SceneFileWriter:
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
-    def idle_stream(self):
-        """
-        Doesn't write anything to the FFMPEG frame buffer.
-        """
-        while self.stream_lock:
-            a = datetime.datetime.now()
-            # self.update_frame()
-            self.renderer.update_frame()
-            n_frames = 1
-            # frame = self.get_frame()
-            frame = self.renderer.get_frame()
-            # self.add_frame(*[frame] * n_frames)
-            self.renderer.add_frame(*[frame] * n_frames)
-            b = datetime.datetime.now()
-            time_diff = (b - a).total_seconds()
-            frame_duration = 1 / config["frame_rate"]
-            if time_diff < frame_duration:
-                sleep(frame_duration - time_diff)
-
     def finish(self):
         """
         Finishes writing to the FFMPEG buffer or writing images
@@ -539,8 +525,8 @@ class SceneFileWriter:
 
     def combine_files(
         self,
-        input_files: List[str],
-        output_file: str,
+        input_files: list[str],
+        output_file: Path | str,
         create_gif=False,
         includes_sound=False,
     ):
@@ -552,7 +538,7 @@ class SceneFileWriter:
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
         )
-        with open(file_list, "w") as fp:
+        with open(file_list, "w", encoding="utf-8") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
                 if os.name == "nt":
@@ -603,8 +589,8 @@ class SceneFileWriter:
 
         # determine output path
         movie_file_path = self.movie_file_path
-        if is_gif_format() and not config["output_file"]:
-            movie_file_path = str(add_version_before_extension(self.gif_file_path))
+        if is_gif_format():
+            movie_file_path = self.gif_file_path
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
@@ -664,7 +650,7 @@ class SceneFileWriter:
         """Concatenate partial movie files for each section."""
 
         self.finish_last_section()
-        sections_index: List[Dict[str, Any]] = []
+        sections_index: list[dict[str, Any]] = []
         for section in self.sections:
             # only if section does want to be saved
             if section.video is not None:

@@ -18,16 +18,4 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
-msgid ":py:obj:`AnimationGroup <manim.animation.composition.AnimationGroup>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
-msgid ":py:obj:`LaggedStart <manim.animation.composition.LaggedStart>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
-msgid ":py:obj:`LaggedStartMap <manim.animation.composition.LaggedStartMap>`"
-msgstr ""
-
 

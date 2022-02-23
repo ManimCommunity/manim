@@ -1,4 +1,5 @@
-import time
+from __future__ import annotations
+
 import typing
 from typing import Any
 
@@ -201,7 +202,7 @@ class CairoRenderer:
         self,
         scene,
         static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Optional[typing.Iterable[Mobject]]:
+    ) -> typing.Iterable[Mobject] | None:
         """Compute and save the static frame, that will be reused at each frame to avoid to unecesseraly computer
         static mobjects.
 

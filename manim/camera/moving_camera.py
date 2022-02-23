@@ -6,6 +6,8 @@
 
 """
 
+from __future__ import annotations
+
 __all__ = ["CameraFrame", "MovingCamera"]
 
 from .. import config
@@ -40,7 +42,7 @@ class MovingCamera(Camera):
         fixed_dimension=0,  # width
         default_frame_stroke_color=WHITE,
         default_frame_stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         """
         Frame is a Mobject, (should almost certainly be a rectangle)

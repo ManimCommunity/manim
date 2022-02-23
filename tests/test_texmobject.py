@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import RED
 
 
 def test_MathTex():

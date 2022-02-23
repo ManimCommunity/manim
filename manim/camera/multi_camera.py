@@ -1,5 +1,7 @@
 """A camera supporting multiple perspectives."""
 
+from __future__ import annotations
+
 __all__ = ["MultiCamera"]
 
 
@@ -14,7 +16,7 @@ class MultiCamera(MovingCamera):
         self,
         image_mobjects_from_cameras=None,
         allow_cameras_to_capture_their_own_display=False,
-        **kwargs
+        **kwargs,
     ):
         """Initialises the MultiCamera
 

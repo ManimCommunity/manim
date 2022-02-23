@@ -26,16 +26,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:20:<autosummary>:1
-msgid ":py:obj:`fade_to <manim.mobject.types.point_cloud_mobject.PGroup.fade_to>`"
-msgstr ""
-
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:22
 msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid ":py:obj:`animate <manim.mobject.types.point_cloud_mobject.PGroup.animate>`\\"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
@@ -43,27 +35,11 @@ msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid ":py:obj:`animation_overrides <manim.mobject.types.point_cloud_mobject.PGroup.animation_overrides>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid ":py:obj:`depth <manim.mobject.types.point_cloud_mobject.PGroup.depth>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid ":py:obj:`height <manim.mobject.types.point_cloud_mobject.PGroup.height>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
 msgid "The height of the mobject."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PGroup.rst:29:<autosummary>:1
-msgid ":py:obj:`width <manim.mobject.types.point_cloud_mobject.PGroup.width>`\\"
 msgstr ""
 
 
