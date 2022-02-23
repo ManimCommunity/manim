@@ -40,7 +40,6 @@ import itertools as it
 import math
 from typing import Sequence
 
-
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from colour import Color
+
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 

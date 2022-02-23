@@ -14,7 +14,7 @@ __all__ = [
 
 import fractions as fr
 import numbers
-from typing import Any, Callable, Iterable, Sequence, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color
@@ -193,7 +193,7 @@ class CoordinateSystem:
             The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
         """
         x, y = self.point_to_coords(point)
-        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
+        return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
     def c2p(self, *coords):
         """Abbreviation for coords_to_point"""
