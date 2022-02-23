@@ -832,7 +832,6 @@ class CoordinateSystem:
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
         colorscale: Sequence[[color], float] | None = None,
-        axes: Mobject | None = None,
         **kwargs,
     ):
         """Generates a surface based on a function.
@@ -844,7 +843,7 @@ class CoordinateSystem:
             class PlotSurfaceExample(Scene):
                 def construct(self):
                     # construct the axes
-                    resolution_fa = 100
+                    resolution_fa = 42
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
 
                     axes = ThreeDAxes(
@@ -865,7 +864,6 @@ class CoordinateSystem:
                     u_range = (-3, 3),
                     v_range = (-3, 3),
                     colorscale = [BLUE, GREEN, YELLOW, ORANGE, RED],
-                    axes = axes
                     )
 
                 self.add(axes, trig_plane)
@@ -882,8 +880,6 @@ class CoordinateSystem:
             Colors of the surface. Passing a list of colors will color the surface by z-value.
             Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
             where the color transitions.
-        axes
-            The axes for the surface, which will be used to map axis-values to colors.
         kwargs
             Additional parameters to be passed to :class:`~.Surface`.
 
@@ -901,7 +897,7 @@ class CoordinateSystem:
             )
             if colorscale:
                 surface.set_fill_by_value(
-                    axes=axes,
+                    axes=self.copy(),
                     colorscale=colorscale,
                 )
         else:
@@ -909,7 +905,7 @@ class CoordinateSystem:
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
                 v_range=v_range,
-                axes=axes,
+                axes=self.copy(),
                 colorscale=colorscale,
                 **kwargs,
             )
