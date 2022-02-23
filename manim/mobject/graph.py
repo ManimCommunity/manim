@@ -6,6 +6,7 @@ __all__ = [
     "Graph",
 ]
 
+import itertools as it
 from copy import copy
 from typing import Hashable, Iterable
 
@@ -874,6 +875,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         *edges: tuple[Hashable, Hashable],
         edge_type: type[Mobject] = Line,
         edge_config: dict | None = None,
+        **kwargs,
     ):
         """Add new edges to the graph.
 
@@ -892,6 +894,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             whose keys are the edge tuples, and whose values are dictionaries
             containing keyword arguments to be passed for the construction
             of the corresponding edge.
+        kwargs
+            Any further keyword arguments are passed to :meth:`.add_vertices`
+            which is used to create new vertices in the passed edges.
 
         Returns
         -------
@@ -909,6 +914,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             base_edge_config[e].update(edge_config.get(e, {}))
         edge_config = base_edge_config
 
+        edge_vertices = set(it.chain(*edges))
+        new_vertices = [v for v in edge_vertices if v not in self.vertices]
+        added_vertices = self.add_vertices(*new_vertices, **kwargs)
+
         added_mobjects = sum(
             (
                 self._add_edge(
@@ -918,7 +927,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 ).submobjects
                 for edge in edges
             ),
-            [],
+            added_vertices,
         )
         return self.get_group_class()(*added_mobjects)
 
