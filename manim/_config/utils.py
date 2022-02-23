@@ -253,6 +253,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_embed",
         "media_width",
         "webgl_renderer_path",
         "log_dir",
@@ -627,6 +628,12 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        try:
+            val = parser["jupyter"].getboolean("media_embed")
+        except ValueError:
+            val = None
+        setattr(self, "media_embed", val)
+
         val = parser["jupyter"].get("media_width")
         if val:
             setattr(self, "media_width", val)
@@ -969,6 +976,12 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    media_embed = property(
+        lambda self: self._d["media_embed"],
+        lambda self, val: self._d.__setitem__("media_embed", val),
+        doc="Embed videos in Jupyter notebook",
     )
 
     media_width = property(
