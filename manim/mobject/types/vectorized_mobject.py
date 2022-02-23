@@ -589,10 +589,6 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
-    @deprecated(since="0.11.0", replacement="self.points")
-    def get_points(self):
-        return np.array(self.points)
-
     def set_anchors_and_handles(
         self,
         anchors1: Sequence[float],
