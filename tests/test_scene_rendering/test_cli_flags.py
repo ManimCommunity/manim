@@ -229,7 +229,7 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "-a",
         infallible_scenes_path,
     ]
-    out, err, exit_code = capture(command)
+    _, err, exit_code = capture(command)
     assert exit_code == 0, err
 
     one_is_not_empty = (

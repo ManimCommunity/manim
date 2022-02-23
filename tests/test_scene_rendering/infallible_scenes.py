@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from manim import *
+from manim import Scene, Square
 
 
 class Wait1(Scene):
     def construct(self):
         self.wait()
+
+
+class Wait3(Scene):
+    def construct(self):
+        self.add(Square())
 
 
 class Wait2(Scene):

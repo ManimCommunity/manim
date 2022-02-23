@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import click
+import cloup
 import requests
 
 from ... import __version__, config, console, error_console, logger
@@ -24,7 +25,7 @@ from .output_options import output_options
 from .render_options import render_options
 
 
-@click.command(
+@cloup.command(
     context_settings=None,
     epilog=EPILOG,
 )
