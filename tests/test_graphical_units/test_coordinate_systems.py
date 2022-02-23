@@ -48,7 +48,10 @@ def test_plot_surface(scene):
         return z
 
     trig_plane = axes.plot_surface(
-        param_trig, u_range=(-5, 5), v_range=(-5, 5), color=BLUE, axes=axes
+        param_trig,
+        u_range=(-5, 5),
+        v_range=(-5, 5),
+        color=BLUE,
     )
 
     scene.add(axes, trig_plane)
@@ -69,7 +72,6 @@ def test_plot_surface_colorscale(scene):
         u_range=(-3, 3),
         v_range=(-3, 3),
         colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
-        axes=axes,
     )
 
     scene.add(axes, trig_plane)
