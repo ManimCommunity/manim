@@ -891,8 +891,8 @@ class CoordinateSystem:
         if config.renderer != "opengl":
             surface = Surface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
-                v_range=u_range,
-                u_range=v_range,
+                u_range=u_range,
+                v_range=v_range,
                 **kwargs,
             )
             if colorscale:
