@@ -1,3 +1,5 @@
+"""Boolean operations for two-dimensional mobjects."""
+
 from __future__ import annotations
 
 import typing

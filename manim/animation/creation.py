@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Animate the display or removal of a mobject from a scene.
 
 .. manim:: CreationModule
@@ -57,6 +55,7 @@ r"""Animate the display or removal of a mobject from a scene.
 
 """
 
+from __future__ import annotations
 
 __all__ = [
     "Create",

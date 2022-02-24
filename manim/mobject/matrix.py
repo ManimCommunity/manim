@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing matrices.
 
 Examples
@@ -27,6 +25,8 @@ Examples
             g = Group(m0, m1, m2, m3).arrange_in_grid(buff=2)
             self.add(g)
 """
+
+from __future__ import annotations
 
 __all__ = [
     "Matrix",

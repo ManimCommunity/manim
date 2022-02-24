@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 r"""Mobjects that are simple geometric shapes."""
+
+from __future__ import annotations
 
 __all__ = [
     "Polygram",

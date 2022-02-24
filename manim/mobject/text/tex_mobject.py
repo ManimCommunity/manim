@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing text rendered using LaTeX.
 
 .. important::
@@ -11,6 +9,8 @@ r"""Mobjects representing text rendered using LaTeX.
    Just as you can use :class:`~.Text` (from the module :mod:`~.text_mobject`) to add text to your videos, you can use :class:`~.Tex` and :class:`~.MathTex` to insert LaTeX.
 
 """
+
+from __future__ import annotations
 
 __all__ = [
     "TexSymbol",

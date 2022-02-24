@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects that are curved.
 
 Examples
@@ -23,6 +21,8 @@ Examples
                 mobj.shift(DOWN * (i-3))
 
 """
+
+from __future__ import annotations
 
 __all__ = [
     "TipableVMobject",

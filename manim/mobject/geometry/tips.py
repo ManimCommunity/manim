@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 r"""A collection of tip mobjects for use with :class:`~.TipableVMobject`."""
+
+from __future__ import annotations
 
 __all__ = [
     "ArrowTip",

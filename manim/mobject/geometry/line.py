@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 r"""Mobjects that are lines or variations of them."""
+
+from __future__ import annotations
 
 __all__ = [
     "Line",

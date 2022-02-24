@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing tables.
 
 Examples
@@ -54,6 +52,8 @@ Examples
             g2 = Group(t2, t3, t4).scale(0.5).arrange(buff=1).to_edge(DOWN, buff=1)
             self.add(g1, g2)
 """
+
+from __future__ import annotations
 
 __all__ = [
     "Table",
