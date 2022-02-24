@@ -160,7 +160,6 @@ class Union(_BooleanOps):
 
     Example
     -------
-
     .. manim:: UnionExample
         :save_last_frame:
 

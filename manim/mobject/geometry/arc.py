@@ -2,7 +2,6 @@ r"""Mobjects that are curved.
 
 Examples
 --------
-
 .. manim:: UsefulAnnotations
     :save_last_frame:
 
@@ -513,7 +512,6 @@ class Circle(Arc):
 
         Examples
         --------
-
         .. manim:: CircleSurround
             :save_last_frame:
 
