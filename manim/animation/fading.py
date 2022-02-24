@@ -20,10 +20,9 @@ __all__ = [
     "FadeIn",
 ]
 
-
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN

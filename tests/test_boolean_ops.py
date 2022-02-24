@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from manim import Circle, Square
-from manim.mobject.boolean_ops import _BooleanOps
+from manim.mobject.geometry.boolean_ops import _BooleanOps
 
 
 @pytest.mark.parametrize(

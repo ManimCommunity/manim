@@ -342,8 +342,6 @@ def _delete_rendering_times(*args):
 
 
 def setup(app):
-    import manim
-
     app.add_node(skip_manim_node, html=(visit, depart))
 
     setup.app = app

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim.mobject.value_tracker import ComplexValueTracker, ValueTracker
+from manim.animation.updaters.value_tracker import ComplexValueTracker, ValueTracker
 
 
 def test_value_tracker_set_value(using_opengl_renderer):
