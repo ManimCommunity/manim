@@ -8,11 +8,12 @@ from concurrent import futures
 
 import grpc
 
+from manim.animation.updaters.value_tracker import ValueTracker
+
 from ... import config, logger
 from ...constants import WEBGL_RENDERER_INFO
 from ...mobject.types.image_mobject import ImageMobject
 from ...mobject.types.vectorized_mobject import VMobject
-from ...mobject.value_tracker import ValueTracker
 from ...renderer.webgl_renderer import WebGLRenderer
 from ...utils.family import extract_mobject_family_members
 from ...utils.module_ops import scene_classes_from_file

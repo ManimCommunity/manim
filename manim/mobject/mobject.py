@@ -31,6 +31,8 @@ from typing import (
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+
 from .. import config
 from ..constants import *
 from ..utils.color import (
@@ -46,7 +48,6 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
-from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -1677,7 +1678,7 @@ class Mobject:
 
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
-        from ..mobject.shape_matchers import BackgroundRectangle
+        from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
         self.background_rectangle = BackgroundRectangle(
             self, color=color, fill_opacity=opacity, **kwargs
@@ -2238,7 +2239,7 @@ class Mobject:
 
 
         """
-        from .geometry import Line
+        from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()

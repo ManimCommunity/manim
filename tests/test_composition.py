@@ -9,7 +9,9 @@ from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
-from manim.mobject.geometry import Circle, Line, RegularPolygon, Square
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import RegularPolygon, Square
 from manim.scene.scene import Scene
 
 

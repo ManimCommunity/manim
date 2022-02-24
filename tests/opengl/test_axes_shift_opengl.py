@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim.mobject.coordinate_systems import Axes
+from manim.mobject.graphing.coordinate_systems import Axes
 
 
 def test_axes_origin_shift(using_opengl_renderer):

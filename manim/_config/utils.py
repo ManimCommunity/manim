@@ -1188,10 +1188,11 @@ class ManimConfig(MutableMapping):
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
         try:
+            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
             from ..mobject.mobject import Mobject
-            from ..mobject.opengl_compatibility import ConvertToOpenGL
-            from ..mobject.opengl_mobject import OpenGLMobject
-            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:

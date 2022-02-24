@@ -16,6 +16,7 @@ Animations
 
 .. inheritance-diagram::
    manim.animation.animation
+   manim.animation.changing
    manim.animation.composition
    manim.animation.creation
    manim.animation.fading
@@ -27,7 +28,9 @@ Animations
    manim.animation.specialized
    manim.animation.transform
    manim.animation.transform_matching_parts
-   manim.animation.update
+   manim.animation.updaters.mobject_update_utils
+   manim.animation.updaters.update
+   manim.animation.updaters.value_tracker
    :parts: 1
    :top-classes: manim.animation.animation.Animation
 
@@ -47,34 +50,36 @@ Mobjects
 ********
 
 .. inheritance-diagram::
-   manim.mobject.boolean_ops
-   manim.mobject.changing
-   manim.mobject.coordinate_systems
    manim.mobject.frame
-   manim.mobject.functions
-   manim.mobject.geometry
+   manim.mobject.geometry.arc
+   manim.mobject.geometry.boolean_ops
+   manim.mobject.geometry.line
+   manim.mobject.geometry.polygram
+   manim.mobject.geometry.shape_matchers
+   manim.mobject.geometry.tips
    manim.mobject.graph
+   manim.mobject.graphing.coordinate_system
+   manim.mobject.graphing.functions
+   manim.mobject.graphing.number_line
+   manim.mobject.graphing.probability
+   manim.mobject.graphing.scale
    manim.mobject.logo
    manim.mobject.matrix
    manim.mobject.mobject
-   manim.mobject.mobject_update_utils
-   manim.mobject.number_line
-   manim.mobject.numbers
-   manim.mobject.probability
-   manim.mobject.shape_matchers
    manim.mobject.table
-   manim.mobject.three_d_utils
-   manim.mobject.three_dimensions
-   manim.mobject.value_tracker
-   manim.mobject.vector_field
+   manim.mobject.three_d.polyhedra
+   manim.mobject.three_d.three_d_utils
+   manim.mobject.three_d.three_dimensions
    manim.mobject.svg.brace
-   manim.mobject.svg.code_mobject
    manim.mobject.svg.svg_mobject
-   manim.mobject.svg.tex_mobject
-   manim.mobject.svg.text_mobject
+   manim.mobject.text.code_mobject
+   manim.mobject.text.tex_mobject
+   manim.mobject.text.text_mobject
+   manim.mobject.text.numbers
    manim.mobject.types.image_mobject
    manim.mobject.types.point_cloud_mobject
    manim.mobject.types.vectorized_mobject
+   manim.mobject.vector_field
    :parts: 1
    :top-classes: manim.mobject.mobject.Mobject
 

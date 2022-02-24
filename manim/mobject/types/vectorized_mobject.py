@@ -20,10 +20,15 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.three_d.three_d_utils import (
+    get_3d_vmob_gradient_start_and_end_points,
+)
+
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
@@ -36,8 +41,6 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
-from ..opengl_compatibility import ConvertToOpenGL
-from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -2201,7 +2204,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import Tex
+            from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)
