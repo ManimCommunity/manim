@@ -423,7 +423,7 @@ class Arrow(Line):
     .. manim:: ArrowExample
         :save_last_frame:
 
-        from manim.mobject.geometry import ArrowSquareTip
+        from manim.mobject.geometry.tips import ArrowSquareTip
         class ArrowExample(Scene):
             def construct(self):
                 arrow_1 = Arrow(start=RIGHT, end=LEFT, color=GOLD)
@@ -722,7 +722,7 @@ class DoubleArrow(Arrow):
     .. manim:: DoubleArrowExample
         :save_last_frame:
 
-        from manim.mobject.geometry import ArrowCircleFilledTip
+        from manim.mobject.geometry.tips import ArrowCircleFilledTip
         class DoubleArrowExample(Scene):
             def construct(self):
                 circle = Circle(radius=2.0)

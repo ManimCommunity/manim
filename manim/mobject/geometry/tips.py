@@ -73,8 +73,9 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: ArrowTipsShowcase
         :save_last_frame:
 
-        from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowSquareFilledTip,\
-                                        ArrowCircleTip, ArrowCircleFilledTip
+        from manim.mobject.geometry.tips import ArrowTriangleTip,\
+                                                ArrowSquareTip, ArrowSquareFilledTip,\
+                                                ArrowCircleTip, ArrowCircleFilledTip
         class ArrowTipsShowcase(Scene):
             def construct(self):
                 a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
