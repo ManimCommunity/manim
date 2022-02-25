@@ -142,16 +142,16 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     return " ".join(commands)
 
 
-def insight_inputenc_error(match):
-    code_point = chr(int(match[1], 16))
+def insight_inputenc_error(matching):
+    code_point = chr(int(matching[1], 16))
     name = unicodedata.name(code_point)
-    yield f"TexTemplate does not support character '{name}' (U+{match[1]})"
-    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
+    yield f"TexTemplate does not support character '{name}' (U+{matching[1]})."
+    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate."
 
 
-def insight_package_not_found_error(match):
-    yield f"You do not have package {match[1]} installed"
-    yield "Install it using your LaTeX package manager"
+def insight_package_not_found_error(matching):
+    yield f"You do not have package {matching[1]} installed."
+    yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos"
 
 
 def compile_tex(tex_file, tex_compiler, output_format):
@@ -266,7 +266,7 @@ LATEX_ERROR_INSIGHTS = [
         insight_inputenc_error,
     ),
     (
-        r"LaTeX Error: File `(.*?\.cls)' not found",
+        r"LaTeX Error: File `(.*?[clsty])' not found",
         insight_package_not_found_error,
     ),
 ]
@@ -309,11 +309,12 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
     context = "".join(context)
     logger.error(context)
 
-    for prog, get_insight in LATEX_ERROR_INSIGHTS:
-        match = re.search(
-            prog,
+    for insights in LATEX_ERROR_INSIGHTS:
+        prob, get_insight = insights
+        matching = re.search(
+            prob,
             "".join(tex_compilation_log[error_start_index])[2:],
         )
-        if match is not None:
-            for insight in get_insight(match):
+        if matching is not None:
+            for insight in get_insight(matching):
                 logger.info(insight)
