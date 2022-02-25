@@ -23,14 +23,13 @@ from manim.utils.space_ops import angle_of_vector
 class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     r"""Base class for arrow tips.
 
-    See Also
-    --------
-    :class:`ArrowTriangleTip`
-    :class:`ArrowTriangleFilledTip`
-    :class:`ArrowCircleTip`
-    :class:`ArrowCircleFilledTip`
-    :class:`ArrowSquareTip`
-    :class:`ArrowSquareFilledTip`
+    .. seealso::
+        :class:`ArrowTriangleTip`
+        :class:`ArrowTriangleFilledTip`
+        :class:`ArrowCircleTip`
+        :class:`ArrowCircleFilledTip`
+        :class:`ArrowSquareTip`
+        :class:`ArrowSquareFilledTip`
 
     Examples
     --------

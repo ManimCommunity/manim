@@ -71,6 +71,13 @@ class NumberLine(Line):
     kwargs
         Additional arguments to be passed to :class:`~.Line`.
 
+
+    .. note::
+
+        Number ranges that include both negative and positive values will be generated
+        from the 0 point, and may not include a tick at the min / max
+        values as the tick locations are dependent on the step size.
+
     Examples
     --------
     .. manim:: NumberLineExample
@@ -113,12 +120,6 @@ class NumberLine(Line):
 
                 line_group = VGroup(l0, l1, l2, l3).arrange(DOWN, buff=1)
                 self.add(line_group)
-
-    .. note::
-
-        Number ranges that include both negative and positive values will be generated
-        from the 0 point, and may not include a tick at the min / max
-        values as the tick locations are dependent on the step size.
     """
 
     def __init__(
@@ -465,7 +466,6 @@ class NumberLine(Line):
             The :class:`~.VMobject` class that will be used to construct the label.
             Defaults to the ``label_constructor`` attribute of the number line
             if not specified.
-
         """
         if x_values is None:
             x_values = self.get_tick_range()
