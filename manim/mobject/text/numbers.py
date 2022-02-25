@@ -9,7 +9,7 @@ from typing import Sequence
 import numpy as np
 
 from manim import config
-from manim.animation.updaters.value_tracker import ValueTracker
+from manim.mobject.value_tracker import ValueTracker
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex
