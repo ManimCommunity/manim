@@ -1,0 +1,4 @@
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "LaTeX compilation error: LaTeX Error: File `notapackage.sty' not found.\n"}
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\n\\begin{center}\n"}
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "LaTeX compilation error: Emergency stop.\n"}
+{"levelname": "ERROR", "module": "tex_file_writing", "message": "Context of error: \n\\documentclass[preview]{standalone}\n-> \\usepackage{notapackage}\n\\begin{document}\n\n\\begin{center}\n"}
