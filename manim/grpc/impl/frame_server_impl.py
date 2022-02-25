@@ -8,7 +8,7 @@ from concurrent import futures
 
 import grpc
 
-from manim.animation.updaters.value_tracker import ValueTracker
+from manim.mobject.value_tracker import ValueTracker
 
 from ... import config, logger
 from ...constants import WEBGL_RENDERER_INFO
