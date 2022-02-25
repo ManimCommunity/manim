@@ -2,12 +2,12 @@
 v0.15.0
 *******
 
-:Date: February 20, 2022
+:Date: February 25, 2022
 
 Contributors
 ============
 
-A total of 32 people contributed to this
+A total of 34 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
@@ -23,8 +23,10 @@ time.
 * Leo Xu
 * Lucas Ricci
 * Marcin Serwin
+* Michael McNeil Forbes +
 * Mysaa
 * Naveen M K
+* Pierre Couy +
 * Simon Ellmann +
 * Tommy Chu +
 * Viicos
@@ -60,10 +62,13 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 58 pull requests were merged for this release.
+A total of 69 pull requests were merged for this release.
 
 Breaking changes
 ----------------
+
+* `#2476 <https://github.com/ManimCommunity/manim/pull/2476>`__: Improved structure of the :mod:`.mobject` module
+   Arrow tips now have to be imported from ``manim.mobject.geometry.tips`` instead of ``manim.mobject.geometry``.
 
 * `#2387 <https://github.com/ManimCommunity/manim/pull/2387>`__: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`
    - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use :class:`Axes`' methods. Also improves :class:`BarChart`'s configuration and ease of use.
@@ -72,11 +77,17 @@ Breaking changes
 Deprecated classes and functions
 --------------------------------
 
+* `#2568 <https://github.com/ManimCommunity/manim/pull/2568>`__: Remove Deprecated Methods
+   Removes methods and classes that were deprecated since v0.10.0 and v0.11.0
+
 * `#2457 <https://github.com/ManimCommunity/manim/pull/2457>`__: Deprecated :class:`.ShowCreationThenFadeOut`
 
 
 New features
 ------------
+
+* `#2442 <https://github.com/ManimCommunity/manim/pull/2442>`__: Added ``media_embed`` config option to control whether media in Jupyter notebooks is embedded
+
 
 * `#2504 <https://github.com/ManimCommunity/manim/pull/2504>`__: Added finer control over :meth:`.Scene.wait` being static (i.e., no updaters) or not
    - Added keyword argument ``frozen_frame`` to :class:`.Wait` and :meth:`.Scene.wait`
@@ -86,6 +97,12 @@ New features
 
 Enhancements
 ------------
+
+* `#2478 <https://github.com/ManimCommunity/manim/pull/2478>`__: Alternative scaling for tree graph layout
+
+
+* `#2565 <https://github.com/ManimCommunity/manim/pull/2565>`__: Allowed passing vertex configuration keyword arguments to :meth:`.Graph.add_edges`
+
 
 * `#2467 <https://github.com/ManimCommunity/manim/pull/2467>`__: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects
 
@@ -115,6 +132,9 @@ Enhancements
 
 Fixed bugs
 ----------
+
+* `#2576 <https://github.com/ManimCommunity/manim/pull/2576>`__: Fixed a bug with animation of removal of edges from a :class:`.Graph`
+
 
 * `#2556 <https://github.com/ManimCommunity/manim/pull/2556>`__: Fixed showing highlighted cells when creating :class:`.Table`
 
@@ -160,6 +180,15 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#2560 <https://github.com/ManimCommunity/manim/pull/2560>`__: Refactored more docstrings in :mod:`.geometry`
+
+
+* `#2571 <https://github.com/ManimCommunity/manim/pull/2571>`__: Refactored docstrings in :mod:`.graphing`
+
+
+* `#2569 <https://github.com/ManimCommunity/manim/pull/2569>`__: Refactored docstrings in mod:`.geometry`
+
 
 * `#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our GitHub wiki
 
@@ -232,6 +261,12 @@ Changes to our development infrastructure
 
 Code quality improvements and similar refactors
 -----------------------------------------------
+
+* `#2573 <https://github.com/ManimCommunity/manim/pull/2573>`__: Moved :mod:`.value_tracker` back inside :mod:`.mobject`
+
+
+* `#2566 <https://github.com/ManimCommunity/manim/pull/2566>`__: Removed unused livestream-related imports and functions from :mod:`.scene_file_writer`
+
 
 * `#2524 <https://github.com/ManimCommunity/manim/pull/2524>`__: Reworked :mod:`.space_ops`
 
