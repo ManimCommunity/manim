@@ -38,7 +38,6 @@ class SampleSpace(Rectangle):
 
     Examples
     --------
-
     .. manim:: ExampleSampleSpace
         :save_last_frame:
 
@@ -398,7 +397,6 @@ class BarChart(Axes):
                     )
 
                     self.add(chart, c_bar_lbls)
-
         """
 
         bar_labels = VGroup()
@@ -429,7 +427,6 @@ class BarChart(Axes):
 
         Examples
         --------
-
         .. manim:: ChangeBarValuesExample
             :save_last_frame:
 
