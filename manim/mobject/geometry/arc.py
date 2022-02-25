@@ -640,7 +640,7 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point: list | np.ndarray | None = ORIGIN,
+        point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
