@@ -7,13 +7,13 @@ __all__ = ["ThreeDCamera"]
 
 import numpy as np
 
-from manim.animation.updaters.value_tracker import ValueTracker
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_end_corner,
     get_3d_vmob_end_corner_unit_normal,
     get_3d_vmob_start_corner,
     get_3d_vmob_start_corner_unit_normal,
 )
+from manim.mobject.value_tracker import ValueTracker
 
 from .. import config
 from ..camera.camera import Camera
