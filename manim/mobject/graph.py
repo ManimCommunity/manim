@@ -998,7 +998,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         mobjects = self.remove_edges(*edges)
         return AnimationGroup(
-            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+            *(animation(mobj, **anim_args) for mobj in mobjects)
         )
 
     @staticmethod
