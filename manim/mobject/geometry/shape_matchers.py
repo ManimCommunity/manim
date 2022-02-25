@@ -18,7 +18,6 @@ class SurroundingRectangle(RoundedRectangle):
 
     Examples
     --------
-
     .. manim:: SurroundingRectExample
         :save_last_frame:
 
@@ -58,7 +57,6 @@ class BackgroundRectangle(SurroundingRectangle):
 
     Examples
     --------
-
     .. manim:: ExampleBackgroundRectangle
         :save_last_frame:
 

@@ -62,8 +62,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 self.play(MoveAlongPath(dot, hexagram), run_time=5, rate_func=linear)
                 self.remove(dot)
                 self.wait()
-
-
     """
 
     def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
@@ -143,9 +141,12 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         radius
             The curvature of the corners of the :class:`Polygram`.
 
+
+        .. seealso::
+            :class:`.~RoundedRectangle`
+
         Examples
         --------
-
         .. manim:: PolygramRoundCorners
             :save_last_frame:
 
@@ -159,10 +160,6 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                     shapes.arrange(RIGHT)
                     self.add(shapes)
-
-        See Also
-        --------
-        :class:`RoundedRectangle`
         """
 
         if radius == 0:
@@ -228,7 +225,6 @@ class Polygon(Polygram):
 
     Examples
     --------
-
     .. manim:: PolygonExample
         :save_last_frame:
 
@@ -354,7 +350,6 @@ class RegularPolygon(RegularPolygram):
 
     Examples
     --------
-
     .. manim:: RegularPolygonExample
         :save_last_frame:
 
@@ -488,7 +483,6 @@ class Triangle(RegularPolygon):
 
     Examples
     --------
-
     .. manim:: TriangleExample
         :save_last_frame:
 
@@ -528,7 +522,6 @@ class Rectangle(Polygon):
 
     Examples
     ----------
-
     .. manim:: RectangleExample
         :save_last_frame:
 
@@ -600,7 +593,6 @@ class Square(Rectangle):
 
     Examples
     --------
-
     .. manim:: SquareExample
         :save_last_frame:
 
@@ -629,7 +621,6 @@ class RoundedRectangle(Rectangle):
 
     Examples
     --------
-
     .. manim:: RoundedRectangleExample
         :save_last_frame:
 
@@ -651,12 +642,6 @@ class RoundedRectangle(Rectangle):
 class Cutout(VMobject, metaclass=ConvertToOpenGL):
     """A shape with smaller cutouts.
 
-    .. warning::
-
-        Technically, this class behaves similar to a symmetric difference: if
-        parts of the ``mobjects`` are not located within the ``main_shape``,
-        these parts will be added to the resulting :class:`~.VMobject`.
-
     Parameters
     ----------
     main_shape : :class:`~.VMobject`
@@ -666,6 +651,12 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
     kwargs
         Further keyword arguments that are passed to the constructor of
         :class:`~.VMobject`.
+
+
+    .. warning::
+        Technically, this class behaves similar to a symmetric difference: if
+        parts of the ``mobjects`` are not located within the ``main_shape``,
+        these parts will be added to the resulting :class:`~.VMobject`.
 
     Examples
     --------
