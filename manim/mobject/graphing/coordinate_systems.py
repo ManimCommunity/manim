@@ -862,7 +862,8 @@ class CoordinateSystem:
         --------
         .. manim:: PlotSurfaceExample
             :save_last_frame:
-            class PlotSurfaceExample(Scene):
+
+            class PlotSurfaceExample(ThreeDScene):
                 def construct(self):
                     resolution_fa = 42
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
