@@ -103,8 +103,8 @@ def _tree_layout(
     T: nx.classes.graph.Graph,
     root_vertex: Hashable | None,
     scale: float | tuple | None = 2,
+    vertex_spacing: tuple | None = None,
     orientation: str = "down",
-    scaling_type: str = "relative",
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
 
@@ -184,7 +184,7 @@ def _tree_layout(
     center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
     height = y_max - y_min
     width = x_max - x_min
-    if scaling_type == "relative":
+    if vertex_spacing is None:
         if isinstance(scale, (float, int)) and (width > 0 or height > 0):
             sf = 2 * scale / max(width, height)
         elif isinstance(scale, tuple):
@@ -201,13 +201,9 @@ def _tree_layout(
             sf = np.array([sw, sh, 0])
         else:
             sf = 1
-    elif scaling_type == "absolute":
-        if isinstance(scale, (float, int)):
-            sf = scale
-        elif isinstance(scale, tuple):
-            sf = np.array([scale[0], scale[1], 0])
-        else:
-            sf = 1
+    else:
+        sx, sy = vertex_spacing
+        sf = np.array([sx, sy, 0])
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
@@ -252,24 +248,19 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         Only for automatically generated layouts. A dictionary whose entries
         are passed as keyword arguments to the automatic layout algorithm
         specified via ``layout`` of``networkx``.
-        The ``tree`` layout also accepts a special parameter ``scaling_type``
+        The ``tree`` layout also accepts a special parameter ``vertex_spacing``
         passed as a keyword argument inside the ``layout_config`` dictionary.
-        This parameter changes the meaning of ``layout_scale`` (see below) for
-        trees. Its value can be ``"relative"`` (used by default, matches the
-        usual meaning of ``layout_scale``) or ``"absolute"`` (see
-        ``layout_scale`` below for more details).
+        Passing a tuple ``(space_x, space_y)`` as this argument overrides
+        the value of ``layout_scale`` and ensures that vertices are arranged
+        in a way such that the centers of siblings in the same layer are
+        at least ``space_x`` units apart horizontally, and neighboring layers
+        are spaced ``space_y`` units vertically.
     layout_scale
         The scale of automatically generated layouts: the vertices will
         be arranged such that the coordinates are located within the
         interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)``
         causing the first coordinate to be in the interval ``[-scale_x, scale_x]``,
         and the second in ``[-scale_y, scale_y]``. Default: 2.
-        For tree layouts, when ``scaling_type`` (see ``layout_config`` above) is
-        ``"absolute"``, the vertices will be arranged such that the centers of two
-        vertices with the same depth are at least ``scale_x`` units away on the horizontal axis.
-        The vertical distance between the center of verdices of adjacent depth will always be
-        ``scale_y``. Specifying a single ``scale`` float has the same effect as using
-        the tuple ``(scale, scale)``
     vertex_type
         The mobject class used for displaying vertices in the scene.
     vertex_config
