@@ -414,7 +414,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
     for ``layout_scale``, and as such it is harder to control the size
     of the mobject. However, we can adjust the captured frame and
     zoom out by using a :class:`.MovingCameraScene`.
-    
+
     .. manim:: LargeTreeGeneration
 
         class LargeTreeGeneration(MovingCameraScene):
