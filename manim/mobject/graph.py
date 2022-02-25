@@ -1062,9 +1062,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_edges(*edges)
-        return AnimationGroup(
-            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
-        )
+        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> Graph:
