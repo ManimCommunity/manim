@@ -80,14 +80,10 @@ def test_error_logging(tmp_path, python_version):
 
 @logs_comparison(
     "bad_tex_scene_BadTex.txt",
-    Path("logs", "bad_tex_scene_BadTex.log"),
+    Path("logs/bad_tex_scene_BadTex.log"),
 )
 def test_tex_error_logs(tmp_path, python_version):
-    bad_tex_scene = Path(
-        "tests",
-        "test_logging",
-        "bad_tex_scene.py",
-    )
+    bad_tex_scene = Path("tests/test_logging/bad_tex_scene.py")
     command = [
         python_version,
         "-m",
