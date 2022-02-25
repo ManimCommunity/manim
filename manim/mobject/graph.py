@@ -408,14 +408,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
 
-    The following example illustrates the use of the ``vertex_spacing``
+    The following code sample illustrates the use of the ``vertex_spacing``
     layout parameter specific to the ``"tree"`` layout. As mentioned
     above, setting ``vertex_spacing`` overrides the specified value
     for ``layout_scale``, and as such it is harder to control the size
     of the mobject. However, we can adjust the captured frame and
-    zoom out by using a :class:`.MovingCameraScene`.
-
-    .. manim:: LargeTreeGeneration
+    zoom out by using a :class:`.MovingCameraScene`::
 
         class LargeTreeGeneration(MovingCameraScene):
             DEPTH = 4
