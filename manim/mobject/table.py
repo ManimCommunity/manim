@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing tables.
 
 Examples
@@ -55,6 +53,8 @@ Examples
             self.add(g1, g2)
 """
 
+from __future__ import annotations
+
 __all__ = [
     "Table",
     "MathTable",
@@ -69,17 +69,18 @@ from typing import Callable, Iterable, Sequence
 
 from colour import Color
 
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon
+from manim.mobject.geometry.shape_matchers import BackgroundRectangle
+from manim.mobject.text.numbers import DecimalNumber, Integer
+from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.text.text_mobject import Paragraph
+
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
-from ..constants import *
-from ..mobject.geometry import Line, Polygon
-from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.text_mobject import Paragraph
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
 

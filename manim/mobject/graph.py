@@ -6,21 +6,23 @@ __all__ = [
     "Graph",
 ]
 
+import itertools as it
 from copy import copy
 from typing import Hashable, Iterable
 
 import networkx as nx
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.geometry.arc import Dot, LabeledDot
+from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.text.tex_mobject import MathTex
 
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
-from .geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
-from .opengl_compatibility import ConvertToOpenGL
-from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
 
@@ -905,6 +907,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         *edges: tuple[Hashable, Hashable],
         edge_type: type[Mobject] = Line,
         edge_config: dict | None = None,
+        **kwargs,
     ):
         """Add new edges to the graph.
 
@@ -923,6 +926,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             whose keys are the edge tuples, and whose values are dictionaries
             containing keyword arguments to be passed for the construction
             of the corresponding edge.
+        kwargs
+            Any further keyword arguments are passed to :meth:`.add_vertices`
+            which is used to create new vertices in the passed edges.
 
         Returns
         -------
@@ -940,6 +946,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             base_edge_config[e].update(edge_config.get(e, {}))
         edge_config = base_edge_config
 
+        edge_vertices = set(it.chain(*edges))
+        new_vertices = [v for v in edge_vertices if v not in self.vertices]
+        added_vertices = self.add_vertices(*new_vertices, **kwargs)
+
         added_mobjects = sum(
             (
                 self._add_edge(
@@ -949,7 +959,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 ).submobjects
                 for edge in edges
             ),
-            [],
+            added_vertices,
         )
         return self.get_group_class()(*added_mobjects)
 
