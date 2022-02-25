@@ -61,9 +61,7 @@ def _determine_graph_layout(
         return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
-            nx_graph,
-            root_vertex=root_vertex,
-            scale=layout_scale,
+            nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
         )
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
@@ -104,7 +102,8 @@ def _determine_graph_layout(
 def _tree_layout(
     T: nx.classes.graph.Graph,
     root_vertex: Hashable | None,
-    scale: float | tuple = 2,
+    scale: float | tuple | None = 2,
+    vertex_spacing: tuple | None = None,
     orientation: str = "down",
 ):
     children = {root_vertex: list(T.neighbors(root_vertex))}
@@ -185,10 +184,26 @@ def _tree_layout(
     center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
     height = y_max - y_min
     width = x_max - x_min
-    if isinstance(scale, (float, int)):
-        sf = 2 * scale / max(width, height)
+    if vertex_spacing is None:
+        if isinstance(scale, (float, int)) and (width > 0 or height > 0):
+            sf = 2 * scale / max(width, height)
+        elif isinstance(scale, tuple):
+            if scale[0] is not None and width > 0:
+                sw = 2 * scale[0] / width
+            else:
+                sw = 1
+
+            if scale[1] is not None and height > 0:
+                sh = 2 * scale[1] / height
+            else:
+                sh = 1
+
+            sf = np.array([sw, sh, 0])
+        else:
+            sf = 1
     else:
-        sf = np.array([2 * scale[0] / width, 2 * scale[1] / height, 0])
+        sx, sy = vertex_spacing
+        sf = np.array([sx, sy, 0])
     return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
@@ -229,16 +244,23 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
         for more details), or a dictionary specifying a coordinate (value)
         for each vertex (key) for manual positioning.
+    layout_config
+        Only for automatically generated layouts. A dictionary whose entries
+        are passed as keyword arguments to the automatic layout algorithm
+        specified via ``layout`` of``networkx``.
+        The ``tree`` layout also accepts a special parameter ``vertex_spacing``
+        passed as a keyword argument inside the ``layout_config`` dictionary.
+        Passing a tuple ``(space_x, space_y)`` as this argument overrides
+        the value of ``layout_scale`` and ensures that vertices are arranged
+        in a way such that the centers of siblings in the same layer are
+        at least ``space_x`` units apart horizontally, and neighboring layers
+        are spaced ``space_y`` units vertically.
     layout_scale
         The scale of automatically generated layouts: the vertices will
         be arranged such that the coordinates are located within the
         interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)``
         causing the first coordinate to be in the interval ``[-scale_x, scale_x]``,
         and the second in ``[-scale_y, scale_y]``. Default: 2.
-    layout_config
-        Only for automatically generated layouts. A dictionary whose entries
-        are passed as keyword arguments to the automatic layout algorithm
-        specified via ``layout`` of``networkx``.
     vertex_type
         The mobject class used for displaying vertices in the scene.
     vertex_config
@@ -385,6 +407,49 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
                 self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
+
+    The following code sample illustrates the use of the ``vertex_spacing``
+    layout parameter specific to the ``"tree"`` layout. As mentioned
+    above, setting ``vertex_spacing`` overrides the specified value
+    for ``layout_scale``, and as such it is harder to control the size
+    of the mobject. However, we can adjust the captured frame and
+    zoom out by using a :class:`.MovingCameraScene`::
+
+        class LargeTreeGeneration(MovingCameraScene):
+            DEPTH = 4
+            CHILDREN_PER_VERTEX = 3
+            LAYOUT_CONFIG = {"vertex_spacing": (0.5, 1)}
+            VERTEX_CONF = {"radius": 0.25, "color": BLUE_B, "fill_opacity": 1}
+
+            def expand_vertex(self, g, vertex_id: str, depth: int):
+                new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
+                new_edges = [(vertex_id, child_id) for child_id in new_vertices]
+                g.add_edges(
+                    *new_edges,
+                    vertex_config=self.VERTEX_CONF,
+                    positions={
+                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN for k in new_vertices
+                    },
+                )
+                if depth < self.DEPTH:
+                    for child_id in new_vertices:
+                        self.expand_vertex(g, child_id, depth + 1)
+
+                return g
+
+            def construct(self):
+                g = Graph(["ROOT"], [], vertex_config=self.VERTEX_CONF)
+                g = self.expand_vertex(g, "ROOT", 1)
+                self.add(g)
+
+                self.play(
+                    g.animate.change_layout(
+                        "tree",
+                        root_vertex="ROOT",
+                        layout_config=self.LAYOUT_CONFIG,
+                    )
+                )
+                self.play(self.camera.auto_zoom(g, margin=1), run_time=0.5)
     """
 
     def __init__(
