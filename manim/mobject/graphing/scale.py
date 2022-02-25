@@ -126,7 +126,6 @@ class LogBase(_ScaleBase):
 
         Examples
         --------
-
         .. code-block:: python
 
             func = ParametricFunction(lambda x: x, scaling=LogBase(base=2))
@@ -159,7 +158,6 @@ class LogBase(_ScaleBase):
 
         Parameters
         ----------
-
         val_range
             The iterable of values used to create the labels. Determines the exponent.
         unit_decimal_places
