@@ -2,7 +2,7 @@
 v0.15.0
 *******
 
-:Date: February 25, 2022
+:Date: February 26, 2022
 
 Contributors
 ============
@@ -62,7 +62,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 69 pull requests were merged for this release.
+A total of 70 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -127,11 +127,14 @@ Enhancements
 
 * `#2396 <https://github.com/ManimCommunity/manim/pull/2396>`__: Fixed animations introducing or removing objects
    * :class:`.ShowPassingFlash` now removes objects when the animation is finished
-   * Added ``introducer`` keyword argument to :clas:`.Animation` analogous to ``remover``
+   * Added ``introducer`` keyword argument to :class:`.Animation` analogous to ``remover``
    * Updated :class:`.Graph` vertex addition handling
 
 Fixed bugs
 ----------
+
+* `#2580 <https://github.com/ManimCommunity/manim/pull/2580>`__: Fix `find_intersection` in `space_ops.py`
+
 
 * `#2576 <https://github.com/ManimCommunity/manim/pull/2576>`__: Fixed a bug with animation of removal of edges from a :class:`.Graph`
 
@@ -187,8 +190,7 @@ Documentation-related changes
 * `#2571 <https://github.com/ManimCommunity/manim/pull/2571>`__: Refactored docstrings in :mod:`.graphing`
 
 
-* `#2569 <https://github.com/ManimCommunity/manim/pull/2569>`__: Refactored docstrings in mod:`.geometry`
-
+* `#2569 <https://github.com/ManimCommunity/manim/pull/2569>`__: Refactored docstrings in :mod:`.geometry`
 
 * `#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our GitHub wiki
 
@@ -293,11 +295,11 @@ Code quality improvements and similar refactors
 
 
 * `#2437 <https://github.com/ManimCommunity/manim/pull/2437>`__: Cleaned up :mod:`.simple_functions`
-   - Removed `fdiv` as in all cases where it was used, it was just doing the same thing as numpy array division.
+   - Removed ``fdiv`` as in all cases where it was used, it was just doing the same thing as numpy array division.
    - Replaced old implementation of the choose function with scipy's implementation
-   - Use `lru_cache` (least recently used cache) for caching the choose function. Since it's only used for beziers, only 2 choose k and 3 choose k will be used, hence a size of 10 should be enough.
-   - Removed `clip_in_place` in favor of `np.clip`
-   - Removed one use of `clip_in_place` that wasn't actually doing anything
+   - Use ``lru_cache`` (least recently used cache) for caching the choose function. Since it's only used for beziers, only 2 choose k and 3 choose k will be used, hence a size of 10 should be enough.
+   - Removed ``clip_in_place`` in favor of ``np.clip``
+   - Removed one use of ``clip_in_place`` that wasn't actually doing anything
 
 * `#2439 <https://github.com/ManimCommunity/manim/pull/2439>`__: Removed twitter template from scripts
 
