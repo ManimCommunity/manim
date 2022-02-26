@@ -222,6 +222,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.Table.add_background_to_entries:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 

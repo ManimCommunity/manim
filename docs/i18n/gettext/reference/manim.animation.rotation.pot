@@ -18,4 +18,8 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
+#: ../../source/reference/manim.animation.rotation.rst:22:<autosummary>:1
+msgid "Animation that rotates a Mobject."
+msgstr ""
+
 

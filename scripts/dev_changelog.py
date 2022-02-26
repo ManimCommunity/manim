@@ -77,6 +77,10 @@ PR_LABELS = {
     "unlabeled": "Unclassified changes",
 }
 
+SILENT_CONTRIBUTORS = [
+    "dependabot[bot]",
+]
+
 
 def update_citation(version, date):
     current_directory = os.path.dirname(__file__)
@@ -114,15 +118,18 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     author_names = []
     for author in authors:
         name = author.name if author.name is not None else author.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
         if github_repo.get_commits(author=author, until=lst_date).totalCount == 0:
             name += " +"
         author_names.append(name)
 
     reviewer_names = []
     for reviewer in reviewers:
-        reviewer_names.append(
-            reviewer.name if reviewer.name is not None else reviewer.login,
-        )
+        name = reviewer.name if reviewer.name is not None else reviewer.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
+        reviewer_names.append(name)
 
     return {
         "authors": sorted(author_names),

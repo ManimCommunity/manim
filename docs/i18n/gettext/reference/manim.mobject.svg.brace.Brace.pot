@@ -64,6 +64,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 

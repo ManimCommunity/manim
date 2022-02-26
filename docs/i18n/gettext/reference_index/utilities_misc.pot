@@ -35,6 +35,10 @@ msgid "Decorators for deprecating classes, functions and function parameters."
 msgstr ""
 
 #: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
+msgid "Debugging utilities."
+msgstr ""
+
+#: ../../source/reference_index/utilities_misc.rst:30:<autosummary>:1
 msgid "Utilities for scene caching."
 msgstr ""
 

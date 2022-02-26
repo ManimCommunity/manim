@@ -22,4 +22,12 @@ msgstr ""
 msgid "Complex Homotopy a function Cx[0, 1] to C"
 msgstr ""
 
+#: ../../source/reference/manim.animation.movement.ComplexHomotopy.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.ComplexHomotopy:0
+msgid "Parameters"
+msgstr ""
+
 
