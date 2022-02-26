@@ -151,7 +151,7 @@ def insight_inputenc_error(matching):
 
 def insight_package_not_found_error(matching):
     yield f"You do not have package {matching[1]} installed."
-    yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos"
+    yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
 def compile_tex(tex_file, tex_compiler, output_format):
