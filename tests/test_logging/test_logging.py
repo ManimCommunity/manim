@@ -91,7 +91,7 @@ def test_tex_error_logs(tmp_path, python_version):
         "-ql",
         "--log_to_file",
         "-v",
-        "ERROR",
+        "INFO",
         "--media_dir",
         str(tmp_path),
         bad_tex_scene,
