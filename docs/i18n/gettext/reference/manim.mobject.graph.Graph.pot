@@ -62,32 +62,32 @@ msgid "Either one of ``\"spring\"`` (the default), ``\"circular\"``, ``\"kamada_
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:29
+msgid "Only for automatically generated layouts. A dictionary whose entries are passed as keyword arguments to the automatic layout algorithm specified via ``layout`` of``networkx``. The ``tree`` layout also accepts a special parameter ``vertex_spacing`` passed as a keyword argument inside the ``layout_config`` dictionary. Passing a tuple ``(space_x, space_y)`` as this argument overrides the value of ``layout_scale`` and ensures that vertices are arranged in a way such that the centers of siblings in the same layer are at least ``space_x`` units apart horizontally, and neighboring layers are spaced ``space_y`` units vertically."
+msgstr ""
+
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:39
 msgid "The scale of automatically generated layouts: the vertices will be arranged such that the coordinates are located within the interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)`` causing the first coordinate to be in the interval ``[-scale_x, scale_x]``, and the second in ``[-scale_y, scale_y]``. Default: 2."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:34
-msgid "Only for automatically generated layouts. A dictionary whose entries are passed as keyword arguments to the automatic layout algorithm specified via ``layout`` of``networkx``."
-msgstr ""
-
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:37
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:44
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_vertices:12
 msgid "The mobject class used for displaying vertices in the scene."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:38
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:45
 msgid "Either a dictionary containing keyword arguments to be passed to the class specified via ``vertex_type``, or a dictionary whose keys are the vertices, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding vertex."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:42
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:49
 msgid "A dictionary whose keys are the vertices, and whose values are mobjects to be used as vertices. Passing vertices here overrides all other configuration options for a vertex."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:45
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:52
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:6
 msgid "The mobject class used for displaying edges in the scene."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:46
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:53
 msgid "Either a dictionary containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edges, and whose values are dictionaries containing keyword arguments for the mobject related to the corresponding edge."
 msgstr ""
 
@@ -99,43 +99,47 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:52
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:59
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.change_layout:7
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.from_networkx:7
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.remove_vertices:6
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:53
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:60
 msgid "First, we create a small graph and demonstrate that the edges move together with the vertices."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:71
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:78
 msgid "There are several automatic positioning algorithms to choose from:"
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:92
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:99
 msgid "Vertices can also be positioned manually:"
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:105
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:112
 msgid "The vertices in graphs can be labeled, and configurations for vertices and edges can be modified both by default and for specific vertices and edges."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:111
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:118
 msgid "In ``edge_config``, edges can be passed in both directions: if ``(u, v)`` is an edge in the graph, both ``(u, v)`` as well as ``(v, u)`` can be used as keys in the dictionary."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:131
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:138
 msgid "You can also lay out a partite graph on columns by specifying a list of the vertices on each side and choosing the partite layout."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:136
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:143
 msgid "All vertices in your graph which are not listed in any of the partitions are collected in their own partition and rendered in the rightmost column."
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:152
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:159
 msgid "The custom tree layout can be used to show the graph by distance from the root vertex. You must pass the root vertex of the tree."
+msgstr ""
+
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph:185
+msgid "The following code sample illustrates the use of the ``vertex_spacing`` layout parameter specific to the ``\"tree\"`` layout. As mentioned above, setting ``vertex_spacing`` overrides the specified value for ``layout_scale``, and as such it is harder to control the size of the mobject. However, we can adjust the captured frame and zoom out by using a :class:`.MovingCameraScene`::"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graph.Graph.rst:14
@@ -185,6 +189,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
@@ -200,12 +208,16 @@ msgstr ""
 msgid "A dictionary either containing keyword arguments to be passed to the class specified via ``edge_type``, or a dictionary whose keys are the edge tuples, and whose values are dictionaries containing keyword arguments to be passed for the construction of the corresponding edge."
 msgstr ""
 
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:12
+msgid "Any further keyword arguments are passed to :meth:`.add_vertices` which is used to create new vertices in the passed edges."
+msgstr ""
+
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:0
 #: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.remove_edges:0
 msgid "Returns"
 msgstr ""
 
-#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:13
+#: ../../../manim/mobject/graph.py:docstring of manim.mobject.graph.Graph.add_edges:15
 msgid "A group containing all newly added vertices and edges."
 msgstr ""
 

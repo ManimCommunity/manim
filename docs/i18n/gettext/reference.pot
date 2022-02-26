@@ -26,15 +26,15 @@ msgstr ""
 msgid "Animations"
 msgstr ""
 
-#: ../../source/reference.rst:35
+#: ../../source/reference.rst:37
 msgid "Cameras"
 msgstr ""
 
-#: ../../source/reference.rst:47
+#: ../../source/reference.rst:49
 msgid "Mobjects"
 msgstr ""
 
-#: ../../source/reference.rst:84
+#: ../../source/reference.rst:87
 msgid "Scenes"
 msgstr ""
 

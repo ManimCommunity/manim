@@ -18,12 +18,24 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:1
+msgid "Transforms the points of a mobject along a clockwise oriented arc."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:6
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:14
 msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:0
+msgid "Parameters"
 msgstr ""
 
 
