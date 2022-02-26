@@ -71,14 +71,14 @@ Breaking changes
    Arrow tips now have to be imported from ``manim.mobject.geometry.tips`` instead of ``manim.mobject.geometry``.
 
 * `#2387 <https://github.com/ManimCommunity/manim/pull/2387>`__: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`
-   - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use :class:`Axes`' methods. Also improves :class:`BarChart`'s configuration and ease of use.
-   - Added :meth:`~.BarChart.add_bar_labels` to annotate the value of each bar of a :class:`~.BarChart`.
+   - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use :class:`~.Axes`' methods. Also improves :class:`~.BarChart`'s configuration and ease of use.
+   - Added :meth:`~.BarChart.get_bar_labels` to annotate the value of each bar of a :class:`~.BarChart`.
 
 Deprecated classes and functions
 --------------------------------
 
-* `#2568 <https://github.com/ManimCommunity/manim/pull/2568>`__: Remove Deprecated Methods
-   Removes methods and classes that were deprecated since v0.10.0 and v0.11.0
+* `#2568 <https://github.com/ManimCommunity/manim/pull/2568>`__: Removed Deprecated Methods
+   Removed methods and classes that were deprecated since v0.10.0 and v0.11.0
 
 * `#2457 <https://github.com/ManimCommunity/manim/pull/2457>`__: Deprecated :class:`.ShowCreationThenFadeOut`
 
@@ -133,7 +133,7 @@ Enhancements
 Fixed bugs
 ----------
 
-* `#2580 <https://github.com/ManimCommunity/manim/pull/2580>`__: Fix `find_intersection` in `space_ops.py`
+* `#2580 <https://github.com/ManimCommunity/manim/pull/2580>`__: Fixed :func:`.find_intersection` in :mod:`.space_ops`
 
 
 * `#2576 <https://github.com/ManimCommunity/manim/pull/2576>`__: Fixed a bug with animation of removal of edges from a :class:`.Graph`
