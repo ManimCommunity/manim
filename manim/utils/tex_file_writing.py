@@ -84,7 +84,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
 
     result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
     if not os.path.exists(result):
-        logger.info('Writing "{}" to {}'.format("".join(expression), result))
+        logger.info(f"Writing {expression} to %(path)s", {"path": f"{result}"})
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
     return result
