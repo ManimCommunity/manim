@@ -34,4 +34,8 @@ msgstr ""
 msgid "This is currently only possible for class:`~.Text` and not for class:`~.MathTex`"
 msgstr ""
 
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.AddTextLetterByLetter:0
+msgid "Return type"
+msgstr ""
+
 

@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:2
+msgid "TracedPath"
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:4
+msgid "Qualified name: ``manim.animation.changing.TracedPath``"
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:1
+msgid "Traces the path of a point returned by a function call."
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:3
+msgid "The function to be traced."
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:4
+msgid "The width of the trace."
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:5
+msgid "The color of the trace."
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:6
+msgid "The time taken for the path to dissipate. Default set to ``None`` which disables dissipation."
+msgstr ""
+
+#: ../../../manim/animation/changing.py:docstring of manim.animation.changing.TracedPath:10
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:33:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:33:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:33:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.animation.changing.TracedPath.rst:33:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

@@ -31,6 +31,18 @@ msgid "Animation that applies a pointwise function to a mobject."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Transforms the points of a mobject along a clockwise oriented arc."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Transforms the points of a mobject along a counterclockwise oriented arc."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Animation that changes color of a mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Fades one mobject into another."
 msgstr ""
 
@@ -39,7 +51,23 @@ msgid "Fades submobjects of one mobject into submobjects of another one."
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Transforms a mobject to the mobject stored in its ``target`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
 msgid "Replaces and morphs a mobject into a target mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Transforms a mobject to its last saved state."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Animation that scales a mobject by a certain factor."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:60:<autosummary>:1
+msgid "Animation that makes a mobject shrink to center."
 msgstr ""
 
 
