@@ -383,6 +383,7 @@ class CoordinateSystem:
         :class:`~.VGroup`
             A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
 
+
         .. seealso::
             :class:`get_x_axis_label`
             :class:`get_y_axis_label`
@@ -589,7 +590,7 @@ class CoordinateSystem:
         point
             A point on the scene.
         kwargs
-            Additional arguments to be provided :meth:`CoordinateSystem.get_line_from_axis_to_point`.
+            Additional parameters to be passed to :meth:`get_line_from_axis_to_point`
 
         Returns
         -------
@@ -1302,7 +1303,7 @@ class CoordinateSystem:
             The graph for which the derivative will be found.
         color
             The color of the derivative curve.
-        **kwargs
+        kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
         Returns
@@ -1352,7 +1353,7 @@ class CoordinateSystem:
             The y-value at which the graph intercepts the y-axis.
         samples
             The number of points to take the area under the graph.
-        **kwargs
+        kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
         Returns
@@ -1666,7 +1667,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     tips
         Whether or not to include the tips on both axes.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
 
     Examples
@@ -2051,7 +2052,7 @@ class ThreeDAxes(Axes):
         Currently non-functional.
     gloss
         Currently non-functional.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Axes`.
     """
 
@@ -2222,7 +2223,7 @@ class NumberPlane(Axes):
         Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
     make_smooth_after_applying_functions
         Currently non-functional.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Axes`.
 
 
