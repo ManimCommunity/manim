@@ -84,7 +84,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
 
     result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
     if not os.path.exists(result):
-        logger.info('Writing "{}" to {}'.format("".join(expression), result))
+        logger.info(f"Writing {expression} to %(path)s", {"path": f"{result}"})
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
     return result
@@ -142,11 +142,16 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     return " ".join(commands)
 
 
-def insight_inputenc_error(match):
-    code_point = chr(int(match[1], 16))
+def insight_inputenc_error(matching):
+    code_point = chr(int(matching[1], 16))
     name = unicodedata.name(code_point)
-    yield f"TexTemplate does not support character '{name}' (U+{match[1]})"
-    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
+    yield f"TexTemplate does not support character '{name}' (U+{matching[1]})."
+    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate."
+
+
+def insight_package_not_found_error(matching):
+    yield f"You do not have package {matching[1]} installed."
+    yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
 def compile_tex(tex_file, tex_compiler, output_format):
@@ -260,6 +265,10 @@ LATEX_ERROR_INSIGHTS = [
         r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
         insight_inputenc_error,
     ),
+    (
+        r"LaTeX Error: File `(.*?[clsty])' not found",
+        insight_package_not_found_error,
+    ),
 ]
 
 
@@ -286,36 +295,26 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
     if line_of_tex_error >= len(tex_source):
         return None
 
-    # all lines numbers containing '\begin{' or '\end{' - except the Manim added center and document tags
-    env_markers_indices = [
-        idx
-        for idx, log_line in enumerate(tex_source)
-        if any(marker in log_line for marker in [r"\begin{", r"\end{"])
-    ][2:-2]
-
-    context = "Context of error:\n\n"
-    if line_of_tex_error in env_markers_indices:
-        context += "".join(tex_source[line_of_tex_error - 1 : line_of_tex_error + 1])
+    context = ["Context of error: \n"]
+    if line_of_tex_error < 3:
+        context += tex_source[: line_of_tex_error + 3]
+        context[-4] = "-> " + context[-4]
+    elif line_of_tex_error > len(tex_source) - 3:
+        context += tex_source[line_of_tex_error - 1 :]
+        context[1] = "-> " + context[1]
     else:
-        marker_before_error = max(
-            idx for idx in env_markers_indices if idx < line_of_tex_error
-        )
-        marker_after_error = min(
-            idx for idx in env_markers_indices if idx > line_of_tex_error
-        )
-        context += "".join(tex_source[marker_before_error:marker_after_error])
+        context += tex_source[line_of_tex_error - 3 : line_of_tex_error + 3]
+        context[-4] = "-> " + context[-4]
+
+    context = "".join(context)
     logger.error(context)
 
-    for prog, get_insight in LATEX_ERROR_INSIGHTS:
-        error_end_index = [
-            idx
-            for idx, _ in enumerate(tex_compilation_log[error_start_index:])
-            if _.startswith("l.")
-        ][0]
-        match = re.search(
-            prog,
-            "".join(tex_compilation_log[error_start_index:error_end_index]),
+    for insights in LATEX_ERROR_INSIGHTS:
+        prob, get_insight = insights
+        matching = re.search(
+            prob,
+            "".join(tex_compilation_log[error_start_index])[2:],
         )
-        if match is not None:
-            for insight in get_insight(match):
+        if matching is not None:
+            for insight in get_insight(matching):
                 logger.info(insight)
