@@ -83,7 +83,7 @@ def test_error_logging(tmp_path, python_version):
     Path("logs/bad_tex_scene_BadTex.log"),
 )
 def test_tex_error_logs(tmp_path, python_version):
-    bad_tex_scene = Path("tests/test_logging/bad_tex_scene.py")
+    bad_tex_scene = os.path.join("tests", "test_logging", "bad_tex_scene.py")
     command = [
         python_version,
         "-m",
