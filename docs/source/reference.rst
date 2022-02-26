@@ -30,7 +30,6 @@ Animations
    manim.animation.transform_matching_parts
    manim.animation.updaters.mobject_update_utils
    manim.animation.updaters.update
-   manim.animation.updaters.value_tracker
    :parts: 1
    :top-classes: manim.animation.animation.Animation
 
@@ -58,7 +57,7 @@ Mobjects
    manim.mobject.geometry.shape_matchers
    manim.mobject.geometry.tips
    manim.mobject.graph
-   manim.mobject.graphing.coordinate_system
+   manim.mobject.graphing.coordinate_systems
    manim.mobject.graphing.functions
    manim.mobject.graphing.number_line
    manim.mobject.graphing.probability
@@ -73,12 +72,13 @@ Mobjects
    manim.mobject.svg.brace
    manim.mobject.svg.svg_mobject
    manim.mobject.text.code_mobject
+   manim.mobject.text.numbers
    manim.mobject.text.tex_mobject
    manim.mobject.text.text_mobject
-   manim.mobject.text.numbers
    manim.mobject.types.image_mobject
    manim.mobject.types.point_cloud_mobject
    manim.mobject.types.vectorized_mobject
+   manim.mobject.value_tracker
    manim.mobject.vector_field
    :parts: 1
    :top-classes: manim.mobject.mobject.Mobject

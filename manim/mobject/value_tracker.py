@@ -1,4 +1,4 @@
-"""Mobjects that dynamically show the change of a variable."""
+"""Simple mobjects that can be used for storing (and updating) a value."""
 
 from __future__ import annotations
 

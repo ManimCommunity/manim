@@ -8,5 +8,4 @@ Modules
 
     ~mobject_update_utils
     ~update
-    ~value_tracker
 """

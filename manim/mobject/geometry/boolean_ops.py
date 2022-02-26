@@ -33,23 +33,23 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         :attr:`z_dim` as the z coordinate.
 
         Parameters
-        ==========
+        ----------
         points:
             An iterable which has the coordinates.
         z_dim:
             The default value of z coordinate.
 
+        Returns
+        -------
+        typing.List[np.ndarray]
+            A list of array converted to 3d.
+
         Example
-        =======
+        -------
         >>> a = _BooleanOps()
         >>> p = [(1, 2), (3, 4)]
         >>> a._convert_2d_to_3d_array(p)
         [array([1., 2., 0.]), array([3., 4., 0.])]
-
-        Returns
-        =======
-        typing.List[np.ndarray]
-            A list of array converted to 3d.
         """
         points = list(points)
         for i, point in enumerate(points):
@@ -62,12 +62,12 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         cairo renderer because it treats the points as Cubic beizer curves.
 
         Parameters
-        ==========
+        ----------
         vmobject:
             The :class:`~.VMobject` to convert from.
 
         Returns
-        =======
+        -------
         SkiaPath:
             The converted path.
         """
@@ -109,12 +109,12 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
     def _convert_skia_path_to_vmobject(self, path: SkiaPath) -> VMobject:
         """Converts SkiaPath back to VMobject.
         Parameters
-        ==========
+        ----------
         path:
             The SkiaPath to convert.
 
         Returns
-        =======
+        -------
         VMobject:
             The converted VMobject.
         """
@@ -149,18 +149,17 @@ class Union(_BooleanOps):
     the :class:`~VMobject` s.
 
     Parameters
-    ==========
+    ----------
     vmobjects
         The :class:`~.VMobject` s to find the union of.
 
     Raises
-    ======
+    ------
     ValueError
         If less than 2 :class:`~.VMobject` s are passed.
 
     Example
-    =======
-
+    -------
     .. manim:: UnionExample
         :save_last_frame:
 
@@ -192,14 +191,14 @@ class Difference(_BooleanOps):
     """Subtracts one :class:`~.VMobject` from another one.
 
     Parameters
-    ==========
+    ----------
     subject
         The 1st :class:`~.VMobject`.
     clip
         The 2nd :class:`~.VMobject`
 
     Example
-    =======
+    -------
     .. manim:: DifferenceExample
         :save_last_frame:
 
@@ -231,17 +230,17 @@ class Intersection(_BooleanOps):
     This keeps the parts covered by both :class:`~.VMobject` s.
 
     Parameters
-    ==========
+    ----------
     vmobjects
         The :class:`~.VMobject` to find the intersection.
 
     Raises
-    ======
+    ------
     ValueError
         If less the 2 :class:`~.VMobject` are passed.
 
     Example
-    =======
+    -------
     .. manim:: IntersectionExample
         :save_last_frame:
 
@@ -287,15 +286,14 @@ class Exclusion(_BooleanOps):
     covered by exactly one of them.
 
     Parameters
-    ==========
+    ----------
     subject
         The 1st :class:`~.VMobject`.
     clip
         The 2nd :class:`~.VMobject`
 
     Example
-    =======
-
+    -------
     .. manim:: IntersectionExample
         :save_last_frame:
 
