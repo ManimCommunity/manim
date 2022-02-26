@@ -62,7 +62,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 70 pull requests were merged for this release.
+A total of 71 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -132,6 +132,9 @@ Enhancements
 
 Fixed bugs
 ----------
+
+* `#2574 <https://github.com/ManimCommunity/manim/pull/2574>`__: Improved Error in :mod:`.utils.tex_file_writing`
+
 
 * `#2580 <https://github.com/ManimCommunity/manim/pull/2580>`__: Fixed :func:`.find_intersection` in :mod:`.space_ops`
 
