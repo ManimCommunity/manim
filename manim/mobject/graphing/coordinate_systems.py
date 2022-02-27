@@ -834,6 +834,7 @@ class CoordinateSystem:
         u_range: Sequence[float] | None = None,
         v_range: Sequence[float] | None = None,
         colorscale: Sequence[[color], float] | None = None,
+        colorscale_axis: int = 2,
         **kwargs,
     ):
         """Generates a surface based on a function.
@@ -893,6 +894,7 @@ class CoordinateSystem:
                 surface.set_fill_by_value(
                     axes=self.copy(),
                     colorscale=colorscale,
+                    axis=colorscale_axis,
                 )
         else:
             surface = OpenGLSurface(
@@ -901,6 +903,7 @@ class CoordinateSystem:
                 v_range=v_range,
                 axes=self.copy(),
                 colorscale=colorscale,
+                colorscale_axis=colorscale_axis,
                 **kwargs,
             )
 
