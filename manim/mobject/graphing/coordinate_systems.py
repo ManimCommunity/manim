@@ -851,6 +851,9 @@ class CoordinateSystem:
             Colors of the surface. Passing a list of colors will color the surface by z-value.
             Passing a list of tuples in the form ``(color, pivot)`` allows user-defined pivots
             where the color transitions.
+        colorscale_axis
+            Defines the axis on which the colorscale is applied (0 = x, 1 = y, 2 = z), default
+            is z-axis (2).
         kwargs
             Additional parameters to be passed to :class:`~.Surface`.
 
