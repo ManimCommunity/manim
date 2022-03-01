@@ -18,12 +18,24 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.ApplyMethod`"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ScaleInPlace:1
+msgid "Animation that scales a mobject by a certain factor."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ScaleInPlace:4
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.ScaleInPlace.rst:14
 msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.ScaleInPlace.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ScaleInPlace:0
+msgid "Parameters"
 msgstr ""
 
 

@@ -26,4 +26,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.Homotopy:0
+msgid "Parameters"
+msgstr ""
+
 

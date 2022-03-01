@@ -11,7 +11,7 @@ msgid "Windows"
 msgstr ""
 
 #: ../../source/installation/windows.rst:4
-msgid "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7-3.9), it might be the easiest way to get everything up and running."
+msgid "The easiest way of installing Manim and its dependencies is by using a package manager like `Chocolatey <https://chocolatey.org/>`__ or `Scoop <https://scoop.sh>`__. If you are not afraid of editing your System's ``PATH``, a manual installation is also possible. In fact, if you already have an existing Python installation (3.7-3.10), it might be the easiest way to get everything up and running."
 msgstr ""
 
 #: ../../source/installation/windows.rst:12
@@ -23,7 +23,7 @@ msgid "Required Dependencies"
 msgstr ""
 
 #: ../../source/installation/windows.rst:22
-msgid "Manim requires a recent version of Python (3.7–3.9) and ``ffmpeg`` in order to work."
+msgid "Manim requires a recent version of Python (3.7–3.10) and ``ffmpeg`` in order to work."
 msgstr ""
 
 #: ../../source/installation/windows.rst:26
@@ -59,11 +59,11 @@ msgid "Manual Installation"
 msgstr ""
 
 #: ../../source/installation/windows.rst:60
-msgid "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7–3.9) and FFmpeg."
+msgid "As mentioned above, Manim needs a reasonably recent version of Python 3 (3.7–3.10) and FFmpeg."
 msgstr ""
 
 #: ../../source/installation/windows.rst:63
-msgid "**Python:** Head over to https://www.python.org, download an installer for Python (3.7–3.9), and follow its instructions to get Python installed on your system."
+msgid "**Python:** Head over to https://www.python.org, download an installer for Python (3.7–3.10), and follow its instructions to get Python installed on your system."
 msgstr ""
 
 #: ../../source/installation/windows.rst:69
@@ -99,14 +99,30 @@ msgid "For Windows, the recommended LaTeX distribution is `MiKTeX <https://mikte
 msgstr ""
 
 #: ../../source/installation/windows.rst:120
-msgid "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX like `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``). In this case, you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing. The full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) is::"
+msgid "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX like:"
 msgstr ""
 
-#: ../../source/installation/windows.rst:137
-msgid "For Chocolatey there is a dedicated ``manim-latex`` package providing a small LaTeX distribution based on TinyTeX which contains these packages; if you use Chocolatey you can get it with ``choco install manim-latex``."
+#: ../../source/installation/windows.rst:123
+msgid "Using Chocolatey:"
 msgstr ""
 
-#: ../../source/installation/windows.rst:143
+#: ../../source/installation/windows.rst:124
+msgid "If you used Chocolatey to install manim or are already a chocolatey user, then you can simply run ``choco install manim-latex``. It is a dedicated package for Manim based on TinyTeX which contains all the required packages that Manim interacts with."
+msgstr ""
+
+#: ../../source/installation/windows.rst:129
+msgid "Manual Installation:"
+msgstr ""
+
+#: ../../source/installation/windows.rst:130
+msgid "You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``) alternative installation instructions can be found at their website. Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing."
+msgstr ""
+
+#: ../../source/installation/windows.rst:136
+msgid "The full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) are::"
+msgstr ""
+
+#: ../../source/installation/windows.rst:147
 msgid "Working with Manim"
 msgstr ""
 

@@ -315,7 +315,6 @@ msgid "The points to adjust"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjusted_thickness:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_fill:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_stroke:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.convert_pixel_array:0
@@ -329,7 +328,6 @@ msgstr ""
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_image:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_mobjects_to_display:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_stroke_rgbas:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_thickening_nudges:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.is_in_frame:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.make_background_from_func:0
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.on_screen_pixels:0
