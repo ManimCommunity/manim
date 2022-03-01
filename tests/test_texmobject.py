@@ -30,7 +30,9 @@ def test_double_braces_testing(text_input, length_sub):
 
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
+    Tex(r"\%")
     assert Path(config.media_dir, "Tex", "983949cac5bdd272.svg").exists()
+    assert Path(config.media_dir, "Tex", "ce6e53f2d9c537bb.tex").exists()
 
 
 def test_tex_whitespace_arg():
