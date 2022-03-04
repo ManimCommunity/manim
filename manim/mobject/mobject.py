@@ -1646,7 +1646,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
+        self, color: Color | str | None = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 
@@ -1698,7 +1698,7 @@ class Mobject:
 
     # Color functions
 
-    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+    def set_color(self, color: Color | str = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings

@@ -253,9 +253,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def generate_style(
         self,
-        color: Color | None,
-        fill_color: Color | None,
-        stroke_color: Color | None,
+        color: Color | str | None,
+        fill_color: Color | str | None,
+        stroke_color: Color | str | None,
         fill_opacity: float,
         stroke_opacity: float,
     ):

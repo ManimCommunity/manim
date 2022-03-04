@@ -65,7 +65,7 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: Color | str | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
@@ -516,15 +516,15 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: Color | str | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[Color | str] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
-        x_range: Sequence[float] = None,
-        y_range: Sequence[float] = None,
-        z_range: Sequence[float] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        z_range: Sequence[float] | None = None,
         three_dimensions: bool = False,  # Automatically True if z_range is set
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
@@ -688,15 +688,15 @@ class StreamLines(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color: Color | None = None,
+        color: Color | str | None = None,
         color_scheme: Callable[[np.ndarray], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[Color | str] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line starting positions:
-        x_range: Sequence[float] = None,
-        y_range: Sequence[float] = None,
-        z_range: Sequence[float] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        z_range: Sequence[float] | None = None,
         three_dimensions: bool = False,
         noise_factor: float | None = None,
         n_repeats=1,

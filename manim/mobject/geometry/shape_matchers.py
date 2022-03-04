@@ -79,7 +79,7 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color: Colors | None = None,
+        color: Color | str | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,

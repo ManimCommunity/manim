@@ -159,9 +159,9 @@ class Table(VGroup):
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
         add_background_rectangles_to_entries: bool = False,
-        entries_background_color: Color = BLACK,
+        entries_background_color: Color | str = BLACK,
         include_background_rectangle: bool = False,
-        background_rectangle_color: Color = BLACK,
+        background_rectangle_color: Color | str = BLACK,
         element_to_mobject: Callable[
             [float | str | VMobject],
             VMobject,
@@ -759,7 +759,7 @@ class Table(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: Color = BLACK) -> Table:
+    def add_background_to_entries(self, color: Color | str = BLACK) -> Table:
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=color)
@@ -823,7 +823,7 @@ class Table(VGroup):
         return rec
 
     def get_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
+        self, pos: Sequence[int] = (1, 1), color: Color | str = YELLOW, **kwargs
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -859,7 +859,7 @@ class Table(VGroup):
         return bg_cell
 
     def add_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: Color = YELLOW, **kwargs
+        self, pos: Sequence[int] = (1, 1), color: Color | str = YELLOW, **kwargs
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 

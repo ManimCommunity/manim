@@ -12,6 +12,7 @@ from typing import Hashable, Iterable
 
 import networkx as nx
 import numpy as np
+from colour import Color
 
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
@@ -457,7 +458,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         vertices: list[Hashable],
         edges: list[tuple[Hashable, Hashable]],
         labels: bool | dict = False,
-        label_fill_color: str = BLACK,
+        label_fill_color: Color | str = BLACK,
         layout: str | dict = "spring",
         layout_scale: float | tuple = 2,
         layout_config: dict | None = None,
@@ -571,7 +572,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         vertex: Hashable,
         position: np.ndarray | None = None,
         label: bool = False,
-        label_fill_color: str = BLACK,
+        label_fill_color: Color | str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
@@ -643,7 +644,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         vertex: Hashable,
         position: np.ndarray | None = None,
         label: bool = False,
-        label_fill_color: str = BLACK,
+        label_fill_color: Color | str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
@@ -692,7 +693,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         *vertices: Hashable,
         positions: dict | None = None,
         labels: bool = False,
-        label_fill_color: str = BLACK,
+        label_fill_color: Color | str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
@@ -746,7 +747,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         *vertices: Hashable,
         positions: dict | None = None,
         labels: bool = False,
-        label_fill_color: str = BLACK,
+        label_fill_color: Color | str = BLACK,
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,

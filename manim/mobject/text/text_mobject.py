@@ -597,11 +597,13 @@ class Text(SVGMobject):
             for start, end in self._find_indexes(word, self.text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def _text2hash(self, color: Color):
+    def _text2hash(self, color: Color | str):
         """Generates ``sha256`` hash for file name."""
-        settings = (
-            "PANGO" + self.font + self.slant + self.weight + color.hex_l
-        )  # to differentiate Text and CairoText
+        # to differentiate Text and CairoText
+        if isinstance(color, Color):
+            settings = "PANGO" + self.font + self.slant + self.weight + color.hex_l
+        else:
+            settings = "PANGO" + self.font + self.slant + self.weight + color
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)

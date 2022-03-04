@@ -18,6 +18,7 @@ from typing import Optional, Sequence, Union
 
 import colour
 import numpy as np
+from colour import Color
 from PIL.Image import Image
 
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -201,7 +202,7 @@ class VMobject(Mobject):
 
     def set_fill(
         self,
-        color: Optional[str] = None,
+        color: Color | str | None = None,
         opacity: Optional[float] = None,
         family: bool = True,
     ):
