@@ -233,7 +233,7 @@ class Animation:
         """
         if scene is None:
             return
-        if self.is_introducer():
+        if self.is_introducer() and self.mobject not in scene.mobjects:
             scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
