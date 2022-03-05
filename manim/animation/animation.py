@@ -49,6 +49,10 @@ class Animation:
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
+
+
+    reversed
+        Whether the animation need to be played backwards.
     name
         The name of the animation. This gets displayed while rendering the animation.
         Defaults to <class-name>(<Mobject-name>).
@@ -135,6 +139,7 @@ class Animation:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
+        self.reversed: bool = reversed
         self.name: str | None = name
         self.remover: bool = remover
         self.introducer: bool = introducer
@@ -359,7 +364,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        if self.remover:
+        if self.reversed:
             return self.rate_func(1 - (value - lower))
         else:
             return self.rate_func(value - lower)
