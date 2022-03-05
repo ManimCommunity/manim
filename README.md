@@ -65,7 +65,7 @@ class SquareToCircle(Scene):
         self.play(FadeOut(square))
 ```
 
-In order to view the output of this scene, save the code in a file called `example.py`. Then, run the following in a terminal window:
+In order to view the output of this scene, save the code in a file called `example.py`, inside the same directory as the installed `manimlib/` folder. Then, run the following in a terminal window:
 
 ```sh
 manim -p -ql example.py SquareToCircle
