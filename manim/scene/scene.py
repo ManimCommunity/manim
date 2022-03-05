@@ -451,7 +451,7 @@ class Scene:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
-            if self.moving_mobjects is not None:
+            if self.moving_mobjects:
                 self.restructure_mobjects(
                     to_remove=mobjects,
                     mobject_list_name="moving_mobjects",
