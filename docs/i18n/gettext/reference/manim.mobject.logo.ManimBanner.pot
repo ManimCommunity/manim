@@ -74,6 +74,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 

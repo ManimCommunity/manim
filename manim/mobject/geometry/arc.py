@@ -2,7 +2,6 @@ r"""Mobjects that are curved.
 
 Examples
 --------
-
 .. manim:: UsefulAnnotations
     :save_last_frame:
 
@@ -46,9 +45,10 @@ __all__ = [
 import itertools
 import math
 import warnings
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
+from colour import Color
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -63,10 +63,14 @@ from manim.utils.space_ops import (
     rotate_vector,
 )
 
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
+    from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
+    from manim.mobject.text.text_mobject import Text
+
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
-    """
-    Meant for shared functionality between Arc and Line.
+    """Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
 
         * Adding, Creating, Modifying tips
@@ -81,7 +85,6 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         * Getters
             - Straightforward accessors, returning information pertaining
                 to the TipableVMobject instance's tip(s), its length etc
-
     """
 
     def __init__(
@@ -99,8 +102,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     # Adding, Creating, Modifying tips
 
     def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
-        """
-        Adds a tip to the TipableVMobject instance, recognising
+        """Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
         """
@@ -114,8 +116,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return self
 
     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
-        """
-        Stylises the tip, positions it spatially, and returns
+        """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
         tip = self.get_unpositioned_tip(tip_shape, tip_length)
@@ -123,8 +124,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return tip
 
     def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
-        """
-        Returns a tip that has been stylistically configured,
+        """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
@@ -207,8 +207,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         return result
 
     def get_tips(self):
-        """
-        Returns a VGroup (collection of VMobjects) containing
+        """Returns a VGroup (collection of VMobjects) containing
         the TipableVMObject instance's tips.
         """
         result = self.get_group_class()()
@@ -351,8 +350,7 @@ class Arc(TipableVMobject):
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
-        """
-        Looks at the normals to the first two
+        """Looks at the normals to the first two
         anchors, and finds their intersection points
         """
         # First two anchors and handles
@@ -386,11 +384,10 @@ class Arc(TipableVMobject):
 
 
 class ArcBetweenPoints(Arc):
-    """
-    Inherits from Arc and additionally takes 2 points between which the arc is spanned.
+    """Inherits from Arc and additionally takes 2 points between which the arc is spanned.
 
     Example
-    --------------------
+    -------
     .. manim:: ArcBetweenPointsExample
 
       class ArcBetweenPointsExample(Scene):
@@ -460,14 +457,13 @@ class Circle(Arc):
 
     Parameters
     ----------
-    color : :class:`~.Colors`, optional
+    color
         The color of the shape.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Arc`
 
     Examples
     --------
-
     .. manim:: CircleExample
         :save_last_frame:
 
@@ -483,8 +479,8 @@ class Circle(Arc):
 
     def __init__(
         self,
-        radius: float = None,
-        color=RED,
+        radius: float | None = None,
+        color: Color | str = RED,
         **kwargs,
     ):
         super().__init__(
@@ -495,22 +491,27 @@ class Circle(Arc):
             **kwargs,
         )
 
-    def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
+    def surround(
+        self,
+        mobject: Mobject,
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buffer_factor: float = 1.2,
+    ):
         """Modifies a circle so that it surrounds a given mobject.
 
         Parameters
         ----------
-        mobject : :class:`~.Mobject`
+        mobject
             The mobject that the circle will be surrounding.
-        dim_to_match : :class:`int`, optional
-        buffer_factor :  :class:`float`, optional
+        dim_to_match
+        buffer_factor
             Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
-        stretch : :class:`bool`, optional
+        stretch
             Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`
 
         Examples
         --------
-
         .. manim:: CircleSurround
             :save_last_frame:
 
@@ -543,17 +544,21 @@ class Circle(Arc):
         self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)
 
-    def point_at_angle(self, angle):
+    def point_at_angle(self, angle: float):
         """Returns the position of a point on the circle.
 
         Parameters
         ----------
-        angle : class: `float`
+        angle
             The angle of the point along the circle in radians.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The location of the point along the circle's circumference.
 
         Examples
         --------
-
         .. manim:: PointAtAngleExample
             :save_last_frame:
 
@@ -567,10 +572,6 @@ class Circle(Arc):
                     s2 = Square(side_length=0.25).move_to(p2)
                     self.add(circle, s1, s2)
 
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            The location of the point along the circle's circumference.
         """
 
         start_angle = angle_of_vector(self.points[0] - self.get_center())
@@ -585,7 +586,6 @@ class Circle(Arc):
 
         Example
         -------
-
         .. manim:: CircleFromPointsExample
             :save_last_frame:
 
@@ -612,22 +612,21 @@ class Dot(Circle):
 
     Parameters
     ----------
-    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
+    point
         The location of the dot.
-    radius : Optional[:class:`float`]
+    radius
         The radius of the dot.
-    stroke_width : :class:`float`, optional
+    stroke_width
         The thickness of the outline of the dot.
-    fill_opacity : :class:`float`, optional
+    fill_opacity
         The opacity of the dot's fill_colour
-    color : :class:`~.Colors`, optional
+    color
         The color of the dot.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Circle`
 
     Examples
     --------
-
     .. manim:: DotExample
         :save_last_frame:
 
@@ -641,11 +640,11 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point=ORIGIN,
+        point: list | np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
-        stroke_width=0,
-        fill_opacity=1.0,
-        color=WHITE,
+        stroke_width: float = 0,
+        fill_opacity: float = 1.0,
+        color: Color | str = WHITE,
         **kwargs,
     ):
         super().__init__(
@@ -659,9 +658,7 @@ class Dot(Circle):
 
 
 class AnnotationDot(Dot):
-    """
-    A dot with bigger radius and bold stroke to annotate scenes.
-    """
+    """A dot with bigger radius and bold stroke to annotate scenes."""
 
     def __init__(
         self,
@@ -685,19 +682,17 @@ class LabeledDot(Dot):
 
     Parameters
     ----------
-    label : Union[:class:`str`, :class:`~.SingleStringMathTex`, :class:`~.Text`, :class:`~.Tex`]
+    label
         The label of the :class:`Dot`. This is rendered as :class:`~.MathTex`
         by default (i.e., when passing a :class:`str`), but other classes
         representing rendered strings like :class:`~.Text` or :class:`~.Tex`
         can be passed as well.
-
-    radius : :class:`float`
+    radius
         The radius of the :class:`Dot`. If ``None`` (the default), the radius
         is calculated based on the size of the ``label``.
 
     Examples
     --------
-
     .. manim:: SeveralLabeledDots
         :save_last_frame:
 
@@ -716,7 +711,12 @@ class LabeledDot(Dot):
                 self.add(dot1, dot2, dot3, dot4)
     """
 
-    def __init__(self, label, radius=None, **kwargs) -> None:
+    def __init__(
+        self,
+        label: str | SingleStringMathTex | Text | Tex,
+        radius: float | None = None,
+        **kwargs,
+    ) -> None:
         if isinstance(label, str):
             from manim import MathTex
 
@@ -736,16 +736,15 @@ class Ellipse(Circle):
 
     Parameters
     ----------
-    width : :class:`float`, optional
+    width
        The horizontal width of the ellipse.
-    height : :class:`float`, optional
+    height
        The vertical height of the ellipse.
-    kwargs : Any
-       Additional arguments to be passed to :class:`Circle`
+    kwargs
+       Additional arguments to be passed to :class:`Circle`.
 
     Examples
     --------
-
     .. manim:: EllipseExample
         :save_last_frame:
 
@@ -757,7 +756,7 @@ class Ellipse(Circle):
                 self.add(ellipse_group)
     """
 
-    def __init__(self, width=2, height=1, **kwargs):
+    def __init__(self, width: float = 2, height: float = 1, **kwargs):
         super().__init__(**kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
@@ -765,7 +764,6 @@ class Ellipse(Circle):
 
 class AnnularSector(Arc):
     """
-
     Parameters
     ----------
     inner_radius
@@ -806,8 +804,6 @@ class AnnularSector(Arc):
                 s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
 
                 self.add(s1, s2, s3, s4)
-
-
     """
 
     def __init__(
@@ -853,10 +849,8 @@ class AnnularSector(Arc):
 
 class Sector(AnnularSector):
     """
-
     Examples
     --------
-
     .. manim:: ExampleSector
         :save_last_frame:
 
@@ -882,12 +876,11 @@ class Annulus(Circle):
         The radius of the inner :class:`Circle`.
     outer_radius
         The radius of the outer :class:`Circle`.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Annulus`
 
     Examples
     --------
-
     .. manim:: AnnulusExample
         :save_last_frame:
 
@@ -931,7 +924,6 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
     """
     Example
     -------
-
     .. manim:: BezierSplineExample
         :save_last_frame:
 
@@ -964,32 +956,17 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
     use across all arcs, but to configure arcs individually an ``arc_config`` list
     has to be passed with the syntax explained below.
 
-    .. tip::
-
-        Two instances of :class:`ArcPolygon` can be transformed properly into one
-        another as well. Be advised that any arc initialized with ``angle=0``
-        will actually be a straight line, so if a straight section should seamlessly
-        transform into an arced section or vice versa, initialize the straight section
-        with a negligible angle instead (such as ``angle=0.0001``).
-
-    There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
-    with pre-defined arcs.
-
-    See Also
-    --------
-    :class:`ArcPolygonFromArcs`
-
     Parameters
     ----------
-    vertices : Union[:class:`list`, :class:`np.array`]
+    vertices
         A list of vertices, start and end points for the arc segments.
-    angle : :class:`float`
+    angle
         The angle used for constructing the arcs. If no other parameters
         are set, this angle is used to construct all arcs.
-    radius : Optional[:class:`float`]
+    radius
         The circle radius used to construct the arcs. If specified,
         overrides the specified ``angle``.
-    arc_config : Optional[Union[List[:class:`dict`]], :class:`dict`]
+    arc_config
         When passing a ``dict``, its content will be passed as keyword
         arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list
         of dictionaries containing values that are passed as keyword
@@ -1008,9 +985,26 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
             >>> ap.arcs
             [ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]
 
+
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into one
+        another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight section
+        with a negligible angle instead (such as ``angle=0.0001``).
+
+    .. note::
+        There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
+        with pre-defined arcs.
+
+    See Also
+    --------
+    :class:`ArcPolygonFromArcs`
+
+
     Examples
     --------
-
     .. manim:: SeveralArcPolygons
 
         class SeveralArcPolygons(Scene):
@@ -1032,7 +1026,14 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
     For further examples see :class:`ArcPolygonFromArcs`.
     """
 
-    def __init__(self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs):
+    def __init__(
+        self,
+        *vertices: list | np.ndarray,
+        angle: float = PI / 4,
+        radius: float | None = None,
+        arc_config: list[dict] | None = None,
+        **kwargs,
+    ):
         n = len(vertices)
         point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
 
@@ -1080,24 +1081,9 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     sections. Arcs can also be passed as straight lines such as an arc
     initialized with ``angle=0``.
 
-    .. tip::
-
-        Two instances of :class:`ArcPolygon` can be transformed properly into
-        one another as well. Be advised that any arc initialized with ``angle=0``
-        will actually be a straight line, so if a straight section should seamlessly
-        transform into an arced section or vice versa, initialize the straight
-        section with a negligible angle instead (such as ``angle=0.0001``).
-
-    There is an alternative version (:class:`ArcPolygon`) that can be instantiated
-    with points.
-
-    See Also
-    --------
-    :class:`ArcPolygon`
-
     Parameters
     ----------
-    arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
+    arcs
         These are the arcs from which the arcpolygon is assembled.
     kwargs
         Keyword arguments that are passed to the constructor of
@@ -1106,13 +1092,29 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
 
     Attributes
     ----------
-    arcs : :class:`list`
+    arcs
         The arcs used to initialize the ArcPolygonFromArcs::
 
             >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
             >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
             >>> ap.arcs
             [Arc, ArcBetweenPoints, Arc]
+
+
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into
+        one another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight
+        section with a negligible angle instead (such as ``angle=0.0001``).
+
+    .. note::
+        There is an alternative version (:class:`ArcPolygon`) that can be instantiated
+        with points.
+
+    .. seealso::
+        :class:`ArcPolygon`
 
     Examples
     --------
@@ -1167,10 +1169,9 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
                 reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
-
     """
 
-    def __init__(self, *arcs, **kwargs):
+    def __init__(self, *arcs: Arc | ArcBetweenPoints, **kwargs):
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints",

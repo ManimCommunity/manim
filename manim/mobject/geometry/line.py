@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import Sequence, Union
+from typing import Sequence
 
 import numpy as np
 from colour import Color
@@ -115,6 +115,7 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
         """Sets starts and end coordinates of a line.
+
         Examples
         --------
         .. manim:: LineExample
@@ -159,7 +160,6 @@ class Line(TipableVMobject):
         ----------
         point
             The point to which the line is projected.
-
         """
 
         start = self.get_start()
@@ -199,6 +199,10 @@ class DashedLine(Line):
     kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
+
+    .. seealso::
+        :class:`~.DashedVMobject`
+
     Examples
     --------
     .. manim:: DashedLineExample
@@ -213,10 +217,6 @@ class DashedLine(Line):
                 # dashed_ratio decreased
                 dashed_3 = DashedLine(config.left_side, config.right_side, dashed_ratio=0.1).shift(DOWN*2)
                 self.add(dashed_1, dashed_2, dashed_3)
-
-    See Also
-    --------
-    :class:`~.DashedVMobject`
     """
 
     def __init__(
@@ -329,9 +329,12 @@ class TangentLine(Line):
     kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
+
+    .. seealso::
+        :meth:`~.VMobject.point_from_proportion`
+
     Examples
     --------
-
     .. manim:: TangentLineExample
         :save_last_frame:
 
@@ -341,10 +344,6 @@ class TangentLine(Line):
                 line_1 = TangentLine(circle, alpha=0.0, length=4, color=BLUE_D) # right
                 line_2 = TangentLine(circle, alpha=0.4, length=4, color=GREEN) # top left
                 self.add(circle, line_1, line_2)
-
-    See Also
-    --------
-    :meth:`~.VMobject.point_from_proportion`
     """
 
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
@@ -371,9 +370,11 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
     kwargs : Any
         Additional arguments to be passed to :class:`~.VMobject`
 
+    .. seealso::
+        :class:`RightAngle`
+
     Examples
     --------
-
     .. manim:: ElbowExample
         :save_last_frame:
 
@@ -385,10 +386,6 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
 
                 elbow_group = Group(elbow_1, elbow_2, elbow_3).arrange(buff=1)
                 self.add(elbow_group)
-
-    See Also
-    --------
-    :class:`RightAngle`
     """
 
     def __init__(self, width=0.2, angle=0, **kwargs):
@@ -417,9 +414,13 @@ class Arrow(Line):
     kwargs : Any
         Additional arguments to be passed to :class:`Line`.
 
+
+    .. seealso::
+        :class:`ArrowTip`
+        :class:`CurvedArrow`
+
     Examples
     --------
-
     .. manim:: ArrowExample
         :save_last_frame:
 
@@ -481,12 +482,6 @@ class Arrow(Line):
                 DR_group.move_to(4 * RIGHT + 2 * DOWN)
 
                 self.add(left_group, middle_group, UR_group, DR_group)
-
-
-    See Also
-    --------
-    :class:`ArrowTip`
-    :class:`CurvedArrow`
     """
 
     def __init__(
@@ -511,9 +506,9 @@ class Arrow(Line):
     def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
-        See Also
-        --------
-        :meth:`~.Mobject.scale`
+
+        .. seealso::
+            :meth:`~.Mobject.scale`
 
         Examples
         --------
@@ -622,7 +617,6 @@ class Vector(Arrow):
 
     Examples
     --------
-
     .. manim:: VectorExample
         :save_last_frame:
 
@@ -661,9 +655,13 @@ class Vector(Arrow):
         kwargs
             Additional arguments to be passed to :class:`~.Matrix`.
 
+        Returns
+        -------
+        :class:`~.Matrix`
+            The label.
+
         Examples
         --------
-
         .. manim:: VectorCoordinateLabel
             :save_last_frame:
 
@@ -677,11 +675,6 @@ class Vector(Arrow):
                     label_2 = vec_2.coordinate_label(color=YELLOW)
 
                     self.add(plane, vec_1, vec_2, label_1, label_2)
-
-        Returns
-        -------
-        :class:`~.Matrix`
-            The label.
         """
 
         # avoiding circular imports
@@ -716,9 +709,13 @@ class DoubleArrow(Arrow):
     kwargs : Any
         Additional arguments to be passed to :class:`Arrow`
 
+
+    .. seealso::
+        :class:`.~ArrowTip`
+        :class:`.~CurvedDoubleArrow`
+
     Examples
     --------
-
     .. manim:: DoubleArrowExample
         :save_last_frame:
 
@@ -745,11 +742,6 @@ class DoubleArrow(Arrow):
                 d3 = DoubleArrow(p1, p2, buff=0, tip_length=0.4, color=BLUE)
                 Group(d1, d2, d3).arrange(DOWN)
                 self.add(box, d1, d2, d3)
-
-    See Also
-    --------
-    :class:`ArrowTip`
-    :class:`CurvedDoubleArrow`
     """
 
     def __init__(self, *args, **kwargs):
@@ -1029,18 +1021,17 @@ class RightAngle(Angle):
 
     Parameters
     ----------
-    line1 : :class:`Line`
+    line1
         The first line.
-    line2 : :class:`Line`
+    line2
         The second line.
-    length : :class:`float`
+    length
         The length of the arms.
     **kwargs
         Further keyword arguments that are passed to the constructor of :class:`Angle`.
 
     Examples
     --------
-
     .. manim:: RightAngleExample
         :save_last_frame:
 
@@ -1062,5 +1053,5 @@ class RightAngle(Angle):
                 self.add(plots)
     """
 
-    def __init__(self, line1, line2, length=None, **kwargs):
+    def __init__(self, line1: Line, line2: Line, length: float | None = None, **kwargs):
         super().__init__(line1, line2, radius=length, elbow=True, **kwargs)

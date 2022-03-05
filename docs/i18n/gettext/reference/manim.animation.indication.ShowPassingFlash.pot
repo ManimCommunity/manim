@@ -23,6 +23,7 @@ msgid "Show only a sliver of the VMobject each frame."
 msgstr ""
 
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:0
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:0
 msgid "Parameters"
 msgstr ""
 
@@ -34,6 +35,11 @@ msgstr ""
 msgid "The length of the sliver relative to the length of the stroke."
 msgstr ""
 
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:0
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:0
+msgid "Return type"
+msgstr ""
+
 #: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash:7
 msgid "Examples"
 msgstr ""
@@ -42,13 +48,13 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:1:<autosummary>:1
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:1
-msgid "Finish the animation."
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:1:<autosummary>:1
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:1
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
 msgstr ""
 
-#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.finish:3
-msgid "This method gets called when the animation is over."
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.ShowPassingFlash.clean_up_from_scene:3
+msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
 msgstr ""
 
 
