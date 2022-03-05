@@ -181,7 +181,7 @@ else:
                     embed = "google.colab" in str(get_ipython())
 
                 if file_type.startswith("image"):
-                    result = Image(filename=config["output_file"], embed=embed)
+                    result = Image(filename=config["output_file"])
                 else:
                     result = Video(
                         tmpfile,
