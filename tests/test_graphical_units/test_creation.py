@@ -68,6 +68,7 @@ def test_ShrinkToCenter(scene):
     square = Square()
     scene.play(ShrinkToCenter(square))
 
+
 @frames_comparison(last_frame=False)
 def test_bring_to_back_introducer(scene):
     a = Square(color=RED, fill_opacity=1)
@@ -76,6 +77,7 @@ def test_bring_to_back_introducer(scene):
     scene.bring_to_back(b)
     scene.play(FadeIn(b))
     scene.wait()
+
 
 @frames_comparison(last_frame=False)
 def test_z_index_introducer(scene):
