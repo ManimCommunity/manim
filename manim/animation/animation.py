@@ -123,6 +123,7 @@ class Animation:
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
+        reversed: bool = False,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -358,7 +359,10 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return self.rate_func(value - lower)
+        if self.remover:
+            return self.rate_func(1 - (value - lower))
+        else:
+            return self.rate_func(value - lower)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> Animation:

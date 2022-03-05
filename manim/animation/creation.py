@@ -189,13 +189,13 @@ class Uncreate(Create):
     def __init__(
         self,
         mobject: VMobject | OpenGLVMobject,
-        rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
+        reversed: bool = True,
         remover: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(
             mobject,
-            rate_func=rate_func,
+            reversed=reversed,
             introducer=False,
             remover=remover,
             **kwargs,
