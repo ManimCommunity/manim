@@ -1,0 +1,45 @@
+*******
+v0.15.1
+*******
+
+:Date: March 05, 2022
+
+Contributors
+============
+
+A total of 5 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+* Yuchen +
+* ad_chaos
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Darylgolden
+* Raghav Goel
+
+Pull requests merged
+====================
+
+A total of 3 pull requests were merged for this release.
+
+Fixed bugs
+----------
+
+* `#2587 <https://github.com/ManimCommunity/manim/pull/2587>`__: Fix bug introduced in Tex rendering via #2574
+
+
+* `#2593 <https://github.com/ManimCommunity/manim/pull/2593>`__: Fixed bug with displaying images in Jupyter Notebooks when ``config.media_embed`` is set to ``False``
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#2578 <https://github.com/ManimCommunity/manim/pull/2578>`__: Fixed incorrect type hint for color property of :class:`.Text`
+
+
