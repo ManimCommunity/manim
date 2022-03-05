@@ -259,8 +259,10 @@ class CairoRenderer:
             config.save_last_frame = True
             config.write_to_movie = False
         else:
+            self.static_image = None
             self.update_frame(scene)
 
         if config["save_last_frame"]:
+            self.static_image = None
             self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())
