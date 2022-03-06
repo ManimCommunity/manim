@@ -403,7 +403,7 @@ class Unwrite(Write):
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            rate_func=lambda t: -rate_func(t) + 1,
+            reversed=True,  # `reversed` is in the kwards of class `Animation`, which decides whether the animation need to be played backwards.
             reverse=reverse,
             **kwargs,
         )
