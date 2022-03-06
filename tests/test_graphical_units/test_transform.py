@@ -155,3 +155,11 @@ def test_MatchPointsScene(scene):
 @frames_comparison(last_frame=False)
 def test_AnimationBuilder(scene):
     scene.play(Square().animate.shift(RIGHT).rotate(PI / 4))
+
+
+@frames_comparison(last_frame=False)
+def test_ReplacementTransform(scene):
+    v1 = Vector()
+    v2 = Vector()
+    v3 = Line()
+    scene.play(ReplacementTransform(VGroup(v1, v2), v3))
