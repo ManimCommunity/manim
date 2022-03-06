@@ -443,7 +443,7 @@ class SpiralIn(Animation):
         self,
         shapes: Mobject,
         scale_factor: float = 8,
-        fade_in_fraction = 0.3,
+        fade_in_fraction=0.3,
         **kwargs,
     ) -> None:
         self.shapes = shapes
@@ -471,6 +471,7 @@ class SpiralIn(Animation):
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
             shape.set_opacity(new_opacity)
+
 
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
