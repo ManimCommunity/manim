@@ -20,16 +20,16 @@ this article, we will focus on the following toy example::
 
     class ToyExample(Scene):
         def construct(self):
-            s = Square(color=ORANGE, fill_opacity=0.5)
-            c = Circle(color=BLUE, fill_opacity=0.5)
-            self.add(s)
-            self.play(ReplacementTransform(s, c, run_time=3))
-            d = Dot()
-            d.add_updater(lambda mob: mob.next_to(c, DOWN))
-            self.play(Create(d))
-            self.play(c.animate.shift(RIGHT))
+            orange_square = Square(color=ORANGE, fill_opacity=0.5)
+            blue_circle = Circle(color=BLUE, fill_opacity=0.5)
+            self.add(orange_square)
+            self.play(ReplacementTransform(orange_square, blue_circle, run_time=3))
+            small_dot = Dot()
+            small_dot.add_updater(lambda mob: mob.next_to(blue_circle, DOWN))
+            self.play(Create(small_dot))
+            self.play(blue_circle.animate.shift(RIGHT))
             self.wait()
-            self.play(FadeOut(c, d))
+            self.play(FadeOut(blue_circle, small_dot))
 
 Before we go into details or even look at the rendered output of this scene,
 let us first describe verbally what happens in this *manimation*. In the first
@@ -51,16 +51,16 @@ Actually rendering the code yields the following video:
 
     class ToyExample(Scene):
         def construct(self):
-            s = Square(color=ORANGE, fill_opacity=0.5)
-            c = Circle(color=BLUE, fill_opacity=0.5)
-            self.add(s)
-            self.play(ReplacementTransform(s, c, run_time=3))
-            d = Dot()
-            d.add_updater(lambda mob: mob.next_to(c, DOWN))
-            self.play(Create(d))
-            self.play(c.animate.shift(RIGHT))
+            orange_square = Square(color=ORANGE, fill_opacity=0.5)
+            blue_circle = Circle(color=BLUE, fill_opacity=0.5)
+            self.add(orange_square)
+            self.play(ReplacementTransform(orange_square, blue_circle, run_time=3))
+            small_dot = Dot()
+            small_dot.add_updater(lambda mob: mob.next_to(blue_circle, DOWN))
+            self.play(Create(small_dot))
+            self.play(blue_circle.animate.shift(RIGHT))
             self.wait()
-            self.play(FadeOut(c, d))
+            self.play(FadeOut(blue_circle, small_dot))
 
 
 For this example, the output (fortunately) coincides with our expectations.
@@ -158,16 +158,16 @@ have created a file ``toy_example.py`` which looks like this::
 
     class ToyExample(Scene):
         def construct(self):
-            s = Square(color=ORANGE, fill_opacity=0.5)
-            c = Circle(color=BLUE, fill_opacity=0.5)
-            self.add(s)
-            self.play(ReplacementTransform(s, c, run_time=3))
-            d = Dot()
-            d.add_updater(lambda mob: mob.next_to(c, DOWN))
-            self.play(Create(d))
-            self.play(c.animate.shift(RIGHT))
+            orange_square = Square(color=ORANGE, fill_opacity=0.5)
+            blue_circle = Circle(color=BLUE, fill_opacity=0.5)
+            self.add(orange_square)
+            self.play(ReplacementTransform(orange_square, blue_circle, run_time=3))
+            small_dot = Dot()
+            small_dot.add_updater(lambda mob: mob.next_to(blue_circle, DOWN))
+            self.play(Create(small_dot))
+            self.play(blue_circle.animate.shift(RIGHT))
             self.wait()
-            self.play(FadeOut(c, d))
+            self.play(FadeOut(blue_circle, small_dot))
 
     with tempconfig({"quality": "medium_quality", "preview": True}):
         scene = ToyExample()
@@ -260,6 +260,74 @@ This is where the actual magic happens.
 Mobject Initialization
 ----------------------
 
+- custom scene.setup method is called (NOP in our case)
+- custom scene.construct method is called (!)
+- mobject initialization in depth: ``orange_square``
+
+  - Step through initialization hierarchy (Square, Rectangle, Polygon, Polygram, VMobject, Mobject)
+  - Talk a bit about color init?
+  - Travelling back up, until Polygram is reached again; points are actually initialized
+
+    - digression: internal representation of points (explain that
+      self.points holds anchors + handles of bezier curves)
+    - first point added to points list (start new path)
+    - remaining vertices: new line segments in between
+
+- mobject initialization of circle: more or less same as ``orange_square``,
+  different inheritance structure obviously.
+
+- adding a mobject to the scene!
+
+  - TL;DR: families (= recursive list of all mobjects + submobjects
+    of mobjects that are in the scene already are expanded, mobject that
+    should be newly added are removed from it, and then added "safely"
+    (to avoid duplicates) to the list separately.
+
+
 
 Producing Frames: The Render Loop
 ---------------------------------
+
+- constructing the ``ReplacementTransform``:
+
+  - ``ReplacementTransform`` only sets the flag for replacing the
+    starting mobject with the target mobject in the scene
+  - ``Transform`` (base class) has information about how points
+    from starting mobject move to points of target mobject
+  - ``Animation`` (base class) has all other info
+ 
+- entering the play call!
+
+  - minor preprocessing regarding animation time for subcaption feature (not important at all)
+  - enter renderer.play!
+
+    - ask scene to compile animation data (static mobjects / moving mobjects + animation run time)
+      static mobjects are mobjects that can be rendered once and then remain in the background
+      throughout the entire animation. in terms of layers: all mobjects
+      that are below the first "moving" / animated mobject.
+    - manim's caching mechanism (no comment, just say that it is there and
+      allows reusing already rendered animations that did not "change"
+    - "background image" consisting of static mobjects is rendered.
+    - ffmpeg pipeline opens, awaiting frames from file writer.
+    - scene.begin_animations: introducers actually add mobjects to scene,
+      starting mobjects are assigned properly, animations are set to
+      initial interpolation state.
+    - check whether current animation is a frozen frame, not in our case
+    - scene.play_internal:
+
+      - construct time_progression (i.e., the progress bar; t-values for
+        which frames are rendered)
+      - step through time progression. scene.update_to_time(t)
+
+        - updates animation mobjects
+        - runs interpolate for correct alpha value
+        - runs mobject updaters
+        - runs scene updaters
+        - self.renderer.render(self, t, self.moving_mobjects), actually
+          rendering the frame
+
+      - finish animations
+      - ffmpeg movie pipeline closes; partial movie file is written
+
+- after all animations: combination of all partial movie files to one
+  rendered video.
