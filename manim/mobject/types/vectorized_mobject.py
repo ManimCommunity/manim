@@ -162,7 +162,7 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors =  [c if (c is not None) else BLACK for c in tuplify(color)]
+        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
         opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
