@@ -330,10 +330,10 @@ class VMobject(Mobject):
             ret["fill_opacity"] = self.get_fill_opacity()
             ret["stroke_color"] = colour.rgb2hex(self.get_stroke_color().get_rgb())
         else:
-            ret["fill_color"] = self.get_fill_color()
+            ret["fill_color"] = self.get_fill_colors()
             ret["fill_opacity"] = self.get_fill_opacities()
-            ret["stroke_color"] = self.get_stroke_color()
-            ret["background_stroke_color"] = self.get_stroke_color(background=True)
+            ret["stroke_color"] = self.get_stroke_colors()
+            ret["background_stroke_color"] = self.get_stroke_colors(background=True)
             ret["background_stroke_width"] = self.get_stroke_width(background=True)
             ret["background_stroke_opacity"] = self.get_stroke_opacity(background=True)
             ret["sheen_factor"] = self.get_sheen_factor()
