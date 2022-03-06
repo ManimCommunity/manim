@@ -4,14 +4,16 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
+from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Square, Triangle
+from manim.mobject.text.tex_mobject import MathTex, Tex
+
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.fading import FadeIn
-from ..animation.update import UpdateFromAlphaFunc
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
-from ..mobject.geometry import Circle, Square, Triangle
-from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
 from ..utils.tex_templates import TexFontTemplates

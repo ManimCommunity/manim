@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, config
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import RED
 
 
 def test_MathTex():
@@ -29,6 +31,11 @@ def test_double_braces_testing(text_input, length_sub):
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "983949cac5bdd272.svg").exists()
+
+
+def test_percent_char_rendering():
+    Tex(r"\%")
+    assert Path(config.media_dir, "Tex", "ce6e53f2d9c537bb.tex").exists()
 
 
 def test_tex_whitespace_arg():

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Animate the display or removal of a mobject from a scene.
 
 .. manim:: CreationModule
@@ -57,6 +55,7 @@ r"""Animate the display or removal of a mobject from a scene.
 
 """
 
+from __future__ import annotations
 
 __all__ = [
     "Create",
@@ -79,13 +78,14 @@ import numpy as np
 from colour import Color
 
 if TYPE_CHECKING:
-    from manim.mobject.svg.text_mobject import Text
+    from manim.mobject.text.text_mobject import Text
+
+from manim.mobject.opengl.opengl_surface import OpenGLSurface
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
-from ..mobject.types.opengl_surface import OpenGLSurface
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth

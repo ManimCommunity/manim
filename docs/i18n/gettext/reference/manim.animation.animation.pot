@@ -22,6 +22,10 @@ msgstr ""
 msgid "An animation."
 msgstr ""
 
+#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
+msgid "A \"no operation\" animation."
+msgstr ""
+
 #: ../../source/reference/manim.animation.animation.rst:31
 msgid "Functions"
 msgstr ""

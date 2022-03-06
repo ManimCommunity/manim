@@ -73,6 +73,11 @@ msgid "Add an update function to this mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:174:<autosummary>:1
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_data:1
+msgid "Aligns the data of this mobject with another mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Mobject.rst:174:<autosummary>:1
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_on_border:1
 msgid "Direction just needs to be a vector pointing towards side or corner in the 2d plane."
 msgstr ""
@@ -542,6 +547,7 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_to_back:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:0
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_data:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_to:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animation_override_for:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.apply_to_family:0
@@ -593,11 +599,9 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.arrange_in_grid:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.clear_updaters:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.copy:0
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.depth:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_time_based_updaters:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_updaters:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.has_time_based_updater:0
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_updaters:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.null_point_align:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.remove:0
@@ -614,7 +618,6 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_width:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.suspend_updating:0
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.update:0
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.width:0
 msgid "Returns"
 msgstr ""
 
@@ -728,7 +731,7 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.become:16
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.flip:4
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.get_midpoint:4
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:7
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.height:6
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.interpolate:5
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.invert:6
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.match_points:5
@@ -742,7 +745,7 @@ msgstr ""
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.shuffle_submobjects:4
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_height:7
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.stretch_to_fit_width:7
-#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.width:7
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.width:6
 msgid "Examples"
 msgstr ""
 
@@ -814,6 +817,18 @@ msgstr ""
 msgid "Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``."
 msgstr ""
 
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_data:3
+msgid "Afterwards, the two mobjects will have the same number of submobjects (see :meth:`.align_submobjects`), the same parent structure (see :meth:`.null_point_align`). If ``skip_point_alignment`` is false, they will also have the same number of points (see :meth:`.align_points`)."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_data:8
+msgid "The other mobject this mobject should be aligned to."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_data:9
+msgid "Controls whether or not the computationally expensive point alignment is skipped (default: False)."
+msgstr ""
+
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.align_to:3
 msgid "Examples: mob1.align_to(mob2, UP) moves mob1 vertically so that its top edge lines ups with mob2's top edge."
 msgstr ""
@@ -827,7 +842,7 @@ msgid "Any method called on :code:`animate` is converted to an animation of appl
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:6
-msgid "For example, :code:`square.set_fill(WHITE)` sets the fill color of a square, while :code:`sqaure.animate.set_fill(WHITE)` animates this action."
+msgid "For example, :code:`square.set_fill(WHITE)` sets the fill color of a square, while :code:`square.animate.set_fill(WHITE)` animates this action."
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.animate:9

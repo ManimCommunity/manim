@@ -40,4 +40,4 @@ extend-ignore = E203, W503, D202, D212, D213, D404
 
                 # Plug-in: flake8-rst-docstrings
                 RST201, RST203, RST210, RST212, RST213, RST215,
-                RST301,
+                RST301, RST303,

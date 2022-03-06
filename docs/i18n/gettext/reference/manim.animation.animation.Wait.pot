@@ -18,6 +18,33 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.animation.Animation`"
 msgstr ""
 
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:1
+msgid "A \"no operation\" animation."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.interpolate:0
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.update_mobjects:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:3
+msgid "The amount of time that should pass."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:4
+msgid "A function without positional arguments that evaluates to a boolean. The function is evaluated after every new frame has been rendered. Playing the animation only stops after the return value is truthy. Overrides the specified ``run_time``."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:8
+msgid "Controls whether or not the wait animation is static, i.e., corresponds to a frozen frame. If ``False`` is passed, the render loop still progresses through the animation as usual and (among other things) continues to call updater functions. If ``None`` (the default value), the :meth:`.Scene.play` call tries to determine whether the Wait call can be static or not itself via :meth:`.Scene.should_mobjects_update`."
+msgstr ""
+
+#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait:14
+msgid "Keyword arguments to be passed to the parent class, :class:`.Animation`."
+msgstr ""
+
 #: ../../source/reference/manim.animation.animation.Wait.rst:14
 msgid "Methods"
 msgstr ""
@@ -60,12 +87,6 @@ msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:3
 msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.interpolate:0
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.update_mobjects:0
-msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.Wait.clean_up_from_scene:6
