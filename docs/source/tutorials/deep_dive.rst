@@ -295,7 +295,7 @@ Producing Frames: The Render Loop
   - ``Transform`` (base class) has information about how points
     from starting mobject move to points of target mobject
   - ``Animation`` (base class) has all other info
- 
+
 - entering the play call!
 
   - minor preprocessing regarding animation time for subcaption feature (not important at all)
