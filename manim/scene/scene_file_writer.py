@@ -4,13 +4,11 @@ from __future__ import annotations
 
 __all__ = ["SceneFileWriter"]
 
-import datetime
 import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
-from time import sleep
 from typing import Any
 
 import numpy as np
@@ -69,7 +67,6 @@ class SceneFileWriter:
 
     def __init__(self, renderer, scene_name, **kwargs):
         self.renderer = renderer
-        self.stream_lock = False
         self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
@@ -418,25 +415,6 @@ class SceneFileWriter:
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
-    def idle_stream(self):
-        """
-        Doesn't write anything to the FFMPEG frame buffer.
-        """
-        while self.stream_lock:
-            a = datetime.datetime.now()
-            # self.update_frame()
-            self.renderer.update_frame()
-            n_frames = 1
-            # frame = self.get_frame()
-            frame = self.renderer.get_frame()
-            # self.add_frame(*[frame] * n_frames)
-            self.renderer.add_frame(*[frame] * n_frames)
-            b = datetime.datetime.now()
-            time_diff = (b - a).total_seconds()
-            frame_duration = 1 / config["frame_rate"]
-            if time_diff < frame_duration:
-                sleep(frame_duration - time_diff)
-
     def finish(self):
         """
         Finishes writing to the FFMPEG buffer or writing images
@@ -548,7 +526,7 @@ class SceneFileWriter:
     def combine_files(
         self,
         input_files: list[str],
-        output_file: str,
+        output_file: Path | str,
         create_gif=False,
         includes_sound=False,
     ):

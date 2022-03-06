@@ -15,13 +15,13 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.config_ops import _Data

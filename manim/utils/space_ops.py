@@ -570,7 +570,8 @@ def find_intersection(
 
     for p0, v0, p1, v1 in zip(*[p0s, v0s, p1s, v1s]):
         normal = np.cross(v1, np.cross(v0, v1))
-        result += [p0 + np.dot(p1 - p0, normal) / np.dot(v0, normal) * v0]
+        denom = max(np.dot(v0, normal), threshold)
+        result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
     return result
 
 

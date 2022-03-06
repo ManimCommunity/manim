@@ -5,9 +5,13 @@ try:
 except ImportError:
     pass
 
-from ..mobject.opengl_mobject import *
-from ..mobject.opengl_three_dimensions import *
-from ..mobject.types.opengl_surface import *
-from ..mobject.types.opengl_vectorized_mobject import *
+
+from manim.mobject.opengl.dot_cloud import *
+from manim.mobject.opengl.opengl_mobject import *
+from manim.mobject.opengl.opengl_point_cloud_mobject import *
+from manim.mobject.opengl.opengl_surface import *
+from manim.mobject.opengl.opengl_three_dimensions import *
+from manim.mobject.opengl.opengl_vectorized_mobject import *
+
 from ..renderer.shader import *
 from ..utils.opengl import *

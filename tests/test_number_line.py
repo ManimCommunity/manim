@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from manim import NumberLine
-from manim.mobject.numbers import Integer
+from manim.mobject.text.numbers import Integer
 
 
 def test_unit_vector():

@@ -76,3 +76,26 @@ def test_error_logging(tmp_path, python_version):
 
     _, err, exitcode = capture(command)
     assert exitcode != 0 and len(err) > 0
+
+
+@logs_comparison(
+    "bad_tex_scene_BadTex.txt",
+    Path("logs/bad_tex_scene_BadTex.log"),
+)
+def test_tex_error_logs(tmp_path, python_version):
+    bad_tex_scene = os.path.join("tests", "test_logging", "bad_tex_scene.py")
+    command = [
+        python_version,
+        "-m",
+        "manim",
+        "-ql",
+        "--log_to_file",
+        "-v",
+        "INFO",
+        "--media_dir",
+        str(tmp_path),
+        bad_tex_scene,
+        "BadTex",
+    ]
+    _, err, exitcode = capture(command)
+    assert exitcode != 0 and len(err) > 0

@@ -107,12 +107,11 @@ msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:0
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
-msgid "Returns"
+msgid "Return type"
 msgstr ""
 
-#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:0
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
-msgid "Return type"
+msgid "Returns"
 msgstr ""
 
 

@@ -35,6 +35,11 @@ msgstr ""
 msgid "The parent Configurable instance of this object."
 msgstr ""
 
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:0
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:0
+msgid "Return type"
+msgstr ""
+
 #: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic:11
 msgid "Notes"
 msgstr ""
@@ -100,20 +105,20 @@ msgstr ""
 msgid "The maximal width of the rendered videos that are displayed in the notebook can be configured via the ``media_width`` configuration option. The default is set to ``25vw``, which is 25% of your current viewport width. To allow the output to become as large as possible, set ``config.media_width = \"100%\"``."
 msgstr ""
 
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:39
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:38
+msgid "The ``media_embed`` option will embed the image/video output in the notebook. This is generally undesirable as it makes the notebooks very large, but is required on some platforms (notably Google's CoLab, where it is automatically enabled unless suppressed by ``config.embed = False``) and needed in cases when the notebook (or converted HTML file) will be moved relative to the video locations. Use-cases include building documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx <manim.utils.docbuild.manim_directive>`."
+msgstr ""
+
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:47
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:40
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:48
 msgid "First make sure to put ``import manim``, or even ``from manim import *`` in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim could look as follows::"
 msgstr ""
 
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:55
+#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:64
 msgid "Evaluating this cell will render and display the ``BannerExample`` scene defined in the body of the cell."
-msgstr ""
-
-#: ../../../manim/utils/ipython_magic.py:docstring of manim.utils.ipython_magic.ManimMagic.manim:59
-msgid "In case you want to hide the red box containing the output progress bar, the ``progress_bar`` config option should be set to ``None``. This can also be done by passing ``--progress_bar None`` as a CLI flag."
 msgstr ""
 
 

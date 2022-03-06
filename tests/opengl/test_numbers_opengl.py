@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim.mobject.numbers import DecimalNumber
+from manim.mobject.text.numbers import DecimalNumber
 
 
 def test_font_size():
