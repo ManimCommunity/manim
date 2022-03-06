@@ -38,11 +38,6 @@ def test_percent_char_rendering():
     assert Path(config.media_dir, "Tex", "ce6e53f2d9c537bb.tex").exists()
 
 
-def test_percent_char_rendering():
-    Tex(r"\%")
-    assert Path(config.media_dir, "Tex", "ce6e53f2d9c537bb.tex").exists()
-
-
 def test_tex_whitespace_arg():
     """Check that correct number of submobjects are created per string with whitespace separator"""
     separator = "\t"
