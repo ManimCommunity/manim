@@ -422,8 +422,8 @@ class SpiralIn(Animation):
     scale_factor
         The factor used for scaling the effect.
 
-    fade_in_rate
-        How quickly to fade in sub-Mobjects as they fly inward.
+    fade_in_fraction
+        Fractional duration of initial fade-in of sub-Mobjects as they fly inward.
 
     Examples
     --------
@@ -462,15 +462,15 @@ class SpiralIn(Animation):
         super().__init__(shapes, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
-        print(alpha)
         for shape in self.shapes:
             shape.restore()
+            shape.save_state()
             opacity = shape.get_fill_opacity()
+            new_opacity = min(opacity, alpha * opacity / self.fade_in_fraction)
             shape.shift((shape.final_position - shape.initial_position) * alpha)
             shape.rotate(TAU * alpha, about_point=self.shape_center)
             shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-            shape.set_fill_opacity(min(opacity, alpha * opacity / self.fade_in_fraction))
-
+            shape.set_opacity(new_opacity)
 
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
