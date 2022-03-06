@@ -253,6 +253,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_embed",
         "media_width",
         "webgl_renderer_path",
         "log_dir",
@@ -627,6 +628,12 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        try:
+            val = parser["jupyter"].getboolean("media_embed")
+        except ValueError:
+            val = None
+        setattr(self, "media_embed", val)
+
         val = parser["jupyter"].get("media_width")
         if val:
             setattr(self, "media_width", val)
@@ -971,6 +978,12 @@ class ManimConfig(MutableMapping):
         doc="Verbosity level of ffmpeg (no flag).",
     )
 
+    media_embed = property(
+        lambda self: self._d["media_embed"],
+        lambda self, val: self._d.__setitem__("media_embed", val),
+        doc="Embed videos in Jupyter notebook",
+    )
+
     media_width = property(
         lambda self: self._d["media_width"],
         lambda self, val: self._d.__setitem__("media_width", val),
@@ -1175,10 +1188,11 @@ class ManimConfig(MutableMapping):
     def renderer(self, val: str) -> None:
         """Renderer for animations."""
         try:
+            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
             from ..mobject.mobject import Mobject
-            from ..mobject.opengl_compatibility import ConvertToOpenGL
-            from ..mobject.opengl_mobject import OpenGLMobject
-            from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:

@@ -43,7 +43,7 @@ msgid "Manim is a Python library, and it can be `installed via pip <https://pypi
 msgstr ""
 
 #: ../../source/installation.rst:39
-msgid "Manim is **only** compatible with Python versions `3.7–3.9`, but not `3.10` for now."
+msgid "Manim requires Python version ``3.7`` or above to run."
 msgstr ""
 
 #: ../../source/installation.rst:43
