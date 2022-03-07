@@ -263,8 +263,6 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         key_map: dict | None = None,
         **kwargs,
     ):
-        assert hasattr(mobject, "tex_string")
-        assert hasattr(target_mobject, "tex_string")
         super().__init__(
             mobject,
             target_mobject,
@@ -276,7 +274,15 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        return mobject.submobjects
+        if isinstance(mobject, (Group, VGroup)):
+            return [
+                p
+                for s in mobject.submobjects
+                for p in TransformMatchingTex.get_mobject_parts(s)
+            ]
+        else:
+            assert hasattr(mobject, "tex_string")
+            return mobject.submobjects
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:
