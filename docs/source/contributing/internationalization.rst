@@ -97,5 +97,5 @@ Source errors
 -------------
 
 If you spot an error with a source string, report it to us by opening an
-`issue <https://github.com/ManimCommunity/manim/issues/new/choose>`__ on
+:issue:`issue <new/choose>` on
 GitHub. Refrain from translating the string until the issue is resolved.
