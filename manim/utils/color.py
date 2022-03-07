@@ -21,6 +21,7 @@ __all__ = [
 ]
 
 import random
+import warnings
 from typing import Iterable
 
 import numpy as np
@@ -281,7 +282,14 @@ __all__ += [
 ]
 
 
+
 def color_to_rgb(color: Color | str) -> np.ndarray:
+    warnings.warn(
+        "This method is not guaranteed to stay around. "
+        "Please refer to colour module `Color.get_rgb` for Color to rgb conversion",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if isinstance(color, str):
         return hex_to_rgb(color)
     elif isinstance(color, Color):
@@ -303,10 +311,22 @@ def rgba_to_color(rgba: Iterable[float]) -> Color:
 
 
 def rgb_to_hex(rgb: Iterable[float]) -> str:
+    warnings.warn(
+        "This method is not guaranteed to stay around. "
+        "Please refer to colour module `rgb2hex` for rgb to hex conversion",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return "#" + "".join("%02x" % round(255 * x) for x in rgb)
 
 
 def hex_to_rgb(hex_code: str) -> np.ndarray:
+    warnings.warn(
+        "This method is not guaranteed to stay around. "
+        "Please refer to colour module `hex2rgb` for hex to rgb conversion",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
         hex_part = "".join([2 * c for c in hex_part])
@@ -322,6 +342,7 @@ def color_to_int_rgb(color: Color) -> np.ndarray:
 
 
 def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
+
     alpha_multiplier = np.vectorize(lambda x: int(x * opacity))
 
     return alpha_multiplier(np.append(color_to_int_rgb(color), 255))
@@ -368,6 +389,7 @@ def random_bright_color() -> Color:
 
 def random_color() -> Color:
     return random.choice(list(ALL_COLORS.values()))
+
 
 
 def get_shaded_rgb(
