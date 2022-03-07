@@ -16,7 +16,6 @@ from manim import config
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
@@ -1983,7 +1982,7 @@ class OpenGLMobject:
     # Background rectangle
 
     def add_background_rectangle(
-        self, color: Colors | None = None, opacity: float = 0.75, **kwargs
+        self, color: str | None = None, opacity: float = 0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top

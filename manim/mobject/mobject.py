@@ -39,7 +39,6 @@ from ..utils.color import (
     BLACK,
     WHITE,
     YELLOW_C,
-    Colors,
     color_gradient,
     interpolate_color,
 )
@@ -1646,7 +1645,7 @@ class Mobject:
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: Optional[Colors] = None, opacity: float = 0.75, **kwargs
+        self, color: str = None, opacity: float = 0.75, **kwargs
     ):
         """Add a BackgroundRectangle as submobject.
 

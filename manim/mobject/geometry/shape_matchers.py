@@ -10,7 +10,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, Color, Colors
+from manim.utils.color import BLACK, RED, YELLOW, Color
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -79,7 +79,7 @@ class BackgroundRectangle(SurroundingRectangle):
     def __init__(
         self,
         mobject,
-        color: Colors | None = None,
+        color: str | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
