@@ -49,8 +49,6 @@ Examples
 
 from __future__ import annotations
 
-from manim.utils.color import get_all_colors
-
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 
@@ -73,7 +71,9 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import *
+
+# from manim.utils.color import *
+from manim.utils.color import ALL_COLORS
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -646,7 +646,7 @@ class Text(SVGMobject):
         t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
-                arg: t2x[word] if word in t2x else default_args[arg]
+                arg: str(t2x[word]) if word in t2x else str(default_args[arg])
                 for t2x, arg in t2xs
             }
 
@@ -1334,10 +1334,7 @@ class MarkupText(SVGMobject):
             return col
         else:
             # lookup in COLOR_VALUES
-            colorDict = get_all_colors()
-            return colorDict[col]
-
-
+            return ALL_COLORS[col]
 
     def _extract_color_tags(self):
         """Used to determine which parts (if any) of the string should be formatted
