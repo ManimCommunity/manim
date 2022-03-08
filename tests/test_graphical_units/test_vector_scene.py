@@ -13,3 +13,4 @@ def test_vector_to_coords(scene):
     basis = scene.get_basis_vectors()
     scene.add(basis)
     scene.vector_to_coords(vector=vector)
+    scene.wait()
