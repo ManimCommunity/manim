@@ -118,15 +118,14 @@ of your choice (Chocolatey: ``choco install miktex.install``,
 Scoop: ``scoop install latex``).
 
 If you are concerned about disk space, there are some alternative,
-smaller distributions of LaTeX like:
+smaller distributions of LaTeX.
 
-- Using Chocolatey:
-If you used Chocolatey to install manim or are already a chocolatey user,
-then you can simply run ``choco install manim-latex``.
-It is a dedicated package for Manim based on TinyTeX which contains
-all the required packages that Manim interacts with.
+**Using Chocolatey:** If you used Chocolatey to install manim or are already
+a chocolatey user, then you can simply run ``choco install manim-latex``. It
+is a dedicated package for Manim based on TinyTeX which contains all the
+required packages that Manim interacts with.
 
-- Manual Installation:
+**Manual Installation:**
 You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
 Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``,
 then ``scoop install tinytex``) alternative installation instructions can be found at their website.

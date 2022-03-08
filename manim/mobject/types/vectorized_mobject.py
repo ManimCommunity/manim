@@ -162,8 +162,8 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors = list(tuplify(color))
-        opacities = list(tuplify(opacity))
+        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
+        opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -177,9 +177,7 @@ class VMobject(Mobject):
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else BLACK
-        passed_opacity = opacity if (opacity is not None) else 0
-        rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
+        rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
             return self

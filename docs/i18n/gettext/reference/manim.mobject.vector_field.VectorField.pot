@@ -129,6 +129,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
@@ -146,7 +150,6 @@ msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_colored_background_image:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_nudge_updater:0
-#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.get_vectorized_rgba_gradient_function:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.nudge:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.nudge_submobjects:0
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.VectorField.scale_func:0

@@ -26,4 +26,8 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowSubmobjectsOneByOne:0
+msgid "Parameters"
+msgstr ""
+
 

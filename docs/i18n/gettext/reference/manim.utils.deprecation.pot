@@ -79,11 +79,11 @@ msgstr ""
 msgid "Basic usage::"
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated:41
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated:43
 msgid "You can specify additional information for a more precise warning::"
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated:55
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated:59
 msgid "You may also use dates instead of versions::"
 msgstr ""
 
@@ -143,19 +143,19 @@ msgstr ""
 msgid "If defined parameters are invalid python identifiers."
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:45
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:47
 msgid "You can also specify additional information for a more precise warning::"
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:59
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:63
 msgid "Basic parameter redirection::"
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:73
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:79
 msgid "Redirecting using a calculated value::"
 msgstr ""
 
-#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:85
+#: ../../../manim/utils/deprecation.py:docstring of manim.utils.deprecation.deprecated_params:93
 msgid "Redirecting multiple parameter values to one::"
 msgstr ""
 
