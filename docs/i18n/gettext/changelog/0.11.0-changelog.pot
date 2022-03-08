@@ -178,7 +178,7 @@ msgid "Breaking changes"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:71
-msgid "`#1990 <https://github.com/ManimCommunity/manim/pull/1990>`__: Changed and improved the implementation of :meth:`.CoordinateSystem.get_area` to work without Riemann rectangles"
+msgid ":pr:`1990`: Changed and improved the implementation of :meth:`.CoordinateSystem.get_area` to work without Riemann rectangles"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:71
@@ -186,7 +186,7 @@ msgid "This changes how :meth:`.CoordinateSystem.get_area` is implemented. To mi
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:74
-msgid "`#2095 <https://github.com/ManimCommunity/manim/pull/2095>`__: Changed angles for polar coordinates to use math convention"
+msgid ":pr:`2095`: Changed angles for polar coordinates to use math convention"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:74
@@ -198,7 +198,7 @@ msgid "Highlights"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:80
-msgid "`#2094 <https://github.com/ManimCommunity/manim/pull/2094>`__: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves"
+msgid ":pr:`2094`: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:80
@@ -206,11 +206,11 @@ msgid "An :class:`~.ImplicitFunction` that plots the points :math:`(x, y)` which
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:82
-msgid "`#2075 <https://github.com/ManimCommunity/manim/pull/2075>`__: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments"
+msgid ":pr:`2075`: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:87
-msgid "`#1998 <https://github.com/ManimCommunity/manim/pull/1998>`__: Added support for Boolean Operations on VMobjects"
+msgid ":pr:`1998`: Added support for Boolean Operations on VMobjects"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:86
@@ -222,23 +222,23 @@ msgid "Deprecated classes and functions"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:92
-msgid "`#2123 <https://github.com/ManimCommunity/manim/pull/2123>`__: Renamed ``distance`` parameter of :class:`.ThreeDScene` and :class:`.ThreeDCamera` to ``focal_distance``"
+msgid ":pr:`2123`: Renamed ``distance`` parameter of :class:`.ThreeDScene` and :class:`.ThreeDCamera` to ``focal_distance``"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:95
-msgid "`#2102 <https://github.com/ManimCommunity/manim/pull/2102>`__: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`"
+msgid ":pr:`2102`: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:98
-msgid "`#2061 <https://github.com/ManimCommunity/manim/pull/2061>`__: Removed deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`"
+msgid ":pr:`2061`: Removed deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:101
-msgid "`#2024 <https://github.com/ManimCommunity/manim/pull/2024>`__: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`"
+msgid ":pr:`2024`: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:104
-msgid "`#1991 <https://github.com/ManimCommunity/manim/pull/1991>`__: Deprecated :meth:`.VMobject.get_points`"
+msgid ":pr:`1991`: Deprecated :meth:`.VMobject.get_points`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:108
@@ -246,11 +246,11 @@ msgid "New features"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:110
-msgid "`#2118 <https://github.com/ManimCommunity/manim/pull/2118>`__: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`"
+msgid ":pr:`2118`: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:113
-msgid "`#1469 <https://github.com/ManimCommunity/manim/pull/1469>`__: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve"
+msgid ":pr:`1469`: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:117
@@ -258,31 +258,31 @@ msgid "Enhancements"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:119
-msgid "`#2111 <https://github.com/ManimCommunity/manim/pull/2111>`__: Improved setting of OpenGL colors"
+msgid ":pr:`2111`: Improved setting of OpenGL colors"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:122
-msgid "`#2113 <https://github.com/ManimCommunity/manim/pull/2113>`__: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`"
+msgid ":pr:`2113`: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:125
-msgid "`#2016 <https://github.com/ManimCommunity/manim/pull/2016>`__: Added OpenGL support for :mod:`~.mobject.boolean_ops`"
+msgid ":pr:`2016`: Added OpenGL support for :mod:`~.mobject.boolean_ops`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:128
-msgid "`#2084 <https://github.com/ManimCommunity/manim/pull/2084>`__: Added :meth:`~Table.get_highlighted_cell` and fixed :meth:`~Table.add_highlighted_cell`"
+msgid ":pr:`2084`: Added :meth:`~Table.get_highlighted_cell` and fixed :meth:`~Table.add_highlighted_cell`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:131
-msgid "`#2013 <https://github.com/ManimCommunity/manim/pull/2013>`__: Removed unnecessary check in :class:`~.TransformMatchingAbstractBase`"
+msgid ":pr:`2013`: Removed unnecessary check in :class:`~.TransformMatchingAbstractBase`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:134
-msgid "`#1971 <https://github.com/ManimCommunity/manim/pull/1971>`__: Added OpenGL support for :class:`~.StreamLines`"
+msgid ":pr:`1971`: Added OpenGL support for :class:`~.StreamLines`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:137
-msgid "`#2041 <https://github.com/ManimCommunity/manim/pull/2041>`__: Added config option to enable OpenGL wireframe for debugging"
+msgid ":pr:`2041`: Added config option to enable OpenGL wireframe for debugging"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:141
@@ -290,59 +290,59 @@ msgid "Fixed bugs"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:143
-msgid "`#2070 <https://github.com/ManimCommunity/manim/pull/2070>`__: Fixed :meth:`~OpenGLRenderer.get_frame` when window is created"
+msgid ":pr:`2070`: Fixed :meth:`~OpenGLRenderer.get_frame` when window is created"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:146
-msgid "`#2071 <https://github.com/ManimCommunity/manim/pull/2071>`__: Fixed :class:`~AnimationGroup` OpenGL compatibility"
+msgid ":pr:`2071`: Fixed :class:`~AnimationGroup` OpenGL compatibility"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:149
-msgid "`#2108 <https://github.com/ManimCommunity/manim/pull/2108>`__: Fixed swapped axis step values in :class:`~.NumberPlane`"
+msgid ":pr:`2108`: Fixed swapped axis step values in :class:`~.NumberPlane`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:152
-msgid "`#2072 <https://github.com/ManimCommunity/manim/pull/2072>`__: Added OpenGL compatibility for :class:`~.Cube`."
+msgid ":pr:`2072`: Added OpenGL compatibility for :class:`~.Cube`."
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:155
-msgid "`#2060 <https://github.com/ManimCommunity/manim/pull/2060>`__: Fixed OpenGL compatibility issue for meth:`~Line.set_opacity`"
+msgid ":pr:`2060`: Fixed OpenGL compatibility issue for meth:`~Line.set_opacity`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:158
-msgid "`#2037 <https://github.com/ManimCommunity/manim/pull/2037>`__: Fixed return value of :meth:`~.OpenGLMobject.apply_complex_function`"
+msgid ":pr:`2037`: Fixed return value of :meth:`~.OpenGLMobject.apply_complex_function`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:161
-msgid "`#2039 <https://github.com/ManimCommunity/manim/pull/2039>`__: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`."
+msgid ":pr:`2039`: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`."
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:164
-msgid "`#2066 <https://github.com/ManimCommunity/manim/pull/2066>`__: Fixed error raised by logging when cache is full"
+msgid ":pr:`2066`: Fixed error raised by logging when cache is full"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:167
-msgid "`#2026 <https://github.com/ManimCommunity/manim/pull/2026>`__: Fixed OpenGL shift animation for :class:`~.Text`"
+msgid ":pr:`2026`: Fixed OpenGL shift animation for :class:`~.Text`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:170
-msgid "`#2028 <https://github.com/ManimCommunity/manim/pull/2028>`__: Fixed OpenGL overriding SVG fill color"
+msgid ":pr:`2028`: Fixed OpenGL overriding SVG fill color"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:173
-msgid "`#2043 <https://github.com/ManimCommunity/manim/pull/2043>`__: Fixed bug where :meth:`.NumberLine.add_labels`  cannot accept non-mobject labels"
+msgid ":pr:`2043`: Fixed bug where :meth:`.NumberLine.add_labels`  cannot accept non-mobject labels"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:176
-msgid "`#2011 <https://github.com/ManimCommunity/manim/pull/2011>`__: Fixed ``-a`` flag for OpenGL rendering"
+msgid ":pr:`2011`: Fixed ``-a`` flag for OpenGL rendering"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:179
-msgid "`#1994 <https://github.com/ManimCommunity/manim/pull/1994>`__: Fix :meth:`~.input_to_graph_point` when passing a line graph (from :meth:`.Axes.get_line_graph`)"
+msgid ":pr:`1994`: Fix :meth:`~.input_to_graph_point` when passing a line graph (from :meth:`.Axes.get_line_graph`)"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:182
-msgid "`#2017 <https://github.com/ManimCommunity/manim/pull/2017>`__: Avoided using deprecated ``get_points`` method and fixed :class:`~.OpenGLPMPoint` color"
+msgid ":pr:`2017`: Avoided using deprecated ``get_points`` method and fixed :class:`~.OpenGLPMPoint` color"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:186
@@ -350,47 +350,47 @@ msgid "Documentation-related changes"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:188
-msgid "`#2131 <https://github.com/ManimCommunity/manim/pull/2131>`__: Copyedited the configuration tutorial in the documentation"
+msgid ":pr:`2131`: Copyedited the configuration tutorial in the documentation"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:191
-msgid "`#2120 <https://github.com/ManimCommunity/manim/pull/2120>`__: Changed ``manim_directive`` to use a clean configuration via ``tempconfig``"
+msgid ":pr:`2120`: Changed ``manim_directive`` to use a clean configuration via ``tempconfig``"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:194
-msgid "`#2122 <https://github.com/ManimCommunity/manim/pull/2122>`__: Fixed broken links in inheritance graphs by moving them to ``reference.rst``"
+msgid ":pr:`2122`: Fixed broken links in inheritance graphs by moving them to ``reference.rst``"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:197
-msgid "`#2115 <https://github.com/ManimCommunity/manim/pull/2115>`__: Improved docstring of :meth:`.PMobject.add_points`"
+msgid ":pr:`2115`: Improved docstring of :meth:`.PMobject.add_points`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:200
-msgid "`#2116 <https://github.com/ManimCommunity/manim/pull/2116>`__: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate"
+msgid ":pr:`2116`: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:203
-msgid "`#2117 <https://github.com/ManimCommunity/manim/pull/2117>`__: Changed the way the background color was set in a documentation example to avoid leaking the setting to other examples"
+msgid ":pr:`2117`: Changed the way the background color was set in a documentation example to avoid leaking the setting to other examples"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:206
-msgid "`#2101 <https://github.com/ManimCommunity/manim/pull/2101>`__: Added note that translation process is not ready"
+msgid ":pr:`2101`: Added note that translation process is not ready"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:209
-msgid "`#2055 <https://github.com/ManimCommunity/manim/pull/2055>`__: Fixed parameter types of :meth:`.Graph.add_edges` and :meth:`.Graph.add_vertices`"
+msgid ":pr:`2055`: Fixed parameter types of :meth:`.Graph.add_edges` and :meth:`.Graph.add_vertices`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:212
-msgid "`#862 <https://github.com/ManimCommunity/manim/pull/862>`__: Prepared documentation for translation (still work in progress)"
+msgid ":pr:`862`: Prepared documentation for translation (still work in progress)"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:215
-msgid "`#2035 <https://github.com/ManimCommunity/manim/pull/2035>`__: Fixed broken link in README"
+msgid ":pr:`2035`: Fixed broken link in README"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:218
-msgid "`#2020 <https://github.com/ManimCommunity/manim/pull/2020>`__:  Corrected paths to user-wide configuration files for MacOS and Linux"
+msgid ":pr:`2020`:  Corrected paths to user-wide configuration files for MacOS and Linux"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:222
@@ -398,11 +398,11 @@ msgid "Changes concerning the testing system"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:224
-msgid "`#2008 <https://github.com/ManimCommunity/manim/pull/2008>`__: Reuse CLI flag tests for OpenGL"
+msgid ":pr:`2008`: Reuse CLI flag tests for OpenGL"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:227
-msgid "`#2080 <https://github.com/ManimCommunity/manim/pull/2080>`__: Reused :class:`~.Mobject` tests for :class:`~.OpenGLMobject`"
+msgid ":pr:`2080`: Reused :class:`~.Mobject` tests for :class:`~.OpenGLMobject`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:231
@@ -410,7 +410,7 @@ msgid "Changes to our development infrastructure"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:233
-msgid "`#2004 <https://github.com/ManimCommunity/manim/pull/2004>`__: Cancel previous workflows in the same branch in Github Actions"
+msgid ":pr:`2004`: Cancel previous workflows in the same branch in Github Actions"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:237
@@ -418,31 +418,31 @@ msgid "Code quality improvements and similar refactors"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:239
-msgid "`#2050 <https://github.com/ManimCommunity/manim/pull/2050>`__: Make colour aliases IDE-friendly"
+msgid ":pr:`2050`: Make colour aliases IDE-friendly"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:242
-msgid "`#2126 <https://github.com/ManimCommunity/manim/pull/2126>`__: Fixed whitespace in info message issued by :meth:`.SceneFileWriter.clean_cache`"
+msgid ":pr:`2126`: Fixed whitespace in info message issued by :meth:`.SceneFileWriter.clean_cache`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:245
-msgid "`#2124 <https://github.com/ManimCommunity/manim/pull/2124>`__: Upgraded several dependencies (in particular: ``skia-pathops``)"
+msgid ":pr:`2124`: Upgraded several dependencies (in particular: ``skia-pathops``)"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:248
-msgid "`#2001 <https://github.com/ManimCommunity/manim/pull/2001>`__: Fixed several warnings issued by LGTM"
+msgid ":pr:`2001`: Fixed several warnings issued by LGTM"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:251
-msgid "`#2064 <https://github.com/ManimCommunity/manim/pull/2064>`__: Removed duplicate insert shader directory"
+msgid ":pr:`2064`: Removed duplicate insert shader directory"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:254
-msgid "`#2027 <https://github.com/ManimCommunity/manim/pull/2027>`__: Improved wording in info message issued by :meth:`.SceneFileWriter.clean_cache`"
+msgid ":pr:`2027`: Improved wording in info message issued by :meth:`.SceneFileWriter.clean_cache`"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:257
-msgid "`#1968 <https://github.com/ManimCommunity/manim/pull/1968>`__: Sharpened Flake8 configuration and fixed resulting warnings"
+msgid ":pr:`1968`: Sharpened Flake8 configuration and fixed resulting warnings"
 msgstr ""
 
 #: ../../source/changelog/0.11.0-changelog.rst:261
