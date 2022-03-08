@@ -99,30 +99,22 @@ msgid "For Windows, the recommended LaTeX distribution is `MiKTeX <https://mikte
 msgstr ""
 
 #: ../../source/installation/windows.rst:120
-msgid "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX like:"
+msgid "If you are concerned about disk space, there are some alternative, smaller distributions of LaTeX."
 msgstr ""
 
 #: ../../source/installation/windows.rst:123
-msgid "Using Chocolatey:"
+msgid "**Using Chocolatey:** If you used Chocolatey to install manim or are already a chocolatey user, then you can simply run ``choco install manim-latex``. It is a dedicated package for Manim based on TinyTeX which contains all the required packages that Manim interacts with."
 msgstr ""
 
-#: ../../source/installation/windows.rst:124
-msgid "If you used Chocolatey to install manim or are already a chocolatey user, then you can simply run ``choco install manim-latex``. It is a dedicated package for Manim based on TinyTeX which contains all the required packages that Manim interacts with."
+#: ../../source/installation/windows.rst:128
+msgid "**Manual Installation:** You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``) alternative installation instructions can be found at their website. Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing."
 msgstr ""
 
-#: ../../source/installation/windows.rst:129
-msgid "Manual Installation:"
-msgstr ""
-
-#: ../../source/installation/windows.rst:130
-msgid "You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``, Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``, then ``scoop install tinytex``) alternative installation instructions can be found at their website. Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``. Therefore we only recommend this option if you know what you are doing."
-msgstr ""
-
-#: ../../source/installation/windows.rst:136
+#: ../../source/installation/windows.rst:135
 msgid "The full list of LaTeX packages which Manim interacts with in some way (a subset might be sufficient for your particular application) are::"
 msgstr ""
 
-#: ../../source/installation/windows.rst:147
+#: ../../source/installation/windows.rst:146
 msgid "Working with Manim"
 msgstr ""
 
