@@ -65,3 +65,10 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+
+  - repo: local
+    hooks:
+      - id: Prepare-Translations
+        language: system
+        name: Prepare-Translations
+        entry: cd docs && poetry run make i18n
