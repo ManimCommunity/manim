@@ -10,6 +10,8 @@ if sys.version_info < (3, 8):
 else:
     from functools import cached_property
 
+from pathlib import Path
+
 import moderngl
 import numpy as np
 from PIL import Image
@@ -380,27 +382,28 @@ class OpenGLRenderer:
             mesh.render()
 
     def get_texture_id(self, path):
-        if str(path) not in self.path_to_texture_id:
-            if type(path) == str:
-                # A way to increase tid's sequentially
-                tid = len(self.path_to_texture_id)
-                im = Image.open(path)
-                texture = self.context.texture(
-                    size=im.size,
-                    components=len(im.getbands()),
-                    data=im.tobytes(),
-                )
-                texture.use(location=tid)
-            elif type(path) == np.ndarray:
-                tid = len(self.path_to_texture_id)
-                texture = self.context.texture(
-                    size=path.shape[1::-1],
-                    components=path.shape[2],
-                    data=path.astype("uint8"),
-                )
-                texture.use(location=tid)
-            self.path_to_texture_id[str(path)] = tid
-        return self.path_to_texture_id[str(path)]
+        if repr(path) not in self.path_to_texture_id:
+            if type(path) == np.ndarray:
+                size = path.shape[1::-1]
+                components = path.shape[2]
+                data = path.astype("uint8")
+            else:
+                if isinstance(path, (str, Path)):
+                    path = Image.open(path)
+                size = path.size
+                components = len(path.getbands())
+                data = path.tobytes()
+
+            tid = len(self.path_to_texture_id)
+            texture = self.context.texture(
+                size=size,
+                components=components,
+                data=data,
+            )
+            texture.use(location=tid)
+            self.path_to_texture_id[repr(path)] = tid
+
+        return self.path_to_texture_id[repr(path)]
 
     def update_skipping_status(self):
         """

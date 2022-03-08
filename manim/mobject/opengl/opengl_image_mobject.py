@@ -4,6 +4,8 @@ __all__ = [
     "OpenGLImageMobject",
 ]
 
+from pathlib import Path
+
 import numpy as np
 from PIL import Image
 
@@ -14,25 +16,26 @@ from manim.utils.images import get_full_raster_image_path
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
         self,
-        filename_or_array: str | np.ndarray,
+        filename_or_array: str | Path | np.ndarray,
         width: float = None,
         height: float = None,
+        image_mode: str = "RGBA",
         opacity: float = 1,
         gloss: float = 0,
         shadow: float = 0,
         **kwargs,
     ):
-        if type(filename_or_array) == str:
-            path = get_full_raster_image_path(filename_or_array)
-            self.image = Image.open(path)
-            self.size = self.image.size
-        else:
+        if type(filename_or_array) == np.ndarray:
             self.image = filename_or_array
             self.size = self.image.shape[1::-1]
+        elif isinstance(filename_or_array, (str, Path)):
+            path = get_full_raster_image_path(filename_or_array)
+            self.image = Image.open(path).convert(image_mode)
+            self.size = self.image.size
 
         if width is None and height is None:
-            width = self.size[0] / self.size[1]
-            height = 1
+            width = 4 * self.size[0] / self.size[1]
+            height = 4
         if height is None:
             height = width * self.size[1] / self.size[0]
         if width is None:
@@ -49,7 +52,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
 
         super().__init__(
             surface,
-            filename_or_array,
+            self.image,
             opacity=opacity,
             gloss=gloss,
             shadow=shadow,
