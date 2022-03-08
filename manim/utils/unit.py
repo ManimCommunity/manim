@@ -24,16 +24,35 @@ class Percent:
     Parameters
     ----------
     axis
-        The axis (X or Y) to consider the percentage of. The Z-axis has no limits so can't be used here.
+        The axis (X or Y) of the frame to consider the percentage of.
+        Z_axis has no such frame limits so can't be used here.
 
     Examples
     --------
 
     .. manim :: PercentAxisExample
+        :ref_classes: Axes Dot ApplyMethod
 
         class PercentAxisExample(Scene):
-                def construct(self):
-                    pass
+            def construct(self):
+                axes = Axes(
+                    x_range=[-1, 0, .1],
+                    y_range=[-1, 0, .1],
+                    x_length=100 * unit.Percent(X_AXIS),
+                    y_length=100 * unit.Percent(Y_AXIS),
+                    axis_config={"color": YELLOW},
+                    tips=False
+                )
+                self.add(axes)
+
+                dot = Dot(radius=0.2, color=RED)
+
+                self.play(ApplyMethod(dot.shift, 30 * unit.Percent(X_AXIS) * RIGHT))
+                self.play(ApplyMethod(dot.shift, 30 * unit.Percent(Y_AXIS) * UP))
+                # using 30 and LEFT below achieves the same effect
+                self.play(ApplyMethod(dot.shift, -30 * unit.Percent(X_AXIS) * RIGHT))
+                # using 30 and DOWN below achieves the same effect
+                self.play(ApplyMethod(dot.shift, -30 * unit.Percent(Y_AXIS) * UP))
 
     """
 
