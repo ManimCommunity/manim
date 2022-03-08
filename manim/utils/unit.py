@@ -19,7 +19,7 @@ class _PixelUnits:
 
 
 class Percent:
-    """A percentage scaling class of each axis.
+    """A percentage (0-100) scaling class of each axis.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ class Percent:
 
 
 Pixels = _PixelUnits()
-"""A scaling object to convert a float to pixels
+"""A scaling object to convert pixels to Munits
 
     Examples
     --------
@@ -85,12 +85,20 @@ Pixels = _PixelUnits()
                 dot1 = Dot(radius=0.2, color=RED).shift(UP)
                 dot2 = Dot(radius=0.2, color=BLUE).shift(DOWN)
                 self.play(
-                    # With the standard frame width/ratio, 2.5 Munits = 150 Pixels
-                    ApplyMethod(dot1.shift, 2.5 * RIGHT),
-                    ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT)
+                    # With the standard Manim frame width/ratio,
+                    # 150 Pixels = 2.5 Munits
+                    ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT),
+                    ApplyMethod(dot1.shift, 2.5 * RIGHT)
                 )
 
 """
 
 Degrees = constants.PI / 180
+"""A convenience constant to convert degrees to radians
+    Normal usage::
+
+        Rotate(dot, 45 * unit.Degrees)  # equivalent to Rotate(dot, PI/4)
+
+"""
+
 Munits = 1
