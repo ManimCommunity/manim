@@ -52,10 +52,10 @@ class Animation:
 
 
     reverse_rate_function
-        Whether the animation need to be played backwards.
-
-        Setting `reverse_rate_function` doesn't have any effect on `remover` and `introducer`.
-            If you want your animation to be a introducer or remover. You must set it manually.
+        Reverses the rate function of the animation. Setting ``reverse_rate_function``
+        does not have any effect on ``remover`` or ``introducer``. These need to be
+        set explicitly if an introducer-animation should be turned into a remover one
+        and vice versa.
     name
         The name of the animation. This gets displayed while rendering the animation.
         Defaults to <class-name>(<Mobject-name>).
