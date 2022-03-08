@@ -1,4 +1,5 @@
-"""Implement the Unit class."""
+"""Classes to convert between pixels, Manim units (Munits), degrees,
+radians and percentage values as measurements in animations etc."""
 
 from __future__ import annotations
 
@@ -18,7 +19,25 @@ class _PixelUnits:
 
 
 class Percent:
-    def __init__(self, axis):
+    """A percentage scaling class of each axis.
+
+    Parameters
+    ----------
+    axis
+        The axis (X or Y) to consider the percentage of. The Z-axis has no limits so can't be used here.
+
+    Examples
+    --------
+
+    .. manim :: PercentAxisExample
+
+        class PercentAxisExample(Scene):
+                def construct(self):
+                    pass
+
+    """
+
+    def __init__(self, axis: np.ndarray):
         if np.array_equal(axis, constants.X_AXIS):
             self.length = config.frame_width
         if np.array_equal(axis, constants.Y_AXIS):
@@ -26,10 +45,10 @@ class Percent:
         if np.array_equal(axis, constants.Z_AXIS):
             raise NotImplementedError("length of Z axis is undefined")
 
-    def __mul__(self, val):
+    def __mul__(self, val: float) -> float:
         return val / 100 * self.length
 
-    def __rmul__(self, val):
+    def __rmul__(self, val: float) -> float:
         return val / 100 * self.length
 
 
