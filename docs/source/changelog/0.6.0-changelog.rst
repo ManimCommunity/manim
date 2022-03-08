@@ -81,16 +81,16 @@ A total of 112 pull requests were merged for this release.
 Breaking changes
 ----------------
 
-* `#1347 <https://github.com/ManimCommunity/manim/pull/1347>`__: Restructure vector_field module and add documentation
+* :pr:`1347`: Restructure vector_field module and add documentation
    :class`~.VectorField` is renamed to :class:`~.ArrowVectorField` and a new class :class:`~.VectorField` is added as a superclass for :class:`~.ArrowVectorField` and :class:`~.StreamLines`. :class:`~.AnimatedStreamLines` is removed. It's functionality is moved to :class:`~.StreamLines`. Added a lot of new options when working with vector fields. :class:`~.ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
 
-* `#1161 <https://github.com/ManimCommunity/manim/pull/1161>`__: Upgrades to CoordinateSystem and graphing.
+* :pr:`1161`: Upgrades to CoordinateSystem and graphing.
    Breaking changes were introduced to :class:`~.Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
    All the above now use lists to construct their ranges as opposed to explicitly defining these values. `x_range` has replaced `x_min`, `x_max` and defining the step is much easier with `x_step` --> ``x_range``  :  ``[x_min, x_max, x_step]``. There were also many upgrades to these classes which improve their functionality and appearance.
 
    ``NumberLineOld`` was introduced to continue support for :class:`~.GraphScene`, although we are moving away from GraphScene and intend to deprecate it in a future release.
 
-* `#1013 <https://github.com/ManimCommunity/manim/pull/1013>`__: Refactored the Command Line Interface to use Click instead of Argparse
+* :pr:`1013`: Refactored the Command Line Interface to use Click instead of Argparse
    This change breaks the CLI API to organize the structure of Manim Community's commands, options, and arguments.
 
    To be more in line with POSIX compliant CLI conventions, options for commands are given *BEFORE* their arguments.
@@ -109,36 +109,36 @@ Breaking changes
 Deprecated classes and functions
 --------------------------------
 
-* `#1431 <https://github.com/ManimCommunity/manim/pull/1431>`__: Fix CLI bugs
+* :pr:`1431`: Fix CLI bugs
    - Fixed conflict with ``-f`` which was previously assigned to both ``--show_in_file_browser`` and ``--format`` by removing ``-f`` from ``--format``. A warning is issued that ``-f`` will soon move to ``--format``.
    - Added back in flags to render the files as gif/last frame. Deprecated them in favor of ``--format``.
    - Fixed the broken ``--output_file``/``-o`` option.
    - Fixed an issue where the ``-qh`` quality option was interpreted as ``-q`` ``-h``, prompting the help page.
 
-* `#1354 <https://github.com/ManimCommunity/manim/pull/1354>`__: Refactored a few functions in space_ops.py, deprecated :func:`~.angle_between`
+* :pr:`1354`: Refactored a few functions in space_ops.py, deprecated :func:`~.angle_between`
 
 
-* `#1370 <https://github.com/ManimCommunity/manim/pull/1370>`__: Remove TexMobject and TextMobject
+* :pr:`1370`: Remove TexMobject and TextMobject
    TexMobject and TextMobject have been deprecated for a while, they are now fully removed. Use Tex or MathTex instead.
 
-* `#1349 <https://github.com/ManimCommunity/manim/pull/1349>`__: Removed the deprecated ``SmallDot`` mobject
+* :pr:`1349`: Removed the deprecated ``SmallDot`` mobject
 
 
-* `#1259 <https://github.com/ManimCommunity/manim/pull/1259>`__: Removed deprecated CairoText class
+* :pr:`1259`: Removed deprecated CairoText class
 
 New features
 ------------
 
-* `#1386 <https://github.com/ManimCommunity/manim/pull/1386>`__: Implement utility methods for adding/removing vertices and edges of graphs; allow custom mobjects as vertices
+* :pr:`1386`: Implement utility methods for adding/removing vertices and edges of graphs; allow custom mobjects as vertices
 
 
-* `#1385 <https://github.com/ManimCommunity/manim/pull/1385>`__: Added :meth:`~.Axes.get_line_graph` for plotting a line graph
+* :pr:`1385`: Added :meth:`~.Axes.get_line_graph` for plotting a line graph
    Added :meth:`~.Axes.get_line_graph` that returns a line graph from lists of points along x, y and z (optional) axes.
 
-* `#1381 <https://github.com/ManimCommunity/manim/pull/1381>`__: Hot reloading for the OpenGL renderer
+* :pr:`1381`: Hot reloading for the OpenGL renderer
    Rerun scene when the input file is modified
 
-* `#1383 <https://github.com/ManimCommunity/manim/pull/1383>`__: Overhaul of the :mod:`~.animation.indication` module interfaces
+* :pr:`1383`: Overhaul of the :mod:`~.animation.indication` module interfaces
    - Added class `Circumscribe` combining functionality of `CircleIndicate`, `AnimationOnSurroundingRectangle`, `ShowPassingFlashAround`, `ShowCreationThenDestructionAround`, `ShowCreationThenFadeAround`, which have all been deprecated.
    - Changes to `Flash`: `flash_radius` parameter now defines inner radius of the animation. Added new parameter `time_width`.
    - `ShowCreationThenDestruction` has been deprecated in favor of `ShowPassingFlash`
@@ -147,329 +147,329 @@ New features
    - Added documentation and examples to all the above
    - Other minor enhancements and bug-fixes
 
-* `#1348 <https://github.com/ManimCommunity/manim/pull/1348>`__: Added :class:`~.Polyhedron`, and platonic solids :class:`~.Tetrahedron`, :class:`~.Octahedron`, :class:`~.Icosahedron` and :class:`~.Dodecahedron`
+* :pr:`1348`: Added :class:`~.Polyhedron`, and platonic solids :class:`~.Tetrahedron`, :class:`~.Octahedron`, :class:`~.Icosahedron` and :class:`~.Dodecahedron`
 
 
-* `#1285 <https://github.com/ManimCommunity/manim/pull/1285>`__: Add :meth:`~.Scene.interactive_embed` for OpenGL rendering
+* :pr:`1285`: Add :meth:`~.Scene.interactive_embed` for OpenGL rendering
    :meth:`~.Scene.interactive_embed` allows interaction with Scene via mouse and keyboard as well as dynamic commands via an iPython terminal.
 
-* `#1261 <https://github.com/ManimCommunity/manim/pull/1261>`__: Render image automatically if no animation is played in a scene
+* :pr:`1261`: Render image automatically if no animation is played in a scene
    - If no animations in scene and asked to preview/render a video, preview/render an image instead of raising a confusing error.
 
-* `#1200 <https://github.com/ManimCommunity/manim/pull/1200>`__: Add text and SVG mobjects to OpenGL
+* :pr:`1200`: Add text and SVG mobjects to OpenGL
    Added OpenGL-compatible text and SVG mobjects
 
 Enhancements
 ------------
 
-* `#1398 <https://github.com/ManimCommunity/manim/pull/1398>`__: Fix and enhance `Mobject.arrange_in_grid`
+* :pr:`1398`: Fix and enhance `Mobject.arrange_in_grid`
    `arrange_in_grid` now actually arranges submobjects in a grid. Added new parameters `buff`, `cell_alignment`, `row_alignments`, `col_alignments`, `row_heights`, `col_widths`, `flow_order`.
 
-* `#1407 <https://github.com/ManimCommunity/manim/pull/1407>`__: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py`
+* :pr:`1407`: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py`
 
 
-* `#1380 <https://github.com/ManimCommunity/manim/pull/1380>`__: Allow image objects as background images
+* :pr:`1380`: Allow image objects as background images
 
 
-* `#1391 <https://github.com/ManimCommunity/manim/pull/1391>`__: Add `path_arc` support to `.animate` syntax
+* :pr:`1391`: Add `path_arc` support to `.animate` syntax
    The parameter `path_arc` of :class:`~.Transform` now works with the `.animate` syntax
 
-* `#1364 <https://github.com/ManimCommunity/manim/pull/1364>`__: Added :meth:`~.Mobject.match_points`
+* :pr:`1364`: Added :meth:`~.Mobject.match_points`
    - Added :func:`~.Mobject.match_points`, which transforms the points, positions and submobjects of a Mobject to match that of the other while keeping style unchanged.
 
-* `#1363 <https://github.com/ManimCommunity/manim/pull/1363>`__: Change of TeX compiler and output file format
+* :pr:`1363`: Change of TeX compiler and output file format
 
 
-* `#1359 <https://github.com/ManimCommunity/manim/pull/1359>`__: Make FILE a required argument
+* :pr:`1359`: Make FILE a required argument
    * Make `FILE` a required argument, `manim/cli/render/commands.py`:L30
 
-* `#1304 <https://github.com/ManimCommunity/manim/pull/1304>`__: Improve Tex string splitting at double braces: only split for double brace groups
+* :pr:`1304`: Improve Tex string splitting at double braces: only split for double brace groups
 
 
-* `#1340 <https://github.com/ManimCommunity/manim/pull/1340>`__: Add OpenGL support to the new transform animations
+* :pr:`1340`: Add OpenGL support to the new transform animations
    Made `FadeTransform`, `FadeTransformPieces`, `TransformMatchingShapes` and `TransformMatchingTex` compatible with OpenGL rendering.
 
-* `#1343 <https://github.com/ManimCommunity/manim/pull/1343>`__: Make TexTemplate() simple, but keep Tex()'s default template
+* :pr:`1343`: Make TexTemplate() simple, but keep Tex()'s default template
    TexTemplate() now returns a simple tex template.
 
-* `#1321 <https://github.com/ManimCommunity/manim/pull/1321>`__: Add OpenGL support to :class:`~.AnimationGroup`
+* :pr:`1321`: Add OpenGL support to :class:`~.AnimationGroup`
 
 
-* `#1302 <https://github.com/ManimCommunity/manim/pull/1302>`__: Raise appropriate errors in :meth:`~.VMobject.point_from_proportion`
+* :pr:`1302`: Raise appropriate errors in :meth:`~.VMobject.point_from_proportion`
    - Raise an error if the ``alpha`` argument is not between 0 and 1.
    - Raise an error if the :class:`~.VMobject` has no points.
 
-* `#1315 <https://github.com/ManimCommunity/manim/pull/1315>`__: Fix performance issues with :meth:`~.VMobject.get_arc_length`, stemming from :pr:`1274`
+* :pr:`1315`: Fix performance issues with :meth:`~.VMobject.get_arc_length`, stemming from :pr:`1274`
 
 
-* `#1320 <https://github.com/ManimCommunity/manim/pull/1320>`__: Add `jpeg` extension to the default image extensions
+* :pr:`1320`: Add `jpeg` extension to the default image extensions
 
 
-* `#1234 <https://github.com/ManimCommunity/manim/pull/1234>`__: Added new method :meth:`~.Mobject.get_midpoint`
+* :pr:`1234`: Added new method :meth:`~.Mobject.get_midpoint`
    Implemented :meth:`~.Mobject.get_midpoint` to return the point that is the middle of the stroke line of an mobject.
 
-* `#1237 <https://github.com/ManimCommunity/manim/pull/1237>`__: Notify user if they are using an outdated version of Manim
+* :pr:`1237`: Notify user if they are using an outdated version of Manim
 
 
-* `#1308 <https://github.com/ManimCommunity/manim/pull/1308>`__: Improved :class:`~.ManimBanner` animations
+* :pr:`1308`: Improved :class:`~.ManimBanner` animations
 
 
-* `#1275 <https://github.com/ManimCommunity/manim/pull/1275>`__: Add SVG <line> element support to :class:`~.SVGMobject`
+* :pr:`1275`: Add SVG <line> element support to :class:`~.SVGMobject`
 
 
-* `#1238 <https://github.com/ManimCommunity/manim/pull/1238>`__: Add parameter ``about_point`` for :meth:`~.Mobject.rotate`
+* :pr:`1238`: Add parameter ``about_point`` for :meth:`~.Mobject.rotate`
 
 
-* `#1260 <https://github.com/ManimCommunity/manim/pull/1260>`__: Change Brace from Tex to SVG (#1258)
+* :pr:`1260`: Change Brace from Tex to SVG (#1258)
 
 
-* `#1122 <https://github.com/ManimCommunity/manim/pull/1122>`__: Support for specifying the interpolation algorithms for individual ImageMobjects
+* :pr:`1122`: Support for specifying the interpolation algorithms for individual ImageMobjects
 
 
-* `#1283 <https://github.com/ManimCommunity/manim/pull/1283>`__: Set default value of keyword ``random_seed`` in :class:`~.Scene` to ``None`` (was 0 and fixed before)
+* :pr:`1283`: Set default value of keyword ``random_seed`` in :class:`~.Scene` to ``None`` (was 0 and fixed before)
 
 
-* `#1220 <https://github.com/ManimCommunity/manim/pull/1220>`__: Added sanity checks to :meth:`~.Mobject.add_to_back` for Mobjects
+* :pr:`1220`: Added sanity checks to :meth:`~.Mobject.add_to_back` for Mobjects
    Add Mobject `add_to_back` sanity checks:
    - Raises ValueError when Mobject tries to add itself
    - Raises TypeError when a non-Mobject is added
    - Filters out incoming duplicate submobjects if at least one instance of that submobject exists in the list
 
-* `#1249 <https://github.com/ManimCommunity/manim/pull/1249>`__: Set corners of :class:`~.Rectangle` in counterclockwise direction
+* :pr:`1249`: Set corners of :class:`~.Rectangle` in counterclockwise direction
    This improves the look of transformations between rectangles and other simple mobjects.
 
-* `#1248 <https://github.com/ManimCommunity/manim/pull/1248>`__: Add Copy function to TexTemplate
+* :pr:`1248`: Add Copy function to TexTemplate
 
 
 Fixed bugs
 ----------
 
-* `#1368 <https://github.com/ManimCommunity/manim/pull/1368>`__: Added a check to ensure checking for the latest version was successful
+* :pr:`1368`: Added a check to ensure checking for the latest version was successful
 
 
-* `#1413 <https://github.com/ManimCommunity/manim/pull/1413>`__: Prevent duplication of the same mobject when adding to submobjects via :meth:`~.Mobject.add_to_back`
+* :pr:`1413`: Prevent duplication of the same mobject when adding to submobjects via :meth:`~.Mobject.add_to_back`
    Fixes #1412
 
-* `#1395 <https://github.com/ManimCommunity/manim/pull/1395>`__: SVG transforms now handle exponent notation (6.02e23)
+* :pr:`1395`: SVG transforms now handle exponent notation (6.02e23)
 
 
-* `#1355 <https://github.com/ManimCommunity/manim/pull/1355>`__: Rewrite `put_start_and_end_on` to work in 3D
+* :pr:`1355`: Rewrite `put_start_and_end_on` to work in 3D
 
 
-* `#1346 <https://github.com/ManimCommunity/manim/pull/1346>`__: Fixed errors introduced by stray print in :class:`~.MathTex`
+* :pr:`1346`: Fixed errors introduced by stray print in :class:`~.MathTex`
 
 
-* `#1305 <https://github.com/ManimCommunity/manim/pull/1305>`__: Automatically remove long tick marks not within the range of the :class:`~NumberLine`
+* :pr:`1305`: Automatically remove long tick marks not within the range of the :class:`~NumberLine`
 
 
-* `#1296 <https://github.com/ManimCommunity/manim/pull/1296>`__: Fix random pipeline TeX failures
+* :pr:`1296`: Fix random pipeline TeX failures
 
 
-* `#1274 <https://github.com/ManimCommunity/manim/pull/1274>`__: Fix :meth:`~.VMobject.point_from_proportion` to account for the length of curves.
+* :pr:`1274`: Fix :meth:`~.VMobject.point_from_proportion` to account for the length of curves.
    - Add :meth:`~.VMobject.get_nth_curve_function_with_length` and associated functions.
    - Change :meth:`~.VMobject.point_from_proportion` to use these functions to account for curve length.
 
 Documentation-related changes
 -----------------------------
 
-* `#1430 <https://github.com/ManimCommunity/manim/pull/1430>`__: Un-deprecated GraphScene (will be deprecated later), fixed an old-style call to NumberPlane
+* :pr:`1430`: Un-deprecated GraphScene (will be deprecated later), fixed an old-style call to NumberPlane
    - More work is required in order to fully replace `GraphScene` via `Axes`, thus `GraphScene` is not deprecated yet.
    - Fixed one example in which the old `NumberPlane` syntax was used.
 
-* `#1425 <https://github.com/ManimCommunity/manim/pull/1425>`__: Added a "How to Cite Manim" section to the Readme
+* :pr:`1425`: Added a "How to Cite Manim" section to the Readme
 
 
-* `#1387 <https://github.com/ManimCommunity/manim/pull/1387>`__: Added Guide to Contribute Examples from GitHub Wiki to Documentation
+* :pr:`1387`: Added Guide to Contribute Examples from GitHub Wiki to Documentation
    Added a Guide
 
-* `#1424 <https://github.com/ManimCommunity/manim/pull/1424>`__: Fixed all current docbuild warnings
+* :pr:`1424`: Fixed all current docbuild warnings
 
 
-* `#1389 <https://github.com/ManimCommunity/manim/pull/1389>`__: Adding Admonitions Tutorial to docs
+* :pr:`1389`: Adding Admonitions Tutorial to docs
 
 
-* `#1341 <https://github.com/ManimCommunity/manim/pull/1341>`__: Reduce complexity of ThreeDSurfacePlot example
+* :pr:`1341`: Reduce complexity of ThreeDSurfacePlot example
 
 
-* `#1362 <https://github.com/ManimCommunity/manim/pull/1362>`__: Quick reference to modules
+* :pr:`1362`: Quick reference to modules
 
 
-* `#1376 <https://github.com/ManimCommunity/manim/pull/1376>`__: Add flake8 and isort in docs
+* :pr:`1376`: Add flake8 and isort in docs
    added 'flake8' and 'isort' usages to docs
 
-* `#1360 <https://github.com/ManimCommunity/manim/pull/1360>`__: Grammatical error corrections in documentation
+* :pr:`1360`: Grammatical error corrections in documentation
    changed a few sentences in docs/source
 
-* `#1351 <https://github.com/ManimCommunity/manim/pull/1351>`__: Some more typehints
+* :pr:`1351`: Some more typehints
 
 
-* `#1358 <https://github.com/ManimCommunity/manim/pull/1358>`__: Fixed link to installation instructions for developers
+* :pr:`1358`: Fixed link to installation instructions for developers
 
 
-* `#1338 <https://github.com/ManimCommunity/manim/pull/1338>`__: Added documentation guidelines for type hints
+* :pr:`1338`: Added documentation guidelines for type hints
 
 
-* `#1342 <https://github.com/ManimCommunity/manim/pull/1342>`__: Multiple ValueTracker example for docs
+* :pr:`1342`: Multiple ValueTracker example for docs
 
 
-* `#1210 <https://github.com/ManimCommunity/manim/pull/1210>`__: Added tutorial chapter on coordinates of an mobject
+* :pr:`1210`: Added tutorial chapter on coordinates of an mobject
 
 
-* `#1335 <https://github.com/ManimCommunity/manim/pull/1335>`__: Added import statements to examples in documentation
+* :pr:`1335`: Added import statements to examples in documentation
 
 
-* `#1245 <https://github.com/ManimCommunity/manim/pull/1245>`__: Added filled angle Example
+* :pr:`1245`: Added filled angle Example
 
 
-* `#1328 <https://github.com/ManimCommunity/manim/pull/1328>`__: Docs: Update Brace example
+* :pr:`1328`: Docs: Update Brace example
 
 
-* `#1326 <https://github.com/ManimCommunity/manim/pull/1326>`__: Improve documentation of :class:`~.ManimMagic` (in particular: fix documented order of CLI flags)
+* :pr:`1326`: Improve documentation of :class:`~.ManimMagic` (in particular: fix documented order of CLI flags)
 
 
-* `#1323 <https://github.com/ManimCommunity/manim/pull/1323>`__: Blacken Docs Strings
+* :pr:`1323`: Blacken Docs Strings
 
 
-* `#1300 <https://github.com/ManimCommunity/manim/pull/1300>`__: Added typehints for :class:`~.ValueTracker`
+* :pr:`1300`: Added typehints for :class:`~.ValueTracker`
 
 
-* `#1301 <https://github.com/ManimCommunity/manim/pull/1301>`__: Added further docstrings and typehints to :class:`~.Mobject`
+* :pr:`1301`: Added further docstrings and typehints to :class:`~.Mobject`
 
 
-* `#1298 <https://github.com/ManimCommunity/manim/pull/1298>`__: Add double backquotes for rst code samples (value_tracker.py)
+* :pr:`1298`: Add double backquotes for rst code samples (value_tracker.py)
 
 
-* `#1297 <https://github.com/ManimCommunity/manim/pull/1297>`__: Change docs to use viewcode extension instead of linkcode
+* :pr:`1297`: Change docs to use viewcode extension instead of linkcode
    Switched ``sphinx.ext.linkcode`` to ``sphinx.ext.viewcode`` and removed ``linkcode_resolve`` in ``conf.py``.
 
-* `#1246 <https://github.com/ManimCommunity/manim/pull/1246>`__: Added docstrings for :class:`~.ValueTracker`
+* :pr:`1246`: Added docstrings for :class:`~.ValueTracker`
 
 
-* `#1251 <https://github.com/ManimCommunity/manim/pull/1251>`__: Switch documentation from guzzle-sphinx-theme to furo
+* :pr:`1251`: Switch documentation from guzzle-sphinx-theme to furo
 
 
-* `#1232 <https://github.com/ManimCommunity/manim/pull/1232>`__: Further docstrings and examples for :class:`~.Mobject`
+* :pr:`1232`: Further docstrings and examples for :class:`~.Mobject`
 
 
-* `#1291 <https://github.com/ManimCommunity/manim/pull/1291>`__: Grammar improvements in README.md
+* :pr:`1291`: Grammar improvements in README.md
 
 
-* `#1269 <https://github.com/ManimCommunity/manim/pull/1269>`__: Add documentation about :meth:`~.set_color_by_tex`
+* :pr:`1269`: Add documentation about :meth:`~.set_color_by_tex`
 
 
-* `#1284 <https://github.com/ManimCommunity/manim/pull/1284>`__: Updated readme by providing the correct link to the example_scenes
+* :pr:`1284`: Updated readme by providing the correct link to the example_scenes
 
 
-* `#1029 <https://github.com/ManimCommunity/manim/pull/1029>`__: Added example jupyter notebook into the examples folders
+* :pr:`1029`: Added example jupyter notebook into the examples folders
 
 
-* `#1279 <https://github.com/ManimCommunity/manim/pull/1279>`__: Added sphinx requirements to pyproject.toml
+* :pr:`1279`: Added sphinx requirements to pyproject.toml
    New contributors who wanted to build the sphinx documentation had an extra step that could be removed by making use of ``poetry install``. This removes the developer's need for ``pip install -r requirements.txt``.
 
-* `#1268 <https://github.com/ManimCommunity/manim/pull/1268>`__: Added documentation explaining the differences between manim versions
+* :pr:`1268`: Added documentation explaining the differences between manim versions
 
 
-* `#1247 <https://github.com/ManimCommunity/manim/pull/1247>`__: Added warning for the usage of `animate`
+* :pr:`1247`: Added warning for the usage of `animate`
 
 
-* `#1242 <https://github.com/ManimCommunity/manim/pull/1242>`__: Added an example for the manim colormap
+* :pr:`1242`: Added an example for the manim colormap
 
 
-* `#1239 <https://github.com/ManimCommunity/manim/pull/1239>`__: Add TinyTex installation instructions
+* :pr:`1239`: Add TinyTex installation instructions
 
 
-* `#1231 <https://github.com/ManimCommunity/manim/pull/1231>`__: Improve changelog generation script
+* :pr:`1231`: Improve changelog generation script
 
 
 Changes concerning the testing system
 -------------------------------------
 
-* `#1299 <https://github.com/ManimCommunity/manim/pull/1299>`__: Red pixels (different value) now appear over green pixels (same value) in GraphicalUnitTest
+* :pr:`1299`: Red pixels (different value) now appear over green pixels (same value) in GraphicalUnitTest
 
 
 Changes to our development infrastructure
 -----------------------------------------
 
-* `#1436 <https://github.com/ManimCommunity/manim/pull/1436>`__: Cache poetry venv with `pyproject.toml` hash in key
+* :pr:`1436`: Cache poetry venv with `pyproject.toml` hash in key
    Cache poetry venv with `pyproject.toml` hash in key
 
-* `#1435 <https://github.com/ManimCommunity/manim/pull/1435>`__: CI: Update poetry cache when new version is released
+* :pr:`1435`: CI: Update poetry cache when new version is released
    Fix `test_version` failure in CI when using cached poetry venv
 
-* `#1427 <https://github.com/ManimCommunity/manim/pull/1427>`__: Add URL's to pyproject.toml
+* :pr:`1427`: Add URL's to pyproject.toml
 
 
-* `#1421 <https://github.com/ManimCommunity/manim/pull/1421>`__: Updated changelog generator's labels and removed pre-commit bot from changelog
+* :pr:`1421`: Updated changelog generator's labels and removed pre-commit bot from changelog
 
 
-* `#1339 <https://github.com/ManimCommunity/manim/pull/1339>`__: CI: Fix macOS installation error from creating file in read-only file system
+* :pr:`1339`: CI: Fix macOS installation error from creating file in read-only file system
 
 
-* `#1257 <https://github.com/ManimCommunity/manim/pull/1257>`__: CI: Caching ffmpeg, tinytex dependencies and poetry venv
+* :pr:`1257`: CI: Caching ffmpeg, tinytex dependencies and poetry venv
    CI: Caching ffmpeg, tinytex dependencies and poetry venv
 
-* `#1294 <https://github.com/ManimCommunity/manim/pull/1294>`__: Added mixed-line-ending to .pre-commit-config.yaml
+* :pr:`1294`: Added mixed-line-ending to .pre-commit-config.yaml
 
 
-* `#1278 <https://github.com/ManimCommunity/manim/pull/1278>`__: Fixed flake8 errors and removed linter/formatter workflows
+* :pr:`1278`: Fixed flake8 errors and removed linter/formatter workflows
 
 
-* `#1270 <https://github.com/ManimCommunity/manim/pull/1270>`__: Added isort to pre_commit file
+* :pr:`1270`: Added isort to pre_commit file
 
 
-* `#1263 <https://github.com/ManimCommunity/manim/pull/1263>`__: CI: Turn off experimental installer for poetry to fix installation errors
+* :pr:`1263`: CI: Turn off experimental installer for poetry to fix installation errors
    - Turn off experimental installer for poetry to prevent manim installation errors for packages.
    - Downgrade py39 to py38 for flake checks as `pip` does not enjoy py39, along with `poetry`.
 
-* `#1255 <https://github.com/ManimCommunity/manim/pull/1255>`__: CI: Fix macOS pipeline failure
+* :pr:`1255`: CI: Fix macOS pipeline failure
    Update `ci.yml` to update and upgrade brew if necessary before installing dependencies, and remove the unsupported `dvisvgm.86_64-darwin` package.
 
-* `#1254 <https://github.com/ManimCommunity/manim/pull/1254>`__: Removed the comment warning that GitHub doesn't allow uploading video in the issue templates.
+* :pr:`1254`: Removed the comment warning that GitHub doesn't allow uploading video in the issue templates.
 
 
-* `#1216 <https://github.com/ManimCommunity/manim/pull/1216>`__: Use actions/checkout for cloning repository; black-checks
+* :pr:`1216`: Use actions/checkout for cloning repository; black-checks
 
 
-* `#1235 <https://github.com/ManimCommunity/manim/pull/1235>`__: Fixed version of decorator at <5.0.0
+* :pr:`1235`: Fixed version of decorator at <5.0.0
 
 
 Code quality improvements and similar refactors
 -----------------------------------------------
 
-* `#1411 <https://github.com/ManimCommunity/manim/pull/1411>`__: Change `Union[float, int]` to just `float` according to PEP 484
+* :pr:`1411`: Change `Union[float, int]` to just `float` according to PEP 484
 
 
-* `#1241 <https://github.com/ManimCommunity/manim/pull/1241>`__: Type Annotations: Fixing errors showing up in static type checking tool mypy
+* :pr:`1241`: Type Annotations: Fixing errors showing up in static type checking tool mypy
 
 
-* `#1319 <https://github.com/ManimCommunity/manim/pull/1319>`__: Fix mean/meant typo
+* :pr:`1319`: Fix mean/meant typo
    Fix typo in docs
 
-* `#1313 <https://github.com/ManimCommunity/manim/pull/1313>`__: Singular typo fix on the Quickstart page in documentation
+* :pr:`1313`: Singular typo fix on the Quickstart page in documentation
 
 
-* `#1292 <https://github.com/ManimCommunity/manim/pull/1292>`__: Remove unnecessary imports from files
+* :pr:`1292`: Remove unnecessary imports from files
    Imports reduced in a bunch of files
 
-* `#1295 <https://github.com/ManimCommunity/manim/pull/1295>`__: Fix grammar and typos in the CODE OF CONDUCT
+* :pr:`1295`: Fix grammar and typos in the CODE OF CONDUCT
 
 
-* `#1293 <https://github.com/ManimCommunity/manim/pull/1293>`__: Minor fixes - reduce lines
+* :pr:`1293`: Minor fixes - reduce lines
    Remove unnecessary lines
 
-* `#1281 <https://github.com/ManimCommunity/manim/pull/1281>`__: Remove all Carriage Return characters in our files
+* :pr:`1281`: Remove all Carriage Return characters in our files
 
 
-* `#1178 <https://github.com/ManimCommunity/manim/pull/1178>`__: Format Imports using Isort
+* :pr:`1178`: Format Imports using Isort
 
 
-* `#1233 <https://github.com/ManimCommunity/manim/pull/1233>`__: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
+* :pr:`1233`: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
 
 
-* `#1282 <https://github.com/ManimCommunity/manim/pull/1282>`__: Fix typing hints in vectorized_mobject.py based on mypy
+* :pr:`1282`: Fix typing hints in vectorized_mobject.py based on mypy
 
 
 New releases
 ------------
 
-* `#1434 <https://github.com/ManimCommunity/manim/pull/1434>`__: Prepare v0.6.0
+* :pr:`1434`: Prepare v0.6.0

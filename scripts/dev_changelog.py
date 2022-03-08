@@ -298,7 +298,7 @@ def main(token, prior, tag, additional, outfile):
                     url = PR.html_url
                     title = PR.title
                     label = PR.labels
-                    f.write(f"* `#{num} <{url}>`__: {title}\n")
+                    f.write(f"* :pr:`{num}`: {title}\n")
                     overview = get_summary(PR.body)
                     if overview:
                         f.write(indent(f"{overview}\n\n", "   "))

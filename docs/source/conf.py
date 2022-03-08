@@ -134,8 +134,8 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "issue "),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "pull request "),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
 }
 
 # opengraph settings
