@@ -17,6 +17,7 @@ import requests
 
 from ... import __version__, config, console, error_console, logger
 from ...constants import EPILOG
+from ...utils.file_ops import check_ffmpeg
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -87,6 +88,7 @@ def render(
         return click_args
 
     config.digest_args(click_args)
+    check_ffmpeg(config.ffmpeg_executable)
     file = Path(config.input_file)
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer

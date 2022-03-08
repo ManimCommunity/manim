@@ -102,4 +102,6 @@ global_options: OptionGroupDecorator = option_group(
         help="Renders animations without outputting image or video files and disables the window",
         default=False,
     ),
+    option("--ffmpeg_executable", help="Path to FFmpeg executable", default=None),
+    option("--latex_executable", help="Path to LaTeX executable"),
 )

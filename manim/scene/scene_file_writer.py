@@ -20,7 +20,7 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
-from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
+from ..constants import GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
@@ -464,7 +464,7 @@ class SceneFileWriter:
             width = config["pixel_width"]
 
         command = [
-            FFMPEG_BIN,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "rawvideo",
@@ -547,7 +547,7 @@ class SceneFileWriter:
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")
         commands = [
-            FFMPEG_BIN,
+            config.ffmpeg_executable,
             "-y",  # overwrite output file if it exists
             "-f",
             "concat",
@@ -614,7 +614,7 @@ class SceneFileWriter:
             )
             temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
             commands = [
-                FFMPEG_BIN,
+                config.ffmpeg_executable,
                 "-i",
                 movie_file_path,
                 "-i",

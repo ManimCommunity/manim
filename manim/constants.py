@@ -63,7 +63,6 @@ __all__ = [
     "PI",
     "TAU",
     "DEGREES",
-    "FFMPEG_BIN",
     "GIF_FILE_EXTENSION",
     "FFMPEG_VERBOSITY_MAP",
     "VERBOSITY_CHOICES",
@@ -94,6 +93,12 @@ INVALID_NUMBER_MESSAGE: str = "Invalid scene numbers have been specified. Aborti
 NO_SCENE_MESSAGE: str = """
    There are no scenes inside that module
 """
+INPUT_LATEX_EXECUTABLE_MESSAGE: str = (
+    "Enter path to LaTeX executable (default: {DEFAULT_LATEX}): "
+)
+INPUT_FFMPEG_EXECUTABLE_MESSAGE: str = (
+    "Enter path to FFmpeg executable (default: {DEFAULT_FFMPEG}): "
+)
 
 # Pango stuff
 NORMAL: str = "NORMAL"
@@ -200,9 +205,6 @@ TAU: float = 2 * PI
 
 DEGREES: float = TAU / 360
 """The exchange rate between radians and degrees."""
-
-# ffmpeg stuff
-FFMPEG_BIN: str = "ffmpeg"
 
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"

@@ -17,6 +17,8 @@ __all__ = [
     "write_to_movie",
 ]
 
+import configparser
+import functools
 import os
 import platform
 import shutil
@@ -29,9 +31,131 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..scene.scene_file_writer import SceneFileWriter
 
-from manim import __version__, config, logger
+from manim import __version__, config, constants, logger
 
 from .. import console
+from .._config.utils import config_file_paths
+
+
+@functools.cache
+def check_ffmpeg_exe_working(ffmpeg_exe: str | None) -> bool:
+    if not ffmpeg_exe:
+        return False
+    if not Path(ffmpeg_exe).is_file():
+        logger.info(f"{ffmpeg_exe} doesn't exists")
+        return False
+    logger.info(f"Checking if running '{ffmpeg_exe} -version' works...")
+    op = sp.run([ffmpeg_exe, "-version"], stdout=sp.PIPE)
+    if op.returncode != 0:
+        logger.info(
+            f"Running '{ffmpeg_exe} -version' returned non-zero exit-code {op.returncode}"
+        )
+        logger.info(f"stdout: {op.stdout}")
+        return False
+    return True
+
+
+@functools.cache
+def check_latex_exe_working(latex_exe: str | None) -> bool:
+    if not latex_exe:
+        return False
+    if not Path(latex_exe).exists():
+        logger.info(f"{latex_exe} doesn't exists")
+        return False
+    logger.info(f"Checking if running '{latex_exe} --version' works...")
+    op = sp.run([latex_exe, "--version"], stdout=sp.PIPE)
+    if op.returncode != 0:
+        logger.info(
+            f"Running '{latex_exe}' returned non-zero exit-code {op.returncode}"
+        )
+        logger.info(f"stdout: {op.stdout}")
+        return False
+    return True
+
+
+def prompt_user_for_choice(input_ffmpeg: bool = False, input_latex: bool = False):
+    ffmpeg_from_path = shutil.which("ffmpeg")
+    latex_from_path = shutil.which("latex")
+    ffmpeg_exe = None
+    latex_exe = None
+
+    while input_ffmpeg:
+        ffmpeg_exe = console.input(
+            f"[log.message] {constants.INPUT_FFMPEG_EXECUTABLE_MESSAGE.format(DEFAULT_FFMPEG=ffmpeg_from_path)} [/log.message]"
+        )
+        if not ffmpeg_exe:
+            ffmpeg_exe = ffmpeg_from_path
+        input_ffmpeg = not check_ffmpeg_exe_working(ffmpeg_exe)
+        if input_ffmpeg is True:
+            logger.info(f"'{ffmpeg_exe}' doesn't seem to work")
+            logger.info("Please try again.")
+
+    while input_latex:
+        latex_exe = console.input(
+            f"[log.message] {constants.INPUT_LATEX_EXECUTABLE_MESSAGE.format(DEFAULT_LATEX=latex_from_path)} [/log.message]"
+        )
+        if not latex_exe:
+            latex_exe = latex_from_path
+        input_latex = not check_latex_exe_working(latex_exe)
+        if input_latex is True:
+            logger.info(f"'{latex_exe}' doesn't seem to work")
+            logger.info("Please try again.")
+
+    return ffmpeg_exe, latex_exe
+
+
+def save_config_latex_ffmpeg(ffmpeg_exe: str = None, latex_exe: str = None) -> None:
+    if ffmpeg_exe:
+        _inp = console.input(
+            "[log.message] Do you want to save ffmpeg executable?: (Y/N) [/log.message]"
+        )
+    if latex_exe:
+        _inp = console.input(
+            "[log.message] Do you want to save latex executable?: (Y/N) [/log.message]"
+        )
+    if _inp.lower() == "y":
+        # Save the file in default.cfg
+        library_wide, _, _ = config_file_paths()
+        _parser = configparser.ConfigParser()
+        with open(library_wide, encoding="utf-8") as f:
+            _parser.read_file(f)
+
+        # always create a backup for original file
+        shutil.copyfile(library_wide, os.fspath(library_wide) + ".old")
+
+        if ffmpeg_exe:
+            _parser["CLI"]["ffmpeg_executable"] = ffmpeg_exe
+        if latex_exe:
+            _parser["CLI"]["latex_executable"] = latex_exe
+
+        with open(library_wide, "w") as f:
+            _parser.write(f)
+
+
+def check_ffmpeg(ffmpeg_exe: str | None) -> None:
+    ffmpeg_chk = check_ffmpeg_exe_working(ffmpeg_exe)
+    ffmpeg_exe_temp, _ = prompt_user_for_choice(
+        input_ffmpeg=(not ffmpeg_chk), input_latex=False
+    )
+    if ffmpeg_exe_temp:
+        ffmpeg_exe = ffmpeg_exe_temp
+    logger.debug(f"ffmpeg executable: {ffmpeg_exe}")
+    if not config.ffmpeg_executable:
+        save_config_latex_ffmpeg(ffmpeg_exe=ffmpeg_exe)
+    config.ffmpeg_executable = ffmpeg_exe
+
+
+def check_latex(latex_exe: str | None) -> None:
+    latex_chk = check_latex_exe_working(latex_exe)
+    _, latex_exe_temp = prompt_user_for_choice(
+        input_ffmpeg=False, input_latex=(not latex_chk)
+    )
+    if latex_exe_temp:
+        latex_exe = latex_exe_temp
+    logger.debug(f"latex executable: {latex_exe}")
+    if not config.latex_executable:
+        save_config_latex_ffmpeg(latex_exe=latex_exe)
+    config.latex_executable = latex_exe
 
 
 def is_mp4_format() -> bool:

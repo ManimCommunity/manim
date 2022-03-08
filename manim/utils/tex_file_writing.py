@@ -11,10 +11,22 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import sys
 import unicodedata
 from pathlib import Path
 
 from .. import config, logger
+from ..utils.file_ops import check_latex
+
+
+def get_tex_executable(compiler: str) -> str:
+    exe = ".exe" if sys.platform == "win32" else ""
+    check_latex(config.latex_executable)
+    latex_dir = Path(config.latex_executable).parent
+    compiler_path = latex_dir / (compiler + exe)
+    if not compiler_path.exists() or not compiler_path.is_file():
+        raise ValueError(f"LaTeX executable {compiler_path} is not found.")
+    return os.fspath(latex_dir / (compiler + exe))
 
 
 def tex_hash(expression):
@@ -112,9 +124,10 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     :class:`str`
         Compilation command according to given parameters
     """
+    tex_compiler_path = get_tex_executable(tex_compiler)
     if tex_compiler in {"latex", "pdflatex", "luatex", "lualatex"}:
         commands = [
-            tex_compiler,
+            tex_compiler_path,
             "-interaction=batchmode",
             f'-output-format="{output_format[1:]}"',
             "-halt-on-error",
@@ -131,7 +144,7 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
         else:
             raise ValueError("xelatex output is either pdf or xdv")
         commands = [
-            "xelatex",
+            tex_compiler_path,
             outflag,
             "-interaction=batchmode",
             "-halt-on-error",
@@ -219,7 +232,7 @@ def convert_to_svg(dvi_file, extension, page=1):
     dvi_file = Path(dvi_file).as_posix()
     if not os.path.exists(result):
         commands = [
-            "dvisvgm",
+            get_tex_executable("dvisvgm"),
             "--pdf" if extension == ".pdf" else "",
             "-p " + str(page),
             f'"{dvi_file}"',

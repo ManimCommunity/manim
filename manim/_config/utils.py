@@ -242,6 +242,7 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
+        "ffmpeg_executable",
         "format",
         "flush_cache",
         "frame_height",
@@ -254,6 +255,7 @@ class ManimConfig(MutableMapping):
         "input_file",
         "media_embed",
         "media_width",
+        "latex_executable",
         "log_dir",
         "log_to_file",
         "max_files_cached",
@@ -574,6 +576,8 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "ffmpeg_executable",
+            "latex_executable",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -713,6 +717,8 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "dry_run",
+            "ffmpeg_executable",
+            "latex_executable",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1553,6 +1559,22 @@ class ManimConfig(MutableMapping):
     @plugins.setter
     def plugins(self, value):
         self._d["plugins"] = value
+
+    @property
+    def ffmpeg_executable(self) -> str:
+        return self._d["ffmpeg_executable"]
+
+    @ffmpeg_executable.setter
+    def ffmpeg_executable(self, value: str | Path):
+        self._d["ffmpeg_executable"] = os.fspath(value)
+
+    @property
+    def latex_executable(self) -> str:
+        return self._d["latex_executable"]
+
+    @latex_executable.setter
+    def latex_executable(self, value: str | Path):
+        self._d["latex_executable"] = os.fspath(value)
 
 
 class ManimFrame(Mapping):
