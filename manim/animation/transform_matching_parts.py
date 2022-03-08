@@ -280,7 +280,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        if isinstance(mobject, (Group, VGroup)):
+        if isinstance(mobject, (Group, VGroup, OpenGLGroup, OpenGLVGroup)):
             return [
                 p
                 for s in mobject.submobjects
