@@ -72,5 +72,25 @@ class Percent:
 
 
 Pixels = _PixelUnits()
+"""A scaling object to convert a float to pixels
+
+    Examples
+    --------
+
+    .. manim :: PixelsExample
+        :ref_classes: Dot ApplyMethod
+
+        class PixelsExample(Scene):
+            def construct(self):
+                dot1 = Dot(radius=0.2, color=RED).shift(UP)
+                dot2 = Dot(radius=0.2, color=BLUE).shift(DOWN)
+                self.play(
+                    # With the standard frame width/ratio, 2.5 Munits = 150 Pixels
+                    ApplyMethod(dot1.shift, 2.5 * RIGHT),
+                    ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT)
+                )
+
+"""
+
 Degrees = constants.PI / 180
 Munits = 1
