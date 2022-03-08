@@ -189,13 +189,13 @@ class Uncreate(Create):
     def __init__(
         self,
         mobject: VMobject | OpenGLVMobject,
-        reversed: bool = True,
+        reverse_rate_function: bool = True,
         remover: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(
             mobject,
-            reversed=reversed,
+            reverse_rate_function=reverse_rate_function,
             introducer=False,
             remover=remover,
             **kwargs,
@@ -403,7 +403,7 @@ class Unwrite(Write):
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            reversed=True,  # `reversed` is in the kwards of class `Animation`, which decides whether the animation need to be played backwards.
+            reverse_rate_function=True,  # `reverse_rate_function` is in the kwards of class `Animation`, which decides whether the animation need to be played backwards.
             reverse=reverse,
             **kwargs,
         )

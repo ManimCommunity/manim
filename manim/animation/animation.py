@@ -51,8 +51,11 @@ class Animation:
         after half of the animations run time.
 
 
-    reversed
+    reverse_rate_function
         Whether the animation need to be played backwards.
+
+        Setting `reverse_rate_function` doesn't have any effect on `remover` and `introducer`.
+            If you want your animation to be a introducer or remover. You must set it manually.
     name
         The name of the animation. This gets displayed while rendering the animation.
         Defaults to <class-name>(<Mobject-name>).
@@ -127,7 +130,7 @@ class Animation:
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
-        reversed: bool = False,
+        reverse_rate_function: bool = False,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -139,7 +142,7 @@ class Animation:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
-        self.reversed: bool = reversed
+        self.reverse_rate_function: bool = reverse_rate_function
         self.name: str | None = name
         self.remover: bool = remover
         self.introducer: bool = introducer
@@ -364,7 +367,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        if self.reversed:
+        if self.reverse_rate_function:
             return self.rate_func(1 - (value - lower))
         else:
             return self.rate_func(value - lower)
