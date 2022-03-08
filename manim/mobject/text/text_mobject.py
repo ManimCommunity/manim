@@ -406,7 +406,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color | None = None,
+        color: Color | str | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",

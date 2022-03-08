@@ -26,9 +26,9 @@ Contributing
    When a developer implements a new feature, they are not forced to respect any translations.
    This means that parts of the translation might become outdated over time.
 
-   That being said, improving the documentation and making it more accessible is still highly encouraged.
-   And even if your work gets outdated and requires change, you or someone else can simply adjust the translation.
-   Your efforts are not in vail!
+That being said, improving the documentation and making it more accessible is still highly encouraged.
+And even if your work gets outdated and requires change, you or someone else can simply adjust the translation.
+Your efforts are not in vail!
 
 
 Voting
@@ -97,5 +97,5 @@ Source errors
 -------------
 
 If you spot an error with a source string, report it to us by opening an
-`issue <https://github.com/ManimCommunity/manim/issues/new/choose>`__ on
+:issue:`issue <new/choose>` on
 GitHub. Refrain from translating the string until the issue is resolved.
