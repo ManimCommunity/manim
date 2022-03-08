@@ -7,6 +7,8 @@ layout (triangle_strip, max_vertices = 5) out;
 uniform vec2 frame_shape;
 uniform float focal_distance;
 uniform float is_fixed_in_frame;
+uniform float is_fixed_orientation;
+uniform vec3 fixed_orientation_center;
 
 uniform float anti_alias_width;
 uniform float flat_stroke;

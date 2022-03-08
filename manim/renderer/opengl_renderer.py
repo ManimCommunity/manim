@@ -15,13 +15,13 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
 from ..constants import *
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils import opengl
 from ..utils.config_ops import _Data
@@ -431,8 +431,22 @@ class OpenGLRenderer:
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
 
-        if scene.compile_animation_data(*args, **kwargs):
-            scene.begin_animations()
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            self.update_frame(scene)
+
+            if not self.skip_animations:
+                for _ in range(int(config.frame_rate * scene.duration)):
+                    self.file_writer.write_frame(self)
+
+            if self.window is not None:
+                self.window.swap_buffers()
+                while time.time() - self.animation_start_time < scene.duration:
+                    pass
+            self.animation_elapsed_time = scene.duration
+
+        else:
             scene.play_internal()
 
         self.file_writer.end_animation(not self.skip_animations)
@@ -563,7 +577,9 @@ class OpenGLRenderer:
         return np_buf
 
     # Returns offset from the bottom left corner in pixels.
-    def pixel_coords_to_space_coords(self, px, py, relative=False):
+    # top_left flag should be set to True when using a GUI framework
+    # where the (0,0) is at the top left: e.g. PySide6
+    def pixel_coords_to_space_coords(self, px, py, relative=False, top_left=False):
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             return np.array([0, 0, 0])
@@ -575,7 +591,9 @@ class OpenGLRenderer:
         else:
             # Only scale wrt one axis
             scale = fh / ph
-            return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])
+            return fc + scale * np.array(
+                [(px - pw / 2), (-1 if top_left else 1) * (py - ph / 2), 0]
+            )
 
     @property
     def background_color(self):

@@ -18,6 +18,42 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:1
+msgid "Animation that rotates a Mobject."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:3
+msgid "The mobject to be rotated."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:4
+msgid "The rotation angle."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:5
+msgid "The rotation axis as a numpy vector."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:6
+msgid "The rotation center."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:7
+msgid "If ``about_point``is ``None``, this argument specifies the direction of the bounding box point to be taken as the rotation center."
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/animation/rotation.py:docstring of manim.animation.rotation.Rotate:12
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.rotation.Rotate.rst:14
 msgid "Methods"
 msgstr ""

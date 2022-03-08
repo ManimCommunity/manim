@@ -59,7 +59,7 @@ msgid "Enabling plugins through ``manim.cfg``"
 msgstr ""
 
 #: ../../source/plugins.rst:75
-msgid "For specifying multiple plugins, command separated values must be used."
+msgid "For specifying multiple plugins, comma-separated values must be used."
 msgstr ""
 
 #: ../../source/plugins.rst:83

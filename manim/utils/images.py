@@ -9,7 +9,6 @@ __all__ = [
     "change_to_rgba_array",
 ]
 
-
 import numpy as np
 from PIL import Image
 

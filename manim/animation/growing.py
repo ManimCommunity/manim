@@ -40,7 +40,8 @@ from ..constants import PI
 from ..utils.paths import spiral_path
 
 if typing.TYPE_CHECKING:
-    from ..mobject.geometry import Arrow
+    from manim.mobject.geometry.line import Arrow
+
     from ..mobject.mobject import Mobject
 
 

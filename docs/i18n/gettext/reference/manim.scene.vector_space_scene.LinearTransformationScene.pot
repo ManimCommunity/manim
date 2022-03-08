@@ -261,7 +261,6 @@ msgstr ""
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:0
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:0
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transformable_label_movement:0
-#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:0
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:0
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:0
 msgid "Returns"

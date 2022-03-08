@@ -10,12 +10,11 @@ import colour
 import numpy as np
 from PIL import Image
 
-from manim.constants import DEFAULT_QUALITY, QUALITIES
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.shape_matchers import SurroundingRectangle
 from ...utils.bezier import interpolate
 from ...utils.color import WHITE, color_to_int_rgb
 from ...utils.images import get_full_raster_image_path

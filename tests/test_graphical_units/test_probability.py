@@ -1,6 +1,6 @@
 from manim.constants import LEFT
-from manim.mobject.probability import BarChart
-from manim.mobject.svg.tex_mobject import MathTex
+from manim.mobject.graphing.probability import BarChart
+from manim.mobject.text.tex_mobject import MathTex
 from manim.utils.color import BLUE, GREEN, RED, WHITE, YELLOW
 from manim.utils.testing.frames_comparison import frames_comparison
 

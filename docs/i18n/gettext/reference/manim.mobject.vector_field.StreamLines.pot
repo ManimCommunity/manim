@@ -144,6 +144,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/vector_field.py:docstring of manim.mobject.vector_field.StreamLines.create:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
