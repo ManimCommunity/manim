@@ -36,7 +36,7 @@ A total of 9 pull requests were merged for this release.
 Enhancements
 ------------
 
-* :pr:`2602`: Support groups in `TransformMatchingParts`
+* :pr:`2602`: Support groups in :class:`.TransformMatchingTex`
 
 
 Fixed bugs
@@ -46,9 +46,9 @@ Fixed bugs
 
 
 * :pr:`2584`: Fixed bug with invalid color type ``None``
-   Fixes #2582 and Fixes #2579
 
-* :pr:`2587`: Fix bug introduced in Tex rendering via #2574
+
+* :pr:`2587`: Fixed bug with rendering Tex string that contain ``%``
 
 
 * :pr:`2593`: Fixed bug with displaying images in Jupyter Notebooks when ``config.media_embed`` is set to ``False``
@@ -57,7 +57,7 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
-* :pr:`2570`: Refactored docstrings in mod:`manim.mobject.graphing.coordinate_systems`
+* :pr:`2570`: Refactored docstrings in :mod:`.coordinate_systems`
 
 
 * :pr:`2603`: Reduced the number of warnings during documentation build
