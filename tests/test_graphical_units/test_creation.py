@@ -67,3 +67,23 @@ def test_SpinInFromNothing(scene):
 def test_ShrinkToCenter(scene):
     square = Square()
     scene.play(ShrinkToCenter(square))
+
+
+@frames_comparison(last_frame=False)
+def test_bring_to_back_introducer(scene):
+    a = Square(color=RED, fill_opacity=1)
+    b = Square(color=BLUE, fill_opacity=1).shift(RIGHT)
+    scene.add(a)
+    scene.bring_to_back(b)
+    scene.play(FadeIn(b))
+    scene.wait()
+
+
+@frames_comparison(last_frame=False)
+def test_z_index_introducer(scene):
+    a = Circle().set_fill(color=RED, opacity=1.0)
+    scene.add(a)
+    b = Circle(arc_center=(0.5, 0.5, 0.0), color=GREEN, fill_opacity=1)
+    b.set_z_index(-1)
+    scene.play(Create(b))
+    scene.wait()

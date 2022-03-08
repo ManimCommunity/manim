@@ -86,13 +86,14 @@ class CairoRenderer:
             {"h": str(self.animations_hashes[:5])},
         )
 
+        self.file_writer.begin_animation(not self.skip_animations)
+        scene.begin_animations()
+
         # Save a static image, to avoid rendering non moving objects.
         self.static_image = self.save_static_frame_data(scene, scene.static_mobjects)
 
-        self.file_writer.begin_animation(not self.skip_animations)
-        scene.begin_animations()
         if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene)
+            self.update_frame(scene, mobjects=scene.moving_mobjects)
             # self.duration stands for the total run time of all the animations.
             # In this case, as there is only a wait, it will be the length of the wait.
             self.freeze_current_frame(scene.duration)
@@ -218,8 +219,8 @@ class CairoRenderer:
         typing.Iterable[Mobject]
             the static image computed.
         """
+        self.static_image = None
         if not static_mobjects:
-            self.static_image = None
             return None
         self.update_frame(scene, mobjects=static_mobjects)
         self.static_image = self.get_frame()
@@ -258,8 +259,10 @@ class CairoRenderer:
             config.save_last_frame = True
             config.write_to_movie = False
         else:
+            self.static_image = None
             self.update_frame(scene)
 
         if config["save_last_frame"]:
+            self.static_image = None
             self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())
