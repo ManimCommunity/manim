@@ -187,7 +187,7 @@ msgid "Breaking changes"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:71
-msgid "`#2476 <https://github.com/ManimCommunity/manim/pull/2476>`__: Improved structure of the :mod:`.mobject` module"
+msgid ":pr:`2476`: Improved structure of the :mod:`.mobject` module"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:71
@@ -195,7 +195,7 @@ msgid "Arrow tips now have to be imported from ``manim.mobject.geometry.tips`` i
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:75
-msgid "`#2387 <https://github.com/ManimCommunity/manim/pull/2387>`__: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`"
+msgid ":pr:`2387`: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:74
@@ -211,7 +211,7 @@ msgid "Deprecated classes and functions"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:81
-msgid "`#2568 <https://github.com/ManimCommunity/manim/pull/2568>`__: Removed Deprecated Methods"
+msgid ":pr:`2568`: Removed Deprecated Methods"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:81
@@ -219,7 +219,7 @@ msgid "Removed methods and classes that were deprecated since v0.10.0 and v0.11.
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:83
-msgid "`#2457 <https://github.com/ManimCommunity/manim/pull/2457>`__: Deprecated :class:`.ShowCreationThenFadeOut`"
+msgid ":pr:`2457`: Deprecated :class:`.ShowCreationThenFadeOut`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:87
@@ -227,11 +227,11 @@ msgid "New features"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:89
-msgid "`#2442 <https://github.com/ManimCommunity/manim/pull/2442>`__: Added ``media_embed`` config option to control whether media in Jupyter notebooks is embedded"
+msgid ":pr:`2442`: Added ``media_embed`` config option to control whether media in Jupyter notebooks is embedded"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:96
-msgid "`#2504 <https://github.com/ManimCommunity/manim/pull/2504>`__: Added finer control over :meth:`.Scene.wait` being static (i.e., no updaters) or not"
+msgid ":pr:`2504`: Added finer control over :meth:`.Scene.wait` being static (i.e., no updaters) or not"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:93
@@ -255,43 +255,43 @@ msgid "Enhancements"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:101
-msgid "`#2478 <https://github.com/ManimCommunity/manim/pull/2478>`__: Alternative scaling for tree graph layout"
+msgid ":pr:`2478`: Alternative scaling for tree graph layout"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:104
-msgid "`#2565 <https://github.com/ManimCommunity/manim/pull/2565>`__: Allowed passing vertex configuration keyword arguments to :meth:`.Graph.add_edges`"
+msgid ":pr:`2565`: Allowed passing vertex configuration keyword arguments to :meth:`.Graph.add_edges`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:107
-msgid "`#2467 <https://github.com/ManimCommunity/manim/pull/2467>`__: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects"
+msgid ":pr:`2467`: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:110
-msgid "`#2537 <https://github.com/ManimCommunity/manim/pull/2537>`__: Added support for PySide coordinate system"
+msgid ":pr:`2537`: Added support for PySide coordinate system"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:113
-msgid "`#2158 <https://github.com/ManimCommunity/manim/pull/2158>`__: Added OpenGL compatibility to :meth:`.ThreeDScene.add_fixed_orientation_mobjects` and  :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`"
+msgid ":pr:`2158`: Added OpenGL compatibility to :meth:`.ThreeDScene.add_fixed_orientation_mobjects` and  :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:116
-msgid "`#2535 <https://github.com/ManimCommunity/manim/pull/2535>`__: Implemented performance enhancement for :meth:`.VMobject.insert_n_curves_to_point_list`"
+msgid ":pr:`2535`: Implemented performance enhancement for :meth:`.VMobject.insert_n_curves_to_point_list`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:119
-msgid "`#2516 <https://github.com/ManimCommunity/manim/pull/2516>`__: Cached view matrix for :class:`~.OpenGLCamera`"
+msgid ":pr:`2516`: Cached view matrix for :class:`~.OpenGLCamera`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:122
-msgid "`#2508 <https://github.com/ManimCommunity/manim/pull/2508>`__: Improve performance for :meth:`.Mobject.become`"
+msgid ":pr:`2508`: Improve performance for :meth:`.Mobject.become`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:125
-msgid "`#2332 <https://github.com/ManimCommunity/manim/pull/2332>`__: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties"
+msgid ":pr:`2332`: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:131
-msgid "`#2396 <https://github.com/ManimCommunity/manim/pull/2396>`__: Fixed animations introducing or removing objects"
+msgid ":pr:`2396`: Fixed animations introducing or removing objects"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:129
@@ -311,71 +311,71 @@ msgid "Fixed bugs"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:136
-msgid "`#2574 <https://github.com/ManimCommunity/manim/pull/2574>`__: Improved Error in :mod:`.utils.tex_file_writing`"
+msgid ":pr:`2574`: Improved Error in :mod:`.utils.tex_file_writing`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:139
-msgid "`#2580 <https://github.com/ManimCommunity/manim/pull/2580>`__: Fixed :func:`.find_intersection` in :mod:`.space_ops`"
+msgid ":pr:`2580`: Fixed :func:`.find_intersection` in :mod:`.space_ops`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:142
-msgid "`#2576 <https://github.com/ManimCommunity/manim/pull/2576>`__: Fixed a bug with animation of removal of edges from a :class:`.Graph`"
+msgid ":pr:`2576`: Fixed a bug with animation of removal of edges from a :class:`.Graph`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:145
-msgid "`#2556 <https://github.com/ManimCommunity/manim/pull/2556>`__: Fixed showing highlighted cells when creating :class:`.Table`"
+msgid ":pr:`2556`: Fixed showing highlighted cells when creating :class:`.Table`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:148
-msgid "`#2559 <https://github.com/ManimCommunity/manim/pull/2559>`__: Fix setting line numbers in :class:`.Text` when using ManimPango settings"
+msgid ":pr:`2559`: Fix setting line numbers in :class:`.Text` when using ManimPango settings"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:151
-msgid "`#2557 <https://github.com/ManimCommunity/manim/pull/2557>`__: Fixed logger bug in :meth:`.Camera.make_background_from_func`"
+msgid ":pr:`2557`: Fixed logger bug in :meth:`.Camera.make_background_from_func`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:154
-msgid "`#2548 <https://github.com/ManimCommunity/manim/pull/2548>`__: Fixed :class:`.Axes` plotting bug with logarithmic x-axis"
+msgid ":pr:`2548`: Fixed :class:`.Axes` plotting bug with logarithmic x-axis"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:157
-msgid "`#1547 <https://github.com/ManimCommunity/manim/pull/1547>`__: Fixed certain unicode characters in users' paths causing issues on Windows"
+msgid ":pr:`1547`: Fixed certain unicode characters in users' paths causing issues on Windows"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:160
-msgid "`#2526 <https://github.com/ManimCommunity/manim/pull/2526>`__: Fixed segfault when using ``--enable_gui``"
+msgid ":pr:`2526`: Fixed segfault when using ``--enable_gui``"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:163
-msgid "`#2538 <https://github.com/ManimCommunity/manim/pull/2538>`__: Fixed flickering OpenGL preview when using ``frozen_frame``"
+msgid ":pr:`2538`: Fixed flickering OpenGL preview when using ``frozen_frame``"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:166
-msgid "`#2528 <https://github.com/ManimCommunity/manim/pull/2528>`__: Fixed custom naming of gifs and added some tests"
+msgid ":pr:`2528`: Fixed custom naming of gifs and added some tests"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:169
-msgid "`#2487 <https://github.com/ManimCommunity/manim/pull/2487>`__: Fixed :meth:`.ThreeDCamera.remove_fixed_orientation_mobjects`"
+msgid ":pr:`2487`: Fixed :meth:`.ThreeDCamera.remove_fixed_orientation_mobjects`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:172
-msgid "`#2530 <https://github.com/ManimCommunity/manim/pull/2530>`__: Use single source of truth for default text values"
+msgid ":pr:`2530`: Use single source of truth for default text values"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:175
-msgid "`#2494 <https://github.com/ManimCommunity/manim/pull/2494>`__: Fixed an issue related to previewing gifs"
+msgid ":pr:`2494`: Fixed an issue related to previewing gifs"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:178
-msgid "`#2490 <https://github.com/ManimCommunity/manim/pull/2490>`__: Fixed order of transformation application in :class:`~.SVGMobject`"
+msgid ":pr:`2490`: Fixed order of transformation application in :class:`~.SVGMobject`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:181
-msgid "`#2357 <https://github.com/ManimCommunity/manim/pull/2357>`__: Fixed ``screeninfo.get_monitors`` for MacOS"
+msgid ":pr:`2357`: Fixed ``screeninfo.get_monitors`` for MacOS"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:184
-msgid "`#2444 <https://github.com/ManimCommunity/manim/pull/2444>`__: Fixed :meth:`.VectorScene.add_axes`"
+msgid ":pr:`2444`: Fixed :meth:`.VectorScene.add_axes`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:188
@@ -383,87 +383,87 @@ msgid "Documentation-related changes"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:190
-msgid "`#2560 <https://github.com/ManimCommunity/manim/pull/2560>`__: Refactored more docstrings in :mod:`.geometry`"
+msgid ":pr:`2560`: Refactored more docstrings in :mod:`.geometry`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:193
-msgid "`#2571 <https://github.com/ManimCommunity/manim/pull/2571>`__: Refactored docstrings in :mod:`.graphing`"
+msgid ":pr:`2571`: Refactored docstrings in :mod:`.graphing`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:196
-msgid "`#2569 <https://github.com/ManimCommunity/manim/pull/2569>`__: Refactored docstrings in :mod:`.geometry`"
+msgid ":pr:`2569`: Refactored docstrings in :mod:`.geometry`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:198
-msgid "`#2549 <https://github.com/ManimCommunity/manim/pull/2549>`__: Added a page for internals which links to our GitHub wiki"
+msgid ":pr:`2549`: Added a page for internals which links to our GitHub wiki"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:201
-msgid "`#2458 <https://github.com/ManimCommunity/manim/pull/2458>`__: Improved documentation for :class:`.Rotate`"
+msgid ":pr:`2458`: Improved documentation for :class:`.Rotate`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:204
-msgid "`#2459 <https://github.com/ManimCommunity/manim/pull/2459>`__: Added examples to some transform animations"
+msgid ":pr:`2459`: Added examples to some transform animations"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:207
-msgid "`#2517 <https://github.com/ManimCommunity/manim/pull/2517>`__: Added guide on profiling and improving performance"
+msgid ":pr:`2517`: Added guide on profiling and improving performance"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:210
-msgid "`#2518 <https://github.com/ManimCommunity/manim/pull/2518>`__: Added imports to examples for ``deprecation`` decorator"
+msgid ":pr:`2518`: Added imports to examples for ``deprecation`` decorator"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:213
-msgid "`#2499 <https://github.com/ManimCommunity/manim/pull/2499>`__: Improved help text for ``--write_to_movie``"
+msgid ":pr:`2499`: Improved help text for ``--write_to_movie``"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:216
-msgid "`#2465 <https://github.com/ManimCommunity/manim/pull/2465>`__: Added documentation for :func:`.index_labels`"
+msgid ":pr:`2465`: Added documentation for :func:`.index_labels`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:219
-msgid "`#2495 <https://github.com/ManimCommunity/manim/pull/2495>`__: Updated minimal LaTeX installation instructions"
+msgid ":pr:`2495`: Updated minimal LaTeX installation instructions"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:222
-msgid "`#2500 <https://github.com/ManimCommunity/manim/pull/2500>`__: Added note about contributions during refactor period"
+msgid ":pr:`2500`: Added note about contributions during refactor period"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:225
-msgid "`#2431 <https://github.com/ManimCommunity/manim/pull/2431>`__: Changed example in :meth:`.Surface.set_fill_by_value`"
+msgid ":pr:`2431`: Changed example in :meth:`.Surface.set_fill_by_value`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:228
-msgid "`#2485 <https://github.com/ManimCommunity/manim/pull/2485>`__: Fixed some typos in documentation"
+msgid ":pr:`2485`: Fixed some typos in documentation"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:231
-msgid "`#2493 <https://github.com/ManimCommunity/manim/pull/2493>`__: Fixed typo in documentation for parameters of :class:`.Square`"
+msgid ":pr:`2493`: Fixed typo in documentation for parameters of :class:`.Square`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:234
-msgid "`#2482 <https://github.com/ManimCommunity/manim/pull/2482>`__: Updated Python version requirement in installation guide"
+msgid ":pr:`2482`: Updated Python version requirement in installation guide"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:237
-msgid "`#2438 <https://github.com/ManimCommunity/manim/pull/2438>`__: Removed unnecessary rotation from example"
+msgid ":pr:`2438`: Removed unnecessary rotation from example"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:240
-msgid "`#2468 <https://github.com/ManimCommunity/manim/pull/2468>`__: Hid more private methods from the docs"
+msgid ":pr:`2468`: Hid more private methods from the docs"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:243
-msgid "`#2466 <https://github.com/ManimCommunity/manim/pull/2466>`__: Fixed a typo in the documentation for plugins"
+msgid ":pr:`2466`: Fixed a typo in the documentation for plugins"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:246
-msgid "`#2448 <https://github.com/ManimCommunity/manim/pull/2448>`__: Improvements to the ``.pot`` files cleaning system"
+msgid ":pr:`2448`: Improvements to the ``.pot`` files cleaning system"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:249
-msgid "`#2436 <https://github.com/ManimCommunity/manim/pull/2436>`__: Fixed typo and improved example in building blocks tutorial"
+msgid ":pr:`2436`: Fixed typo and improved example in building blocks tutorial"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:253
@@ -471,19 +471,19 @@ msgid "Changes to our development infrastructure"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:255
-msgid "`#2554 <https://github.com/ManimCommunity/manim/pull/2554>`__: Removed ``Remove-Item`` calls for MSYS2 Python"
+msgid ":pr:`2554`: Removed ``Remove-Item`` calls for MSYS2 Python"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:258
-msgid "`#2531 <https://github.com/ManimCommunity/manim/pull/2531>`__: Added a GitHub Action for automatic validation of citation metadata"
+msgid ":pr:`2531`: Added a GitHub Action for automatic validation of citation metadata"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:261
-msgid "`#2536 <https://github.com/ManimCommunity/manim/pull/2536>`__: Upgraded version of setup-ffmpeg CI action"
+msgid ":pr:`2536`: Upgraded version of setup-ffmpeg CI action"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:264
-msgid "`#2484 <https://github.com/ManimCommunity/manim/pull/2484>`__: Updated tinytex download URL"
+msgid ":pr:`2484`: Updated tinytex download URL"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:268
@@ -491,47 +491,47 @@ msgid "Code quality improvements and similar refactors"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:270
-msgid "`#2573 <https://github.com/ManimCommunity/manim/pull/2573>`__: Moved :mod:`.value_tracker` back inside :mod:`.mobject`"
+msgid ":pr:`2573`: Moved :mod:`.value_tracker` back inside :mod:`.mobject`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:273
-msgid "`#2566 <https://github.com/ManimCommunity/manim/pull/2566>`__: Removed unused livestream-related imports and functions from :mod:`.scene_file_writer`"
+msgid ":pr:`2566`: Removed unused livestream-related imports and functions from :mod:`.scene_file_writer`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:276
-msgid "`#2524 <https://github.com/ManimCommunity/manim/pull/2524>`__: Reworked :mod:`.space_ops`"
+msgid ":pr:`2524`: Reworked :mod:`.space_ops`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:279
-msgid "`#2519 <https://github.com/ManimCommunity/manim/pull/2519>`__: Removed outdated comment"
+msgid ":pr:`2519`: Removed outdated comment"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:282
-msgid "`#2503 <https://github.com/ManimCommunity/manim/pull/2503>`__: Removed unused imports"
+msgid ":pr:`2503`: Removed unused imports"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:285
-msgid "`#2475 <https://github.com/ManimCommunity/manim/pull/2475>`__: Removed setuptools dependency"
+msgid ":pr:`2475`: Removed setuptools dependency"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:288
-msgid "`#2472 <https://github.com/ManimCommunity/manim/pull/2472>`__: Removed unnecessary comment in :mod:`.simple_functions`"
+msgid ":pr:`2472`: Removed unnecessary comment in :mod:`.simple_functions`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:291
-msgid "`#2429 <https://github.com/ManimCommunity/manim/pull/2429>`__: Upgraded to future-style type annotations"
+msgid ":pr:`2429`: Upgraded to future-style type annotations"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:294
-msgid "`#2464 <https://github.com/ManimCommunity/manim/pull/2464>`__: Bump pillow from 8.4.0 to 9.0.0"
+msgid ":pr:`2464`: Bump pillow from 8.4.0 to 9.0.0"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:297
-msgid "`#2376 <https://github.com/ManimCommunity/manim/pull/2376>`__: Updated dependencies for Python 3.10"
+msgid ":pr:`2376`: Updated dependencies for Python 3.10"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:305
-msgid "`#2437 <https://github.com/ManimCommunity/manim/pull/2437>`__: Cleaned up :mod:`.simple_functions`"
+msgid ":pr:`2437`: Cleaned up :mod:`.simple_functions`"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:301
@@ -555,7 +555,7 @@ msgid "Removed one use of ``clip_in_place`` that wasn't actually doing anything"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:307
-msgid "`#2439 <https://github.com/ManimCommunity/manim/pull/2439>`__: Removed twitter template from scripts"
+msgid ":pr:`2439`: Removed twitter template from scripts"
 msgstr ""
 
 #: ../../source/changelog/0.15.0-changelog.rst:311

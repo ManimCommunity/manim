@@ -62,11 +62,11 @@ msgstr ""
 msgid "Additional arguments to be passed to :class:`Axes`."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.NumberPlane:13
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.NumberPlane:14
 msgid "If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.NumberPlane:17
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.NumberPlane:18
 msgid "Examples"
 msgstr ""
 
