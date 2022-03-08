@@ -41,7 +41,7 @@ def invert_image(image: np.array) -> Image:
     return Image.fromarray(arr)
 
 
-def change_to_rgba_array(image):
+def change_to_rgba_array(image, dtype="uint8"):
     """Converts an RGB array into RGBA with the alpha value opacity maxed."""
     pa = image
     if len(pa.shape) == 2:
@@ -51,7 +51,7 @@ def change_to_rgba_array(image):
     if pa.shape[2] == 3:
         alphas = 255 * np.ones(
             list(pa.shape[:2]) + [1],
-            dtype="uint8",
+            dtype=dtype,
         )
         pa = np.append(pa, alphas, axis=2)
     return pa
