@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+__all__ = [
+    "OpenGLImageMobject",
+]
+
 import numpy as np
 from PIL import Image
 
-from ...utils.images import get_full_raster_image_path
-from ..types.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
+from manim.utils.images import get_full_raster_image_path
+from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
