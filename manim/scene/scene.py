@@ -451,7 +451,7 @@ class Scene:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
-            if self.moving_mobjects is not None:
+            if self.moving_mobjects:
                 self.restructure_mobjects(
                     to_remove=mobjects,
                     mobject_list_name="moving_mobjects",
@@ -1074,13 +1074,6 @@ class Scene:
                 # Static image logic when the wait is static is done by the renderer, not here.
                 self.animations[0].is_static_wait = True
                 return None
-        elif config.renderer != "opengl":
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
         self.duration = self.get_run_time(self.animations)
         return self
 
@@ -1089,6 +1082,14 @@ class Scene:
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
+
+        if config.renderer != "opengl":
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
