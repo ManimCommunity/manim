@@ -35,13 +35,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config
 from ..constants import *
-from ..utils.color import (
-    BLACK,
-    WHITE,
-    YELLOW_C,
-    color_gradient,
-    interpolate_color,
-)
+from ..utils.color import BLACK, WHITE, YELLOW_C, color_gradient, interpolate_color
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
