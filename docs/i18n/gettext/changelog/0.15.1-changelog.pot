@@ -1,0 +1,131 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.15.1-changelog.rst:3
+msgid "v0.15.1"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:5
+msgid "March 08, 2022"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:10
+msgid "A total of 9 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:14
+#: ../../source/changelog/0.15.1-changelog.rst:24
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:15
+msgid "Nicolai Weitkemper"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:16
+msgid "Yuchen +"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:17
+#: ../../source/changelog/0.15.1-changelog.rst:28
+msgid "ad_chaos"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:20
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:23
+msgid "Alex Lembcke"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:25
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:26
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:27
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:29
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:32
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:34
+msgid "A total of 9 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:37
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:39
+msgid ":pr:`2602`: Support groups in :class:`.TransformMatchingTex`"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:43
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:45
+msgid ":pr:`2594`: Fixed render flow issues with introducer animations"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:48
+msgid ":pr:`2584`: Fixed bug with invalid color type ``None``"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:51
+msgid ":pr:`2587`: Fixed bug with rendering Tex string that contain ``%``"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:54
+msgid ":pr:`2593`: Fixed bug with displaying images in Jupyter Notebooks when ``config.media_embed`` is set to ``False``"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:58
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:60
+msgid ":pr:`2570`: Refactored docstrings in :mod:`.coordinate_systems`"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:63
+msgid ":pr:`2603`: Reduced the number of warnings during documentation build"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:67
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:69
+msgid ":pr:`2578`: Fixed incorrect type hint for color property of :class:`.Text`"
+msgstr ""
+
+#: ../../source/changelog/0.15.1-changelog.rst:73
+msgid "New releases"
+msgstr ""
+
+

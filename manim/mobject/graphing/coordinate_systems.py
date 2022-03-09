@@ -59,7 +59,6 @@ class CoordinateSystem:
 
     Examples
     --------
-
     .. manim:: CoordSysExample
         :save_last_frame:
 
@@ -103,7 +102,6 @@ class CoordinateSystem:
                 )
 
                 self.add(title, graphs, grid, grid_labels)
-
     """
 
     def __init__(
@@ -165,7 +163,6 @@ class CoordinateSystem:
 
         Examples
         --------
-
         .. manim:: PolarToPointExample
             :ref_classes: PolarPlane Vector
             :save_last_frame:
@@ -252,20 +249,6 @@ class CoordinateSystem:
     ) -> Mobject:
         """Generate an x-axis label.
 
-        Examples
-        --------
-
-        .. manim:: GetXAxisLabelExample
-            :save_last_frame:
-
-            class GetXAxisLabelExample(Scene):
-                def construct(self):
-                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
-                    x_label = ax.get_x_axis_label(
-                        Tex("$x$-values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
-                    )
-                    self.add(ax, x_label)
-
         Parameters
         ----------
         label
@@ -281,6 +264,19 @@ class CoordinateSystem:
         -------
         :class:`~.Mobject`
             The positioned label.
+
+        Examples
+        --------
+        .. manim:: GetXAxisLabelExample
+            :save_last_frame:
+
+            class GetXAxisLabelExample(Scene):
+                def construct(self):
+                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
+                    x_label = ax.get_x_axis_label(
+                        Tex("$x$-values").scale(0.65), edge=DOWN, direction=DOWN, buff=0.5
+                    )
+                    self.add(ax, x_label)
         """
         return self._get_axis_label(
             label, self.get_x_axis(), edge, direction, buff=buff, **kwargs
@@ -295,23 +291,6 @@ class CoordinateSystem:
         **kwargs,
     ):
         """Generate a y-axis label.
-
-        Examples
-        --------
-
-        .. manim:: GetYAxisLabelExample
-            :save_last_frame:
-
-            class GetYAxisLabelExample(Scene):
-                def construct(self):
-                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
-                    y_label = ax.get_y_axis_label(
-                        Tex("$y$-values").scale(0.65).rotate(90 * DEGREES),
-                        edge=LEFT,
-                        direction=LEFT,
-                        buff=0.3,
-                    )
-                    self.add(ax, y_label)
 
         Parameters
         ----------
@@ -328,6 +307,22 @@ class CoordinateSystem:
         -------
         :class:`~.Mobject`
             The positioned label.
+
+        Examples
+        --------
+        .. manim:: GetYAxisLabelExample
+            :save_last_frame:
+
+            class GetYAxisLabelExample(Scene):
+                def construct(self):
+                    ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
+                    y_label = ax.get_y_axis_label(
+                        Tex("$y$-values").scale(0.65).rotate(90 * DEGREES),
+                        edge=LEFT,
+                        direction=LEFT,
+                        buff=0.3,
+                    )
+                    self.add(ax, y_label)
         """
 
         return self._get_axis_label(
@@ -376,20 +371,6 @@ class CoordinateSystem:
         """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
-        Examples
-        --------
-
-        .. manim:: GetAxisLabelsExample
-            :save_last_frame:
-
-            class GetAxisLabelsExample(Scene):
-                def construct(self):
-                    ax = Axes()
-                    labels = ax.get_axis_labels(
-                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45)
-                    )
-                    self.add(ax, labels)
-
         Parameters
         ----------
         x_label
@@ -402,10 +383,23 @@ class CoordinateSystem:
         :class:`~.VGroup`
             A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
 
-        See Also
+
+        .. seealso::
+            :class:`get_x_axis_label`
+            :class:`get_y_axis_label`
+
+        Examples
         --------
-        :class:`get_x_axis_label`
-        :class:`get_y_axis_label`
+        .. manim:: GetAxisLabelsExample
+            :save_last_frame:
+
+            class GetAxisLabelsExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    labels = ax.get_axis_labels(
+                        Tex("x-axis").scale(0.7), Text("y-axis").scale(0.45)
+                    )
+                    self.add(ax, labels)
         """
 
         self.axis_labels = VGroup(
@@ -424,13 +418,11 @@ class CoordinateSystem:
 
         Parameters
         ----------
-
         axes_numbers
             The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
 
         Examples
         --------
-
         .. code-block:: python
 
             ax = ThreeDAxes()
@@ -505,10 +497,10 @@ class CoordinateSystem:
         :class:`~.Line`
             The line from an axis to a point.
 
-        See Also
-        --------
-        :meth:`~.CoordinateSystem.get_vertical_line`
-        :meth:`~.CoordinateSystem.get_horizontal_line`
+
+        .. seealso::
+            :meth:`~.CoordinateSystem.get_vertical_line`
+            :meth:`~.CoordinateSystem.get_horizontal_line`
         """
 
         line_config = line_config if line_config is not None else {}
@@ -526,9 +518,20 @@ class CoordinateSystem:
     def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
         """A vertical line from the x-axis to a given point in the scene.
 
+        Parameters
+        ----------
+        point
+            The point to which the vertical line will be drawn.
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`.
+
+        Returns
+        -------
+        :class:`Line`
+            A vertical line from the x-axis to the point.
+
         Examples
         --------
-
         .. manim:: GetVerticalLineExample
             :save_last_frame:
 
@@ -542,27 +545,27 @@ class CoordinateSystem:
 
                     self.add(ax, line, dot)
 
-        Parameters
-        ----------
-        point
-            The point to which the vertical line will be drawn.
 
-        kwargs
-            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
-
-        Returns
-        -------
-        :class:`Line`
-            A vertical line from the x-axis to the point.
         """
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
     def get_horizontal_line(self, point: Sequence[float], **kwargs) -> Line:
         """A horizontal line from the y-axis to a given point in the scene.
 
+        Parameters
+        ----------
+        point
+            The point to which the horizontal line will be drawn.
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`.
+
+        Returns
+        -------
+        :class:`Line`
+            A horizontal line from the y-axis to the point.
+
         Examples
         --------
-
         .. manim:: GetHorizontalLineExample
             :save_last_frame:
 
@@ -575,19 +578,6 @@ class CoordinateSystem:
                     line = ax.get_horizontal_line(point, line_func=Line)
 
                     self.add(ax, line, dot)
-
-        Parameters
-        ----------
-        point
-            The point to which the horizontal line will be drawn.
-
-        kwargs
-            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
-
-        Returns
-        -------
-        :class:`Line`
-            A horizontal line from the y-axis to the point.
         """
 
         return self.get_line_from_axis_to_point(1, point, **kwargs)
@@ -595,9 +585,25 @@ class CoordinateSystem:
     def get_lines_to_point(self, point: Sequence[float], **kwargs) -> VGroup:
         """Generate both horizontal and vertical lines from the axis to a point.
 
+        Parameters
+        ----------
+        point
+            A point on the scene.
+        kwargs
+            Additional parameters to be passed to :meth:`get_line_from_axis_to_point`
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the horizontal and vertical lines.
+
+
+        .. seealso::
+            :meth:`~.CoordinateSystem.get_vertical_line`
+            :meth:`~.CoordinateSystem.get_horizontal_line`
+
         Examples
         --------
-
         .. manim:: GetLinesToPointExample
             :save_last_frame:
 
@@ -609,23 +615,6 @@ class CoordinateSystem:
                     lines_1 = ax.get_lines_to_point(circ.get_right(), color=GREEN_B)
                     lines_2 = ax.get_lines_to_point(circ.get_corner(DL), color=BLUE_B)
                     self.add(ax, lines_1, lines_2, circ)
-
-        Parameters
-        ----------
-        point
-            A point on the scene.
-        kwargs
-            Additional arguments to be provided :meth:`CoordinateSystem.get_line_from_axis_to_point`.
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            A :class:`~.VGroup` of the horizontal and vertical lines.
-
-        See Also
-        --------
-        :meth:`~.CoordinateSystem.get_vertical_line`
-        :meth:`~.CoordinateSystem.get_horizontal_line`
         """
 
         return VGroup(
@@ -643,15 +632,28 @@ class CoordinateSystem:
     ):
         """Generates a curve based on a function.
 
-        .. warning::
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.ParametricFunction`.
+        x_range
+            The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
+        kwargs
+            Additional parameters to be passed to :class:`~.ParametricFunction`.
 
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The plotted curve.
+
+
+        .. warning::
             This method may not produce accurate graphs since Manim currently relies on interpolation between
             evenly-spaced samples of the curve, instead of intelligent plotting.
             See the example below for some solutions to this problem.
 
         Examples
         --------
-
         .. manim:: PlotExample
             :save_last_frame:
 
@@ -694,22 +696,6 @@ class CoordinateSystem:
                     curves = VGroup(curve_1, curve_2, curve_3)
 
                     self.add(axes, curves)
-
-        Parameters
-        ----------
-        function
-            The function used to construct the :class:`~.ParametricFunction`.
-
-        x_range
-            The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
-
-        kwargs
-            Additional parameters to be passed to :class:`~.ParametricFunction`.
-
-        Returns
-        -------
-        :class:`~.ParametricFunction`
-            The plotted curve.
         """
 
         t_range = np.array(self.x_range, dtype=float)
@@ -750,7 +736,7 @@ class CoordinateSystem:
         max_quads
             The maximum number of quads to use.
         kwargs
-            Additional parameters to pass into :class:`ImplicitFunction`
+            Additional parameters to pass into :class:`ImplicitFunction`.
 
         Examples
         --------
@@ -833,23 +819,6 @@ class CoordinateSystem:
     ) -> np.ndarray:
         """Returns the coordinates of the point on a ``graph`` corresponding to an ``x`` value.
 
-        Examples
-        --------
-
-        .. manim:: InputToGraphPointExample
-            :save_last_frame:
-
-            class InputToGraphPointExample(Scene):
-                def construct(self):
-                    ax = Axes()
-                    curve = ax.plot(lambda x : np.cos(x))
-
-                    # move a square to PI on the cosine curve.
-                    position = ax.input_to_graph_point(x=PI, graph=curve)
-                    sq = Square(side_length=1, color=YELLOW).move_to(position)
-
-                    self.add(ax, curve, sq)
-
         Parameters
         ----------
         x
@@ -866,6 +835,22 @@ class CoordinateSystem:
         ------
         :exc:`ValueError`
             When the target x is not in the range of the line graph.
+
+        Examples
+        --------
+        .. manim:: InputToGraphPointExample
+            :save_last_frame:
+
+            class InputToGraphPointExample(Scene):
+                def construct(self):
+                    ax = Axes()
+                    curve = ax.plot(lambda x : np.cos(x))
+
+                    # move a square to PI on the cosine curve.
+                    position = ax.input_to_graph_point(x=PI, graph=curve)
+                    sq = Square(side_length=1, color=YELLOW).move_to(position)
+
+                    self.add(ax, curve, sq)
         """
 
         if hasattr(graph, "underlying_function"):
@@ -887,13 +872,11 @@ class CoordinateSystem:
                 )
 
     def input_to_graph_coords(self, x: float, graph: ParametricFunction) -> tuple:
-        """
-        Returns a tuple of the axis relative coordinates of the point
+        """Returns a tuple of the axis relative coordinates of the point
         on the graph based on the x-value given.
 
         Examples
         --------
-
         .. code-block:: pycon
 
             >>> from manim import Axes
@@ -905,15 +888,11 @@ class CoordinateSystem:
         return x, graph.underlying_function(x)
 
     def i2gc(self, x: float, graph: ParametricFunction) -> tuple:
-        """
-        Alias for :meth:`input_to_graph_coords`.
-        """
+        """Alias for :meth:`input_to_graph_coords`."""
         return self.input_to_graph_coords(x, graph)
 
     def i2gp(self, x: float, graph: ParametricFunction) -> np.ndarray:
-        """
-        Alias for :meth:`input_to_graph_point`.
-        """
+        """Alias for :meth:`input_to_graph_point`."""
         return self.input_to_graph_point(x, graph)
 
     def get_graph_label(
@@ -929,9 +908,32 @@ class CoordinateSystem:
     ) -> Mobject:
         """Creates a properly positioned label for the passed graph, with an optional dot.
 
+        Parameters
+        ----------
+        graph
+            The curve.
+        label
+            The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        x_val
+            The x_value along the curve that positions the label.
+        direction
+            The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``.
+        buff
+            The distance between the curve and the label.
+        color
+            The color of the label. Defaults to the color of the curve.
+        dot
+            Whether to add a dot at the point on the graph.
+        dot_config
+            Additional parameters to be passed to :class:`~.Dot`.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The positioned label and :class:`~.Dot`, if applicable.
+
         Examples
         --------
-
         .. manim:: GetGraphLabelExample
             :save_last_frame:
 
@@ -948,30 +950,6 @@ class CoordinateSystem:
                     )
 
                     self.add(ax, sin, label)
-
-        Parameters
-        ----------
-        graph
-            The curve.
-        label
-            The label for the function's curve. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
-        x_val
-            The x_value along the curve that positions the label.
-        direction
-            The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
-        buff
-            The distance between the curve and the label.
-        color
-            The color of the label. Defaults to the color of the curve.
-        dot
-            Whether to add a dot at the point on the graph.
-        dot_config
-            Additional parameters to be passed to :class:`~.Dot`.
-
-        Returns
-        -------
-        :class:`Mobject`
-            The positioned label and :class:`~.Dot`, if applicable.
         """
 
         if dot_config is None:
@@ -1016,9 +994,42 @@ class CoordinateSystem:
     ) -> VGroup:
         """Generates a :class:`~.VGroup` of the Riemann Rectangles for a given curve.
 
+        Parameters
+        ----------
+        graph
+            The graph whose area will be approximated by Riemann rectangles.
+        x_range
+            The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``.
+        dx
+            The change in x-value that separates each rectangle.
+        input_sample_type
+            Can be any of ``"left"``, ``"right"`` or ``"center"``. Refers to where
+            the sample point for the height of each Riemann Rectangle
+            will be inside the segments of the partition.
+        stroke_width
+            The stroke_width of the border of the rectangles.
+        stroke_color
+            The color of the border of the rectangle.
+        fill_opacity
+            The opacity of the rectangles.
+        color
+            The colors of the rectangles. Creates a balanced gradient if multiple colors are passed.
+        show_signed_area
+            Indicates negative area when the curve dips below the x-axis by inverting its color.
+        blend
+            Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation.
+        bounded_graph
+            If a secondary graph is specified, encloses the area between the two curves.
+        width_scale_factor
+            The factor by which the width of the rectangles is scaled.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` containing the Riemann Rectangles.
+
         Examples
         --------
-
         .. manim:: GetRiemannRectanglesExample
             :save_last_frame:
 
@@ -1058,51 +1069,6 @@ class CoordinateSystem:
                     self.add(
                         ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects
                     )
-
-        Parameters
-        ----------
-        graph
-            The graph whose area will be approximated by Riemann rectangles.
-
-        x_range
-            The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``.
-
-        dx
-            The change in x-value that separates each rectangle.
-
-        input_sample_type
-            Can be any of ``"left"``, ``"right"`` or ``"center"``. Refers to where
-            the sample point for the height of each Riemann Rectangle
-            will be inside the segments of the partition.
-
-        stroke_width
-            The stroke_width of the border of the rectangles.
-
-        stroke_color
-            The color of the border of the rectangle.
-
-        fill_opacity
-            The opacity of the rectangles.
-
-        color
-            The colors of the rectangles. Creates a balanced gradient if multiple colors are passed.
-
-        show_signed_area
-            Indicates negative area when the curve dips below the x-axis by inverting its color.
-
-        blend
-            Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation.
-
-        bounded_graph
-            If a secondary graph is specified, encloses the area between the two curves.
-
-        width_scale_factor
-            The factor by which the width of the rectangles is scaled.
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            A :class:`~.VGroup` containing the Riemann Rectangles.
         """
 
         # setting up x_range, overwrite user's third input
@@ -1185,9 +1151,33 @@ class CoordinateSystem:
     ):
         """Returns a :class:`~.Polygon` representing the area under the graph passed.
 
+        Parameters
+        ----------
+        graph
+            The graph/curve for which the area needs to be gotten.
+        x_range
+            The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
+        color
+            The color of the area. Creates a gradient if a list of colors is provided.
+        opacity
+            The opacity of the area.
+        bounded_graph
+            If a secondary :attr:`graph` is specified, encloses the area between the two curves.
+        kwargs
+            Additional parameters passed to :class:`~.Polygon`.
+
+        Returns
+        -------
+        :class:`~.Polygon`
+            The :class:`~.Polygon` representing the area.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
+
         Examples
         --------
-
         .. manim:: GetAreaExample
             :save_last_frame:
 
@@ -1203,31 +1193,6 @@ class CoordinateSystem:
                     )
 
                     self.add(ax, curve, area)
-
-        Parameters
-        ----------
-        graph
-            The graph/curve for which the area needs to be gotten.
-        x_range
-            The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
-        color
-            The color of the area. Creates a gradient if a list of colors is provided.
-        opacity
-            The opacity of the area.
-        bounded_graph
-            If a secondary :attr:`graph` is specified, encloses the area between the two curves.
-        kwargs
-            Additional parameters passed to :class:`~.Polygon`
-
-        Returns
-        -------
-        :class:`~.Polygon`
-            The :class:`~.Polygon` representing the area.
-
-        Raises
-        ------
-        :exc:`ValueError`
-            When x_ranges do not match (either area x_range, graph's x_range or bounded_graph's x_range).
         """
         if x_range is None:
             a = graph.t_min
@@ -1271,17 +1236,6 @@ class CoordinateSystem:
         """Returns the angle to the x-axis of the tangent
         to the plotted curve at a particular x-value.
 
-        Examples
-        --------
-
-        .. code-block:: python
-
-            ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
-            ax.angle_of_tangent(x=3, graph=curve)
-            # 1.4056476493802699
-
-
         Parameters
         ----------
         x
@@ -1295,6 +1249,15 @@ class CoordinateSystem:
         -------
         :class:`float`
             The angle of the tangent to the curve.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            ax = Axes()
+            curve = ax.plot(lambda x: x ** 2)
+            ax.angle_of_tangent(x=3, graph=curve)
+            # 1.4056476493802699
         """
 
         p0 = np.array([*self.input_to_graph_coords(x, graph)])
@@ -1304,16 +1267,6 @@ class CoordinateSystem:
     def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs) -> float:
         """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
-            ax.slope_of_tangent(x=-2, graph=curve)
-            # -3.5000000259052038
 
         Parameters
         ----------
@@ -1326,6 +1279,15 @@ class CoordinateSystem:
         -------
         :class:`float`
             The slope of the tangent with the x axis.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            ax = Axes()
+            curve = ax.plot(lambda x: x ** 2)
+            ax.slope_of_tangent(x=-2, graph=curve)
+            # -3.5000000259052038
         """
 
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
@@ -1335,9 +1297,22 @@ class CoordinateSystem:
     ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed graph.
 
+        Parameters
+        ----------
+        graph
+            The graph for which the derivative will be found.
+        color
+            The color of the derivative curve.
+        kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`.
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the derivative.
+
         Examples
         --------
-
         .. manim:: DerivativeGraphExample
             :save_last_frame:
 
@@ -1354,22 +1329,6 @@ class CoordinateSystem:
                     labels = VGroup(label_1, label_2)
 
                     self.add(ax, curves, labels)
-
-        Parameters
-        ----------
-        graph
-            The graph for which the derivative will be found.
-
-        color
-            The color of the derivative curve.
-
-        **kwargs
-            Any valid keyword argument of :class:`~.ParametricFunction`
-
-        Returns
-        -------
-        :class:`~.ParametricFunction`
-            The curve of the derivative.
         """
 
         def deriv(x):
@@ -1386,6 +1345,28 @@ class CoordinateSystem:
     ):
         """Plots an antiderivative graph.
 
+        Parameters
+        ----------
+        graph
+            The graph for which the antiderivative will be found.
+        y_intercept
+            The y-value at which the graph intercepts the y-axis.
+        samples
+            The number of points to take the area under the graph.
+        kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`.
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the antiderivative.
+
+
+        .. note::
+            This graph is plotted from the values of area under the reference graph.
+            The result might not be ideal if the reference graph contains uncalculatable
+            areas from x=0.
+
         Examples
         --------
         .. manim:: AntiderivativeExample
@@ -1400,27 +1381,6 @@ class CoordinateSystem:
                     )
                     graph2 = ax.plot_antiderivative_graph(graph1, color=BLUE)
                     self.add(ax, graph1, graph2)
-
-        .. note::
-            This graph is plotted from the values of area under the reference graph.
-            The result might not be ideal if the reference graph contains uncalculatable
-            areas from x=0.
-
-        Parameters
-        ----------
-        graph
-            The graph for which the antiderivative will be found.
-        y_intercept
-            The y-value at which the graph intercepts the y-axis.
-        samples
-            The number of points to take the area under the graph.
-        **kwargs
-            Any valid keyword argument of :class:`~.ParametricFunction`
-
-        Returns
-        -------
-        :class:`~.ParametricFunction`
-            The curve of the antiderivative.
         """
 
         def antideriv(x):
@@ -1447,9 +1407,38 @@ class CoordinateSystem:
         """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
          the secant to the curve at a particular x-value.
 
+        Parameters
+        ----------
+        x
+            The x-value at which the secant intersects the graph for the first time.
+        graph
+            The curve for which the secant will be found.
+        dx
+            The change in `x` after which the secant exits.
+        dx_line_color
+            The color of the line that indicates the change in `x`.
+        dy_line_color
+            The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`.
+        dx_label
+            The label for the `dx` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        dy_label
+            The label for the `dy` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
+        include_secant_line
+            Whether to include the secant line in the graph,
+            or just the df/dx lines and labels.
+        secant_line_color
+            The color of the secant line.
+        secant_line_length
+            The length of the secant line.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A group containing the elements: `dx_line`, `df_line`, and
+            if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`.
+
         Examples
         --------
-
          .. manim:: GetSecantSlopeGroupExample
             :save_last_frame:
 
@@ -1469,47 +1458,6 @@ class CoordinateSystem:
                     )
 
                     self.add(ax, graph, slopes)
-
-
-        Parameters
-        ----------
-        x
-            The x-value at which the secant intersects the graph for the first time.
-
-        graph
-            The curve for which the secant will be found.
-
-        dx
-            The change in `x` after which the secant exits.
-
-        dx_line_color
-            The color of the line that indicates the change in `x`.
-
-        dy_line_color
-            The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`.
-
-        dx_label
-            The label for the `dx` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
-
-        dy_label
-            The label for the `dy` line. Defaults to :class:`~.MathTex` for ``str`` and ``float`` inputs.
-
-        include_secant_line
-            Whether to include the secant line in the graph,
-            or just the df/dx lines and labels.
-
-        secant_line_color
-            The color of the secant line.
-
-        secant_line_length
-            The length of the secant line.
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            A group containing the elements: `dx_line`, `df_line`, and
-            if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`.
-
         """
         group = VGroup()
 
@@ -1575,9 +1523,24 @@ class CoordinateSystem:
     ) -> VGroup:
         """Obtains multiple lines from the x-axis to the curve.
 
+        Parameters
+        ----------
+        graph
+            The graph along which the lines are placed.
+        x_range
+            A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``.
+        num_lines
+            The number of evenly spaced lines.
+        kwargs
+            Additional arguments to be passed to :meth:`~.CoordinateSystem.get_vertical_line`.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            The :class:`~.VGroup` of the evenly spaced lines.
+
         Examples
         --------
-
         .. manim:: GetVerticalLinesToGraph
             :save_last_frame:
 
@@ -1596,22 +1559,6 @@ class CoordinateSystem:
                     )
 
                     self.add(ax, curve, lines)
-
-        Parameters
-        ----------
-        graph
-            The graph along which the lines are placed.
-        x_range
-            A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``.
-        num_lines
-            The number of evenly spaced lines.
-        kwargs
-            Additional arguments to be passed to :meth:`~.CoordinateSystem.get_vertical_line`
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            The :class:`~.VGroup` of the evenly spaced lines.
         """
 
         x_range = x_range if x_range is not None else self.x_range
@@ -1656,9 +1603,13 @@ class CoordinateSystem:
         line_color
             The color of the vertical line.
 
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the label, triangle and vertical line mobjects.
+
         Examples
         --------
-
         .. manim:: T_labelExample
             :save_last_frame:
 
@@ -1670,12 +1621,6 @@ class CoordinateSystem:
                     # creates the T_label
                     t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
                     self.add(axes, func, t_label)
-
-        Returns
-        -------
-        :class:`~.VGroup`
-            A :class:`~.VGroup` of the label, triangle and vertical line mobjects.
-
         """
 
         T_label_group = VGroup()
@@ -1704,26 +1649,6 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
-    Examples
-    --------
-
-    .. manim:: LogScalingExample
-        :save_last_frame:
-
-        class LogScalingExample(Scene):
-            def construct(self):
-                ax = Axes(
-                    x_range=[0, 10, 1],
-                    y_range=[-2, 6, 1],
-                    tips=False,
-                    axis_config={"include_numbers": True},
-                    y_axis_config={"scaling": LogBase(custom_labels=True)},
-                )
-
-                # x_min must be > 0 because log is undefined at 0.
-                graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
-                self.add(ax, graph)
-
     Parameters
     ----------
     x_range
@@ -1742,8 +1667,27 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     tips
         Whether or not to include the tips on both axes.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
+
+    Examples
+    --------
+    .. manim:: LogScalingExample
+        :save_last_frame:
+
+        class LogScalingExample(Scene):
+            def construct(self):
+                ax = Axes(
+                    x_range=[0, 10, 1],
+                    y_range=[-2, 6, 1],
+                    tips=False,
+                    axis_config={"include_numbers": True},
+                    y_axis_config={"scaling": LogBase(custom_labels=True)},
+                )
+
+                # x_min must be > 0 because log is undefined at 0.
+                graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                self.add(ax, graph)
     """
 
     def __init__(
@@ -1832,6 +1776,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         This method is useful for having defaults in a class and being able to overwrite
         them with user-defined input.
 
+        Parameters
+        ----------
+        default_configs
+            The dict that will be updated.
+        passed_configs
+            The dict that will be used to update.
+
         To create a tuple with one dictionary, add a comma after the element:
 
         .. code-block:: python
@@ -1841,13 +1792,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     dict_2,
                 )
             )
-
-        Parameters
-        ----------
-        default_configs
-            The dict that will be updated.
-        passed_configs
-            The dict that will be used to update.
         """
 
         for default_config, passed_config in zip(default_configs, passed_configs):
@@ -1887,9 +1831,18 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
+        Parameters
+        ----------
+        coords
+            The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
+
+        Returns
+        -------
+        np.ndarray
+            A point with respect to the scene's coordinate system.
+
         Examples
         --------
-
         .. manim:: CoordsToPointExample
             :save_last_frame:
 
@@ -1907,16 +1860,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     dot_scene = Dot((2,2,0), color=RED)
 
                     self.add(plane, dot_scene, ax, dot_axes, lines)
-
-        Parameters
-        ----------
-        coords
-            The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
-
-        Returns
-        -------
-        np.ndarray
-            A point with respect to the scene's coordinate system.
         """
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
@@ -1929,9 +1872,18 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
+        Parameters
+        ----------
+        point
+            The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
+
+        Returns
+        -------
+        Tuple[float]
+            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
+
         Examples
         --------
-
         .. manim:: PointToCoordsExample
             :save_last_frame:
 
@@ -1948,16 +1900,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     )
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
-
-        Parameters
-        ----------
-        point
-            The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
-
-        Returns
-        -------
-        Tuple[float]
-            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
         """
         return tuple(axis.point_to_number(point) for axis in self.get_axes())
 
@@ -2007,9 +1949,14 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         kwargs
             Additional arguments to be passed into :class:`~.VMobject`.
 
+        Returns
+        -------
+        :class:`~.VDict`
+            A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph["line_graph"]``.
+            The dots can be accessed with: ``line_graph["vertex_dots"]``.
+
         Examples
         --------
-
         .. manim:: LineGraphExample
             :save_last_frame:
 
@@ -2030,12 +1977,6 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                         stroke_width = 4,
                     )
                     self.add(plane, line_graph)
-
-        Returns
-        -------
-        :class:`~.VDict`
-            A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph["line_graph"]``.
-            The dots can be accessed with: ``line_graph["vertex_dots"]``.
         """
         x_values, y_values = map(np.array, (x_values, y_values))
         if z_values is None:
@@ -2111,7 +2052,7 @@ class ThreeDAxes(Axes):
         Currently non-functional.
     gloss
         Currently non-functional.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Axes`.
     """
 
@@ -2221,19 +2162,6 @@ class ThreeDAxes(Axes):
     ) -> Mobject:
         """Generate a z-axis label.
 
-        Examples
-        --------
-
-        .. manim:: GetZAxisLabelExample
-            :save_last_frame:
-
-            class GetZAxisLabelExample(ThreeDScene):
-                def construct(self):
-                    ax = ThreeDAxes()
-                    lab = ax.get_z_axis_label(Tex("$z$-label"))
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
-                    self.add(ax, lab)
-
         Parameters
         ----------
         label
@@ -2253,6 +2181,18 @@ class ThreeDAxes(Axes):
         -------
         :class:`~.Mobject`
             The positioned label.
+
+        Examples
+        --------
+        .. manim:: GetZAxisLabelExample
+            :save_last_frame:
+
+            class GetZAxisLabelExample(ThreeDScene):
+                def construct(self):
+                    ax = ThreeDAxes()
+                    lab = ax.get_z_axis_label(Tex("$z$-label"))
+                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.add(ax, lab)
         """
 
         positioned_label = self._get_axis_label(
@@ -2283,17 +2223,16 @@ class NumberPlane(Axes):
         Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
     make_smooth_after_applying_functions
         Currently non-functional.
-    kwargs : Any
+    kwargs
         Additional arguments to be passed to :class:`Axes`.
 
-    .. note::
 
+    .. note::
         If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
 
     Examples
     --------
-
     .. manim:: NumberPlaneExample
         :save_last_frame:
 
@@ -2449,13 +2388,10 @@ class NumberPlane(Axes):
         ----------
         axis_parallel_to
             The axis with which the lines will be parallel.
-
         axis_perpendicular_to
             The axis with which the lines will be perpendicular.
-
         ratio_faded_lines
             The ratio between the space between faded lines and the space between non-faded lines.
-
         freq
             Frequency of non-faded lines (number of non-faded lines per graph unit).
 
@@ -2573,7 +2509,6 @@ class PolarPlane(Axes):
 
     Examples
     --------
-
     .. manim:: PolarPlaneExample
         :ref_classes: PolarPlane
         :save_last_frame:
@@ -2750,6 +2685,7 @@ class PolarPlane(Axes):
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
+
         Returns
         -------
         :class:`~.VGroup`
@@ -2777,12 +2713,14 @@ class PolarPlane(Axes):
         **kwargs,
     ) -> VDict:
         """Gets labels for the coordinates
+
         Parameters
         ----------
         r_values
             Iterable of values along the radius, by default None.
         a_values
             Iterable of values along the azimuth, by default None.
+
         Returns
         -------
         VDict
@@ -2876,6 +2814,7 @@ class PolarPlane(Axes):
         a_values: Iterable[float] | None = None,
     ):
         """Adds the coordinates.
+
         Parameters
         ----------
         r_values
@@ -2934,7 +2873,6 @@ class ComplexPlane(NumberPlane):
 
     Examples
     --------
-
     .. manim:: ComplexPlaneExample
         :save_last_frame:
         :ref_classes: Dot MathTex

@@ -141,15 +141,18 @@ msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1
 msgid "Adds the coordinates."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:1
 msgid "Gets the axes."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
-msgid "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None."
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:1
+msgid "Gets labels for the coordinates"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:27
@@ -176,25 +179,28 @@ msgstr ""
 msgid "The width of the mobject."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1
-msgid "Adds the coordinates. :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:3
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:3
+msgid "Iterable of values along the radius, by default None."
 msgstr ""
 
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:1
-msgid "Gets the axes. :returns: A pair of axes. :rtype: :class:`~.VGroup`"
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:4
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:4
+msgid "Iterable of values along the azimuth, by default None."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:3
+msgid "A pair of axes."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:0
 #: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
 msgid "Return type"
-msgstr ""
-
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:1
-msgid "Gets labels for the coordinates :param r_values: Iterable of values along the radius, by default None. :param a_values: Iterable of values along the azimuth, by default None."
-msgstr ""
-
-#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
-msgid "Returns"
 msgstr ""
 
 
