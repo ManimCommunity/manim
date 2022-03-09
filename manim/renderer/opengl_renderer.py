@@ -390,6 +390,7 @@ class OpenGLRenderer:
             texture.repeat_x = False
             texture.repeat_y = False
             texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+            texture.swizzle = "RRR1" if path.mode == "L" else "RGBA"
             texture.use(location=tid)
             self.path_to_texture_id[repr(path)] = tid
 
