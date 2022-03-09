@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Iterable
+
 import moderngl
 import numpy as np
+from PIL import Image
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -324,7 +328,13 @@ class OpenGLTexturedSurface(OpenGLSurface):
     num_textures = _Uniforms()
 
     def __init__(
-        self, uv_surface, image_file, dark_image_file=None, shader_folder=None, **kwargs
+        self,
+        uv_surface: OpenGLSurface,
+        image_file: str | Path,
+        dark_image_file: str | Path = None,
+        image_mode: str | Iterable[str] = "RGBA",
+        shader_folder: str | Path = None,
+        **kwargs,
     ):
         self.uniforms = {}
 
@@ -334,17 +344,21 @@ class OpenGLTexturedSurface(OpenGLSurface):
             image_file = change_to_rgba_array(image_file)
 
         # Set texture information
-        if dark_image_file is None:
-            dark_image_file = image_file
-            self.num_textures = 1
-        else:
-            if type(dark_image_file) == np.ndarray:
-                dark_image_file = change_to_rgba_array(dark_image_file)
-            self.num_textures = 2
+        if isinstance(image_mode, (str, Path)):
+            image_mode = [image_mode] * 2
+        image_mode_light, image_mode_dark = image_mode
         texture_paths = {
-            "LightTexture": get_full_raster_image_path(image_file),
-            "DarkTexture": get_full_raster_image_path(dark_image_file),
+            "LightTexture": self.get_image_from_file(
+                image_file,
+                image_mode_light,
+            ),
+            "DarkTexture": self.get_image_from_file(
+                dark_image_file or image_file,
+                image_mode_dark,
+            ),
         }
+        if dark_image_file:
+            self.num_textures = 2
 
         self.uv_surface = uv_surface
         self.uv_func = uv_surface.uv_func
@@ -353,6 +367,14 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
         super().__init__(texture_paths=texture_paths, **kwargs)
+
+    def get_image_from_file(
+        self,
+        image_file: str | Path,
+        image_mode: str,
+    ):
+        image_file = get_full_raster_image_path(image_file)
+        return Image.open(image_file).convert(image_mode)
 
     def init_data(self):
         super().init_data()

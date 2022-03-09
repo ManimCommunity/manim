@@ -25,13 +25,12 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         shadow: float = 0,
         **kwargs,
     ):
+        self.image = filename_or_array
         if type(filename_or_array) == np.ndarray:
-            self.image = filename_or_array
             self.size = self.image.shape[1::-1]
         elif isinstance(filename_or_array, (str, Path)):
             path = get_full_raster_image_path(filename_or_array)
-            self.image = Image.open(path).convert(image_mode)
-            self.size = self.image.size
+            self.size = Image.open(path).size
 
         if width is None and height is None:
             width = 4 * self.size[0] / self.size[1]
@@ -53,8 +52,19 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         super().__init__(
             surface,
             self.image,
+            image_mode=image_mode,
             opacity=opacity,
             gloss=gloss,
             shadow=shadow,
             **kwargs,
         )
+
+    def get_image_from_file(
+        self,
+        image_file: str | Path | np.ndarray,
+        image_mode: str,
+    ):
+        if isinstance(image_file, (str, Path)):
+            return super().get_image_from_file(image_file, image_mode)
+        else:
+            return Image.fromarray(image_file.astype("uint8")).convert(image_mode)

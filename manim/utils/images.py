@@ -17,8 +17,6 @@ from ..utils.file_ops import seek_full_path_from_defaults
 
 
 def get_full_raster_image_path(image_file_name: str) -> str:
-    if isinstance(image_file_name, (np.ndarray, Image.Image)):
-        return image_file_name
     return seek_full_path_from_defaults(
         image_file_name,
         default_dir=config.get_dir("assets_dir"),

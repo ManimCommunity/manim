@@ -10,8 +10,6 @@ if sys.version_info < (3, 8):
 else:
     from functools import cached_property
 
-from pathlib import Path
-
 import moderngl
 import numpy as np
 from PIL import Image
@@ -383,23 +381,15 @@ class OpenGLRenderer:
 
     def get_texture_id(self, path):
         if repr(path) not in self.path_to_texture_id:
-            if type(path) == np.ndarray:
-                size = path.shape[1::-1]
-                components = path.shape[2]
-                data = path.astype("uint8")
-            else:
-                if isinstance(path, (str, Path)):
-                    path = Image.open(path)
-                size = path.size
-                components = len(path.getbands())
-                data = path.tobytes()
-
             tid = len(self.path_to_texture_id)
             texture = self.context.texture(
-                size=size,
-                components=components,
-                data=data,
+                size=path.size,
+                components=len(path.getbands()),
+                data=path.tobytes(),
             )
+            texture.repeat_x = False
+            texture.repeat_y = False
+            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
             texture.use(location=tid)
             self.path_to_texture_id[repr(path)] = tid
 
