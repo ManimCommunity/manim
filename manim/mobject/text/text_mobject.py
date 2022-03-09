@@ -71,7 +71,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.utils.color import ALL_COLORS
+from manim.utils.color import ALL_COLORS, color_gradient
 from manim.utils.deprecation import deprecated
 
 TEXT_MOB_SCALE_FACTOR = 0.05
