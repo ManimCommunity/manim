@@ -575,6 +575,7 @@ class ManimConfig(MutableMapping):
             "input_file",
             "output_file",
             "movie_file_extension",
+            "format",
             "background_color",
             "renderer",
             "webgl_renderer_path",
@@ -688,7 +689,8 @@ class ManimConfig(MutableMapping):
             self.input_file = Path(args.file).absolute()
 
         self.scene_names = args.scene_names if args.scene_names is not None else []
-        self.output_file = args.output_file
+        if args.output_file is not None:
+            self.output_file = args.output_file
 
         for key in [
             "notify_outdated_version",
