@@ -161,7 +161,7 @@ class Colors(Enum):
 
         >>> from manim import RED, GREEN, BLUE
         >>> RED
-        '#FC6255'
+        <Color #fc6255>
 
     Note this way uses the name of the colors in UPPERCASE.
 
