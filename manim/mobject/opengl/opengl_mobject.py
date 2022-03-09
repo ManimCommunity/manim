@@ -10,7 +10,7 @@ from typing import Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
+from colour import Color, rgb2hex
 
 from manim import config
 from manim.constants import *
@@ -1871,7 +1871,7 @@ class OpenGLMobject:
 
     def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
         if color is not None:
-            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
+            rgbs = np.array([c.get_rgb() for c in listify(color)])
         if opacity is not None:
             opacities = listify(opacity)
 
@@ -1937,7 +1937,7 @@ class OpenGLMobject:
         return self
 
     def get_color(self):
-        return rgb_to_hex(self.rgbas[0, :3])
+        return rgb2hex((self.rgbas[0], self.rgbas[1], self.rgbas[2]))
 
     def get_opacity(self):
         return self.rgbas[0, 3]

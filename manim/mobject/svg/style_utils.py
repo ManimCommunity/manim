@@ -7,9 +7,7 @@ __all__ = ["cascade_element_style", "parse_style", "parse_color_string"]
 
 from xml.dom.minidom import Element as MinidomElement
 
-from colour import web2hex
-
-from ...utils.color import rgb_to_hex
+from colour import rgb2hex, web2hex
 
 CASCADING_STYLING_ATTRIBUTES: list[str] = [
     "fill",
@@ -109,7 +107,7 @@ def parse_color_string(color_spec: str) -> str:
         else:
             parsed_rgbs = [int(i) / 255.0 for i in splits]
 
-        hex_color = rgb_to_hex(parsed_rgbs)
+        hex_color = rgb2hex(tuple(parsed_rgbs))
 
     elif color_spec[0] == "#":
         # its OK, parse as hex color standard.

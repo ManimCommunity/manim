@@ -7,7 +7,7 @@ from typing import Callable, Iterable, Sequence
 
 import moderngl
 import numpy as np
-from colour import Color
+from colour import Color, rgb2hex
 
 from manim import config
 from manim.constants import *
@@ -328,13 +328,13 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+        return [Color(rgb2hex(tuple(rgba[:3]))) for rgba in self.fill_rgba]
 
     def get_fill_opacities(self):
         return self.fill_rgba[:, 3]
 
     def get_stroke_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+        return [Color(rgb2hex(tuple(rgba[:3]))) for rgba in self.stroke_rgba]
 
     def get_stroke_opacities(self):
         return self.stroke_rgba[:, 3]

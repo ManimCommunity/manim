@@ -356,9 +356,9 @@ class BarChart(Axes):
             bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
             self.bars.add(bar)
         if isinstance(self.bar_colors, str):
-            self.bars.set_color_by_gradient(self.bar_colors)
+            self.bars.set_color_by_gradient(Color(self.bar_colors))
         else:
-            self.bars.set_color_by_gradient(*self.bar_colors)
+            self.bars.set_color_by_gradient(*[Color(c) for c in self.bar_colors])
 
         self.add_to_back(self.bars)
 

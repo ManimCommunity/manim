@@ -26,7 +26,7 @@ from enum import Enum, EnumMeta
 from typing import Iterable
 
 import numpy as np
-from colour import Color
+from colour import Color, web2rgb
 
 from ..utils.bezier import interpolate
 from ..utils.space_ops import normalize
@@ -635,7 +635,10 @@ def color_to_rgb(color: Color | str) -> np.ndarray:
 
 
 def color_to_rgba(color: Color | str, alpha: float = 1) -> np.ndarray:
-    return np.array([*color_to_rgb(color), alpha])
+    if isinstance(color, str):
+        return np.array([*web2rgb(color), alpha])
+    elif isinstance(color, Color):
+        return np.array([*color.get_rgb(), alpha])
 
 
 def rgb_to_color(rgb: Iterable[float]) -> Color:
@@ -670,11 +673,14 @@ def hex_to_rgb(hex_code: str) -> np.ndarray:
 
 
 def invert_color(color: Color) -> Color:
-    return rgb_to_color(1.0 - color_to_rgb(color))
+    return rgb_to_color(1.0 - np.array(color.get_rgb()))
 
 
-def color_to_int_rgb(color: Color) -> np.ndarray:
-    return (255 * color_to_rgb(color)).astype("uint8")
+def color_to_int_rgb(color: Color | str) -> np.ndarray:
+    if isinstance(color, str):
+        return [round(i) for i in (255 * np.array(Color(color).get_rgb()))]
+    elif isinstance(color, Color):
+        return [round(i) for i in (255 * np.array(color.get_rgb()))]
 
 
 def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
@@ -692,7 +698,7 @@ def color_gradient(
         return reference_colors[0]
     if isinstance(reference_colors, Color):
         return list(reference_colors.range_to(reference_colors, length_of_output))
-    rgbs = list(map(color_to_rgb, reference_colors))
+    rgbs = [np.array(c.get_rgb()) for c in reference_colors]
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
@@ -706,19 +712,19 @@ def color_gradient(
 
 
 def interpolate_color(color1: Color, color2: Color, alpha: float) -> Color:
-    rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
+    rgb = interpolate(np.array(color1.get_rgb()), np.array(color2.get_rgb()), alpha)
     return rgb_to_color(rgb)
 
 
 def average_color(*colors: Color) -> Color:
-    rgbs = np.array(list(map(color_to_rgb, colors)))
+    rgbs = np.array([c.get_rgb() for c in colors])
     mean_rgb = np.apply_along_axis(np.mean, 0, rgbs)
     return rgb_to_color(mean_rgb)
 
 
 def random_bright_color() -> Color:
     color = random_color()
-    curr_rgb = color_to_rgb(color)
+    curr_rgb = color.get_rgb()
     new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return Color(rgb=new_rgb)
 

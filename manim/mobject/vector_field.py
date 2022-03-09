@@ -29,7 +29,7 @@ from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
+from ..utils.color import BLUE_E, GREEN, RED, YELLOW, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
@@ -82,7 +82,7 @@ class VectorField(VGroup):
                     return np.linalg.norm(p)
 
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
-            self.rgbs = np.array(list(map(color_to_rgb, colors)))
+            self.rgbs = np.array([c.get_rgb() for c in colors])
 
             def pos_to_rgb(pos: np.ndarray) -> tuple[float, float, float, float]:
                 vec = self.func(pos)
@@ -410,7 +410,7 @@ class VectorField(VGroup):
         -------
             function to generate the gradients as numpy arrays representing rgba values
         """
-        rgbs = np.array([color_to_rgb(c) for c in colors])
+        rgbs = np.array([c.get_rgb() for c in colors])
 
         def func(values, opacity=1):
             alphas = inverse_interpolate(start, end, np.array(values))
