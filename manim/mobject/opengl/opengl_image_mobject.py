@@ -20,12 +20,14 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         width: float = None,
         height: float = None,
         image_mode: str = "RGBA",
+        resampling_algorithm: int = Image.BICUBIC,
         opacity: float = 1,
         gloss: float = 0,
         shadow: float = 0,
         **kwargs,
     ):
         self.image = filename_or_array
+        self.resampling_algorithm = resampling_algorithm
         if type(filename_or_array) == np.ndarray:
             self.size = self.image.shape[1::-1]
         elif isinstance(filename_or_array, (str, Path)):
@@ -67,4 +69,12 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         if isinstance(image_file, (str, Path)):
             return super().get_image_from_file(image_file, image_mode)
         else:
-            return Image.fromarray(image_file.astype("uint8")).convert(image_mode)
+            return (
+                Image.fromarray(image_file.astype("uint8"))
+                .convert(image_mode)
+                .resize(
+                    np.array(image_file.shape[:2])
+                    * 200,  # assumption of 200 ppmu (pixels per manim unit) would suffice
+                    resample=self.resampling_algorithm,
+                )
+            )
