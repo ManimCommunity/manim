@@ -11,7 +11,7 @@ for installation failures. Some errors resulting from this are:
 - ``ModuleNotFoundError: No module named 'manim'``
 - ``ModuleNotFoundError: No module named 'manimlib'``
 
-Some reasons that conflict may occur are: 
+Some reasons that conflict may occur are:
 
 - You followed any tutorial created before October 2020 (because the community edition did not exist before then)
 - You cloned a repository on GitHub (installation of the community version for normal use does not require the cloning of any repository)
