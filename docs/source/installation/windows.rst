@@ -38,7 +38,7 @@ Scoop
 *****
 
 While there is no recipe for installing Manim with Scoop directly,
-you can install all requirements by running:
+you can install all its requirements by running:
 
 .. code-block:: powershell
 
@@ -50,7 +50,7 @@ and then Manim can be installed by running:
 
    python -m pip install manim
 
-Manim should now be installed on your system. Continue reading
+Manim should now be installed on your system. Skip to
 the :ref:`optional dependencies <win-optional-dependencies>` section
 below.
 
@@ -66,8 +66,8 @@ installed on your system.
 
 .. note::
 
-   We have received reports of problems caused by using the version of
-   Python that can be installed from the Windows Store. At this point,
+   We have received reports of problems caused by using the Windows 
+   Store version of Python. At this point,
    we recommend staying away from the Windows Store version. Instead,
    install Python directly from the
    `official website <https://www.python.org>`__.
@@ -77,17 +77,17 @@ pre-compiled and ready-to-use version from one of the resources
 linked at https://ffmpeg.org/download.html#build-windows, such as
 `the version available here
 <https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z>`__
-(recommended), or if you know exactly what you are doing
-you can alternatively get the source code
+(recommended). Alternatively, if you know exactly what you are doing,
+you can get the source code
 from https://ffmpeg.org/download.html and compile it yourself.
 
 
 After downloading the pre-compiled archive,
 `unzip it <https://www.7-zip.org>`__ and, if you like, move the
-extracted directory to some more permanent place (e.g.,
+extracted directory to a more permanent place (e.g.,
 ``C:\Program Files\``). Next, edit the ``PATH`` environment variable:
-first, visit ``Control Panel`` > ``System`` > ``System settings`` >
-``Environment Variables``, then add the full path to the ``bin``
+first, go to ``Control Panel`` > ``System`` > ``System settings`` >
+``Environment Variables``, and then add the full path to the ``bin``
 directory inside of the (moved) ffmpeg directory to the
 ``PATH`` variable. Finally, save your changes and exit.
 
@@ -108,7 +108,7 @@ Optional Dependencies
 ---------------------
 
 In order to make use of Manim's interface to LaTeX to, for example, render
-equations, LaTeX has to be installed as well. Note that this is an optional
+equations, LaTeX must be installed as well. Note that this is an optional
 dependency: if you don't intend to use LaTeX, you don't have to install it.
 
 For Windows, the recommended LaTeX distribution is
@@ -128,12 +128,12 @@ required packages that Manim interacts with.
 **Manual Installation:**
 You can also use `TinyTeX <https://yihui.org/tinytex/>`__ (Chocolatey: ``choco install tinytex``,
 Scoop: first ``scoop bucket add r-bucket https://github.com/cderv/r-bucket.git``,
-then ``scoop install tinytex``) alternative installation instructions can be found at their website.
+then ``scoop install tinytex``); alternative installation instructions can be found at their website.
 Keep in mind that you will have to manage the LaTeX packages installed on your system yourself via ``tlmgr``.
-Therefore we only recommend this option if you know what you are doing.
+Therefore, we only recommend this option if you know what you are doing.
 
 The full list of LaTeX packages which Manim interacts with in some way
-(a subset might be sufficient for your particular application) are::
+(a subset might be sufficient for your particular application) is::
 
    amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel
    fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin
