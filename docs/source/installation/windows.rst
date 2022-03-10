@@ -66,7 +66,7 @@ installed on your system.
 
 .. note::
 
-   We have received reports of problems caused by using the Windows 
+   We have received reports of problems caused by using the Windows
    Store version of Python. At this point,
    we recommend staying away from the Windows Store version. Instead,
    install Python directly from the
