@@ -575,7 +575,9 @@ class Circle(Arc):
         """
 
         start_angle = angle_of_vector(self.points[0] - self.get_center())
-        return self.point_from_proportion((angle - start_angle) / TAU)
+        proportion = (angle - start_angle) / TAU
+        proportion -= math.floor(proportion)
+        return self.point_from_proportion(proportion)
 
     @staticmethod
     def from_three_points(
