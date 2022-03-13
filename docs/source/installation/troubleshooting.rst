@@ -98,7 +98,7 @@ using ``pip install --upgrade manim``.
 
 
 Some letters are missing from Text/Tex output
-------------------------------------------------------------
+---------------------------------------------
 
 If you have recently installed TeX you may need to build the fonts it
 uses. This can be done by running:
