@@ -203,7 +203,7 @@ Try running the following commands in your terminal:
 3. ``py3 --version``
 4. ``python3 --version``
 
-Ideally, ``py --version`` and ``python --version`` should return a version.
+Minimally, ``py --version`` and ``python --version`` should return a version.
 If none of these commands are recognized,
 this means that Python was installed on your system, but was not added to PATH.
 See above for directions to add it to your PATH variable.
