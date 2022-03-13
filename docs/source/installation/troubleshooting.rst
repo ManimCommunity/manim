@@ -195,7 +195,7 @@ Follow the steps in `this StackExchange answer <https://superuser.com/questions/
 --------------------------------
 
 If ``choco install manimce`` failed,
-it is because Python was not added to your ``PATH`` variable properly.
+it is likely because Python was not added to your ``PATH`` variable properly.
 Try running the following commands in your terminal:
 
 1. ``py --version``
