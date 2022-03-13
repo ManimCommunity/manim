@@ -111,7 +111,7 @@ uses. This can be done by running:
 .. _dvisvgm-troubleshoot:
 
 Installation does not support converting PDF to SVG
-----------------------------------------------------
+---------------------------------------------------
 
 First, make sure your ``dvisvgm`` version is at least 2.4:
 
