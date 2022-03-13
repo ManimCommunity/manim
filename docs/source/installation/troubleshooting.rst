@@ -90,7 +90,7 @@ of the corresponding `GitHub repository <https://github.com/ManimCommunity/Manim
 
 
 (Windows) OSError: dlopen() failed to load a library: pango
-------------------------------------------------------------
+-----------------------------------------------------------
 
 This should be fixed in Manim's latest version, update
 using ``pip install --upgrade manim``.
