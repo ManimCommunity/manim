@@ -408,6 +408,7 @@ Plotting with Manim
             self.add(ax, labels, curve_1, curve_2, line_1, line_2, riemann_area, area)
 
 .. manim:: PolygonOnAxes
+    :ref_classes: Axes Polygon
 
     class PolygonOnAxes(Scene):
         def get_rectangle_coors(self, bottom_left, top_right):
