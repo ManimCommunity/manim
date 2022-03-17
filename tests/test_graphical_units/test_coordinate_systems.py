@@ -53,7 +53,6 @@ def test_plot_log_x_axis(scene):
     )
 
     graph = ax.plot(lambda x: 2 if x < 10 else 1, x_range=[-1, 4])
-
     scene.add(ax, graph)
 
 

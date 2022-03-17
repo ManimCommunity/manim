@@ -4,8 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-import typing
-from typing import Callable, Sequence
+from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 
@@ -14,7 +13,7 @@ from ..animation.transform import Transform
 from ..constants import OUT, PI, TAU
 from ..utils.rate_functions import linear
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
 
 

@@ -71,7 +71,7 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # This pattern also affects html_static_path and html_extra_path.
 html_extra_path = ["robots.txt"]
 
-exclude_patterns: list = []
+exclude_patterns: list[str] = []
 
 # -- Options for internationalization ----------------------------------------
 # Set the destination directory of the localized po files
@@ -134,8 +134,8 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "issue "),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "pull request "),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
 }
 
 # opengraph settings

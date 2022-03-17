@@ -30,12 +30,13 @@ from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from manim.mobject.opengl.opengl_mobject import OpenGLPoint
+
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..gui.gui import configure_pygui
-from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLRenderer
 from ..renderer.shader import Object3D
@@ -450,7 +451,7 @@ class Scene:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
-            if self.moving_mobjects is not None:
+            if self.moving_mobjects:
                 self.restructure_mobjects(
                     to_remove=mobjects,
                     mobject_list_name="moving_mobjects",
@@ -1073,13 +1074,6 @@ class Scene:
                 # Static image logic when the wait is static is done by the renderer, not here.
                 self.animations[0].is_static_wait = True
                 return None
-        elif config.renderer != "opengl":
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
         self.duration = self.get_run_time(self.animations)
         return self
 
@@ -1088,6 +1082,14 @@ class Scene:
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
+
+        if config.renderer != "opengl":
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
@@ -1167,7 +1169,6 @@ class Scene:
         self.interactive_mode = True
 
         def ipython(shell, namespace):
-            import manim
             import manim.opengl
 
             def load_module_into_namespace(module, namespace):

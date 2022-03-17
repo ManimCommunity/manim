@@ -94,7 +94,6 @@ msgstr ""
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_center:0
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_height:0
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.frame_width:0
-#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.get_mobjects_indicating_movement:0
 msgid "Returns"
 msgstr ""
 

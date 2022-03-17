@@ -371,7 +371,7 @@ msgid "Propose consequences"
 msgstr ""
 
 #: ../../source/conduct.md:185
-msgid "What follows are examples of possible consequences to an incident report. This consequences list is not inclusive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary."
+msgid "What follows are examples of possible consequences of an incident report. This list of consequences is not exhaustive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary."
 msgstr ""
 
 #: ../../source/conduct.md:187

@@ -22,7 +22,6 @@ Module Index
    ~utils.iterables
    ~utils.paths
    ~utils.rate_functions
-   ~utils.scale
    ~utils.simple_functions
    ~utils.sounds
    ~utils.space_ops

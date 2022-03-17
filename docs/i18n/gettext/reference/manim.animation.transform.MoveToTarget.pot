@@ -18,12 +18,28 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.Transform`"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:1
+msgid "Transforms a mobject to the mobject stored in its ``target`` attribute."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:3
+msgid "After calling the :meth:`~.Mobject.generate_target` method, the :attr:`target` attribute of the mobject is populated with a copy of it. After modifying the attribute, playing the :class:`.MoveToTarget` animation transforms the original mobject into the modified one stored in the :attr:`target` attribute."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:9
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.MoveToTarget.rst:14
 msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.MoveToTarget.rst:22
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.MoveToTarget:0
+msgid "Parameters"
 msgstr ""
 
 

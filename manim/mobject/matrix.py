@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing matrices.
 
 Examples
@@ -28,6 +26,8 @@ Examples
             self.add(g)
 """
 
+from __future__ import annotations
+
 __all__ = [
     "Matrix",
     "DecimalMatrix",
@@ -44,11 +44,12 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.text.numbers import DecimalNumber, Integer
+from manim.mobject.text.tex_mobject import MathTex, Tex
+
 from ..constants import *
-from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from .opengl_compatibility import ConvertToOpenGL
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.

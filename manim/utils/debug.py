@@ -6,11 +6,9 @@ from __future__ import annotations
 __all__ = ["print_family", "index_labels"]
 
 
-from colour import Color
-
 from manim.mobject.mobject import Mobject
+from manim.mobject.text.numbers import Integer
 
-from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
 

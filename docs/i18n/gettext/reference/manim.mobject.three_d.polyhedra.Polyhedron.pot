@@ -1,0 +1,119 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:2
+msgid "Polyhedron"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:4
+msgid "Qualified name: ``manim.mobject.three\\_d.polyhedra.Polyhedron``"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:1
+msgid "An abstract polyhedra class."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:3
+msgid "In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list of faces. This implementation mirrors that of a standard polyhedral data format (OFF, object file format)."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:0
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:0
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.get_edges:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:6
+msgid "A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to a vertex. The vertices are indexed with the usual indexing of Python."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:8
+msgid "A list of faces. Each face is a sublist containing the indices of the vertices that form the corners of that face."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:9
+msgid "Configuration for the polygons representing the faces of the polyhedron."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:10
+msgid "Configuration for the graph containing the vertices and edges of the polyhedron."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:13
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:14
+msgid "To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:39
+msgid "In defining the polyhedron above, we first defined the coordinates of the vertices. These are the corners of the square base, given as the first four coordinates in the vertex list, and the apex, the last coordinate in the list."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:43
+msgid "Next, we define the faces of the polyhedron. The triangular surfaces of the pyramid are polygons with two adjacent vertices in the base and the vertex at the apex as corners. We thus define these surfaces in the first four elements of our face list. The last element defines the base of the pyramid."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron:47
+msgid "The graph and faces of polyhedra can also be accessed and modified directly, after instantiation. They are stored in the `graph` and `faces` attributes respectively."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:23:<autosummary>:1
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1
+msgid "Creates VGroup of faces from a list of face coordinates."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:23:<autosummary>:1
+msgid "Extracts the coordinates of the vertices in the graph."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:23:<autosummary>:1
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.get_edges:1
+msgid "Creates list of cyclic pairwise tuples."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.Polyhedron.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.create_faces:0
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.extract_face_coords:0
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra.Polyhedron.get_edges:0
+msgid "Return type"
+msgstr ""
+
+
