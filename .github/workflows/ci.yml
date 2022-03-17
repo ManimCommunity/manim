@@ -37,13 +37,10 @@ jobs:
 
       - name: Activate Python ${{ matrix.python }}
         run: |
-          ls -al /
           echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.poetry/bin:$PATH" > $GITHUB_PATH
       
       - name: Show Python Version
         run: |
-          echo $PATH
-          ls -al /root
           python --version --version
  
       - name: Install Manim
