@@ -411,7 +411,7 @@ Plotting with Manim
     :ref_classes: Axes Polygon
 
     class PolygonOnAxes(Scene):
-        def get_rectangle_coors(self, bottom_left, top_right):
+        def get_rectangle_corners(self, bottom_left, top_right):
             return [
                 (top_right[0], top_right[1]),
                 (bottom_left[0], top_right[1]),
