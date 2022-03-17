@@ -442,7 +442,7 @@ Plotting with Manim
                 polygon = Polygon(
                     *[
                         ax.c2p(*i)
-                        for i in self.get_rectangle_coors(
+                        for i in self.get_rectangle_corners(
                             (0, 0), (t.get_value(), k / t.get_value())
                         )
                     ]
@@ -460,13 +460,10 @@ Plotting with Manim
 
             self.add(ax, graph, dot)
             self.play(Create(polygon))
-            self.wait(1)
             self.play(t.animate.set_value(10))
-            self.wait(1)
             self.play(t.animate.set_value(k / 10))
-            self.wait(1)
             self.play(t.animate.set_value(5))
-            self.wait(1)
+
 
 .. manim:: HeatDiagramPlot
     :save_last_frame:
