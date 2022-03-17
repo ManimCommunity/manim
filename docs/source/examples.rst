@@ -431,17 +431,11 @@ Plotting with Manim
             t = ValueTracker(5)
             k = 25
 
-            graph = always_redraw(
-                lambda: ax.plot(
-                    lambda x: k / x,
-                    color=YELLOW_D,
-                    x_range=[
-                        k / 10,
-                        10.0,
-                        0.01,
-                    ],
-                    use_smoothing=False,
-                )
+            graph = ax.plot(
+                lambda x: k / x,
+                color=YELLOW_D,
+                x_range=[k / 10, 10.0, 0.01],
+                use_smoothing=False,
             )
 
             def get_rectangle():
