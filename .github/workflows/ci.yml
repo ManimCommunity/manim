@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-            
+
       - name: Check Runner
         run: |
           which latex
@@ -38,11 +38,11 @@ jobs:
       - name: Activate Python ${{ matrix.python }}
         run: |
           echo "/root/.pyenv/versions/${{ matrix.python }}/bin:/root/.poetry/bin:$PATH" > $GITHUB_PATH
-      
+
       - name: Show Python Version
         run: |
           python --version --version
- 
+
       - name: Install Manim
         run: |
           poetry install -E webgl_renderer
@@ -59,7 +59,7 @@ jobs:
         run: |
           cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
 
-      
+
   test:
     runs-on: ${{ matrix.os }}
     env:
