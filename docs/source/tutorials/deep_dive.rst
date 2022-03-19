@@ -256,25 +256,79 @@ The rest of this article is concerned with the last line in our toy example scri
 
 This is where the actual magic happens.
 
+Inspecting the `implementation of the render method <https://github.com/ManimCommunity/manim/blob/df1a60421ea1119cbbbd143ef288d294851baaac/manim/scene/scene.py#L211>`__
+reveals that there are several hooks that can be used for pre- or postprocessing
+a scene. Unsurprisingly, :meth:`.Scene.render` describes the full *render cycle*
+of a scene. During this life cycle, there are three custom methods whose base
+implementation is empty and that can be overwritten to suit your purposes. In
+the order they are called, these customizable methods are:
+
+- :meth:`.Scene.setup`, which is intended for preparing and, well, *setting up*
+  the scene for your animation (e.g., adding initial mobjects, assigning custom
+  attributes to your scene class, etc.),
+- :meth:`.Scene.construct`, which is the *script* for your screen play and
+  contains programmatic descriptions of your animations, and 
+- :meth:`.Scene.tear_down`, which is intended for any operations you might
+  want to run on the scene after the last frame has already been rendered
+  (for example, this could run some code that generates a custom thumbnail
+  for the video based on the state of the objects in the scene -- this
+  hook is more relevant for situations where Manim is used within other
+  Python scripts).
+
+After these three methods are run, the animations have been fully rendered,
+and Manim calls :meth:`.CairoRenderer.scene_finished` to gracefully
+complete the rendering process. This checks whether any animations have been
+played -- and if so, it tells the :class:`.SceneFileWriter` to close the pipe
+to ``ffmpeg``. If not, Manim assumes that a static image should be output
+which it then renders using the same strategy by calling the render loop
+(see below) once.
+
+**Back in our toy example,** the call to :meth:`.Scene.render` first
+triggers :meth:`.Scene.setup` (which simply ``pass``es), followed by
+a call of :meth:`.Scene.construct`. At this point, our *animation script*
+is run, starting with the initialization of ``orange_square``.
+
 
 Mobject Initialization
 ----------------------
 
-- custom scene.setup method is called (NOP in our case)
-- custom scene.construct method is called (!)
+Mobjects are, in a nutshell, the Python objects that represent all the
+*things* we want to display in our scene. Before we follow our debugger
+into the depths of mobject initialization code, it makes sense to
+discuss Manim's different types of Mobjects and their basic data
+structure.
+
+What even is a Mobject?
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- brief discussion of :class:`.Mobject` and its init function
+
+... and what are VMobjects?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- explain nature of points array of VMobjects
+
+  - digression: internal representation of points (explain that
+      self.points holds anchors + handles of bezier curves)
+  - first point added to points list (start new path)
+  - remaining vertices: new line segments in between
+
+
+Squares and Circles: back to our Toy Example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 - mobject initialization in depth: ``orange_square``
 
   - Step through initialization hierarchy (Square, Rectangle, Polygon, Polygram, VMobject, Mobject)
   - Talk a bit about color init?
   - Travelling back up, until Polygram is reached again; points are actually initialized
 
-    - digression: internal representation of points (explain that
-      self.points holds anchors + handles of bezier curves)
-    - first point added to points list (start new path)
-    - remaining vertices: new line segments in between
-
+  
 - mobject initialization of circle: more or less same as ``orange_square``,
   different inheritance structure obviously.
+
+Adding Mobjects to the Scene
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - adding a mobject to the scene!
 
