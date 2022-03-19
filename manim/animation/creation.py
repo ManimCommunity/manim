@@ -65,6 +65,7 @@ __all__ = [
     "Unwrite",
     "ShowPartial",
     "ShowIncreasingSubsets",
+    "SpiralIn",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
@@ -85,6 +86,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession
+from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
@@ -407,6 +409,68 @@ class Unwrite(Write):
             reverse=reverse,
             **kwargs,
         )
+
+
+class SpiralIn(Animation):
+    r"""Create the Mobject with sub-Mobjects flying in on spiral trajectories.
+
+    Parameters
+    ----------
+    shapes
+        The Mobject on which to be operated.
+
+    scale_factor
+        The factor used for scaling the effect.
+
+    fade_in_fraction
+        Fractional duration of initial fade-in of sub-Mobjects as they fly inward.
+
+    Examples
+    --------
+    .. manim :: SpiralInExample
+
+        class SpiralInExample(Scene):
+            def construct(self):
+                pi = MathTex(r"\pi").scale(7)
+                pi.shift(2.25 * LEFT + 1.5 * UP)
+                circle = Circle(color=GREEN_C, fill_opacity=1).shift(LEFT)
+                square = Square(color=BLUE_D, fill_opacity=1).shift(UP)
+                shapes = VGroup(pi, circle, square)
+                self.play(SpiralIn(shapes))
+    """
+
+    def __init__(
+        self,
+        shapes: Mobject,
+        scale_factor: float = 8,
+        fade_in_fraction=0.3,
+        **kwargs,
+    ) -> None:
+        self.shapes = shapes
+        self.scale_factor = scale_factor
+        self.shape_center = shapes.get_center()
+        self.fade_in_fraction = fade_in_fraction
+        for shape in shapes:
+            shape.final_position = shape.get_center()
+            shape.initial_position = (
+                shape.final_position
+                + (shape.final_position - self.shape_center) * self.scale_factor
+            )
+            shape.move_to(shape.initial_position)
+            shape.save_state()
+
+        super().__init__(shapes, **kwargs)
+
+    def interpolate_mobject(self, alpha: float) -> None:
+        for shape in self.shapes:
+            shape.restore()
+            shape.save_state()
+            opacity = shape.get_fill_opacity()
+            new_opacity = min(opacity, alpha * opacity / self.fade_in_fraction)
+            shape.shift((shape.final_position - shape.initial_position) * alpha)
+            shape.rotate(TAU * alpha, about_point=self.shape_center)
+            shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
+            shape.set_opacity(new_opacity)
 
 
 class ShowIncreasingSubsets(Animation):
