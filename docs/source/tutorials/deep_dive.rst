@@ -267,7 +267,7 @@ the order they are called, these customizable methods are:
   the scene for your animation (e.g., adding initial mobjects, assigning custom
   attributes to your scene class, etc.),
 - :meth:`.Scene.construct`, which is the *script* for your screen play and
-  contains programmatic descriptions of your animations, and 
+  contains programmatic descriptions of your animations, and
 - :meth:`.Scene.tear_down`, which is intended for any operations you might
   want to run on the scene after the last frame has already been rendered
   (for example, this could run some code that generates a custom thumbnail
@@ -323,7 +323,7 @@ Squares and Circles: back to our Toy Example
   - Talk a bit about color init?
   - Travelling back up, until Polygram is reached again; points are actually initialized
 
-  
+
 - mobject initialization of circle: more or less same as ``orange_square``,
   different inheritance structure obviously.
 
