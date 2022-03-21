@@ -45,7 +45,7 @@ jobs:
 
       - name: Install Manim
         run: |
-          poetry install -E webgl_renderer
+          poetry install
 
       - name: Run tests
         run: |
@@ -202,7 +202,7 @@ jobs:
       - name: Install manim
         run: |
           poetry config experimental.new-installer false
-          poetry install -E webgl_renderer
+          poetry install
 
       - name: Run tests
         run: |
