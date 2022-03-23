@@ -79,14 +79,16 @@ Pixels = _PixelUnits()
 
     .. manim :: PixelsExample
         :ref_classes: Dot ApplyMethod
+        :quality: low
 
         class PixelsExample(Scene):
             def construct(self):
                 dot1 = Dot(radius=0.2, color=RED).shift(UP)
                 dot2 = Dot(radius=0.2, color=BLUE).shift(DOWN)
                 self.play(
-                    # With the standard Manim frame width/ratio,
-                    # 150 Pixels = 2.5 Munits
+                    # With the low quality (-ql) Manim frame width/ratio,
+                    #     150 Pixels = 2.5 Munits
+                    # This ratio will change depending on your resolution, quality configuration etc.
                     ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT),
                     ApplyMethod(dot1.shift, 2.5 * RIGHT)
                 )
