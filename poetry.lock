@@ -2313,7 +2313,7 @@ jupyterlab = ["jupyterlab"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "6ca54c0ab82a938193968ab15cf9c142f1715d805114687e961e4c8a705396fa"
+content-hash = "a7889cae8f42d0225346a5fe4cfb31fa039863b02a4f20def6672a67c7d28404"
 
 [metadata.files]
 alabaster = [
