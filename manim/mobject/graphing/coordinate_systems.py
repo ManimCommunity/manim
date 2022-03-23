@@ -2423,7 +2423,7 @@ class NumberPlane(Axes):
         # the range becomes (0,4), not (0,6).
         ranges = (
             np.arange(0, min(x_max - x_min, x_max), step),
-            np.arange(0, max(x_min - x_max, x_min), -step),
+            np.arange(-step, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:
