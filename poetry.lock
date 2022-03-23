@@ -536,7 +536,7 @@ importlib-metadata = {version = ">=0.9", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "fonttools"
-version = "4.31.1"
+version = "4.31.2"
 description = "Tools to manipulate font files"
 category = "dev"
 optional = false
@@ -1784,14 +1784,13 @@ docutils = ">=0.11,<1.0"
 
 [[package]]
 name = "rich"
-version = "11.2.0"
+version = "12.0.1"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
 python-versions = ">=3.6.2,<4.0.0"
 
 [package.dependencies]
-colorama = ">=0.4.0,<0.5.0"
 commonmark = ">=0.9.0,<0.10.0"
 pygments = ">=2.6.0,<3.0.0"
 typing-extensions = {version = ">=3.7.4,<5.0", markers = "python_version < \"3.8\""}
@@ -2162,7 +2161,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.19.14"
+version = "3.19.15"
 description = "Typing stubs for protobuf"
 category = "dev"
 optional = false
@@ -2314,7 +2313,7 @@ jupyterlab = ["jupyterlab"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "1f4d9ce4418b6127daedc3255709987c58b8250a3b4a4d4394ecd857899578c5"
+content-hash = "6ca54c0ab82a938193968ab15cf9c142f1715d805114687e961e4c8a705396fa"
 
 [metadata.files]
 alabaster = [
@@ -2704,8 +2703,8 @@ flake8-simplify = [
     {file = "flake8_simplify-0.14.6.tar.gz", hash = "sha256:c4008db8016707684a1f0502ee69f3c2da37687d3cf7031cc1f326bf5986bf47"},
 ]
 fonttools = [
-    {file = "fonttools-4.31.1-py3-none-any.whl", hash = "sha256:2b288eae806800668cb5cdf52a37b5ac701c5adda2dd5c88b685581ce3385285"},
-    {file = "fonttools-4.31.1.zip", hash = "sha256:f8b35ed9ba189710994cec2c86b8eb5f0c49336698575e439a0d5671d3ca1ace"},
+    {file = "fonttools-4.31.2-py3-none-any.whl", hash = "sha256:2df636a3f402ef14593c6811dac0609563b8c374bd7850e76919eb51ea205426"},
+    {file = "fonttools-4.31.2.zip", hash = "sha256:236b29aee6b113e8f7bee28779c1230a86ad2aac9a74a31b0aedf57e7dfb62a4"},
 ]
 furo = [
     {file = "furo-2021.11.23-py3-none-any.whl", hash = "sha256:6d396451ad1aadce380c662fca9362cb10f4fd85f296d74fe3ca32006eb641d7"},
@@ -3624,8 +3623,8 @@ restructuredtext-lint = [
     {file = "restructuredtext_lint-1.4.0.tar.gz", hash = "sha256:1b235c0c922341ab6c530390892eb9e92f90b9b75046063e047cacfb0f050c45"},
 ]
 rich = [
-    {file = "rich-11.2.0-py3-none-any.whl", hash = "sha256:d5f49ad91fb343efcae45a2b2df04a9755e863e50413623ab8c9e74f05aee52b"},
-    {file = "rich-11.2.0.tar.gz", hash = "sha256:1a6266a5738115017bb64a66c59c717e7aa047b3ae49a011ede4abdeffc6536e"},
+    {file = "rich-12.0.1-py3-none-any.whl", hash = "sha256:ce5c714e984a2d185399e4e1dd1f8b2feacb7cecfc576f1522425643a36a57ea"},
+    {file = "rich-12.0.1.tar.gz", hash = "sha256:3fba9dd15ebe048e2795a02ac19baee79dc12cc50b074ef70f2958cd651b59a9"},
 ]
 scipy = [
     {file = "scipy-1.7.3-1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:c9e04d7e9b03a8a6ac2045f7c5ef741be86727d8f49c45db45f244bdd2bcff17"},
@@ -3875,8 +3874,8 @@ types-pillow = [
     {file = "types_Pillow-8.3.11-py3-none-any.whl", hash = "sha256:998189334e616b1dd42c9634669efbf726184039e96e9a23ec95246e0ecff3fc"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.19.14.tar.gz", hash = "sha256:00d59b1e07c808f2f03c6ca8ba4b077281585bb28148a3020cfbf7ec5fc7fb86"},
-    {file = "types_protobuf-3.19.14-py3-none-any.whl", hash = "sha256:8f9192068983e24358d5554d6c8e84f56f790a34836cd57666e94c215b6f1134"},
+    {file = "types-protobuf-3.19.15.tar.gz", hash = "sha256:d371d0a5b32e78c2d684329a5d4491d385e6eadcab497b37c41172ded328c5d9"},
+    {file = "types_protobuf-3.19.15-py3-none-any.whl", hash = "sha256:4673a4e56495886590c36cd87f2d855299a699a598eacb2e27d82b57eb4afb05"},
 ]
 types-pygments = [
     {file = "types-Pygments-2.9.17.tar.gz", hash = "sha256:d3a9d08365abc8a122edac4f5a94c8bcbbef8f6a3e055982523810e81f8d749c"},
