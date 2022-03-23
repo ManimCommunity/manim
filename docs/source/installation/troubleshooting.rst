@@ -75,7 +75,7 @@ Other errors
 
 ``pip install manim`` fails when installing manimpango?
 -------------------------------------------------------
-This mostly means that pip was not able to use our pre-built wheels
+This most likely means that pip was not able to use our pre-built wheels
 of ``manimpango``. Let us know (via our `Discord <https://www.manim.community/discord/>`_
 or by opening a
 `new issue on GitHub <https://github.com/ManimCommunity/ManimPango/issues/new>`_)
