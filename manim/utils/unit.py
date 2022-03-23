@@ -104,3 +104,4 @@ Degrees = constants.PI / 180
 """
 
 Munits = 1
+"""Optional constant to include for readability. Merely has value 1."""
