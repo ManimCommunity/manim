@@ -25,7 +25,7 @@ class Percent:
     ----------
     axis
         The axis (X or Y) of the frame to consider the percentage of.
-        Z_axis has no such frame limits so can't be used here.
+        ``Z_AXIS`` has no such frame limits so cannot be used here.
 
     Examples
     --------
@@ -94,8 +94,10 @@ Pixels = _PixelUnits()
 """
 
 Degrees = constants.PI / 180
-"""A convenience constant to convert degrees to radians
-    Normal usage::
+"""A convenience constant to convert degrees to radians.
+
+    Examples
+    --------
 
         Rotate(dot, 45 * unit.Degrees)  # equivalent to Rotate(dot, PI/4)
 
