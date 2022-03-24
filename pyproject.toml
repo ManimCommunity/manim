@@ -35,14 +35,12 @@ Pillow = ">=8.4,<10.0"
 scipy = "^1.7.3"
 tqdm = "^4.62.3"
 pydub = "^0.25.1"
-rich = ">=6.0"
+rich = ">=6.0,!=12.0.0"
 pycairo = "^1.19"
 manimpango = "^0.4.0.post0"
 networkx = "^2.5"
 decorator = "^5.0.7"
 importlib-metadata = { version = "^4.10.0", python = "<3.8" }
-grpcio =  { version = "^1.43.0", optional = true }
-grpcio-tools = { version = "^1.43.0", optional = true }
 watchdog = "^2.1.6"
 jupyterlab = { version = "^3.0", optional = true }
 moderngl = "^5.6.3"
@@ -59,7 +57,6 @@ Pygments = "^2.10.0"
 "backports.cached-property" = "^1.0.1"
 
 [tool.poetry.extras]
-webgl_renderer = ["grpcio","grpcio-tools"]
 jupyterlab = ["jupyterlab"]
 gui = ["dearpygui"]
 

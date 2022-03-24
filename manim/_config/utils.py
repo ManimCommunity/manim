@@ -255,7 +255,6 @@ class ManimConfig(MutableMapping):
         "input_file",
         "media_embed",
         "media_width",
-        "webgl_renderer_path",
         "log_dir",
         "log_to_file",
         "max_files_cached",
@@ -282,7 +281,6 @@ class ManimConfig(MutableMapping):
         "upto_animation_number",
         "renderer",
         "use_opengl_renderer",
-        "use_webgl_renderer",
         "enable_gui",
         "gui_location",
         "use_projection_fill_shaders",
@@ -537,7 +535,6 @@ class ManimConfig(MutableMapping):
             "flush_cache",
             "custom_folders",
             "use_opengl_renderer",
-            "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -577,7 +574,6 @@ class ManimConfig(MutableMapping):
             "movie_file_extension",
             "background_color",
             "renderer",
-            "webgl_renderer_path",
             "window_position",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
@@ -710,7 +706,6 @@ class ManimConfig(MutableMapping):
             "renderer",
             "background_color",
             "use_opengl_renderer",
-            "use_webgl_renderer",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -1181,7 +1176,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def renderer(self):
-        """Renderer: "cairo", "opengl", "webgl"""
+        """Renderer: "cairo", "opengl"""
         return self._d["renderer"]
 
     @renderer.setter
@@ -1221,7 +1216,7 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "renderer",
             val,
-            ["cairo", "opengl", "webgl"],
+            ["cairo", "opengl"],
         )
 
     @property
@@ -1236,30 +1231,8 @@ class ManimConfig(MutableMapping):
             self._set_from_list(
                 "renderer",
                 "opengl",
-                ["cairo", "opengl", "webgl"],
+                ["cairo", "opengl"],
             )
-
-    @property
-    def use_webgl_renderer(self):
-        """Whether or not to use WebGL renderer."""
-        return self._d["use_webgl_renderer"]
-
-    @use_webgl_renderer.setter
-    def use_webgl_renderer(self, val: bool) -> None:
-        self._d["use_webgl_renderer"] = val
-        if val:
-            self._set_from_list(
-                "webgl",
-                "renderer",
-                ["cairo", "opengl", "webgl"],
-            )
-            self["disable_caching"] = True
-
-    webgl_renderer_path = property(
-        lambda self: self._d["webgl_renderer_path"],
-        lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
-        doc="Path to WebGL renderer.",
-    )
 
     media_dir = property(
         lambda self: self._d["media_dir"],

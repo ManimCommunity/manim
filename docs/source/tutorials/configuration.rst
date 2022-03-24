@@ -360,7 +360,6 @@ A list of all config options
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
-   'verbosity', 'video_dir', 'webgl_renderer_path', 'window_position',
-   'window_monitor', 'window_size', 'write_all', 'write_to_movie', 'enable_wireframe',
-   'force_window']
+   'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
+   'window_position', 'window_monitor', 'window_size', 'write_all', 'write_to_movie',
+   'enable_wireframe', 'force_window']

@@ -50,16 +50,6 @@ def render(
         )
         args["renderer"] = "opengl"
 
-    if args["use_webgl_renderer"]:
-        logger.warning(
-            "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!",
-        )
-        args["renderer"] = "webgl"
-
-    if args["use_webgl_renderer"] and args["use_opengl_renderer"]:
-        logger.warning("You may select only one renderer!")
-        sys.exit()
-
     if args["save_as_gif"]:
         logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
         args["format"] = "gif"
@@ -118,20 +108,6 @@ def render(
                     keep_running = False
 
         except Exception:
-            error_console.print_exception()
-            sys.exit(1)
-    elif config.renderer == "webgl":
-        try:
-            from manim.grpc.impl import frame_server_impl
-
-            server = frame_server_impl.get(file)
-            server.start()
-            server.wait_for_termination()
-        except ModuleNotFoundError:
-            console.print(
-                "Dependencies for the WebGL render are missing. Run "
-                "pip install manim[webgl_renderer] to install them.",
-            )
             error_console.print_exception()
             sys.exit(1)
     else:
