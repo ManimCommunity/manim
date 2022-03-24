@@ -88,9 +88,11 @@ def render(
 
     config.digest_args(click_args)
     file = Path(config.input_file)
+
     # Register the input file with Pluggy
     # This is done so that user's implementation of hooks takes precedence.
-    config.plugin_manager.register(get_module(file))
+    if file != '-':
+        config.plugin_manager.register(get_module(file))
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
