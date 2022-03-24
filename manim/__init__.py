@@ -10,6 +10,11 @@ __version__: str = pkg_resources.get_distribution(__name__).version
 
 import sys
 
+import pluggy
+
+# This should be created before anything else.
+pluggy_hookimpl = pluggy.HookimplMarker("manim")
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *

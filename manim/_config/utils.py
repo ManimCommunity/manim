@@ -25,6 +25,7 @@ from pathlib import Path
 
 import colour
 import numpy as np
+import pluggy
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
@@ -300,6 +301,7 @@ class ManimConfig(MutableMapping):
 
     def __init__(self) -> None:
         self._d = {k: None for k in self._OPTS}
+        self._plugin_manager = None
 
     # behave like a dict
     def __iter__(self) -> typing.Iterator[str]:
@@ -1569,6 +1571,19 @@ class ManimConfig(MutableMapping):
     @plugins.setter
     def plugins(self, value):
         self._d["plugins"] = value
+
+    @property
+    def plugin_manager(self):
+        if self._plugin_manager:
+            return self._plugin_manager
+        from manim.plugins import hooksimpl, hookspecs
+
+        pm = pluggy.PluginManager("manim")
+        pm.add_hookspecs(hookspecs)
+        pm.load_setuptools_entrypoints("manim")
+        pm.register(hooksimpl)
+        self._plugin_manager = pm
+        return pm
 
 
 class ManimFrame(Mapping):

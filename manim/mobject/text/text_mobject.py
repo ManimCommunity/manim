@@ -409,7 +409,7 @@ class Text(SVGMobject):
         color: Color | str | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
-        font: str = "",
+        font: str | None = None,
         slant: str = NORMAL,
         weight: str = NORMAL,
         t2c: dict[str, str] = None,
@@ -429,6 +429,8 @@ class Text(SVGMobject):
     ):
 
         self.line_spacing = line_spacing
+        if not font:
+            font = config.plugin_manager.hook.default_font(requestor=Text.__name__)[0]
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24

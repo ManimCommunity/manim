@@ -17,7 +17,7 @@ import requests
 
 from ... import __version__, config, console, error_console, logger
 from ...constants import EPILOG
-from ...utils.module_ops import scene_classes_from_file
+from ...utils.module_ops import get_module, scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
 from .output_options import output_options
@@ -88,6 +88,9 @@ def render(
 
     config.digest_args(click_args)
     file = Path(config.input_file)
+    # Register the input file with Pluggy
+    # This is done so that user's implementation of hooks takes precedence.
+    config.plugin_manager.register(get_module(file))
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
