@@ -91,7 +91,7 @@ def render(
 
     # Register the input file with Pluggy
     # This is done so that user's implementation of hooks takes precedence.
-    if file != '-':
+    if file != "-":
         config.plugin_manager.register(get_module(file))
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
