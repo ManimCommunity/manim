@@ -11,8 +11,8 @@ Qualified name: ``{{ fullname | escape }}``
 
 
    {% block methods %}
-   {% set no_init_m = methods | select('ne', '__init__') | set %}
-   {%- if no_init_m.difference(set(inherited_members)) %}
+   {% set no_init_m = methods | select('ne', '__init__') %}
+   {%- if set(no_init_m).difference(set(inherited_members)) %}
    .. rubric:: {{ _('Methods') }}
 
    .. autosummary::
