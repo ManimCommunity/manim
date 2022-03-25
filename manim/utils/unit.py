@@ -1,5 +1,34 @@
 """Classes to convert between pixels, Manim units (Munits), degrees,
-radians and percentage values as measurements in animations etc."""
+radians and percentage values as measurements in animations etc.
+
+unit.Pixels - A scaling object to convert pixels to Munits
+
+Examples
+--------
+
+.. manim :: PixelsExample
+    :ref_classes: Dot ApplyMethod
+    :quality: low
+
+    class PixelsExample(Scene):
+        def construct(self):
+            dot1 = Dot(radius=0.2, color=RED).shift(UP)
+            dot2 = Dot(radius=0.2, color=BLUE).shift(DOWN)
+            self.play(
+                # With the low quality (-ql) Manim frame width/ratio,
+                #     150 Pixels = 2.5 Munits
+                # This ratio will change depending on your resolution, quality configuration etc.
+                ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT),
+                ApplyMethod(dot1.shift, 2.5 * RIGHT)
+            )
+
+unit.Degrees - A convenience constant to convert degrees to radians.
+
+Examples
+--------
+
+    Rotate(dot, 45 * unit.Degrees)  # equivalent to Rotate(dot, PI/4)
+"""
 
 from __future__ import annotations
 
@@ -72,38 +101,10 @@ class Percent:
 
 
 Pixels = _PixelUnits()
-"""A scaling object to convert pixels to Munits
-
-    Examples
-    --------
-
-    .. manim :: PixelsExample
-        :ref_classes: Dot ApplyMethod
-        :quality: low
-
-        class PixelsExample(Scene):
-            def construct(self):
-                dot1 = Dot(radius=0.2, color=RED).shift(UP)
-                dot2 = Dot(radius=0.2, color=BLUE).shift(DOWN)
-                self.play(
-                    # With the low quality (-ql) Manim frame width/ratio,
-                    #     150 Pixels = 2.5 Munits
-                    # This ratio will change depending on your resolution, quality configuration etc.
-                    ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT),
-                    ApplyMethod(dot1.shift, 2.5 * RIGHT)
-                )
-
-"""
+"""A scaling object to convert pixels to Munits"""
 
 Degrees = constants.PI / 180
-"""A convenience constant to convert degrees to radians.
-
-    Examples
-    --------
-
-        Rotate(dot, 45 * unit.Degrees)  # equivalent to Rotate(dot, PI/4)
-
-"""
+"""A convenience constant to convert degrees to radians."""
 
 Munits = 1
 """Optional constant to include for readability. Merely has value 1."""
