@@ -11,13 +11,13 @@ Qualified name: ``{{ fullname | escape }}``
 
 
    {% block methods %}
-   {% set no_init_m = methods | select('ne', '__init__') %}
-   {%- if set(no_init_m).difference(set(inherited_members)) %}
+   {% set methods_to_list = methods if item != '__init__' and item not in inherited_members %}
+   {%- if methods_to_list %}
    .. rubric:: {{ _('Methods') }}
 
    .. autosummary::
       :nosignatures:
-      {% for item in methods if item != '__init__' and item not in inherited_members %}
+      {% for item in methods_to_list %}
       ~{{ name }}.{{ item }}
       {%- endfor %}
    {%- endif %}
