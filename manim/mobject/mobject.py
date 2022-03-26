@@ -425,6 +425,27 @@ class Mobject:
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
+    def insert(self, index:int, mobject: Mobject):
+        """Inserts a mobject at a specific position into self.submobjects
+
+        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
+        where ``self.submobjects`` is a list.
+
+        Highly adapted from ``Mobject.add``.
+
+        Parameters
+        ----------
+        index
+            The index at which
+        mobject
+            The mobject to be inserted.
+        """
+        if not isinstance(mobject, Mobject):
+            raise TypeError("All submobjects must be of type Mobject")
+        if mobject is self:
+            raise ValueError("Mobject cannot contain self")
+        self.submobjects.insert(index, mobject)
+
     def __add__(self, mobject):
         raise NotImplementedError
 
