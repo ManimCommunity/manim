@@ -736,8 +736,7 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-
-    def insert(self, index: int, mobject: OpenGLMobject, update_parent:bool = False):
+    def insert(self, index: int, mobject: OpenGLMobject, update_parent: bool = False):
         """Inserts a mobject at a specific position into self.submobjects
 
         Effectively just calls  ``self.submobjects.insert(index, mobject)``,
@@ -1617,7 +1616,7 @@ class OpenGLMobject:
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas**wag_factor
+            alphas = alphas ** wag_factor
             mob.set_points(
                 mob.points
                 + np.dot(
