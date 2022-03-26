@@ -78,6 +78,7 @@ def tempconfig(temp: ManimConfig | dict) -> _GeneratorContextManager:
     # make the local variable named config point to a new dictionary, it will
     # NOT change the dictionary that every module has a reference to.
     config.update(temp)
+    config._plugin_manager = None
     try:
         yield
     finally:
