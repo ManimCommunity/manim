@@ -339,22 +339,43 @@ class BarChart(Axes):
         self.x_axis.labels = labels
         self.x_axis.add(labels)
 
-    def _add_bars(self):
+    def _create_bar(self, bar_number:int, value: float) -> Rectangle:
+        """Creates a positioned bar on the chart.
+
+        Parameters
+        ----------
+        bar_number
+            Determines the x-position of the bar.
+        value
+            The value that determines the height of the bar.
+
+        Returns
+        -------
+        Rectangle
+            A positioned rectangle representing a bar on the chart.
+        """
+
+        bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
+        bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
+        bar = Rectangle(
+            height=bar_h,
+            width=bar_w,
+            stroke_width=self.bar_stroke_width,
+            fill_opacity=self.bar_fill_opacity,
+        )
+
+        pos = UP if (value >= 0) else DOWN
+        bar.next_to(self.c2p(bar_number + 0.5, 0), pos, buff=0)
+        return bar
+
+    def _add_bars(self) -> None:
+
         self.bars = VGroup()
 
         for i, value in enumerate(self.values):
-            bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
-            bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
-            bar = Rectangle(
-                height=bar_h,
-                width=bar_w,
-                stroke_width=self.bar_stroke_width,
-                fill_opacity=self.bar_fill_opacity,
-            )
+            temp_bar = self._create_bar(bar_number=i, value=value)
+            self.bars.add(temp_bar)
 
-            pos = UP if (value >= 0) else DOWN
-            bar.next_to(self.c2p(i + 0.5, 0), pos, buff=0)
-            self.bars.add(bar)
         if isinstance(self.bar_colors, str):
             self.bars.set_color_by_gradient(self.bar_colors)
         else:
