@@ -352,7 +352,7 @@ class BarChart(Axes):
         self.x_axis.labels = labels
         self.x_axis.add(labels)
 
-    def _create_bar(self, bar_number:int, value: float) -> Rectangle:
+    def _create_bar(self, bar_number: int, value: float) -> Rectangle:
         """Creates a positioned bar on the chart.
 
         Parameters
@@ -450,7 +450,7 @@ class BarChart(Axes):
 
         return bar_labels
 
-    def change_bar_values(self, values: Iterable[float], update_colors :bool = True):
+    def change_bar_values(self, values: Iterable[float], update_colors: bool = True):
         """Updates the height of the bars of the chart.
 
         Parameters
