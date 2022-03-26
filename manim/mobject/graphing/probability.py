@@ -283,9 +283,9 @@ class BarChart(Axes):
             (x_axis_config,), (kwargs.pop("x_axis_config", None),)
         )
 
-        self.bars = None
-        self.x_labels = None
-        self.bar_labels = None
+        self.bars: VGroup
+        self.x_labels: VGroup
+        self.bar_labels: VGroup
 
         super().__init__(
             x_range=x_range,
@@ -303,6 +303,19 @@ class BarChart(Axes):
             self._add_x_axis_labels()
 
         self.y_axis.add_numbers()
+
+    def _update_colors(self):
+        """Initialize the colors of the bars of the chart.
+
+        Sets the color of ``self.bars`` via ``self.bar_colors``.
+
+        Primarily used when the bars are initialized with ``self._add_bars``
+        or updated via ``self.change_bar_values``.
+        """
+        if isinstance(self.bar_colors, str):
+            self.bars.set_color_by_gradient(self.bar_colors)
+        else:
+            self.bars.set_color_by_gradient(*self.bar_colors)
 
     def _add_x_axis_labels(self):
         """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
@@ -355,8 +368,13 @@ class BarChart(Axes):
             A positioned rectangle representing a bar on the chart.
         """
 
+        ## bar measurements relative to the axis
+
+        # distance from between the y-axis and the top of the bar
         bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
+        # width of the bar
         bar_w = self.c2p(self.bar_width, 0)[0] - self.c2p(0, 0)[0]
+
         bar = Rectangle(
             height=bar_h,
             width=bar_w,
@@ -369,18 +387,13 @@ class BarChart(Axes):
         return bar
 
     def _add_bars(self) -> None:
-
         self.bars = VGroup()
 
         for i, value in enumerate(self.values):
             temp_bar = self._create_bar(bar_number=i, value=value)
             self.bars.add(temp_bar)
 
-        if isinstance(self.bar_colors, str):
-            self.bars.set_color_by_gradient(self.bar_colors)
-        else:
-            self.bars.set_color_by_gradient(*self.bar_colors)
-
+        self._update_colors()
         self.add_to_back(self.bars)
 
     def get_bar_labels(
@@ -437,7 +450,7 @@ class BarChart(Axes):
 
         return bar_labels
 
-    def change_bar_values(self, values: Iterable[float]):
+    def change_bar_values(self, values: Iterable[float], update_colors :bool = True):
         """Updates the height of the bars of the chart.
 
         Parameters
@@ -445,6 +458,8 @@ class BarChart(Axes):
         values
             The values that will be used to update the height of the bars.
             Does not have to match the number of bars.
+        update_colors
+            Whether to re-initalize the colors of the bars based on ``self.bar_colors``.
 
         Examples
         --------
@@ -489,11 +504,17 @@ class BarChart(Axes):
                     # if already negative, then we move the bottom edge of the bar
                     # to the location of the previous top
 
-                bar.stretch_to_fit_height(quotient * bar.height)
+                bar.stretch_to_fit_height(abs(quotient) * bar.height)
 
             except ZeroDivisionError:
-                bar.height = 0
+                # create a new bar since the current one has a height of zero (doesn't exist)
+                temp_bar = self._create_bar(i, value)
+                self.bars.remove(bar)
+                self.bars.insert(i, temp_bar)
 
             bar.move_to(bar_lim, aligned_edge)
+
+        if update_colors:
+            self._update_colors()
 
         self.values[: len(values)] = values
