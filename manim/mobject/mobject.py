@@ -110,7 +110,7 @@ class Mobject:
     def animation_override_for(
         cls,
         animation_class: type[Animation],
-    ) -> Optional[Callable[[Mobject, ...], Animation]]:
+    ) -> Callable[[Mobject, ...], Animation] | None:
         """Returns the function defining a specific animation override for this class.
 
         Parameters
@@ -2076,7 +2076,7 @@ class Mobject:
 
     def align_to(
         self,
-        mobject_or_point: Union[Mobject, np.ndarray, list],
+        mobject_or_point: Mobject | np.ndarray | list,
         direction=ORIGIN,
         alignment_vect=UP,
     ):
