@@ -188,7 +188,7 @@ is in the same directory as <file.py>,
 
 Since config files are meant to replace CLI flags, all CLI flags can be set via
 a config file.  Moreover, any config option can be set via a config file,
-whether or not it has an associated CLI flag.  See the bottom of this document 
+whether or not it has an associated CLI flag.  See the bottom of this document
 for a list of all CLI flags and all config options.
 
 Manim will look for a ``manim.cfg`` config file in the same directory as the
