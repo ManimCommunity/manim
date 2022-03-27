@@ -368,7 +368,7 @@ class BarChart(Axes):
             A positioned rectangle representing a bar on the chart.
         """
 
-        ## bar measurements relative to the axis
+        # bar measurements relative to the axis
 
         # distance from between the y-axis and the top of the bar
         bar_h = abs(self.c2p(0, value)[1] - self.c2p(0, 0)[1])
