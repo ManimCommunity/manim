@@ -14,5 +14,5 @@ def test_FunctionGraph(scene):
 
 @frames_comparison
 def test_ImplicitFunction(scene):
-    graph = ImplicitFunction(lambda x, y: x ** 2 + y ** 2 - 9)
+    graph = ImplicitFunction(lambda x, y: x**2 + y**2 - 9)
     scene.add(graph)

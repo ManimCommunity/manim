@@ -317,7 +317,7 @@ class ThreeDCamera(Camera):
                 factor[lt0] = focal_distance / (focal_distance - zs[lt0])
             else:
                 factor = focal_distance / (focal_distance - zs)
-                factor[(focal_distance - zs) < 0] = 10 ** 6
+                factor[(focal_distance - zs) < 0] = 10**6
             points[:, i] *= factor * zoom
         return points
 
