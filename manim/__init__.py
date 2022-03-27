@@ -27,8 +27,6 @@ for i, arg in enumerate(sys.argv):
         config.renderer = parsed_renderer
     elif arg == "--use_opengl_renderer":
         config.renderer = "opengl"
-    elif arg == "--use_webgl_renderer":
-        config.renderer = "webgl"
 
 # many scripts depend on this -> has to be loaded first
 from .utils.commands import *  # isort:skip
