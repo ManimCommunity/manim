@@ -21,13 +21,12 @@ Examples
                 ApplyMethod(dot2.shift, (150 * unit.Pixels) * RIGHT),
                 ApplyMethod(dot1.shift, 2.5 * RIGHT)
             )
+            self.wait()
 
 unit.Degrees - A convenience constant to convert degrees to radians.
 
-Examples
---------
-
-    Rotate(dot, 45 * unit.Degrees)  # equivalent to Rotate(dot, PI/4)
+    Rotate(dot, 45 * unit.Degrees)
+    Rotate(dot, PI/4) # same rotation
 """
 
 from __future__ import annotations
@@ -101,10 +100,10 @@ class Percent:
 
 
 Pixels = _PixelUnits()
-"""A scaling object to convert pixels to Munits"""
+"""A scaling object to convert pixels to Munits (see example above)."""
 
 Degrees = constants.PI / 180
-"""A convenience constant to convert degrees to radians."""
+"""A convenience constant to convert degrees to radians (see example above)."""
 
 Munits = 1
-"""Optional constant to include for readability. Merely has value 1."""
+"""Optional constant (with value 1) to include for readability."""
