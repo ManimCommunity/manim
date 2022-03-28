@@ -201,7 +201,7 @@ class SceneFileWriter:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = (
+            new_partial_movie_file = str(
                 self.partial_movie_directory
                 / f"{hash_animation}{config['movie_file_extension']}"
             )
