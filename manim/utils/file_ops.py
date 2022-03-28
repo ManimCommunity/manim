@@ -132,7 +132,6 @@ def add_version_before_extension(file_name):
 
 def guarantee_existence(path):
     path = Path(path)
-    print(path)
     if not path.exists():
         path.mkdir(parents=True)
     return path.resolve(strict=True)
