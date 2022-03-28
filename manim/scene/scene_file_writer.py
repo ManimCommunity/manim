@@ -535,6 +535,7 @@ class SceneFileWriter:
         with open(file_list, "w", encoding="utf-8") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in input_files:
+                pf_path = str(pf_path)
                 if os.name == "nt":
                     pf_path = pf_path.replace("\\", "/")
                 fp.write(f"file 'file:{pf_path}'\n")
@@ -565,7 +566,7 @@ class SceneFileWriter:
         if not includes_sound:
             commands += ["-an"]
 
-        commands += [output_file]
+        commands += [str(output_file)]
 
         combine_process = subprocess.Popen(commands)
         combine_process.wait()
@@ -575,7 +576,7 @@ class SceneFileWriter:
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
-        partial_movie_files = [el for el in self.partial_movie_files if el is not None]
+        partial_movie_files = [str(el) for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as
@@ -607,9 +608,9 @@ class SceneFileWriter:
             commands = [
                 FFMPEG_BIN,
                 "-i",
-                movie_file_path,
+                str(movie_file_path),
                 "-i",
-                sound_file_path,
+                str(sound_file_path),
                 "-y",  # overwrite output file if it exists
                 "-c:v",
                 "copy",
@@ -628,7 +629,7 @@ class SceneFileWriter:
                 "-metadata",
                 f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
-                temp_file_path,
+                str(temp_file_path),
             ]
             subprocess.call(commands)
             shutil.move(temp_file_path, movie_file_path)
