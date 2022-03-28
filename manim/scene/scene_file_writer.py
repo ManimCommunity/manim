@@ -577,7 +577,7 @@ class SceneFileWriter:
         video file for that Scene.
         """
         partial_movie_files = [
-            str(el) for el in self.partial_movie_files if el is not None
+            el for el in self.partial_movie_files if el is not None
         ]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
@@ -588,6 +588,7 @@ class SceneFileWriter:
         movie_file_path = self.movie_file_path
         if is_gif_format():
             movie_file_path = self.gif_file_path
+        movie_file_path = str(movie_file_path)
         logger.info("Combining to Movie file.")
         self.combine_files(
             partial_movie_files,
@@ -610,9 +611,9 @@ class SceneFileWriter:
             commands = [
                 FFMPEG_BIN,
                 "-i",
-                str(movie_file_path),
+                movie_file_path,
                 "-i",
-                str(sound_file_path),
+                sound_file_path,
                 "-y",  # overwrite output file if it exists
                 "-c:v",
                 "copy",
@@ -631,7 +632,7 @@ class SceneFileWriter:
                 "-metadata",
                 f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
-                str(temp_file_path),
+                temp_file_path,
             ]
             subprocess.call(commands)
             shutil.move(temp_file_path, movie_file_path)
