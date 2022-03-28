@@ -14,7 +14,7 @@ Qualified name: ``{{ fullname | escape }}``
    {% set displayed_methods = [] %}
    {% for item in methods %}
       {% if item != '__init__' and item not in inherited_members %}
-         {% do displayed_methods.append(item) %}
+         {% set displayed_methods = displayed_methods + [item] %}
       {%- endif %}
    {%- endfor %}
    {%- if displayed_methods %}
