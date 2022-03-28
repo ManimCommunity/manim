@@ -11,14 +11,18 @@ Qualified name: ``{{ fullname | escape }}``
 
 
    {% block methods %}
-   {% set methods_to_list = methods if item not in inherited_members %}
-   {% set methods_to_list = methods_to_list if item != '__init__' %}
-   {%- if methods_to_list %}
+   {% set displayed_methods = [] %}
+   {% for item in methods %}
+      {% if item != '__init__' and item not in inherited_members %}
+         {% do displayed_methods.append(item) %}
+      {%- endif %}
+   {%- endfor %}
+   {%- if displayed_methods %}
    .. rubric:: {{ _('Methods') }}
 
    .. autosummary::
       :nosignatures:
-      {% for item in methods_to_list %}
+      {% for item in displayed_methods %}
       ~{{ name }}.{{ item }}
       {%- endfor %}
    {%- endif %}
