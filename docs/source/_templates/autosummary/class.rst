@@ -11,7 +11,8 @@ Qualified name: ``{{ fullname | escape }}``
 
 
    {% block methods %}
-   {% set methods_to_list = methods if item != '__init__' and item not in inherited_members %}
+   {% set methods_to_list = methods if item not in inherited_members %}
+   {% set methods_to_list = methods_to_list if item != '__init__' %}
    {%- if methods_to_list %}
    .. rubric:: {{ _('Methods') }}
 
