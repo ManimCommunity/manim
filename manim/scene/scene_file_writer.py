@@ -110,9 +110,8 @@ class SceneFileWriter:
                     "images_dir", module_name=module_name, scene_name=scene_name
                 ),
             )
-            self.image_file_path = os.path.join(
-                image_dir,
-                add_extension_if_not_present(self.output_name, ".png"),
+            self.image_file_path = image_dir / add_extension_if_not_present(
+                self.output_name, ".png"
             )
 
         if write_to_movie():
@@ -121,14 +120,10 @@ class SceneFileWriter:
                     "video_dir", module_name=module_name, scene_name=scene_name
                 ),
             )
-
-            self.movie_file_path = os.path.join(
-                movie_dir,
-                add_extension_if_not_present(
-                    self.output_name,
-                    config["movie_file_extension"],
-                ),
+            self.movie_file_path = movie_dir / add_extension_if_not_present(
+                self.output_name, config["movie_file_extension"]
             )
+
             # TODO: /dev/null would be good in case sections_output_dir is used without bein set (doesn't work on Windows), everyone likes defensive programming, right?
             self.sections_output_dir = ""
             if config.save_sections:
@@ -148,7 +143,7 @@ class SceneFileWriter:
                         self.gif_file_path
                     )
 
-                self.gif_file_path = os.path.join(movie_dir, self.gif_file_path)
+                self.gif_file_path = movie_dir / self.gif_file_path
 
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
@@ -206,9 +201,9 @@ class SceneFileWriter:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = os.path.join(
-                self.partial_movie_directory,
-                f"{hash_animation}{config['movie_file_extension']}",
+            new_partial_movie_file = (
+                self.partial_movie_directory
+                / f"{hash_animation}{config['movie_file_extension']}"
             )
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
@@ -373,7 +368,8 @@ class SceneFileWriter:
                 renderer.get_raw_frame_buffer_object_data(),
             )
         elif is_png_format() and not config["dry_run"]:
-            target_dir, extension = os.path.splitext(self.image_file_path)
+            target_dir = self.image_file_path.parent / self.image_file_path.stem
+            extension = self.image_file_path.suffix
             self.output_image(
                 renderer.get_image(),
                 target_dir,
@@ -382,7 +378,8 @@ class SceneFileWriter:
             )
 
     def output_image_from_array(self, frame_data):
-        target_dir, extension = os.path.splitext(self.image_file_path)
+        target_dir = self.image_file_path.parent / self.image_file_path.stem
+        extension = self.image_file_path.suffix
         self.output_image(
             Image.fromarray(frame_data),
             target_dir,
@@ -435,8 +432,8 @@ class SceneFileWriter:
             else:
                 self.clean_cache()
         elif is_png_format() and not config["dry_run"]:
-            target_dir, _ = os.path.splitext(self.image_file_path)
-            logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
+            target_dir = self.image_file_path.parent / self.image_file_path.stem
+            logger.info("\n%i images ready at %s\n", self.frame_count, str(target_dir))
         if self.subcaptions:
             self.write_subcaption_file()
 
@@ -517,11 +514,11 @@ class SceneFileWriter:
         """
         if not hasattr(self, "partial_movie_directory") or not write_to_movie():
             return False
-        path = os.path.join(
-            self.partial_movie_directory,
-            f"{hash_invocation}{config['movie_file_extension']}",
+        path = (
+            self.partial_movie_directory
+            / f"{hash_invocation}{config['movie_file_extension']}"
         )
-        return os.path.exists(path)
+        return path.exists()
 
     def combine_files(
         self,
@@ -530,10 +527,7 @@ class SceneFileWriter:
         create_gif=False,
         includes_sound=False,
     ):
-        file_list = os.path.join(
-            self.partial_movie_directory,
-            "partial_movie_file_list.txt",
-        )
+        file_list = str(self.partial_movie_directory / "partial_movie_file_list.txt")
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
@@ -668,8 +662,8 @@ class SceneFileWriter:
     def clean_cache(self):
         """Will clean the cache by removing the oldest partial_movie_files."""
         cached_partial_movies = [
-            os.path.join(self.partial_movie_directory, file_name)
-            for file_name in os.listdir(self.partial_movie_directory)
+            (self.partial_movie_directory / file_name)
+            for file_name in self.partial_movie_directory.iterdir()
             if file_name != "partial_movie_file_list.txt"
         ]
         if len(cached_partial_movies) > config["max_files_cached"]:
@@ -682,7 +676,7 @@ class SceneFileWriter:
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             for file_to_delete in oldest_files_to_delete:
-                os.remove(file_to_delete)
+                file_to_delete.unlink()
             logger.info(
                 f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
                 " You can change this behaviour by changing max_files_cached in config.",
@@ -691,12 +685,12 @@ class SceneFileWriter:
     def flush_cache_directory(self):
         """Delete all the cached partial movie files"""
         cached_partial_movies = [
-            os.path.join(self.partial_movie_directory, file_name)
-            for file_name in os.listdir(self.partial_movie_directory)
+            self.partial_movie_directory / file_name
+            for file_name in self.partial_movie_directory.iterdir()
             if file_name != "partial_movie_file_list.txt"
         ]
         for f in cached_partial_movies:
-            os.remove(f)
+            f.unlink()
         logger.info(
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},
