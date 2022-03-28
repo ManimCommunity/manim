@@ -1,10 +1,8 @@
 """Classes to convert between pixels, Manim units (Munits), degrees,
 radians and percentage values as measurements in animations etc.
 
-unit.Pixels - A scaling object to convert pixels to Munits
-
-Examples
---------
+unit.Pixels Example
+-------------------
 
 .. manim :: PixelsExample
     :ref_classes: Dot ApplyMethod
@@ -23,7 +21,9 @@ Examples
             )
             self.wait()
 
-unit.Degrees - A convenience constant to convert degrees to radians.
+unit.Degrees Example
+--------------------
+Normal usage::
 
     Rotate(dot, 45 * unit.Degrees)
     Rotate(dot, PI/4) # same rotation
