@@ -51,7 +51,7 @@ msgid "Fixed bugs"
 msgstr ""
 
 #: ../../source/changelog/0.13.1-changelog.rst:30
-msgid "`#2363 <https://github.com/ManimCommunity/manim/pull/2363>`__: Fixed broken IPython magic command"
+msgid ":pr:`2363`: Fixed broken IPython magic command"
 msgstr ""
 
 #: ../../source/changelog/0.13.1-changelog.rst:34
