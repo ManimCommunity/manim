@@ -304,7 +304,7 @@ What even is a Mobject?
 :class:`.Mobject` stands for *mathematical object* or *Manim object*
 (depends on who you ask 😄). The Python class :class:`.Mobject` is
 the base class for all objects that should be displayed on screen.
-Looking at the `initialization method 
+Looking at the `initialization method
 <https://github.com/ManimCommunity/manim/blob/5d72d9cfa2e3dd21c844b1da807576f5a7194fda/manim/mobject/mobject.py#L94>`__
 of :class:`.Mobject`, you will find that not too much happens in there:
 
@@ -383,7 +383,7 @@ The handles are drawn as red dots with a line to their closest anchor.
                 np.array([4, -2, 0]),  # end of second curve
             ]
             handles = [
-                Dot(point, color=RED) for point in 
+                Dot(point, color=RED) for point in
                 [[-3, 1, 0], [0, 3, 0], [0, 1, 0], [4, 3, 0]]
             ]
             handle_lines = [
@@ -448,7 +448,7 @@ the polygon: ``UR`` is up right (and equal to ``UP + RIGHT``),
 ``UL`` is up left (and equal to ``UP + LEFT``), and so forth.
 Before we follow our debugger deeper, let us observe what
 happens with the constructed polygon: the remaining two lines
-stretch the polygon to fit the specified width and height 
+stretch the polygon to fit the specified width and height
 such that a rectangle with the desired measurements is created.
 
 The initialization function of :class:`.Polygon` is particularly
