@@ -284,7 +284,7 @@ which it then renders using the same strategy by calling the render loop
 (see below) once.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` first
-triggers :meth:`.Scene.setup` (which simply ``pass``es), followed by
+triggers :meth:`.Scene.setup` (which only consists of ``pass``), followed by
 a call of :meth:`.Scene.construct`. At this point, our *animation script*
 is run, starting with the initialization of ``orange_square``.
 
@@ -301,28 +301,185 @@ structure.
 What even is a Mobject?
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- brief discussion of :class:`.Mobject` and its init function
+:class:`.Mobject` stands for *mathematical object* or *Manim object*
+(depends on who you ask 😄). The Python class :class:`.Mobject` is
+the base class for all objects that should be displayed on screen.
+Looking at the `initialization method 
+<https://github.com/ManimCommunity/manim/blob/5d72d9cfa2e3dd21c844b1da807576f5a7194fda/manim/mobject/mobject.py#L94>`__
+of :class:`.Mobject`, you will find that not too much happens in there:
+
+- some initial attribute values are assigned, like ``name`` (which makes the
+  render logs mention the name of the mobject instead of its type),
+  ``submobjects`` (initially an empty list), ``color``, and some others.
+- Then, two methods related to *points* are called: ``reset_points``
+  followed by ``generate_points``,
+- and finally, ``init_colors`` is called.
+
+Digging deeper, you will find that :meth:`.Mobject.reset_points` simply
+sets the ``points`` attribute of the mobject to an empty NumPy vector,
+while the other two methods, :meth:`.Mobject.generate_points` and
+:meth:`.Mobject.init_colors` are just implemented as ``pass``.
+
+This makes sense: :class:`.Mobject` is not supposed to be used as
+an *actual* object that is displayed on screen; in fact the camera
+(which we will discuss later in more detail; it is the class that is,
+for the Cairo renderer, responsible for "taking a picture" of the
+current scene) does not process "pure" :class:`Mobjects <.Mobject>`
+in any way, they *cannot* even appear in the rendered output.
+
+This is where different types of mobjects come into play. Roughly
+speaking, the Cairo renderer setup knows three different types of
+mobjects that can be rendered:
+
+- :class:`.ImageMobject`, which represent images that you can display
+  in your scene,
+- :class:`.PMobject`, which are very special mobjects used to represent
+  point clouds; we will not discuss them further in this tutorial,
+- :class:`.VMobject`, which are *vectorized mobjects*, that is, mobjects
+  that consist of points that are connected via curves. These are pretty
+  much everywhere, and we will discuss them in detail in the next section.
 
 ... and what are VMobjects?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- explain nature of points array of VMobjects
+As just mentioned, :class:`VMobjects <.VMobject>` represent vectorized
+mobjects. To render a :class:`.VMobject`, the camera looks at the
+``points`` attribute of a :class:`.VMobject` and divides it into sets
+of four points each. Each of these sets is then used to construct a
+cubic Bézier curve with the first and last entry describing the
+end points of the curve ("anchors"), and the second and third entry
+describing the control points in between ("handles").
 
-  - digression: internal representation of points (explain that
-      self.points holds anchors + handles of bezier curves)
-  - first point added to points list (start new path)
-  - remaining vertices: new line segments in between
+.. hint::
+  To learn more about Bézier curves, take a look at the excellent
+  online textbook `A Primer on Bézier curves <https://pomax.github.io/bezierinfo/>`__
+  by `Pomax <https://twitter.com/TheRealPomax>`__ -- there is an playground representing
+  cubic Bézier curves `in §1 <https://pomax.github.io/bezierinfo/#introduction>`__,
+  the red and yellow points are "anchors", and the green and blue
+  points are "handles".
+
+In contrast to :class:`.Mobject`, :class:`.VMobject` can be displayed
+on screen (even though, technically, it is still considered a base class).
+To illustrate how points are processed, consider the following short example
+of a :class:`.VMobject` with 8 points (and thus made out of 8/4 = 2 cubic
+Bézier curves). The resulting :class:`.VMobject` is drawn in green.
+The handles are drawn as red dots with a line to their closest anchor.
+
+.. manim:: VMobjectDemo
+    :save_last_frame:
+
+    class VMobjectDemo(Scene):
+        def construct(self):
+            plane = NumberPlane()
+            my_vmobject = VMobject(color=GREEN)
+            my_vmobject.points = [
+                np.array([-2, -1, 0]),  # start of first curve
+                np.array([-3, 1, 0]),
+                np.array([0, 3, 0]),
+                np.array([1, 3, 0]),  # end of first curve
+                np.array([1, 3, 0]),  # start of second curve
+                np.array([0, 1, 0]),
+                np.array([4, 3, 0]),
+                np.array([4, -2, 0]),  # end of second curve
+            ]
+            handles = [
+                Dot(point, color=RED) for point in 
+                [[-3, 1, 0], [0, 3, 0], [0, 1, 0], [4, 3, 0]]
+            ]
+            handle_lines = [
+                Line(
+                    my_vmobject.points[ind],
+                    my_vmobject.points[ind+1],
+                    color=RED,
+                    stroke_width=2
+                ) for ind in range(0, len(my_vmobject.points), 2)
+            ]
+            self.add(plane, *handles, *handle_lines, my_vmobject)
+
+
+.. warning::
+  Manually setting the points of your :class:`.VMobject` is usually
+  discouraged; there are specialized methods that can take care of
+  that for you -- but it might be relevant when implementing your own,
+  custom :class:`.VMobject`.
+
 
 
 Squares and Circles: back to our Toy Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- mobject initialization in depth: ``orange_square``
+With a basic understanding of different types of mobjects,
+and an idea of how vectorized mobjects are built we can now
+come back to our toy example and the execution of the
+:meth:`.Scene.construct` method. In the first two lines
+of our animation script, the ``orange_square`` and the
+``blue_circle`` are initialized.
 
-  - Step through initialization hierarchy (Square, Rectangle, Polygon, Polygram, VMobject, Mobject)
-  - Talk a bit about color init?
-  - Travelling back up, until Polygram is reached again; points are actually initialized
+When creating the orange square by running
 
+::
+
+  Square(color=ORANGE, fill_opacity=0.5)
+
+the initialization method of :class:`.Square`,
+``Square.__init__``, is called. `Looking at the
+implementation <https://github.com/ManimCommunity/manim/blob/5d72d9cfa2e3dd21c844b1da807576f5a7194fda/manim/mobject/geometry/polygram.py#L607>`__,
+we can see that the ``side_length`` attribute of the square is set,
+and then
+
+::
+
+  super().__init__(height=side_length, width=side_length, **kwargs)
+
+is called. This ``super`` call is the Python way of calling the
+initialization function of the parent class. As :class:`.Square`
+inherits from :class:`.Rectangle`, the next method called
+is ``Rectangle.__init__``. There, only the first three lines
+are really relevant for us::
+
+  super().__init__(UR, UL, DL, DR, color=color, **kwargs)
+  self.stretch_to_fit_width(width)
+  self.stretch_to_fit_height(height)
+
+First, the initialization function of the parent class of
+:class:`.Rectangle` -- :class:`.Polygon` -- is called. The
+four positional arguments passed are the four corners of
+the polygon: ``UR`` is up right (and equal to ``UP + RIGHT``),
+``UL`` is up left (and equal to ``UP + LEFT``), and so forth.
+Before we follow our debugger deeper, let us observe what
+happens with the constructed polygon: the remaining two lines
+stretch the polygon to fit the specified width and height 
+such that a rectangle with the desired measurements is created.
+
+The initialization function of :class:`.Polygon` is particularly
+simple, it only calls the initialization function of its parent
+class, :class:`.Polygram`. There, we have almost reached the end
+of the chain: :class:`.Polygram` inherits from :class:`.VMobject`,
+whose initialization function mainly sets the values of some
+attributes (quite similar to ``Mobject.__init__``, but more specific
+to the Bézier curves that make up the mobject).
+
+After calling the initialization function of :class:`.VMobject`,
+the constructor of :class:`.Polygram` also does something somewhat
+odd: it sets the points (which, you might remember above, should
+actually be set in a corresponding ``generate_points`` method
+of :class:`.Polygram`).
+
+.. warning::
+  In several instances, the implementation of mobjects does
+  not really stick to all aspects of Manim's interface. This
+  is unfortunate, and increasing consistency is something
+  that we actively work on. Help is welcome!
+
+Without going too much into detail, :class:`.Polygram` sets its
+``points`` attribute via :meth:`.VMobject.start_new_path`,
+:meth:`.VMobject.add_points_as_corners`, which take care of
+setting the quadruples of anchors and handles appropriately.
+After the points are set, Python continues to process the
+call stack until it reaches the method that was first called;
+the initialization method of :class:`.Square`. After this,
+the square is initialized and assigned to the ``orange_square``
+variable.
 
 - mobject initialization of circle: more or less same as ``orange_square``,
   different inheritance structure obviously.
