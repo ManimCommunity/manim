@@ -28,7 +28,6 @@ from ..utils.file_ops import (
     is_gif_format,
     is_png_format,
     is_webm_format,
-    log_to_file,
     modify_atime,
     write_to_movie,
 )
@@ -160,7 +159,7 @@ class SceneFileWriter:
                 ),
             )
 
-            if log_to_file():
+            if config["log_to_file"]:
                 log_dir = guarantee_existence(config.get_dir("log_dir"))
                 set_file_logger(
                     scene_name=scene_name, module_name=module_name, log_dir=log_dir

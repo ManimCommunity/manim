@@ -15,7 +15,6 @@ __all__ = [
     "is_webm_format",
     "is_mov_format",
     "write_to_movie",
-    "log_to_file",
 ]
 
 import os
@@ -120,13 +119,6 @@ def write_to_movie() -> bool:
         or is_webm_format()
         or is_mov_format()
     )
-
-
-def log_to_file() -> bool:
-    """
-    Determines if file logging is set to True.
-    """
-    return config["log_to_file"]
 
 
 def add_extension_if_not_present(file_name: Path, extension: str) -> Path:

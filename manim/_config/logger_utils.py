@@ -156,8 +156,7 @@ def set_file_logger(scene_name: str, module_name: str, log_dir: Path) -> None:
     # <name_of_animation_file>_<name_of_scene>.log, gotten from config.  So it
     # can differ from the real name of the scene.  <name_of_scene> would only
     # appear if scene name was provided when manim was called.
-    scene_name_suffix = "".join(scene_name)
-    log_file_name = f"{module_name}_{scene_name_suffix}.log"
+    log_file_name = f"{module_name}_{scene_name}.log"
     log_file_path = log_dir / log_file_name
 
     file_handler = logging.FileHandler(log_file_path, mode="w")
