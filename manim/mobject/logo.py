@@ -11,7 +11,7 @@ from manim.mobject.text.tex_mobject import MathTex, Tex
 
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create
+from ..animation.creation import Create, SpiralIn
 from ..animation.fading import FadeIn
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.types.vectorized_mobject import VGroup
@@ -127,33 +127,8 @@ class ManimBanner(VGroup):
         :class:`~.AnimationGroup`
             An animation to be used in a :meth:`.Scene.play` call.
         """
-        shape_center = self.shapes.get_center()
-        expansion_factor = 8 * self.scale_factor
-
-        for shape in self.shapes:
-            shape.final_position = shape.get_center()
-            shape.initial_position = (
-                shape.final_position
-                + (shape.final_position - shape_center) * expansion_factor
-            )
-            shape.move_to(shape.initial_position)
-            shape.save_state()
-
-        def spiral_updater(shapes, alpha):
-            for shape in shapes:
-                shape.restore()
-                shape.shift((shape.final_position - shape.initial_position) * alpha)
-                shape.rotate(TAU * alpha, about_point=shape_center)
-                shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-                shape.set_opacity(min(1, alpha * 3))
-
         return AnimationGroup(
-            UpdateFromAlphaFunc(
-                self.shapes,
-                spiral_updater,
-                run_time=run_time,
-                rate_func=ease_out_sine,
-            ),
+            SpiralIn(self.shapes),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
         )

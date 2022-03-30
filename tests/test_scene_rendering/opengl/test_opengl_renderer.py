@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from unittest.mock import Mock
 
 import pytest
@@ -35,6 +36,9 @@ def test_force_window_opengl_render_with_movies(
     renderer.window.close()
 
 
+@pytest.mark.skipif(
+    platform.processor() == "aarch64", reason="Fails on Linux-ARM runners"
+)
 def test_force_window_opengl_render_with_format(
     using_temp_opengl_config,
     force_window_config_pngs,
