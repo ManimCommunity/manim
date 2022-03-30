@@ -95,7 +95,7 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
+        type=click.Choice(["cairo", "opengl"], case_sensitive=False),
         help="Select a renderer for your Scene.",
         default=None,
     ),
@@ -104,18 +104,6 @@ render_options = option_group(
         is_flag=True,
         help="Render scenes using OpenGL (Deprecated).",
         default=None,
-    ),
-    option(
-        "--use_webgl_renderer",
-        is_flag=True,
-        help="Render scenes using the WebGL frontend (Deprecated).",
-        default=None,
-    ),
-    option(
-        "--webgl_renderer_path",
-        default=None,
-        type=click.Path(),
-        help="The path to the WebGL frontend.",
     ),
     option(
         "-g",

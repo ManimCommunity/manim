@@ -233,7 +233,10 @@ class Animation:
         """
         if scene is None:
             return
-        if self.is_introducer():
+        if (
+            self.is_introducer()
+            and self.mobject not in scene.get_mobject_family_members()
+        ):
             scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
@@ -451,12 +454,12 @@ class Animation:
         return self.remover
 
     def is_introducer(self) -> bool:
-        """Test if a the animation is a remover.
+        """Test if a the animation is an introducer.
 
         Returns
         -------
         bool
-            ``True`` if the animation is a remover, ``False`` otherwise.
+            ``True`` if the animation is an introducer, ``False`` otherwise.
         """
         return self.introducer
 
