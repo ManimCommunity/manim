@@ -252,6 +252,7 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "enable_wireframe",
         "ffmpeg_loglevel",
+        "ffmpeg_path",
         "format",
         "flush_cache",
         "frame_height",
@@ -633,6 +634,9 @@ class ManimConfig(MutableMapping):
         if val:
             self.ffmpeg_loglevel = val
 
+        val = parser["ffmpeg"].get("path")
+        setattr(self, "ffmpeg_path", val)
+
         try:
             val = parser["jupyter"].getboolean("media_embed")
         except ValueError:
@@ -965,6 +969,11 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    ffmpeg_path = property(
+        lambda self: self._d["ffmpeg_path"],
+        lambda self, val: self._set_str("ffmpeg_path", val),
     )
 
     media_embed = property(
