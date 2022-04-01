@@ -14,7 +14,7 @@ __all__ = [
     "make_even",
     "make_even_by_cycling",
     "remove_nones",
-    "concatenate_lists",
+    "flatten_lists",
     "listify",
 ]
 
@@ -62,7 +62,7 @@ def batch_by_property(items, property_func):
     return batch_prop_pairs
 
 
-def concatenate_lists(*list_of_lists):
+def flatten_lists(*list_of_lists):
     return [item for lst in list_of_lists for item in lst]
 
 
