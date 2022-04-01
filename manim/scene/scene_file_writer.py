@@ -19,6 +19,7 @@ from pydub import AudioSegment
 from manim import __version__
 
 from .. import config, logger
+from .._config.logger_utils import set_file_logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
@@ -157,6 +158,12 @@ class SceneFileWriter:
                     module_name=module_name,
                 ),
             )
+
+            if config["log_to_file"]:
+                log_dir = guarantee_existence(config.get_dir("log_dir"))
+                set_file_logger(
+                    scene_name=scene_name, module_name=module_name, log_dir=log_dir
+                )
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
