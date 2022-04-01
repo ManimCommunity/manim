@@ -4,8 +4,8 @@ import os
 
 from manim import *
 
-from .assert_utils import assert_dir_exists, assert_file_not_exists
-from .utils.video_tester import *
+from tests.assert_utils import assert_dir_exists, assert_file_not_exists
+from tests.utils.video_tester import *
 
 
 def test_guarantee_existence(tmp_path):
