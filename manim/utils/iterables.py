@@ -14,7 +14,7 @@ __all__ = [
     "make_even",
     "make_even_by_cycling",
     "remove_nones",
-    "flatten_lists",
+    "concatenate_lists",
     "listify",
 ]
 
@@ -25,26 +25,51 @@ import numpy as np
 
 
 def adjacent_n_tuples(objects: Sequence, n: int) -> zip:
+    """Returns the Sequence objects cyclically split into n length tuples.
+
+    Examples::
+
+        list(adjacent_n_tuples([1, 2, 3, 4], 2))
+        # returns [(1, 2), (2, 3), (3, 4), (4, 1)]
+
+        list(adjacent_n_tuples([1, 2, 3, 4], 3))
+        # returns [(1, 2, 3), (2, 3, 4), (3, 4, 1), (4, 1, 2)]
+    """
     return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
 def adjacent_pairs(objects: Sequence) -> zip:
+    """Alias for ``adjacent_n_tuples(objects, 2)``.
+
+    Example::
+
+        list(adjacent_pairs([1, 2, 3, 4]))
+        # returns [(1, 2), (2, 3), (3, 4), (4, 1)]
+    """
     return adjacent_n_tuples(objects, 2)
 
 
-def all_elements_are_instances(iterable: Iterable, class_) -> bool:
-    return all([isinstance(e, class_) for e in iterable])
+def all_elements_are_instances(iterable: Iterable, Class) -> bool:
+    """Returns ``True`` if all elements of iterable are instances of Class.
+    False otherwise.
+    """
+    return all([isinstance(e, Class) for e in iterable])
 
 
 def batch_by_property(
-    items: Iterable, property_func: Callable
+    items: Sequence, property_func: Callable
 ) -> list[tuple[list, Any]]:
     """
-    Takes in a list, and returns a list of tuples, (batch, prop)
+    Takes in a Sequence, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
-    put into property_func, and such that chaining all these
-    batches together would give the original list (i.e. order is
-    preserved)
+    put into the Callable property_func, and such that chaining all these
+    batches together would give the original Sequence (i.e. order is
+    preserved).
+
+    Example::
+
+        batch_by_property([(1, 2), (3, 4), (5, 6, 7), (8, 9)], len)
+        # returns [([(1, 2), (3, 4)], 2), ([(5, 6, 7)], 3), ([(8, 9)], 2)]
     """
     batch_prop_pairs = []
     curr_batch = []
@@ -65,23 +90,51 @@ def batch_by_property(
     return batch_prop_pairs
 
 
-def flatten_lists(*list_of_lists: Iterable) -> list:
+def concatenate_lists(*list_of_lists: Iterable) -> list:
+    """Combines the Iterables provided as arguments into one list.
+
+    Example::
+
+        concatenate_lists([1, 2], [3, 4], [5])
+        # returns [1, 2, 3, 4, 5]
+    """
     return [item for lst in list_of_lists for item in lst]
 
 
 def list_difference_update(l1: Iterable, l2: Iterable) -> list:
+    """Returns a list containing all the elements of l1 not in l2
+
+    Example::
+
+        list_difference_update([1, 2, 3, 4], [2, 4])
+        # returns [1, 3]
+    """
     return [e for e in l1 if e not in l2]
 
 
 def list_update(l1: Iterable, l2: Iterable) -> list:
     """
-    Used instead of list(set(l1).update(l2)) to maintain order,
+    Used instead of ``set.update()`` to maintain order,
     making sure duplicates are removed from l1, not l2.
+    Removes overlap of l1 and l2 and then concatenates l2 unchanged.
+
+    Example::
+
+        list_update([1, 2, 3], [2, 4, 4])
+        # returns [1, 3, 2, 4, 4]
     """
     return [e for e in l1 if e not in l2] + list(l2)
 
 
 def listify(obj) -> list:
+    """Converts obj to a list intelligently.
+
+    Examples::
+
+        listify('str')   # ['str']
+        listify((1, 2))  # [1, 2]
+        listify(len)     # [len]
+    """
     if isinstance(obj, str):
         return [obj]
     try:
