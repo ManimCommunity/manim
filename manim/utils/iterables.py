@@ -19,23 +19,26 @@ __all__ = [
 ]
 
 import itertools as it
+from typing import Any, Callable, Collection, Generator, Iterable, Reversible, Sequence
 
 import numpy as np
 
 
-def adjacent_n_tuples(objects, n):
+def adjacent_n_tuples(objects: Sequence, n: int) -> zip:
     return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
 
 
-def adjacent_pairs(objects):
+def adjacent_pairs(objects: Sequence) -> zip:
     return adjacent_n_tuples(objects, 2)
 
 
-def all_elements_are_instances(iterable, Class):
-    return all([isinstance(e, Class) for e in iterable])
+def all_elements_are_instances(iterable: Iterable, class_) -> bool:
+    return all([isinstance(e, class_) for e in iterable])
 
 
-def batch_by_property(items, property_func):
+def batch_by_property(
+    items: Iterable, property_func: Callable
+) -> list[tuple[list, Any]]:
     """
     Takes in a list, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
@@ -62,15 +65,15 @@ def batch_by_property(items, property_func):
     return batch_prop_pairs
 
 
-def flatten_lists(*list_of_lists):
+def flatten_lists(*list_of_lists: Iterable) -> list:
     return [item for lst in list_of_lists for item in lst]
 
 
-def list_difference_update(l1, l2):
+def list_difference_update(l1: Iterable, l2: Iterable) -> list:
     return [e for e in l1 if e not in l2]
 
 
-def list_update(l1, l2):
+def list_update(l1: Iterable, l2: Iterable) -> list:
     """
     Used instead of list(set(l1).update(l2)) to maintain order,
     making sure duplicates are removed from l1, not l2.
@@ -78,7 +81,7 @@ def list_update(l1, l2):
     return [e for e in l1 if e not in l2] + list(l2)
 
 
-def listify(obj):
+def listify(obj) -> list:
     if isinstance(obj, str):
         return [obj]
     try:
@@ -87,7 +90,7 @@ def listify(obj):
         return [obj]
 
 
-def make_even(iterable_1, iterable_2):
+def make_even(iterable_1: Iterable, iterable_2: Iterable) -> tuple[list, list]:
     list_1, list_2 = list(iterable_1), list(iterable_2)
     length = max(len(list_1), len(list_2))
     return (
@@ -96,17 +99,19 @@ def make_even(iterable_1, iterable_2):
     )
 
 
-def make_even_by_cycling(iterable_1, iterable_2):
+def make_even_by_cycling(
+    iterable_1: Collection, iterable_2: Collection
+) -> tuple[list, list]:
     length = max(len(iterable_1), len(iterable_2))
     cycle1 = it.cycle(iterable_1)
     cycle2 = it.cycle(iterable_2)
     return (
-        [next(cycle1) for x in range(length)],
-        [next(cycle2) for x in range(length)],
+        [next(cycle1) for _ in range(length)],
+        [next(cycle2) for _ in range(length)],
     )
 
 
-def remove_list_redundancies(lst):
+def remove_list_redundancies(lst: Reversible) -> list:
     """
     Used instead of list(set(l)) to maintain order
     Keeps the last occurrence of each element
@@ -121,20 +126,18 @@ def remove_list_redundancies(lst):
     return reversed_result
 
 
-def remove_nones(sequence):
+def remove_nones(sequence: Iterable) -> list:
+    # Note this is redundant with it.chain
     return [x for x in sequence if x]
 
 
-# Note this is redundant with it.chain
-
-
-def resize_array(nparray, length):
+def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
     if len(nparray) == length:
         return nparray
     return np.resize(nparray, (length, *nparray.shape[1:]))
 
 
-def resize_preserving_order(nparray, length):
+def resize_preserving_order(nparray: np.ndarray, length: int) -> np.ndarray:
     if len(nparray) == 0:
         return np.zeros((length, *nparray.shape[1:]))
     if len(nparray) == length:
@@ -143,7 +146,7 @@ def resize_preserving_order(nparray, length):
     return nparray[indices]
 
 
-def resize_with_interpolation(nparray, length):
+def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
     if len(nparray) == length:
         return nparray
     cont_indices = np.linspace(0, len(nparray) - 1, length)
@@ -156,16 +159,16 @@ def resize_with_interpolation(nparray, length):
     )
 
 
-def stretch_array_to_length(nparray, length):
+def stretch_array_to_length(nparray: np.ndarray, length: int) -> np.ndarray:
     curr_len = len(nparray)
     if curr_len > length:
         raise Warning("Trying to stretch array to a length shorter than its own")
     indices = np.arange(length) / float(length)
     indices *= curr_len
-    return nparray[indices.astype("int")]
+    return nparray[indices.astype(int)]
 
 
-def tuplify(obj):
+def tuplify(obj) -> tuple:
     if isinstance(obj, str):
         return (obj,)
     try:
@@ -174,7 +177,7 @@ def tuplify(obj):
         return (obj,)
 
 
-def uniq_chain(*args):
+def uniq_chain(*args) -> Generator:
     unique_items = set()
     for x in it.chain(*args):
         if x in unique_items:
