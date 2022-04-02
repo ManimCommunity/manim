@@ -27,7 +27,13 @@ import numpy as np
 def adjacent_n_tuples(objects: Sequence, n: int) -> zip:
     """Returns the Sequence objects cyclically split into n length tuples.
 
-    Examples::
+    See Also
+    --------
+    adjacent_pairs : alias with n=2
+
+    Examples
+    --------
+    Normal usage::
 
         list(adjacent_n_tuples([1, 2, 3, 4], 2))
         # returns [(1, 2), (2, 3), (3, 4), (4, 1)]
@@ -41,7 +47,13 @@ def adjacent_n_tuples(objects: Sequence, n: int) -> zip:
 def adjacent_pairs(objects: Sequence) -> zip:
     """Alias for ``adjacent_n_tuples(objects, 2)``.
 
-    Example::
+    See Also
+    --------
+    adjacent_n_tuples
+
+    Examples
+    --------
+    Normal usage::
 
         list(adjacent_pairs([1, 2, 3, 4]))
         # returns [(1, 2), (2, 3), (3, 4), (4, 1)]
@@ -59,14 +71,15 @@ def all_elements_are_instances(iterable: Iterable, Class) -> bool:
 def batch_by_property(
     items: Sequence, property_func: Callable
 ) -> list[tuple[list, Any]]:
-    """
-    Takes in a Sequence, and returns a list of tuples, (batch, prop)
+    """Takes in a Sequence, and returns a list of tuples, (batch, prop)
     such that all items in a batch have the same output when
     put into the Callable property_func, and such that chaining all these
     batches together would give the original Sequence (i.e. order is
     preserved).
 
-    Example::
+    Examples
+    --------
+    Normal usage::
 
         batch_by_property([(1, 2), (3, 4), (5, 6, 7), (8, 9)], len)
         # returns [([(1, 2), (3, 4)], 2), ([(5, 6, 7)], 3), ([(8, 9)], 2)]
@@ -93,7 +106,9 @@ def batch_by_property(
 def concatenate_lists(*list_of_lists: Iterable) -> list:
     """Combines the Iterables provided as arguments into one list.
 
-    Example::
+    Examples
+    --------
+    Normal usage::
 
         concatenate_lists([1, 2], [3, 4], [5])
         # returns [1, 2, 3, 4, 5]
@@ -102,9 +117,11 @@ def concatenate_lists(*list_of_lists: Iterable) -> list:
 
 
 def list_difference_update(l1: Iterable, l2: Iterable) -> list:
-    """Returns a list containing all the elements of l1 not in l2
+    """Returns a list containing all the elements of l1 not in l2.
 
-    Example::
+    Examples
+    --------
+    Normal usage::
 
         list_difference_update([1, 2, 3, 4], [2, 4])
         # returns [1, 3]
@@ -113,12 +130,13 @@ def list_difference_update(l1: Iterable, l2: Iterable) -> list:
 
 
 def list_update(l1: Iterable, l2: Iterable) -> list:
-    """
-    Used instead of ``set.update()`` to maintain order,
-    making sure duplicates are removed from l1, not l2.
-    Removes overlap of l1 and l2 and then concatenates l2 unchanged.
+    """Used instead of ``set.update()`` to maintain order,
+        making sure duplicates are removed from l1, not l2.
+        Removes overlap of l1 and l2 and then concatenates l2 unchanged.
 
-    Example::
+    Examples
+    --------
+    Normal usage::
 
         list_update([1, 2, 3], [2, 4, 4])
         # returns [1, 3, 2, 4, 4]
@@ -129,7 +147,9 @@ def list_update(l1: Iterable, l2: Iterable) -> list:
 def listify(obj) -> list:
     """Converts obj to a list intelligently.
 
-    Examples::
+    Examples
+    --------
+    Normal usage::
 
         listify('str')   # ['str']
         listify((1, 2))  # [1, 2]
