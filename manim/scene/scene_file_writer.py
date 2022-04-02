@@ -576,9 +576,7 @@ class SceneFileWriter:
         partial movie files that make up a Scene into a single
         video file for that Scene.
         """
-        partial_movie_files = [
-            el for el in self.partial_movie_files if el is not None
-        ]
+        partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE: Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as
