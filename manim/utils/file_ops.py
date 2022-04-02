@@ -130,22 +130,22 @@ def add_version_before_extension(file_name):
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
-def guarantee_existence(path):
-    path = Path(path)
+def guarantee_existence(path: Path) -> Path:
     if not path.exists():
         path.mkdir(parents=True)
     return path.resolve(strict=True)
 
 
-def guarantee_empty_existence(path):
-    path = Path(path)
+def guarantee_empty_existence(path: Path) -> Path:
     if path.exists():
         shutil.rmtree(str(path))
     path.mkdir(parents=True)
     return path.resolve(strict=True)
 
 
-def seek_full_path_from_defaults(file_name, default_dir, extensions):
+def seek_full_path_from_defaults(
+    file_name: str, default_dir: Path, extensions: list[str]
+) -> Path:
     possible_paths = [Path(file_name)]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
