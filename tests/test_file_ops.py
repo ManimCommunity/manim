@@ -8,7 +8,7 @@ from .assert_utils import assert_dir_exists, assert_file_not_exists
 from .utils.video_tester import *
 
 
-def test_guarantee_existence(tmp_path : Path):
+def test_guarantee_existence(tmp_path: Path):
     test_dir = tmp_path / "test"
     guarantee_existence(test_dir)
     # test if file dir got created
@@ -19,7 +19,7 @@ def test_guarantee_existence(tmp_path : Path):
     guarantee_existence(test_dir)
 
 
-def test_guarantee_empty_existence(tmp_path : Path):
+def test_guarantee_empty_existence(tmp_path: Path):
     test_dir = tmp_path / "test"
     test_dir.mkdir()
     with open(test_dir / "test.txt", "x"):
