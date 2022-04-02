@@ -3,19 +3,19 @@
 from __future__ import annotations
 
 __all__ = [
-    "remove_list_redundancies",
-    "list_update",
-    "list_difference_update",
-    "all_elements_are_instances",
     "adjacent_n_tuples",
     "adjacent_pairs",
-    "tuplify",
-    "stretch_array_to_length",
+    "all_elements_are_instances",
+    "concatenate_lists",
+    "list_difference_update",
+    "list_update",
+    "listify",
     "make_even",
     "make_even_by_cycling",
+    "remove_list_redundancies",
     "remove_nones",
-    "concatenate_lists",
-    "listify",
+    "stretch_array_to_length",
+    "tuplify",
 ]
 
 import itertools as it
