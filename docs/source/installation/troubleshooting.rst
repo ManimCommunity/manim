@@ -4,13 +4,15 @@ Troubleshooting
 Version incompatibility
 ***********************
 
-Confusion and conflict between versions is by far the most common reason
-for installation failures. Some signs and errors resulting from this are
-as follows:
+Confusion and conflict between versions are by far the most common reasons
+for installation failures. Some errors resulting from this are:
 
 - ``There are no scenes in that module``
 - ``ModuleNotFoundError: No module named 'manim'``
 - ``ModuleNotFoundError: No module named 'manimlib'``
+
+Some reasons that conflict may occur are:
+
 - You followed any tutorial created before October 2020 (because the community edition did not exist before then)
 - You cloned a repository on GitHub (installation of the community version for normal use does not require the cloning of any repository)
 - Different import statements (explained below)
@@ -65,7 +67,7 @@ them with:
    pip uninstall <package>
 
 
-If you have cloned a repository from GitHub, you should either remove it
+If you cloned manim from GitHub, you should either remove it
 or run manim outside that folder.
 
 Other errors
@@ -73,7 +75,7 @@ Other errors
 
 ``pip install manim`` fails when installing manimpango?
 -------------------------------------------------------
-Most likely this means that pip was not able to use our pre-built wheels
+This most likely means that pip was not able to use our pre-built wheels
 of ``manimpango``. Let us know (via our `Discord <https://www.manim.community/discord/>`_
 or by opening a
 `new issue on GitHub <https://github.com/ManimCommunity/ManimPango/issues/new>`_)
@@ -87,19 +89,19 @@ instructions given in
 of the corresponding `GitHub repository <https://github.com/ManimCommunity/ManimPango>`_.
 
 
-(Windows) OSError: dlopen() failed to load a library: pango?
-------------------------------------------------------------
+(Windows) OSError: dlopen() failed to load a library: pango
+-----------------------------------------------------------
 
 This should be fixed in Manim's latest version, update
 using ``pip install --upgrade manim``.
 
 
 
-Some letters are missing from Text/Tex output?
-------------------------------------------------------------
+Some letters are missing from Text/Tex output
+---------------------------------------------
 
 If you have recently installed TeX you may need to build the fonts it
-uses. Which can be done by running:
+uses. This can be done by running:
 
 .. code-block:: bash
 
@@ -108,8 +110,8 @@ uses. Which can be done by running:
 
 .. _dvisvgm-troubleshoot:
 
-Installation does not support converting PDF to SVG?
-----------------------------------------------------
+Installation does not support converting PDF to SVG
+---------------------------------------------------
 
 First, make sure your ``dvisvgm`` version is at least 2.4:
 
@@ -148,7 +150,7 @@ If, however, ``--libgs=filename`` appears in the help, that means that your
 ``/opt/local/lib``). Please look carefully, as the file might be located
 elsewhere, e.g. in the directory where Ghostscript is installed.
 
-As soon as you have found the library, try (on Mac OS or Linux)
+When you have found the library, try (on Mac OS or Linux)
 
 .. code-block:: bash
 
@@ -173,7 +175,7 @@ As a last check, you can run
 
   dvisvgm -V1
 
-while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm``
+(while still having ``LIBGS`` set to the correct path, of course.) If ``dvisvgm``
 can find your Ghostscript installation, it will be shown in the output together
 with the version number.
 
@@ -193,7 +195,7 @@ Follow the steps in `this StackExchange answer <https://superuser.com/questions/
 --------------------------------
 
 If ``choco install manimce`` failed,
-it is likely being caused by Python not being added to your ``PATH`` variable properly.
+it is likely because Python was not added to your ``PATH`` variable properly.
 Try running the following commands in your terminal:
 
 1. ``py --version``
@@ -206,18 +208,16 @@ If none of these commands are recognized,
 this means that Python was installed on your system, but was not added to PATH.
 See above for directions to add it to your PATH variable.
 
-If any of these commands opens up the Windows store,
+If any of these commands open the Windows store,
 this is likely interfering with the process.
-This is because Chocolatey runs a command that calls python or python3,
-and opening up the Windows store is not the expected behavior.
 See below to fix aliases.
 
 (Windows) Fix Aliases
 ---------------------
 
 1. Go to the Windows Settings.
-2. Under Apps and Features, there are an application execution aliases.
-3. Within this menu disable the alias(es) that is causing the issue (``python`` and/or ``python3``).
+2. Under Apps and Features, there are application execution aliases.
+3. Within this menu disable the alias(es) that are causing the issue (``python`` and/or ``python3``).
 
 ``IndexError: List index out of range``
 ---------------------------------------
