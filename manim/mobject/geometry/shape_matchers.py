@@ -106,10 +106,17 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def set_style(
         self,
-        stroke_color=None,
-        stroke_width=None,
         fill_color=None,
         fill_opacity=None,
+        stroke_color=None,
+        stroke_width=None,
+        stroke_opacity=None,
+        background_stroke_color=None,
+        background_stroke_width=None,
+        background_stroke_opacity=None,
+        sheen_factor=None,
+        sheen_direction=None,
+        background_image=None,
         family=True,
     ):
         # Unchangeable style, except for fill_opacity
