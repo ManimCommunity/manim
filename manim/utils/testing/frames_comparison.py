@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import functools
 import inspect
+import shutil
 from pathlib import Path
 from typing import Callable
 
@@ -247,7 +248,7 @@ def _control_data_path(
 
 
 def _config_test(last_frame: bool) -> ManimConfig:
-    return ManimConfig().digest_file(
+    _config = ManimConfig().digest_file(
         str(
             Path(__file__).parent
             / (
@@ -257,3 +258,8 @@ def _config_test(last_frame: bool) -> ManimConfig:
             ),
         ),
     )
+    # Below configuration is done so that the test suite
+    # can't run in interactive mode.
+    _config.ffmpeg_executable = shutil.which("ffmpeg")
+    _config.latex_executable = shutil.which("latex")
+    return _config

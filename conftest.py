@@ -17,8 +17,8 @@ from _pytest.doctest import DoctestItem
 
 from manim import config, tempconfig
 
-config.ffmpeg_executable = shutil.which("ffmpeg") # type: ignore
-config.latex_executable = shutil.which("latex") # type: ignore
+config.ffmpeg_executable = shutil.which("ffmpeg")  # type: ignore
+config.latex_executable = shutil.which("latex")  # type: ignore
 
 
 @pytest.fixture(autouse=True)
