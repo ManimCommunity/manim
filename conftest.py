@@ -3,16 +3,22 @@
 # run on difference temporary directories and avoiding
 # errors.
 
-from __future__ import annotations
-
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
 # itself. If it's a normal test then it uses the
 # tempconfig to change directories.
+
+from __future__ import annotations
+
+import shutil
+
 import pytest
 from _pytest.doctest import DoctestItem
 
 from manim import config, tempconfig
+
+config.ffmpeg_executable = shutil.which("ffmpeg") # type: ignore
+config.latex_executable = shutil.which("latex") # type: ignore
 
 
 @pytest.fixture(autouse=True)
