@@ -101,7 +101,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     # Adding, Creating, Modifying tips
 
-    def add_tip(self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=False):
+    def add_tip(
+        self, tip=None, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
         """Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
@@ -115,7 +117,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.add(tip)
         return self
 
-    def create_tip(self, tip_shape=None, tip_length=None, tip_width=None, at_start=False):
+    def create_tip(
+        self, tip_shape=None, tip_length=None, tip_width=None, at_start=False
+    ):
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
