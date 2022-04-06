@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import capture
+from manim import capture, config
 
 plugin_pyproject_template = textwrap.dedent(
     """\
@@ -51,9 +51,11 @@ plugin_init_template = textwrap.dedent(
 )
 
 cfg_file_contents = textwrap.dedent(
-    """\
+    f"""\
         [CLI]
-        plugins = {plugin_name}
+        plugins = {{plugin_name}}
+        ffmpeg_executable = {config.ffmpeg_executable}
+        latex_executable = {config.latex_executable}
     """,
 )
 
