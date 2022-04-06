@@ -37,7 +37,7 @@ from .. import console
 from .._config.utils import config_file_paths
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def check_ffmpeg_exe_working(ffmpeg_exe: str | None) -> bool:
     if not ffmpeg_exe:
         return False
@@ -55,7 +55,7 @@ def check_ffmpeg_exe_working(ffmpeg_exe: str | None) -> bool:
     return True
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def check_latex_exe_working(latex_exe: str | None) -> bool:
     if not latex_exe:
         return False
