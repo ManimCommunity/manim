@@ -133,14 +133,20 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         """
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
+        style = {}
+
         if tip_shape is None:
             tip_shape = ArrowTriangleFilledTip
+
+        if tip_shape is ArrowTriangleFilledTip:
+            if tip_width is None:
+                tip_width = self.get_default_tip_length()
+            style.update({"width": tip_width})
         if tip_length is None:
             tip_length = self.get_default_tip_length()
+
         color = self.get_color()
-        style = {"fill_color": color, "stroke_color": color}
-        if tip_width is not None:
-            style.update({"width": tip_width})
+        style.update({"fill_color": color, "stroke_color": color})
         style.update(self.tip_style)
         tip = tip_shape(length=tip_length, **style)
         return tip
