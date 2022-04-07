@@ -189,7 +189,6 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         start_angle=PI,
         **kwargs,
     ):
-        print("ARROW",kwargs)
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
@@ -210,7 +209,6 @@ class ArrowTriangleFilledTip(ArrowTriangleTip):
     """
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        print("2arrow", kwargs)
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
@@ -251,7 +249,6 @@ class ArrowSquareTip(ArrowTip, Square):
         start_angle=PI,
         **kwargs,
     ):
-        print(kwargs)
         self.start_angle = start_angle
         Square.__init__(
             self,
