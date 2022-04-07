@@ -189,7 +189,7 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         start_angle=PI,
         **kwargs,
     ):
-        print("ARROW",kwargs)
+        print("ARROW", kwargs)
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
