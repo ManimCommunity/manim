@@ -53,23 +53,29 @@ class TexTemplate:
 """
     default_placeholder_text = "YourTextHere"
     default_tex_compiler = "latex"
+    default_dvisvgm_compiler = "dvisvgm"
     default_output_format = ".dvi"
     default_post_doc_commands = ""
 
     def __init__(
         self,
         tex_compiler=None,
+        dvisvgm_compiler=None,
         output_format=None,
         documentclass=None,
         preamble=None,
         placeholder_text=None,
         post_doc_commands=None,
-        **kwargs,
     ):
         self.tex_compiler = (
             tex_compiler
             if tex_compiler is not None
             else TexTemplate.default_tex_compiler
+        )
+        self.dvisvgm_compiler = (
+            dvisvgm_compiler
+            if dvisvgm_compiler is not None
+            else TexTemplate.default_dvisvgm_compiler
         )
         self.output_format = (
             output_format

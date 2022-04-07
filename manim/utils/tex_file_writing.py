@@ -50,7 +50,9 @@ def tex_to_svg_file(expression, environment=None, tex_template=None):
         tex_template.tex_compiler,
         tex_template.output_format,
     )
-    return convert_to_svg(dvi_file, tex_template.output_format)
+    return convert_to_svg(
+        dvi_file, tex_template.dvisvgm_compiler, tex_template.output_format
+    )
 
 
 def generate_tex_file(expression, environment=None, tex_template=None):
@@ -112,7 +114,12 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     :class:`str`
         Compilation command according to given parameters
     """
-    if tex_compiler in {"latex", "pdflatex", "luatex", "lualatex"}:
+
+    tex_compiler_executable = (
+        tex_compiler.stem if Path(tex_compiler).exists() else tex_compiler
+    )
+
+    if tex_compiler_executable in {"latex", "pdflatex", "luatex", "lualatex"}:
         commands = [
             tex_compiler,
             "-interaction=batchmode",
@@ -123,7 +130,7 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
             ">",
             os.devnull,
         ]
-    elif tex_compiler == "xelatex":
+    elif tex_compiler_executable == "xelatex":
         if output_format == ".xdv":
             outflag = "-no-pdf"
         elif output_format == ".pdf":
@@ -131,7 +138,7 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
         else:
             raise ValueError("xelatex output is either pdf or xdv")
         commands = [
-            "xelatex",
+            tex_compiler,
             outflag,
             "-interaction=batchmode",
             "-halt-on-error",
@@ -197,7 +204,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
     return result
 
 
-def convert_to_svg(dvi_file, extension, page=1):
+def convert_to_svg(dvi_file, dvisvgm_compiler, extension, page=1):
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
@@ -220,7 +227,7 @@ def convert_to_svg(dvi_file, extension, page=1):
     dvi_file = Path(dvi_file).as_posix()
     if not result.exists():
         commands = [
-            "dvisvgm",
+            dvisvgm_compiler,
             "--pdf" if extension == ".pdf" else "",
             "-p " + str(page),
             f'"{dvi_file}"',
