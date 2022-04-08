@@ -107,14 +107,13 @@ def test_animate_with_changed_custom_attribute(using_temp_config):
     """Test that animating the change of a custom attribute
     using the animate syntax works correctly.
     """
+
     class CustomAnimateScene(Scene):
         def construct(self):
             vt = ValueTracker(0)
             vt.custom_attribute = "hello"
-            self.play(
-                vt.animate.set_value(42).set(custom_attribute="world")
-            )
+            self.play(vt.animate.set_value(42).set(custom_attribute="world"))
             assert vt.get_value() == 42
             assert vt.custom_attribute == "world"
-    
+
     CustomAnimateScene().render()

@@ -366,7 +366,6 @@ class _MethodAnimation(MoveToTarget):
         super().finish()
 
 
-
 class ApplyMethod(Transform):
     """Animates a mobject by applying a method.
 
