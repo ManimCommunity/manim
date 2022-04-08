@@ -551,12 +551,12 @@ class Scene:
 
     def remove_updater(self, func: Callable[[float], None]) -> None:
         """Remove an update function from the scene.
-    
+
         Parameters
         ----------
         func
             The updater function to be removed.
-        
+
         See also
         --------
         :meth:`.Scene.add_updater`
