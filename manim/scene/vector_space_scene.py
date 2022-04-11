@@ -1008,6 +1008,11 @@ class LinearTransformationScene(VectorScene):
             norm = np.linalg.norm(v.target.get_end())
             if norm < 0.1:
                 v.target.get_tip().scale(norm)
+            scale_ratio = np.linalg.norm(v.get_end()) / norm
+            if 0.25 < scale_ratio < 4:
+                v.target.scale(1 / scale_ratio)
+                v.target.scale(scale_ratio, scale_tips=True)
+                v.target.stroke_width *= scale_ratio
         return self.get_piece_movement(self.moving_vectors)
 
     def get_transformable_label_movement(self):
