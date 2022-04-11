@@ -4,8 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-import manim
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -115,7 +114,7 @@ class BackgroundRectangle(SurroundingRectangle):
             fill_opacity=fill_opacity,
         )
         if len(kwargs) > 0:
-            manim.logger.info(
+            logger.info(
                 "set_style for BackgroundRectangle does not process arguments other than fill_opacity."
             )
         return self
