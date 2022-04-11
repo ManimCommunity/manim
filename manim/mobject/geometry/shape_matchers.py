@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
+import manim
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
@@ -104,28 +105,19 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(
-        self,
-        fill_color=None,
-        fill_opacity=None,
-        stroke_color=None,
-        stroke_width=None,
-        stroke_opacity=None,
-        background_stroke_color=None,
-        background_stroke_width=None,
-        background_stroke_opacity=None,
-        sheen_factor=None,
-        sheen_direction=None,
-        background_image=None,
-        family=True,
-    ):
+    def set_style(self, fill_opacity, **kwargs):
         # Unchangeable style, except for fill_opacity
+        # All other style arguments are ignored
         super().set_style(
             stroke_color=BLACK,
             stroke_width=0,
             fill_color=BLACK,
             fill_opacity=fill_opacity,
         )
+        if len(kwargs) > 0:
+            manim.logger.info(
+                "set_style for BackgroundRectangle does not process arguments other than fill_opacity."
+            )
         return self
 
     def get_fill_color(self):
