@@ -49,6 +49,13 @@ class Animation:
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
+
+
+    reverse_rate_function
+        Reverses the rate function of the animation. Setting ``reverse_rate_function``
+        does not have any effect on ``remover`` or ``introducer``. These need to be
+        set explicitly if an introducer-animation should be turned into a remover one
+        and vice versa.
     name
         The name of the animation. This gets displayed while rendering the animation.
         Defaults to <class-name>(<Mobject-name>).
@@ -123,6 +130,7 @@ class Animation:
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
+        reverse_rate_function: bool = False,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -134,6 +142,7 @@ class Animation:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
+        self.reverse_rate_function: bool = reverse_rate_function
         self.name: str | None = name
         self.remover: bool = remover
         self.introducer: bool = introducer
@@ -361,7 +370,10 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return self.rate_func(value - lower)
+        if self.reverse_rate_function:
+            return self.rate_func(1 - (value - lower))
+        else:
+            return self.rate_func(value - lower)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> Animation:
