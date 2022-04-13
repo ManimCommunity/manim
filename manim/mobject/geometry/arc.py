@@ -763,6 +763,70 @@ class Ellipse(Circle):
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
+    @property
+    def width(self):
+        """The width of the Ellipse.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    ellipse = Ellipse(width=1)
+                    self.play(ellipse.animate.set(width=6))
+                    self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+
+        # Get the length across the X dimension
+        return self.length_over_dim(0)
+
+    @width.setter
+    def width(self, value):
+        # Ellipse width setter stretches along horizontal axis
+        self.stretch_to_fit_width(value)
+
+    @property
+    def height(self):
+        """The height of the Ellipse.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    ellipse = Ellipse(height=2)
+                    self.play(ellipse.animate.set(height=6))
+                    self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+
+        # Get the length across the Y dimension
+        return self.length_over_dim(1)
+
+    @height.setter
+    def height(self, value):
+        # Ellipse width setter stretches along vertical axis.
+        self.stretch_to_fit_height(value)
+
 
 class AnnularSector(Arc):
     """

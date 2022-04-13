@@ -79,6 +79,14 @@ def test_Ellipse(scene):
 
 
 @frames_comparison
+def test_Ellipse_set_width(scene):
+    e = Ellipse(width=1, height=1)
+    e.set(width=3)
+    e.set(height=10)
+    scene.add(e)
+
+
+@frames_comparison
 def test_Sector(scene):
     e = Sector()
     scene.add(e)
