@@ -86,9 +86,9 @@ def test_NumberPlane():
         assert len(plane.x_lines) == num_x_lines
 
     plane = NumberPlane((-5, 5, 0.5), (-8, 8, 2))  # <- test for different step values
-    # horizontal lines: -6 -4, -2, 0, 2, 4, 6 
+    # horizontal lines: -6 -4, -2, 0, 2, 4, 6
     assert len(plane.x_lines) == 7
-    # vertical lines: 0, +-0.5, +-1, +-1.5, +-2, +-2.5, 
+    # vertical lines: 0, +-0.5, +-1, +-1.5, +-2, +-2.5,
     # +-3, +-3.5, +-4, +-4.5
     assert len(plane.y_lines) == 19
 
