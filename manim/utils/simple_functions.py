@@ -48,23 +48,26 @@ def binary_search(
     upper_bound: Union[int, float],
     tolerance: Union[int, float] = 1e-4,
 ) -> Union[int, float, None]:
+
     lh = lower_bound
     rh = upper_bound
+    mh = np.mean(np.array([lh, rh]))
     while abs(rh - lh) > tolerance:
-        mh = np.mean([lh, rh])
+        mh = np.mean(np.array([lh, rh]))
         lx, mx, rx = (function(h) for h in (lh, mh, rh))
         if lx == target:
             return lh
         if rx == target:
             return rh
 
-        if lx <= target and rx >= target:
+        if lx <= target <= rx:
             if mx > target:
                 rh = mh
             else:
                 lh = mh
-        elif lx > target and rx < target:
+        elif lx > target > rx:
             lh, rh = rh, lh
         else:
             return None
+
     return mh
