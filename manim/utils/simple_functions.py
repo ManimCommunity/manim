@@ -21,12 +21,12 @@ from scipy import special
 
 
 def binary_search(
-    function: Callable[[Union[int, float]], Union[int, float]],
-    target: Union[int, float],
-    lower_bound: Union[int, float],
-    upper_bound: Union[int, float],
-    tolerance: Union[int, float] = 1e-4,
-) -> Union[int, float, None]:
+    function: Callable[[int | float], int | float],
+    target: int | float,
+    lower_bound: int | float,
+    upper_bound: int | float,
+    tolerance: int | float = 1e-4,
+) -> int | float | None:
     """Performs a numerical binary search to determine the input to `function`,
     between the bounds given, that outputs `target` to within `tolerance` (default of 0.0001).
     Returns None if no input can be found within the bounds.
