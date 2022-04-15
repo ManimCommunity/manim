@@ -12,25 +12,28 @@ __all__ = [
 
 import inspect
 from functools import lru_cache
+from types import MappingProxyType
+from typing import Callable, Union
 
 import numpy as np
 from scipy import special
 
 
-def sigmoid(x):
+def sigmoid(x: float) -> float:
     return 1.0 / (1 + np.exp(-x))
 
 
 @lru_cache(maxsize=10)
-def choose(n, k):
+def choose(n: int, k: int) -> int:
     return special.comb(n, k, exact=True)
 
 
-def get_parameters(function):
+def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Parameter]:
     return inspect.signature(function).parameters
 
 
 def clip(a, min_a, max_a):
+    """Any comparable objects (i.e. supports >,<)"""
     if a < min_a:
         return min_a
     elif a > max_a:
@@ -38,7 +41,13 @@ def clip(a, min_a, max_a):
     return a
 
 
-def binary_search(function, target, lower_bound, upper_bound, tolerance=1e-4):
+def binary_search(
+    function: Callable[[Union[int, float]], Union[int, float]],
+    target: Union[int, float],
+    lower_bound: Union[int, float],
+    upper_bound: Union[int, float],
+    tolerance: Union[int, float] = 1e-4,
+) -> Union[int, float, None]:
     lh = lower_bound
     rh = upper_bound
     while abs(rh - lh) > tolerance:
