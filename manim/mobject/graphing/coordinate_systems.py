@@ -881,7 +881,7 @@ class CoordinateSystem:
 
             >>> from manim import Axes
             >>> ax = Axes()
-            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> parabola = ax.plot(lambda x: x**2)
             >>> ax.input_to_graph_coords(x=3, graph=parabola)
             (3, 9)
         """
@@ -1255,7 +1255,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.4056476493802699
         """
@@ -1285,7 +1285,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
         """
