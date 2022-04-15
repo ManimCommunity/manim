@@ -8,14 +8,14 @@ can be configured programmatically via `the ManimConfig class`_, at the time
 of command invocation via `command-line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
-The most common, simplest, and recommended way to set the configure Manim is
+The most common, simplest, and recommended way to configure Manim is
 via the command-line interface (CLI), which is described directly below.
 
 Command-line arguments
 **********************
 
-By far, the most commonly used command in the CLI is the ``render`` command,
-which is used to render the scene(s) to an output file.
+By far the most commonly used command in the CLI is the ``render`` command,
+which is used to render scene(s) to an output file.
 It is used with the following arguments:
 
 .. program-output:: manim render --help
@@ -189,7 +189,7 @@ is in the same directory as <file.py>,
 Since config files are meant to replace CLI flags, all CLI flags can be set via
 a config file.  Moreover, any config option can be set via a config file,
 whether or not it has an associated CLI flag.  See the bottom of this document
-for a list of all CLI flags and all config options.
+for a list of all CLI flags and config options.
 
 Manim will look for a ``manim.cfg`` config file in the same directory as the
 file being rendered, and **not** in the directory of execution.  For example,
