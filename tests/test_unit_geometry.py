@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import numpy as np
 import logging
+
+import numpy as np
+
 logger = logging.getLogger(__name__)
 
-from manim import Sector, Circle, BackgroundRectangle
+from manim import BackgroundRectangle, Circle, Sector
 
 
 def test_get_arc_center():
@@ -17,6 +19,8 @@ def test_BackgroundRectangle(caplog):
     bg = BackgroundRectangle(c)
     bg.set_style(fill_opacity=0.42)
     assert bg.get_fill_opacity() == 0.42
-    bg.set_style(fill_opacity=1, hello='world')
-    assert "Argument {'hello': 'world'} is ignored in BackgroundRectangle.set_style." in caplog.text
-    
+    bg.set_style(fill_opacity=1, hello="world")
+    assert (
+        "Argument {'hello': 'world'} is ignored in BackgroundRectangle.set_style."
+        in caplog.text
+    )
