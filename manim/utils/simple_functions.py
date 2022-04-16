@@ -33,17 +33,17 @@ def binary_search(
 
     Examples
     --------
-    Normal Usage::
+    ::
 
-        Observe that 0 <= 2 (solution) <= 5 and (2)^2 + 3(2) + 1 = 11 (target)
-        >>>binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
-        2.0000457763671875
-        >>>binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, 0.01)
-        2.001953125
+        # Observe that 0 <= 2 (solution) <= 5 and (2)^2 + 3(2) + 1 = 11 (target)
+        binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
+        # Returns 2.0000457763671875
+        binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, 0.01)
+        # Returns 2.001953125
 
-        Here, observe that 7 (solution) > 5 (upper_bound) and (7)^2 + 3(7) + 1 = 71 (target)
-        >>>binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5)
-        None
+        # Here, observe that 7 (solution) > 5 (upper_bound) and (7)^2 + 3(7) + 1 = 71 (target)
+        binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5)
+        # Returns None
     """
 
     lh = lower_bound
@@ -89,13 +89,10 @@ def clip(a, min_a, max_a):
 
     Examples
     --------
-    Normal Usage::
+    ::
 
-        >>>clip(15, 11, 20)
-        15
-
-        >>>clip('a', 'h', 'k')
-        'h'
+        clip(15, 11, 20)     # Returns 15
+        clip('a', 'h', 'k')  # Returns 'h'
     """
     if a < min_a:
         return min_a
@@ -112,11 +109,11 @@ def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Paramete
     --------
     ::
 
-        >>> get_parameters(get_parameters)
-        mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
+        get_parameters(get_parameters)
+        # Returns mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
 
-        >>> dict(get_parameters(choose))
-        {'n': <Parameter "n: 'int'">, 'k': <Parameter "k: 'int'">}
+        dict(get_parameters(choose))
+        # Returns {'n': <Parameter "n: 'int'">, 'k': <Parameter "k: 'int'">}
     """
     return inspect.signature(function).parameters
 
