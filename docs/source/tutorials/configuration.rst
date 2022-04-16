@@ -8,7 +8,7 @@ can be configured programmatically via `the ManimConfig class`_, at the time
 of command invocation via `command-line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
-The most common, simplest and recommended way to set the configure Manim is
+The most common, simplest, and recommended way to configure Manim is
 via the command-line interface (CLI), which is described directly below.
 
 Command-line arguments
@@ -21,7 +21,7 @@ It is used with the following arguments:
 .. program-output:: manim render --help
    :ellipsis: 9
 
-However, since manim defaults to the :code:`render` command whenever no command
+However, since Manim defaults to the :code:`render` command whenever no command
 is specified, the following form is far more common and can be used instead:
 
 .. code-block:: bash
@@ -34,7 +34,7 @@ An example of using the above form is:
 
    manim -qm file.py SceneOne
 
-This asks manim to search for a Scene class called :code:`SceneOne` inside the
+This asks Manim to search for a Scene class called :code:`SceneOne` inside the
 file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag).
 
 Another frequently used flag is ``-p`` ("preview"), which makes manim
@@ -74,7 +74,7 @@ A list of all CLI flags
 The ManimConfig class
 *********************
 
-The most direct way of configuring manim is through the global ``config`` object,
+The most direct way of configuring Manim is through the global ``config`` object,
 which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax or
 with dict-like syntax:
@@ -139,22 +139,22 @@ rendered in our documentation with a reference frame.
 The config files
 ****************
 
-As the last example shows, executing manim from the command-line may involve
-using many flags at the same time.  This may become a nuisance if you must
-execute the same script many times in a short time period, for example when
-making small incremental tweaks to your scene script.  For this reason, manim
+As the last example shows, executing Manim from the command line may involve
+using many flags simultaneously.  This may become a nuisance if you must
+execute the same script many times in a short time period, for example, when
+making small incremental tweaks to your scene script.  For this reason, Manim
 can also be configured using a configuration file.  A configuration file is a
 file ending with the suffix ``.cfg``.
 
 To use a local configuration file when rendering your scene, you must create a
-file with name ``manim.cfg`` in the same directory as your scene code.
+file with the name ``manim.cfg`` in the same directory as your scene code.
 
-.. warning:: The config file **must** be named ``manim.cfg``. Currently, manim
+.. warning:: The config file **must** be named ``manim.cfg``. Currently, Manim
              does not support config files with any other name.
 
 The config file must start with the section header ``[CLI]``.  The
-configuration options under this header have the same name as the CLI flags,
-and serve the same purpose.  Take for example the following config file.
+configuration options under this header have the same name as the CLI flags
+and serve the same purpose.  Take, for example, the following config file.
 
 .. code-block:: ini
 
@@ -188,8 +188,8 @@ is in the same directory as <file.py>,
 
 Since config files are meant to replace CLI flags, all CLI flags can be set via
 a config file.  Moreover, any config option can be set via a config file,
-whether or not it has an associated CLI flag.  For a list of all CLI flags and
-all config options, see the bottom of this document.
+whether or not it has an associated CLI flag.  See the bottom of this document
+for a list of all CLI flags and config options.
 
 Manim will look for a ``manim.cfg`` config file in the same directory as the
 file being rendered, and **not** in the directory of execution.  For example,
@@ -215,7 +215,7 @@ As explained in the previous section, a :code:`manim.cfg` config file only
 affects the scene scripts in its same folder.  However, the user may also
 create a special config file that will apply to all scenes rendered by that
 user. This is referred to as the **user-wide** config file, and it will apply
-regardless of where manim is executed from, and regardless of where the scene
+regardless of where Manim is executed from, and regardless of where the scene
 script is stored.
 
 The user-wide config file lives in a special folder, depending on the operating
@@ -235,14 +235,14 @@ Here, :code:`UserDirectory` is the user's home folder.
 .. warning:: Do not store scene scripts in the same folder as the user-wide
              config file.  In this case, the behavior is undefined.
 
-Whenever you use manim from anywhere in the system, manim will look for a
+Whenever you use Manim from anywhere in the system, Manim will look for a
 user-wide config file and read its configuration.
 
 
 Cascading config files
 ======================
 
-What happens if you execute manim and it finds both a folder-wide config file
+What happens if you execute Manim and it finds both a folder-wide config file
 and a user-wide config file?  Manim will read both files, but if they are
 incompatible, **the folder-wide file takes precedence**.
 
@@ -280,7 +280,7 @@ executing
 
    manim -o myscene -c RED <file.py> SceneName
 
-There is also a **library-wide** config file that determines manim's default
+There is also a **library-wide** config file that determines Manim's default
 behavior and applies to every user of the library.  It has the least
 precedence, so any config options in the user-wide and any folder-wide files
 will override the library-wide file.  This is referred to as the *cascading*
@@ -301,19 +301,19 @@ Order of operations
 
 
 
-With so many different ways of configuring manim, it can be difficult to know
-when each config option is being set.  In fact, this will depend on how manim
+With so many different ways of configuring Manim, it can be difficult to know
+when each config option is being set.  In fact, this will depend on how Manim
 is being used.
 
-If manim is imported from a module, then the configuration system will follow
+If Manim is imported from a module, then the configuration system will follow
 these steps:
 
 1. The library-wide config file is loaded.
-2. The user-wide and folder-wide files are loaded, if they exist.
+2. The user-wide and folder-wide files are loaded if they exist.
 3. All files found in the previous two steps are parsed in a single
    :class:`ConfigParser` object, called ``parser``.  This is where *cascading*
    happens.
-4. :class:`logging.Logger` is instantiated to create manim's global ``logger``
+4. :class:`logging.Logger` is instantiated to create Manim's global ``logger``
    object. It is configured using the "logger" section of the parser,
    i.e. ``parser['logger']``.
 5. :class:`ManimConfig` is instantiated to create the global ``config`` object.
@@ -321,7 +321,7 @@ these steps:
    :meth:`ManimConfig.digest_parser`.
 7. Both ``logger`` and ``config`` are exposed to the user.
 
-If manim is being invoked from the command-line, all of the previous steps
+If Manim is being invoked from the command line, all of the previous steps
 happen, and are complemented by:
 
 8. The CLI flags are parsed and fed into ``config`` via
