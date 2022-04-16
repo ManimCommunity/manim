@@ -115,7 +115,8 @@ class BackgroundRectangle(SurroundingRectangle):
         )
         if len(kwargs) > 0:
             logger.info(
-                "set_style for BackgroundRectangle does not process arguments other than fill_opacity."
+                "Argument %s is ignored in BackgroundRectangle.set_style.",
+                kwargs,
             )
         return self
 
