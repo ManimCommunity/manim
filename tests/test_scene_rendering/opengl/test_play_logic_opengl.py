@@ -101,3 +101,19 @@ def test_t_values_save_last_frame(using_temp_opengl_config):
     scene.update_to_time = Mock()
     scene.render()
     scene.update_to_time.assert_called_once_with(1)
+
+
+def test_animate_with_changed_custom_attribute(using_temp_opengl_config):
+    """Test that animating the change of a custom attribute
+    using the animate syntax works correctly.
+    """
+
+    class CustomAnimateScene(Scene):
+        def construct(self):
+            vt = ValueTracker(0)
+            vt.custom_attribute = "hello"
+            self.play(vt.animate.set_value(42).set(custom_attribute="world"))
+            assert vt.get_value() == 42
+            assert vt.custom_attribute == "world"
+
+    CustomAnimateScene().render()
