@@ -88,6 +88,14 @@ instructions given in
 `the BUILDING section <https://github.com/ManimCommunity/ManimPango#BUILDING>`_
 of the corresponding `GitHub repository <https://github.com/ManimCommunity/ManimPango>`_.
 
+``ImportError: numpy.core.multiarray failed to import`` when trying to render the animation
+-----------------------------------------------------------------------------------
+This issue is mostly caused by the existing ``numpy`` version in your computer, it can be easily fixed by running:
+
+.. code-block:: bash
+
+  pip3 install numpy --upgrade
+
 
 (Windows) OSError: dlopen() failed to load a library: pango
 -----------------------------------------------------------
