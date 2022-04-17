@@ -62,12 +62,13 @@ def test_Wiggle(scene):
     scene.add(square)
     scene.play(Wiggle(square))
 
+
 def test_Wiggle_custom_about_points():
     square = Square()
     wiggle = Wiggle(
         square,
-        scale_about_point=[1., 2., 3.],
-        rotate_about_point=[4., 5., 6.],
+        scale_about_point=[1.0, 2.0, 3.0],
+        rotate_about_point=[4.0, 5.0, 6.0],
     )
-    assert wiggle.get_scale_about_point() == [1., 2., 3.]
-    assert wiggle.get_rotate_about_point() == [4., 5., 6.]
+    assert wiggle.get_scale_about_point() == [1.0, 2.0, 3.0]
+    assert wiggle.get_rotate_about_point() == [4.0, 5.0, 6.0]
