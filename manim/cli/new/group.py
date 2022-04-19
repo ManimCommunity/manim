@@ -180,6 +180,8 @@ def scene(**args):
     no_args_is_help=True,
     epilog=EPILOG,
     help="Create a new project or insert a new scene.",
+    short_help="""Create a new project or insert a new scene.\n
+Usage: manim new --help.""",
 )
 @click.pass_context
 def new(ctx):

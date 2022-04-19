@@ -19,8 +19,8 @@ from ...utils.file_ops import copy_template_files
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
     short_help="""Sets up a new project in current working directory with default settings.\n
-It copies files from templates directory and pastes them in the current working dir.
-""",
+It copies files from templates directory and pastes them in the current working dir.\n
+Usage: manim init --help.""",
 )
 def init():
     """Sets up a new project in current working directory with default settings.

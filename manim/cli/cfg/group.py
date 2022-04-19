@@ -120,6 +120,8 @@ def replace_keys(default: dict) -> dict:
     no_args_is_help=True,
     epilog=EPILOG,
     help="Manages Manim configuration files.",
+    short_help="""Manages Manim configuration files.\n
+Usage: manim cfg --help.""",
 )
 @click.pass_context
 def cfg(ctx):

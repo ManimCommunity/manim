@@ -18,6 +18,8 @@ from ...plugins.plugins_flags import list_plugins
     no_args_is_help=True,
     epilog=EPILOG,
     help="Manages Manim plugins.",
+    short_help="""Manages Manim plugins.\n
+Usage: manim plugins --help.""",
 )
 @click.option(
     "-l",
