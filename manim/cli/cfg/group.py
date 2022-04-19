@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 from ast import literal_eval
+from pathlib import Path
 
 import click
 from rich.errors import StyleSyntaxError
@@ -256,10 +257,10 @@ def show():
 
 
 @cfg.command(context_settings=CONTEXT_SETTINGS)
-@click.option("-d", "--directory", default=os.getcwd())
+@click.option("-d", "--directory", default=Path.cwd())
 @click.pass_context
 def export(ctx, directory):
-    if os.path.abspath(directory) == os.path.abspath(os.getcwd()):
+    if Path(directory).absolute == Path(Path.cwd()).absolute:
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
@@ -271,13 +272,15 @@ Are you sure you want to continue? (y/n)""",
     else:
         proceed = True
     if proceed:
-        if not os.path.isdir(directory):
+        if not Path(directory).is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
-            os.mkdir(directory)
-        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:
+            Path(directory).mkdir(parents=True, exist_ok=True)
+        with open(
+            Path(directory).joinpath("manim.cfg"), "w"
+        ) as outpath:  # this is not used?
             ctx.invoke(write)
-            from_path = os.path.join(os.getcwd(), "manim.cfg")
-            to_path = os.path.join(directory, "manim.cfg")
+            from_path = Path(Path.cwd()).joinpath("manim.cfg")
+            to_path = Path(directory).joinpath("manim.cfg")
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")
