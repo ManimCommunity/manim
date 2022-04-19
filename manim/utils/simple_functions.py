@@ -49,7 +49,7 @@ def binary_search(
         >>> abs(solution - 2) < 0.01
         True
 
-    Searching in the inverval :math:`[0, 5]` for a target value of :math:`71`
+    Searching in the interval :math:`[0, 5]` for a target value of :math:`71`
     does not yield a solution::
 
         >>> binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5) is None
