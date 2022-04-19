@@ -137,7 +137,7 @@ def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Paramete
 def sigmoid(x: float) -> float:
     r"""Returns the output of the logistic function.
 
-    The logistic function, or sigmoid function, is defined
+    The logistic function, a common example of a sigmoid function, is defined
     as :math:`\frac{1}{1 + e^{-x}}`.
 
     References
