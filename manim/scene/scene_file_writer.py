@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,7 @@ from ..constants import GIF_FILE_EXTENSION
 from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
+    ensure_executable,
     guarantee_existence,
     is_gif_format,
     is_png_format,
@@ -79,6 +81,14 @@ class SceneFileWriter:
         self.next_section(
             name="autocreated", type=DefaultSectionType.NORMAL, skip_animations=False
         )
+        # fail fast if ffmpeg is not found
+        if not ensure_executable(Path(config.ffmpeg_path)):
+            logger.critical(
+                """FFmpeg not found.
+Manim requires an ffmpeg installation to render videos.
+Please download ffmpeg """
+            )
+            sys.exit(1)
 
     def init_output_directories(self, scene_name):
         """Initialise output directories.
