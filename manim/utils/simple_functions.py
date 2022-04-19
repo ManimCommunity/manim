@@ -27,23 +27,33 @@ def binary_search(
     upper_bound: int | float,
     tolerance: int | float = 1e-4,
 ) -> int | float | None:
-    """Performs a numerical binary search to determine the input to ``function``,
-    between the bounds given, that outputs ``target`` to within ``tolerance`` (default of 0.0001).
+    """Searches for a value in a range by repeatedly dividing the range in half.
+    
+    To be more precise, performs numerical binary search to determine the
+    input to ``function``, between the bounds given, that outputs ``target``
+    to within ``tolerance`` (default of 0.0001).
     Returns ``None`` if no input can be found within the bounds.
 
     Examples
     --------
+
+    Consider the polynomial :math:`x^2 + 3x + 1` where we search for
+    a target value of :math:`11`. An exact solution is :math:`x = 2`.
+
     ::
 
-        # Observe that 0 <= 2 (solution) <= 5 and (2)^2 + 3(2) + 1 = 11 (target)
-        binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
-        # Returns 2.0000457763671875 (within 0.0001 of true answer, 2)
-        binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, 0.01)
-        # Returns 2.001953125        (within 0.01 of true answer, 2)
+        >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
+        >>> abs(solution - 2) < 1e-4
+        True
+        >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, tolerance=0.01)
+        >>> abs(solution - 2) < 0.01
+        True
 
-        # Here, observe that 7 (solution) > 5 (upper_bound) and (7)^2 + 3(7) + 1 = 71 (target)
-        binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5)
-        # Returns None
+    Searching in the inverval :math:`[0, 5]` for a target value of :math:`71`
+    does not yield a solution::
+
+        >>> binary_search(lambda x: x**2 + 3*x + 1, 71, 0, 5) is None
+        True
     """
     lh = lower_bound
     rh = upper_bound
@@ -71,7 +81,10 @@ def binary_search(
 
 @lru_cache(maxsize=10)
 def choose(n: int, k: int) -> int:
-    """'n choose k' - the number of combinations of ``n`` things taken ``k`` at a time.
+    r"""The binomial coefficient n choose k.
+
+    :math:`\binom{n}{k}` describes the number of possible choices of
+    :math:`k` elements from a set of :math:`n` elements.
 
     References
     ----------
@@ -82,7 +95,9 @@ def choose(n: int, k: int) -> int:
 
 
 def clip(a, min_a, max_a):
-    """Accepts any comparable objects (i.e. those that support <, >).
+    """Clips ``a`` to the interval [``min_a``, ``max_a``].
+    
+    Accepts any comparable objects (i.e. those that support <, >).
     Returns ``a`` if it is between ``min_a`` and ``max_a``.
     Otherwise, whichever of ``min_a`` and ``max_a`` is closest.
 
@@ -90,8 +105,10 @@ def clip(a, min_a, max_a):
     --------
     ::
 
-        clip(15, 11, 20)     # Returns 15
-        clip('a', 'h', 'k')  # Returns 'h'
+        >>> clip(15, 11, 20)
+        15
+        >>> clip('a', 'h', 'k')
+        'h'
     """
     if a < min_a:
         return min_a
@@ -108,17 +125,20 @@ def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Paramete
     --------
     ::
 
-        get_parameters(get_parameters)
-        # Returns mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
+        >>> get_parameters(get_parameters)
+        mappingproxy(OrderedDict([('function', <Parameter "function: 'Callable'">)]))
 
-        dict(get_parameters(choose))
-        # Returns {'n': <Parameter "n: 'int'">, 'k': <Parameter "k: 'int'">}
+        >>> tuple(get_parameters(choose))
+        ('n', 'k')
     """
     return inspect.signature(function).parameters
 
 
 def sigmoid(x: float) -> float:
-    """Returns the output of the logistic function, defined as 1/(1+e^-x)
+    r"""Returns the output of the logistic function.
+    
+    The logistic function, or sigmoid function, is defined
+    as :math:`\frac{1}{1 + e^{-x}}`.
 
     References
     ----------
