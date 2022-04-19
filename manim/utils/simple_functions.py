@@ -28,7 +28,7 @@ def binary_search(
     tolerance: int | float = 1e-4,
 ) -> int | float | None:
     """Searches for a value in a range by repeatedly dividing the range in half.
-    
+
     To be more precise, performs numerical binary search to determine the
     input to ``function``, between the bounds given, that outputs ``target``
     to within ``tolerance`` (default of 0.0001).
@@ -96,7 +96,7 @@ def choose(n: int, k: int) -> int:
 
 def clip(a, min_a, max_a):
     """Clips ``a`` to the interval [``min_a``, ``max_a``].
-    
+
     Accepts any comparable objects (i.e. those that support <, >).
     Returns ``a`` if it is between ``min_a`` and ``max_a``.
     Otherwise, whichever of ``min_a`` and ``max_a`` is closest.
@@ -136,7 +136,7 @@ def get_parameters(function: Callable) -> MappingProxyType[str, inspect.Paramete
 
 def sigmoid(x: float) -> float:
     r"""Returns the output of the logistic function.
-    
+
     The logistic function, or sigmoid function, is defined
     as :math:`\frac{1}{1 + e^{-x}}`.
 
