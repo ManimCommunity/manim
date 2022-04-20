@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+from pathlib import Path
 
 import numpy as np
 
@@ -37,9 +38,9 @@ def set_test_scene(scene_object, module_name):
     config["frame_rate"] = 15
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        os.makedirs(os.path.join(tmpdir, "tex"))
-        config["text_dir"] = os.path.join(tmpdir, "text")
-        config["tex_dir"] = os.path.join(tmpdir, "tex")
+        Path(tmpdir).joinpath("tex").mkdir()
+        config["text_dir"] = Path(tmpdir).joinpath("text")
+        config["tex_dir"] = Path(tmpdir).joinpath("tex")
         scene = scene_object(skip_animations=True)
         scene.render()
         data = scene.renderer.get_frame()
@@ -48,14 +49,13 @@ def set_test_scene(scene_object, module_name):
         data == np.array([0, 0, 0, 255]),
     ), f"Control data generated for {str(scene)} only contains empty pixels."
     assert data.shape == (480, 854, 4)
-    tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path_control_data = os.path.join(
-        tests_directory,
+    tests_directory = Path(__file__).absolute().parent.parent
+    path_control_data = Path(tests_directory).joinpath(
         "control_data",
         "graphical_units_data",
     )
-    path = os.path.join(path_control_data, module_name)
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    np.savez_compressed(os.path.join(path, str(scene)), frame_data=data)
+    path = Path(path_control_data).joinpath(module_name)
+    if not path.is_dir():
+        path.mkdir()
+    np.savez_compressed(Path(path).joinpath(str(scene)), frame_data=data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-import pathlib
+from pathlib import Path
 from typing import Any
 
 from manim import get_dir_layout, get_video_metadata, logger
@@ -13,7 +13,7 @@ from manim import get_dir_layout, get_video_metadata, logger
 def get_section_dir_layout(dirpath: str) -> list[str]:
     """Return a list of all files in the sections directory."""
     # test if sections have been created in the first place, doesn't work with multiple scene but this isn't an issue with tests
-    if not os.path.isdir(dirpath):
+    if not Path(dirpath).is_dir():
         return []
     files = get_dir_layout(dirpath)
     # indicate that the sections directory has been created
@@ -23,9 +23,9 @@ def get_section_dir_layout(dirpath: str) -> list[str]:
 
 def get_section_index(metapath: str) -> list[dict[str, Any]]:
     """Return content of sections index file."""
-    parent_folder = pathlib.Path(metapath).parent.absolute()
+    parent_folder = Path(metapath).parent.absolute()
     # test if sections have been created in the first place
-    if not os.path.isdir(parent_folder):
+    if not Path(parent_folder).is_dir():
         return []
     with open(metapath) as file:
         index = json.load(file)
@@ -51,20 +51,20 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
 
     See Also
     --------
+
     tests/utils/video_tester.py : read control data and compare with output of test
     """
-    path_to_sections = os.path.join(
-        pathlib.Path(path_to_video).parent.absolute(), "sections"
-    )
-    tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
+    orig_path_to_sections = Path(path_to_video)
+    path_to_sections = orig_path_to_sections.parent.absolute().joinpath("sections")
+    tests_directory = Path(__file__).absolute().parent.parent
+    path_control_data = Path(tests_directory).joinpath("control_data", "videos_data")
     # this is the name of the section used in the test, not the name of the test itself, it can be found as a parameter of this function
-    scene_name = "".join(os.path.basename(path_to_video).split(".")[:-1])
+    scene_name = orig_path_to_sections.stem
 
     movie_metadata = get_video_metadata(path_to_video)
-    section_dir_layout = get_section_dir_layout(path_to_sections)
+    section_dir_layout = get_section_dir_layout(str(path_to_sections))
     section_index = get_section_index(
-        os.path.join(path_to_sections, f"{scene_name}.json")
+        str(Path(path_to_sections).joinpath(f"{scene_name}.json"))
     )
     data = {
         "name": name,
@@ -72,7 +72,7 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
         "section_dir_layout": section_dir_layout,
         "section_index": section_index,
     }
-    path_saved = os.path.join(path_control_data, f"{name}.json")
+    path_saved = Path(path_control_data).joinpath(f"{name}.json")
     with open(path_saved, "w") as f:
         json.dump(data, f, indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")
