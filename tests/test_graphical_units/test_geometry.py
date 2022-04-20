@@ -169,6 +169,15 @@ def test_Angle(scene):
 
 
 @frames_comparison
+def test_three_points_Angle(scene):
+    A = np.array([3, 5, 0])
+    B = np.array([0, 0, 0])
+    C = np.array([8, 0, 0])
+    a = Angle.from_three_points(A, B, C)
+    scene.add(a)
+
+
+@frames_comparison
 def test_RightAngle(scene):
     l1 = Line(ORIGIN, RIGHT)
     l2 = Line(ORIGIN, UP)

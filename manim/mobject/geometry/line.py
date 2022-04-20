@@ -1015,6 +1015,35 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             return self.angle_value / DEGREES
         return self.angle_value
 
+    @staticmethod
+    def from_three_points(A, B, C, **kwargs):
+        """Create an instance of the :class:`Angle` class from three points.
+
+        Parameters
+        ----------
+        A
+            :class:Numpy.array()  -  End point of line 1
+        B
+            :class:Numpy.array()  -  Start point of lines 1 and 2
+        C
+            :class:Numpy.array()  -  End point of line 2
+
+        Returns
+        -------
+        :class:`Angle`
+            The angle calculated from the three points
+
+        Examples
+        --------
+
+        .. manim:: from_three_points
+            A = np.array(...)
+            B = np.array(...)
+            C = np.array(...)
+            ang = Angle.from_three_points(A, B, C)
+        """
+        return Angle(Line(B, A), Line(B, C), **kwargs)
+
 
 class RightAngle(Angle):
     """An elbow-type mobject representing a right angle between two lines.
