@@ -1016,7 +1016,9 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return self.angle_value
 
     @staticmethod
-    def from_three_points(A, B, C, **kwargs):
+    def from_three_points(
+        A: np.array(), B: np.array(), C: np.array(), **kwargs
+    ) -> Angle:
         """Create an instance of the :class:`Angle` class from three points.
 
         Parameters
@@ -1027,19 +1029,19 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             :class:Numpy.array()  -  Start point of lines 1 and 2
         C
             :class:Numpy.array()  -  End point of line 2
+        **kwargs
+            keyword arguments are passed to Angle constructor
 
         Returns
         -------
-        :class:`Angle`
-            The angle calculated from the three points
+        : The Angle calculated from the three points
 
         Examples
         --------
-
-        .. manim:: from_three_points
-            A = np.array(...)
-            B = np.array(...)
-            C = np.array(...)
+        ::
+            >>> A = np.array(UP)
+            >>> B = np.array(ORIGIN)
+            >>> C = np.array(RIGHT)
             ang = Angle.from_three_points(A, B, C)
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
