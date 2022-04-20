@@ -753,7 +753,7 @@ class Text(SVGMobject):
 
         dir_name = config.get_dir("text_dir")
         if not Path(dir_name).exists():
-            Path(dir_name).mkdir()
+            Path(dir_name).mkdir(parents=True)
         hash_name = self._text2hash(color)
         file_name = Path(dir_name).joinpath(hash_name + ".svg")
 
@@ -1246,7 +1246,7 @@ class MarkupText(SVGMobject):
 
         dir_name = config.get_dir("text_dir")
         if not Path(dir_name).exists():
-            Path(dir_name).mkdir()
+            Path(dir_name).mkdir(parents=True)
         hash_name = self._text2hash(color)
         file_name = Path(dir_name).joinpath(hash_name + ".svg")
         if file_name.exists():
