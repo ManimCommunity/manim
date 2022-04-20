@@ -1042,7 +1042,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             >>> A = np.array(UP)
             >>> B = np.array(ORIGIN)
             >>> C = np.array(RIGHT)
-            ang = Angle.from_three_points(A, B, C)
+            >>> ang = Angle.from_three_points(A, B, C)
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
