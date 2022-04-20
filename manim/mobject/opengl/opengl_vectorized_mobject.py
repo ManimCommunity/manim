@@ -1629,7 +1629,9 @@ class OpenGLVGroup(OpenGLVMobject):
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, OpenGLVGroup
+        >>> from manim import Triangle, Square, config
+        >>> config.renderer = "opengl"
+        >>> from manim.opengl import OpenGLVGroup
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
