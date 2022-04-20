@@ -752,7 +752,7 @@ class Text(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not Path(dir_name).exists():
+        if not Path(dir_name).is_dir():
             Path(dir_name).mkdir(parents=True)
         hash_name = self._text2hash(color)
         file_name = Path(dir_name).joinpath(hash_name + ".svg")
