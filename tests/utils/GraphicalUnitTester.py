@@ -61,7 +61,7 @@ class GraphicalUnitTester:
             config["text_dir"],
             config["tex_dir"],
         ]:
-            Path(dir_temp).mkdir()
+            Path(dir_temp).mkdir(parents=True)
 
         with tempconfig({"dry_run": True}):
             if config["renderer"] == "opengl":

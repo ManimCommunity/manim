@@ -47,7 +47,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     --------
-    file_name : :class:`str`
+    file_name : :class:`str` or :class:`pathlib.Path`
         The file's path name. When possible, the full path is preferred but a
         relative path may be used as well. Relative paths are relative to the
         directory specified by the `--assets_dir` command line argument.
@@ -88,7 +88,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     ):
 
         self.def_map = {}
-        self.file_name = file_name or self.file_name
+        self.file_name = str(file_name)
         self._ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
