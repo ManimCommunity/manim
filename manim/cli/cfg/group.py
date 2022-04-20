@@ -274,7 +274,7 @@ Are you sure you want to continue? (y/n)""",
     if proceed:
         if not Path(directory).is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
-            Path(directory).mkdir(parents=True, exist_ok=True)
+            Path(directory).mkdir(parents=True)
         with open(
             Path(directory).joinpath("manim.cfg"), "w"
         ) as outpath:  # this is not used?
