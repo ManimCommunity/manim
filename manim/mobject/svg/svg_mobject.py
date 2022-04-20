@@ -9,7 +9,6 @@ import os
 import re
 import string
 import warnings
-from pathlib import Path
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
@@ -47,7 +46,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     --------
-    file_name : :class:`str` or :class:`pathlib.Path`
+    file_name : :class:`str`
         The file's path name. When possible, the full path is preferred but a
         relative path may be used as well. Relative paths are relative to the
         directory specified by the `--assets_dir` command line argument.
@@ -88,7 +87,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     ):
 
         self.def_map = {}
-        self.file_name = str(file_name)
+        self.file_name = file_name or self.file_name
         self._ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
@@ -125,28 +124,28 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
-        if Path(self.file_name).exists():
+        if os.path.exists(self.file_name):
             self.file_path = self.file_name
             return
 
-        relative = Path.cwd().joinpath(self.file_name)
-        if Path(relative).exists():
+        relative = os.path.join(os.getcwd(), self.file_name)
+        if os.path.exists(relative):
             self.file_path = relative
             return
 
         possible_paths = [
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name),
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name + ".svg"),
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name + ".xdv"),
-            Path(self.file_name),
-            Path(self.file_name).joinpath(".svg"),
-            Path(self.file_name).joinpath(".xdv"),
+            os.path.join(config.get_dir("assets_dir"), self.file_name),
+            os.path.join(config.get_dir("assets_dir"), self.file_name + ".svg"),
+            os.path.join(config.get_dir("assets_dir"), self.file_name + ".xdv"),
+            self.file_name,
+            self.file_name + ".svg",
+            self.file_name + ".xdv",
         ]
         for path in possible_paths:
-            if path.exists():
+            if os.path.exists(path):
                 self.file_path = path
                 return
-        error = f"From: {Path.cwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
+        error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
         raise OSError(error)
 
     def generate_points(self):

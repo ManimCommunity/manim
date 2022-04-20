@@ -79,18 +79,18 @@ def generate_tex_file(expression, environment=None, tex_template=None):
         output = tex_template.get_texcode_for_expression(expression)
 
     tex_dir = config.get_dir("tex_dir")
-    if not Path(tex_dir).exists():
-        Path(tex_dir).mkdir()
+    if not os.path.exists(tex_dir):
+        os.makedirs(tex_dir)
 
-    result = Path(tex_dir).joinpath(tex_hash(output) + ".tex")
-    if not result.exists():
+    result = os.path.join(tex_dir, tex_hash(output)) + ".tex"
+    if not os.path.exists(result):
         logger.info(
             "Writing %(expression)s to %(path)s",
             {"expression": expression, "path": f"{result}"},
         )
         with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(output)
-    return result.as_posix()
+    return result
 
 
 def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
@@ -178,7 +178,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
     result = Path(result).as_posix()
     tex_file = Path(tex_file).as_posix()
     tex_dir = Path(config.get_dir("tex_dir")).as_posix()
-    if not Path(result).exists():
+    if not os.path.exists(result):
         command = tex_compilation_command(
             tex_compiler,
             output_format,
@@ -215,10 +215,9 @@ def convert_to_svg(dvi_file, extension, page=1):
         Path to generated SVG file.
     """
     result = dvi_file.replace(extension, ".svg")
-    result = Path(result)
-    result_str = result.as_posix()
+    result = Path(result).as_posix()
     dvi_file = Path(dvi_file).as_posix()
-    if not result.exists():
+    if not os.path.exists(result):
         commands = [
             "dvisvgm",
             "--pdf" if extension == ".pdf" else "",
@@ -226,14 +225,14 @@ def convert_to_svg(dvi_file, extension, page=1):
             f'"{dvi_file}"',
             "-n",
             "-v 0",
-            "-o " + f'"{result_str}"',
+            "-o " + f'"{result}"',
             ">",
             os.devnull,
         ]
         os.system(" ".join(commands))
 
     # if the file does not exist now, this means conversion failed
-    if not result.exists():
+    if not os.path.exists(result):
         raise ValueError(
             f"Your installation does not support converting {extension} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."
@@ -241,7 +240,7 @@ def convert_to_svg(dvi_file, extension, page=1):
             f" https://docs.manim.community/en/stable/installation/troubleshooting.html",
         )
 
-    return result_str
+    return result
 
 
 def print_all_tex_errors(log_file, tex_compiler, tex_file):
