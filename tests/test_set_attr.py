@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import numpy as np
-import pytest
 
 from manim import config
 from manim.constants import RIGHT
-from manim.mobject.geometry import Square
+from manim.mobject.geometry.polygram import Square
 
 
 def test_Data():

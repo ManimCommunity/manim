@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.scene.section.DefaultSectionType``"
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:1
-msgid "Bases: :class:`str`, :class:`enum.Enum`"
+msgid "Bases: :py:class:`str`, :py:class:`enum.Enum`"
 msgstr ""
 
 #: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:1

@@ -42,6 +42,11 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.geometry.arc import Circle, Dot
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Rectangle
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
@@ -50,12 +55,11 @@ from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
-from ..mobject.geometry import Circle, Dot, Line, Rectangle
 from ..mobject.mobject import Mobject
-from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -100,23 +104,19 @@ class FocusOn(Transform):
         self.color = color
         self.opacity = opacity
         remover = True
-        # Initialize with blank mobject, while create_target
-        # and create_starting_mobject handle the meat
-        super().__init__(VGroup(), run_time=run_time, remover=remover, **kwargs)
-
-    def create_target(self) -> "Dot":
-        little_dot = Dot(radius=0)
-        little_dot.set_fill(self.color, opacity=self.opacity)
-        little_dot.add_updater(lambda d: d.move_to(self.focus_point))
-        return little_dot
-
-    def create_starting_mobject(self) -> "Dot":
-        return Dot(
+        starting_dot = Dot(
             radius=config["frame_x_radius"] + config["frame_y_radius"],
             stroke_width=0,
             fill_color=self.color,
             fill_opacity=0,
         )
+        super().__init__(starting_dot, run_time=run_time, remover=remover, **kwargs)
+
+    def create_target(self) -> Dot:
+        little_dot = Dot(radius=0)
+        little_dot.set_fill(self.color, opacity=self.opacity)
+        little_dot.add_updater(lambda d: d.move_to(self.focus_point))
+        return little_dot
 
 
 class Indicate(Transform):
@@ -304,7 +304,7 @@ class ShowPassingFlash(ShowPartial):
 
     def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
-        super().__init__(mobject, remover=True, **kwargs)
+        super().__init__(mobject, remover=True, introducer=True, **kwargs)
 
     def _get_bounds(self, alpha: float) -> Tuple[float]:
         tw = self.time_width
@@ -314,8 +314,8 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def finish(self) -> None:
-        super().finish()
+    def clean_up_from_scene(self, scene: "Scene") -> None:
+        super().clean_up_from_scene(scene)
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
@@ -342,10 +342,11 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         )
 
 
-# TODO Decide what to do with this class:
-#   Remove?
-#   Deprecate?
-#   Keep and add docs?
+@deprecated(
+    since="v0.15.0",
+    until="v0.16.0",
+    message="Use Create then FadeOut to achieve this effect.",
+)
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
@@ -534,10 +535,12 @@ class Wiggle(Animation):
     def get_scale_about_point(self) -> np.ndarray:
         if self.scale_about_point is None:
             return self.mobject.get_center()
+        return self.scale_about_point
 
     def get_rotate_about_point(self) -> np.ndarray:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
+        return self.rotate_about_point
 
     def interpolate_submobject(
         self,

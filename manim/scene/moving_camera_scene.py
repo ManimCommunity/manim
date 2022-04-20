@@ -66,6 +66,8 @@ Examples
 
 """
 
+from __future__ import annotations
+
 __all__ = ["MovingCameraScene"]
 
 from ..camera.moving_camera import MovingCamera

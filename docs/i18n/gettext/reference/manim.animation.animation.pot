@@ -22,6 +22,10 @@ msgstr ""
 msgid "An animation."
 msgstr ""
 
+#: ../../source/reference/manim.animation.animation.rst:28:<autosummary>:1
+msgid "A \"no operation\" animation."
+msgstr ""
+
 #: ../../source/reference/manim.animation.animation.rst:31
 msgid "Functions"
 msgstr ""
@@ -32,10 +36,6 @@ msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:3
 msgid "Should only be used to decorate methods of classes derived from :class:`~.Mobject`. ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined them. They don't override subclasses of the ``Animation`` they override."
-msgstr ""
-
-#: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:7
-msgid ":meth:`~.Mobject.add_animation_override`"
 msgstr ""
 
 #: ../../../manim/animation/animation.py:docstring of manim.animation.animation.override_animation:0

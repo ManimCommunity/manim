@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.camera.multi\\_camera.MultiCamera``"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
-msgid "Bases: :class:`manim.camera.moving_camera.MovingCamera`"
+msgid "Bases: :py:class:`manim.camera.moving_camera.MovingCamera`"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
@@ -107,12 +107,11 @@ msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:0
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
-msgid "Returns"
+msgid "Return type"
 msgstr ""
 
-#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:0
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
-msgid "Return type"
+msgid "Returns"
 msgstr ""
 
 

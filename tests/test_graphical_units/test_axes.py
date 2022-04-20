@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "plot"
 
@@ -20,7 +22,7 @@ def test_axes(scene):
 @frames_comparison
 def test_plot_functions(scene):
     ax = Axes(x_range=(-10, 10.3), y_range=(-1.5, 1.5))
-    graph = ax.plot(lambda x: x ** 2)
+    graph = ax.plot(lambda x: x**2)
     scene.add(ax, graph)
 
 
@@ -69,9 +71,10 @@ def test_get_y_axis_label(scene):
 def test_plot_derivative_graph(scene):
     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
-    curve_1 = ax.plot(lambda x: x ** 2, color=PURPLE_B)
+    curve_1 = ax.plot(lambda x: x**2, color=PURPLE_B)
     curve_2 = ax.plot_derivative_graph(curve_1)
-    curves = VGroup(curve_1, curve_2)
+    curve_3 = ax.plot_antiderivative_graph(curve_1)
+    curves = VGroup(curve_1, curve_2, curve_3)
     scene.add(ax, curves)
 
 
@@ -153,7 +156,7 @@ def test_plot_line_graph(scene):
         x_values=[0, 1.5, 2, 2.8, 4, 6.25],
         y_values=[1, 3, 2.25, 4, 2.5, 1.75],
         line_color=GOLD_E,
-        vertex_dot_style=dict(stroke_width=3, fill_color=PURPLE),
+        vertex_dot_style={"stroke_width": 3, "fill_color": PURPLE},
         vertex_dot_radius=0.04,
         stroke_width=4,
     )
@@ -213,7 +216,7 @@ def test_get_area_with_boundary_and_few_plot_points(scene):
 @frames_comparison
 def test_get_riemann_rectangles(scene):
     ax = Axes(y_range=[-2, 10])
-    quadratic = ax.plot(lambda x: 0.5 * x ** 2 - 0.5)
+    quadratic = ax.plot(lambda x: 0.5 * x**2 - 0.5)
 
     # the rectangles are constructed from their top right corner.
     # passing an iterable to `color` produces a gradient

@@ -45,7 +45,9 @@ For example:
 
     class SingleLineColor(Scene):
         def construct(self):
-            text = MarkupText(f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED)
+            text = MarkupText(
+                f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED
+            )
             self.add(text)
 
 .. _Pango library: https://pango.gnome.org
@@ -105,7 +107,15 @@ Weight specifies the boldness of a font. You can see a list of weights in
             import manimpango
 
             g = VGroup()
-            weight_list = dict(sorted({weight: manimpango.Weight(weight).value for weight in manimpango.Weight}.items(), key=lambda x: x[1]))
+            weight_list = dict(
+                sorted(
+                    {
+                        weight: manimpango.Weight(weight).value
+                        for weight in manimpango.Weight
+                    }.items(),
+                    key=lambda x: x[1],
+                )
+            )
             for weight in weight_list:
                 g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
@@ -367,7 +377,11 @@ we have to add it manually.
         def construct(self):
             myTemplate = TexTemplate()
             myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate, font_size=144)
+            tex = Tex(
+                r"$\mathscr{H} \rightarrow \mathbb{H}$}",
+                tex_template=myTemplate,
+                font_size=144,
+            )
             self.add(tex)
 
 Substrings and parts
@@ -429,6 +443,31 @@ will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``.
 This makes transformations between similar text fragments easy
 to write using :class:`~.TransformMatchingTex`.
 
+Using ``index_labels`` to work with complicated strings
+=======================================================
+
+You might sometimes be working with a very complicated :class:`~.MathTex` mobject
+that makes it difficult to work with its individual components. This is
+where the debugging function :func:`.index_labels` is very useful.
+
+The method shows the index of a mobject's submobjects, allowing you
+to easily find the components of the mobject you would like to change.
+
+.. manim:: IndexLabelsMathTex
+    :save_last_frame:
+
+    class IndexLabelsMathTex(Scene):
+        def construct(self):
+            text = MathTex(r"\binom{2n}{n+2}", font_size=96)
+
+            # index the first (and only) term of the MathTex mob
+            self.add(index_labels(text[0]))
+
+            text[0][1:3].set_color(YELLOW)
+            text[0][3:6].set_color(RED)
+            self.add(text)
+
+
 LaTeX Maths Fonts - The Template Library
 ========================================
 
@@ -442,7 +481,11 @@ ready for you to use. These templates will all work in math mode:
 
     class LaTeXMathFonts(Scene):
         def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive, font_size=144)
+            tex = Tex(
+                r"$x^2 + y^2 = z^2$",
+                tex_template=TexFontTemplates.french_cursive,
+                font_size=144,
+            )
             self.add(tex)
 
 Manim also has a :class:`~.TexTemplateLibrary` containing the TeX

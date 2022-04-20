@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.image\\_mobject.ImageMobject``"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject:1
-msgid "Bases: :class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
+msgid "Bases: :py:class:`manim.mobject.types.image_mobject.AbstractImageMobject`"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject:1
@@ -79,7 +79,7 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
-msgid "Used to animate the application of a method."
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
 #: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1

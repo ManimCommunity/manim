@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.CurvesAsSubmob
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects:1
-msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects:1
@@ -34,15 +34,19 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:28:<autosummary>:1
-msgid "Used to animate the application of a method."
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:32:<autosummary>:1
 msgid "The depth of the mobject."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:28:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.CurvesAsSubmobjects.rst:32:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 

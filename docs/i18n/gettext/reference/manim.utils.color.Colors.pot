@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.utils.color.Colors``"
 msgstr ""
 
 #: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:1
-msgid "Bases: :class:`enum.Enum`"
+msgid "Bases: :py:class:`enum.Enum`"
 msgstr ""
 
 #: ../../../manim/utils/color.py:docstring of manim.utils.color.Colors:1

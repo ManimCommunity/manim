@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.\\_config.logger\\_utils.JSONFormatter``"
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:1
-msgid "Bases: :class:`logging.Formatter`"
+msgid "Bases: :py:class:`logging.Formatter`"
 msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:1

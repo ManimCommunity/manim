@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 import click
@@ -62,7 +64,7 @@ render_options = option_group(
         "--quality",
         default=None,
         type=click.Choice(
-            reversed([q["flag"] for q in QUALITIES.values() if q["flag"]]),
+            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
             case_sensitive=False,
         ),
         help="Render quality at the follow resolution framerates, respectively: "
@@ -93,7 +95,7 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
+        type=click.Choice(["cairo", "opengl"], case_sensitive=False),
         help="Select a renderer for your Scene.",
         default=None,
     ),
@@ -102,18 +104,6 @@ render_options = option_group(
         is_flag=True,
         help="Render scenes using OpenGL (Deprecated).",
         default=None,
-    ),
-    option(
-        "--use_webgl_renderer",
-        is_flag=True,
-        help="Render scenes using the WebGL frontend (Deprecated).",
-        default=None,
-    ),
-    option(
-        "--webgl_renderer_path",
-        default=None,
-        type=click.Path(),
-        help="The path to the WebGL frontend.",
     ),
     option(
         "-g",

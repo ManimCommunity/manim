@@ -72,7 +72,7 @@ Enabling plugins through ``manim.cfg``
     [CLI]
     plugins = manim_rubikscube
 
-For specifying multiple plugins, command separated values must be used.
+For specifying multiple plugins, comma-separated values must be used.
 
 .. code-block:: ini
 

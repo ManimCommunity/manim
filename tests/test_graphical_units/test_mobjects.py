@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "mobjects"
 
@@ -25,3 +27,12 @@ def test_become(scene):
     s3 = s.copy().become(d3, stretch=True).set_opacity(0.25).set_color(YELLOW)
 
     scene.add(s, d1, d2, d3, s1, s2, s3)
+
+
+@frames_comparison
+def test_match_style(scene):
+    square = Square(fill_color=[RED, GREEN], fill_opacity=1)
+    circle = Circle()
+    VGroup(square, circle).arrange()
+    circle.match_style(square)
+    scene.add(square, circle)

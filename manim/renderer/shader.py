@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import re
 import textwrap
@@ -11,8 +13,8 @@ from ..utils import opengl
 from ..utils.simple_functions import get_parameters
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
-shader_program_cache = {}
-file_path_to_code_map = {}
+shader_program_cache: dict = {}
+file_path_to_code_map: dict = {}
 
 __all__ = [
     "Object3D",
@@ -297,7 +299,7 @@ class Mesh(Object3D):
             "u_model_matrix",
             opengl.matrix_to_shader_input(self.model_matrix),
         )
-        self.shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
+        self.shader.set_uniform("u_view_matrix", renderer.camera.formatted_view_matrix)
         self.shader.set_uniform(
             "u_projection_matrix",
             renderer.camera.projection_matrix,
@@ -407,8 +409,8 @@ class FullScreenQuad(Mesh):
 
         shader = Shader(
             context,
-            source=dict(
-                vertex_shader="""
+            source={
+                "vertex_shader": """
                 #version 330
                 in vec4 in_vert;
                 uniform mat4 u_model_view_matrix;
@@ -419,8 +421,8 @@ class FullScreenQuad(Mesh):
                     gl_Position = clip_space_vertex;
                 }}
                 """,
-                fragment_shader=fragment_shader_source,
-            ),
+                "fragment_shader": fragment_shader_source,
+            },
         )
         attributes = np.zeros(6, dtype=[("in_vert", np.float32, (4,))])
         attributes["in_vert"] = np.array(

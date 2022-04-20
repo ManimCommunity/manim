@@ -6,6 +6,8 @@
 
 """
 
+from __future__ import annotations
+
 __all__ = ["CameraFrame", "MovingCamera"]
 
 from .. import config
@@ -40,7 +42,7 @@ class MovingCamera(Camera):
         fixed_dimension=0,  # width
         default_frame_stroke_color=WHITE,
         default_frame_stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         """
         Frame is a Mobject, (should almost certainly be a rectangle)
@@ -213,7 +215,7 @@ class MovingCamera(Camera):
                 continue
 
             # initialize scene critical points with first mobjects critical points
-            if scene_critical_x_left == None:
+            if scene_critical_x_left is None:
                 scene_critical_x_left = m.get_critical_point(LEFT)[0]
                 scene_critical_x_right = m.get_critical_point(RIGHT)[0]
                 scene_critical_y_up = m.get_critical_point(UP)[1]
