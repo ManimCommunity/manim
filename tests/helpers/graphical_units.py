@@ -3,9 +3,7 @@
 
 from __future__ import annotations
 
-import os
 import tempfile
-from operator import truediv
 from pathlib import Path
 
 import numpy as np
@@ -39,9 +37,12 @@ def set_test_scene(scene_object, module_name):
     config["frame_rate"] = 15
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        Path(tmpdir).joinpath("tex").mkdir(parents=True)
-        config["text_dir"] = Path(tmpdir).joinpath("text")
-        config["tex_dir"] = Path(tmpdir).joinpath("tex")
+        temp_path = Path(tmpdir)
+        tex_dir = temp_path / "tex"
+        tex_dir.mkdir(parents=True)
+        text_dir = temp_path / "text"
+        config["text_dir"] = text_dir
+        config["tex_dir"] = tex_dir
         scene = scene_object(skip_animations=True)
         scene.render()
         data = scene.renderer.get_frame()
@@ -58,5 +59,5 @@ def set_test_scene(scene_object, module_name):
     path = Path(path_control_data).joinpath(module_name)
     if not path.is_dir():
         path.mkdir(parents=True)
-    np.savez_compressed(Path(path).joinpath(str(scene)), frame_data=data)
+    np.savez_compressed(path.joinpath(str(scene)), frame_data=data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")

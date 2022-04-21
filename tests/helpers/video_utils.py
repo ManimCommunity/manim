@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 
@@ -55,24 +54,23 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
     tests/utils/video_tester.py : read control data and compare with output of test
     """
     orig_path_to_sections = Path(path_to_video)
-    path_to_sections = orig_path_to_sections.parent.absolute().joinpath("sections")
+    path_to_sections = orig_path_to_sections.parent.absolute() / "sections"
     tests_directory = Path(__file__).absolute().parent.parent
-    path_control_data = Path(tests_directory).joinpath("control_data", "videos_data")
+    path_control_data = Path(tests_directory) / "control_data" / "videos_data"
     # this is the name of the section used in the test, not the name of the test itself, it can be found as a parameter of this function
     scene_name = orig_path_to_sections.stem
 
     movie_metadata = get_video_metadata(path_to_video)
     section_dir_layout = get_section_dir_layout(str(path_to_sections))
-    section_index = get_section_index(
-        str(Path(path_to_sections).joinpath(f"{scene_name}.json"))
-    )
+    section_index = get_section_index(str(path_to_sections / f"{scene_name}.json"))
+
     data = {
         "name": name,
         "movie_metadata": movie_metadata,
         "section_dir_layout": section_dir_layout,
         "section_index": section_index,
     }
-    path_saved = Path(path_control_data).joinpath(f"{name}.json")
+    path_saved = Path(path_control_data) / f"{name}.json"
     with open(path_saved, "w") as f:
         json.dump(data, f, indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")

@@ -114,26 +114,24 @@ def test_custom_dirs(tmp_path):
     ):
         scene = MyScene()
         scene.render()
+        tmp_path = Path(tmp_path)
+        assert_dir_filled(tmp_path / "test_sections")
+        assert_file_exists(tmp_path / "test_sections/MyScene.json")
 
-        assert_dir_filled(Path(tmp_path).joinpath("test_sections"))
-        assert_file_exists(Path(tmp_path).joinpath("test_sections", "MyScene.json"))
+        assert_dir_filled(tmp_path / "test_video")
+        assert_file_exists(tmp_path / "test_video/MyScene.mp4")
 
-        assert_dir_filled(Path(tmp_path).joinpath("test_video"))
-        assert_file_exists(Path(tmp_path).joinpath("test_video", "MyScene.mp4"))
-
-        assert_dir_filled(Path(tmp_path).joinpath("test_partial_movie_dir"))
+        assert_dir_filled(tmp_path / "test_partial_movie_dir")
         assert_file_exists(
-            Path(tmp_path).joinpath(
-                "test_partial_movie_dir", "partial_movie_file_list.txt"
-            )
+            tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt"
         )
 
         # TODO: another example with image output would be nice
-        assert_dir_exists(Path(tmp_path).joinpath("test_images"))
+        assert_dir_exists(tmp_path / "test_images")
 
-        assert_dir_filled(Path(tmp_path).joinpath("test_text"))
-        assert_dir_filled(Path(tmp_path).joinpath("test_tex"))
-        assert_dir_filled(Path(tmp_path).joinpath("test_log"))
+        assert_dir_filled(tmp_path / "test_text")
+        assert_dir_filled(tmp_path / "test_tex")
+        assert_dir_filled(tmp_path / "test_log")
 
 
 def test_frame_size(tmp_path):
