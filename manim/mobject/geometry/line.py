@@ -1019,7 +1019,9 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     def from_three_points(
         A: np.array(), B: np.array(), C: np.array(), **kwargs
     ) -> Angle:
-        """Create an instance of the :class:`Angle` class from three points.
+        r"""The angle between the lines AB and BC.
+        
+        This constructs the angle :math:`\angle ABC`.
 
         Parameters
         ----------
