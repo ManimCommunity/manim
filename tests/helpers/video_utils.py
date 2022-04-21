@@ -20,13 +20,13 @@ def get_section_dir_layout(dirpath: str) -> list[str]:
     return files
 
 
-def get_section_index(metapath: str) -> list[dict[str, Any]]:
+def get_section_index(metapath: Path) -> list[dict[str, Any]]:
     """Return content of sections index file."""
-    parent_folder = Path(metapath).parent.absolute()
+    parent_folder = metapath.parent.absolute()
     # test if sections have been created in the first place
-    if not Path(parent_folder).is_dir():
+    if not parent_folder.is_dir():
         return []
-    with open(metapath) as file:
+    with metapath.open() as file:
         index = json.load(file)
     return index
 
@@ -62,7 +62,7 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
 
     movie_metadata = get_video_metadata(path_to_video)
     section_dir_layout = get_section_dir_layout(str(path_to_sections))
-    section_index = get_section_index(str(path_to_sections / f"{scene_name}.json"))
+    section_index = get_section_index(path_to_sections / f"{scene_name}.json")
 
     data = {
         "name": name,
