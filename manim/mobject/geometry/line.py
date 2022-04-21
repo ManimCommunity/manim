@@ -1017,7 +1017,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def from_three_points(
-        A: np.array(), B: np.array(), C: np.array(), **kwargs
+        A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
     ) -> Angle:
         r"""The angle between the lines AB and BC.
         
