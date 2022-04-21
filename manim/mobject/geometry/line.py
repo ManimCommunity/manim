@@ -1036,7 +1036,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        : The Angle calculated from the three points
+        The Angle calculated from the three points
 
         Examples
         --------
