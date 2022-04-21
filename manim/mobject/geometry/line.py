@@ -1032,7 +1032,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         C
             :class:Numpy.array()  -  End point of line 2
         **kwargs
-            keyword arguments are passed to Angle constructor
+            Further keyword arguments are passed to :class:`.Angle`
 
         Returns
         -------
