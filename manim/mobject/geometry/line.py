@@ -1020,7 +1020,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
     ) -> Angle:
         r"""The angle between the lines AB and BC.
-        
+
         This constructs the angle :math:`\angle ABC`.
 
         Parameters
