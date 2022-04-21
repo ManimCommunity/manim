@@ -82,7 +82,7 @@ def generate_tex_file(expression, environment=None, tex_template=None):
     if not Path(tex_dir).exists():
         Path(tex_dir).mkdir()
 
-    result = Path(tex_dir).joinpath(tex_hash(output) + ".tex")
+    result = Path(tex_dir) / (tex_hash(output) + ".tex")
     if not result.exists():
         logger.info(
             "Writing %(expression)s to %(path)s",

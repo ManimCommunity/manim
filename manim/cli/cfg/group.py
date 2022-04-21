@@ -260,7 +260,8 @@ def show():
 @click.option("-d", "--directory", default=Path.cwd())
 @click.pass_context
 def export(ctx, directory):
-    if Path(directory).absolute == Path(Path.cwd()).absolute:
+    directory_path = Path(directory)
+    if directory_path.absolute == Path(Path.cwd()).absolute:
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
@@ -272,15 +273,15 @@ Are you sure you want to continue? (y/n)""",
     else:
         proceed = True
     if proceed:
-        if not Path(directory).is_dir():
+        if not directory_path.is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
-            Path(directory).mkdir(parents=True)
+            directory_path.mkdir(parents=True)
         with open(
-            Path(directory).joinpath("manim.cfg"), "w"
+            directory_path.joinpath("manim.cfg"), "w"
         ) as outpath:  # this is not used?
             ctx.invoke(write)
-            from_path = Path(Path.cwd()).joinpath("manim.cfg")
-            to_path = Path(directory).joinpath("manim.cfg")
+            from_path = Path.cwd() / "manim.cfg"
+            to_path = directory_path / "manim.cfg"
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")

@@ -88,7 +88,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     ):
 
         self.def_map = {}
-        self.file_name = str(file_name)
+        self.file_name = Path(file_name)
         self._ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
@@ -125,22 +125,22 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
-        if Path(self.file_name).exists():
+        if self.file_name.exists():
             self.file_path = self.file_name
             return
 
-        relative = Path.cwd().joinpath(self.file_name)
-        if Path(relative).exists():
+        relative = Path.cwd() / self.file_name
+        if relative.exists():
             self.file_path = relative
             return
 
         possible_paths = [
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name),
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name + ".svg"),
-            Path(config.get_dir("assets_dir")).joinpath(self.file_name + ".xdv"),
-            Path(self.file_name),
-            Path(self.file_name).joinpath(".svg"),
-            Path(self.file_name).joinpath(".xdv"),
+            config.get_dir("assets_dir") / self.file_name,
+            config.get_dir("assets_dir") / self.file_name + ".svg",
+            config.get_dir("assets_dir") / self.file_name + ".xdv",
+            self.file_path,
+            self.file_path / ".svg",
+            self.file_path / ".xdv",
         ]
         for path in possible_paths:
             if path.exists():
@@ -154,7 +154,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         the SVGMobject's points from XML tags, populating self.mobjects, and
         any submobjects within self.mobjects.
         """
-        doc = minidom_parse(self.file_path)
+        doc = minidom_parse(str(self.file_path))
         for node in doc.childNodes:
             if not isinstance(node, MinidomElement) or node.tagName != "svg":
                 continue
