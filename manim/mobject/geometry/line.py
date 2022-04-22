@@ -1044,7 +1044,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-        .. manim:: AngleFromThreePointsBasicExample
+        .. manim:: AngleFromThreePointsExample
             :save_last_frame:
 
             class AngleFromThreePointsExample(Scene):
