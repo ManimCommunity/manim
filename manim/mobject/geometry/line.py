@@ -1019,7 +1019,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     def from_three_points(
         A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
     ) -> Angle:
-        r"""The angle between the lines AB and BC.
+        """The angle between the lines AB and BC.
 
         This constructs the angle :math:`\angle ABC`.
 
@@ -1039,24 +1039,19 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         -------
         The Angle calculated from the three points
 
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
 
         Examples
         --------
         .. manim:: AngleFromThreePointsBasicExample
             :save_last_frame:
 
-            class AngleFromThreePointsBasicExample(Scene):
+            class AngleFromThreePointsExample(Scene):
                 def construct(self):
-                    right_angle = Angle.from_three_points(UP, ORIGIN, RIGHT)
-                    self.add(right_angle)
-
-        .. manim:: AngleFromThreePointsRedExample
-            :save_last_frame:
-
-            class AngleFromThreePointsRedExample(Scene):
-                def construct(self):
-                    right_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, stroke_width=8, color=RED)
-                    self.add(right_angle)
+                    sample_angle = Angle.from_three_points(UP, ORIGIN, LEFT)
+                    red_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, radius=.8, quadrant=(-1,-1), color=RED, stroke_width=8, other_angle=True)
+                    self.add(VGroup(sample_angle, red_angle))
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
