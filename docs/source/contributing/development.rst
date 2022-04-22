@@ -66,6 +66,10 @@ For first-time contributors
      as create and enter a virtual environment. You can always re-enter
      that environment by running ``poetry shell``.
 
+   - In case you want to install extra dependencies that are defined in
+     the ``[tool.poetry.extras]``  section of ``pyproject.toml``, this can be done by passing
+     the ``-E`` flag, for example ``poetry install -E jupyterlab -E gui``.
+
    - In case you decided against Poetry, you can install Manim via pip
      by running ``python3 -m pip install .``. Note that due to our
      development infrastructure being based on Poetry, we currently
