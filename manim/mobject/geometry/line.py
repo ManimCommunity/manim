@@ -1051,7 +1051,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 def construct(self):
                     sample_angle = Angle.from_three_points(UP, ORIGIN, LEFT)
                     red_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, radius=.8, quadrant=(-1,-1), color=RED, stroke_width=8, other_angle=True)
-                    self.add(VGroup(sample_angle, red_angle))
+                    self.add(red_angle, sample_angle)
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
