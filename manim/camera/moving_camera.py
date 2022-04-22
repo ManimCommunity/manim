@@ -13,6 +13,7 @@ __all__ = ["CameraFrame", "MovingCamera"]
 from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, UP
+from ..mobject.mobject import Mobject
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import WHITE
@@ -175,7 +176,13 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
-    def auto_zoom(self, mobjects, margin=0, only_mobjects_in_frame=False, animate=True):
+    def auto_zoom(
+        self,
+        mobjects: list[Mobject],
+        margin: float = 0,
+        only_mobjects_in_frame: bool = False,
+        animate: bool = True,
+    ):
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
