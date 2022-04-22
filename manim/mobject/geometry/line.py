@@ -1019,18 +1019,16 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     def from_three_points(
         A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
     ) -> Angle:
-        r"""The angle between the lines AB and BC.
+        """The angle between the lines AB and BC.
 
         This constructs the angle :math:`\angle ABC`.
 
         Parameters
         ----------
-        A
-            :class:Numpy.array()  -  End point of line 1
-        B
-            :class:Numpy.array()  -  Start point of lines 1 and 2
-        C
-            :class:Numpy.array()  -  End point of line 2
+        A: The endpoint of the first angle leg
+        B: The vertex of the angle
+        C: The endpoint of the second angle leg
+
         **kwargs
             Further keyword arguments are passed to :class:`.Angle`
 
@@ -1040,7 +1038,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Examples
         --------
-        ::
+        .. manim:: AngleWithThreePointsExample
+            :save_last_frame:
             >>> A = np.array(UP)
             >>> B = np.array(ORIGIN)
             >>> C = np.array(RIGHT)
