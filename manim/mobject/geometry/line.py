@@ -1040,10 +1040,11 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         --------
         .. manim:: AngleWithThreePointsExample
             :save_last_frame:
-            >>> A = np.array(UP)
-            >>> B = np.array(ORIGIN)
-            >>> C = np.array(RIGHT)
-            >>> ang = Angle.from_three_points(A, B, C)
+
+            class AngleWithThreePointsExample(Scene):
+                def construct(self):
+                    right_angle = Angle.from_three_points(UP, ORIGIN, RIGHT)
+                    self.add(right_angle)
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
