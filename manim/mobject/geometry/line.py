@@ -1039,8 +1039,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         -------
         The Angle calculated from the three points
 
-                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
-                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
 
         Examples
         --------
