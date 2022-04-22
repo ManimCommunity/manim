@@ -490,9 +490,9 @@ The implementation of :meth:`.Circle.__init__` immediately calls
 the initialization method of :class:`.Arc`, as a circle in Manim
 is simply an arc with an angle of :math:`\tau = 2\pi`. When
 initializing the arc, some basic attributes are set (like
-``Arc.radius``, ``Arc.arc_center``, ``Arc.start_angle``, and 
+``Arc.radius``, ``Arc.arc_center``, ``Arc.start_angle``, and
 ``Arc.angle``), and then the initialization method of its
-parent class, :class:`.TipableVMobject`, is called (which is 
+parent class, :class:`.TipableVMobject`, is called (which is
 a rather abstract base class for mobjects which a arrow tip can
 be attached to). Note that in contrast to :class:`.Polygram`,
 this class does **not** preemptively generate the points of the circle.
