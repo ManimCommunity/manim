@@ -9,12 +9,12 @@ from typing import Any
 from manim import get_dir_layout, get_video_metadata, logger
 
 
-def get_section_dir_layout(dirpath: str) -> list[str]:
+def get_section_dir_layout(dirpath: Path) -> list[str]:
     """Return a list of all files in the sections directory."""
     # test if sections have been created in the first place, doesn't work with multiple scene but this isn't an issue with tests
-    if not Path(dirpath).is_dir():
+    if not dirpath.is_dir():
         return []
-    files = get_dir_layout(dirpath)
+    files = get_dir_layout(str(dirpath))
     # indicate that the sections directory has been created
     files.append(".")
     return files
@@ -61,7 +61,7 @@ def save_control_data_from_video(path_to_video: str, name: str) -> None:
     scene_name = orig_path_to_sections.stem
 
     movie_metadata = get_video_metadata(path_to_video)
-    section_dir_layout = get_section_dir_layout(str(path_to_sections))
+    section_dir_layout = get_section_dir_layout(path_to_sections)
     section_index = get_section_index(path_to_sections / f"{scene_name}.json")
 
     data = {
