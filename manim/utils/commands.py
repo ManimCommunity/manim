@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from subprocess import run
-from typing import Any, Generator
+from typing import Generator
 
 __all__ = [
     "capture",
@@ -18,7 +18,7 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str) -> dict[str, Any]:
+def get_video_metadata(path_to_video: str) -> dict[str]:
     command = [
         "ffprobe",
         "-v",
