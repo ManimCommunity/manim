@@ -1039,14 +1039,25 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         -------
         The Angle calculated from the three points
 
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
+
         Examples
         --------
-        .. manim:: AngleWithThreePointsExample
+        .. manim:: AngleFromThreePointsBasicExample
             :save_last_frame:
 
-            class AngleWithThreePointsExample(Scene):
+            class AngleFromThreePointsBasicExample(Scene):
                 def construct(self):
                     right_angle = Angle.from_three_points(UP, ORIGIN, RIGHT)
+                    self.add(right_angle)
+
+        .. manim:: AngleFromThreePointsRedExample
+            :save_last_frame:
+
+            class AngleFromThreePointsRedExample(Scene):
+                def construct(self):
+                    right_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, stroke_width=8, color=RED)
                     self.add(right_angle)
         """
         return Angle(Line(B, A), Line(B, C), **kwargs)
