@@ -14,7 +14,7 @@ def get_section_dir_layout(dirpath: Path) -> list[str]:
     # test if sections have been created in the first place, doesn't work with multiple scene but this isn't an issue with tests
     if not dirpath.is_dir():
         return []
-    files = get_dir_layout(str(dirpath))
+    files = list(get_dir_layout(dirpath))
     # indicate that the sections directory has been created
     files.append(".")
     return files

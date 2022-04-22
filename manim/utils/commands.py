@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
-import os
+from pathlib import Path
 from subprocess import run
-from typing import Any
+from typing import Any, Generator
 
 __all__ = [
     "capture",
@@ -36,10 +36,10 @@ def get_video_metadata(path_to_video: str) -> dict[str, Any]:
     return json.loads(config)["streams"][0]
 
 
-def get_dir_layout(dirpath: str) -> list[str]:
+def get_dir_layout(dirpath: Path) -> Generator[str, None, None]:
     """Get list of paths relative to dirpath of all files in dir and subdirs recursively."""
-    index_files: list[str] = []
-    for root, dirs, files in os.walk(dirpath):
-        for file in files:
-            index_files.append(f"{os.path.relpath(os.path.join(root, file), dirpath)}")
-    return index_files
+    for p in dirpath.iterdir():
+        if p.is_dir():
+            yield from get_dir_layout(p)
+            continue
+        yield str(p.relative_to(dirpath))
