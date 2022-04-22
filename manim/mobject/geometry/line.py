@@ -1025,9 +1025,12 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
 
         Parameters
         ----------
-        A: The endpoint of the first angle leg
-        B: The vertex of the angle
-        C: The endpoint of the second angle leg
+        A
+            The endpoint of the first angle leg
+        B
+            The vertex of the angle
+        C
+            The endpoint of the second angle leg
 
         **kwargs
             Further keyword arguments are passed to :class:`.Angle`
