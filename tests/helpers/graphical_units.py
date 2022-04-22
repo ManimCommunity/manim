@@ -38,11 +38,8 @@ def set_test_scene(scene_object, module_name):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         temp_path = Path(tmpdir)
-        tex_dir = temp_path / "tex"
-        tex_dir.mkdir(parents=True)
-        text_dir = temp_path / "text"
-        config["text_dir"] = text_dir
-        config["tex_dir"] = tex_dir
+        config["text_dir"] = temp_path / "text"
+        config["tex_dir"] = temp_path / "tex"
         scene = scene_object(skip_animations=True)
         scene.render()
         data = scene.renderer.get_frame()
