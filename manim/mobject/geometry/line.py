@@ -1019,7 +1019,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     def from_three_points(
         A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
     ) -> Angle:
-        """The angle between the lines AB and BC.
+        r"""The angle between the lines AB and BC.
 
         This constructs the angle :math:`\angle ABC`.
 
