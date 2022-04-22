@@ -481,8 +481,34 @@ the initialization method of :class:`.Square`. After this,
 the square is initialized and assigned to the ``orange_square``
 variable.
 
-- mobject initialization of circle: more or less same as ``orange_square``,
-  different inheritance structure obviously.
+The initialization of ``blue_circle`` is similar to the one of
+``orange_square``, with the main difference being that the inheritance
+chain of :class:`.Circle` is different. Let us briefly follow the trace
+of the debugger:
+
+The implementation of :meth:`.Circle.__init__` immediately calls
+the initialization method of :class:`.Arc`, as a circle in Manim
+is simply an arc with an angle of :math:`\tau = 2\pi`. When
+initializing the arc, some basic attributes are set (like
+``Arc.radius``, ``Arc.arc_center``, ``Arc.start_angle``, and 
+``Arc.angle``), and then the initialization method of its
+parent class, :class:`.TipableVMobject`, is called (which is 
+a rather abstract base class for mobjects which a arrow tip can
+be attached to). Note that in contrast to :class:`.Polygram`,
+this class does **not** preemptively generate the points of the circle.
+
+After that, things are less exciting: :class:`.TipableVMobject` again
+sets some attributes relevant for adding arrow tips, and afterwards
+passes to the initialization method of :class:`.VMobject`. From there,
+:class:`.Mobject` is initialized and :meth:`.Mobject.generate_points`
+is called, which actually runs the method implemented in
+:meth:`.Arc.generate_points`.
+
+After both our ``orange_square`` and the ``blue_circle`` are initialized,
+the square is actually added to the scene. The :meth:`.Scene.add` method
+is actually doing a few interesting things, so it is worth to dig a bit
+deeper in the next section.
+
 
 Adding Mobjects to the Scene
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
