@@ -513,17 +513,87 @@ deeper in the next section.
 Adding Mobjects to the Scene
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- adding a mobject to the scene!
+The code in our ``construct`` method that is run next is
 
-  - TL;DR: families (= recursive list of all mobjects + submobjects
-    of mobjects that are in the scene already are expanded, mobject that
-    should be newly added are removed from it, and then added "safely"
-    (to avoid duplicates) to the list separately.
+::
+
+  self.add(orange_square)
+
+From a high-level point of view, :meth:`.Scene.add` adds the
+``orange_square`` to the list of mobjects that should be rendered,
+which is stored in the ``mobjects`` attribute of the scene. However,
+it does so in a very careful way to avoid the situation that a mobject
+is being added to the scene more than once. At a first glance, this
+sounds like a simple task -- the problem is that ``Scene.mobjects``
+is not a "flat" list of mobjects, but a list of mobjects which
+might contain mobjects themselves, and so on.
+
+Stepping through the code in :meth:`.Scene.add`, we see that first
+it is checked whether we are currently using the OpenGL renderer
+(which we are not) -- adding mobjects to the scene works slightly
+different (and actually easier!) for the OpenGL renderer. Then, the
+code branch for the Cairo renderer is entered and the list of so-called
+foreground mobjects (which are rendered on top of all other mobjects)
+is added to the list of passed mobjects. This is to ensure that the
+foreground mobjects will stay above of the other mobjects, even after 
+adding the new ones. In our case, the list of foreground mobjects
+is actually empty, and nothing changes.
+
+Next, :meth:`.Scene.restructure_mobjects` is called with the list
+of mobjects to be added as the ``to_remove`` argument, which might
+sound odd at first. Practically, this ensures that mobjects are not
+added twice, as mentioned above: if they were present in the scene
+``Scene.mobjects`` list before (even if they were contained as a
+child of some other mobject), they are first removed from the list.
+The way :meth:`.Scene.restrucutre_mobjects` works is rather aggressive:
+It always operates on a given list of mobjects; in the ``add`` method
+two different lists occur: the default one, ``Scene.mobjects`` (no extra
+keyword arugment is passed), and ``Scene.moving_mobjects`` (which we will 
+discuss later in more detail). It iterates through all of the members of
+the list, and checks whether any of the mobjects passed in ``to_remove``
+are contained as children (in any nesting level). If so, **their parent
+mobject is deconstructed** and their siblings are inserted directly
+one level higher. Consider the following example::
+
+  >>> from manim import Scene, Square, Circle, Group
+  >>> test_scene = Scene()
+  >>> mob1 = Square()
+  >>> mob2 = Circle()
+  >>> mob_group = Group(mob1, mob2)
+  >>> test_scene.add(mob_group)
+  >>> test_scene.mobjects
+  [Group]
+  >>> test_scene.restructure_mobjects(to_remove=[mob1])
+  >>> test_scene.mobjects
+  [Circle]
+
+Note that the group is disbanded and the circle moves into the
+root layer of mobjects in ``test_scene.mobjects``.
+
+After the mobject list is "restructured", the mobject to be added
+are simply appended to ``Scene.mobjects``. In our toy example,
+the ``Scene.mobjects`` list is actually empty, so the
+``restructure_mobjects`` method does not actually do anything. The
+``orange_square`` is simply added to ``Scene.mobjects``, and as
+the aforementioned ``Scene.moving_mobjects`` list is, at this point,
+also still empty, nothing happens and :meth:`.Scene.add` returns.
+
+We will hear more about the ``moving_mobject`` list when we discuss
+the render loop. Before we do that, let us look at the next line
+of code in our toy example, which includes the initialization of
+an animation class, 
+::
+  
+  ReplacementTransform(orange_square, blue_circle, run_time=3)
+
+Hence it is time to talk about :class:`.Animation`.
 
 
+Animations and the Render Loop
+------------------------------
 
-Producing Frames: The Render Loop
----------------------------------
+Initializing animations
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - constructing the ``ReplacementTransform``:
 
