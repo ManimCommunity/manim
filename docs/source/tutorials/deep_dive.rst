@@ -535,7 +535,7 @@ different (and actually easier!) for the OpenGL renderer. Then, the
 code branch for the Cairo renderer is entered and the list of so-called
 foreground mobjects (which are rendered on top of all other mobjects)
 is added to the list of passed mobjects. This is to ensure that the
-foreground mobjects will stay above of the other mobjects, even after 
+foreground mobjects will stay above of the other mobjects, even after
 adding the new ones. In our case, the list of foreground mobjects
 is actually empty, and nothing changes.
 
@@ -548,7 +548,7 @@ child of some other mobject), they are first removed from the list.
 The way :meth:`.Scene.restrucutre_mobjects` works is rather aggressive:
 It always operates on a given list of mobjects; in the ``add`` method
 two different lists occur: the default one, ``Scene.mobjects`` (no extra
-keyword arugment is passed), and ``Scene.moving_mobjects`` (which we will 
+keyword arugment is passed), and ``Scene.moving_mobjects`` (which we will
 discuss later in more detail). It iterates through all of the members of
 the list, and checks whether any of the mobjects passed in ``to_remove``
 are contained as children (in any nesting level). If so, **their parent
@@ -581,9 +581,9 @@ also still empty, nothing happens and :meth:`.Scene.add` returns.
 We will hear more about the ``moving_mobject`` list when we discuss
 the render loop. Before we do that, let us look at the next line
 of code in our toy example, which includes the initialization of
-an animation class, 
+an animation class,
 ::
-  
+
   ReplacementTransform(orange_square, blue_circle, run_time=3)
 
 Hence it is time to talk about :class:`.Animation`.
