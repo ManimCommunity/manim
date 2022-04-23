@@ -1,0 +1,197 @@
+*******
+v0.15.2
+*******
+
+:Date: April 24, 2022
+
+Contributors
+============
+
+A total of 32 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Bailey Powers +
+* Benjamin Hackl
+* Dan Walsh +
+* Darigov Research
+* Darylgolden
+* David Millard +
+* Hamidreza Hashemi +
+* Jan-Hendrik Müller
+* Jonathan Alpert +
+* Joy Bhalla
+* Kian Cross +
+* Luca +
+* Mohsin Shaikh +
+* Naveen M K
+* Prismo +
+* Ryan McCauley
+* WillSoltas +
+* ad_chaos
+* darkways +
+* dawn*squirryl +
+* icedcoffeeee
+* peaceheis
+* sparshg
+* trickypr +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Dan Walsh
+* Darylgolden
+* GameDungeon
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Jonathan Alpert
+* Luca
+* Naveen M K
+* Prismo
+* Ryan McCauley
+* ad_chaos
+* darkways
+* hickmott99
+* icedcoffeeee
+* peaceheis
+
+Pull requests merged
+====================
+
+A total of 35 pull requests were merged for this release.
+
+New features
+------------
+
+* :pr:`2534`: Implement `OpenGLImageMobject`
+
+
+* :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - Angle.from_three_points
+   Added a function to create an angle object with three points. In addition, we added a test within the test_geometry.py that instantiates an angle object with three points.
+
+* :pr:`2404`: Add SpiralIn Animation
+
+
+Enhancements
+------------
+
+* :pr:`2693`: Allow using :meth:`.MovingCamera.auto_zoom` without animation
+   Allows auto zooming camera without having to play an animation by passing an `animation=False` argument
+
+* :pr:`2665`: Improved handling of attributes when using the ``.animate`` syntax
+
+
+* :pr:`2655`: Fix `assert_is_mobject_method` when using OpenGL
+
+
+* :pr:`2642`: Migrated file_ops.py and scene_file_writer.py from os.path to Pathlib
+   In file_ops.py and scene_file_writer.py: Uses of str type file names have have been mostly (see further information) converted to Pathlib Path objects. Uses of os.path methods have been converted to equivalent Pathlib methods.
+
+Fixed bugs
+----------
+
+* :pr:`2688`: Fixed two minor issues of :class:`.SpiralIn` and :class:`.ManimBanner`
+
+
+* :pr:`2648`: Handle user-defined centers for Wiggle animation
+   Fixes a minor bug in the Wiggle animation where user-defined centers are ignored.
+
+* :pr:`2658`: Fix arguments of overridden `set_style` for `BackgroundRectangle`
+   Fixes issue #2337:
+   Using `Write()` animation on a `Text` object with `.add_background_rectangle()` applied no longer generates a `TypeError`.
+
+* :pr:`2676`: Fixed opengl finish transform
+
+
+* :pr:`2668`: (Re)set background color of :class:`.OpenGLRenderer` when initializing scene
+
+
+* :pr:`2546`: Fixed a File logging bug and some maintenance
+
+
+* :pr:`2613`: Fixed bug in :meth:`.Circle.point_at_angle` when the angle is not in the interval :math:`[0, 2\pi]`
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2686`: Add instructions to install extra dependencies with poetry
+
+
+* :pr:`2640`: Copyedited Documentation
+   Reviewed tutorials\configurations.rst. Edited simple mistakes such as Manim not being capitalized and commas.
+
+* :pr:`2663`: Added documentation for scene updater functions
+
+
+* :pr:`2651`: Update copyright year in documentation to 2020-2022
+   Updates year in conf.py to correct year in the footer of the documentation.
+
+   Would resolve https://github.com/ManimCommunity/manim/issues/2650 if merged
+
+* :pr:`2609`: Copy Edit troubleshooting.rst
+
+
+* :pr:`2610`: Add example PolygonOnAxes
+
+
+* :pr:`2619`: Improve Example for arrange_in_grid
+
+
+* :pr:`2620`: Fixed typo in :meth:`.Animation.is_introducer`
+
+
+* :pr:`2617`: Re-added :mod:`.value_tracker` documentation
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2656`: Fixed incompatibility with black version
+
+
+* :pr:`2561`: Run tests on Linux-aarch64
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2696`: Improve `scripts/dev_changelog.py`
+
+
+* :pr:`2691`:  Removed :class:`CameraFrame`
+
+
+* :pr:`2678`: Require `backports-cached-property` only for Python < 3.8
+
+
+* :pr:`2630`: Remove WebGL renderer
+   The WebGL renderer is broken and is unmaintained anymore. The support for it in Manim is removed.
+
+Unclassified changes
+--------------------
+
+* :pr:`2674`: Document and type `simple_functions.py`
+   - Just some short and sweet documentation for `simple_functions.py` along with a general neatening up. 🙂.
+   - Small additions with some extra clarity for these functions (same style as my recent PR for `iterables.py` (#2649)
+
+* :pr:`2634`: Fix background lines drawn twice in `NumberPlane`
+
+
+* :pr:`2649`: Document and type utils/iterables.py
+   - `utils/iterables.py` has been **fully documented** (including examples to demonstrate usage) and **typed**
+
+* :pr:`2597`: Fix Bug in :class:`Uncreate` with ``rate_func`` via introducing new parameter ``reversed`` to :class:`Animation`
+   Refractor the :class:`Uncreate`. The new implementation uses a flag member :param:`reversed`. Set it to ``True`` and its superclass handles the reverse.
+
+   Introduce a bool parameter ``reversed`` to :class:`Animation`. It decides whether the animation needs to be played backwards. Default to be False.
+   Add conditional branches in :func:`Animation.get_sub_alpha`. If the parameter ``reversed`` is True, it would set ``rate_func(t)`` to ``rate_func(1 - t)``.
+
+* :pr:`2652`: Update cloup version to 0.13.0 from 0.7.0
+   This PR updates the cloup version from 0.7.0 to 0.13.0 as requested in #2614
+
+* :pr:`2062`: Reuse shader wrappers and shader data
+
+
