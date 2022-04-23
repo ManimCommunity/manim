@@ -1,0 +1,94 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:2
+msgid "PMobject"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:4
+msgid "Qualified name: ``manim.mobject.types.point\\_cloud\\_mobject.PMobject``"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject:1
+msgid "Bases: :py:class:`manim.mobject.mobject.Mobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject:1
+msgid "A disc made of a cloud of Dots"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject:4
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1
+msgid "Add points."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.get_color:1
+msgid "Returns the color of the :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+msgid "The simplest :class:`~.Mobject` to be transformed to or from self."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.reset_points:1
+msgid "Sets :attr:`points` to be an empty array."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+msgid "Condition is function which takes in one arguments, (x, y, z)."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.sort_points:1
+msgid "Function is any map from R^3 to R"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:40:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.thin_out:1
+msgid "Removes all but every nth point for n = factor"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PMobject.rst:42
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.add_points:3
+msgid "Points must be a Nx3 numpy array. Rgbas must be a Nx4 numpy array if it is not None."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PMobject.get_point_mobject:1
+msgid "The simplest :class:`~.Mobject` to be transformed to or from self. Should by a point of the appropriate type"
+msgstr ""
+
+

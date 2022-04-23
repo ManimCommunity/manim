@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "indication"
 
@@ -59,3 +61,14 @@ def test_Wiggle(scene):
     square = Square()
     scene.add(square)
     scene.play(Wiggle(square))
+
+
+def test_Wiggle_custom_about_points():
+    square = Square()
+    wiggle = Wiggle(
+        square,
+        scale_about_point=[1.0, 2.0, 3.0],
+        rotate_about_point=[4.0, 5.0, 6.0],
+    )
+    assert wiggle.get_scale_about_point() == [1.0, 2.0, 3.0]
+    assert wiggle.get_rotate_about_point() == [4.0, 5.0, 6.0]

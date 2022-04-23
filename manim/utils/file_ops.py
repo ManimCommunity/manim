@@ -1,8 +1,11 @@
 """Utility functions for interacting with the file system."""
 
+from __future__ import annotations
+
 __all__ = [
     "add_extension_if_not_present",
     "guarantee_existence",
+    "guarantee_empty_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
@@ -16,10 +19,15 @@ __all__ = [
 
 import os
 import platform
+import shutil
 import subprocess as sp
 import time
 from pathlib import Path
 from shutil import copyfile
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..scene.scene_file_writer import SceneFileWriter
 
 from manim import __version__, config, logger
 
@@ -113,38 +121,47 @@ def write_to_movie() -> bool:
     )
 
 
-def add_extension_if_not_present(file_name, extension):
+def add_extension_if_not_present(file_name: Path, extension: str) -> Path:
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
 
 
-def add_version_before_extension(file_name):
+def add_version_before_extension(file_name: Path) -> Path:
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
-def guarantee_existence(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return os.path.abspath(path)
+def guarantee_existence(path: Path) -> Path:
+    if not path.exists():
+        path.mkdir(parents=True)
+    return path.resolve(strict=True)
 
 
-def seek_full_path_from_defaults(file_name, default_dir, extensions):
-    possible_paths = [file_name]
+def guarantee_empty_existence(path: Path) -> Path:
+    if path.exists():
+        shutil.rmtree(str(path))
+    path.mkdir(parents=True)
+    return path.resolve(strict=True)
+
+
+def seek_full_path_from_defaults(
+    file_name: str, default_dir: Path, extensions: list[str]
+) -> Path:
+    possible_paths = [Path(file_name)]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
     for path in possible_paths:
-        if os.path.exists(path):
+        if path.exists():
             return path
     error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
     raise OSError(error)
 
 
-def modify_atime(file_path):
+def modify_atime(file_path) -> None:
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default.
 
     Parameters
@@ -158,23 +175,26 @@ def modify_atime(file_path):
 def open_file(file_path, in_browser=False):
     current_os = platform.system()
     if current_os == "Windows":
-        os.startfile(file_path if not in_browser else os.path.dirname(file_path))
+        os.startfile(file_path if not in_browser else file_path.parent)
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = file_path if not in_browser else file_path.parent
         elif current_os.startswith("CYGWIN"):
             commands = ["cygstart"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = file_path if not in_browser else file_path.parent
         elif current_os == "Darwin":
-            commands = ["open"] if not in_browser else ["open", "-R"]
+            if is_gif_format():
+                commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]
+            else:
+                commands = ["open"] if not in_browser else ["open", "-R"]
         else:
             raise OSError("Unable to identify your operating system...")
         commands.append(file_path)
         sp.Popen(commands)
 
 
-def open_media_file(file_writer):
+def open_media_file(file_writer: SceneFileWriter) -> None:
     file_paths = []
 
     if config["save_last_frame"]:
@@ -193,7 +213,7 @@ def open_media_file(file_writer):
             logger.info(f"Previewed File at: '{file_path}'")
 
 
-def get_template_names():
+def get_template_names() -> list[str]:
     """Returns template names from the templates directory.
 
     Returns
@@ -204,7 +224,7 @@ def get_template_names():
     return [template_name.stem for template_name in template_path.glob("*.mtp")]
 
 
-def get_template_path():
+def get_template_path() -> Path:
     """Returns the Path of templates directory.
 
     Returns
@@ -228,7 +248,9 @@ def add_import_statement(file):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir=Path("."), template_name="Default"):
+def copy_template_files(
+    project_dir: Path = Path("."), template_name: str = "Default"
+) -> None:
     """Copies template files from templates dir to project_dir.
 
     Parameters

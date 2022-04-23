@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 
 from manim import Circle, Line, Square, VDict, VGroup
-from manim.mobject.opengl_mobject import OpenGLMobject
-from manim.mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 
 def test_opengl_vmobject_point_from_propotion(using_opengl_renderer):
@@ -54,7 +56,7 @@ def test_vgroup_add(using_opengl_renderer):
         # If only one of the added object is not an instance of OpenGLVMobject, none of them should be added
         obj.add(OpenGLVMobject(), OpenGLMobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a OpenGLMobject cannot contain itself
         obj.add(obj)
 
@@ -74,7 +76,7 @@ def test_vgroup_add_dunder(using_opengl_renderer):
         # If only one of the added object is not an instance of OpenGLVMobject, none of them should be added
         obj += (OpenGLVMobject(), OpenGLMobject())
     assert len(obj.submobjects) == 1
-    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+    with pytest.raises(ValueError):
         # a OpenGLMobject cannot contain itself
         obj += obj
 

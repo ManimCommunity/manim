@@ -9,13 +9,13 @@ Both ``logger`` and ``console`` use the ``rich`` library to produce rich text
 format.
 
 """
+from __future__ import annotations
+
 import configparser
 import copy
 import json
 import logging
-import os
 import sys
-import typing
 from typing import TYPE_CHECKING
 
 from rich import color, errors
@@ -25,7 +25,7 @@ from rich.logging import RichHandler
 from rich.theme import Theme
 
 if TYPE_CHECKING:
-    from manim._config.utils import ManimConfig
+    from pathlib import Path
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
     "animations",
@@ -51,7 +51,7 @@ Loading the default color configuration.[/logging.level.error]
 def make_logger(
     parser: configparser.ConfigParser,
     verbosity: str,
-) -> typing.Tuple[logging.Logger, Console]:
+) -> tuple[logging.Logger, Console]:
     """Make the manim logger and console.
 
     Parameters
@@ -141,7 +141,7 @@ def parse_theme(parser: configparser.ConfigParser) -> Theme:
     return custom_theme
 
 
-def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
+def set_file_logger(scene_name: str, module_name: str, log_dir: Path) -> None:
     """Add a file handler to manim logger.
 
     The path to the file is built using ``config.log_dir``.
@@ -151,28 +151,13 @@ def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
     config : :class:`ManimConfig`
         The global config, used to determine the log file path.
 
-    verbosity : :class:`str`
-        The verbosity level of the logger.
-
-    Notes
-    -----
-    Calling this function changes the verbosity of all handlers assigned to
-    manim logger.
-
     """
     # Note: The log file name will be
     # <name_of_animation_file>_<name_of_scene>.log, gotten from config.  So it
     # can differ from the real name of the scene.  <name_of_scene> would only
     # appear if scene name was provided when manim was called.
-    scene_name_suffix = "".join(config["scene_names"])
-    scene_file_name = os.path.basename(config["input_file"]).split(".")[0]
-    log_file_name = (
-        f"{scene_file_name}_{scene_name_suffix}.log"
-        if scene_name_suffix
-        else f"{scene_file_name}.log"
-    )
-    log_file_path = config.get_dir("log_dir") / log_file_name
-    log_file_path.parent.mkdir(parents=True, exist_ok=True)
+    log_file_name = f"{module_name}_{scene_name}.log"
+    log_file_path = log_dir / log_file_name
 
     file_handler = logging.FileHandler(log_file_path, mode="w")
     file_handler.setFormatter(JSONFormatter())
@@ -180,9 +165,6 @@ def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
     logger = logging.getLogger("manim")
     logger.addHandler(file_handler)
     logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
-
-    config.verbosity = verbosity
-    logger.setLevel(verbosity)
 
 
 class JSONFormatter(logging.Formatter):

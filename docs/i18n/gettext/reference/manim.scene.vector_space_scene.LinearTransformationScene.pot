@@ -1,0 +1,425 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:2
+msgid "LinearTransformationScene"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:4
+msgid "Qualified name: ``manim.scene.vector\\_space\\_scene.LinearTransformationScene``"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:1
+msgid "Bases: :py:class:`manim.scene.vector_space_scene.VectorScene`"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:1
+msgid "This scene contains special methods that make it especially suitable for showing linear transformations."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_background_mobject:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_foreground_mobject:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_moving_mobject:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_special_mobjects:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_mobject:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_function:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse_transpose:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_matrix:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_nonlinear_transformation:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_transposed_matrix:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_matrix_transformation:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transposed_matrix_transformation:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:4
+msgid "Whether or not to include the background plane in the scene."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:5
+msgid "Whether or not to include the foreground plane in the scene."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:6
+msgid "Parameters to be passed to :class:`NumberPlane` to adjust the background plane."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:7
+msgid "Parameters to be passed to :class:`NumberPlane` to adjust the foreground plane."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:8
+msgid "Whether or not to include the coordinates for the background plane."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:9
+msgid "Whether to show the basis x_axis -> ``i_hat`` and y_axis -> ``j_hat`` vectors."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:10
+msgid "The ``stroke_width`` of the basis vectors."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:11
+msgid "The color of the ``i_hat`` vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:12
+msgid "The color of the ``j_hat`` vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:13
+msgid "Indicates the previous position of the basis vectors following a transformation."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene:16
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_background_mobject:1
+msgid "Adds the mobjects to the special list self.background_mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_foreground_mobject:1
+msgid "Adds the mobjects to the special list self.foreground_mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_moving_mobject:1
+msgid "Adds the mobject to the special list self.moving_mobject, and adds a property to the mobject called mobject.target, which keeps track of what the mobject will move to or become etc."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_special_mobjects:1
+msgid "Adds mobjects to a separate list that can be tracked, if these mobjects have some extra importance."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+msgid "Adds a title, after scaling it, adding a background rectangle, moving it to the top and adding it to foreground_mobjects adding it as a local variable of self."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:1
+msgid "Method for creating, and animating the addition of a transformable label for the vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_mobject:1
+msgid "Adds the mobjects to the special list self.transformable_mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:1
+msgid "Adds a unit square to the scene via self.get_unit_square."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:1
+msgid "Adds a vector to the scene, and puts it in the special list self.moving_vectors."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_function:1
+msgid "Applies the given function to each of the mobjects in self.transformable_mobjects, and plays the animation showing this."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse:1
+msgid "This method applies the linear transformation represented by the inverse of the passed matrix to the number plane, and each vector/similar mobject on it."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse_transpose:1
+msgid "Applies the inverse of the transformation represented by the given transposed matrix to the number plane and each vector/similar mobject on it."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_matrix:1
+msgid "Applies the transformation represented by the given matrix to the number plane, and each vector/similar mobject on it."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_nonlinear_transformation:1
+msgid "Applies the non-linear transformation represented by the given function to the number plane and each vector/similar mobject on it."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_transposed_matrix:1
+msgid "Applies the transformation represented by the given transposed matrix to the number plane, and each vector/similar mobject on it."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_matrix_transformation:1
+msgid "Returns a function corresponding to the linear transformation represented by the matrix passed."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+msgid "This method returns an animation that moves a mobject in \"self.moving_mobjects\"  to its corresponding .target value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+msgid "This method returns an animation that moves an arbitrary mobject in \"pieces\" to its corresponding .target value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transformable_label_movement:1
+msgid "This method returns an animation that moves all labels in \"self.transformable_labels\" to its corresponding .target ."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transposed_matrix_transformation:1
+msgid "Returns a function corresponding to the linear transformation represented by the transposed matrix passed."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:1
+msgid "Returns a unit square for the current NumberPlane."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+msgid "This method returns an animation that moves a mobject in \"self.moving_vectors\"  to its corresponding .target value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.setup:1
+msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common setup involved before the construct method is called."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:44:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:1
+msgid "Returns a column matrix indicating the vector coordinates, after writing them to the screen, and adding them to the special list self.foreground_mobjects"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.LinearTransformationScene.rst:46
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_background_mobject:4
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_mobject:4
+msgid "The mobjects to add to the list."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_foreground_mobject:4
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_moving_mobject:7
+msgid "The mobjects to add to the list"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_moving_mobject:9
+msgid "What the moving_mobject goes to, etc."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_special_mobjects:4
+msgid "The special list to which you want to add these mobjects."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_special_mobjects:7
+msgid "The mobjects to add."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:1
+msgid "Adds a title, after scaling it, adding a background rectangle, moving it to the top and adding it to foreground_mobjects adding it as a local variable of self. Returns the Scene."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:5
+msgid "What the title should be."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:7
+msgid "How much the title should be scaled by."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:9
+msgid "Whether or not to animate the addition."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transformable_label_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:12
+msgid "The scene with the title added to it."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_title:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transformable_label_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:4
+msgid "The vector for which the label must be added."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:6
+msgid "The MathTex/string of the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:8
+msgid "The name to give the transformation as a label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:10
+msgid "What the label should display after a Linear Transformation"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:12
+msgid "Any valid keyword argument of get_vector_label"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_transformable_label:14
+msgid "The MathTex of the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:4
+msgid "Whether or not to animate the addition with DrawBorderThenFill."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:6
+msgid "Any valid keyword arguments of self.get_unit_square()"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_unit_square:9
+msgid "The unit square."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:4
+msgid "It can be a pre-made graphical vector, or the coordinates of one."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:7
+msgid "The string of the hex color of the vector. This is only taken into consideration if 'vector' is not an Arrow. Defaults to YELLOW."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:11
+msgid "Any valid keyword argument of VectorScene.add_vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.add_vector:13
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:5
+msgid "The arrow representing the vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_function:5
+msgid "The function that affects each point of each mobject in self.transformable_mobjects."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_function:8
+msgid "Any other animations that need to be played simultaneously with this."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_function:11
+msgid "Any valid keyword argument of a self.play() call."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse:5
+msgid "The matrix whose inverse is to be applied."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse:7
+msgid "Any valid keyword argument of self.apply_matrix()"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse_transpose:5
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_matrix:5
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_transposed_matrix:5
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_matrix_transformation:4
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transposed_matrix_transformation:5
+msgid "The matrix."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_inverse_transpose:7
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_matrix:7
+msgid "Any valid keyword argument of self.apply_transposed_matrix()"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_nonlinear_transformation:5
+msgid "The function."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_nonlinear_transformation:7
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.apply_transposed_matrix:7
+msgid "Any valid keyword argument of self.apply_function()"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:1
+msgid "This method returns an animation that moves a mobject in \"self.moving_mobjects\"  to its corresponding .target value. func is a function that determines where the .target goes."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:5
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:5
+msgid "The function that determines where the .target of the moving mobject goes."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_moving_mobject_movement:9
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:9
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_transformable_label_movement:4
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:9
+msgid "The animation of the movement."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:1
+msgid "This method returns an animation that moves an arbitrary mobject in \"pieces\" to its corresponding .target value. If self.leave_ghost_vectors is True, ghosts of the original positions/mobjects are left on screen"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_piece_movement:6
+msgid "The pieces for which the movement must be shown."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:3
+msgid "The string of the hex color code of the color wanted."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:5
+msgid "The opacity of the square"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_unit_square:7
+msgid "The stroke_width in pixels of the border of the square"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.get_vector_movement:1
+msgid "This method returns an animation that moves a mobject in \"self.moving_vectors\"  to its corresponding .target value. func is a function that determines where the .target goes."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.LinearTransformationScene.write_vector_coordinates:7
+msgid "Any valid keyword arguments of VectorScene.write_vector_coordinates"
+msgstr ""
+
+

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import re
 
 import click
 from cloup import option, option_group
+
+from manim.constants import QUALITIES
 
 from ... import logger
 
@@ -15,7 +19,7 @@ def validate_scene_range(ctx, param, value):
 
     if value:
         try:
-            start, end = map(int, re.split(";|,|-", value))
+            start, end = map(int, re.split(r"[;,\-]", value))
             return start, end
         except Exception:
             logger.error("Couldn't determine a range for -n option.")
@@ -25,7 +29,7 @@ def validate_scene_range(ctx, param, value):
 def validate_resolution(ctx, param, value):
     if value:
         try:
-            start, end = map(int, re.split(";|,|-", value))
+            start, end = map(int, re.split(r"[;,\-]", value))
             return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
@@ -59,15 +63,20 @@ render_options = option_group(
         "-q",
         "--quality",
         default=None,
-        type=click.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
-        help="""
-            Render quality at the follow resolution framerates, respectively:
-            854x480 30FPS,
-            1280x720 30FPS,
-            1920x1080 60FPS,
-            2560x1440 60FPS,
-            3840x2160 60FPS
-            """,
+        type=click.Choice(
+            list(reversed([q["flag"] for q in QUALITIES.values() if q["flag"]])),  # type: ignore
+            case_sensitive=False,
+        ),
+        help="Render quality at the follow resolution framerates, respectively: "
+        + ", ".join(
+            reversed(
+                [
+                    f'{q["pixel_width"]}x{q["pixel_height"]} {q["frame_rate"]}FPS'
+                    for q in QUALITIES.values()
+                    if q["flag"]
+                ]
+            )
+        ),
     ),
     option(
         "-r",
@@ -86,7 +95,7 @@ render_options = option_group(
     ),
     option(
         "--renderer",
-        type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
+        type=click.Choice(["cairo", "opengl"], case_sensitive=False),
         help="Select a renderer for your Scene.",
         default=None,
     ),
@@ -95,18 +104,6 @@ render_options = option_group(
         is_flag=True,
         help="Render scenes using OpenGL (Deprecated).",
         default=None,
-    ),
-    option(
-        "--use_webgl_renderer",
-        is_flag=True,
-        help="Render scenes using the WebGL frontend (Deprecated).",
-        default=None,
-    ),
-    option(
-        "--webgl_renderer_path",
-        default=None,
-        type=click.Path(),
-        help="The path to the WebGL frontend.",
     ),
     option(
         "-g",
@@ -121,6 +118,12 @@ render_options = option_group(
         default=None,
         is_flag=True,
         help="Save as a gif (Deprecated).",
+    ),
+    option(
+        "--save_sections",
+        default=None,
+        is_flag=True,
+        help="Save section videos in addition to movie file.",
     ),
     option(
         "-s",

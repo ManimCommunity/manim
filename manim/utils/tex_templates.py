@@ -1,4 +1,6 @@
 """A library of LaTeX templates."""
+from __future__ import annotations
+
 __all__ = [
     "TexTemplateLibrary",
     "TexFontTemplates",

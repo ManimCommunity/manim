@@ -1,0 +1,61 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:2
+msgid "VectorizedPoint"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:4
+msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VectorizedPoint``"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.height:6
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VectorizedPoint.width:6
+msgid "Examples"
+msgstr ""
+
+

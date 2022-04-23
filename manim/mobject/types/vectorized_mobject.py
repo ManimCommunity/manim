@@ -20,26 +20,27 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.three_d.three_d_utils import (
+    get_3d_vmob_gradient_start_and_end_points,
+)
+
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
-    point_lies_on_bezier,
     proportions_along_bezier_curve_for_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
-from ...utils.deprecation import deprecated, deprecated_params
+from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
-from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
-from ..opengl_compatibility import ConvertToOpenGL
-from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -51,7 +52,27 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class VMobject(Mobject):
-    """A vectorized mobject."""
+    """A vectorized mobject.
+
+    Parameters
+    ----------
+    background_stroke_color
+        The purpose of background stroke is to have something
+        that won't overlap fill, e.g.  For text against some
+        textured background.
+    sheen_factor
+        When a color c is set, there will be a second color
+        computed based on interpolating c to WHITE by with
+        sheen_factor, and the display will gradient to this
+        secondary color in the direction of sheen_direction.
+    close_new_points
+        Indicates that it will not be displayed, but
+        that it should count in parent mobject's path
+    tolerance_point_for_equality
+        This is within a pixel
+    """
+
+    sheen_factor = 0.0
 
     def __init__(
         self,
@@ -60,35 +81,22 @@ class VMobject(Mobject):
         stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
-        # The purpose of background stroke is to have
-        # something that won't overlap the fill, e.g.
-        # For text against some textured background
         background_stroke_color=BLACK,
         background_stroke_opacity=1.0,
         background_stroke_width=0,
-        # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
-        # sheen_factor, and the display will gradient to this
-        # secondary color in the direction of sheen_direction.
         sheen_factor=0.0,
         sheen_direction=UL,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
         make_smooth_after_applying_functions=False,
         background_image=None,
         shade_in_3d=False,
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
+        # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
         **kwargs,
     ):
-        self.fill_color = fill_color
         self.fill_opacity = fill_opacity
-        self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
         self.background_stroke_color = background_stroke_color
@@ -107,18 +115,23 @@ class VMobject(Mobject):
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
         super().__init__(**kwargs)
 
+        if fill_color:
+            self.fill_color = fill_color
+        if stroke_color:
+            self.stroke_color = stroke_color
+
     def get_group_class(self):
         return VGroup
 
     # Colors
     def init_colors(self, propagate_colors=True):
         self.set_fill(
-            color=self.fill_color or self.color,
+            color=self.fill_color,
             opacity=self.fill_opacity,
             family=propagate_colors,
         )
         self.set_stroke(
-            color=self.stroke_color or self.color,
+            color=self.stroke_color,
             width=self.stroke_width,
             opacity=self.stroke_opacity,
             family=propagate_colors,
@@ -149,8 +162,8 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors = list(tuplify(color))
-        opacities = list(tuplify(opacity))
+        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
+        opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -159,14 +172,12 @@ class VMobject(Mobject):
         if sheen_factor != 0 and len(rgbas) == 1:
             light_rgbas = np.array(rgbas)
             light_rgbas[:, :3] += sheen_factor
-            clip_in_place(light_rgbas, 0, 1)
+            np.clip(light_rgbas, 0, 1, out=light_rgbas)
             rgbas = np.append(rgbas, light_rgbas, axis=0)
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else BLACK
-        passed_opacity = opacity if (opacity is not None) else 0
-        rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
+        rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
             return self
@@ -191,7 +202,7 @@ class VMobject(Mobject):
         color: Optional[str] = None,
         opacity: Optional[float] = None,
         family: bool = True,
-    ) -> "VMobject":
+    ):
         """Set the fill color and fill opacity of a :class:`VMobject`.
 
         Parameters
@@ -205,8 +216,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            self. For chaining purposes.
+        :class:`VMobject`
+            ``self``
 
         Examples
         --------
@@ -233,8 +244,6 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
-        if color is not None:
-            self.fill_color = color
         return self
 
     def set_stroke(
@@ -252,19 +261,17 @@ class VMobject(Mobject):
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
             opacity_name = "background_stroke_opacity"
-            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
             opacity_name = "stroke_opacity"
-            color_name = "stroke_color"
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
             setattr(self, opacity_name, opacity)
-        if color is not None:
-            setattr(self, color_name, color)
+        if color is not None and background:
+            self.background_stroke_color = color
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -351,12 +358,6 @@ class VMobject(Mobject):
     def set_color(self, color, family=True):
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
-
-        # check if a list of colors is passed to color
-        if isinstance(color, str):
-            self.color = colour.Color(color)
-        else:
-            self.color = color
         return self
 
     def set_opacity(self, opacity, family=True):
@@ -389,6 +390,8 @@ class VMobject(Mobject):
         """
         return self.get_fill_colors()[0]
 
+    fill_color = property(get_fill_color, set_fill)
+
     def get_fill_opacity(self):
         """
         If there are multiple opacities, this returns the
@@ -397,7 +400,10 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     def get_fill_colors(self):
-        return [colour.Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
+        return [
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_fill_rgbas()
+        ]
 
     def get_fill_opacities(self):
         return self.get_fill_rgbas()[:, 3]
@@ -415,6 +421,8 @@ class VMobject(Mobject):
     def get_stroke_color(self, background=False):
         return self.get_stroke_colors(background)[0]
 
+    stroke_color = property(get_stroke_color, set_stroke)
+
     def get_stroke_width(self, background=False):
         if background:
             width = self.background_stroke_width
@@ -429,7 +437,8 @@ class VMobject(Mobject):
 
     def get_stroke_colors(self, background=False):
         return [
-            colour.Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)
+            colour.Color(rgb=rgba[:3]) if rgba.any() else None
+            for rgba in self.get_stroke_rgbas(background)
         ]
 
     def get_stroke_opacities(self, background=False):
@@ -439,6 +448,8 @@ class VMobject(Mobject):
         if np.all(self.get_fill_opacities() == 0):
             return self.get_stroke_color()
         return self.get_fill_color()
+
+    color = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: np.ndarray, family=True):
         """Sets the direction of the applied sheen.
@@ -579,17 +590,13 @@ class VMobject(Mobject):
         self.points = np.array(points)
         return self
 
-    @deprecated(since="0.11.0", replacement="self.points")
-    def get_points(self):
-        return np.array(self.points)
-
     def set_anchors_and_handles(
         self,
         anchors1: Sequence[float],
         handles1: Sequence[float],
         handles2: Sequence[float],
         anchors2: Sequence[float],
-    ) -> "VMobject":
+    ):
         """Given two sets of anchors and handles, process them to set them as anchors
         and handles of the VMobject.
 
@@ -600,8 +607,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            for chaining.
+        :class:`VMobject`
+            ``self``
         """
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
@@ -647,7 +654,7 @@ class VMobject(Mobject):
         handle1: np.ndarray,
         handle2: np.ndarray,
         anchor: np.ndarray,
-    ) -> None:
+    ):
         """Add cubic bezier curve to the path.
 
         NOTE : the first anchor is not a parameter as by default the end of the last sub-path!
@@ -660,6 +667,11 @@ class VMobject(Mobject):
             second handle
         anchor : np.ndarray
             anchor
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         self.throw_error_if_no_points()
         new_points = [handle1, handle2, anchor]
@@ -667,13 +679,20 @@ class VMobject(Mobject):
             self.append_points(new_points)
         else:
             self.append_points([self.get_last_point()] + new_points)
+        return self
 
     def add_quadratic_bezier_curve_to(
         self,
         handle: np.ndarray,
         anchor: np.ndarray,
-    ) -> "VMobject":
-        """Add Quadratic bezier curve to the path."""
+    ):
+        """Add Quadratic bezier curve to the path.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
+        """
         # How does one approximate a quadratic with a cubic?
         # refer to the Wikipedia page on Bezier curves
         # https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Degree_elevation, accessed Jan 20, 2021
@@ -688,7 +707,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_line_to(self, point: np.ndarray) -> "VMobject":
+    def add_line_to(self, point: np.ndarray):
         """Add a straight line from the last point of VMobject to the given point.
 
         Parameters
@@ -696,6 +715,11 @@ class VMobject(Mobject):
 
         point : np.ndarray
             end of the straight line.
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(
@@ -706,7 +730,7 @@ class VMobject(Mobject):
         )
         return self
 
-    def add_smooth_curve_to(self, *points: np.array) -> "VMobject":
+    def add_smooth_curve_to(self, *points: np.array):
         """Creates a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted
         as a handle, the second as an anchor.
 
@@ -714,10 +738,11 @@ class VMobject(Mobject):
         ----------
         points: np.array
             Points (anchor and handle, or just anchor) to add a smooth curve from
+
         Returns
         -------
-        VMobject
-
+        :class:`VMobject`
+            ``self``
 
         Raises
         ------
@@ -765,7 +790,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]):
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -778,8 +803,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            self. For chaining purposes.
+        :class:`VMobject`
+            ``self``
         """
         nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
@@ -795,15 +820,15 @@ class VMobject(Mobject):
         self.make_smooth()
         return self
 
-    def change_anchor_mode(self, mode: str) -> "VMobject":
+    def change_anchor_mode(self, mode: str):
         """Changes the anchor mode of the bezier curves. This will modify the handles.
 
         There can be only two modes, "jagged", and "smooth".
 
         Returns
         -------
-        VMobject
-            For chaining purposes.
+        :class:`VMobject`
+            ``self``
         """
         assert mode in ["jagged", "smooth"]
         nppcc = self.n_points_per_cubic_curve
@@ -835,7 +860,7 @@ class VMobject(Mobject):
     def make_jagged(self):
         return self.change_anchor_mode("jagged")
 
-    def add_subpath(self, points: np.ndarray) -> "VMobject":
+    def add_subpath(self, points: np.ndarray):
         assert len(points) % 4 == 0
         self.points = np.append(self.points, points, axis=0)
         return self
@@ -869,7 +894,7 @@ class VMobject(Mobject):
         super().rotate(angle, axis, about_point, **kwargs)
         return self
 
-    def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
+    def scale_handle_to_anchor_distances(self, factor: float):
         """If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
         away from A, but so that the line from A to H doesn't change.
@@ -885,8 +910,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            For chaining.
+        :class:`VMobject`
+            ``self``
         """
         for submob in self.family_members_with_points():
             if len(submob.points) < self.n_points_per_cubic_curve:
@@ -1011,7 +1036,7 @@ class VMobject(Mobject):
     def get_subpaths(self) -> typing.Tuple:
         """Returns subpaths formed by the curves of the VMobject.
 
-        We define a subpath between two curve if one of their extreminities are coincidents.
+        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
 
         Returns
         -------
@@ -1051,6 +1076,35 @@ class VMobject(Mobject):
             expression of the nth bezier curve.
         """
         return bezier(self.get_nth_curve_points(n))
+
+    def get_nth_curve_length_pieces(
+        self,
+        n: int,
+        sample_points: Optional[int] = None,
+    ) -> np.ndarray:
+        """Returns the array of short line lengths used for length approximation.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        np.ndarray
+            The short length-pieces of the nth curve.
+        """
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        return norms
 
     def get_nth_curve_length(
         self,
@@ -1098,15 +1152,8 @@ class VMobject(Mobject):
             The length of the nth curve.
         """
 
-        if sample_points is None:
-            sample_points = 10
-
         curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
+        norms = self.get_nth_curve_length_pieces(n, sample_points=sample_points)
         length = np.sum(norms)
 
         return curve, length
@@ -1334,10 +1381,25 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject):
-        # This probably makes the current vmobject and the given one have the same number of points,
-        # by adding extra points to the last sub-path. This method is never used in the whole library.
+    def align_points(self, vmobject: "VMobject"):
+        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+        corresponding subpaths each containing the same number of points.
+
+        Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
+        of a single point repeated.
+
+        Parameters
+        ----------
+        vmobject
+            The object to align points with.
+
+        Returns
+        -------
+        :class:`VMobject`
+           ``self``
+        """
         self.align_rgbas(vmobject)
+        # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():
             return
 
@@ -1351,7 +1413,7 @@ class VMobject(Mobject):
             if mob.has_new_path_started():
                 mob.add_line_to(mob.get_last_point())
 
-        # Figure out what the subpaths are, and align
+        # Figure out what the subpaths are
         subpaths1 = self.get_subpaths()
         subpaths2 = vmobject.get_subpaths()
         n_subpaths = max(len(subpaths1), len(subpaths2))
@@ -1365,9 +1427,19 @@ class VMobject(Mobject):
             if n >= len(path_list):
                 # Create a null path at the very end
                 return [path_list[-1][-1]] * nppcc
-            return path_list[n]
+            path = path_list[n]
+            # Check for useless points at the end of the path and remove them
+            # https://github.com/ManimCommunity/manim/issues/1959
+            while len(path) > nppcc:
+                # If the last nppc points are all equal to the preceding point
+                if self.consider_points_equals(path[-nppcc:], path[-nppcc - 1]):
+                    path = path[:-nppcc]
+                else:
+                    break
+            return path
 
         for n in range(n_subpaths):
+            # For each pair of subpaths, add points until they are the same length
             sp1 = get_nth_subpath(subpaths1, n)
             sp2 = get_nth_subpath(subpaths2, n)
             diff1 = max(0, (len(sp2) - len(sp1)) // nppcc)
@@ -1380,7 +1452,7 @@ class VMobject(Mobject):
         vmobject.set_points(new_path2)
         return self
 
-    def insert_n_curves(self, n: int) -> "VMobject":
+    def insert_n_curves(self, n: int):
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1390,8 +1462,8 @@ class VMobject(Mobject):
 
         Returns
         -------
-        VMobject
-            for chaining.
+        :class:`VMobject`
+            ``self``
         """
         new_path_point = None
         if self.has_new_path_started():
@@ -1431,13 +1503,20 @@ class VMobject(Mobject):
         # it's total length is target_num.  For example,
         # with curr_num = 10, target_num = 15, this would
         # be [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
-        repeat_indices = (np.arange(target_num) * curr_num) // target_num
+        repeat_indices = (np.arange(target_num, dtype="i") * curr_num) // target_num
 
         # If the nth term of this list is k, it means
         # that the nth curve of our path should be split
-        # into k pieces.  In the above example, this would
-        # be [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
-        split_factors = [sum(repeat_indices == i) for i in range(curr_num)]
+        # into k pieces.
+        # In the above example our array had the following elements
+        # [0, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9]
+        # We have two 0s, one 1, two 2s and so on.
+        # The split factors array would hence be:
+        # [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        split_factors = np.zeros(curr_num, dtype="i")
+        for val in repeat_indices:
+            split_factors[val] += 1
+
         new_points = np.zeros((0, self.dim))
         for quad, sf in zip(bezier_quads, split_factors):
             # What was once a single cubic curve defined
@@ -1496,7 +1575,7 @@ class VMobject(Mobject):
         vmobject: "VMobject",
         a: float,
         b: float,
-    ) -> "VMobject":
+    ):
         """Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject
         passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)
 
@@ -1508,6 +1587,11 @@ class VMobject(Mobject):
             upper-bound.
         b : float
             lower-bound
+
+        Returns
+        -------
+        :class:`VMobject`
+            ``self``
         """
         assert isinstance(vmobject, VMobject)
         # Partial curve includes three portions:
@@ -1565,8 +1649,15 @@ class VMobject(Mobject):
         VMobject
             The subcurve between of [a, b]
         """
-        vmob = self.copy()
-        vmob.pointwise_become_partial(self, a, b)
+        if self.is_closed() and a > b:
+            vmob = self.copy()
+            vmob.pointwise_become_partial(self, a, 1)
+            vmob2 = self.copy()
+            vmob2.pointwise_become_partial(self, 0, b)
+            vmob.append_vectorized_mobject(vmob2)
+        else:
+            vmob = self.copy()
+            vmob.pointwise_become_partial(self, a, b)
         return vmob
 
     def get_direction(self):
@@ -1604,7 +1695,7 @@ class VMobject(Mobject):
             class ChangeOfDirection(Scene):
                 def construct(self):
                     ccw = RegularPolygon(5)
-                    ccw.shift(LEFT).rotate
+                    ccw.shift(LEFT)
                     cw = RegularPolygon(5)
                     cw.shift(RIGHT).reverse_direction()
 
@@ -2111,7 +2202,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import Tex
+            from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)
@@ -2188,6 +2279,22 @@ class CurvesAsSubmobjects(VGroup):
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """A :class:`VMobject` composed of dashes instead of lines.
 
+    Parameters
+    ----------
+        vmobject
+            The object that will get dashed
+        num_dashes
+            Number of dashes to add.
+        dashed_ratio
+            Ratio of dash to empty space.
+        dash_offset
+            Shifts the starting point of dashes along the
+            path. Value 1 shifts by one full dash length.
+        equal_lengths
+            If ``True``, dashes will be (approximately) equally long.
+            If ``False``, dashes will be split evenly in the curve's
+            input t variable (legacy behavior).
+
     Examples
     --------
     .. manim:: DashedVMobjectExample
@@ -2198,7 +2305,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 r = 0.5
 
                 top_row = VGroup()  # Increasing num_dashes
-                for dashes in range(2, 12):
+                for dashes in range(1, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
 
@@ -2209,11 +2316,13 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     )
                     middle_row.add(circ)
 
-                sq = DashedVMobject(Square(1.5, color=RED))
-                penta = DashedVMobject(RegularPolygon(5, color=BLUE))
-                bottom_row = VGroup(sq, penta)
+                func1 = FunctionGraph(lambda t: t**5,[-1,1],color=WHITE)
+                func_even = DashedVMobject(func1,num_dashes=6,equal_lengths=True)
+                func_stretched = DashedVMobject(func1, num_dashes=6, equal_lengths=False)
+                bottom_row = VGroup(func_even,func_stretched)
 
-                top_row.arrange(buff=0.4)
+
+                top_row.arrange(buff=0.3)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
                 everything = VGroup(top_row, middle_row, bottom_row).arrange(DOWN, buff=1)
@@ -2221,38 +2330,105 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     """
 
-    @deprecated_params(
-        params="positive_space_ratio dash_spacing",
-        since="v0.9.0",
-        message="Use dashed_ratio instead of positive_space_ratio.",
-    )
     def __init__(
-        self, vmobject, num_dashes=15, dashed_ratio=0.5, color=WHITE, **kwargs
+        self,
+        vmobject,
+        num_dashes=15,
+        dashed_ratio=0.5,
+        dash_offset=0,
+        color=WHITE,
+        equal_lengths=True,
+        **kwargs,
     ):
-        # Simplify with removal of deprecation warning
-        self.dash_spacing = kwargs.pop("dash_spacing", None)  # Unused param
-        self.dashed_ratio = kwargs.pop("positive_space_ratio", None) or dashed_ratio
+
+        self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
         r = self.dashed_ratio
         n = self.num_dashes
-        if num_dashes > 0:
+        if n > 0:
             # Assuming total length is 1
             dash_len = r / n
             if vmobject.is_closed():
                 void_len = (1 - r) / n
             else:
-                void_len = (1 - r) / (n - 1)
+                if n == 1:
+                    void_len = 1 - r
+                else:
+                    void_len = (1 - r) / (n - 1)
 
-            self.add(
-                *(
-                    vmobject.get_subcurve(
-                        i * (dash_len + void_len),
-                        i * (dash_len + void_len) + dash_len,
+            period = dash_len + void_len
+            phase_shift = (dash_offset % 1) * period
+
+            if vmobject.is_closed():
+                # closed curves have equal amount of dashes and voids
+                pattern_len = 1
+            else:
+                # open curves start and end with a dash, so the whole dash pattern with the last void is longer
+                pattern_len = 1 + void_len
+
+            dash_starts = [((i * period + phase_shift) % pattern_len) for i in range(n)]
+            dash_ends = [
+                ((i * period + dash_len + phase_shift) % pattern_len) for i in range(n)
+            ]
+
+            # closed shapes can handle overflow at the 0-point
+            # open shapes need special treatment for it
+            if not vmobject.is_closed():
+                # due to phase shift being [0...1] range, always the last dash element needs attention for overflow
+                # if an entire dash moves out of the shape end:
+                if dash_ends[-1] > 1 and dash_starts[-1] > 1:
+                    # remove the last element since it is out-of-bounds
+                    dash_ends.pop()
+                    dash_starts.pop()
+                elif dash_ends[-1] < dash_len:  # if it overflowed
+                    if (
+                        dash_starts[-1] < 1
+                    ):  # if the beginning of the piece is still in range
+                        dash_starts.append(0)
+                        dash_ends.append(dash_ends[-1])
+                        dash_ends[-2] = 1
+                    else:
+                        dash_starts[-1] = 0
+                elif dash_starts[-1] > (1 - dash_len):
+                    dash_ends[-1] = 1
+
+            if equal_lengths:
+                # calculate the entire length by adding up short line-pieces
+                norms = np.array(0)
+                for k in range(vmobject.get_num_curves()):
+                    norms = np.append(norms, vmobject.get_nth_curve_length_pieces(k))
+                # add up length-pieces in array form
+                length_vals = np.cumsum(norms)
+                ref_points = np.linspace(0, 1, length_vals.size)
+                curve_length = length_vals[-1]
+                self.add(
+                    *(
+                        vmobject.get_subcurve(
+                            np.interp(
+                                dash_starts[i] * curve_length,
+                                length_vals,
+                                ref_points,
+                            ),
+                            np.interp(
+                                dash_ends[i] * curve_length,
+                                length_vals,
+                                ref_points,
+                            ),
+                        )
+                        for i in range(len(dash_starts))
                     )
-                    for i in range(n)
                 )
-            )
+            else:
+                self.add(
+                    *(
+                        vmobject.get_subcurve(
+                            dash_starts[i],
+                            dash_ends[i],
+                        )
+                        for i in range(len(dash_starts))
+                    )
+                )
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == "opengl":

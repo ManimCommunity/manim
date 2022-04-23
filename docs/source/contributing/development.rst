@@ -66,6 +66,10 @@ For first-time contributors
      as create and enter a virtual environment. You can always re-enter
      that environment by running ``poetry shell``.
 
+   - In case you want to install extra dependencies that are defined in
+     the ``[tool.poetry.extras]``  section of ``pyproject.toml``, this can be done by passing
+     the ``-E`` flag, for example ``poetry install -E jupyterlab -E gui``.
+
    - In case you decided against Poetry, you can install Manim via pip
      by running ``python3 -m pip install .``. Note that due to our
      development infrastructure being based on Poetry, we currently
@@ -147,13 +151,13 @@ Develop your contribution
 
    .. tip::
 
-      Use the :mod:`manim directive for Sphinx <.manim_directive>` to add examples
+      Use the :mod:`manim directive for Sphinx <manim.utils.docbuild.manim_directive>` to add examples
       to the documentation!
 
       .. autosummary::
          :toctree: ../reference
 
-         manim_directive
+         manim.utils.docbuild.manim_directive
 
 As far as development on your local machine goes, these are the main steps you
 should follow.

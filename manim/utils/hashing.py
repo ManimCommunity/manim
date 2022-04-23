@@ -1,5 +1,7 @@
 """Utilities for scene caching."""
 
+from __future__ import annotations
+
 import collections
 import copy
 import inspect
@@ -48,7 +50,7 @@ class _Memoizer:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
+    def check_already_processed_decorator(cls: _Memoizer, is_method=False):
         """Decorator to handle the arguments that goes through the decorated function.
         Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
         the decorated function call go ahead.
@@ -108,18 +110,15 @@ class _Memoizer:
         obj,
         default_function: typing.Callable[[Any], Any],
     ):
-        if (
-            isinstance(
-                obj,
-                (
-                    int,
-                    float,
-                    str,
-                    complex,
-                ),
-            )
-            and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]
-        ):
+        if isinstance(
+            obj,
+            (
+                int,
+                float,
+                str,
+                complex,
+            ),
+        ) and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]:
             # It makes no sense (and it'd slower) to memoize objects of these primitive
             # types.  Hence, we simply return the object.
             return obj
@@ -140,7 +139,7 @@ class _Memoizer:
         obj_to_membership_sign: typing.Callable[[Any], int],
         default_func,
         memoizing=True,
-    ) -> typing.Union[str, Any]:
+    ) -> str | Any:
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER

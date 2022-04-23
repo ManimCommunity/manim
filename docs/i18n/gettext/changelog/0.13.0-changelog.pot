@@ -1,0 +1,381 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.13.0-changelog.rst:3
+msgid "v0.13.0"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:5
+msgid "December 04, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:10
+msgid "A total of 27 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:14
+#: ../../source/changelog/0.13.0-changelog.rst:38
+msgid "Alex Lembcke"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:15
+#: ../../source/changelog/0.13.0-changelog.rst:39
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:16
+#: ../../source/changelog/0.13.0-changelog.rst:40
+msgid "Christopher Besch"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:17
+#: ../../source/changelog/0.13.0-changelog.rst:41
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:18
+msgid "Filip +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:19
+msgid "John Ingles +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:20
+#: ../../source/changelog/0.13.0-changelog.rst:45
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:21
+msgid "Lucas Ricci +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:22
+msgid "Marcin Serwin +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:23
+msgid "Mysaa"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:24
+#: ../../source/changelog/0.13.0-changelog.rst:47
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:25
+msgid "Ricky +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:26
+#: ../../source/changelog/0.13.0-changelog.rst:50
+msgid "Viicos"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:27
+msgid "ask09ok +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:28
+msgid "citrusmunch +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:29
+#: ../../source/changelog/0.13.0-changelog.rst:52
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:30
+msgid "mostlyaman +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:31
+msgid "vmiezys +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:32
+msgid "zhujisheng +"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:35
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:42
+msgid "Filip"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:43
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:44
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:46
+msgid "Lucas Ricci"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:48
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:49
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:51
+msgid "ask09ok"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:53
+msgid "mostlyaman"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:56
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:58
+msgid "A total of 39 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:61
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:63
+msgid ":pr:`2313`: Finalized translation process and documentation"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:67
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:75
+msgid ":pr:`2331`: Removed deprecations up to ``v0.12.0``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:70
+msgid "Removed ``distance`` parameters from :class:`~.ThreeDCamera` (replacement: ``focal_distance``)"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:71
+msgid "Removed ``min_distance_to_new_point`` parameter from :class:`~.TracedPath`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:72
+msgid "Removed ``positive_space_ratio`` and ``dash_spacing`` parameters from :class:`~.DashedVMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:73
+msgid "Removed ``<method>_in_place`` methods from :mod:`.mobject`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:74
+msgid "Removed ``ReconfigurableScene``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:75
+msgid "Removed ``SampleSpaceScene``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:77
+msgid ":pr:`2312`: Replaced all occurrences of ``set_submobjects``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:81
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:85
+msgid ":pr:`2314`: Added basic support for adding subcaptions via :meth:`.Scene.add_subcaption`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:84
+msgid "New method :meth:`.Scene.add_subcaption`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:85
+msgid "New keyword arguments ``subcaption``, ``subcaption_duration``, ``subcaption_offset`` for :meth:`.Scene.play`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:87
+msgid ":pr:`2267`: Implemented :meth:`.CoordinateSystem.plot_antiderivative_graph`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:91
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:93
+msgid ":pr:`2347`: Moved ``manim_directive.py`` to ``manim.utils.docbuild``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:96
+msgid ":pr:`2340`: Added documentation for :mod:`.animation.growing` and improved :class:`.SpinInFromNothing`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:99
+msgid ":pr:`2343`: Replaced current tree layout algorithm with SageMath's for improved layout of large trees"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:102
+msgid ":pr:`2351`: Added missing ``**kwargs`` parameter to :meth:`.Table.add_highlighted_cell`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:105
+msgid ":pr:`2344`: Resized SVG logos, fit content to canvas"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:109
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:111
+msgid ":pr:`2359`: Resolved ``ValueError`` when calling ``manim cfg write``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:114
+msgid ":pr:`2276`: Fixed bug with alignment of z-axis in :class:`~.ThreeDAxes`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:117
+msgid ":pr:`2325`: Several improvements to handling of ``quality`` argument"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:120
+msgid ":pr:`2335`: Fixed bug with zooming camera and :class:`~.PointCloud`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:123
+msgid ":pr:`2328`: Fixed bug causing incorrect RGBA values to be passed to cairo"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:126
+msgid ":pr:`2292`: Fixed positioning of :class:`~.Flash`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:129
+msgid ":pr:`2262`: Fixed wrong cell coordinates with :meth:`.Table.get_cell` after scaling"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:132
+msgid ":pr:`2280`: Fixed :class:`~.DecimalNumber` color when number of displayed digits changes"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:136
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:138
+msgid ":pr:`2354`: Port over docs and typings from ``mobject.py`` and ``vectorized_mobject.py`` to their OpenGL counterparts"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:141
+msgid ":pr:`2350`: Added mention of Manim sideview extension for VS Code"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:144
+msgid ":pr:`2342`: Removed :meth:`~.CoordinateSystem.get_graph` usage from :class:`~.Axes` example"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:147
+msgid ":pr:`2216`: Edited and added new sections to the quickstart tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:150
+msgid ":pr:`2279`: Added documentation for discontinuous functions"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:153
+msgid ":pr:`2319`: Swapped ``dotL`` and ``dotR`` in :meth:`.Mobject.interpolate` example"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:156
+msgid ":pr:`2230`: Copyedited building blocks tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:159
+msgid ":pr:`2310`: Clarified that Manim does not support Python 3.10 yet in the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:162
+msgid ":pr:`2294`: Made documentation front page more concise and rearranged order of tutorials"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:165
+msgid ":pr:`2287`: Replace link to old interactive notebook"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:169
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:171
+msgid ":pr:`2346`: Made ``frames_comparsion`` decorator for frame testing a proper module of the library"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:174
+msgid ":pr:`2318`: Added tests for ``remover`` keyword argument of :class:`~.AnimationGroup`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:177
+msgid ":pr:`2301`: Added a test for :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:180
+msgid ":pr:`2274`: Optimized some tests to reduce duration"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:183
+msgid ":pr:`2272`: Added test for :class:`~.Broadcast`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:187
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:189
+msgid ":pr:`2327`: Corrected type hint for ``labels`` keyword argument of :class:`~.Graph`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:192
+msgid ":pr:`2329`: Remove unintended line break in README"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:195
+msgid ":pr:`2305`: Corrected type hint ``discontinuities`` argument for :class:`~.ParametricFunction`"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:198
+msgid ":pr:`2300`: Add contact email for PyPi"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:202
+msgid "New releases"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:204
+msgid ":pr:`2353`: Prepare new release: ``v0.13.0``"
+msgstr ""
+
+#: ../../source/changelog/0.13.0-changelog.rst:208
+msgid "Unclassified changes"
+msgstr ""
+
+

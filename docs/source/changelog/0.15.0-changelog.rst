@@ -1,0 +1,313 @@
+*******
+v0.15.0
+*******
+
+:Date: February 26, 2022
+
+Contributors
+============
+
+A total of 34 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* AnonymoZ +
+* Benjamin Hackl
+* Darylgolden
+* Eshaan Naga Venkata +
+* Faruk D. +
+* GameDungeon
+* Kevin Cen +
+* Laith Bahodi
+* Leo Xu
+* Lucas Ricci
+* Marcin Serwin
+* Michael McNeil Forbes +
+* Mysaa
+* Naveen M K
+* Pierre Couy +
+* Simon Ellmann +
+* Tommy Chu +
+* Viicos
+* ad_chaos
+* betafcc +
+* friedkeenan
+* icedcoffeeee
+* vmoros +
+* 鹤翔万里
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Eshaan Naga Venkata
+* GameDungeon
+* Jan-Hendrik Müller
+* Laith Bahodi
+* Marcin Kurczewski
+* Marcin Serwin
+* Naveen M K
+* Raghav Goel
+* RomainJMend
+* Ryan McCauley
+* Tommy Chu
+* ad_chaos
+* betafcc
+* icedcoffeeee
+
+Pull requests merged
+====================
+
+A total of 71 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`2476`: Improved structure of the :mod:`.mobject` module
+   Arrow tips now have to be imported from ``manim.mobject.geometry.tips`` instead of ``manim.mobject.geometry``.
+
+* :pr:`2387`: Refactored :class:`~.BarChart` and made it inherit from :class:`~.Axes`
+   - :class:`~.BarChart` now inherits from :class:`~.Axes`, allowing it to use :class:`~.Axes`' methods. Also improves :class:`~.BarChart`'s configuration and ease of use.
+   - Added :meth:`~.BarChart.get_bar_labels` to annotate the value of each bar of a :class:`~.BarChart`.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`2568`: Removed Deprecated Methods
+   Removed methods and classes that were deprecated since v0.10.0 and v0.11.0
+
+* :pr:`2457`: Deprecated :class:`.ShowCreationThenFadeOut`
+
+
+New features
+------------
+
+* :pr:`2442`: Added ``media_embed`` config option to control whether media in Jupyter notebooks is embedded
+
+
+* :pr:`2504`: Added finer control over :meth:`.Scene.wait` being static (i.e., no updaters) or not
+   - Added keyword argument ``frozen_frame`` to :class:`.Wait` and :meth:`.Scene.wait`
+   - New convenience method: :meth:`.Scene.pause` (alias for ``Scene.wait(frozen_frame=True)``)
+   - Changed default behavior for OpenGL updaters: updater functions are now not called by default when they are added
+   - Changed default behavior of :meth:`.Scene.should_mobjects_update`: made it respect the set value of ``Wait.frozen_frame``, changed automatic determination of frozen frame state to also consider Scene updaters
+
+Enhancements
+------------
+
+* :pr:`2478`: Alternative scaling for tree graph layout
+
+
+* :pr:`2565`: Allowed passing vertex configuration keyword arguments to :meth:`.Graph.add_edges`
+
+
+* :pr:`2467`: :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text` and :class:`~.MarkupText` inherit color from their parent mobjects
+
+
+* :pr:`2537`: Added support for PySide coordinate system
+
+
+* :pr:`2158`: Added OpenGL compatibility to :meth:`.ThreeDScene.add_fixed_orientation_mobjects` and  :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
+
+
+* :pr:`2535`: Implemented performance enhancement for :meth:`.VMobject.insert_n_curves_to_point_list`
+
+
+* :pr:`2516`: Cached view matrix for :class:`~.OpenGLCamera`
+
+
+* :pr:`2508`: Improve performance for :meth:`.Mobject.become`
+
+
+* :pr:`2332`: Changed ``color``, ``stroke_color`` and ``fill_color`` attributes to properties
+
+
+* :pr:`2396`: Fixed animations introducing or removing objects
+   * :class:`.ShowPassingFlash` now removes objects when the animation is finished
+   * Added ``introducer`` keyword argument to :class:`.Animation` analogous to ``remover``
+   * Updated :class:`.Graph` vertex addition handling
+
+Fixed bugs
+----------
+
+* :pr:`2574`: Improved Error in :mod:`.utils.tex_file_writing`
+
+
+* :pr:`2580`: Fixed :func:`.find_intersection` in :mod:`.space_ops`
+
+
+* :pr:`2576`: Fixed a bug with animation of removal of edges from a :class:`.Graph`
+
+
+* :pr:`2556`: Fixed showing highlighted cells when creating :class:`.Table`
+
+
+* :pr:`2559`: Fix setting line numbers in :class:`.Text` when using ManimPango settings
+
+
+* :pr:`2557`: Fixed logger bug in :meth:`.Camera.make_background_from_func`
+
+
+* :pr:`2548`: Fixed :class:`.Axes` plotting bug with logarithmic x-axis
+
+
+* :pr:`1547`: Fixed certain unicode characters in users' paths causing issues on Windows
+
+
+* :pr:`2526`: Fixed segfault when using ``--enable_gui``
+
+
+* :pr:`2538`: Fixed flickering OpenGL preview when using ``frozen_frame``
+
+
+* :pr:`2528`: Fixed custom naming of gifs and added some tests
+
+
+* :pr:`2487`: Fixed :meth:`.ThreeDCamera.remove_fixed_orientation_mobjects`
+
+
+* :pr:`2530`: Use single source of truth for default text values
+
+
+* :pr:`2494`: Fixed an issue related to previewing gifs
+
+
+* :pr:`2490`: Fixed order of transformation application in :class:`~.SVGMobject`
+
+
+* :pr:`2357`: Fixed ``screeninfo.get_monitors`` for MacOS
+
+
+* :pr:`2444`: Fixed :meth:`.VectorScene.add_axes`
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2560`: Refactored more docstrings in :mod:`.geometry`
+
+
+* :pr:`2571`: Refactored docstrings in :mod:`.graphing`
+
+
+* :pr:`2569`: Refactored docstrings in :mod:`.geometry`
+
+* :pr:`2549`: Added a page for internals which links to our GitHub wiki
+
+
+* :pr:`2458`: Improved documentation for :class:`.Rotate`
+
+
+* :pr:`2459`: Added examples to some transform animations
+
+
+* :pr:`2517`: Added guide on profiling and improving performance
+
+
+* :pr:`2518`: Added imports to examples for ``deprecation`` decorator
+
+
+* :pr:`2499`: Improved help text for ``--write_to_movie``
+
+
+* :pr:`2465`: Added documentation for :func:`.index_labels`
+
+
+* :pr:`2495`: Updated minimal LaTeX installation instructions
+
+
+* :pr:`2500`: Added note about contributions during refactor period
+
+
+* :pr:`2431`: Changed example in :meth:`.Surface.set_fill_by_value`
+
+
+* :pr:`2485`: Fixed some typos in documentation
+
+
+* :pr:`2493`: Fixed typo in documentation for parameters of :class:`.Square`
+
+
+* :pr:`2482`: Updated Python version requirement in installation guide
+
+
+* :pr:`2438`: Removed unnecessary rotation from example
+
+
+* :pr:`2468`: Hid more private methods from the docs
+
+
+* :pr:`2466`: Fixed a typo in the documentation for plugins
+
+
+* :pr:`2448`: Improvements to the ``.pot`` files cleaning system
+
+
+* :pr:`2436`: Fixed typo and improved example in building blocks tutorial
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2554`: Removed ``Remove-Item`` calls for MSYS2 Python
+
+
+* :pr:`2531`: Added a GitHub Action for automatic validation of citation metadata
+
+
+* :pr:`2536`: Upgraded version of setup-ffmpeg CI action
+
+
+* :pr:`2484`: Updated tinytex download URL
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2573`: Moved :mod:`.value_tracker` back inside :mod:`.mobject`
+
+
+* :pr:`2566`: Removed unused livestream-related imports and functions from :mod:`.scene_file_writer`
+
+
+* :pr:`2524`: Reworked :mod:`.space_ops`
+
+
+* :pr:`2519`: Removed outdated comment
+
+
+* :pr:`2503`: Removed unused imports
+
+
+* :pr:`2475`: Removed setuptools dependency
+
+
+* :pr:`2472`: Removed unnecessary comment in :mod:`.simple_functions`
+
+
+* :pr:`2429`: Upgraded to future-style type annotations
+
+
+* :pr:`2464`: Bump pillow from 8.4.0 to 9.0.0
+
+
+* :pr:`2376`: Updated dependencies for Python 3.10
+
+
+* :pr:`2437`: Cleaned up :mod:`.simple_functions`
+   - Removed ``fdiv`` as in all cases where it was used, it was just doing the same thing as numpy array division.
+   - Replaced old implementation of the choose function with scipy's implementation
+   - Use ``lru_cache`` (least recently used cache) for caching the choose function. Since it's only used for beziers, only 2 choose k and 3 choose k will be used, hence a size of 10 should be enough.
+   - Removed ``clip_in_place`` in favor of ``np.clip``
+   - Removed one use of ``clip_in_place`` that wasn't actually doing anything
+
+* :pr:`2439`: Removed twitter template from scripts
+
+
+New releases
+------------
+
+* :pr:`2547`: Prepared new release, ``v0.15.0``

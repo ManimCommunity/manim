@@ -1,0 +1,52 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 031f65d9b7a2e83b265c23f1c4450271\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
+"X-Crowdin-Project-ID: 1\n"
+"X-Crowdin-Language: sv\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/index.pot\n"
+"X-Crowdin-File-ID: 5163\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"PO-Revision-Date: 2021-11-06 12:29\n"
+
+#: ../../source/index.rst:7
+msgid "Manim Community Overview"
+msgstr "Manim Community Översikt"
+
+#: ../../source/index.rst:9
+msgid "Animating technical concepts is traditionally pretty tedious since it can be difficult to make the animations precise enough to convey them accurately. ``Manim`` uses Python to generate animations programmatically, making it possible to specify exactly how each one should run."
+msgstr "Traditionellt så har det varit jobbigt att animera tekniska begrepp eftersom det är svårt att skapa animationer som är tillräckligt exakta för att förklara dem korrekt. ``Manim`` använder sig av Python för att generera animationer på ett programmatiskt sätt vilket gör det möjligt att ange exakt hur varje animation ska köras."
+
+#: ../../source/index.rst:14
+msgid "This project is still very much a work in progress, but we hope that the information here will make it easier for newcomers to get started using ``Manim``."
+msgstr "Detta projekt är fortfarande i hög grad ett pågående arbete, men vi hoppas att informationen här kommer att göra det lättare för nykomlingar att komma igång med ``Manim``."
+
+#: ../../source/index.rst:20
+msgid "All content of the docs is licensed under the MIT license. Especially for the examples you encounter: Feel free to use this code in your own projects!"
+msgstr "Allt innehåll i dokumentationen är licensierat under MIT-licensen. Detta gäller även för alla exempel som du möter på. Använd gärna koden i dina egna projekt!"
+
+#: ../../source/index.rst:23
+msgid "We are curious to see the awesome projects you build using this library, feel free to share your projects with us `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_, or via `Discord <https://www.manim.community/discord/>`_."
+msgstr "Vi är nyfikna på att se de fantastiska projekt du skapar med hjälp av detta bibliotek! Dela gärna dina projekt med oss på Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_ eller via `Discord <https://www.manim.community/discord/>`_."
+
+#: ../../source/index.rst:27
+msgid "In case you publish your work made with Manim, we would appreciate if you add a link to `our homepage <https://www.manim.community>`_ or `our GitHub repository <https://github.com/ManimCommunity/manim>`_. If you use Manim in a scientific context, instructions on how to cite a particular release can be found `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_."
+msgstr "Om du publicerar ett projekt du skapad med Manim så skulle vi uppskatta om du lägger till en länk till `vår hemsida <https://www.manim.community>`_ eller `vårt GitHub-arkiv <https://github.com/ManimCommunity/manim>`_. Om du använder Manim i ett vetenskapligt sammanhang så finns instruktioner om hur man citerar en viss version av Manim `i vår README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_."
+
+#: ../../source/index.rst:36
+msgid "As a quick reference, here are some often used modules, classes and methods:"
+msgstr "Som snabbreferens ges här några av de oftast använda modulerna, klasserna och metoderna:"
+
+#: ../../source/index.rst:38
+msgid "Modules: :mod:`~.moving_camera_scene`, :mod:`~.tex_mobject`, :mod:`~.geometry`,"
+msgstr "Moduler: :mod:`~.moving_camera_scene`, :mod:`~.tex_mobject`, :mod:`~.geometry`,"
+
+#: ../../source/index.rst:43
+msgid "Classes: :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Angle`, :class:`~.Tex`, :class:`~.Text`,"
+msgstr "Klasser: :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Angle`, :class:`~.Tex`, :class:`~.Text`,"
+

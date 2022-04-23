@@ -1,22 +1,28 @@
+from __future__ import annotations
+
 import re
+from typing import TYPE_CHECKING
 
 import click
 from cloup import option, option_group
 
 from ... import logger
 
+if TYPE_CHECKING:
+    from cloup._option_groups import OptionGroupDecorator
+
 
 def validate_gui_location(ctx, param, value):
     if value:
         try:
-            x_offset, y_offset = map(int, re.split(";|,|-", value))
+            x_offset, y_offset = map(int, re.split(r"[;,\-]", value))
             return (x_offset, y_offset)
         except Exception:
             logger.error("GUI location option is invalid.")
             exit()
 
 
-global_options = option_group(
+global_options: OptionGroupDecorator = option_group(
     "Global options",
     option(
         "-c",
@@ -88,6 +94,12 @@ global_options = option_group(
         "--force_window",
         is_flag=True,
         help="Force window to open when using the opengl renderer, intended for debugging as it may impact performance",
+        default=False,
+    ),
+    option(
+        "--dry_run",
+        is_flag=True,
+        help="Renders animations without outputting image or video files and disables the window",
         default=False,
     ),
 )

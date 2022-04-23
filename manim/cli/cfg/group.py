@@ -5,16 +5,17 @@ cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
+from __future__ import annotations
+
 import os
 from ast import literal_eval
-from typing import Union
 
 import click
 import cloup
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-from ... import cli_ctx_settings, config, console
+from ... import cli_ctx_settings, console
 from ..._config.utils import config_file_paths, make_config_parser
 from ...constants import EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
@@ -27,7 +28,7 @@ If left empty, the default colour will be used.[/red]
 RICH_NON_STYLE_ENTRIES: str = ["log.width", "log.height", "log.timestamps"]
 
 
-def value_from_string(value: str) -> Union[str, int, bool]:
+def value_from_string(value: str) -> str | int | bool:
     """Extracts the literal of proper datatype from a string.
     Parameters
     ----------
@@ -202,11 +203,13 @@ modify write_cfg_subcmd_input to account for it.""",
                         )
                         temp = input()
 
-                    default[key] = temp
+                    default[key] = temp.replace("%", "%%")
 
             default = replace_keys(default) if category == "logger" else default
 
-            parser[category] = dict(default)
+            parser[category] = {
+                i: v.replace("%", "%%") for i, v in dict(default).items()
+            }
 
     else:
         action = "open"

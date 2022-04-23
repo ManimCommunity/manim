@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
 

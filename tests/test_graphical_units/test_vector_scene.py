@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim.scene.vector_space_scene import VectorScene
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "vector_scene"
 
@@ -11,3 +13,4 @@ def test_vector_to_coords(scene):
     basis = scene.get_basis_vectors()
     scene.add(basis)
     scene.vector_to_coords(vector=vector)
+    scene.wait()

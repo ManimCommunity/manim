@@ -2,7 +2,7 @@
 Constant definitions.
 """
 
-import typing
+from __future__ import annotations
 
 import numpy as np
 from cloup import Context
@@ -68,7 +68,6 @@ __all__ = [
     "GIF_FILE_EXTENSION",
     "FFMPEG_VERBOSITY_MAP",
     "VERBOSITY_CHOICES",
-    "WEBGL_RENDERER_INFO",
     "QUALITIES",
     "DEFAULT_QUALITY",
     "DEFAULT_QUALITY_SHORT",
@@ -208,7 +207,7 @@ FFMPEG_BIN: str = "ffmpeg"
 # gif stuff
 GIF_FILE_EXTENSION: str = ".gif"
 
-FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
+FFMPEG_VERBOSITY_MAP: dict[str, str] = {
     "DEBUG": "error",
     "INFO": "error",
     "WARNING": "error",
@@ -216,15 +215,9 @@ FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-WEBGL_RENDERER_INFO: str = (
-    "The Electron frontend to Manim is hosted at "
-    "https://github.com/ManimCommunity/manim-renderer. After cloning and building it, "
-    "you can either start it prior to running Manim or specify the path to the "
-    "executable with the --webgl_renderer_path flag."
-)
 
 # Video qualities
-QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
+QUALITIES: dict[str, dict[str, str | int | None]] = {
     "fourk_quality": {
         "flag": "k",
         "pixel_height": 2160,

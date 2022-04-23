@@ -1,0 +1,564 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.9.0-changelog.rst:3
+msgid "v0.9.0"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:5
+msgid "August 02, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:10
+msgid "A total of 35 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:14
+#: ../../source/changelog/0.9.0-changelog.rst:47
+msgid "Alex Lembcke"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:15
+#: ../../source/changelog/0.9.0-changelog.rst:48
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:16
+#: ../../source/changelog/0.9.0-changelog.rst:49
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:17
+#: ../../source/changelog/0.9.0-changelog.rst:50
+msgid "Devin Neal"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:18
+msgid "Harivinay +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:19
+#: ../../source/changelog/0.9.0-changelog.rst:52
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:20
+msgid "Jared Hughes +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:21
+#: ../../source/changelog/0.9.0-changelog.rst:54
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:22
+msgid "Kadatatlu Kishore +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:23
+#: ../../source/changelog/0.9.0-changelog.rst:55
+msgid "KingWampy"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:24
+msgid "LED Me Explain +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:25
+#: ../../source/changelog/0.9.0-changelog.rst:56
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:26
+#: ../../source/changelog/0.9.0-changelog.rst:58
+msgid "Mohammad Al-Fetyani"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:27
+msgid "Noam Zaks"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:28
+#: ../../source/changelog/0.9.0-changelog.rst:59
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:29
+msgid "PaulCMurdoch"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:30
+msgid "Raghav Prabhakar +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:31
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:32
+msgid "Suhail Sherif +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:33
+msgid "Taektiek +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:34
+msgid "Udeshya Dhungana +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:35
+msgid "UraniumCronorum +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:36
+msgid "Vinh H. Pham (Vincent) +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:37
+msgid "ccn +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:38
+msgid "icedcoffeeee +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:39
+msgid "sahilmakhijani +"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:40
+#: ../../source/changelog/0.9.0-changelog.rst:64
+msgid "sparshg"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:43
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:46
+msgid "Abhijith Muthyala"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:51
+msgid "Harivinay"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:53
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:57
+msgid "Lino"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:60
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:61
+msgid "Suhail Sherif"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:62
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:63
+msgid "sahilmakhijani"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:67
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:69
+msgid "A total of 55 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:72
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:75
+msgid ":pr:`1677`: Added a new :class:`~.Table` mobject"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:75
+msgid "This brings easy-to-use and customizable tables to Manim. Several examples for this new mobject can be found at :mod:`the module documentation page <.mobject.table>` and its subpages."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:78
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:82
+msgid ":pr:`1848`: Deprecated parameters for :class:`~.DashedLine` and :class:`~.DashedVMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:81
+msgid "``dash_spacing`` is an unused parameter"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:82
+msgid "``positive_space_ratio`` has been replaced with the shorter name ``dashed_ratio``"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:92
+msgid ":pr:`1773`: Remove all classes and functions that were deprecated until ``v0.7.0`` and ``v0.8.0``"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:85
+msgid "The classes ``FadeInFrom``, ``FadeOutAndShift``, ``FadeOutToPoint``, ``FadeInFromPoint``, ``FadeInFromLarge``, ``VFadeIn``, ``VFadeOut``, ``VFadeInThenOut`` have been removed, use :class:`~.FadeIn` or :class:`~.FadeOut` with appropriate keyword arguments instead."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:88
+msgid "The classes ``CircleIndicate``, ``ShowCreationThenDestruction``, ``AnimationOnSurroundingRectangle``, ``ShowPassingFlashAround``, ``ShowCreationThenDestructionAround``, ``ShowCreationThenFadeAround``, ``WiggleOutThenIn``, ``TurnInsideOut`` have been removed. Use :class:`~.Circumscribe`, :class:`~.ShowPassingFlash`, or :class:`~.Wiggle` instead."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:90
+msgid "The classes ``OpenGLTexMobject`` and ``OpenGLTextMobject`` have been removed, use :class:`~.MathTex` and :class:`~.Tex` instead. Also, ``VMobjectFromSVGPathstring`` has been removed, use :class:`~.SVGPathMobject` instead."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:92
+msgid "Finally, the utility functions ``get_norm`` and ``cross`` have been removed (use the corresponding Numpy methods instead), and the function ``angle_between`` has been replaced with ``angle_between_vectors``."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:96
+msgid ":pr:`1731`: Deprecated :class:`~.ParametricSurface` parameters"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:95
+msgid "``u_min`` and ``u_max`` have been replaced by ``u_range``."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:96
+msgid "``v_min`` and ``v_max`` have been replaced by ``v_range``."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:99
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:103
+msgid ":pr:`1780`: Allow non-numerical values to be added to :class:`~.NumberLine` and :class:`~.Axes`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:102
+msgid "Added :meth:`.NumberLine.add_labels` method to :class:`~.NumberLine` which accepts a dictionary of positions/values."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:103
+msgid ":meth:`.CoordinateSystem.add_coordinates` now accepts a dictionary too."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:105
+msgid ":pr:`1719`: Added a :class:`~.Broadcast` animation"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:109
+msgid ":pr:`1765`: Added a static method :meth:`.Circle.from_three_points` for defining a circle from three points"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:109
+msgid "Added a new :func:`~.perpendicular_bisector` function in ``space_ops.py``"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:112
+msgid ":pr:`1686`: Added :meth:`.ParametricSurface.set_fill_by_value`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:112
+msgid "This method enables a color gradient to be applied to a :class:`~.ParametricSurface`, including the ability to define at which points the colors should be centered."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:115
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:117
+msgid ":pr:`1833`: Added OpenGL compatibility for :class:`~.VDict`, :meth:`~.Axes.get_line_graph` and :class:`~.FocusOn`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:121
+msgid ":pr:`1760`: Added ``window_size`` flag to manually adjust the size of the OpenGL window"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:121
+msgid "Accepts a tuple in the form: ``x,y``."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:124
+msgid ":pr:`1823`: Reworked :class:`~.DashedVMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:124
+msgid "Rewritten the logic to generate dashes"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:129
+msgid ":pr:`1808`: OpenGL renderer updates"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:127
+msgid "Adds model matrices to all OpenGLVMobjects"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:128
+msgid "Improved performance on vectorized mobject shaders"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:129
+msgid "Added updaters that are part of the scene rather than a mobject"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:132
+msgid ":pr:`1787`: Made :class:`~.DecimalNumber` apply color to the ellipsis"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:132
+msgid "Made color apply to the dots when `show_ellipsis` is set to true in `DecimalNumber`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:134
+msgid ":pr:`1775`: Let :class:`~.Create` work on :class:`~.OpenGLSurface`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:137
+msgid ":pr:`1757`: Added warning when there is a large number of items to hash."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:140
+msgid ":pr:`1774`: Add the ``reverse`` parameter to :class:`~.Write`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:144
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:146
+msgid ":pr:`1722`: Fixed ``remover=True`` for :class:`~.AnimationGroup`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:151
+msgid ":pr:`1727`: Fixed some hot reload issues and compatibility with IDEs"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:150
+msgid "Fixed interactive embed issue where it would fail when running on non-tty terminals"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:151
+msgid "Fixed issue where file observer would error after the second run as the first observer was not closed"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:153
+msgid ":pr:`1844`: Fixed the oversized :class:`~.Code` window with the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:159
+msgid ":pr:`1821`: Fixed issues concerning ``frame_center`` in :class:`~.ThreeDScene`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:157
+msgid "Changing ``frame_center`` in a :class:`~.ThreeDScene` now actually changes the camera position."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:158
+msgid "An animation with only ``frame_center`` animated will now be rendered properly."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:159
+msgid "A black dot is not created at the origin once ``frame_center`` is animated."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:161
+msgid ":pr:`1826`: Fixed scaling issue with :meth:`.BarChart.change_bar_values`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:164
+msgid ":pr:`1839`: Allow passing arguments to ``.animate`` with the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:167
+msgid ":pr:`1791`: :meth:`~.Mobject.set_z_index` now sets all submobjects' ``z_index`` value"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:170
+msgid ":pr:`1792`: Fixed bug that caused dry runs to fail when using the PNG format"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:173
+msgid ":pr:`1790`: Fixed an import from ``manimlib``"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:176
+msgid ":pr:`1782`: Fixed :class:`~.Tex` not working properly with the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:179
+msgid ":pr:`1783`: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.invert` to OpenGL"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:182
+msgid ":pr:`1786`: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:185
+msgid ":pr:`1763`: Fixed not being able to set some CLI flags in the configuration file"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:189
+msgid ":pr:`1776`: :meth:`.CoordinateSystem.get_riemann_rectangles` now uses the graph's range instead of the axes range"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:189
+msgid "If no range specified, `get_riemann_rectangles` generates the rectangles only where the area is correctly bounded"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:191
+msgid ":pr:`1770`: Rewrote :meth:`.OpenGLMobject.put_start_and_end_on` to work correctly in 3D"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:194
+msgid ":pr:`1736`: Fixed :class:`~.LinearTransformationScene` crashing on multiple animations"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:198
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:200
+msgid ":pr:`1852`: Fixed docs for :meth:`.Coordinate_system.add_coordinates` and moved :class: `~.Code` example"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:206
+msgid ":pr:`1807`: Updated installation instructions"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:204
+msgid "Added a warning about the incompatibility of different versions of Manim in the README"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:205
+msgid "Modified the admonition warning in the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:206
+msgid "Removed duplicated information from the README (``pip install manim`` is already covered in the docs)"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:208
+msgid ":pr:`1739`: Added a section on creating a custom animation to the \"Manim's building blocks\" tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:211
+msgid ":pr:`1835`: Updated documentation with information about reworked graphical unit test system"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:214
+msgid ":pr:`1845`: Improve ``ThreeDSurfacePlot`` example in example gallery"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:217
+msgid ":pr:`1842`: Removed instructions on installing Poetry from Developer Installation documentation, reference Poetry's documentation instead"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:220
+msgid ":pr:`1829`: Switch the order of Scoop and Chocolatey in the docs for the Windows Installation"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:223
+msgid ":pr:`1827`: Added ``robots.txt`` to prevent old versions of documentation from showing in search results"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:226
+msgid ":pr:`1819`: Removed mention of ``-h`` CLI flag from documentation"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:229
+msgid ":pr:`1813`: Removed unused variables from tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:232
+msgid ":pr:`1815`: Added codespell to the list of used linters in the contribution guidelines"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:235
+msgid ":pr:`1778`: Improve sidebar structure of the documentation's reference manual"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:238
+msgid ":pr:`1749`: Added documentation and example for :meth:`.VMobject.set_fill`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:241
+msgid ":pr:`1743`: Edited the developer installation instructions to include information on cloning the repository"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:244
+msgid ":pr:`1706`: Rework example for :class:`~.Variable`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:248
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:250
+msgid ":pr:`1836`: Converted all the graphical tests to the new syntax"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:254
+msgid ":pr:`1802`: Refactored graphical unit testing system, and implemented multi frames tests"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:254
+msgid "This PR introduces a new ``@frames_comparison`` decorator which allows writing simple ``construct``-like functions as tests. Control data for new tests can be easily generated by calling ``pytest --set_test``."
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:257
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:259
+msgid ":pr:`1830`: Be more concise about the documentation URL in the PR template"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:263
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:265
+msgid ":pr:`1851`: Renamed ``Tabular`` to :class:`~.Table`"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:268
+msgid ":pr:`1817`: Remove pillow version requirement"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:271
+msgid ":pr:`1806`: Fixed spelling mistake"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:274
+msgid ":pr:`1745`: Updated the BibTeX template in the README to Manim v0.9.0"
+msgstr ""
+
+#: ../../source/changelog/0.9.0-changelog.rst:278
+msgid "New releases"
+msgstr ""
+
+

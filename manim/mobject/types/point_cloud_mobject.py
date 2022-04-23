@@ -1,9 +1,14 @@
 """Mobjects representing point clouds."""
 
+from __future__ import annotations
+
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 import numpy as np
 from colour import Color
+
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -17,8 +22,6 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
-from ..opengl_compatibility import ConvertToOpenGL
-from ..types.opengl_point_cloud_mobject import OpenGLPMobject
 
 
 class PMobject(Mobject, metaclass=ConvertToOpenGL):
@@ -311,7 +314,7 @@ class PointCloudDot(Mobject1D):
         stroke_width=2,
         density=DEFAULT_POINT_DENSITY_1D,
         color=YELLOW,
-        **kwargs
+        **kwargs,
     ):
         self.radius = radius
         self.epsilon = 1.0 / density

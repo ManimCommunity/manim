@@ -1,0 +1,133 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.1.1-changelog.rst:3
+msgid "v0.1.1"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:5
+msgid "December 1, 2020"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:7
+msgid "Changes since Manim Community release v0.1.0"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:10
+msgid "Plugins"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:12
+msgid "Provided a standardized method for plugin discoverability, creation, installation, and usage. See the :ref:`documentation <plugins>`."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:16
+msgid "Fixes"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:18
+msgid "JsRender is optional to install. (via :pr:`697`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:19
+msgid "Allow importing modules from the same directory as the input file when using ``manim`` from the command line (via :pr:`724`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:21
+msgid "Remove some unnecessary or unpythonic methods from :class:`~.Scene` (``get_mobjects``, ``add_mobjects_among``, ``get_mobject_copies``), via :pr:`758`."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:24
+msgid "Fix formatting of :class:`~.Code` (via :pr:`798`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:27
+msgid "Configuration"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:29
+msgid "Removed the ``skip_animations`` config option and added the ``Renderer.skip_animations`` attribute instead (via :pr:`696`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:31
+msgid "The global ``config`` dict has been replaced by a global ``config`` instance of the new class :class:`~.ManimConfig`.  This class has a dict-like API, so this should not break user code, only make it more robust.  See the Configuration tutorial for details."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:35
+msgid "Added the option to configure a directory for external assets (via :pr:`649`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:39
+msgid "Documentation"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:41
+msgid "Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues and pull requests on GitHub (via :pr:`685`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:43
+msgid "Add a ``skip-manim`` tag for skipping the ``.. manim::`` directive when building the documentation locally (via :pr:`796`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:48
+msgid "Mobjects, Scenes, and Animations"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:50
+msgid "The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:51
+msgid ":class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:52
+msgid "Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot` (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a label)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:55
+msgid "Scene.set_variables_as_attrs has been removed (via :pr:`692`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:56
+msgid "Ensure that the axes for graphs (:class:`GraphScene`) always intersect (:pr:`580`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:57
+msgid "Now Mobject.add_updater does not call the newly-added updater by default (use ``call_updater=True`` instead) (via :pr:`710`)"
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:59
+msgid "VMobject now has methods to determine and change the direction of the points (via :pr:`647`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:60
+msgid "Added BraceBetweenPoints (via :pr:`693`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:61
+msgid "Added ArcPolygon and ArcPolygonFromArcs (via :pr:`707`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:62
+msgid "Added Cutout (via :pr:`760`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:63
+msgid "Added Mobject raise not implemented errors for dunder methods and implementations for VGroup dunder methods (via :pr:`790`)."
+msgstr ""
+
+#: ../../source/changelog/0.1.1-changelog.rst:64
+msgid "Added :class:`~.ManimBanner` for a animated version of our logo and banner (via :pr:`729`)"
+msgstr ""
+
+

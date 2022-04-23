@@ -1,0 +1,516 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.10.0-changelog.rst:3
+msgid "v0.10.0"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:5
+msgid "September 01, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:10
+msgid "A total of 40 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:14
+msgid "Animfysyk +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:15
+#: ../../source/changelog/0.10.0-changelog.rst:48
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:16
+msgid "Christian Clauss"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:17
+msgid "Daniel Adelodun +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:18
+msgid "Darigov Research"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:19
+#: ../../source/changelog/0.10.0-changelog.rst:49
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:20
+msgid "Eric Biedert +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:21
+#: ../../source/changelog/0.10.0-changelog.rst:53
+msgid "Harivinay"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:22
+#: ../../source/changelog/0.10.0-changelog.rst:55
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:23
+msgid "Jephian Lin +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:24
+msgid "Joy Bhalla +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:25
+#: ../../source/changelog/0.10.0-changelog.rst:60
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:26
+msgid "Lalourche +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:27
+msgid "Max Stoumen"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:28
+#: ../../source/changelog/0.10.0-changelog.rst:61
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:29
+#: ../../source/changelog/0.10.0-changelog.rst:62
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:30
+msgid "Partha Das +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:31
+msgid "Raj Dandekar +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:32
+msgid "Rohan Sharma +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:33
+#: ../../source/changelog/0.10.0-changelog.rst:65
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:34
+msgid "Václav Hlaváč +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:35
+msgid "asjadaugust +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:36
+#: ../../source/changelog/0.10.0-changelog.rst:66
+msgid "ccn"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:37
+#: ../../source/changelog/0.10.0-changelog.rst:67
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:38
+#: ../../source/changelog/0.10.0-changelog.rst:69
+msgid "sparshg"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:39
+msgid "vinnniii15 +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:40
+msgid "vladislav doster +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:41
+msgid "xia0long +"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:44
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:47
+msgid "Aathish Sivasubrahmanian"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:50
+msgid "Devin Neal"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:51
+msgid "Eric Biedert"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:52
+msgid "GameDungeon"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:54
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:56
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:57
+msgid "Jephian Lin"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:58
+msgid "Joy Bhalla"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:59
+msgid "KingWampy"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:63
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:64
+msgid "Raj Dandekar"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:68
+msgid "ralphieraccoon"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:72
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:74
+msgid "A total of 59 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:77
+msgid "Breaking changes"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:81
+msgid ":pr:`1843`: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:80
+msgid "``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:81
+msgid "``ParametricSurface`` has been renamed to :class:`~.Surface`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:84
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:86
+msgid ":pr:`1941`: Added examples, tests and improved documentation for :mod:`~.coordinate_systems`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:89
+msgid ":pr:`1694`: Added ``font_size`` parameter for :class:`~.Tex` and :class:`~.Text`, replaced ``scale`` parameters with ``font_size``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:92
+msgid ":pr:`1860`: Removed :class:`~.GraphScene`, :class:`~.NumberLineOld` and parameters for :class:`~.ChangingDecimal`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:96
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:99
+msgid ":pr:`1929`: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:99
+msgid "Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:101
+msgid ":pr:`1980`: Added a ``dissipating_time`` keyword argument to :class:`~.TracedPath` to allow animating a dissipating path"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:105
+msgid ":pr:`1899`: Allow switching the renderer to OpenGL at runtime"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:105
+msgid "Previously, the metaclass approach only changed the inheritance chain to switch between OpenGL and cairo mobjects when the class objects are initialized, i.e., at import time. This PR also triggers the changes to the inheritance chain when the value of ``config.renderer`` is changed."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:107
+msgid ":pr:`1828`: Added configuration option ``zero_pad`` for zero padding PNG file names"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:111
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:113
+msgid ":pr:`1882`: Added OpenGL support for :class:`~.PMobject` and its subclasses"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:116
+msgid ":pr:`1881`: Added methods :meth:`.Angle.get_lines` and :meth:`.Angle.get_value` to :class:`~.Angle`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:119
+msgid ":pr:`1952`: Added the option to save last frame for OpenGL"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:122
+msgid ":pr:`1922`: Fixed IPython interface to exit cleanly when OpenGL renderer raises an error"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:125
+msgid ":pr:`1923`: Fixed CLI help text for ``manim init`` subcommand so that it is not truncated"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:129
+msgid ":pr:`1868`: Added OpenGL support to IPython magic"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:129
+msgid "The OpenGL renderer can now be used in jupyter notebooks when using the ``%%manim`` magic command."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:131
+msgid ":pr:`1841`: Reduced default resolution of :class:`~.Dot3D`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:134
+msgid ":pr:`1866`: Allow passing keyword argument ``corner_radius`` to :class:`~.SurroundingRectangle`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:137
+msgid ":pr:`1847`: Allow :class:`~.Cross` to be created without requiring a mobject"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:141
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:143
+msgid ":pr:`1985`: Use ``height`` to determine ``font_size`` instead of the ``_font_size`` attribute"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:146
+msgid ":pr:`1758`: Fixed scene selection being ignored when using the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:149
+msgid ":pr:`1871`: Fixed broken :meth:`.VectorScene.vector_to_coords`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:152
+msgid ":pr:`1973`: Fixed indexing of :meth:`.Table.get_entries` to respect row length"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:155
+msgid ":pr:`1950`: Fixed passing custom arrow shapes to :class:`~.CurvedArrow`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:158
+msgid ":pr:`1967`: Fixed :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:161
+msgid ":pr:`1951`: Fixed :meth:`.Axes.get_line_graph` returning a graph rendered below the axes"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:164
+msgid ":pr:`1943`: Added ``buff`` keyword argument to :class:`~.BraceLabel`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:167
+msgid ":pr:`1938`: Fixed :class:`~.Rotate` for angles that are multiples of :math:`2\\pi`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:170
+msgid ":pr:`1924`: Made arrow tips rotate ``IN`` and ``OUT`` properly"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:173
+msgid ":pr:`1931`: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:176
+msgid ":pr:`1893`: Fixed CLI error when rendering a file containing a single scene without specifying the scene name"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:179
+msgid ":pr:`1744`: Fixed bug in :class:`~.NumberPlane` with strictly positive or strictly negative values for ``x_range`` and ``y_range``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:182
+msgid ":pr:`1887`: Fixed ``custom_config`` not working in ``frames_comparison``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:185
+msgid ":pr:`1879`: Fixed how the installed version is determined by Poetry"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:189
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:191
+msgid ":pr:`1979`: Corrected Japanese phrases in documentation"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:194
+msgid ":pr:`1976`: Fixed labelling of languages in documentation example"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:197
+msgid ":pr:`1949`: Rewrite installation instructions from scratch"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:200
+msgid ":pr:`1963`: Added sitemap to ``robots.txt``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:203
+msgid ":pr:`1939`: Fixed formatting of parameter description of :class:`~.NumberPlane`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:206
+msgid ":pr:`1918`: Fixed a typo in the text tutorial"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:209
+msgid ":pr:`1915`: Improved the wording of the installation instructions for Google Colab"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:212
+msgid ":pr:`1906`: Improved language and overall consistency in ``README``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:215
+msgid ":pr:`1880`: Updated tutorials to use ``.animate`` instead of :class:`~.ApplyMethod`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:218
+msgid ":pr:`1877`: Remove duplicated imports in some documentation examples"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:221
+msgid ":pr:`1869`: Fixed duplicated Parameters section in  :meth:`.Mobject.arrange_in_grid`"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:225
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:227
+msgid ":pr:`1894`: Fixed an OpenGL test"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:231
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:233
+msgid ":pr:`1987`: Added support for using OpenGL in subprocess in Windows pipeline"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:236
+msgid ":pr:`1964`: Added ``CITATION.cff`` and a method to automatically update this citation with new releases"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:239
+msgid ":pr:`1856`: Modified Dockerfile to support multi-platform builds via ``docker buildx``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:242
+msgid ":pr:`1955`: Partially support OpenGL rendering with Docker"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:245
+msgid ":pr:`1896`: Made RTD apt install FFMPEG instead of installing a Python binding"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:248
+msgid ":pr:`1864`: Shortened and simplified PR template"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:251
+msgid ":pr:`1853`: Updated Sphinx to 4.1.2"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:255
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:257
+msgid ":pr:`1960`: Ignore fewer flake8 errors"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:260
+msgid ":pr:`1947`: Set flake8 not to ignore undefined names in Python code"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:263
+msgid ":pr:`1948`: flake8: Set max-line-length instead of ignoring long lines"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:268
+msgid ":pr:`1956`:  Upgrade to modern Python syntax"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:267
+msgid "This pull request was created `with the command <https://github.com/asottile/pyupgrade#readme>`__ ``pyupgrade --py36-plus **/*.py``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:268
+msgid "Python f-strings simplify the code and `should speed up execution <https://www.scivision.dev/python-f-string-speed>`__."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:271
+msgid ":pr:`1898`: Replaced ``self.data[\"attr\"]`` and ``self.uniforms[\"attr\"]`` with ``self.attr``"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:271
+msgid "In particular, ``OpenGLVMobject.points`` can now be accessed directly."
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:273
+msgid ":pr:`1934`: Improved code quality by implementing suggestions from LGTM"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:276
+msgid ":pr:`1861`: Updated ``dearpygui`` version to 0.8.x"
+msgstr ""
+
+#: ../../source/changelog/0.10.0-changelog.rst:280
+msgid "New releases"
+msgstr ""
+
+

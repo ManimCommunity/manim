@@ -1,34 +1,38 @@
 """Mobjects used to represent mathematical graphs (think graph theory, not plotting)."""
 
+from __future__ import annotations
+
 __all__ = [
     "Graph",
 ]
 
+import itertools as it
 from copy import copy
-from typing import Hashable, List, Optional, Tuple, Type, Union
+from typing import Hashable, Iterable
 
 import networkx as nx
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.geometry.arc import Dot, LabeledDot
+from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.text.tex_mobject import MathTex
 
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
-from .geometry import Dot, LabeledDot, Line
 from .mobject import Mobject, override_animate
-from .opengl_compatibility import ConvertToOpenGL
-from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
 
 def _determine_graph_layout(
     nx_graph: nx.classes.graph.Graph,
-    layout: Union[str, dict] = "spring",
+    layout: str | dict = "spring",
     layout_scale: float = 2,
-    layout_config: Union[dict, None] = None,
-    partitions: Union[List[List[Hashable]], None] = None,
-    root_vertex: Union[Hashable, None] = None,
+    layout_config: dict | None = None,
+    partitions: list[list[Hashable]] | None = None,
+    root_vertex: Hashable | None = None,
 ) -> dict:
     automatic_layouts = {
         "circular": nx.layout.circular_layout,
@@ -57,9 +61,7 @@ def _determine_graph_layout(
         return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
-            nx_graph,
-            root_vertex=root_vertex,
-            scale=layout_scale,
+            nx_graph, root_vertex=root_vertex, scale=layout_scale, **layout_config
         )
     elif layout == "partite":
         if partitions is None or len(partitions) == 0:
@@ -98,65 +100,111 @@ def _determine_graph_layout(
 
 
 def _tree_layout(
-    G: nx.classes.graph.Graph,
-    root_vertex: Union[Hashable, None],
-    scale: float,
-) -> dict:
-    result = {root_vertex: np.array([0, 0, 0])}
+    T: nx.classes.graph.Graph,
+    root_vertex: Hashable | None,
+    scale: float | tuple | None = 2,
+    vertex_spacing: tuple | None = None,
+    orientation: str = "down",
+):
+    children = {root_vertex: list(T.neighbors(root_vertex))}
 
-    if not nx.is_tree(G):
+    if not nx.is_tree(T):
         raise ValueError("The tree layout must be used with trees")
     if root_vertex is None:
         raise ValueError("The tree layout requires the root_vertex parameter")
 
-    def _recursive_position_for_row(
-        G: nx.classes.graph.Graph,
-        result: dict,
-        two_rows_before: List[Hashable],
-        last_row: List[Hashable],
-        current_height: float,
-    ):
-        new_row = []
-        for v in last_row:
-            for x in G.neighbors(v):
-                if x not in two_rows_before:
-                    new_row.append(x)
+    # The following code is SageMath's tree layout implementation, taken from
+    # https://github.com/sagemath/sage/blob/cc60cfebc4576fed8b01f0fc487271bdee3cefed/src/sage/graphs/graph_plot.py#L1447
 
-        new_row_length = len(new_row)
+    # Always make a copy of the children because they get eaten
+    stack = [list(children[root_vertex]).copy()]
+    stick = [root_vertex]
+    parent = {u: root_vertex for u in children[root_vertex]}
+    pos = {}
+    obstruction = [0.0] * len(T)
+    if orientation == "down":
+        o = -1
+    else:
+        o = 1
 
-        if new_row_length == 0:
-            return
+    def slide(v, dx):
+        """
+        Shift the vertex v and its descendants to the right by dx.
+        Precondition: v and its descendents have already had their
+        positions computed.
+        """
+        level = [v]
+        while level:
+            nextlevel = []
+            for u in level:
+                x, y = pos[u]
+                x += dx
+                obstruction[y] = max(x + 1, obstruction[y])
+                pos[u] = x, y
+                nextlevel += children[u]
+            level = nextlevel
 
-        if new_row_length == 1:
-            result[new_row[0]] = np.array([0, current_height, 0])
+    while stack:
+        C = stack[-1]
+        if not C:
+            p = stick.pop()
+            stack.pop()
+            cp = children[p]
+            y = o * len(stack)
+            if not cp:
+                x = obstruction[y]
+                pos[p] = x, y
+            else:
+                x = sum(pos[c][0] for c in cp) / float(len(cp))
+                pos[p] = x, y
+                ox = obstruction[y]
+                if x < ox:
+                    slide(p, ox - x)
+                    x = ox
+            obstruction[y] = x + 1
+            continue
+
+        t = C.pop()
+        pt = parent[t]
+
+        ct = [u for u in list(T.neighbors(t)) if u != pt]
+        for c in ct:
+            parent[c] = t
+        children[t] = copy(ct)
+
+        stack.append(ct)
+        stick.append(t)
+
+    # the resulting layout is then rescaled again to fit on Manim's canvas
+
+    x_min = min(pos.values(), key=lambda t: t[0])[0]
+    x_max = max(pos.values(), key=lambda t: t[0])[0]
+    y_min = min(pos.values(), key=lambda t: t[1])[1]
+    y_max = max(pos.values(), key=lambda t: t[1])[1]
+    center = np.array([x_min + x_max, y_min + y_max, 0]) / 2
+    height = y_max - y_min
+    width = x_max - x_min
+    if vertex_spacing is None:
+        if isinstance(scale, (float, int)) and (width > 0 or height > 0):
+            sf = 2 * scale / max(width, height)
+        elif isinstance(scale, tuple):
+            if scale[0] is not None and width > 0:
+                sw = 2 * scale[0] / width
+            else:
+                sw = 1
+
+            if scale[1] is not None and height > 0:
+                sh = 2 * scale[1] / height
+            else:
+                sh = 1
+
+            sf = np.array([sw, sh, 0])
         else:
-            for i in range(new_row_length):
-                result[new_row[i]] = np.array(
-                    [-1 + 2 * i / (new_row_length - 1), current_height, 0],
-                )
-
-        _recursive_position_for_row(
-            G,
-            result,
-            two_rows_before=last_row,
-            last_row=new_row,
-            current_height=current_height + 1,
-        )
-
-    _recursive_position_for_row(
-        G,
-        result,
-        two_rows_before=[],
-        last_row=[root_vertex],
-        current_height=1,
-    )
-
-    height = max(map(lambda v: result[v][1], result))
-
-    return {
-        v: np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]) * scale / 2
-        for v, pos in result.items()
-    }
+            sf = 1
+    else:
+        sx, sy = vertex_spacing
+        sf = np.array([sx, sy, 0])
+    return {v: (np.array([x, y, 0]) - center) * sf for v, (x, y) in pos.items()}
 
 
 class Graph(VMobject, metaclass=ConvertToOpenGL):
@@ -196,14 +244,23 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
         for more details), or a dictionary specifying a coordinate (value)
         for each vertex (key) for manual positioning.
-    layout_scale
-        The scale of automatically generated layouts: the vertices will
-        be arranged such that the coordinates are located within the
-        interval ``[-scale, scale]``. Default: 2.
     layout_config
         Only for automatically generated layouts. A dictionary whose entries
         are passed as keyword arguments to the automatic layout algorithm
         specified via ``layout`` of``networkx``.
+        The ``tree`` layout also accepts a special parameter ``vertex_spacing``
+        passed as a keyword argument inside the ``layout_config`` dictionary.
+        Passing a tuple ``(space_x, space_y)`` as this argument overrides
+        the value of ``layout_scale`` and ensures that vertices are arranged
+        in a way such that the centers of siblings in the same layer are
+        at least ``space_x`` units apart horizontally, and neighboring layers
+        are spaced ``space_y`` units vertically.
+    layout_scale
+        The scale of automatically generated layouts: the vertices will
+        be arranged such that the coordinates are located within the
+        interval ``[-scale, scale]``. Some layouts accept a tuple ``(scale_x, scale_y)``
+        causing the first coordinate to be in the interval ``[-scale_x, scale_x]``,
+        and the second in ``[-scale_y, scale_y]``. Default: 2.
     vertex_type
         The mobject class used for displaying vertices in the scene.
     vertex_config
@@ -350,24 +407,67 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
                 self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
+
+    The following code sample illustrates the use of the ``vertex_spacing``
+    layout parameter specific to the ``"tree"`` layout. As mentioned
+    above, setting ``vertex_spacing`` overrides the specified value
+    for ``layout_scale``, and as such it is harder to control the size
+    of the mobject. However, we can adjust the captured frame and
+    zoom out by using a :class:`.MovingCameraScene`::
+
+        class LargeTreeGeneration(MovingCameraScene):
+            DEPTH = 4
+            CHILDREN_PER_VERTEX = 3
+            LAYOUT_CONFIG = {"vertex_spacing": (0.5, 1)}
+            VERTEX_CONF = {"radius": 0.25, "color": BLUE_B, "fill_opacity": 1}
+
+            def expand_vertex(self, g, vertex_id: str, depth: int):
+                new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
+                new_edges = [(vertex_id, child_id) for child_id in new_vertices]
+                g.add_edges(
+                    *new_edges,
+                    vertex_config=self.VERTEX_CONF,
+                    positions={
+                        k: g.vertices[vertex_id].get_center() + 0.1 * DOWN for k in new_vertices
+                    },
+                )
+                if depth < self.DEPTH:
+                    for child_id in new_vertices:
+                        self.expand_vertex(g, child_id, depth + 1)
+
+                return g
+
+            def construct(self):
+                g = Graph(["ROOT"], [], vertex_config=self.VERTEX_CONF)
+                g = self.expand_vertex(g, "ROOT", 1)
+                self.add(g)
+
+                self.play(
+                    g.animate.change_layout(
+                        "tree",
+                        root_vertex="ROOT",
+                        layout_config=self.LAYOUT_CONFIG,
+                    )
+                )
+                self.play(self.camera.auto_zoom(g, margin=1), run_time=0.5)
     """
 
     def __init__(
         self,
-        vertices: List[Hashable],
-        edges: List[Tuple[Hashable, Hashable]],
-        labels: bool = False,
+        vertices: list[Hashable],
+        edges: list[tuple[Hashable, Hashable]],
+        labels: bool | dict = False,
         label_fill_color: str = BLACK,
-        layout: Union[str, dict] = "spring",
-        layout_scale: float = 2,
-        layout_config: Union[dict, None] = None,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Union[dict, None] = None,
-        vertex_mobjects: Optional[dict] = None,
-        edge_type: Type["Mobject"] = Line,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-        edge_config: Union[dict, None] = None,
+        layout: str | dict = "spring",
+        layout_scale: float | tuple = 2,
+        layout_config: dict | None = None,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+        edge_type: type[Mobject] = Line,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+        edge_config: dict | None = None,
     ) -> None:
         super().__init__()
 
@@ -460,22 +560,94 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         self.add_updater(update_edges)
 
-    def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
+    def __getitem__(self: Graph, v: Hashable) -> Mobject:
         return self.vertices[v]
 
-    def __repr__(self: "Graph") -> str:
+    def __repr__(self: Graph) -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def _create_vertex(
+        self,
+        vertex: Hashable,
+        position: np.ndarray | None = None,
+        label: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> tuple[Hashable, np.ndarray, dict, Mobject]:
+        if position is None:
+            position = self.get_center()
+
+        if vertex_config is None:
+            vertex_config = {}
+
+        if vertex in self.vertices:
+            raise ValueError(
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
+            )
+
+        if isinstance(label, (Mobject, OpenGLMobject)):
+            label = label
+        elif label is True:
+            label = MathTex(vertex, fill_color=label_fill_color)
+        elif vertex in self._labels:
+            label = self._labels[vertex]
+        else:
+            label = None
+
+        base_vertex_config = copy(self.default_vertex_config)
+        base_vertex_config.update(vertex_config)
+        vertex_config = base_vertex_config
+
+        if label is not None:
+            vertex_config["label"] = label
+            if vertex_type is Dot:
+                vertex_type = LabeledDot
+
+        if vertex_mobject is None:
+            vertex_mobject = vertex_type(**vertex_config)
+
+        vertex_mobject.move_to(position)
+
+        return (vertex, position, vertex_config, vertex_mobject)
+
+    def _add_created_vertex(
+        self,
+        vertex: Hashable,
+        position: np.ndarray,
+        vertex_config: dict,
+        vertex_mobject: Mobject,
+    ) -> Mobject:
+        if vertex in self.vertices:
+            raise ValueError(
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
+            )
+
+        self._graph.add_node(vertex)
+        self._layout[vertex] = position
+
+        if "label" in vertex_config:
+            self._labels[vertex] = vertex_config["label"]
+
+        self._vertex_config[vertex] = vertex_config
+
+        self.vertices[vertex] = vertex_mobject
+        self.vertices[vertex].move_to(position)
+        self.add(self.vertices[vertex])
+
+        return self.vertices[vertex]
 
     def _add_vertex(
         self,
         vertex: Hashable,
-        position: Optional[np.ndarray] = None,
+        position: np.ndarray | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobject: Optional[dict] = None,
-    ) -> "Mobject":
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobject: dict | None = None,
+    ) -> Mobject:
         """Add a vertex to the graph.
 
         Parameters
@@ -503,84 +675,28 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             The mobject to be used as the vertex. Overrides all other
             vertex customization options.
         """
-        if position is None:
-            position = self.get_center()
-
-        if vertex_config is None:
-            vertex_config = {}
-
-        if vertex in self.vertices:
-            raise ValueError(
-                f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
+        return self._add_created_vertex(
+            *self._create_vertex(
+                vertex=vertex,
+                position=position,
+                label=label,
+                label_fill_color=label_fill_color,
+                vertex_type=vertex_type,
+                vertex_config=vertex_config,
+                vertex_mobject=vertex_mobject,
             )
+        )
 
-        self._graph.add_node(vertex)
-        self._layout[vertex] = position
-
-        if isinstance(label, (Mobject, OpenGLMobject)):
-            self._labels[vertex] = label
-        elif label is True:
-            self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
-
-        base_vertex_config = copy(self.default_vertex_config)
-        base_vertex_config.update(vertex_config)
-        vertex_config = base_vertex_config
-
-        if vertex in self._labels:
-            vertex_config["label"] = self._labels[vertex]
-            if vertex_type is Dot:
-                vertex_type = LabeledDot
-
-        self._vertex_config[vertex] = vertex_config
-
-        if vertex_mobject is None:
-            self.vertices[vertex] = vertex_type(**vertex_config)
-        else:
-            self.vertices[vertex] = vertex_mobject
-
-        self.vertices[vertex].move_to(position)
-        self.add(self.vertices[vertex])
-
-        return self.vertices[vertex]
-
-    def add_vertices(
-        self: "Graph",
+    def _create_vertices(
+        self: Graph,
         *vertices: Hashable,
-        positions: Optional[dict] = None,
+        positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: Type["Mobject"] = Dot,
-        vertex_config: Optional[dict] = None,
-        vertex_mobjects: Optional[dict] = None,
-    ):
-        """Add a list of vertices to the graph.
-
-        Parameters
-        ----------
-
-        vertices
-            Hashable vertex identifiers.
-        positions
-            A dictionary specifying the coordinates where the new vertices should be added.
-            If ``None``, all vertices are created at the center of the graph.
-        labels
-            Controls whether or not the vertex is labeled. If ``False`` (the default),
-            the vertex is not labeled; if ``True`` it is labeled using its
-            names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
-            any :class:`~.Mobject` can be passed to be used as the label.
-        label_fill_color
-            Sets the fill color of the default labels generated when ``labels``
-            is set to ``True``. Has no effect for other values of ``labels``.
-        vertex_type
-            The mobject class used for displaying vertices in the scene.
-        vertex_config
-            A dictionary containing keyword arguments to be passed to
-            the class specified via ``vertex_type``.
-        vertex_mobjects
-            A dictionary whose keys are the vertex identifiers, and whose
-            values are mobjects that should be used as vertices. Overrides
-            all other vertex customization options.
-        """
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+    ) -> Iterable[tuple[Hashable, np.ndarray, dict, Mobject]]:
         if positions is None:
             positions = {}
         if vertex_mobjects is None:
@@ -613,7 +729,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         }
 
         return [
-            self._add_vertex(
+            self._create_vertex(
                 v,
                 position=positions[v],
                 label=labels[v],
@@ -625,6 +741,57 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             for v in vertices
         ]
 
+    def add_vertices(
+        self: Graph,
+        *vertices: Hashable,
+        positions: dict | None = None,
+        labels: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: type[Mobject] = Dot,
+        vertex_config: dict | None = None,
+        vertex_mobjects: dict | None = None,
+    ):
+        """Add a list of vertices to the graph.
+
+        Parameters
+        ----------
+
+        vertices
+            Hashable vertex identifiers.
+        positions
+            A dictionary specifying the coordinates where the new vertices should be added.
+            If ``None``, all vertices are created at the center of the graph.
+        labels
+            Controls whether or not the vertex is labeled. If ``False`` (the default),
+            the vertex is not labeled; if ``True`` it is labeled using its
+            names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
+            any :class:`~.Mobject` can be passed to be used as the label.
+        label_fill_color
+            Sets the fill color of the default labels generated when ``labels``
+            is set to ``True``. Has no effect for other values of ``labels``.
+        vertex_type
+            The mobject class used for displaying vertices in the scene.
+        vertex_config
+            A dictionary containing keyword arguments to be passed to
+            the class specified via ``vertex_type``.
+        vertex_mobjects
+            A dictionary whose keys are the vertex identifiers, and whose
+            values are mobjects that should be used as vertices. Overrides
+            all other vertex customization options.
+        """
+        return [
+            self._add_created_vertex(*v)
+            for v in self._create_vertices(
+                *vertices,
+                positions=positions,
+                labels=labels,
+                label_fill_color=label_fill_color,
+                vertex_type=vertex_type,
+                vertex_config=vertex_config,
+                vertex_mobjects=vertex_mobjects,
+            )
+        ]
+
     @override_animate(add_vertices)
     def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
         if anim_args is None:
@@ -632,8 +799,18 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         animation = anim_args.pop("animation", Create)
 
-        vertex_mobjects = self.add_vertices(*args, **kwargs)
-        return AnimationGroup(*(animation(v, **anim_args) for v in vertex_mobjects))
+        vertex_mobjects = self._create_vertices(*args, **kwargs)
+
+        def on_finish(scene: Scene):
+            for v in vertex_mobjects:
+                scene.remove(v[-1])
+                self._add_created_vertex(*v)
+
+        return AnimationGroup(
+            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
+            group=self,
+            _on_finish=on_finish,
+        )
 
     def _remove_vertex(self, vertex):
         """Remove a vertex (as well as all incident edges) from the graph.
@@ -704,13 +881,15 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertices(*vertices)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        return AnimationGroup(
+            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+        )
 
     def _add_edge(
         self,
-        edge: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        edge: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
     ):
         """Add a new edge to the graph.
 
@@ -759,9 +938,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def add_edges(
         self,
-        *edges: Tuple[Hashable, Hashable],
-        edge_type: Type["Mobject"] = Line,
-        edge_config: Optional[dict] = None,
+        *edges: tuple[Hashable, Hashable],
+        edge_type: type[Mobject] = Line,
+        edge_config: dict | None = None,
+        **kwargs,
     ):
         """Add new edges to the graph.
 
@@ -780,6 +960,9 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             whose keys are the edge tuples, and whose values are dictionaries
             containing keyword arguments to be passed for the construction
             of the corresponding edge.
+        kwargs
+            Any further keyword arguments are passed to :meth:`.add_vertices`
+            which is used to create new vertices in the passed edges.
 
         Returns
         -------
@@ -797,6 +980,10 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
             base_edge_config[e].update(edge_config.get(e, {}))
         edge_config = base_edge_config
 
+        edge_vertices = set(it.chain(*edges))
+        new_vertices = [v for v in edge_vertices if v not in self.vertices]
+        added_vertices = self.add_vertices(*new_vertices, **kwargs)
+
         added_mobjects = sum(
             (
                 self._add_edge(
@@ -806,7 +993,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 ).submobjects
                 for edge in edges
             ),
-            [],
+            added_vertices,
         )
         return self.get_group_class()(*added_mobjects)
 
@@ -817,9 +1004,11 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         animation = anim_args.pop("animation", Create)
 
         mobjects = self.add_edges(*args, **kwargs)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        return AnimationGroup(
+            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+        )
 
-    def _remove_edge(self, edge: Tuple[Hashable]):
+    def _remove_edge(self, edge: tuple[Hashable]):
         """Remove an edge from the graph.
 
         Parameters
@@ -848,7 +1037,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: Tuple[Hashable]):
+    def remove_edges(self, *edges: tuple[Hashable]):
         """Remove several edges from the graph.
 
         Parameters
@@ -876,7 +1065,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
         return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
 
     @staticmethod
-    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
+    def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> Graph:
         """Build a :class:`~.Graph` from a given ``networkx`` graph.
 
         Parameters
@@ -910,12 +1099,12 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
     def change_layout(
         self,
-        layout: Union[str, dict] = "spring",
+        layout: str | dict = "spring",
         layout_scale: float = 2,
-        layout_config: Union[dict, None] = None,
-        partitions: Union[List[List[Hashable]], None] = None,
-        root_vertex: Union[Hashable, None] = None,
-    ) -> "Graph":
+        layout_config: dict | None = None,
+        partitions: list[list[Hashable]] | None = None,
+        root_vertex: Hashable | None = None,
+    ) -> Graph:
         """Change the layout of this graph.
 
         See the documentation of :class:`~.Graph` for details about the

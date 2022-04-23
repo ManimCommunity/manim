@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from manim import *
-from tests.test_graphical_units.testing.frames_comparison import frames_comparison
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "transform"
 
@@ -119,7 +121,8 @@ def test_ApplyComplexFunction(scene):
 def test_ApplyMatrix(scene):
     square = Square()
     matrice = [[1.0, 0.5], [1.0, 0.0]]
-    scene.play(ApplyMatrix(matrice, square))
+    about_point = np.asarray((-10.0, 5.0, 0.0))
+    scene.play(ApplyMatrix(matrice, square, about_point))
 
 
 @frames_comparison(last_frame=False)
@@ -152,3 +155,11 @@ def test_MatchPointsScene(scene):
 @frames_comparison(last_frame=False)
 def test_AnimationBuilder(scene):
     scene.play(Square().animate.shift(RIGHT).rotate(PI / 4))
+
+
+@frames_comparison(last_frame=False)
+def test_ReplacementTransform(scene):
+    v1 = Vector()
+    v2 = Vector()
+    v3 = Line()
+    scene.play(ReplacementTransform(VGroup(v1, v2), v3))

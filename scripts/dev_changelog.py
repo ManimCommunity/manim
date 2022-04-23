@@ -43,6 +43,8 @@ Note
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
+from __future__ import annotations
+
 import datetime
 import os
 import re
@@ -75,6 +77,10 @@ PR_LABELS = {
     "release": "New releases",
     "unlabeled": "Unclassified changes",
 }
+
+SILENT_CONTRIBUTORS = [
+    "dependabot[bot]",
+]
 
 
 def update_citation(version, date):
@@ -113,15 +119,18 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     author_names = []
     for author in authors:
         name = author.name if author.name is not None else author.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
         if github_repo.get_commits(author=author, until=lst_date).totalCount == 0:
             name += " +"
         author_names.append(name)
 
     reviewer_names = []
     for reviewer in reviewers:
-        reviewer_names.append(
-            reviewer.name if reviewer.name is not None else reviewer.login,
-        )
+        name = reviewer.name if reviewer.name is not None else reviewer.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
+        reviewer_names.append(name)
 
     return {
         "authors": sorted(author_names),
@@ -147,7 +156,12 @@ def get_pr_nums(lst, cur):
         f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n")),
+        filter(
+            lambda x: not any(
+                ["pre-commit autoupdate" in x, "New Crowdin updates" in x]
+            ),
+            commits.split("\n"),
+        ),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
@@ -159,10 +173,13 @@ def get_pr_nums(lst, cur):
 
 def get_summary(body):
     pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
-    has_changelog_pattern = re.search(pattern, body)
-    if has_changelog_pattern:
+    try:
+        has_changelog_pattern = re.search(pattern, body)
+        if has_changelog_pattern:
 
-        return has_changelog_pattern.group()[22:-21].strip()
+            return has_changelog_pattern.group()[22:-21].strip()
+    except Exception:
+        print(f"Error parsing body for changelog: {body}")
 
 
 @cloup.command(
@@ -282,7 +299,7 @@ def main(token, prior, tag, additional, outfile):
                     url = PR.html_url
                     title = PR.title
                     label = PR.labels
-                    f.write(f"* `#{num} <{url}>`__: {title}\n")
+                    f.write(f"* :pr:`{num}`: {title}\n")
                     overview = get_summary(PR.body)
                     if overview:
                         f.write(indent(f"{overview}\n\n", "   "))
