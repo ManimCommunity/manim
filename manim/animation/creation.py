@@ -191,13 +191,13 @@ class Uncreate(Create):
     def __init__(
         self,
         mobject: VMobject | OpenGLVMobject,
-        rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
+        reverse_rate_function: bool = True,
         remover: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(
             mobject,
-            rate_func=rate_func,
+            reverse_rate_function=reverse_rate_function,
             introducer=False,
             remover=remover,
             **kwargs,
@@ -405,7 +405,7 @@ class Unwrite(Write):
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            rate_func=lambda t: -rate_func(t) + 1,
+            reverse_rate_function=True,
             reverse=reverse,
             **kwargs,
         )
@@ -459,9 +459,10 @@ class SpiralIn(Animation):
             shape.move_to(shape.initial_position)
             shape.save_state()
 
-        super().__init__(shapes, **kwargs)
+        super().__init__(shapes, introducer=True, **kwargs)
 
     def interpolate_mobject(self, alpha: float) -> None:
+        alpha = self.rate_func(alpha)
         for shape in self.shapes:
             shape.restore()
             shape.save_state()

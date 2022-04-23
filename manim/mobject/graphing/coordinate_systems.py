@@ -881,7 +881,7 @@ class CoordinateSystem:
 
             >>> from manim import Axes
             >>> ax = Axes()
-            >>> parabola = ax.plot(lambda x: x ** 2)
+            >>> parabola = ax.plot(lambda x: x**2)
             >>> ax.input_to_graph_coords(x=3, graph=parabola)
             (3, 9)
         """
@@ -1255,7 +1255,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.angle_of_tangent(x=3, graph=curve)
             # 1.4056476493802699
         """
@@ -1285,7 +1285,7 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = Axes()
-            curve = ax.plot(lambda x: x ** 2)
+            curve = ax.plot(lambda x: x**2)
             ax.slope_of_tangent(x=-2, graph=curve)
             # -3.5000000259052038
         """
@@ -2422,8 +2422,9 @@ class NumberPlane(Axes):
         # min/max used in case range does not include 0. i.e. if (2,6):
         # the range becomes (0,4), not (0,6).
         ranges = (
-            np.arange(0, min(x_max - x_min, x_max), step),
-            np.arange(0, max(x_min - x_max, x_min), -step),
+            [0],
+            np.arange(step, min(x_max - x_min, x_max), step),
+            np.arange(-step, max(x_min - x_max, x_min), -step),
         )
 
         for inputs in ranges:

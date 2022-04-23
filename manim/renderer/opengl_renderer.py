@@ -246,7 +246,7 @@ class OpenGLRenderer:
         # Initialize texture map.
         self.path_to_texture_id = {}
 
-        self._background_color = color_to_rgba(config["background_color"], 1.0)
+        self.background_color = config["background_color"]
 
     def init_scene(self, scene):
         self.partial_movie_files = []
@@ -255,6 +255,7 @@ class OpenGLRenderer:
             scene.__class__.__name__,
         )
         self.scene = scene
+        self.background_color = config["background_color"]
         if not hasattr(self, "window"):
             if self.should_create_window():
                 from .opengl_renderer_window import Window
