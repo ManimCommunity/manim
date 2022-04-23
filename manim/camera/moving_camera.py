@@ -18,7 +18,6 @@ from ..mobject.mobject import Mobject
 from ..utils.color import WHITE
 
 
-# TODO, think about how to incorporate perspective
 class MovingCamera(Camera):
     """
     Stays in line with the height, width and position of it's 'frame', which is a Rectangle
