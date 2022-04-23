@@ -548,7 +548,7 @@ child of some other mobject), they are first removed from the list.
 The way :meth:`.Scene.restrucutre_mobjects` works is rather aggressive:
 It always operates on a given list of mobjects; in the ``add`` method
 two different lists occur: the default one, ``Scene.mobjects`` (no extra
-keyword arugment is passed), and ``Scene.moving_mobjects`` (which we will
+keyword argument is passed), and ``Scene.moving_mobjects`` (which we will
 discuss later in more detail). It iterates through all of the members of
 the list, and checks whether any of the mobjects passed in ``to_remove``
 are contained as children (in any nesting level). If so, **their parent
