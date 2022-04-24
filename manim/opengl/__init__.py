@@ -7,6 +7,7 @@ except ImportError:
 
 
 from manim.mobject.opengl.dot_cloud import *
+from manim.mobject.opengl.opengl_image_mobject import *
 from manim.mobject.opengl.opengl_mobject import *
 from manim.mobject.opengl.opengl_point_cloud_mobject import *
 from manim.mobject.opengl.opengl_surface import *

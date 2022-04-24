@@ -27,7 +27,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
-click = ">=7.1<=9.0"
+click = ">=7.2<=9.0"
 click-default-group = "^1.2.2"
 colour = "^0.1.5"
 numpy = "^1.9"

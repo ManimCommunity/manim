@@ -1015,6 +1015,46 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
             return self.angle_value / DEGREES
         return self.angle_value
 
+    @staticmethod
+    def from_three_points(
+        A: np.ndarray, B: np.ndarray, C: np.ndarray, **kwargs
+    ) -> Angle:
+        """The angle between the lines AB and BC.
+
+        This constructs the angle :math:`\angle ABC`.
+
+        Parameters
+        ----------
+        A
+            The endpoint of the first angle leg
+        B
+            The vertex of the angle
+        C
+            The endpoint of the second angle leg
+
+        **kwargs
+            Further keyword arguments are passed to :class:`.Angle`
+
+        Returns
+        -------
+        The Angle calculated from the three points
+
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
+
+        Examples
+        --------
+        .. manim:: AngleFromThreePointsExample
+            :save_last_frame:
+
+            class AngleFromThreePointsExample(Scene):
+                def construct(self):
+                    sample_angle = Angle.from_three_points(UP, ORIGIN, LEFT)
+                    red_angle = Angle.from_three_points(LEFT + UP, ORIGIN, RIGHT, radius=.8, quadrant=(-1,-1), color=RED, stroke_width=8, other_angle=True)
+                    self.add(red_angle, sample_angle)
+        """
+        return Angle(Line(B, A), Line(B, C), **kwargs)
+
 
 class RightAngle(Angle):
     """An elbow-type mobject representing a right angle between two lines.

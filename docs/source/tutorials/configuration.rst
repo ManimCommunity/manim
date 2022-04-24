@@ -363,3 +363,41 @@ A list of all config options
    'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
    'window_position', 'window_monitor', 'window_size', 'write_all', 'write_to_movie',
    'enable_wireframe', 'force_window']
+
+
+Accessing CLI command options
+*****************************
+
+Entering ``manim``, or ``manim --help``, will open the main help page.
+
+.. code::
+
+   Usage: manim [OPTIONS] COMMAND [ARGS]...
+
+     Animation engine for explanatory math videos.
+
+   Options:
+     --version  Show version and exit.
+     --help     Show this message and exit.
+
+   Commands:
+     cfg      Manages Manim configuration files.
+     init     Sets up a new project in current working directory with default
+              settings.
+
+              It copies files from templates directory and pastes them in the
+              current working dir.
+     new      Create a new project or insert a new scene.
+     plugins  Manages Manim plugins.
+     render   Render SCENE(S) from the input FILE.
+
+   See 'manim <command>' to read about a specific subcommand.
+
+   Made with <3 by Manim Community developers.
+
+Each of the subcommands has its own help page which can be accessed similarly:
+
+.. code::
+
+   manim render
+   manim render --help
