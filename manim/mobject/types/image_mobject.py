@@ -17,7 +17,7 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import WHITE, color_to_int_rgb
-from ...utils.images import get_full_raster_image_path
+from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 
 class AbstractImageMobject(Mobject):
@@ -183,25 +183,12 @@ class ImageMobject(AbstractImageMobject):
         else:
             self.pixel_array = np.array(filename_or_array)
         self.pixel_array_dtype = kwargs.get("pixel_array_dtype", "uint8")
-        self.change_to_rgba_array()
+        self.pixel_array = change_to_rgba_array(
+            self.pixel_array, self.pixel_array_dtype
+        )
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
         super().__init__(scale_to_resolution, **kwargs)
-
-    def change_to_rgba_array(self):
-        """Converts an RGB array into RGBA with the alpha value opacity maxed."""
-        pa = self.pixel_array
-        if len(pa.shape) == 2:
-            pa = pa.reshape(list(pa.shape) + [1])
-        if pa.shape[2] == 1:
-            pa = pa.repeat(3, axis=2)
-        if pa.shape[2] == 3:
-            alphas = 255 * np.ones(
-                list(pa.shape[:2]) + [1],
-                dtype=self.pixel_array_dtype,
-            )
-            pa = np.append(pa, alphas, axis=2)
-        self.pixel_array = pa
 
     def get_pixel_array(self):
         """A simple getter method."""
