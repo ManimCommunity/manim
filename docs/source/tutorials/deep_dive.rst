@@ -607,7 +607,7 @@ think of as an animation on a group of mobjects rather than a group
 of animations). Moreover, except for in a particular special case,
 the run time of animations is also fixed and known beforehand.
 
-The initialization of animations actually is not very exciting, 
+The initialization of animations actually is not very exciting,
 :meth:`.Animation.__init__` merely sets some attributes derived
 from the passed keyword arguments and additionally ensures that
 the ``Animation.starting_mobject`` and ``Animation.mobject``
@@ -615,7 +615,7 @@ attributes are populated. Once the animation is played, the
 ``starting_mobject`` attribute holds an unmodified copy of the
 mobject the animation is attached to; during the initialization
 it is set to a placeholder mobject. The ``mobject`` attribute
-is set to the mobject the animation is attached to. 
+is set to the mobject the animation is attached to.
 
 Animations have a few special methods which are called during the
 render loop:
@@ -628,7 +628,7 @@ render loop:
   the last frame has been rendered).
 - :meth:`.Animation.interpolate` is the method that updates the mobject
   attached to the animation to the corresponding animation completion
-  percentage. For example, if in the render loop, 
+  percentage. For example, if in the render loop,
   ``some_animation.interpolate(0.5)`` is called, the attached mobject
   will be updated to the state where 50% of the animation are completed.
 
@@ -651,7 +651,7 @@ initialized and ready to be ``play``ed.
 
 The ``play`` call: Manim's render loop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
+
 - entering the play call!
 
   - minor preprocessing regarding animation time for subcaption feature (not important at all)
