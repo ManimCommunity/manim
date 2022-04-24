@@ -597,14 +597,61 @@ Animations and the Render Loop
 Initializing animations
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- constructing the ``ReplacementTransform``:
+Before we follow the trace of the debugger, let us briefly discuss
+the general structure of the (abstract) base class :class:`.Animation`.
+An animation object holds all the information necessary for the renderer
+to generate the corresponding frames. Animations (in the sense of
+animation objects) in Manim are *always* tied to a specific mobject;
+even in the case of :class:`.AnimationGroup` (which you should actually
+think of as an animation on a group of mobjects rather than a group
+of animations). Moreover, except for in a particular special case,
+the run time of animations is also fixed and known beforehand.
 
-  - ``ReplacementTransform`` only sets the flag for replacing the
-    starting mobject with the target mobject in the scene
-  - ``Transform`` (base class) has information about how points
-    from starting mobject move to points of target mobject
-  - ``Animation`` (base class) has all other info
+The initialization of animations actually is not very exciting, 
+:meth:`.Animation.__init__` merely sets some attributes derived
+from the passed keyword arguments and additionally ensures that
+the ``Animation.starting_mobject`` and ``Animation.mobject``
+attributes are populated. Once the animation is played, the
+``starting_mobject`` attribute holds an unmodified copy of the
+mobject the animation is attached to; during the initialization
+it is set to a placeholder mobject. The ``mobject`` attribute
+is set to the mobject the animation is attached to. 
 
+Animations have a few special methods which are called during the
+render loop:
+
+- :meth:`.Animation.begin`, which is called (as hinted by its name)
+  at the beginning of every animation, so before the first frame
+  is rendered. In it, all the required setup for the animation happens.
+- :meth:`.Animation.finish` is the counterpart to the ``begin`` method
+  which is called at the end of the life cycle of the animation (after
+  the last frame has been rendered).
+- :meth:`.Animation.interpolate` is the method that updates the mobject
+  attached to the animation to the corresponding animation completion
+  percentage. For example, if in the render loop, 
+  ``some_animation.interpolate(0.5)`` is called, the attached mobject
+  will be updated to the state where 50% of the animation are completed.
+
+We will discuss details about these and some further animation methods
+once we walk through the actual render loop. For now, we continue with
+our toy example and the code that is run when initializing the
+:class:`.ReplacementTransform` animation.
+
+The initialization method of :class:`.ReplacementTransform` only
+consists of a call to the constructor of its parent class,
+:class:`.Transform`, with the additional keyword argument
+``replace_mobject_with_target_in_scene`` set to ``True``.
+:class:`.Transform` then sets attributes that control how the
+points of the starting mobject are deformed into the points of
+the target mobject, and then passes on to the initialization
+method of :class:`.Animation`. Other basic properties of the
+animation (like its ``run_time``, the ``rate_func``, etc.) are
+processed there -- and then the animation object is fully
+initialized and ready to be ``play``ed.
+
+The ``play`` call: Manim's render loop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
 - entering the play call!
 
   - minor preprocessing regarding animation time for subcaption feature (not important at all)
