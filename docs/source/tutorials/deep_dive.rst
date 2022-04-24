@@ -561,9 +561,11 @@ one level higher. Consider the following example::
   >>> mob2 = Circle()
   >>> mob_group = Group(mob1, mob2)
   >>> test_scene.add(mob_group)
+  <manim.scene.scene.Scene object at ...>
   >>> test_scene.mobjects
   [Group]
   >>> test_scene.restructure_mobjects(to_remove=[mob1])
+  <manim.scene.scene.Scene object at ...>
   >>> test_scene.mobjects
   [Circle]
 
