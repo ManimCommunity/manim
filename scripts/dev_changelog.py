@@ -139,6 +139,10 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
             continue
         reviewer_names.append(name)
 
+    # Sort items in pr_by_labels
+    for i in pr_by_labels:
+        pr_by_labels[i] = sorted(pr_by_labels[i], key=lambda pr: pr.number)
+
     return {
         "authors": sorted(author_names),
         "reviewers": sorted(reviewer_names),
