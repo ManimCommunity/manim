@@ -8,23 +8,14 @@
 
 from __future__ import annotations
 
-__all__ = ["CameraFrame", "MovingCamera"]
+__all__ = ["MovingCamera"]
 
 from .. import config
 from ..camera.camera import Camera
-from ..constants import DOWN, LEFT, ORIGIN, RIGHT, UP
+from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import WHITE
-
-
-# TODO, think about how to incorporate perspective
-class CameraFrame(VGroup):
-    def __init__(self, center=ORIGIN, **kwargs):
-        super().__init__(center=center, **kwargs)
-        self.width = config["frame_width"]
-        self.height = config["frame_height"]
 
 
 class MovingCamera(Camera):
