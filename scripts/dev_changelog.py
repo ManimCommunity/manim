@@ -45,6 +45,7 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 
 from __future__ import annotations
 
+import concurrent.futures
 import datetime
 import os
 import re
@@ -88,6 +89,7 @@ def update_citation(version, date):
     with open(os.path.join(current_directory, "TEMPLATE.cff")) as a, open(
         os.path.join(parent_directory, "CITATION.cff"),
         "w",
+        newline="\n",
     ) as b:
         contents = a.read()
         contents = contents.replace("<version>", version)
@@ -102,17 +104,23 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     authors = set()
     reviewers = set()
     pr_by_labels = defaultdict(list)
-    for num in tqdm(pr_nums, desc="Processing PRs"):
-        pr = github_repo.get_pull(num)
-        authors.add(pr.user)
-        reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
-        pr_labels = [label.name for label in pr.labels]
-        for label in PR_LABELS.keys():
-            if label in pr_labels:
-                pr_by_labels[label].append(pr)
-                break  # ensure that PR is only added in one category
-        else:
-            pr_by_labels["unlabeled"].append(pr)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_num = {
+            executor.submit(github_repo.get_pull, num): num for num in pr_nums
+        }
+        for future in tqdm(
+            concurrent.futures.as_completed(future_to_num), "Processing PRs"
+        ):
+            pr = future.result()
+            authors.add(pr.user)
+            reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
+            pr_labels = [label.name for label in pr.labels]
+            for label in PR_LABELS.keys():
+                if label in pr_labels:
+                    pr_by_labels[label].append(pr)
+                    break  # ensure that PR is only added in one category
+            else:
+                pr_by_labels["unlabeled"].append(pr)
 
     # identify first-time contributors:
     author_names = []
@@ -239,7 +247,7 @@ def main(token, prior, tag, additional, outfile):
     else:
         outfile = Path(outfile).resolve()
 
-    with outfile.open("w", encoding="utf8") as f:
+    with outfile.open("w", encoding="utf8", newline="\n") as f:
         f.write("*" * len(tag) + "\n")
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
