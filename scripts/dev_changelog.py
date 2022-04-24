@@ -54,6 +54,7 @@ from pathlib import Path
 from textwrap import dedent, indent
 
 import click
+import cloup
 from git import Repo
 from github import Github
 from tqdm import tqdm
@@ -193,7 +194,7 @@ def get_summary(body):
         print(f"Error parsing body for changelog: {body}")
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
