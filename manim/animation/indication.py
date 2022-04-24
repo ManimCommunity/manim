@@ -535,10 +535,12 @@ class Wiggle(Animation):
     def get_scale_about_point(self) -> np.ndarray:
         if self.scale_about_point is None:
             return self.mobject.get_center()
+        return self.scale_about_point
 
     def get_rotate_about_point(self) -> np.ndarray:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
+        return self.rotate_about_point
 
     def interpolate_submobject(
         self,

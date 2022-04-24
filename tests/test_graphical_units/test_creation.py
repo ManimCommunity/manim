@@ -20,6 +20,13 @@ def test_uncreate(scene):
 
 
 @frames_comparison(last_frame=False)
+def test_uncreate_rate_func(scene):
+    square = Square()
+    scene.add(square)
+    scene.play(Uncreate(square), rate_func=linear)
+
+
+@frames_comparison(last_frame=False)
 def test_DrawBorderThenFill(scene):
     square = Square(fill_opacity=1)
     scene.play(DrawBorderThenFill(square))
