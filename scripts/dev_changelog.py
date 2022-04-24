@@ -88,6 +88,7 @@ def update_citation(version, date):
     with open(os.path.join(current_directory, "TEMPLATE.cff")) as a, open(
         os.path.join(parent_directory, "CITATION.cff"),
         "w",
+        newline="\n",
     ) as b:
         contents = a.read()
         contents = contents.replace("<version>", version)
@@ -239,7 +240,7 @@ def main(token, prior, tag, additional, outfile):
     else:
         outfile = Path(outfile).resolve()
 
-    with outfile.open("w", encoding="utf8") as f:
+    with outfile.open("w", encoding="utf8", newline="\n") as f:
         f.write("*" * len(tag) + "\n")
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
