@@ -80,7 +80,7 @@ New features
 
 
 * :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - :meth:`.Angle.from_three_points`
-   Added a function to create an angle object with three points.
+
 
 Enhancements
 ------------
@@ -122,7 +122,7 @@ Fixed bugs
 
 
 * :pr:`2648`: Handle user-defined centers for Wiggle animation
-   Fixes a minor bug in the Wiggle animation where user-defined centers are ignored.
+
 
 * :pr:`2658`: Fix arguments of overridden ``set_style`` for :class:`.BackgroundRectangle`
    Using :class:`.Write` animation on a :class:`.Text` object with ``.add_background_rectangle()`` applied no longer generates a ``TypeError``.
@@ -206,3 +206,5 @@ New releases
 ------------
 
 * :pr:`2694`: Prepared bugfix release v0.15.2
+
+
