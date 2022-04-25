@@ -2,7 +2,7 @@
 v0.15.2
 *******
 
-:Date: April 24, 2022
+:Date: April 25, 2022
 
 Contributors
 ============
@@ -73,35 +73,40 @@ New features
    - Added ``no_args_is_help`` parameter for ``manim render`` to allow easy access to help page.
    - Added note to ``manim`` help page epilog on how to access other command help pages.
 
-* :pr:`2404`: Add SpiralIn Animation
+* :pr:`2404`: Add :class:`~.SpiralIn` Animation
+   - Make :class:`~.ManimBanner` to use :class:`~.SpiralIn`.
+
+* :pr:`2534`: Implement :class:`~.OpenGLImageMobject`
 
 
-* :pr:`2534`: Implement `OpenGLImageMobject`
-
-
-* :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - Angle.from_three_points
+* :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - :meth:`~.Angle.from_three_points`
    Added a function to create an angle object with three points. In addition, we added a test within the test_geometry.py that instantiates an angle object with three points.
 
 Enhancements
 ------------
 
-* :pr:`2642`: Migrated file_ops.py and scene_file_writer.py from os.path to Pathlib
+* :pr:`2642`: Migrated ``file_ops.py`` and ``scene_file_writer.py`` from os.path to Pathlib
    In file_ops.py and scene_file_writer.py: Uses of str type file names have have been mostly (see further information) converted to Pathlib Path objects. Uses of os.path methods have been converted to equivalent Pathlib methods.
 
-* :pr:`2655`: Fix `assert_is_mobject_method` when using OpenGL
+* :pr:`2655`: Fix :func:`assert_is_mobject_method` when using OpenGL
 
 
 * :pr:`2665`: Improved handling of attributes when using the ``.animate`` syntax
 
 
 * :pr:`2693`: Allow using :meth:`.MovingCamera.auto_zoom` without animation
-   Allows auto zooming camera without having to play an animation by passing an `animation=False` argument
+   Allows auto zooming camera without having to play an animation by passing an ``animation=False`` argument
 
 Fixed bugs
 ----------
 
 * :pr:`2546`: Fixed a File logging bug and some maintenance
 
+
+* :pr:`2597`: Fix Bug in :class:`.Uncreate` with ``rate_func`` via introducing new parameter ``reversed`` to :class:`.Animation`
+   - Refractor the :class:`.Uncreate`. The new implementation uses a flag member ``reversed``. Set it to ``True`` and its superclass handles the reverse.
+   - Introduce a bool parameter ``reversed`` to :class:`Animation`. It decides whether the animation needs to be played backwards. Default to be False.
+   - Add conditional branches in :func:`.Animation.get_sub_alpha`. If the parameter ``reversed`` is True, it would set ``rate_func(t)`` to ``rate_func(1 - t)``.
 
 * :pr:`2613`: Fixed bug in :meth:`.Circle.point_at_angle` when the angle is not in the interval :math:`[0, 2\pi]`
 
@@ -186,12 +191,6 @@ Unclassified changes
 
 * :pr:`2062`: Reuse shader wrappers and shader data
 
-
-* :pr:`2597`: Fix Bug in :class:`Uncreate` with ``rate_func`` via introducing new parameter ``reversed`` to :class:`Animation`
-   Refractor the :class:`Uncreate`. The new implementation uses a flag member :param:`reversed`. Set it to ``True`` and its superclass handles the reverse.
-
-   Introduce a bool parameter ``reversed`` to :class:`Animation`. It decides whether the animation needs to be played backwards. Default to be False.
-   Add conditional branches in :func:`Animation.get_sub_alpha`. If the parameter ``reversed`` is True, it would set ``rate_func(t)`` to ``rate_func(1 - t)``.
 
 * :pr:`2634`: Fix background lines drawn twice in `NumberPlane`
 
