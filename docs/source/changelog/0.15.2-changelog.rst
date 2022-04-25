@@ -62,7 +62,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 38 pull requests were merged for this release.
+A total of 39 pull requests were merged for this release.
 
 New features
 ------------
@@ -200,3 +200,11 @@ Code quality improvements and similar refactors
 
 
 * :pr:`2697`: devchangelog: Sort items before writing
+
+
+New releases
+------------
+
+* :pr:`2694`: Prepared bugfix release v0.15.2
+
+
