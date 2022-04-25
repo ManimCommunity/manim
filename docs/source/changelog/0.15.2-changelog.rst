@@ -200,5 +200,3 @@ Code quality improvements and similar refactors
 
 
 * :pr:`2697`: devchangelog: Sort items before writing
-
-
