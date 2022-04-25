@@ -73,26 +73,33 @@ New features
    - Added ``no_args_is_help`` parameter for ``manim render`` to allow easy access to help page.
    - Added note to ``manim`` help page epilog on how to access other command help pages.
 
-* :pr:`2404`: Add :class:`~.SpiralIn` Animation
-   - Make :class:`~.ManimBanner` to use :class:`~.SpiralIn`.
+* :pr:`2404`: Add :class:`.SpiralIn` Animation
+   - Make :class:`.ManimBanner` to use :class:`.SpiralIn`.
 
 * :pr:`2534`: Implement :class:`~.OpenGLImageMobject`
 
 
-* :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - :meth:`~.Angle.from_three_points`
-   Added a function to create an angle object with three points. In addition, we added a test within the test_geometry.py that instantiates an angle object with three points.
+* :pr:`2684`: Created a more accessible way to create Angles with line.py angle function - :meth:`.Angle.from_three_points`
+   Added a function to create an angle object with three points.
 
 Enhancements
 ------------
 
-* :pr:`2642`: Migrated ``file_ops.py`` and ``scene_file_writer.py`` from os.path to Pathlib
-   In file_ops.py and scene_file_writer.py: Uses of str type file names have have been mostly (see further information) converted to Pathlib Path objects. Uses of os.path methods have been converted to equivalent Pathlib methods.
+* :pr:`2062`: Reuse shader wrappers and shader data
 
-* :pr:`2655`: Fix :func:`assert_is_mobject_method` when using OpenGL
+
+* :pr:`2642`: Migrated ``file_ops.py`` and ``scene_file_writer.py`` from os.path to Pathlib
+   In ``file_ops.py`` and ``scene_file_writer.py``: Uses of str type file names have been mostly (see further information) converted to pathlib's Path objects. Uses of ``os.path`` methods have been converted to equivalent pathlib methods.
+
+* :pr:`2655`: Fix :func:`.assert_is_mobject_method` when using OpenGL
 
 
 * :pr:`2665`: Improved handling of attributes when using the ``.animate`` syntax
 
+
+* :pr:`2674`: Document and type ``simple_functions.py``
+   - Add documentation for `simple_functions.py`.
+   - Small additions with some extra clarity for these functions.
 
 * :pr:`2693`: Allow using :meth:`.MovingCamera.auto_zoom` without animation
    Allows auto zooming camera without having to play an animation by passing an ``animation=False`` argument
@@ -105,18 +112,20 @@ Fixed bugs
 
 * :pr:`2597`: Fix Bug in :class:`.Uncreate` with ``rate_func`` via introducing new parameter ``reversed`` to :class:`.Animation`
    - Refractor the :class:`.Uncreate`. The new implementation uses a flag member ``reversed``. Set it to ``True`` and its superclass handles the reverse.
-   - Introduce a bool parameter ``reversed`` to :class:`Animation`. It decides whether the animation needs to be played backwards. Default to be False.
-   - Add conditional branches in :func:`.Animation.get_sub_alpha`. If the parameter ``reversed`` is True, it would set ``rate_func(t)`` to ``rate_func(1 - t)``.
+   - Introduce a bool parameter ``reversed`` to :class:`.Animation`. It decides whether the animation needs to be played backwards. Default to be False.
+   - Add conditional branches in :meth:`.Animation.get_sub_alpha`. If the parameter ``reversed`` is True, it would set ``rate_func(t)`` to ``rate_func(1 - t)``.
 
 * :pr:`2613`: Fixed bug in :meth:`.Circle.point_at_angle` when the angle is not in the interval :math:`[0, 2\pi]`
+
+
+* :pr:`2634`: Fix background lines drawn twice in :class:`.NumberPlane`
 
 
 * :pr:`2648`: Handle user-defined centers for Wiggle animation
    Fixes a minor bug in the Wiggle animation where user-defined centers are ignored.
 
-* :pr:`2658`: Fix arguments of overridden `set_style` for `BackgroundRectangle`
-   Fixes issue #2337:
-   Using `Write()` animation on a `Text` object with `.add_background_rectangle()` applied no longer generates a `TypeError`.
+* :pr:`2658`: Fix arguments of overridden ``set_style`` for :class:`.BackgroundRectangle`
+   Using :class:`.Write` animation on a :class:`.Text` object with ``.add_background_rectangle()`` applied no longer generates a ``TypeError``.
 
 * :pr:`2668`: (Re)set background color of :class:`.OpenGLRenderer` when initializing scene
 
@@ -146,12 +155,13 @@ Documentation-related changes
 
 
 * :pr:`2640`: Copyedited Documentation
-   Reviewed tutorials\configurations.rst. Edited simple mistakes such as Manim not being capitalized and commas.
+   Reviewed ``tutorials/configurations.rst``. Edited simple mistakes such as Manim not being capitalized and commas.
+
+* :pr:`2649`: Document and type utils/iterables.py
+
 
 * :pr:`2651`: Update copyright year in documentation to 2020-2022
-   Updates year in conf.py to correct year in the footer of the documentation.
-
-   Would resolve https://github.com/ManimCommunity/manim/issues/2650 if merged
+   Updates year in ``docs/conf.py`` to correct year in the footer of the documentation.
 
 * :pr:`2663`: Added documentation for scene updater functions
 
@@ -174,37 +184,21 @@ Code quality improvements and similar refactors
 * :pr:`2630`: Remove WebGL renderer
    The WebGL renderer is broken and is unmaintained anymore. The support for it in Manim is removed.
 
-* :pr:`2678`: Require `backports-cached-property` only for Python < 3.8
+* :pr:`2652`: Update cloup version to 0.13.0 from 0.7.0
 
+
+* :pr:`2678`: Require ``backports-cached-property`` only for Python < 3.8
+
+
+* :pr:`2685`: Migrate from os.path to pathlib in Testing Scripts
+   This pull request changes a number of instances of ``os.path`` to Pathlib objects and functions. In addition, this PR modifies the SVGMobject constructor to accept both a Pathlib object or a string variable pathname its constructor.
 
 * :pr:`2691`:  Removed :class:`CameraFrame`
 
 
-* :pr:`2696`: Improve `scripts/dev_changelog.py`
+* :pr:`2696`: Improve ``scripts/dev_changelog.py``
 
 
 * :pr:`2697`: devchangelog: Sort items before writing
 
-
-Unclassified changes
---------------------
-
-* :pr:`2062`: Reuse shader wrappers and shader data
-
-
-* :pr:`2634`: Fix background lines drawn twice in `NumberPlane`
-
-
-* :pr:`2649`: Document and type utils/iterables.py
-   - `utils/iterables.py` has been **fully documented** (including examples to demonstrate usage) and **typed**
-
-* :pr:`2652`: Update cloup version to 0.13.0 from 0.7.0
-   This PR updates the cloup version from 0.7.0 to 0.13.0 as requested in #2614
-
-* :pr:`2674`: Document and type `simple_functions.py`
-   - Just some short and sweet documentation for `simple_functions.py` along with a general neatening up. 🙂.
-   - Small additions with some extra clarity for these functions (same style as my recent PR for `iterables.py` (#2649)
-
-* :pr:`2685`: Migrate from os.path to pathlib in Testing Scripts
-   This pull request changes a number of instances of OS.path to Pathlib objects and functions. In addition, this PR modifies the SVGMobject constructor to accept both a Pathlib object or a string variable pathname its constructor.
 
