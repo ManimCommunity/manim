@@ -98,7 +98,7 @@ Enhancements
 
 
 * :pr:`2674`: Document and type ``simple_functions.py``
-   - Add documentation for `simple_functions.py`.
+   - Add documentation for ``simple_functions.py``.
    - Small additions with some extra clarity for these functions.
 
 * :pr:`2693`: Allow using :meth:`.MovingCamera.auto_zoom` without animation
@@ -206,3 +206,5 @@ New releases
 ------------
 
 * :pr:`2694`: Prepared bugfix release v0.15.2
+
+
