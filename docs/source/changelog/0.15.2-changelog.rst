@@ -206,5 +206,3 @@ New releases
 ------------
 
 * :pr:`2694`: Prepared bugfix release v0.15.2
-
-
