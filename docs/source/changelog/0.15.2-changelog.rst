@@ -107,7 +107,7 @@ Enhancements
 Fixed bugs
 ----------
 
-* :pr:`2546`: Fixed a File logging bug and some maintenance
+* :pr:`2546`: Fixed a file logging bug and some maintenance
 
 
 * :pr:`2597`: Fix Bug in :class:`.Uncreate` with ``rate_func`` via introducing new parameter ``reversed`` to :class:`.Animation`
@@ -130,7 +130,7 @@ Fixed bugs
 * :pr:`2668`: (Re)set background color of :class:`.OpenGLRenderer` when initializing scene
 
 
-* :pr:`2676`: Fixed opengl finish transform
+* :pr:`2676`: Fixed propagation of custom attributes in animations for the OpenGL renderer
 
 
 * :pr:`2688`: Fixed two minor issues of :class:`.SpiralIn` and :class:`.ManimBanner`
@@ -139,7 +139,7 @@ Fixed bugs
 Documentation-related changes
 -----------------------------
 
-* :pr:`2609`: Copy Edit troubleshooting.rst
+* :pr:`2609`: Copyedit troubleshooting.rst
 
 
 * :pr:`2610`: Add example PolygonOnAxes
@@ -161,7 +161,6 @@ Documentation-related changes
 
 
 * :pr:`2651`: Update copyright year in documentation to 2020-2022
-   Updates year in ``docs/conf.py`` to correct year in the footer of the documentation.
 
 * :pr:`2663`: Added documentation for scene updater functions
 
@@ -182,24 +181,24 @@ Code quality improvements and similar refactors
 -----------------------------------------------
 
 * :pr:`2630`: Remove WebGL renderer
-   The WebGL renderer is broken and is unmaintained anymore. The support for it in Manim is removed.
+   The WebGL renderer is broken and unmaintained. The support for it in Manim is removed.
 
-* :pr:`2652`: Update cloup version to 0.13.0 from 0.7.0
+* :pr:`2652`: Update ``cloup`` version to 0.13.0 from 0.7.0
 
 
 * :pr:`2678`: Require ``backports-cached-property`` only for Python < 3.8
 
 
-* :pr:`2685`: Migrate from os.path to pathlib in Testing Scripts
+* :pr:`2685`: Migrate from ``os.path`` to ``pathlib`` in testing scripts
    This pull request changes a number of instances of ``os.path`` to Pathlib objects and functions. In addition, this PR modifies the SVGMobject constructor to accept both a Pathlib object or a string variable pathname its constructor.
 
 * :pr:`2691`:  Removed :class:`CameraFrame`
 
 
-* :pr:`2696`: Improve ``scripts/dev_changelog.py``
+* :pr:`2696`: Made changelog generation run in parallel plus further improvements to ``scripts/dev_changelog.py``
 
 
-* :pr:`2697`: devchangelog: Sort items before writing
+* :pr:`2697`: Sort PRs by number in changelog sections before writing
 
 
 New releases
