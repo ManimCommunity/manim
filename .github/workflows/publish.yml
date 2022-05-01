@@ -35,7 +35,7 @@ jobs:
           tags: |
             manimcommunity/manim:stable
             manimcommunity/manim:latest
-            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
+            manimcommunity/manim:v${{ steps.create_release.outputs.tag_name }}
 
   docker-amd64:
     runs-on: ubuntu-latest
@@ -67,4 +67,4 @@ jobs:
           tags: |
             manimcommunity/manim:stable
             manimcommunity/manim:latest
-            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
+            manimcommunity/manim:v${{ steps.create_release.outputs.tag_name }}
