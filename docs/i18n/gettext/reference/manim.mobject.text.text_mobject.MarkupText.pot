@@ -147,7 +147,7 @@ msgid "Escaping of special characters: ``>`` **should** be written as ``&gt;`` w
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:103
-msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
+msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://docs.gtk.org/Pango/pango_markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:0
