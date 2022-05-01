@@ -30,8 +30,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: false
-          tags: [
-            manimcommunity/manim:stable, 
-            manimcommunity/manim:latest,
-            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
-          ]
+          file: docker/Dockerfile
+          tags: |
+            manimcommunity/manim:stable 
+            manimcommunity/manim:latest
+      #     manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
+
