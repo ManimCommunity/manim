@@ -826,41 +826,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         return length
 
-    def get_nth_curve_function_with_length(
-        self,
-        n: int,
-        sample_points: int | None = None,
-    ) -> tuple[Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
-
-        Parameters
-        ----------
-        n
-            The index of the desired curve.
-        sample_points
-            The number of points to sample to find the length.
-
-        Returns
-        -------
-        curve : typing.Callable[[float], np.ndarray]
-            The function for the nth curve.
-        length : :class:`float`
-            The length of the nth curve.
-        """
-
-        if sample_points is None:
-            sample_points = 10
-
-        curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
-        length = np.sum(norms)
-
-        return curve, length
-
     def get_curve_functions(
         self,
     ) -> Iterable[Callable[[float], np.ndarray]]:
