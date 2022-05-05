@@ -44,7 +44,6 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
-from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
@@ -142,7 +141,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
-        stretch_brackets: bool = False,
+        stretch_brackets: bool = True,
         bracket_config: dict = {},
         **kwargs,
     ):
@@ -176,7 +175,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         right_bracket
             The right bracket type, by default ``"]"``.
         stretch_brackets
-            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``False``.
+            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
         bracket_config
             Additional arguments to be passed to :class:`~.MathTex` when constructing
             the brackets.
