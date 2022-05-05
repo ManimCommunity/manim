@@ -44,6 +44,7 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
+from manim import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
@@ -141,6 +142,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
+        stretch_brackets: bool = False,
         bracket_config: dict = {},
         **kwargs,
     ):
@@ -173,6 +175,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The left bracket type, by default ``"["``.
         right_bracket
             The right bracket type, by default ``"]"``.
+        stretch_brackets
+            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``False``.
         bracket_config
             Additional arguments to be passed to :class:`~.MathTex` when constructing
             the brackets.
@@ -190,6 +194,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
+        self.stretch_brackets = stretch_brackets
         super().__init__(**kwargs)
         mob_matrix = self._matrix_to_mob_matrix(matrix)
         self._organize_mob_matrix(mob_matrix)
@@ -241,14 +246,44 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The current matrix object (self).
         """
 
-        bracket_pair = MathTex(left, right, **kwargs)
-        bracket_pair.scale(2)
-        bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
-        l_bracket, r_bracket = bracket_pair.split()
+        # Height per row of LaTeX matrix with default settings
+        BRACKET_HEIGHT = 0.5977
+
+        # ceil(Total height / bracket height)
+        n = int((self.height + 2 * self.bracket_v_buff) / BRACKET_HEIGHT) + 1
+        texstr = "".join(
+            [
+                r"\left" + left,
+                r"\begin{array}{c}",
+                *n * [r"\quad \\"],
+                r"\end{array}",
+                r"\right" + right,
+            ]
+        )
+
+        # Using substrings_to_isolate results in large brackets being cropped weirdly.
+        # So need to manually split the left / right brackets.
+        bracket_pair = MathTex(texstr, **kwargs)
+        points = bracket_pair.get_all_points()
+        mask = [p[0] < bracket_pair.get_center()[0] for p in points]
+
+        if config.renderer == "opengl":
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
+            l_bracket = OpenGLVMobject().set_points(points[mask])
+            r_bracket = OpenGLVMobject().set_points(points[np.logical_not(mask)])
+        else:
+            l_bracket = VMobject().set_points(points[mask])
+            r_bracket = VMobject().set_points(points[np.logical_not(mask)])
+
+        bracket_pair = VGroup(l_bracket, r_bracket).match_style(bracket_pair)
+
+        if self.stretch_brackets:
+            bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
         l_bracket.next_to(self, LEFT, self.bracket_h_buff)
         r_bracket.next_to(self, RIGHT, self.bracket_h_buff)
+        self.brackets = bracket_pair
         self.add(l_bracket, r_bracket)
-        self.brackets = VGroup(l_bracket, r_bracket)
         return self
 
     def get_columns(self):
