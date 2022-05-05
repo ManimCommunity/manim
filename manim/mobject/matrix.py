@@ -246,38 +246,35 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The current matrix object (self).
         """
 
-        # Height per row of LaTeX matrix with default settings
+        # Height per row of LaTeX array with default settings
         BRACKET_HEIGHT = 0.5977
 
-        # ceil(Total height / bracket height)
-        n = int((self.height + 2 * self.bracket_v_buff) / BRACKET_HEIGHT) + 1
-        texstr = "".join(
+        n = int((self.height) / BRACKET_HEIGHT) + 1
+        empty_tex_array = "".join(
             [
-                r"\left" + left,
                 r"\begin{array}{c}",
                 *n * [r"\quad \\"],
                 r"\end{array}",
+            ]
+        )
+        tex_left = "".join(
+            [
+                r"\left" + left,
+                empty_tex_array,
+                r"\right.",
+            ]
+        )
+        tex_right = "".join(
+            [
+                r"\left.",
+                empty_tex_array,
                 r"\right" + right,
             ]
         )
+        l_bracket = MathTex(tex_left, **kwargs)
+        r_bracket = MathTex(tex_right, **kwargs)
 
-        # Using substrings_to_isolate results in large brackets being cropped weirdly.
-        # So need to manually split the left / right brackets.
-        bracket_pair = MathTex(texstr, **kwargs)
-        points = bracket_pair.get_all_points()
-        mask = [p[0] < bracket_pair.get_center()[0] for p in points]
-
-        if config.renderer == "opengl":
-            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-            l_bracket = OpenGLVMobject().set_points(points[mask])
-            r_bracket = OpenGLVMobject().set_points(points[np.logical_not(mask)])
-        else:
-            l_bracket = VMobject().set_points(points[mask])
-            r_bracket = VMobject().set_points(points[np.logical_not(mask)])
-
-        bracket_pair = VGroup(l_bracket, r_bracket).match_style(bracket_pair)
-
+        bracket_pair = VGroup(l_bracket, r_bracket)
         if self.stretch_brackets:
             bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
         l_bracket.next_to(self, LEFT, self.bracket_h_buff)
