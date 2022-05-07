@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Optional, Sequence
 
 import moderngl
 import numpy as np
@@ -826,41 +826,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         return length
 
-    def get_nth_curve_function_with_length(
-        self,
-        n: int,
-        sample_points: int | None = None,
-    ) -> tuple[Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
-
-        Parameters
-        ----------
-        n
-            The index of the desired curve.
-        sample_points
-            The number of points to sample to find the length.
-
-        Returns
-        -------
-        curve : typing.Callable[[float], np.ndarray]
-            The function for the nth curve.
-        length : :class:`float`
-            The length of the nth curve.
-        """
-
-        if sample_points is None:
-            sample_points = 10
-
-        curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
-        length = np.sum(norms)
-
-        return curve, length
-
     def get_curve_functions(
         self,
     ) -> Iterable[Callable[[float], np.ndarray]]:
@@ -876,6 +841,35 @@ class OpenGLVMobject(OpenGLMobject):
 
         for n in range(num_curves):
             yield self.get_nth_curve_function(n)
+
+    def get_nth_curve_length_pieces(
+        self,
+        n: int,
+        sample_points: int | None = None,
+    ) -> np.ndarray:
+        """Returns the array of short line lengths used for length approximation.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        np.ndarray
+            The short length-pieces of the nth curve.
+        """
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        return norms
 
     def get_curve_functions_with_lengths(
         self, **kwargs
