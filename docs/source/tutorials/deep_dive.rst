@@ -735,7 +735,7 @@ TODO:
 - scene.begin_animations: introducers actually add mobjects to scene,
   starting mobjects are assigned properly, animations are set to
   initial interpolation state.
-- determine static/moving mobjects 
+- determine static/moving mobjects
 
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
