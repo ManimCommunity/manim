@@ -647,43 +647,115 @@ the target mobject, and then passes on to the initialization
 method of :class:`.Animation`. Other basic properties of the
 animation (like its ``run_time``, the ``rate_func``, etc.) are
 processed there -- and then the animation object is fully
-initialized and ready to be ``play``ed.
+initialized and ready to be played.
 
-The ``play`` call: Manim's render loop
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The ``play`` call: preparing to enter Manim's render loop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- entering the play call!
+We are finally there, the render loop is in our reach. Let us
+walk through the code that is run when :meth:`.Scene.play` is called.
 
-  - minor preprocessing regarding animation time for subcaption feature (not important at all)
-  - enter renderer.play!
+.. hint::
 
-    - ask scene to compile animation data (static mobjects / moving mobjects + animation run time)
-      static mobjects are mobjects that can be rendered once and then remain in the background
-      throughout the entire animation. in terms of layers: all mobjects
-      that are below the first "moving" / animated mobject.
-    - manim's caching mechanism (no comment, just say that it is there and
-      allows reusing already rendered animations that did not "change"
-    - "background image" consisting of static mobjects is rendered.
-    - ffmpeg pipeline opens, awaiting frames from file writer.
-    - scene.begin_animations: introducers actually add mobjects to scene,
-      starting mobjects are assigned properly, animations are set to
-      initial interpolation state.
-    - check whether current animation is a frozen frame, not in our case
-    - scene.play_internal:
+  Recall that this article is specifically about the Cairo renderer.
+  Up to here, things were more or less the same for the OpenGL renderer
+  as well; while some base mobjects might be different, the control flow
+  and lifecycle of mobjects is still more or less the same. There are more
+  substantial differences when it comes to the rendering loop.
 
-      - construct time_progression (i.e., the progress bar; t-values for
-        which frames are rendered)
-      - step through time progression. scene.update_to_time(t)
+As you will see when inspecting the method, :meth:`.Scene.play` almost
+immediately passes over to the ``play`` method of the renderer,
+in our case :class:`.CairoRenderer.play`. The one thing :meth:`.Scene.play`
+takes care of is the management of subcaptions that you might have
+passed to it (see the the documentation of :meth:`.Scene.play` and
+:meth:`.Scene.add_subcaption` for more information).
 
-        - updates animation mobjects
-        - runs interpolate for correct alpha value
-        - runs mobject updaters
-        - runs scene updaters
-        - self.renderer.render(self, t, self.moving_mobjects), actually
-          rendering the frame
+.. warning::
 
-      - finish animations
-      - ffmpeg movie pipeline closes; partial movie file is written
+  As has been said before, the communication between scene and renderer
+  is not in a very clean state at this point, so the following paragraphs
+  might be confusing if you don't run a debugger and step through the
+  code yourself a bit.
+
+Inside :meth:`.CairoRenderer.play`, the renderer first checks whether
+it may skip rendering of the current play call. This might happen, for example,
+when ``-s`` is passed to the CLI (i.e., only the last frame should be rendered),
+or when the ``-n`` flag is passed and the current play call is outside of the
+specified render bounds. The "skipping status" is updated in form of the
+call to :meth:`.CairoRenderer.update_skipping_status`.
+
+Next, the renderer asks the scene to process the animations in the play
+call so that renderer obtains all of the information it needs. To
+be more concrete, :meth:`.Scene.compile_animation_data` is called,
+which then takes care of several things:
+
+- The method processes all animations and the keyword arguments passed
+  to the initial :meth:`.Scene.play` call. In particular, this means
+  that it makes sure all arguments passed to the play call are actually
+  animations (or ``.animate`` syntax calls, which are also assembled to
+  be actual :class:`.Animation`-objects at that point). It also propagates
+  any animation-related keyword arguments (like ``run_time``,
+  or ``rate_func``) passed to :class:`.Scene.play` to each individual
+  animation. The processed animations are then stored in the ``animations``
+  attribute of the scene (which the renderer later reads...).
+- It adds all mobjects to which the animations that are played are
+  bound to to the scene (provided the animation is not an mobject-introducing
+  animation -- for these, the addition to the scene happens later).
+- In case the played animation is a :class:`.Wait` animation (this is the
+  case in a :meth:`.Scene.wait` call), the method checks whether a static
+  image should be rendered, or whether the render loop should be processed
+  as usual (see :meth:`.Scene.should_update_mobjects` for the exact conditions,
+  basically it checks whether there are any time-dependent updater functions
+  and so on).
+- Finally, the method determines the total run time of the play call (which
+  at this point is computed as the maximum of the run times of the passed
+  animations). This is stored in the ``duration`` attribute of the scene.
+
+
+After the animation data has been compiled by the scene, the renderer
+continues to prepare for entering the render loop. It now checks the
+skipping status which has been determined before. If the renderer can
+skip this play call, it does so: it sets the current play call hash (which
+we will get back to in a moment) to ``None`` and increases the time of the
+renderer by the determined animation run time.
+
+Otherwise, the renderer checks whether or not Manim's caching system should
+be used. The idea of the caching system is simple: for every play call, a
+hash value is computed, which is then stored and upon re-rendering the scene,
+the hash is generated again and checked against the stored value. If it is the
+same, the cached output is reused, otherwise it is fully rerendered again.
+We will not go into details of the caching system here; if you would like
+to learn more, the :func:`.get_hash_from_play_call` function in the
+:mod:`.utils.hashnig` module is essentially the entry point to the caching
+mechanism.
+
+TODO:
+
+- open movie pipe for one play call
+- scene.begin_animations: introducers actually add mobjects to scene,
+  starting mobjects are assigned properly, animations are set to
+  initial interpolation state.
+- determine static/moving mobjects 
+
+The render loop (for real this time)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- "background image" consisting of static mobjects is rendered.
+- check whether current animation is a frozen frame, not in our case
+- scene.play_internal:
+  - construct time_progression (i.e., the progress bar; t-values for
+    which frames are rendered)
+  - step through time progression. scene.update_to_time(t)
+
+    - updates animation mobjects
+    - runs interpolate for correct alpha value
+    - runs mobject updaters
+    - runs scene updaters
+    - self.renderer.render(self, t, self.moving_mobjects), actually
+      rendering the frame
+
+  - finish animations
+  - ffmpeg movie pipeline closes; partial movie file is written
 
 - after all animations: combination of all partial movie files to one
   rendered video.
