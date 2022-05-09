@@ -135,27 +135,27 @@ def add_version_before_extension(file_name: Path) -> Path:
 
 
 def guarantee_existence(path: Path) -> Path:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return Path(os.path.abspath(path))
+    if not path.exists():
+        path.mkdir(parents=True)
+    return path.resolve(strict=True)
 
 
 def guarantee_empty_existence(path: Path) -> Path:
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
-    return Path(os.path.abspath(path))
+    if path.exists():
+        shutil.rmtree(str(path))
+    path.mkdir(parents=True)
+    return path.resolve(strict=True)
 
 
 def seek_full_path_from_defaults(
-    file_name: Path, default_dir: str, extensions: str
+    file_name: str, default_dir: Path, extensions: list[str]
 ) -> Path:
-    possible_paths = [file_name]
+    possible_paths = [Path(file_name)]
     possible_paths += [
         Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
     for path in possible_paths:
-        if os.path.exists(path):
+        if path.exists():
             return path
     error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
     raise OSError(error)
@@ -175,14 +175,14 @@ def modify_atime(file_path) -> None:
 def open_file(file_path, in_browser=False):
     current_os = platform.system()
     if current_os == "Windows":
-        os.startfile(file_path if not in_browser else os.path.dirname(file_path))
+        os.startfile(file_path if not in_browser else file_path.parent)
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = file_path if not in_browser else file_path.parent
         elif current_os.startswith("CYGWIN"):
             commands = ["cygstart"]
-            file_path = file_path if not in_browser else os.path.dirname(file_path)
+            file_path = file_path if not in_browser else file_path.parent
         elif current_os == "Darwin":
             if is_gif_format():
                 commands = ["ffplay", "-loglevel", config["ffmpeg_loglevel"].lower()]

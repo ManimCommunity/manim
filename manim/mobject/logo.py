@@ -128,7 +128,7 @@ class ManimBanner(VGroup):
             An animation to be used in a :meth:`.Scene.play` call.
         """
         return AnimationGroup(
-            SpiralIn(self.shapes),
+            SpiralIn(self.shapes, run_time=run_time),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
         )
