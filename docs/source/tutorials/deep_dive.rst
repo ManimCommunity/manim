@@ -726,7 +726,7 @@ the hash is generated again and checked against the stored value. If it is the
 same, the cached output is reused, otherwise it is fully rerendered again.
 We will not go into details of the caching system here; if you would like
 to learn more, the :func:`.get_hash_from_play_call` function in the
-:mod:`.utils.hashnig` module is essentially the entry point to the caching
+:mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
 TODO:
