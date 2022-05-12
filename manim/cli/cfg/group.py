@@ -257,7 +257,7 @@ def show():
         console.print("\n")
 
 
-@cfg.command(context_settings=CONTEXT_SETTINGS)
+@cfg.command(context_settings=cli_ctx_settings)
 @click.option("-d", "--directory", default=Path.cwd())
 @click.pass_context
 def export(ctx, directory):
