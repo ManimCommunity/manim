@@ -199,7 +199,7 @@ class Code(VGroup):
         self.file_name = file_name
         if self.file_name:
             self._ensure_valid_file()
-            with open(self.file_path) as f:
+            with open(self.file_path, encoding="utf-8") as f:
                 self.code_string = f.read()
         elif code:
             self.code_string = code
