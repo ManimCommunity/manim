@@ -64,18 +64,41 @@ Actually rendering the code yields the following video:
 
 
 For this example, the output (fortunately) coincides with our expectations.
-Now let us explore the code flow behind Manim's rendering logic.
 
 Overview
 --------
 
 Because there is a lot of information in this article, here is a brief overview
-discussing the contents of the following sections on a very high level.
+discussing the contents of the following chapters on a very high level.
 
-- preliminaries (import, up to scene.render): TODO
-- initializing mobjects (already within construct): TODO
-- the actual render loop: TODO
+- `Preliminaries`_: In this chapter we unravel all the steps that take place
+  to prepare a scene for rendering; right until the point where the user-overridden
+  ``construct`` method is ran. This includes a brief discussion on using Manim's CLI
+  versus other means of rendering (e.g., via Jupyter notebooks, or in your Python
+  script by calling the :meth:`.Scene.render` method yourself).
+- `Mobject Initialization`_: For the second chapter we dive into creating and handling
+  Mobjects, the basic elements that should be displayed in our scene.
+  We discuss the :class:`.Mobject` base class, how there are essentially
+  three different types of Mobjects, and then discuss the most important of them,
+  vectorized Mobjects. In particular, we describe the internal point data structure
+  that governs how the mechanism responsible for drawing the vectorized Mobject
+  to the screen sets the corresponding Bézier curves. We conclude the chapter
+  with a tour into :meth:`.Scene.add`, the bookkeeping mechanism controlling which
+  mobjects should be rendered.
+- `Animations and the Render Loop`_: And finally, in the last chapter we walk
+  through the instantiation of :class:`.Animation` objects (the blueprints that
+  hold information on how Mobjects should be modified when the render loop runs),
+  followed by a investigation of the infamous :meth:`.Scene.play` call. We will
+  see that there are three relevant parts in a :meth:`.Scene.play` call;
+  a part in which the passed animations and keyword arguments are processed
+  and prepared, followed by the actual "render loop" in which the library
+  steps through a time line and renders frame by frame. The final part
+  does some post-processing to save a short video segment ("partial movie file")
+  and cleanup for the next call to :meth:`.Scene.play`. In the end, after all of
+  :meth:`.Scene.construct` has been run, the library combines the partial movie
+  files to one video.
 
+And with that, let us get *in medias res*.
 
 Preliminaries
 -------------
@@ -83,7 +106,7 @@ Preliminaries
 Importing the library
 ^^^^^^^^^^^^^^^^^^^^^
 
-Now let us get *in medias res*. Independent of how exactly you are telling your system
+Independent of how exactly you are telling your system
 to render the scene, i.e., whether you run ``manim -qm -p file_name.py ToyExample``, or
 whether you are rendering the scene directly from the Python script via a snippet
 like
@@ -729,6 +752,7 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
+
 TODO:
 
 - open movie pipe for one play call
@@ -743,6 +767,7 @@ The render loop (for real this time)
 - "background image" consisting of static mobjects is rendered.
 - check whether current animation is a frozen frame, not in our case
 - scene.play_internal:
+
   - construct time_progression (i.e., the progress bar; t-values for
     which frames are rendered)
   - step through time progression. scene.update_to_time(t)
@@ -754,8 +779,11 @@ The render loop (for real this time)
     - self.renderer.render(self, t, self.moving_mobjects), actually
       rendering the frame
 
-  - finish animations
-  - ffmpeg movie pipeline closes; partial movie file is written
+Completing the render loop
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- finish animations
+- ffmpeg movie pipeline closes; partial movie file is written
 
 - after all animations: combination of all partial movie files to one
   rendered video.
