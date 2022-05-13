@@ -20,12 +20,13 @@ import numpy as np
 
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
+from manim.opengl import OpenGLMobject
 
 
 def assert_is_mobject_method(method):
     assert inspect.ismethod(method)
     mobject = method.__self__
-    assert isinstance(mobject, Mobject)
+    assert isinstance(mobject, (Mobject, OpenGLMobject))
 
 
 def always(method, *args, **kwargs):

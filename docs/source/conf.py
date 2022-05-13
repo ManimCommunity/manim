@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020-2021, The Manim Community Dev Team"
+copyright = "2020-2022, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
@@ -134,8 +134,8 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "issue "),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "pull request "),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
 }
 
 # opengraph settings

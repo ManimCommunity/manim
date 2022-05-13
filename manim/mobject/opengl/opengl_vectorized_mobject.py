@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools as it
 import operator as op
 from functools import reduce, wraps
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Optional, Sequence
 
 import moderngl
 import numpy as np
@@ -12,6 +12,7 @@ from colour import Color
 from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.renderer.shader_wrapper import ShaderWrapper
 from manim.utils.bezier import (
     bezier,
     get_quadratic_approximation_of_cubic,
@@ -131,6 +132,12 @@ class OpenGLVMobject(OpenGLMobject):
             self.fill_color = Color(fill_color)
         if stroke_color:
             self.stroke_color = Color(stroke_color)
+
+        self.fill_data = None
+        self.stroke_data = None
+        self.fill_shader_wrapper = None
+        self.stroke_shader_wrapper = None
+        self.init_shader_data()
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -819,41 +826,6 @@ class OpenGLVMobject(OpenGLMobject):
 
         return length
 
-    def get_nth_curve_function_with_length(
-        self,
-        n: int,
-        sample_points: int | None = None,
-    ) -> tuple[Callable[[float], np.ndarray], float]:
-        """Returns the expression of the nth curve along with its (approximate) length.
-
-        Parameters
-        ----------
-        n
-            The index of the desired curve.
-        sample_points
-            The number of points to sample to find the length.
-
-        Returns
-        -------
-        curve : typing.Callable[[float], np.ndarray]
-            The function for the nth curve.
-        length : :class:`float`
-            The length of the nth curve.
-        """
-
-        if sample_points is None:
-            sample_points = 10
-
-        curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
-        length = np.sum(norms)
-
-        return curve, length
-
     def get_curve_functions(
         self,
     ) -> Iterable[Callable[[float], np.ndarray]]:
@@ -869,6 +841,35 @@ class OpenGLVMobject(OpenGLMobject):
 
         for n in range(num_curves):
             yield self.get_nth_curve_function(n)
+
+    def get_nth_curve_length_pieces(
+        self,
+        n: int,
+        sample_points: int | None = None,
+    ) -> np.ndarray:
+        """Returns the array of short line lengths used for length approximation.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        np.ndarray
+            The short length-pieces of the nth curve.
+        """
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        return norms
 
     def get_curve_functions_with_lengths(
         self, **kwargs
@@ -1489,8 +1490,6 @@ class OpenGLVMobject(OpenGLMobject):
 
     # For shaders
     def init_shader_data(self):
-        from ...renderer.shader_wrapper import ShaderWrapper
-
         self.fill_data = np.zeros(0, dtype=self.fill_dtype)
         self.stroke_data = np.zeros(0, dtype=self.stroke_dtype)
         self.fill_shader_wrapper = ShaderWrapper(
@@ -1511,30 +1510,23 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_shader_wrapper(self):
-        from ...renderer.shader_wrapper import ShaderWrapper
+        self.update_fill_shader_wrapper()
+        return self.fill_shader_wrapper
 
-        return ShaderWrapper(
-            vert_data=self.get_fill_shader_data(),
-            vert_indices=self.get_triangulation(),
-            shader_folder=self.fill_shader_folder,
-            render_primitive=moderngl.TRIANGLES,
-            uniforms=self.get_fill_uniforms(),
-            depth_test=self.depth_test,
-        )
+    def update_fill_shader_wrapper(self):
+        self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
+        self.fill_shader_wrapper.vert_indices = self.get_triangulation()
+        self.fill_shader_wrapper.uniforms = self.get_fill_uniforms()
 
     def get_stroke_shader_wrapper(self):
-        from ...renderer.shader_wrapper import ShaderWrapper
+        self.update_stroke_shader_wrapper()
+        return self.stroke_shader_wrapper
 
-        return ShaderWrapper(
-            vert_data=self.get_stroke_shader_data(),
-            shader_folder=self.stroke_shader_folder,
-            render_primitive=moderngl.TRIANGLES,
-            uniforms=self.get_stroke_uniforms(),
-            depth_test=self.depth_test,
-        )
+    def update_stroke_shader_wrapper(self):
+        self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
+        self.stroke_shader_wrapper.uniforms = self.get_stroke_uniforms()
 
     def get_shader_wrapper_list(self):
-
         # Build up data lists
         fill_shader_wrappers = []
         stroke_shader_wrappers = []
@@ -1580,31 +1572,34 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_stroke_shader_data(self):
         points = self.points
-        stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
+        if len(self.stroke_data) != len(points):
+            self.stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
-        nppc = self.n_points_per_curve
-        stroke_data["point"] = points
-        stroke_data["prev_point"][:nppc] = points[-nppc:]
-        stroke_data["prev_point"][nppc:] = points[:-nppc]
-        stroke_data["next_point"][:-nppc] = points[nppc:]
-        stroke_data["next_point"][-nppc:] = points[:nppc]
+        if "points" not in self.locked_data_keys:
+            nppc = self.n_points_per_curve
+            self.stroke_data["point"] = points
+            self.stroke_data["prev_point"][:nppc] = points[-nppc:]
+            self.stroke_data["prev_point"][nppc:] = points[:-nppc]
+            self.stroke_data["next_point"][:-nppc] = points[nppc:]
+            self.stroke_data["next_point"][-nppc:] = points[:nppc]
 
-        self.read_data_to_shader(stroke_data, "color", "stroke_rgba")
-        self.read_data_to_shader(stroke_data, "stroke_width", "stroke_width")
-        self.read_data_to_shader(stroke_data, "unit_normal", "unit_normal")
+        self.read_data_to_shader(self.stroke_data, "color", "stroke_rgba")
+        self.read_data_to_shader(self.stroke_data, "stroke_width", "stroke_width")
+        self.read_data_to_shader(self.stroke_data, "unit_normal", "unit_normal")
 
-        return stroke_data
+        return self.stroke_data
 
     def get_fill_shader_data(self):
         points = self.points
-        fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
-        fill_data["vert_index"][:, 0] = range(len(points))
+        if len(self.fill_data) != len(points):
+            self.fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
+            self.fill_data["vert_index"][:, 0] = range(len(points))
 
-        self.read_data_to_shader(fill_data, "point", "points")
-        self.read_data_to_shader(fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(fill_data, "unit_normal", "unit_normal")
+        self.read_data_to_shader(self.fill_data, "point", "points")
+        self.read_data_to_shader(self.fill_data, "color", "fill_rgba")
+        self.read_data_to_shader(self.fill_data, "unit_normal", "unit_normal")
 
-        return fill_data
+        return self.fill_data
 
     def refresh_shader_data(self):
         self.get_fill_shader_data()
@@ -1628,7 +1623,9 @@ class OpenGLVGroup(OpenGLVMobject):
     can subtract elements of a OpenGLVGroup via :meth:`~.OpenGLVGroup.remove` method, or
     `-` and `-=` operators:
 
-        >>> from manim import Triangle, Square, OpenGLVGroup
+        >>> from manim import Triangle, Square, config
+        >>> config.renderer = "opengl"
+        >>> from manim.opengl import OpenGLVGroup
         >>> vg = OpenGLVGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)

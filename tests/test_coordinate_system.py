@@ -55,19 +55,16 @@ def test_NumberPlane():
     pos_y_range = (2, 6)
     neg_y_range = (-6, -2)
 
-    x_vals = [0, 1.5, 2, 2.8, 4, 6.25]
-    y_vals = [2, 5, 4.25, 6, 4.5, 2.75]
-
     testing_data = [
-        (pos_x_range, pos_y_range, x_vals, y_vals),
-        (pos_x_range, neg_y_range, x_vals, [-v for v in y_vals]),
-        (neg_x_range, pos_y_range, [-v for v in x_vals], y_vals),
-        (neg_x_range, neg_y_range, [-v for v in x_vals], [-v for v in y_vals]),
+        (pos_x_range, pos_y_range),
+        (pos_x_range, neg_y_range),
+        (neg_x_range, pos_y_range),
+        (neg_x_range, neg_y_range),
     ]
 
     for test_data in testing_data:
 
-        x_range, y_range, x_vals, y_vals = test_data
+        x_range, y_range = test_data
 
         x_start, x_end = x_range
         y_start, y_end = y_range
@@ -89,8 +86,11 @@ def test_NumberPlane():
         assert len(plane.x_lines) == num_x_lines
 
     plane = NumberPlane((-5, 5, 0.5), (-8, 8, 2))  # <- test for different step values
-    assert len(plane.x_lines) == 8
-    assert len(plane.y_lines) == 20
+    # horizontal lines: -6 -4, -2, 0, 2, 4, 6
+    assert len(plane.x_lines) == 7
+    # vertical lines: 0, +-0.5, +-1, +-1.5, +-2, +-2.5,
+    # +-3, +-3.5, +-4, +-4.5
+    assert len(plane.y_lines) == 19
 
 
 def test_point_to_coords():

@@ -345,7 +345,22 @@ class Scene:
             for mesh in obj.get_family():
                 mesh.update(dt)
 
-    def update_self(self, dt):
+    def update_self(self, dt: float):
+        """Run all scene updater functions.
+
+        Among all types of update functions (mobject updaters, mesh updaters,
+        scene updaters), scene update functions are called last.
+
+        Parameters
+        ----------
+        dt
+            Scene time since last update.
+
+        See Also
+        --------
+        :meth:`.Scene.add_updater`
+        :meth:`.Scene.remove_updater`
+        """
         for func in self.updaters:
             func(dt)
 
@@ -451,7 +466,7 @@ class Scene:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
             self.mobjects += mobjects
-            if self.moving_mobjects is not None:
+            if self.moving_mobjects:
                 self.restructure_mobjects(
                     to_remove=mobjects,
                     mobject_list_name="moving_mobjects",
@@ -503,10 +518,50 @@ class Scene:
                 self.restructure_mobjects(mobjects, list_name, False)
             return self
 
-    def add_updater(self, func):
+    def add_updater(self, func: Callable[[float], None]) -> None:
+        """Add an update function to the scene.
+
+        The scene updater functions are run every frame,
+        and they are the last type of updaters to run.
+
+        .. WARNING::
+
+            When using the Cairo renderer, scene updaters that
+            modify mobjects are not detected in the same way
+            that mobject updaters are. To be more concrete,
+            a mobject only modified via a scene updater will
+            not necessarily be added to the list of *moving
+            mobjects* and thus might not be updated every frame.
+
+            TL;DR: Use mobject updaters to update mobjects.
+
+        Parameters
+        ----------
+        func
+            The updater function. It takes a float, which is the
+            time difference since the last update (usually equal
+            to the frame rate).
+
+        See also
+        --------
+        :meth:`.Scene.remove_updater`
+        :meth:`.Scene.update_self`
+        """
         self.updaters.append(func)
 
-    def remove_updater(self, func):
+    def remove_updater(self, func: Callable[[float], None]) -> None:
+        """Remove an update function from the scene.
+
+        Parameters
+        ----------
+        func
+            The updater function to be removed.
+
+        See also
+        --------
+        :meth:`.Scene.add_updater`
+        :meth:`.Scene.update_self`
+        """
         self.updaters = [f for f in self.updaters if f is not func]
 
     def restructure_mobjects(
@@ -1074,13 +1129,6 @@ class Scene:
                 # Static image logic when the wait is static is done by the renderer, not here.
                 self.animations[0].is_static_wait = True
                 return None
-        elif config.renderer != "opengl":
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
         self.duration = self.get_run_time(self.animations)
         return self
 
@@ -1089,6 +1137,14 @@ class Scene:
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
+
+        if config.renderer != "opengl":
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""

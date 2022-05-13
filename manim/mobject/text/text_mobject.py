@@ -406,7 +406,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: float = 1.0,
         stroke_width: float = 0,
-        color: Color | None = None,
+        color: Color | str | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         line_spacing: float = -1,
         font: str = "",
@@ -888,7 +888,7 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://docs.gtk.org/Pango/pango_markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 

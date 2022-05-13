@@ -2221,11 +2221,9 @@ class Mobject:
 
             class ArrangeInGrid(Scene):
                 def construct(self):
-                    #Add some numbered boxes:
-                    np.random.seed(3)
                     boxes = VGroup(*[
-                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
-                        for i in range(22)
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(24)
                     ])
                     self.add(boxes)
 
@@ -2233,7 +2231,8 @@ class Mobject:
                         buff=(0.25,0.5),
                         col_alignments="lccccr",
                         row_alignments="uccd",
-                        col_widths=[2, *[None]*4, 2],
+                        col_widths=[1, *[None]*4, 1],
+                        row_heights=[1, None, None, 1],
                         flow_order="dr"
                     )
 
@@ -2784,7 +2783,6 @@ class _AnimationBuilder:
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
-        self.methods.append(method)
         has_overridden_animation = hasattr(method, "_override_animate")
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
@@ -2802,6 +2800,7 @@ class _AnimationBuilder:
                     **method_kwargs,
                 )
             else:
+                self.methods.append([method, method_args, method_kwargs])
                 method(*method_args, **method_kwargs)
             return self
 

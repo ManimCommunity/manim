@@ -98,6 +98,7 @@ def test_custom_dirs(tmp_path):
         {
             "media_dir": tmp_path,
             "save_sections": True,
+            "log_to_file": True,
             "frame_rate": 15,
             "pixel_height": 854,
             "pixel_width": 480,
@@ -108,30 +109,29 @@ def test_custom_dirs(tmp_path):
             "images_dir": "{media_dir}/test_images",
             "text_dir": "{media_dir}/test_text",
             "tex_dir": "{media_dir}/test_tex",
+            "log_dir": "{media_dir}/test_log",
         }
     ):
         scene = MyScene()
         scene.render()
+        tmp_path = Path(tmp_path)
+        assert_dir_filled(tmp_path / "test_sections")
+        assert_file_exists(tmp_path / "test_sections/MyScene.json")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_sections"))
-        assert_file_exists(os.path.join(tmp_path, "test_sections", "MyScene.json"))
+        assert_dir_filled(tmp_path / "test_video")
+        assert_file_exists(tmp_path / "test_video/MyScene.mp4")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_video"))
-        assert_file_exists(os.path.join(tmp_path, "test_video", "MyScene.mp4"))
-
-        assert_dir_filled(os.path.join(tmp_path, "test_partial_movie_dir"))
+        assert_dir_filled(tmp_path / "test_partial_movie_dir")
         assert_file_exists(
-            os.path.join(
-                tmp_path, "test_partial_movie_dir", "partial_movie_file_list.txt"
-            )
+            tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt"
         )
 
         # TODO: another example with image output would be nice
-        assert_dir_exists(os.path.join(tmp_path, "test_images"))
+        assert_dir_exists(tmp_path / "test_images")
 
-        assert_dir_filled(os.path.join(tmp_path, "test_text"))
-        assert_dir_filled(os.path.join(tmp_path, "test_tex"))
-        # TODO: testing the log dir would be nice but it doesn't get generated for some reason and test crashes when setting "log_to_file" to True
+        assert_dir_filled(tmp_path / "test_text")
+        assert_dir_filled(tmp_path / "test_tex")
+        assert_dir_filled(tmp_path / "test_log")
 
 
 def test_frame_size(tmp_path):

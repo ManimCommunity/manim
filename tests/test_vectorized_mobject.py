@@ -289,3 +289,9 @@ def test_vmobject_different_num_points_and_submobjects_become():
     a.become(b)
     assert np.array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
+
+
+def test_vmobject_point_at_angle():
+    a = Circle()
+    p = a.point_at_angle(4 * PI)
+    assert np.array_equal(a.points[0], p)

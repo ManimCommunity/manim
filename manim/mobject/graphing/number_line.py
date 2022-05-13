@@ -138,8 +138,8 @@ class NumberLine(Line):
         stroke_width: float = 2.0,
         # tip
         include_tip: bool = False,
-        tip_width: float = 0.25,
-        tip_height: float = 0.25,
+        tip_width: float = DEFAULT_ARROW_TIP_LENGTH,
+        tip_height: float = DEFAULT_ARROW_TIP_LENGTH,
         # numbers/labels
         include_numbers: bool = False,
         font_size: float = 36,
@@ -217,7 +217,7 @@ class NumberLine(Line):
         self.center()
 
         if self.include_tip:
-            self.add_tip()
+            self.add_tip(tip_length=self.tip_height, tip_width=self.tip_width)
             self.tip.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:

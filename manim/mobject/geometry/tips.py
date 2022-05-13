@@ -185,6 +185,7 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         fill_opacity=0,
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
+        width=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
         **kwargs,
     ):
@@ -195,8 +196,10 @@ class ArrowTriangleTip(ArrowTip, Triangle):
             start_angle=start_angle,
             **kwargs,
         )
-        self.width = length
-        self.stretch_to_fit_height(length)
+        self.width = width
+
+        self.stretch_to_fit_width(length)
+        self.stretch_to_fit_height(width)
 
 
 class ArrowTriangleFilledTip(ArrowTriangleTip):
