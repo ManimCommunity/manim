@@ -752,14 +752,74 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
+In the event that the animation has to rendered, the renderer asks
+its :class:`.SceneFileWriter` to start a writing process. The process
+is started by a call to ``ffmpeg`` and opens a pipe to which rendered
+raw frames can be written. As long as the pipe is open, the process
+can be accessed via the ``writing_process`` attribute of the file writer.
+With the writing process in place, the renderer then asks the scene
+to "begin" the animations.
 
-TODO:
+First, it literally *begins* all of the animations by calling their
+setup methods (:meth:`.Animation._setup_scene`, :meth:`.Animation.begin`).
+In doing so, the mobjects that are newly introduced by an animation
+(like via :class:`.Create` etc.) are added to the scene. Furthermore, the
+animation suspends updater functions being called on its mobject, and
+it sets its mobject to the state that corresponds to the first frame
+of the animation.
 
-- open movie pipe for one play call
-- scene.begin_animations: introducers actually add mobjects to scene,
-  starting mobjects are assigned properly, animations are set to
-  initial interpolation state.
-- determine static/moving mobjects
+After this has happened for all animations in the current ``play`` call,
+the Cairo renderer determines which of the scene's mobjects can be
+painted statically to the background, and which ones have to be
+redrawn every frame. It does so by calling
+:meth:`.Scene.get_moving_and_static_mobjects`, and the resulting
+partition of mobjects is stored in the corresponding ``moving_mobjects``
+and ``static_mobjects`` attributes.
+
+.. NOTE::
+
+  The mechanism that determines static and moving mobjects is
+  specific for the Cairo renderer, the OpenGL renderer works differently.
+  Basically, moving mobjects are determined by checking whether they,
+  any of their children, or any of the mobjects "below" them (in the
+  sense of the order in which mobjects are processed in the scene)
+  either have an update function attached, or whether they appear
+  in one of the current animations. See the implementation of
+  :meth:`.Scene.get_moving_mobjects` for more details.
+
+Up to this very point, we did not actually render any (partial)
+image or movie files from the scene yet. This is, however, about to change.
+Before we enter the render loop, let us briefly revisit our toy
+example and discuss how the generic :meth:`.Scene.play` call
+setup looks like there.
+
+For the call that plays the :class:`.ReplacementTransform`, there
+is no subcaption to be taken care of. The renderer then asks
+the scene to compile the animation data: the passed argument
+already is an animation (no additional preparations needed),
+there is no need for processing any keyword arguments (as
+we did not specify any additional ones to ``play``). The
+mobject bound to the animation, ``orange_square``, is already
+part of the scene (so again, no action taken). Finally, the run
+time is extracted (3 seconds long) and stored in
+``Scene.duration``. The renderer then checks whether it should
+skip (it should not), then whether the animation is already
+cached (it is not).
+
+The scene then ``begin``\ s the animation: for the
+:class:`.ReplacementTransform` this means that the animation populates
+all of its relevant animation attributes (i.e., compatible copies
+of the starting and the target mobject so that it can safely interpolate
+between the two).
+
+The mechanism determining static and moving mobjects considers
+all of the scenes mobjects (at this point only the
+``orange_square``), and determines that the ``orange_square`` is
+bound to an animation that is currently played. As a result,
+the square is classified as a "moving mobject".
+
+Time to render some frames.
+
 
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
