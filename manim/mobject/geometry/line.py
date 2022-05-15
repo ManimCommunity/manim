@@ -1021,7 +1021,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     ) -> Angle:
         """The angle between the lines AB and BC.
 
-        This constructs the angle :math:`\angle ABC`.
+        This constructs the angle :math:`\\angle ABC`.
 
         Parameters
         ----------
