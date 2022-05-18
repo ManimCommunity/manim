@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 
-__all__ = ["Scene", "manim_scene"]
+__all__ = ["Scene", "manimation"]
 
 import copy
 import datetime
@@ -15,6 +15,7 @@ import threading
 import time
 import types
 from queue import Queue
+from typing import Callable, Type
 
 import srt
 
@@ -1741,13 +1742,74 @@ class Scene:
             func()
 
 
-def manim_scene(original_construct=None, *, base_class=Scene):
-    def scene_decorator(construct):
-        scene = type(construct.__name__, (base_class,), {})()
+def manimation(
+    construct_function: Callable[[Scene], None] | None = None,
+    *,
+    scene_class: Type[Scene] = Scene,
+) -> Scene | Callable[[Callable[[Scene], None]], Scene]:
+    """A short-hand decorator for creating an animation from a construct-like function.
+
+    This decorator creates a :class:`.Scene` object whose ``construct`` method
+    is created from the specified function. This allows to write (and render)
+    scenes in a short-hand manner::
+
+        @manimation
+        def hello_world(scene: Scene):
+            t = Text("Hello World!")
+            scene.play(Write(t))
+            scene.play(t.animate.scale(2))
+            scene.wait()
+
+
+        hello_world.render()
+
+    This is equivalent to the following, *classical* way of creating and rendering
+    a scene::
+
+        class HelloWorld(Scene):
+            def construct(self):
+                t = Text("Hello World!")
+                self.play(Write(t))
+                self.play(t.animate.scale(2))
+                self.wait()
+
+
+        scene_object = HelloWorld()
+        scene_object.render()
+
+    Parameters
+    ----------
+    construct_function
+        The (decorated) function that will be used to construct the scene.
+    scene_class
+        The base class that is used to construct the scene.
+
+    Examples
+    --------
+
+    An example for a scene using a different base class for the scene::
+
+        @manimation(scene_class=MovingCameraScene)
+        def moving_around(scene: MovingCameraScene): ...
+
+    Note that the type hint for the scene class is optional and just
+    helps your IDE to suggest the correct auto-completion options.
+    """
+
+    def scene_decorator(construct: Callable[[Scene], None]) -> Scene:
+        scene_name = construct.__name__
+        if scene_name == "<lambda>":
+            scene_name = "anonymous"
+        scene = type(construct.__name__, (scene_class,), {})()
         scene.construct = types.MethodType(construct, scene)
         return scene
 
-    if original_construct:
-        return scene_decorator(original_construct)
+    if construct_function is not None and not callable(construct_function):
+        raise TypeError(
+            "The argument passed to manimation must be a callable function."
+        )
+
+    if callable(construct_function):
+        return scene_decorator(construct_function)
 
     return scene_decorator
