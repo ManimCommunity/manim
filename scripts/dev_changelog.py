@@ -43,13 +43,18 @@ Note
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 
+from __future__ import annotations
+
+import concurrent.futures
 import datetime
+import os
 import re
 from collections import defaultdict
 from pathlib import Path
 from textwrap import dedent, indent
 
 import click
+import cloup
 from git import Repo
 from github import Github
 from tqdm import tqdm
@@ -74,6 +79,24 @@ PR_LABELS = {
     "unlabeled": "Unclassified changes",
 }
 
+SILENT_CONTRIBUTORS = [
+    "dependabot[bot]",
+]
+
+
+def update_citation(version, date):
+    current_directory = os.path.dirname(__file__)
+    parent_directory = os.path.split(current_directory)[0]
+    with open(os.path.join(current_directory, "TEMPLATE.cff")) as a, open(
+        os.path.join(parent_directory, "CITATION.cff"),
+        "w",
+        newline="\n",
+    ) as b:
+        contents = a.read()
+        contents = contents.replace("<version>", version)
+        contents = contents.replace("<date_released>", date)
+        b.write(contents)
+
 
 def process_pullrequests(lst, cur, github_repo, pr_nums):
     lst_commit = github_repo.get_commit(sha=this_repo.git.rev_list("-1", lst))
@@ -82,31 +105,44 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     authors = set()
     reviewers = set()
     pr_by_labels = defaultdict(list)
-    for num in tqdm(pr_nums, desc="Processing PRs"):
-        pr = github_repo.get_pull(num)
-        authors.add(pr.user)
-        reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
-        pr_labels = [label.name for label in pr.labels]
-        for label in PR_LABELS.keys():
-            if label in pr_labels:
-                pr_by_labels[label].append(pr)
-                break  # ensure that PR is only added in one category
-        else:
-            pr_by_labels["unlabeled"].append(pr)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_num = {
+            executor.submit(github_repo.get_pull, num): num for num in pr_nums
+        }
+        for future in tqdm(
+            concurrent.futures.as_completed(future_to_num), "Processing PRs"
+        ):
+            pr = future.result()
+            authors.add(pr.user)
+            reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
+            pr_labels = [label.name for label in pr.labels]
+            for label in PR_LABELS.keys():
+                if label in pr_labels:
+                    pr_by_labels[label].append(pr)
+                    break  # ensure that PR is only added in one category
+            else:
+                pr_by_labels["unlabeled"].append(pr)
 
     # identify first-time contributors:
     author_names = []
     for author in authors:
         name = author.name if author.name is not None else author.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
         if github_repo.get_commits(author=author, until=lst_date).totalCount == 0:
             name += " +"
         author_names.append(name)
 
     reviewer_names = []
     for reviewer in reviewers:
-        reviewer_names.append(
-            reviewer.name if reviewer.name is not None else reviewer.login
-        )
+        name = reviewer.name if reviewer.name is not None else reviewer.login
+        if name in SILENT_CONTRIBUTORS:
+            continue
+        reviewer_names.append(name)
+
+    # Sort items in pr_by_labels
+    for i in pr_by_labels:
+        pr_by_labels[i] = sorted(pr_by_labels[i], key=lambda pr: pr.number)
 
     return {
         "authors": sorted(author_names),
@@ -126,10 +162,18 @@ def get_pr_nums(lst, cur):
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
-        "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
+        "--oneline",
+        "--no-merges",
+        "--first-parent",
+        f"{lst}..{cur}",
     )
     split_commits = list(
-        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n"))
+        filter(
+            lambda x: not any(
+                ["pre-commit autoupdate" in x, "New Crowdin updates" in x]
+            ),
+            commits.split("\n"),
+        ),
     )
     commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
@@ -141,13 +185,16 @@ def get_pr_nums(lst, cur):
 
 def get_summary(body):
     pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
-    has_changelog_pattern = re.search(pattern, body)
-    if has_changelog_pattern:
+    try:
+        has_changelog_pattern = re.search(pattern, body)
+        if has_changelog_pattern:
 
-        return has_changelog_pattern.group()[22:-21].strip()
+            return has_changelog_pattern.group()[22:-21].strip()
+    except Exception:
+        print(f"Error parsing body for changelog: {body}")
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
@@ -161,7 +208,10 @@ def get_summary(body):
     type=int,
 )
 @click.option(
-    "-o", "--outfile", type=str, help="Path and file name of the changelog output."
+    "-o",
+    "--outfile",
+    type=str,
+    help="Path and file name of the changelog output.",
 )
 def main(token, prior, tag, additional, outfile):
     """Generate Changelog/List of contributors/PRs for release.
@@ -190,6 +240,10 @@ def main(token, prior, tag, additional, outfile):
     authors = contributions["authors"]
     reviewers = contributions["reviewers"]
 
+    # update citation file
+    today = datetime.date.today()
+    update_citation(tag, str(today))
+
     if not outfile:
         outfile = (
             Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
@@ -198,12 +252,11 @@ def main(token, prior, tag, additional, outfile):
     else:
         outfile = Path(outfile).resolve()
 
-    with outfile.open("w", encoding="utf8") as f:
+    with outfile.open("w", encoding="utf8", newline="\n") as f:
         f.write("*" * len(tag) + "\n")
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
 
-        today = datetime.date.today()
         f.write(f":Date: {today.strftime('%B %d, %Y')}\n\n")
 
         heading = "Contributors"
@@ -215,8 +268,8 @@ def main(token, prior, tag, additional, outfile):
                 A total of {len(set(authors).union(set(reviewers)))} people contributed to this
                 release. People with a '+' by their names authored a patch for the first
                 time.\n
-                """
-            )
+                """,
+            ),
         )
 
         for author in authors:
@@ -228,8 +281,8 @@ def main(token, prior, tag, additional, outfile):
                 """
                 The patches included in this release have been reviewed by
                 the following contributors.\n
-                """
-            )
+                """,
+            ),
         )
 
         for reviewer in reviewers:
@@ -241,7 +294,7 @@ def main(token, prior, tag, additional, outfile):
         f.write(heading + "\n")
         f.write("=" * len(heading) + "\n\n")
         f.write(
-            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
+            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n",
         )
 
         pr_by_labels = contributions["PRs"]
@@ -258,7 +311,7 @@ def main(token, prior, tag, additional, outfile):
                     url = PR.html_url
                     title = PR.title
                     label = PR.labels
-                    f.write(f"* `#{num} <{url}>`__: {title}\n")
+                    f.write(f"* :pr:`{num}`: {title}\n")
                     overview = get_summary(PR.body)
                     if overview:
                         f.write(indent(f"{overview}\n\n", "   "))

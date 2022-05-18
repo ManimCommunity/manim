@@ -1,5 +1,7 @@
 """Implement the Unit class."""
 
+from __future__ import annotations
+
 import numpy as np
 
 from .. import config, constants

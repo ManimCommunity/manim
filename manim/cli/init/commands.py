@@ -5,24 +5,27 @@ init``. Here you can specify options, subcommands, and subgroups for the init
 group.
 
 """
+from __future__ import annotations
+
 from pathlib import Path
 
-import click
+import cloup
 
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import copy_template_files
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
+    short_help="""Sets up a new project in current working directory with default settings.\n
+It copies files from templates directory and pastes them in the current working dir.
+""",
 )
 def init():
-    """Sets up a project in current working directory with default settings.
+    """Sets up a new project in current working directory with default settings.
 
     It copies files from templates directory and pastes them in the current working dir.
-
-    The new project is set up with default settings.
     """
     cfg = Path("manim.cfg")
     if cfg.exists():

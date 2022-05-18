@@ -1,0 +1,263 @@
+*******
+v0.11.0
+*******
+
+:Date: October 02, 2021
+
+Contributors
+============
+
+A total of 31 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Aathish Sivasubrahmanian
+* Benjamin Hackl
+* Charlie +
+* Christopher Besch +
+* Darylgolden
+* Evan Boehs +
+* GameDungeon
+* Hugues Devimeux
+* Jerónimo Squartini
+* Laith Bahodi
+* Meredith Espinosa +
+* Mysaa
+* Naveen M K
+* Nicolai Weitkemper +
+* Oliver
+* Ryan McCauley
+* Tim +
+* icedcoffeeee
+* imadjamil +
+* leleogere +
+* Максим Заякин +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Aathish Sivasubrahmanian
+* Benjamin Hackl
+* Charlie
+* Darylgolden
+* Evan Boehs
+* GameDungeon
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Jason Villanueva
+* Laith Bahodi
+* Mark Miller
+* Mysaa
+* Naveen M K
+* Nicolai Weitkemper
+* Oliver
+* Raghav Goel
+* Ryan McCauley
+* Skaft
+* friedkeenan
+* icedcoffeeee
+* leleogere
+
+Pull requests merged
+====================
+
+A total of 55 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`1990`: Changed and improved the implementation of :meth:`.CoordinateSystem.get_area` to work without Riemann rectangles
+   This changes how :meth:`.CoordinateSystem.get_area` is implemented. To mimic the old behavior (tiny Riemann rectangles), use :meth:`.CoordinateSystem.get_riemann_rectangles` with a small value for ``dx``.
+
+* :pr:`2095`: Changed angles for polar coordinates to use math convention
+   This PR switches the parameter names ``phi`` and ``theta`` in :func:`cartesian_to_spherical` and :func:`spherical_to_cartesian` to align with the `usual definition in mathematics <https://user-images.githubusercontent.com/83535735/131709630-87290522-7747-4b21-9411-dd3d35ebaf0f.png>`__.
+
+Highlights
+----------
+
+* :pr:`2094`: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves
+   An :class:`~.ImplicitFunction` that plots the points :math:`(x, y)` which satisfy some equation :math:`f(x,y) = 0`.
+
+* :pr:`2075`: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments
+
+
+* :pr:`1998`: Added support for Boolean Operations on VMobjects
+   This PR introduces boolean operations for :class:`~.VMobject`; see details and examples at
+   :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection` and :class:`~.Exclusion`.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`2123`: Renamed ``distance`` parameter of :class:`.ThreeDScene` and :class:`.ThreeDCamera` to ``focal_distance``
+
+
+* :pr:`2102`: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`
+
+
+* :pr:`2061`: Removed deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`
+
+
+* :pr:`2024`: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`
+
+
+* :pr:`1991`: Deprecated :meth:`.VMobject.get_points`
+
+
+New features
+------------
+
+* :pr:`2118`: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`
+
+
+* :pr:`1469`: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve
+
+
+Enhancements
+------------
+
+* :pr:`2111`: Improved setting of OpenGL colors
+
+
+* :pr:`2113`: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`
+
+
+* :pr:`2016`: Added OpenGL support for :mod:`~.mobject.boolean_ops`
+
+
+* :pr:`2084`: Added :meth:`~Table.get_highlighted_cell` and fixed :meth:`~Table.add_highlighted_cell`
+
+
+* :pr:`2013`: Removed unnecessary check in :class:`~.TransformMatchingAbstractBase`
+
+
+* :pr:`1971`: Added OpenGL support for :class:`~.StreamLines`
+
+
+* :pr:`2041`: Added config option to enable OpenGL wireframe for debugging
+
+
+Fixed bugs
+----------
+
+* :pr:`2070`: Fixed :meth:`~OpenGLRenderer.get_frame` when window is created
+
+
+* :pr:`2071`: Fixed :class:`~AnimationGroup` OpenGL compatibility
+
+
+* :pr:`2108`: Fixed swapped axis step values in :class:`~.NumberPlane`
+
+
+* :pr:`2072`: Added OpenGL compatibility for :class:`~.Cube`.
+
+
+* :pr:`2060`: Fixed OpenGL compatibility issue for meth:`~Line.set_opacity`
+
+
+* :pr:`2037`: Fixed return value of :meth:`~.OpenGLMobject.apply_complex_function`
+
+
+* :pr:`2039`: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`.
+
+
+* :pr:`2066`: Fixed error raised by logging when cache is full
+
+
+* :pr:`2026`: Fixed OpenGL shift animation for :class:`~.Text`
+
+
+* :pr:`2028`: Fixed OpenGL overriding SVG fill color
+
+
+* :pr:`2043`: Fixed bug where :meth:`.NumberLine.add_labels`  cannot accept non-mobject labels
+
+
+* :pr:`2011`: Fixed ``-a`` flag for OpenGL rendering
+
+
+* :pr:`1994`: Fix :meth:`~.input_to_graph_point` when passing a line graph (from :meth:`.Axes.get_line_graph`)
+
+
+* :pr:`2017`: Avoided using deprecated ``get_points`` method and fixed :class:`~.OpenGLPMPoint` color
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2131`: Copyedited the configuration tutorial in the documentation
+
+
+* :pr:`2120`: Changed ``manim_directive`` to use a clean configuration via ``tempconfig``
+
+
+* :pr:`2122`: Fixed broken links in inheritance graphs by moving them to ``reference.rst``
+
+
+* :pr:`2115`: Improved docstring of :meth:`.PMobject.add_points`
+
+
+* :pr:`2116`: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate
+
+
+* :pr:`2117`: Changed the way the background color was set in a documentation example to avoid leaking the setting to other examples
+
+
+* :pr:`2101`: Added note that translation process is not ready
+
+
+* :pr:`2055`: Fixed parameter types of :meth:`.Graph.add_edges` and :meth:`.Graph.add_vertices`
+
+
+* :pr:`862`: Prepared documentation for translation (still work in progress)
+
+
+* :pr:`2035`: Fixed broken link in README
+
+
+* :pr:`2020`:  Corrected paths to user-wide configuration files for MacOS and Linux
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2008`: Reuse CLI flag tests for OpenGL
+
+
+* :pr:`2080`: Reused :class:`~.Mobject` tests for :class:`~.OpenGLMobject`
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`2004`: Cancel previous workflows in the same branch in Github Actions
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2050`: Make colour aliases IDE-friendly
+
+
+* :pr:`2126`: Fixed whitespace in info message issued by :meth:`.SceneFileWriter.clean_cache`
+
+
+* :pr:`2124`: Upgraded several dependencies (in particular: ``skia-pathops``)
+
+
+* :pr:`2001`: Fixed several warnings issued by LGTM
+
+
+* :pr:`2064`: Removed duplicate insert shader directory
+
+
+* :pr:`2027`: Improved wording in info message issued by :meth:`.SceneFileWriter.clean_cache`
+
+
+* :pr:`1968`: Sharpened Flake8 configuration and fixed resulting warnings
+
+
+New releases
+------------
+
+* :pr:`2114`: Prepared new release, ``v0.11.0``

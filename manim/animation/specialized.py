@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = ["Broadcast"]
 
 from typing import Any, Sequence
@@ -56,7 +58,7 @@ class Broadcast(LaggedStart):
         remover: bool = True,
         lag_ratio: float = 0.2,
         run_time: float = 3,
-        **kwargs: Any
+        **kwargs: Any,
     ):
         self.focal_point = focal_point
         self.n_mobs = n_mobs

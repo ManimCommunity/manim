@@ -15,17 +15,17 @@ r"""Animate the display or removal of a mobject from a scene.
             s6 = Square()
             s7 = Square()
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
-            t1 = Text("Write").scale(0.5).next_to(s1, UP)
-            t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("Create").scale(0.5).next_to(s3, UP)
-            t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
-            t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
-            t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
-            t7 = Text("ShowSubmobjectsOneByOne").scale(0.45).next_to(s7, UP)
+            t1 = Text("Write", font_size=24).next_to(s1, UP)
+            t2 = Text("AddTextLetterByLetter", font_size=24).next_to(s2, UP)
+            t3 = Text("Create", font_size=24).next_to(s3, UP)
+            t4 = Text("Uncreate", font_size=24).next_to(s4, UP)
+            t5 = Text("DrawBorderThenFill", font_size=24).next_to(s5, UP)
+            t6 = Text("ShowIncreasingSubsets", font_size=22).next_to(s6, UP)
+            t7 = Text("ShowSubmobjectsOneByOne", font_size=22).next_to(s7, UP)
 
             self.add(s1, s2, s3, s4, s5, s6, s7, t1, t2, t3, t4, t5, t6, t7)
 
-            texts = [Text("manim").scale(0.6), Text("manim").scale(0.6)]
+            texts = [Text("manim", font_size=29), Text("manim", font_size=29)]
             texts[0].move_to(s1.get_center())
             texts[1].move_to(s2.get_center())
             self.add(*texts)
@@ -55,6 +55,7 @@ r"""Animate the display or removal of a mobject from a scene.
 
 """
 
+from __future__ import annotations
 
 __all__ = [
     "Create",
@@ -64,6 +65,7 @@ __all__ = [
     "Unwrite",
     "ShowPartial",
     "ShowIncreasingSubsets",
+    "SpiralIn",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
     "AddTextWordByWord",
@@ -71,32 +73,23 @@ __all__ = [
 
 
 import itertools as it
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Iterable, Sequence
 
 import numpy as np
 from colour import Color
 
 if TYPE_CHECKING:
-    from manim.mobject.svg.text_mobject import Text
+    from manim.mobject.text.text_mobject import Text
+
+from manim.mobject.opengl.opengl_surface import OpenGLSurface
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ..animation.animation import Animation
 from ..animation.composition import Succession
+from ..constants import TAU
 from ..mobject.mobject import Group, Mobject
-from ..mobject.types.opengl_surface import OpenGLSurface
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
-from ..utils.deprecation import deprecated
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 
@@ -115,7 +108,9 @@ class ShowPartial(Animation):
     """
 
     def __init__(
-        self, mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface, None], **kwargs
+        self,
+        mobject: VMobject | OpenGLVMobject | OpenGLSurface | None,
+        **kwargs,
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
@@ -123,7 +118,10 @@ class ShowPartial(Animation):
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        alpha: float,
     ) -> None:
         submobject.pointwise_become_partial(
             starting_submobject, *self._get_bounds(alpha)
@@ -162,13 +160,14 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject, OpenGLSurface],
+        mobject: VMobject | OpenGLVMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
+        introducer: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> tuple[int, float]:
         return (0, alpha)
 
 
@@ -191,12 +190,18 @@ class Uncreate(Create):
 
     def __init__(
         self,
-        mobject: Union[VMobject, OpenGLVMobject],
-        rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
+        mobject: VMobject | OpenGLVMobject,
+        reverse_rate_function: bool = True,
         remover: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
+        super().__init__(
+            mobject,
+            reverse_rate_function=reverse_rate_function,
+            introducer=False,
+            remover=remover,
+            **kwargs,
+        )
 
 
 class DrawBorderThenFill(Animation):
@@ -213,24 +218,31 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject | OpenGLVMobject,
         run_time: float = 2,
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: Dict = {},  # what does this dict accept?
-        fill_animation_config: Dict = {},
+        draw_border_animation_config: dict = {},  # what does this dict accept?
+        fill_animation_config: dict = {},
+        introducer: bool = True,
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
-        super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
+        super().__init__(
+            vmobject,
+            run_time=run_time,
+            introducer=introducer,
+            rate_func=rate_func,
+            **kwargs,
+        )
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
         self.draw_border_animation_config = draw_border_animation_config
         self.fill_animation_config = fill_animation_config
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: Union[VMobject, OpenGLVMobject]) -> None:
+    def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
             raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
@@ -245,7 +257,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: Union[VMobject, OpenGLVMobject]) -> Color:
+    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -256,7 +268,11 @@ class DrawBorderThenFill(Animation):
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, outline, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        outline,
+        alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
         subalpha: int
@@ -277,42 +293,47 @@ class Write(DrawBorderThenFill):
 
         class ShowWrite(Scene):
             def construct(self):
-                self.play(Write(Text("Hello").scale(3)))
+                self.play(Write(Text("Hello", font_size=144)))
 
     .. manim:: ShowWriteReversed
 
         class ShowWriteReversed(Scene):
             def construct(self):
-                self.play(Write(Text("Hello").scale(3), reverse=True))
+                self.play(Write(Text("Hello", font_size=144), reverse=True))
     """
 
     def __init__(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject | OpenGLVMobject,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
         **kwargs,
     ) -> None:
-        run_time: Optional[float] = kwargs.pop("run_time", None)
-        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time: float | None = kwargs.pop("run_time", None)
+        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
         self.reverse = reverse
+        if "remover" not in kwargs:
+            kwargs["remover"] = reverse
         super().__init__(
             vmobject,
             rate_func=rate_func,
             run_time=run_time,
             lag_ratio=lag_ratio,
+            introducer=not reverse,
             **kwargs,
         )
 
     def _set_default_config_from_length(
         self,
-        vmobject: Union[VMobject, OpenGLVMobject],
-        run_time: Optional[float],
-        lag_ratio: Optional[float],
-    ) -> Tuple[float, float]:
+        vmobject: VMobject | OpenGLVMobject,
+        run_time: float | None,
+        lag_ratio: float | None,
+    ) -> tuple[float, float]:
         length = len(vmobject.family_members_with_points())
         if run_time is None:
             if length < 15:
@@ -373,19 +394,84 @@ class Unwrite(Write):
         **kwargs,
     ) -> None:
 
-        run_time: Optional[float] = kwargs.pop("run_time", None)
-        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time: float | None = kwargs.pop("run_time", None)
+        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
-            vmobject, run_time, lag_ratio
+            vmobject,
+            run_time,
+            lag_ratio,
         )
         super().__init__(
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            rate_func=lambda t: -rate_func(t) + 1,
+            reverse_rate_function=True,
             reverse=reverse,
             **kwargs,
         )
+
+
+class SpiralIn(Animation):
+    r"""Create the Mobject with sub-Mobjects flying in on spiral trajectories.
+
+    Parameters
+    ----------
+    shapes
+        The Mobject on which to be operated.
+
+    scale_factor
+        The factor used for scaling the effect.
+
+    fade_in_fraction
+        Fractional duration of initial fade-in of sub-Mobjects as they fly inward.
+
+    Examples
+    --------
+    .. manim :: SpiralInExample
+
+        class SpiralInExample(Scene):
+            def construct(self):
+                pi = MathTex(r"\pi").scale(7)
+                pi.shift(2.25 * LEFT + 1.5 * UP)
+                circle = Circle(color=GREEN_C, fill_opacity=1).shift(LEFT)
+                square = Square(color=BLUE_D, fill_opacity=1).shift(UP)
+                shapes = VGroup(pi, circle, square)
+                self.play(SpiralIn(shapes))
+    """
+
+    def __init__(
+        self,
+        shapes: Mobject,
+        scale_factor: float = 8,
+        fade_in_fraction=0.3,
+        **kwargs,
+    ) -> None:
+        self.shapes = shapes
+        self.scale_factor = scale_factor
+        self.shape_center = shapes.get_center()
+        self.fade_in_fraction = fade_in_fraction
+        for shape in shapes:
+            shape.final_position = shape.get_center()
+            shape.initial_position = (
+                shape.final_position
+                + (shape.final_position - self.shape_center) * self.scale_factor
+            )
+            shape.move_to(shape.initial_position)
+            shape.save_state()
+
+        super().__init__(shapes, introducer=True, **kwargs)
+
+    def interpolate_mobject(self, alpha: float) -> None:
+        alpha = self.rate_func(alpha)
+        for shape in self.shapes:
+            shape.restore()
+            shape.save_state()
+            opacity = shape.get_fill_opacity()
+            new_opacity = min(opacity, alpha * opacity / self.fade_in_fraction)
+            shape.shift((shape.final_position - shape.initial_position) * alpha)
+            shape.rotate(TAU * alpha, about_point=self.shape_center)
+            shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
+            shape.set_opacity(new_opacity)
 
 
 class ShowIncreasingSubsets(Animation):
@@ -421,7 +507,7 @@ class ShowIncreasingSubsets(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
-        index = int(self.int_func(alpha * n_submobs))
+        index = int(self.int_func(self.rate_func(alpha) * n_submobs))
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
@@ -445,12 +531,12 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        text: "Text",
+        text: Text,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
-        run_time: Optional[float] = None,
+        run_time: float | None = None,
         **kwargs,
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
@@ -494,7 +580,7 @@ class AddTextWordByWord(Succession):
 
     def __init__(
         self,
-        text_mobject: "Text",
+        text_mobject: Text,
         run_time: float = None,
         time_per_char: float = 0.06,
         **kwargs,
@@ -502,12 +588,12 @@ class AddTextWordByWord(Succession):
         self.time_per_char = time_per_char
         tpc = self.time_per_char
         anims = it.chain(
-            *[
+            *(
                 [
                     ShowIncreasingSubsets(word, run_time=tpc * len(word)),
                     Animation(word, run_time=0.005 * len(word) ** 1.5),
                 ]
                 for word in text_mobject
-            ]
+            )
         )
         super().__init__(*anims, **kwargs)

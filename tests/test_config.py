@@ -1,9 +1,13 @@
+from __future__ import annotations
+
+import os
 import tempfile
 from pathlib import Path
 
 import numpy as np
 
-from manim import WHITE, Scene, Square, config, tempconfig
+from manim import WHITE, Scene, Square, Tex, Text, config, tempconfig
+from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
 def test_tempconfig():
@@ -32,6 +36,8 @@ def test_tempconfig():
 class MyScene(Scene):
     def construct(self):
         self.add(Square())
+        self.add(Text("Prepare for unforeseen consequencesλ"))
+        self.add(Tex(r"$\lambda$"))
         self.wait(1)
 
 
@@ -73,14 +79,59 @@ def test_digest_file(tmp_path):
             [CLI]
             media_dir = this_is_my_favorite_path
             video_dir = {media_dir}/videos
+            sections_dir = {media_dir}/{scene_name}/prepare_for_unforeseen_consequences
             frame_height = 10
-            """
+            """,
         )
         tmp_cfg.close()
         config.digest_file(tmp_cfg.name)
 
         assert config.get_dir("media_dir") == Path("this_is_my_favorite_path")
         assert config.get_dir("video_dir") == Path("this_is_my_favorite_path/videos")
+        assert config.get_dir("sections_dir", scene_name="test") == Path(
+            "this_is_my_favorite_path/test/prepare_for_unforeseen_consequences"
+        )
+
+
+def test_custom_dirs(tmp_path):
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "save_sections": True,
+            "log_to_file": True,
+            "frame_rate": 15,
+            "pixel_height": 854,
+            "pixel_width": 480,
+            "save_sections": True,
+            "sections_dir": "{media_dir}/test_sections",
+            "video_dir": "{media_dir}/test_video",
+            "partial_movie_dir": "{media_dir}/test_partial_movie_dir",
+            "images_dir": "{media_dir}/test_images",
+            "text_dir": "{media_dir}/test_text",
+            "tex_dir": "{media_dir}/test_tex",
+            "log_dir": "{media_dir}/test_log",
+        }
+    ):
+        scene = MyScene()
+        scene.render()
+        tmp_path = Path(tmp_path)
+        assert_dir_filled(tmp_path / "test_sections")
+        assert_file_exists(tmp_path / "test_sections/MyScene.json")
+
+        assert_dir_filled(tmp_path / "test_video")
+        assert_file_exists(tmp_path / "test_video/MyScene.mp4")
+
+        assert_dir_filled(tmp_path / "test_partial_movie_dir")
+        assert_file_exists(
+            tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt"
+        )
+
+        # TODO: another example with image output would be nice
+        assert_dir_exists(tmp_path / "test_images")
+
+        assert_dir_filled(tmp_path / "test_text")
+        assert_dir_filled(tmp_path / "test_tex")
+        assert_dir_filled(tmp_path / "test_log")
 
 
 def test_frame_size(tmp_path):
@@ -95,7 +146,7 @@ def test_frame_size(tmp_path):
             [CLI]
             pixel_height = 10
             pixel_width = 10
-            """
+            """,
         )
         tmp_cfg.close()
         config.digest_file(tmp_cfg.name)
@@ -115,7 +166,7 @@ def test_frame_size(tmp_path):
             pixel_width = 10
             frame_height = 10
             frame_width = 10
-            """
+            """,
         )
         tmp_cfg.close()
         config.digest_file(tmp_cfg.name)
@@ -142,7 +193,7 @@ def test_temporary_dry_run():
 def test_dry_run_with_png_format():
     """Test that there are no exceptions when running a png without output"""
     with tempconfig(
-        {"write_to_movie": False, "disable_caching": True, "format": "png"}
+        {"dry_run": True, "write_to_movie": False, "disable_caching": True}
     ):
         assert config["dry_run"] is True
         scene = MyScene()
@@ -152,7 +203,7 @@ def test_dry_run_with_png_format():
 def test_dry_run_with_png_format_skipped_animations():
     """Test that there are no exceptions when running a png without output and skipped animations"""
     with tempconfig(
-        {"write_to_movie": False, "disable_caching": True, "format": "png"}
+        {"dry_run": True, "write_to_movie": False, "disable_caching": True}
     ):
         assert config["dry_run"] is True
         scene = MyScene(skip_animations=True)

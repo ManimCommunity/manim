@@ -1,7 +1,13 @@
 """Image manipulation utilities."""
 
-__all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
+from __future__ import annotations
 
+__all__ = [
+    "get_full_raster_image_path",
+    "drag_pixels",
+    "invert_image",
+    "change_to_rgba_array",
+]
 
 import numpy as np
 from PIL import Image
@@ -10,7 +16,7 @@ from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 
-def get_full_raster_image_path(image_file_name):
+def get_full_raster_image_path(image_file_name: str) -> str:
     return seek_full_path_from_defaults(
         image_file_name,
         default_dir=config.get_dir("assets_dir"),
@@ -18,7 +24,7 @@ def get_full_raster_image_path(image_file_name):
     )
 
 
-def drag_pixels(frames):
+def drag_pixels(frames: list[np.array]) -> list[np.array]:
     curr = frames[0]
     new_frames = []
     for frame in frames:
@@ -27,7 +33,23 @@ def drag_pixels(frames):
     return new_frames
 
 
-def invert_image(image):
+def invert_image(image: np.array) -> Image:
     arr = np.array(image)
     arr = (255 * np.ones(arr.shape)).astype(arr.dtype) - arr
     return Image.fromarray(arr)
+
+
+def change_to_rgba_array(image, dtype="uint8"):
+    """Converts an RGB array into RGBA with the alpha value opacity maxed."""
+    pa = image
+    if len(pa.shape) == 2:
+        pa = pa.reshape(list(pa.shape) + [1])
+    if pa.shape[2] == 1:
+        pa = pa.repeat(3, axis=2)
+    if pa.shape[2] == 3:
+        alphas = 255 * np.ones(
+            list(pa.shape[:2]) + [1],
+            dtype=dtype,
+        )
+        pa = np.append(pa, alphas, axis=2)
+    return pa

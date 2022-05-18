@@ -5,7 +5,7 @@ Before filling in the details, ensure:
   - Added gradient support and documentation for SVG files
 -->
 
-## Changelog 
+## Changelog
 <!-- Optional: more descriptive changelog entry than just the title for the upcoming
 release. Write RST between the following start and end comments.-->
 <!--changelog-start-->

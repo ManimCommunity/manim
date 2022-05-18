@@ -1,0 +1,282 @@
+*******
+v0.10.0
+*******
+
+:Date: September 01, 2021
+
+Contributors
+============
+
+A total of 40 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Animfysyk +
+* Benjamin Hackl
+* Christian Clauss
+* Daniel Adelodun +
+* Darigov Research
+* Darylgolden
+* Eric Biedert +
+* Harivinay
+* Jan-Hendrik Müller
+* Jephian Lin +
+* Joy Bhalla +
+* Laith Bahodi
+* Lalourche +
+* Max Stoumen
+* Naveen M K
+* Oliver
+* Partha Das +
+* Raj Dandekar +
+* Rohan Sharma +
+* Ryan McCauley
+* Václav Hlaváč +
+* asjadaugust +
+* ccn
+* icedcoffeeee
+* sparshg
+* vinnniii15 +
+* vladislav doster +
+* xia0long +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Aathish Sivasubrahmanian
+* Benjamin Hackl
+* Darylgolden
+* Devin Neal
+* Eric Biedert
+* GameDungeon
+* Harivinay
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Jason Villanueva
+* Jephian Lin
+* Joy Bhalla
+* KingWampy
+* Laith Bahodi
+* Naveen M K
+* Oliver
+* Raghav Goel
+* Raj Dandekar
+* Ryan McCauley
+* ccn
+* icedcoffeeee
+* ralphieraccoon
+* sparshg
+
+Pull requests merged
+====================
+
+A total of 59 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`1843`: Dropped redundant OpenGL files and add metaclass support for :class:`~.Surface`
+   - ``OpenGL<x>`` classes from ``opengl_geometry.py``, ``opengl_text_mobject.py``, ``opengl_tex_mobject.py``, ``opengl_svg_path.py``, ``opengl_svg_mobject.py`` and most of ``opengl_three_dimensions.py`` have been removed.
+   - ``ParametricSurface`` has been renamed to :class:`~.Surface`
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`1941`: Added examples, tests and improved documentation for :mod:`~.coordinate_systems`
+
+
+* :pr:`1694`: Added ``font_size`` parameter for :class:`~.Tex` and :class:`~.Text`, replaced ``scale`` parameters with ``font_size``
+
+
+* :pr:`1860`: Removed :class:`~.GraphScene`, :class:`~.NumberLineOld` and parameters for :class:`~.ChangingDecimal`
+
+
+New features
+------------
+
+* :pr:`1929`: Implementing a ``zoom`` parameter for :meth:`.ThreeDScene.move_camera`
+   Zooming into a :class:`~.ThreeDScene` can now be done by calling, for example, ``self.move_camera(zoom=2)`` in the ``construct`` method.
+
+* :pr:`1980`: Added a ``dissipating_time`` keyword argument to :class:`~.TracedPath` to allow animating a dissipating path
+
+
+* :pr:`1899`: Allow switching the renderer to OpenGL at runtime
+   Previously, the metaclass approach only changed the inheritance chain to switch between OpenGL and cairo mobjects when the class objects are initialized, i.e., at import time. This PR also triggers the changes to the inheritance chain when the value of ``config.renderer`` is changed.
+
+* :pr:`1828`: Added configuration option ``zero_pad`` for zero padding PNG file names
+
+
+Enhancements
+------------
+
+* :pr:`1882`: Added OpenGL support for :class:`~.PMobject` and its subclasses
+
+
+* :pr:`1881`: Added methods :meth:`.Angle.get_lines` and :meth:`.Angle.get_value` to :class:`~.Angle`
+
+
+* :pr:`1952`: Added the option to save last frame for OpenGL
+
+
+* :pr:`1922`: Fixed IPython interface to exit cleanly when OpenGL renderer raises an error
+
+
+* :pr:`1923`: Fixed CLI help text for ``manim init`` subcommand so that it is not truncated
+
+
+* :pr:`1868`: Added OpenGL support to IPython magic
+   The OpenGL renderer can now be used in jupyter notebooks when using the ``%%manim`` magic command.
+
+* :pr:`1841`: Reduced default resolution of :class:`~.Dot3D`
+
+
+* :pr:`1866`: Allow passing keyword argument ``corner_radius`` to :class:`~.SurroundingRectangle`
+
+
+* :pr:`1847`: Allow :class:`~.Cross` to be created without requiring a mobject
+
+
+Fixed bugs
+----------
+
+* :pr:`1985`: Use ``height`` to determine ``font_size`` instead of the ``_font_size`` attribute
+
+
+* :pr:`1758`: Fixed scene selection being ignored when using the OpenGL renderer
+
+
+* :pr:`1871`: Fixed broken :meth:`.VectorScene.vector_to_coords`
+
+
+* :pr:`1973`: Fixed indexing of :meth:`.Table.get_entries` to respect row length
+
+
+* :pr:`1950`: Fixed passing custom arrow shapes to :class:`~.CurvedArrow`
+
+
+* :pr:`1967`: Fixed :attr:`.Axes.coordinate_labels` referring to the entire axis, not just its labels
+
+
+* :pr:`1951`: Fixed :meth:`.Axes.get_line_graph` returning a graph rendered below the axes
+
+
+* :pr:`1943`: Added ``buff`` keyword argument to :class:`~.BraceLabel`
+
+
+* :pr:`1938`: Fixed :class:`~.Rotate` for angles that are multiples of :math:`2\pi`
+
+
+* :pr:`1924`: Made arrow tips rotate ``IN`` and ``OUT`` properly
+
+
+* :pr:`1931`: Fixed ``row_heights`` in :meth:`.Mobject.arrange_in_grid`
+
+
+* :pr:`1893`: Fixed CLI error when rendering a file containing a single scene without specifying the scene name
+
+
+* :pr:`1744`: Fixed bug in :class:`~.NumberPlane` with strictly positive or strictly negative values for ``x_range`` and ``y_range``
+
+
+* :pr:`1887`: Fixed ``custom_config`` not working in ``frames_comparison``
+
+
+* :pr:`1879`: Fixed how the installed version is determined by Poetry
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`1979`: Corrected Japanese phrases in documentation
+
+
+* :pr:`1976`: Fixed labelling of languages in documentation example
+
+
+* :pr:`1949`: Rewrite installation instructions from scratch
+
+
+* :pr:`1963`: Added sitemap to ``robots.txt``
+
+
+* :pr:`1939`: Fixed formatting of parameter description of :class:`~.NumberPlane`
+
+
+* :pr:`1918`: Fixed a typo in the text tutorial
+
+
+* :pr:`1915`: Improved the wording of the installation instructions for Google Colab
+
+
+* :pr:`1906`: Improved language and overall consistency in ``README``
+
+
+* :pr:`1880`: Updated tutorials to use ``.animate`` instead of :class:`~.ApplyMethod`
+
+
+* :pr:`1877`: Remove duplicated imports in some documentation examples
+
+
+* :pr:`1869`: Fixed duplicated Parameters section in  :meth:`.Mobject.arrange_in_grid`
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`1894`: Fixed an OpenGL test
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`1987`: Added support for using OpenGL in subprocess in Windows pipeline
+
+
+* :pr:`1964`: Added ``CITATION.cff`` and a method to automatically update this citation with new releases
+
+
+* :pr:`1856`: Modified Dockerfile to support multi-platform builds via ``docker buildx``
+
+
+* :pr:`1955`: Partially support OpenGL rendering with Docker
+
+
+* :pr:`1896`: Made RTD apt install FFMPEG instead of installing a Python binding
+
+
+* :pr:`1864`: Shortened and simplified PR template
+
+
+* :pr:`1853`: Updated Sphinx to 4.1.2
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`1960`: Ignore fewer flake8 errors
+
+
+* :pr:`1947`: Set flake8 not to ignore undefined names in Python code
+
+
+* :pr:`1948`: flake8: Set max-line-length instead of ignoring long lines
+
+
+* :pr:`1956`:  Upgrade to modern Python syntax
+   - This pull request was created `with the command <https://github.com/asottile/pyupgrade#readme>`__ ``pyupgrade --py36-plus **/*.py``
+   - Python f-strings simplify the code and `should speed up execution <https://www.scivision.dev/python-f-string-speed>`__.
+
+* :pr:`1898`: Replaced ``self.data["attr"]`` and ``self.uniforms["attr"]`` with ``self.attr``
+   In particular, ``OpenGLVMobject.points`` can now be accessed directly.
+
+* :pr:`1934`: Improved code quality by implementing suggestions from LGTM
+
+
+* :pr:`1861`: Updated ``dearpygui`` version to 0.8.x
+
+
+New releases
+------------
+
+* :pr:`1989`: Prepare new release v0.10.0

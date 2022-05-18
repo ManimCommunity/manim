@@ -1,0 +1,57 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:2
+msgid "polygram"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/polygram.py:docstring of manim.mobject.geometry.polygram:1
+msgid "Mobjects that are simple geometric shapes."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A shape with smaller cutouts."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A shape consisting of one closed loop of vertices."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A generalized :class:`Polygon`, allowing for disconnected sets of edges."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A quadrilateral with two sets of parallel sides."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "An n-sided regular :class:`Polygon`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A :class:`Polygram` with regularly spaced vertices."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A rectangle with rounded corners."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A rectangle with equal side lengths."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.polygram.rst:38:<autosummary>:1
+msgid "A regular polygram without the intersecting lines."
+msgstr ""
+
+

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import configparser
 from pathlib import Path
 
 import click
+import cloup
 
 from ... import console
 from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
@@ -32,7 +35,7 @@ def select_resolution():
     resolution_options = []
     for quality in QUALITIES.items():
         resolution_options.append(
-            (quality[1]["pixel_height"], quality[1]["pixel_width"])
+            (quality[1]["pixel_height"], quality[1]["pixel_width"]),
         )
     resolution_options.pop()
     choice = click.prompt(
@@ -68,12 +71,12 @@ def update_cfg(cfg_dict, project_cfg_path):
         config.write(conf)
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@click.argument("project_name", type=Path, required=False)
-@click.option(
+@cloup.argument("project_name", type=Path, required=False)
+@cloup.option(
     "-d",
     "--default",
     "default_settings",
@@ -100,11 +103,11 @@ def project(default_settings, **args):
 
     if project_name.is_dir():
         console.print(
-            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n"
+            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n",
         )
     else:
         project_name.mkdir()
-        new_cfg = dict()
+        new_cfg = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
         if not default_settings:
@@ -125,13 +128,13 @@ def project(default_settings, **args):
             update_cfg(CFG_DEFAULTS, new_cfg_path)
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=True,
     epilog=EPILOG,
 )
-@click.argument("scene_name", type=str, required=True)
-@click.argument("file_name", type=str, required=False)
+@cloup.argument("scene_name", type=str, required=True)
+@cloup.argument("file_name", type=str, required=False)
 def scene(**args):
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
@@ -159,7 +162,6 @@ def scene(**args):
             # file exists so we are going to append new scene to that file
             with open(file_name, "a") as f:
                 f.write("\n\n\n" + scene)
-            pass
         else:
             # file does not exist so we create a new file, append the scene and prepend the import statement
             with open(file_name, "w") as f:
@@ -173,14 +175,14 @@ def scene(**args):
             f.write("\n\n\n" + scene)
 
 
-@click.group(
+@cloup.group(
     context_settings=CONTEXT_SETTINGS,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
     help="Create a new project or insert a new scene.",
 )
-@click.pass_context
+@cloup.pass_context
 def new(ctx):
     pass
 

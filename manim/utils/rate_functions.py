@@ -84,6 +84,8 @@ There are primarily 3 kinds of standard easing functions:
 """
 
 
+from __future__ import annotations
+
 __all__ = [
     "linear",
     "smooth",
@@ -195,7 +197,8 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
 
 @unit_interval
 def running_start(
-    t: float, pull_factor: float = -0.5
+    t: float,
+    pull_factor: float = -0.5,
 ) -> typing.Iterable:  # what is func return type?
     return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
 

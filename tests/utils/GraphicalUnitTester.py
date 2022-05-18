@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import logging
 import os
+from pathlib import Path
 
 import numpy as np
 
@@ -32,24 +35,29 @@ class GraphicalUnitTester:
     def __init__(self, scene_class, module_tested, tmpdir, rgb_atol=0):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
-        tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.path_tests_medias_cache = os.path.join(
-            tmpdir,
-            "test_graphical_units",
-            "tests_cache",
-            module_tested,
-            scene_class.__name__,
+        tests_directory = Path(__file__).absolute().parent.parent
+
+        self.path_tests_medias_cache = (
+            Path(tmpdir)
+            / "test_graphical_units"
+            / "tests_cache"
+            / module_tested
+            / scene_class.__name__
         )
-        self.path_control_data = os.path.join(
-            tests_directory, "control_data", "graphical_units_data", module_tested
+
+        self.path_control_data = (
+            Path(tests_directory)
+            / "control_data"
+            / "graphical_units_data"
+            / module_tested
         )
         self.rgb_atol = rgb_atol
 
         # IMPORTANT NOTE : The graphical units tests don't use for now any
         # custom manim.cfg, since it is impossible to manually select a
         # manim.cfg from a python file. (see issue #293)
-        config["text_dir"] = os.path.join(self.path_tests_medias_cache, "Text")
-        config["tex_dir"] = os.path.join(self.path_tests_medias_cache, "Tex")
+        config["text_dir"] = Path(self.path_tests_medias_cache) / "Text"
+        config["tex_dir"] = Path(self.path_tests_medias_cache) / "Tex"
 
         config["disable_caching"] = True
         config["quality"] = "low_quality"
@@ -59,7 +67,7 @@ class GraphicalUnitTester:
             config["text_dir"],
             config["tex_dir"],
         ]:
-            os.makedirs(dir_temp)
+            Path(dir_temp).mkdir(parents=True)
 
         with tempconfig({"dry_run": True}):
             if config["renderer"] == "opengl":
@@ -76,14 +84,12 @@ class GraphicalUnitTester:
         :class:`numpy.array`
             The pre-rendered frame.
         """
-        frame_data_path = os.path.join(
-            os.path.join(self.path_control_data, f"{self.scene}.npz")
-        )
+        frame_data_path = Path(self.path_control_data) / f"{self.scene}.npz"
         return np.load(frame_data_path)["frame_data"]
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generated and the one expected."""
-        import matplotlib.gridspec as gridspec
+        import matplotlib.gridspec as gridspec  # type: ignore
         import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)
@@ -128,7 +134,7 @@ class GraphicalUnitTester:
         )
 
         mismatches = np.logical_not(
-            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0)
+            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0),
         )
         if mismatches.any():
             incorrect_indices = np.argwhere(mismatches)

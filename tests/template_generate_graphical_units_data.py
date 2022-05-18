@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from manim import *
 from tests.helpers.graphical_units import set_test_scene
 
@@ -14,5 +16,6 @@ class YourClassTest(Scene):  # e.g. RoundedRectangleTest
 
 
 set_test_scene(
-    YourClassTest, "INSERT_MODULE_NAME"
+    YourClassTest,
+    "INSERT_MODULE_NAME",
 )  # INSERT_MODULE_NAME can be e.g.  "geometry" or "movements"

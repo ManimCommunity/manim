@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 
 from manim.animation.creation import Uncreate
-from manim.mobject.geometry import Dot, Line, Square
+from manim.mobject.geometry.arc import Dot
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import override_animate
 from manim.mobject.types.vectorized_mobject import VGroup
 
@@ -70,12 +74,14 @@ def test_chaining_overridden_animate():
             return Uncreate(self.line, **anim_args)
 
     with pytest.raises(
-        NotImplementedError, match="not supported for overridden animations"
+        NotImplementedError,
+        match="not supported for overridden animations",
     ):
         DotsWithLine().animate.shift((1, 0, 0)).remove_line()
 
     with pytest.raises(
-        NotImplementedError, match="not supported for overridden animations"
+        NotImplementedError,
+        match="not supported for overridden animations",
     ):
         DotsWithLine().animate.remove_line().shift((1, 0, 0))
 

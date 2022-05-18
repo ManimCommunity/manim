@@ -1,5 +1,7 @@
 """Mobjects representing raster images."""
 
+from __future__ import annotations
+
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
@@ -7,16 +9,16 @@ import pathlib
 import colour
 import numpy as np
 from PIL import Image
+from PIL.Image import Resampling
 
-from manim.constants import DEFAULT_QUALITY, QUALITIES
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.shape_matchers import SurroundingRectangle
 from ...utils.bezier import interpolate
 from ...utils.color import WHITE, color_to_int_rgb
-from ...utils.images import get_full_raster_image_path
+from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 
 class AbstractImageMobject(Mobject):
@@ -26,15 +28,18 @@ class AbstractImageMobject(Mobject):
     Parameters
     ----------
     scale_to_resolution : :class:`int`
-        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-        This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
+        At this resolution the image is placed pixel by pixel onto the screen, so it
+        will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with
+        e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering
+        won't effect the position of the image on the screen.
     """
 
     def __init__(
         self,
         scale_to_resolution,
         pixel_array_dtype="uint8",
-        resampling_algorithm=Image.BICUBIC,
+        resampling_algorithm=Resampling.BICUBIC,
         **kwargs,
     ):
         self.pixel_array_dtype = pixel_array_dtype
@@ -51,12 +56,16 @@ class AbstractImageMobject(Mobject):
 
     def set_resampling_algorithm(self, resampling_algorithm):
         """
-        Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it.
-        Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+        Sets the interpolation method for upscaling the image. By default the image is
+        interpolated using bicubic algorithm. This method lets you change it.
+        Interpolation is done internally using Pillow, and the function besides the
+        string constants describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------
-        resampling_algorithm : :class:`int`, an integer constant described in the Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under the following keys:
+        resampling_algorithm : :class:`int`, an integer constant described in the
+        Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under
+        the following keys:
          * 'bicubic' or 'cubic'
          * 'nearest' or 'none'
          * 'box'
@@ -68,7 +77,10 @@ class AbstractImageMobject(Mobject):
             self.resampling_algorithm = resampling_algorithm
         else:
             raise ValueError(
-                "resampling_algorithm has to be an int, one of the values defined in RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
+                "resampling_algorithm has to be an int, one of the values defined in "
+                "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
+                "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
+                "'hamming', 'lanczos'.",
             )
 
     def reset_points(self):
@@ -78,7 +90,7 @@ class AbstractImageMobject(Mobject):
                 UP + LEFT,
                 UP + RIGHT,
                 DOWN + LEFT,
-            ]
+            ],
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
@@ -96,8 +108,11 @@ class ImageMobject(AbstractImageMobject):
     Parameters
     ----------
     scale_to_resolution : :class:`int`
-        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-        This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
+        At this resolution the image is placed pixel by pixel onto the screen, so it
+        will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with
+        e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering
+        won't effect the position of the image on the screen.
 
 
     Example
@@ -169,24 +184,12 @@ class ImageMobject(AbstractImageMobject):
         else:
             self.pixel_array = np.array(filename_or_array)
         self.pixel_array_dtype = kwargs.get("pixel_array_dtype", "uint8")
-        self.change_to_rgba_array()
+        self.pixel_array = change_to_rgba_array(
+            self.pixel_array, self.pixel_array_dtype
+        )
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
-        AbstractImageMobject.__init__(self, scale_to_resolution, **kwargs)
-
-    def change_to_rgba_array(self):
-        """Converts an RGB array into RGBA with the alpha value opacity maxed."""
-        pa = self.pixel_array
-        if len(pa.shape) == 2:
-            pa = pa.reshape(list(pa.shape) + [1])
-        if pa.shape[2] == 1:
-            pa = pa.repeat(3, axis=2)
-        if pa.shape[2] == 3:
-            alphas = 255 * np.ones(
-                list(pa.shape[:2]) + [1], dtype=self.pixel_array_dtype
-            )
-            pa = np.append(pa, alphas, axis=2)
-        self.pixel_array = pa
+        super().__init__(scale_to_resolution, **kwargs)
 
     def get_pixel_array(self):
         """A simple getter method."""
@@ -252,13 +255,19 @@ class ImageMobject(AbstractImageMobject):
             f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.fill_opacity = interpolate(
-            mobject1.fill_opacity, mobject2.fill_opacity, alpha
+            mobject1.fill_opacity,
+            mobject2.fill_opacity,
+            alpha,
         )
         self.stroke_opacity = interpolate(
-            mobject1.stroke_opacity, mobject2.stroke_opacity, alpha
+            mobject1.stroke_opacity,
+            mobject2.stroke_opacity,
+            alpha,
         )
         self.pixel_array = interpolate(
-            mobject1.pixel_array, mobject2.pixel_array, alpha
+            mobject1.pixel_array,
+            mobject2.pixel_array,
+            alpha,
         ).astype(self.pixel_array_dtype)
 
     def get_style(self):
@@ -305,5 +314,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
             f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.pixel_array = interpolate(
-            mobject1.pixel_array, mobject2.pixel_array, alpha
+            mobject1.pixel_array,
+            mobject2.pixel_array,
+            alpha,
         ).astype(self.pixel_array_dtype)

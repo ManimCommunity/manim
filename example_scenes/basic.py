@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 from manim import *
 
 # To watch one of these scenes, run the following:
@@ -29,13 +30,12 @@ class OpeningManim(Scene):
         transform_title.to_corner(UP + LEFT)
         self.play(
             Transform(title, transform_title),
-            LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
+            LaggedStart(*(FadeOut(obj, shift=DOWN) for obj in basel)),
         )
         self.wait()
 
         grid = NumberPlane()
-        grid_title = Tex("This is a grid")
-        grid_title.scale(1.5)
+        grid_title = Tex("This is a grid", font_size=72)
         grid_title.move_to(transform_title)
 
         self.add(grid, grid_title)  # Make sure title is on top of grid
@@ -47,7 +47,7 @@ class OpeningManim(Scene):
         self.wait()
 
         grid_transform_title = Tex(
-            r"That was a non-linear function \\ applied to the grid"
+            r"That was a non-linear function \\ applied to the grid",
         )
         grid_transform_title.move_to(grid_title, UL)
         grid.prepare_for_nonlinear_transform()
@@ -59,8 +59,8 @@ class OpeningManim(Scene):
                         np.sin(p[1]),
                         np.sin(p[0]),
                         0,
-                    ]
-                )
+                    ],
+                ),
             ),
             run_time=3,
         )
@@ -87,8 +87,9 @@ class WarpSquare(Scene):
         square = Square()
         self.play(
             ApplyPointwiseFunction(
-                lambda point: complex_to_R3(np.exp(R3_to_complex(point))), square
-            )
+                lambda point: complex_to_R3(np.exp(R3_to_complex(point))),
+                square,
+            ),
         )
         self.wait()
 
@@ -127,6 +128,37 @@ class UpdatersExample(Scene):
             run_time=5,
         )
         self.wait()
+
+
+class SpiralInExample(Scene):
+    def construct(self):
+        logo_green = "#81b29a"
+        logo_blue = "#454866"
+        logo_red = "#e07a5f"
+
+        font_color = "#ece6e2"
+
+        pi = MathTex(r"\pi").scale(7).set_color(font_color)
+        pi.shift(2.25 * LEFT + 1.5 * UP)
+
+        circle = Circle(color=logo_green, fill_opacity=0.7, stroke_width=0).shift(LEFT)
+        square = Square(color=logo_blue, fill_opacity=0.8, stroke_width=0).shift(UP)
+        triangle = Triangle(color=logo_red, fill_opacity=0.9, stroke_width=0).shift(
+            RIGHT
+        )
+        pentagon = Polygon(
+            *[
+                [np.cos(2 * np.pi / 5 * i), np.sin(2 * np.pi / 5 * i), 0]
+                for i in range(5)
+            ],
+            color=PURPLE_B,
+            fill_opacity=1,
+            stroke_width=0
+        ).shift(UP + 2 * RIGHT)
+        shapes = VGroup(triangle, square, circle, pentagon, pi)
+        self.play(SpiralIn(shapes, fade_in_fraction=0.9))
+        self.wait()
+        self.play(FadeOut(shapes))
 
 
 # See many more examples at https://docs.manim.community/en/stable/examples.html

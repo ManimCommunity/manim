@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import types
-from importlib import import_module
 
 import pkg_resources
 
@@ -22,7 +23,7 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
         # essentially this would be similar to `from plugin import *``
         # if not just import the module with the plugin name
         if hasattr(loaded_plugin, "__all__"):
-            for thing in loaded_plugin.__all__:
+            for thing in loaded_plugin.__all__:  # type: ignore
                 exec(f"{thing}=loaded_plugin.{thing}")
                 __all__.append(thing)
         else:
@@ -37,6 +38,6 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
             exec(f"{lst.__name__}=lst")
             __all__.append(lst.__name__)
     plugins_requested.remove(plugin.name)
-else:
-    if plugins_requested != []:
-        logger.warning("Missing Plugins: %s", plugins_requested)
+
+if plugins_requested != []:
+    logger.warning("Missing Plugins: %s", plugins_requested)

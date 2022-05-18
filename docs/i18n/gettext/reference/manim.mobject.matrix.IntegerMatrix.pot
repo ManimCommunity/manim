@@ -1,0 +1,69 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:2
+msgid "IntegerMatrix"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:4
+msgid "Qualified name: ``manim.mobject.matrix.IntegerMatrix``"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:1
+msgid "Bases: :py:class:`manim.mobject.matrix.Matrix`"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:1
+msgid "A mobject that displays a matrix with integer entries on the screen."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:16
+msgid "Will round if there are decimal entries in the matrix."
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:18
+msgid "A numpy 2d array or list of lists"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.IntegerMatrix:20
+msgid "Mobject to use, by default Integer"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.IntegerMatrix.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

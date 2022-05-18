@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 try:
     import dearpygui.dearpygui as dpg
-    from dearpygui.demo import show_demo
 
     dearpygui_imported = True
 except ImportError:
@@ -13,6 +14,7 @@ from .. import __version__, config
 from ..utils.module_ops import scene_classes_from_file
 
 if dearpygui_imported:
+    dpg.create_context()
     window = dpg.generate_uuid()
 
 
@@ -22,7 +24,10 @@ def configure_pygui(renderer, widgets, update=True):
     if update:
         dpg.delete_item(window)
     else:
-        dpg.setup_viewport()
+        dpg.create_viewport()
+        dpg.setup_dearpygui()
+        dpg.show_viewport()
+
     dpg.set_viewport_title(title=f"Manim Community v{__version__}")
     dpg.set_viewport_width(1015)
     dpg.set_viewport_height(540)
@@ -59,7 +64,8 @@ def configure_pygui(renderer, widgets, update=True):
         dpg.add_separator()
         if len(widgets) != 0:
             with dpg.collapsing_header(
-                label=f"{config['scene_names'][0]} widgets", default_open=True
+                label=f"{config['scene_names'][0]} widgets",
+                default_open=True,
             ):
                 for widget_config in widgets:
                     widget_config_copy = widget_config.copy()
@@ -68,10 +74,9 @@ def configure_pygui(renderer, widgets, update=True):
                     if widget != "separator":
                         del widget_config_copy["name"]
                         del widget_config_copy["widget"]
-                        getattr(dpg, f"add_{widget}")(name, **widget_config_copy)
+                        getattr(dpg, f"add_{widget}")(label=name, **widget_config_copy)
                     else:
                         dpg.add_separator()
-    # show_demo()
 
     if not update:
         dpg.start_dearpygui()

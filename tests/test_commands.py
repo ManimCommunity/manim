@@ -1,18 +1,16 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 from textwrap import dedent
 
 from click.testing import CliRunner
 
-from manim import __version__
+from manim import __version__, capture
 from manim.__main__ import main
-
-from .utils.video_tester import *
 
 
 def test_manim_version():
-    command = ["--version"]
-
     command = [
         sys.executable,
         "-m",
@@ -34,14 +32,14 @@ Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
   Manages Manim configuration files.
 
 Options:
-  -h, --help  Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
   export
   show
   write
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.stdout
 
@@ -57,9 +55,9 @@ Usage: manim plugins [OPTIONS]
 
 Options:
   -l, --list  List available plugins.
-  -h, --help  Show this message and exit.
+  --help      Show this message and exit.
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
 
@@ -73,12 +71,12 @@ def test_manim_init_subcommand():
     expected_main_py = ""
 
     with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg")
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg"),
     ) as f:
         expected_manim_cfg = f.read()
 
     with open(
-        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp")
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp"),
     ) as f:
         expected_main_py = f.read()
 
@@ -111,12 +109,12 @@ Usage: manim new [OPTIONS] COMMAND [ARGS]...
   Create a new project or insert a new scene.
 
 Options:
-  -h, --help  Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
   project  Creates a new project.
   scene    Inserts a SCENE to an existing FILE or creates a new FILE.
 
-  Made with <3 by Manim Community developers.
+Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output

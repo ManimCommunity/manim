@@ -1,15 +1,15 @@
-"""Mobjects that dynamically show the change of a variable."""
+"""Simple mobjects that can be used for storing (and updating) a value."""
+
+from __future__ import annotations
 
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 
-from typing import Union
-
 import numpy as np
 
-from ..mobject.mobject import Mobject
-from ..utils.paths import straight_path
-from .opengl_compatibility import ConvertToOpenGL
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.utils.paths import straight_path
 
 
 class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
@@ -76,11 +76,11 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
 
     def get_value(self) -> float:
         """Get the current value of this ValueTracker."""
-        return self.get_points()[0, 0]
+        return self.points[0, 0]
 
     def set_value(self, value: float):
         """Sets a new scalar value to the ValueTracker"""
-        self.get_points()[0, 0] = value
+        self.points[0, 0] = value
         return self
 
     def increment_value(self, d_value: float):
@@ -127,12 +127,12 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         self.set_value(self.get_value() / d_value)
         return self
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
+    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path()):
         """
         Turns self into an interpolation between mobject1
         and mobject2.
         """
-        self.set_points(path_func(mobject1.get_points(), mobject2.get_points(), alpha))
+        self.set_points(path_func(mobject1.points, mobject2.points, alpha))
         return self
 
 
@@ -166,10 +166,10 @@ class ComplexValueTracker(ValueTracker):
 
         The value is internally stored as a points array [a, b, 0]. This can be accessed directly
         to represent the value geometrically, see the usage example."""
-        return complex(*self.get_points()[0, :2])
+        return complex(*self.points[0, :2])
 
     def set_value(self, z):
         """Sets a new complex value to the ComplexValueTracker"""
         z = complex(z)
-        self.get_points()[0, :2] = (z.real, z.imag)
+        self.points[0, :2] = (z.real, z.imag)
         return self

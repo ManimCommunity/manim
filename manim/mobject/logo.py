@@ -1,15 +1,19 @@
 """Utilities for Manim's logo and banner."""
 
+from __future__ import annotations
+
 __all__ = ["ManimBanner"]
+
+from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Square, Triangle
+from manim.mobject.text.tex_mobject import MathTex, Tex
 
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create
+from ..animation.creation import Create, SpiralIn
 from ..animation.fading import FadeIn
-from ..animation.update import UpdateFromAlphaFunc
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
-from ..mobject.geometry import Circle, Square, Triangle
-from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
 from ..utils.tex_templates import TexFontTemplates
@@ -53,7 +57,7 @@ class ManimBanner(VGroup):
     """
 
     def __init__(self, dark_theme: bool = True):
-        VGroup.__init__(self)
+        super().__init__()
 
         logo_green = "#81b29a"
         logo_blue = "#454866"
@@ -90,7 +94,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs) -> "ManimBanner":
+    def scale(self, scale_factor: float, **kwargs) -> ManimBanner:
         """Scale the banner by the specified scale factor.
 
         Parameters
@@ -123,30 +127,8 @@ class ManimBanner(VGroup):
         :class:`~.AnimationGroup`
             An animation to be used in a :meth:`.Scene.play` call.
         """
-        shape_center = self.shapes.get_center()
-        expansion_factor = 8 * self.scale_factor
-
-        for shape in self.shapes:
-            shape.final_position = shape.get_center()
-            shape.initial_position = (
-                shape.final_position
-                + (shape.final_position - shape_center) * expansion_factor
-            )
-            shape.move_to(shape.initial_position)
-            shape.save_state()
-
-        def spiral_updater(shapes, alpha):
-            for shape in shapes:
-                shape.restore()
-                shape.shift((shape.final_position - shape.initial_position) * alpha)
-                shape.rotate(TAU * alpha, about_point=shape_center)
-                shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
-                shape.set_opacity(min(1, alpha * 3))
-
         return AnimationGroup(
-            UpdateFromAlphaFunc(
-                self.shapes, spiral_updater, run_time=run_time, rate_func=ease_out_sine
-            ),
+            SpiralIn(self.shapes, run_time=run_time),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
         )
@@ -257,6 +239,9 @@ class ManimBanner(VGroup):
                 rate_func=ease_in_out_cubic,
             ),
             UpdateFromAlphaFunc(
-                self, slide_back, run_time=run_time * 1 / 3, rate_func=smooth
+                self,
+                slide_back,
+                run_time=run_time * 1 / 3,
+                rate_func=smooth,
             ),
         )

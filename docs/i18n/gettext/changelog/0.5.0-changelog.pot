@@ -1,0 +1,634 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.5.0-changelog.rst:3
+msgid "v0.5.0"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:5
+msgid "April 02, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:10
+msgid "A total of 35 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:14
+msgid "Abel Aebker +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:15
+#: ../../source/changelog/0.5.0-changelog.rst:47
+msgid "Abhijith Muthyala"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:16
+msgid "AntonBallmaier +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:17
+msgid "Aron"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:18
+#: ../../source/changelog/0.5.0-changelog.rst:48
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:19
+msgid "Bogdan Stăncescu +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:20
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:21
+#: ../../source/changelog/0.5.0-changelog.rst:50
+msgid "Devin Neal"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:22
+msgid "GameDungeon +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:23
+#: ../../source/changelog/0.5.0-changelog.rst:51
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:24
+#: ../../source/changelog/0.5.0-changelog.rst:52
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:25
+#: ../../source/changelog/0.5.0-changelog.rst:53
+msgid "Kapil Sachdeva"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:26
+#: ../../source/changelog/0.5.0-changelog.rst:54
+msgid "KingWampy"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:27
+msgid "Lionel Ray +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:28
+#: ../../source/changelog/0.5.0-changelog.rst:57
+msgid "Mark Miller"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:29
+msgid "Mohammad Al-Fetyani +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:30
+#: ../../source/changelog/0.5.0-changelog.rst:59
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:31
+msgid "Niklas Dewally +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:32
+msgid "Oliver +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:33
+msgid "Roopesh +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:34
+msgid "Seb Pearce +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:35
+msgid "aebkea +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:36
+msgid "friedkeenan"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:37
+msgid "hydrobeam +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:38
+msgid "kolibril13"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:39
+msgid "sparshg"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:40
+msgid "tfglynn +"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:43
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:46
+msgid "Abel Aebker"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:49
+msgid "Bogdan Stăncescu"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:55
+msgid "Leo Torres"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:56
+msgid "Lionel Ray"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:58
+msgid "Mohammad Al-Fetyani"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:60
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:61
+msgid "Ricky Chon"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:62
+msgid "vector67"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:65
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:67
+msgid "A total of 64 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:70
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:73
+msgid ":pr:`1075`: Add OpenGL Renderer"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:73
+msgid "Adds an OpenGLRenderer, OpenGLCamera, OpenGL-enabled Mobjects, and a ``--use_opengl_renderer`` flag. When this flag is passed, you can pass the ``-p`` flag to preview animations, the ``-w`` flag to generate video, and the ``-q`` flag to specify render quality. If you don't pass either the ``-p`` or the ``-w`` flag, nothing will happen. Scenes rendered with the OpenGL renderer must *only* use OpenGL-enabled Mobjects."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:76
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:80
+msgid ":pr:`1124`: Deprecated :class:`ShowCreation` in favor of :class:`Create`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:79
+msgid "Deprecated :class:`ShowCreation` in favor of :class:`Create` across the library with the exception of the `show_creation` boolean variable `vector_space_scene.py`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:80
+msgid "Added a deprecation warning in the original :class:`ShowCreation` class."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:83
+msgid ":pr:`1110`: Deprecated SmallDot + OpenGLSmallDot"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:83
+msgid "`SmallDot` isn't necessary and a deprecation warning will be raised. This will be removed in a future release."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:86
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:91
+msgid ":pr:`1037`: Added new fade and transform animations (:class:`~.TransformMatchingShapes`, :class:`~.TransformMatchingTex`, :class:`~.FadeTransform`) from 3b1b/manim"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:89
+msgid "Added new Fade animation: :class:`~FadeOutToPoint` Added :class:`~FadeTransform` and :class:`~FadeTransformPieces` for transforming mobjects and submobjects with a fade Added :class:`~TransformMatchingShapes` and :class:`~TransformMatchingTex` for transforming mobjects and tex that have matching parts"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:93
+msgid ":pr:`1097`: Added 3D Mobject :class:`~.Dot3D`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:96
+msgid ":pr:`1074`: Added jupyter media_width option to the config"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:100
+msgid ":pr:`1107`: Added :class:`~.Unwrite` animation class to complement :class:`~.Write`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:100
+msgid "Added :class:`Unwrite` which inherits from :class:`~.Write`. It automatically reverses the animation of :class:`~.Write` by passing the reversed rate function, but it also takes an additional boolean parameter `reverse` which, if `False`, renders the animation from left to right (assuming text oriented in the usual way), but if `True`, it renders right to left."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:103
+msgid ":pr:`1085`: Added :class:`~.Angle` and :class:`~.RightAngle` for intersecting lines"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:103
+msgid ":class:`~.Angle` and :class:`~.RightAngle` both take two lines as input. If they intersect, or share a common vertex, an angle is drawn between them. Users can customize the look of the angle and also use a dotted right angle."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:106
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:108
+msgid ":pr:`1144`: Improved quality of GIFs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:114
+msgid ":pr:`1157`: Refresh triangulation on call to :meth:`~.OpenGLVMobject.apply_points_function`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:112
+msgid "Rotate called apply_points_function, which was previous not subclassed by OpenGLMobject - now it is. Then, the vertex normals can be updated too."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:114
+msgid "Additionally, the old_points matrix would change after rotating, making the old points / new points test irrelevant. This is addressed with a .copy call."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:116
+msgid ":pr:`1151`: Added parametric function support to :class:`OpenGLSurface`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:119
+msgid ":pr:`1139`: In-Code `config[\"preview\"]` Support"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:123
+msgid ":pr:`1123`: Added caching, skipping, and user-specified background colors to the OpenGL renderer"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:123
+msgid "OpenGL play logic has been improved to support caching and skipping with `-n` argument ( it is now similar to Cairo play logic). A random bug was fixed in OpenGLSurface and OpenGL background color can now be changed via `background_color` argument."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:128
+msgid ":pr:`1118`: Allow passing animation arguments with .animate syntax"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:126
+msgid "Users will now be able to do things like `obj.animate(run_time=2).method(arg)` if they want to specify animation arguments for an individual `.animate` call, and can still not specify any arguments like `obj.animate.method(arg)`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:128
+msgid "Passing animation arguments is only allowed directly after `.animate` is accessed, if passed elsewhere then a `ValueError` is raised."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:132
+msgid ":pr:`718`: Rotating the numbers in y axis"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:131
+msgid "In Axes, the y axis will be rotated 90deg but the numbers are also rotated and shouldn't be. Fixes this issue."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:135
+msgid ":pr:`1070`: Raise FileNotFoundError when unable to locate the .cfg file specified via ``--config_file``"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:135
+msgid "Raising the error will stop script execution and let the user know that there are problems with the `--config_file` location instead of reverting back to the default configuration."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:138
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:140
+msgid ":pr:`1224`: Fixed :class:`~.ShowIncreasingSubsets`, :class:`~.ShowSubmobjectsOneByOne`, and :class:`~.AddTextLetterByLetter`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:143
+msgid ":pr:`1201`: Prevent crash on :meth:`~.Scene.embed` for empty scenes"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:146
+msgid ":pr:`1192`: Fixed issue when an animation is cached, manim can't merge the partial movie files."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:150
+msgid ":pr:`1193`: Fixed using :class:`~.Animation` without a child :class:`~.Mobject` in :class:`~.AnimationGroup`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:150
+msgid "`AnimationGroup` may now take `Animation` objects which do not have a child `Mobject`, such as `Wait`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:152
+msgid ":pr:`1170`: Fixed minor SVG parsing bugs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:155
+msgid ":pr:`1159`: Added support for multiple transforms in the same SVG element"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:159
+msgid ":pr:`1156`: Fixed :class:`~.DrawBorderThenFill` to support OpenGL and improved type hints for some functions"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:159
+msgid "Fixed a bug in :class:`~.DrawBorderThenFill` that prevented :class:`~.Write` animations from working with :class:`~.OpenGLVMobjects` and slightly improved type hints for some animation functions to include :class:`~.OpenGLVMobject`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:162
+msgid ":pr:`1134`: Fixed the `-a` flag."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:162
+msgid "The ``-a`` / ``--write-all`` flag was broken. When used, it would cause Manim to crash just after beginning to render the second scene."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:165
+msgid ":pr:`1115`: Fixed bugs in :class:`~.OpenGLMobject` and added :class:`ApplyMethod` support"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:165
+msgid "Fixed undefined variables and converted :class:`Mobject` to :class:`OpenGLMobject`. Also, fixed assert statement in :class:`ApplyMethod`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:171
+msgid ":pr:`1092`: Refactored coordinate_systems.py, fixed bugs, added :class:`~.NumberPlane` test"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:168
+msgid "The default behavior of :meth:`~.Mobject.rotate` is to rotate about the center of :class:`~.Mobject`. :class:`~.NumberLine` is symmetric about the point at the number 0 only when ``|x_min|`` == ``|x_max|``. Ideally, the rotation should coincide with the point at number 0 on the line."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:171
+msgid "Added a regression test and additionally fixed some bugs introduced in :pr:`718`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:174
+msgid ":pr:`1078`: Removed stray print statements from `__main__.py`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:174
+msgid "Uses rich's print traceback instead and fixes an issue in printing the version twice when `manim --version` is called."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:177
+msgid ":pr:`1086`: Fixed broken line spacing in :class:`~.Text`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:177
+msgid "The `line_spacing` kwarg was missing when creating :class:`Text` Mobjects; this adds it."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:180
+msgid ":pr:`1083`: Corrected the shape of :class:`~.Torus`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:180
+msgid ":class:`Torus` draws a surface with an elliptical cross-section when `minor_radius` is different from 1. This PR ensures the cross-section is always a circle."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:183
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:185
+msgid ":pr:`1217`: Copyedited the document on testing in our documentation"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:188
+msgid ":pr:`1206`: Added Docstrings to :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:191
+msgid ":pr:`1218`: Removed BezierSpline from the example gallery"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:194
+msgid ":pr:`1219`: Updated Dockerfile (include dependencies for building documentation), moved documentation to main README"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:198
+msgid ":pr:`1209`: Added :ref_methods: to the manim directive"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:198
+msgid "This allows class methods to be linked in the documentation. Checkout the `example references <https://docs.manim.community/en/latest/examples.html#movingaround>`_ below the code to see how this is used!"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:200
+msgid ":pr:`1204`: Added rotation example to example gallery"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:203
+msgid ":pr:`1137`: Added GitHub Wiki pages on adding testing/documentation to Sphinx Docs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:206
+msgid ":pr:`1114`: Added examples for :class:`~.Ellipse`, :class:`~.Polygon`, :class:`~.RegularPolygon`, :class:`~.Triangle` and :class:`~.RoundedRectangle`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:209
+msgid ":pr:`1195`: Removed SmallDot from example"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:212
+msgid ":pr:`1130`: Added pre-commit to run black and flake8, updated contributing documentation accordingly"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:216
+msgid ":pr:`1138`: Moved previous version changelogs to separate files; Added a Script to generate future changelogs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:216
+msgid "This script quickly generates a changelog for whoever is making the release."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:218
+msgid ":pr:`1190`: Added note in contributing guide to read the latest version of the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:221
+msgid ":pr:`1188`: Added sounds example to docs"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:224
+msgid ":pr:`1165`: Added documentation for installing Manim on Colab"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:227
+msgid ":pr:`1128`: Added examples for :class:`~.DashedLine`, :class:`~.TangentLine`, :class:`~.Elbow`, :class:`~.Arrow`, :class:`~.Vector`, :class:`~.DoubleArrow`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:230
+msgid ":pr:`1177`: Replace links to the latest version of the documentation to the stable version"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:233
+msgid ":pr:`1077`: Added details to :func:`~.Mobject.get_critical_point`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:236
+msgid ":pr:`1154`: Fixed some typing hints. (ints to floats)"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:239
+msgid ":pr:`1036`: Added :class:`~.SurroundingRectangle` to the example gallery"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:242
+msgid ":pr:`1103`: Added documentation and examples for Square, Dot, Circle and Rectangle"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:245
+msgid ":pr:`1101`: Added documentation to :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:249
+msgid ":pr:`1088`: Added new svg files to documentation and imports"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:249
+msgid "In particular, SVGPathMobject, VMobjectFromPathstring, and the style_utils functions to manim's namespace."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:252
+msgid ":pr:`1076`: Improve documentation for GraphScene"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:252
+msgid "Updated `coords_to_point` and `point_to_coords` under `manim/scene/graph_scene.py` as the dosctring of each function confusingly described the opposite of what it is supposed to do."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:255
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:257
+msgid ":pr:`1160`: Enable CI testing for OpenGL"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:261
+msgid ":pr:`1100`: Rewrote test cases to use sys.executable in the command instead of \"python\""
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:261
+msgid "Tests would fail due to `capture()` not spawning a subshell in the correct environment, so when python was called, the test would be unable to find necessary packages."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:263
+msgid ":pr:`1079`: Removed the hardcoded value, `manim`, in `test_version.py`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:267
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:269
+msgid ":pr:`1213`: Updated TinyTex dependencies"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:272
+msgid ":pr:`1187`: Add CodeCov to Github Workflow"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:275
+msgid ":pr:`1166`: CI: Use poetry's cache dir rather than pip"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:281
+msgid ":pr:`1071`: Enable pytest-cov based code coverage"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:279
+msgid "Include pytest-cov as a python module as part of developer dependencies"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:280
+msgid "In updating poetry to include pytest-cov, manimpango moved from version 0.2.3 to 0.2.4, and libpango1.0-dev needed to be installed in Ubuntu."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:281
+msgid "Add to the CI workflow (`ci.yml`) to create and upload test coverage."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:283
+msgid ":pr:`1073`: Removed \"one line summary\" from PULL_REQUEST_TEMPLATE.md"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:287
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:289
+msgid ":pr:`1167`: Merge :class:`~.OpenGLMobject` and :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:292
+msgid ":pr:`1164`: Fixed single PEP8 style in `cairo_renderer.py`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:295
+msgid ":pr:`1140`: Flake8 Compat & Code Cleanup"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:305
+msgid ":pr:`1019`: Refactored :meth:`~.Scene.play`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:299
+msgid "Removed the _**three**_ decorators of :meth:`~.Scene.play`, in particular: caching logic and file writer logic are now included within :meth:`~.Scene.play` (it wasn't possible before, because `scene.wait` and `scene.play` were two different things)."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:300
+msgid "Added `is_static_wait` attributes to Wait. (<=> if wait is a frozen frame)."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:301
+msgid "Renamed and moved `scene.add_static_frame` to `renderer.freeze_current_frame`."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:302
+msgid "Now when calling play without animation, it raises `ValueError` instead of just a warning."
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:303
+msgid "Fixed :pr:`874` by modifying `renderer.update_skipping_status`"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:304
+msgid "`renderer` starts the animation with `scene.begin_animations` (`scene.compile_animation_data` used to do this)"
+msgstr ""
+
+#: ../../source/changelog/0.5.0-changelog.rst:305
+msgid "The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later."
+msgstr ""
+
+

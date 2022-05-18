@@ -1,10 +1,13 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
+from __future__ import annotations
+
 import mimetypes
 import os
 import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from manim import Group, config, logger, tempconfig
 from manim.__main__ import main
@@ -12,6 +15,7 @@ from manim.renderer.shader import shader_program_cache
 
 try:
     from IPython import get_ipython
+    from IPython.core.interactiveshell import InteractiveShell
     from IPython.core.magic import (
         Magics,
         line_cell_magic,
@@ -25,13 +29,18 @@ else:
 
     @magics_class
     class ManimMagic(Magics):
-        def __init__(self, shell):
-            super(ManimMagic, self).__init__(shell)
+        def __init__(self, shell: InteractiveShell) -> None:
+            super().__init__(shell)
             self.rendered_files = {}
 
         @needs_local_scope
         @line_cell_magic
-        def manim(self, line, cell=None, local_ns=None):
+        def manim(
+            self,
+            line: str,
+            cell: str = None,
+            local_ns: dict[str, Any] = None,
+        ) -> None:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
 
@@ -69,6 +78,14 @@ else:
                 which is 25% of your current viewport width. To allow the output to become as large
                 as possible, set ``config.media_width = "100%"``.
 
+                The ``media_embed`` option will embed the image/video output in the notebook. This is
+                generally undesirable as it makes the notebooks very large, but is required on some
+                platforms (notably Google's CoLab, where it is automatically enabled unless suppressed
+                by ``config.embed = False``) and needed in cases when the notebook (or converted HTML
+                file) will be moved relative to the video locations. Use-cases include building
+                documentation with Sphinx and JupyterBook. See also the :mod:`manim directive for Sphinx
+                <manim.utils.docbuild.manim_directive>`.
+
             Examples
             --------
 
@@ -79,6 +96,7 @@ else:
                 %%manim -v WARNING --disable_caching -qm BannerExample
 
                 config.media_width = "75%"
+                config.media_embed = True
 
                 class BannerExample(Scene):
                     def construct(self):
@@ -103,6 +121,7 @@ else:
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
                 return
+
             modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
@@ -119,21 +138,22 @@ else:
                     else:
                         logger.warning(
                             "Renderer must be set to OpenGL in the configuration file "
-                            "before importing Manim! Using cairo renderer instead."
+                            "before importing Manim! Using cairo renderer instead.",
                         )
                         config.renderer = "cairo"
 
-                SceneClass = local_ns[config["scene_names"][0]]
-                scene = SceneClass(renderer)
-                scene.render()
+                try:
+                    SceneClass = local_ns[config["scene_names"][0]]
+                    scene = SceneClass(renderer=renderer)
+                    scene.render()
+                finally:
+                    # Shader cache becomes invalid as the context is destroyed
+                    shader_program_cache.clear()
 
-                # Shader cache becomes invalid as the context is destroyed
-                shader_program_cache.clear()
-
-                # Close OpenGL window here instead of waiting for the main thread to
-                # finish causing the window to stay open and freeze
-                if renderer is not None and renderer.window is not None:
-                    renderer.window.close()
+                    # Close OpenGL window here instead of waiting for the main thread to
+                    # finish causing the window to stay open and freeze
+                    if renderer is not None and renderer.window is not None:
+                        renderer.window.close()
 
                 if config["output_file"] is None:
                     logger.info("No output file produced")
@@ -153,22 +173,25 @@ else:
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
+                embed = config["media_embed"]
+                if embed is None:
+                    # videos need to be embedded when running in google colab.
+                    # do this automatically in case config.media_embed has not been
+                    # set explicitly.
+                    embed = "google.colab" in str(get_ipython())
+
                 if file_type.startswith("image"):
-                    display(Image(filename=config["output_file"]))
-                    return
-
-                # videos need to be embedded when running in google colab
-                video_embed = "google.colab" in str(get_ipython())
-
-                display(
-                    Video(
+                    result = Image(filename=config["output_file"])
+                else:
+                    result = Video(
                         tmpfile,
                         html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
-                        embed=video_embed,
+                        embed=embed,
                     )
-                )
 
-        def add_additional_args(self, args):
+                display(result)
+
+        def add_additional_args(self, args: list[str]) -> list[str]:
             additional_args = ["--jupyter"]
             # Use webm to support transparency
             if "-t" in args and "--format" not in args:
@@ -176,5 +199,5 @@ else:
             return additional_args + args[:-1] + [""] + [args[-1]]
 
 
-def _generate_file_name():
+def _generate_file_name() -> str:
     return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
