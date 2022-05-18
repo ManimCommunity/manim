@@ -15,7 +15,7 @@ import threading
 import time
 import types
 from queue import Queue
-from typing import Callable, Type
+from typing import Callable
 
 import srt
 
@@ -1745,7 +1745,7 @@ class Scene:
 def manimation(
     construct_function: Callable[[Scene], None] | None = None,
     *,
-    scene_class: Type[Scene] = Scene,
+    scene_class: type[Scene] = Scene,
 ) -> Scene | Callable[[Callable[[Scene], None]], Scene]:
     """A short-hand decorator for creating an animation from a construct-like function.
 
