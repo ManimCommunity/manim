@@ -6,7 +6,7 @@ Tutorials
    :maxdepth: 2
 
    tutorials/quickstart
-   tutorials/building_blocks
    tutorials/a_deeper_look
+   tutorials/building_blocks
    tutorials/configuration
    tutorials/using_text
