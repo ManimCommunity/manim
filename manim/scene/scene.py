@@ -1645,10 +1645,10 @@ class Scene:
 
 
 def manimation(
-    construct_function: Callable[[Scene], None] | None = None, 
-    *, 
-    scene_class: Type[Scene] = Scene
-    ) -> Scene | Callable[[Callable[[Scene], None]], Scene]:
+    construct_function: Callable[[Scene], None] | None = None,
+    *,
+    scene_class: type[Scene] = Scene,
+) -> Scene | Callable[[Callable[[Scene], None]], Scene]:
     """A short-hand decorator for creating an animation from a construct-like function.
 
     This decorator creates a :class:`.Scene` object whose ``construct`` method
@@ -1696,6 +1696,7 @@ def manimation(
     Note that the type hint for the scene class is optional and just
     helps your IDE to suggest the correct auto-completion options.
     """
+
     def scene_decorator(construct: Callable[[Scene], None]) -> Scene:
         scene_name = construct.__name__
         if scene_name == "<lambda>":
@@ -1705,7 +1706,9 @@ def manimation(
         return scene
 
     if construct_function is not None and not callable(construct_function):
-        raise TypeError("The argument passed to manimation must be a callable function.")
+        raise TypeError(
+            "The argument passed to manimation must be a callable function."
+        )
 
     if callable(construct_function):
         return scene_decorator(construct_function)
