@@ -2258,8 +2258,10 @@ class NumberPlane(Axes):
                     x_length= 5,y_length=2).move_to(LEFT*3)
 
                 number_plane_scaled_y = NumberPlane(
-                    x_range=(-4,11,1),
-                    x_length= 5,y_length=4).move_to(RIGHT*3)
+                    x_range=(-4, 11, 1),
+                    x_length=5,
+                    y_length=4,
+                ).move_to(RIGHT*3)
 
                 self.add(number_plane)
                 self.add(number_plane_scaled_y)
