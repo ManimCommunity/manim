@@ -2228,7 +2228,7 @@ class NumberPlane(Axes):
 
 
     .. note::
-        If :attr:`x_length` or :attr:`y_length` are not defined, they are automatically calculated such that 
+        If :attr:`x_length` or :attr:`y_length` are not defined, they are automatically calculated such that
         one unit on each axis is one Manim unit long.
 
     Examples
@@ -2246,19 +2246,19 @@ class NumberPlane(Axes):
                     }
                 )
                 self.add(number_plane)
-    
+
     .. manim:: NumberPlaneScaled
         :save_last_frame:
 
         class NumberPlaneScaled(Scene):
             def construct(self):
                 number_plane = NumberPlane(
-                    x_range=(-4,11,1), 
-                    y_range=(-3,3,1), 
+                    x_range=(-4,11,1),
+                    y_range=(-3,3,1),
                     x_length= 5,y_length=2).move_to(LEFT*3)
 
                 number_plane_scaled_y = NumberPlane(
-                    x_range=(-4,11,1), 
+                    x_range=(-4,11,1),
                     x_length= 5,y_length=4).move_to(RIGHT*3)
 
                 self.add(number_plane)
