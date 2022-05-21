@@ -752,7 +752,7 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
-In the event that the animation has to rendered, the renderer asks
+In the event that the animation has to be rendered, the renderer asks
 its :class:`.SceneFileWriter` to start a writing process. The process
 is started by a call to ``ffmpeg`` and opens a pipe to which rendered
 raw frames can be written. As long as the pipe is open, the process
@@ -804,7 +804,10 @@ part of the scene (so again, no action taken). Finally, the run
 time is extracted (3 seconds long) and stored in
 ``Scene.duration``. The renderer then checks whether it should
 skip (it should not), then whether the animation is already
-cached (it is not).
+cached (it is not). The corresponding animation hash value is
+determined and passed to the file writer, which then also calls
+``ffmpeg`` to start the writing process which waits for rendered
+frames from the library.
 
 The scene then ``begin``\ s the animation: for the
 :class:`.ReplacementTransform` this means that the animation populates
@@ -824,8 +827,42 @@ Time to render some frames.
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- "background image" consisting of static mobjects is rendered.
-- check whether current animation is a frozen frame, not in our case
+As mentioned above, due to the mechanism that determines static and moving
+mobjects in the scene, the renderer knows which mobjects it can paint
+statically to the background of the scene. Practically, this means that
+it partially renders a scene (to produce a background image), and then
+when iterating through the time progression of the animation only the
+"moving mobjects" are re-painted on top of the static background.
+
+The renderer calls :meth:`.CairoRenderer.save_static_frame_data`, which
+first checks whether there are currently any static mobjects, and if there
+are, it updates the frame (only with the static mobjects; more about how
+exactly this works in a moment) and then saves a NumPy array representing
+the rendered frame in the ``static_image`` attribute. In our toy example,
+there are no static mobjects, and so the ``static_image`` attribute is
+simply set to ``None``.
+
+Next, the renderer asks the scene whether the current animation is
+a "frozen frame" animation, which would mean that the renderer actually
+does not have to repaint the moving mobjects in every frame of the time
+progression. It can then just take the latest static frame, and display it
+throughout the animation.
+
+.. NOTE::
+
+  An animation is considered a "frozen frame" animation if only a
+  static :class:`.Wait` animation is played. See the description
+  of :meth:`.Scene.compile_animation_data` above, or the
+  implementation of :meth:`.Scene.should_update_mobjects` for
+  more details.
+
+If this is not the case (just as in our toy example), the renderer
+then calls the :meth:`.Scene.play_internal` method, which is the
+integral part of the render loop (in which the library steps through
+the time progression of the animation and renders the corresponding
+frames).
+
+
 - scene.play_internal:
 
   - construct time_progression (i.e., the progress bar; t-values for
