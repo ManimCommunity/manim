@@ -575,8 +575,9 @@ class ArrowVectorField(VectorField):
         x_range = np.arange(*self.x_range)
         y_range = np.arange(*self.y_range)
         z_range = np.arange(*self.z_range)
-        vecs = [self.get_vector(pos) for pos in it.product(x_range, y_range, z_range)]
-        self.add(*vecs)
+        self.add(
+            *[self.get_vector(pos) for pos in it.product(x_range, y_range, z_range)]
+        )
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
@@ -594,7 +595,8 @@ class ArrowVectorField(VectorField):
             Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
-        output = np.array(self.func(point))
+        point = np.asarray(point)
+        output = np.asarray(self.func(point))
         norm = np.linalg.norm(output)
         if norm != 0:
             output *= self.length_func(norm) / norm
