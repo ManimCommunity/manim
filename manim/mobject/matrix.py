@@ -141,6 +141,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         element_alignment_corner: Sequence[float] = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
+        stretch_brackets: bool = True,
         bracket_config: dict = {},
         **kwargs,
     ):
@@ -173,6 +174,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The left bracket type, by default ``"["``.
         right_bracket
             The right bracket type, by default ``"]"``.
+        stretch_brackets
+            ``True`` if should stretch the brackets to fit the height of matrix contents, by default ``True``.
         bracket_config
             Additional arguments to be passed to :class:`~.MathTex` when constructing
             the brackets.
@@ -190,6 +193,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
+        self.stretch_brackets = stretch_brackets
         super().__init__(**kwargs)
         mob_matrix = self._matrix_to_mob_matrix(matrix)
         self._organize_mob_matrix(mob_matrix)
@@ -241,14 +245,41 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
             The current matrix object (self).
         """
 
-        bracket_pair = MathTex(left, right, **kwargs)
-        bracket_pair.scale(2)
-        bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
-        l_bracket, r_bracket = bracket_pair.split()
+        # Height per row of LaTeX array with default settings
+        BRACKET_HEIGHT = 0.5977
+
+        n = int((self.height) / BRACKET_HEIGHT) + 1
+        empty_tex_array = "".join(
+            [
+                r"\begin{array}{c}",
+                *n * [r"\quad \\"],
+                r"\end{array}",
+            ]
+        )
+        tex_left = "".join(
+            [
+                r"\left" + left,
+                empty_tex_array,
+                r"\right.",
+            ]
+        )
+        tex_right = "".join(
+            [
+                r"\left.",
+                empty_tex_array,
+                r"\right" + right,
+            ]
+        )
+        l_bracket = MathTex(tex_left, **kwargs)
+        r_bracket = MathTex(tex_right, **kwargs)
+
+        bracket_pair = VGroup(l_bracket, r_bracket)
+        if self.stretch_brackets:
+            bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
         l_bracket.next_to(self, LEFT, self.bracket_h_buff)
         r_bracket.next_to(self, RIGHT, self.bracket_h_buff)
+        self.brackets = bracket_pair
         self.add(l_bracket, r_bracket)
-        self.brackets = VGroup(l_bracket, r_bracket)
         return self
 
     def get_columns(self):
