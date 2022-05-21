@@ -575,9 +575,38 @@ class ArrowVectorField(VectorField):
         x_range = np.arange(*self.x_range)
         y_range = np.arange(*self.y_range)
         z_range = np.arange(*self.z_range)
-        for x, y, z in it.product(x_range, y_range, z_range):
-            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
+        vecs = self.get_vectors(np.stack(list(it.product(x_range, y_range, z_range))))
+        self.add(*vecs)
         self.set_opacity(self.opacity)
+
+    def get_vectors(self, points: np.ndarray):
+        """Creates a list of vectors in the vector field.
+
+        The created vectors are based on the function of the vector field and are
+        rooted in their given point. Color and length fit the specifications of
+        this vector field.
+
+        Parameters
+        ----------
+        points
+            The root points of the vectors.
+        kwargs : Any
+            Additional arguments to be passed to the :class:`~.Vector` constructor
+
+        """
+        output = np.asarray([self.func(point) for point in points])
+        norm = np.linalg.norm(output, axis=1)
+        mask = norm != 0
+        newvals = (output[mask].T * self.length_func(norm[mask]) / norm[mask]).T
+        output[mask] = newvals
+        color_func = (
+            (lambda x: self.color) if self.single_color else self.pos_to_color
+        )  # TODO: Still calls self.func in pos_to_color -> there should be a vec_to_color instead
+        vectors = [
+            Vector(vec, **self.vector_config).shift(point).set_color(color_func(point))
+            for vec, point in zip(output, points)
+        ]
+        return vectors
 
     def get_vector(self, point: np.ndarray):
         """Creates a vector in the vector field.
