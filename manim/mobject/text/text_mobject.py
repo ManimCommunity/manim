@@ -149,9 +149,9 @@ class Paragraph(VGroup):
         self.alignment = alignment
         super().__init__()
 
-        lines_str_list = list(text)
-        lines_str = "\n".join(lines_str_list)
+        lines_str = "\n".join(list(text))
         self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
+        lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
         self.lines = [list(self.chars), [self.alignment] * self.chars.__len__()]
