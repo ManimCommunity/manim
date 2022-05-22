@@ -147,6 +147,7 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
+        self.consider_spaces_as_chars = config.get("disable_ligatures", False)
         super().__init__()
 
         lines_str = "\n".join(list(text))
@@ -179,9 +180,12 @@ class Paragraph(VGroup):
         chars = self.get_group_class()()
         for line_no in range(lines_str_list.__len__()):
             line_str = lines_str_list[line_no]
+            # Count all the characters in line_str
+            # Spaces may or may not count as characters
             char_count = line_str.__len__()
-            for blank in (" ", "\n", "\t"):
-                char_count -= line_str.count(blank)
+            if not self.consider_spaces_as_chars:
+                for blank in (" ", "\n", "\t"):
+                    char_count -= line_str.count(blank)
             chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
@@ -189,6 +193,10 @@ class Paragraph(VGroup):
                 ]
             )
             char_index_counter += char_count
+            if self.consider_spaces_as_chars:
+                # If spaces count as characters, count the extra \n character
+                # which separates Paragraph's lines to avoid issues
+                char_index_counter += 1
         return chars
 
     def _set_all_lines_alignments(self, alignment):
