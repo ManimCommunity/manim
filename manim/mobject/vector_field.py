@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+
 __all__ = [
     "VectorField",
     "ArrowVectorField",
@@ -25,7 +27,7 @@ from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP
+from ..constants import ORIGIN, OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
@@ -167,6 +169,33 @@ class VectorField(VGroup):
 
         """
         return lambda p: func(p * scalar)
+
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+        """Scale the vector field to fit a coordinate system.
+
+        This method is useful when the vector field is defined in a coordinate system
+        different from the one used to display the vector field.
+
+        This method can only be used once because it transforms the origin of each vector.
+
+        Parameters
+        ----------
+        coordinate_system
+            The coordinate system to fit the vector field to.
+
+        dim
+            The dimension of the vector field. Should be 2 or 3.
+
+        """
+        mat = np.eye(3)
+        for i, ax in enumerate(coordinate_system.get_axes()):
+            mat[i, :] = ax.get_unit_vector()
+        mat = mat.T
+        for vec in self.submobjects:
+            start_pos = vec.get_start()
+            center_to_start = vec.get_center() - start_pos
+            vec.move_to(coordinate_system.coords_to_point(*start_pos) + center_to_start)
+            vec.apply_matrix(mat, about_point=vec.get_start())
 
     def nudge(
         self,
