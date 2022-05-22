@@ -12,7 +12,7 @@ from .cli.init.commands import init
 from .cli.new.group import new
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
-from .constants import EPILOG
+from .constants import EPILOG, DEFAULT_RENDER_NOTE
 
 
 def exit_early(ctx, param, value):
@@ -29,7 +29,8 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     default="render",
     no_args_is_help=True,
     help="Animation engine for explanatory math videos.",
-    epilog="See 'manim <command>' to read about a specific subcommand.\n\n" + EPILOG,
+    epilog=f"See 'manim <command>' to read about a specific subcommand.\n\n"\
+            "{DEFAULT_RENDER_NOTE}\n\n{EPILOG}"
 )
 @click.option(
     "--version",

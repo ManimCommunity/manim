@@ -71,6 +71,7 @@ __all__ = [
     "QUALITIES",
     "DEFAULT_QUALITY",
     "DEFAULT_QUALITY_SHORT",
+    "DEFAULT_RENDER_NOTE",
     "EPILOG",
     "CONTEXT_SETTINGS",
     "SHIFT_VALUE",
@@ -94,6 +95,8 @@ INVALID_NUMBER_MESSAGE: str = "Invalid scene numbers have been specified. Aborti
 NO_SCENE_MESSAGE: str = """
    There are no scenes inside that module
 """
+
+
 
 # Pango stuff
 NORMAL: str = "NORMAL"
@@ -259,6 +262,8 @@ QUALITIES: dict[str, dict[str, str | int | None]] = {
 DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
 
+DEFAULT_RENDER_NOTE: str = "NOTE: `manim render` is called, if you just type `manim`." \
+    "So type `manim render --help` if you'd like to know what the `-qlp` flags do for example."
 EPILOG = "Made with <3 by Manim Community developers."
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507
