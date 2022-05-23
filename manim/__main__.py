@@ -29,8 +29,8 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     default="render",
     no_args_is_help=True,
     help="Animation engine for explanatory math videos.",
-    epilog=f"See 'manim <command>' to read about a specific subcommand.\n\n"\
-            "{DEFAULT_RENDER_NOTE}\n\n{EPILOG}"
+    epilog="See 'manim <command>' to read about a specific subcommand.\n\n"\
+            f"{DEFAULT_RENDER_NOTE}\n\n{EPILOG}"
 )
 @click.option(
     "--version",
