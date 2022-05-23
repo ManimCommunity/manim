@@ -1,5 +1,5 @@
-A deeper look
-=============
+Manim's Output Settings
+=======================
 
 This document will focus on understanding manim's output files and some of the
 main command-line flags available.
