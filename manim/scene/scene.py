@@ -305,7 +305,7 @@ class Scene:
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
-        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
         self.renderer.file_writer.next_section(name, type, skip_animations)
 

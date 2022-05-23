@@ -355,7 +355,7 @@ You're done!
 With a working installation of Manim and this sample project under your belt,
 you're ready to start creating animations of your own.  To learn
 more about what Manim is doing under the hood, move on to the next tutorial:
-:doc:`a_deeper_look`.  For an overview of
+:doc:`output_and_config`.  For an overview of
 Manim's features, as well as its configuration and other settings, check out the
 other :doc:`../tutorials`.  For a list of all available features, refer to the
 :doc:`../reference` page.

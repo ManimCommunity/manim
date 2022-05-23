@@ -5,8 +5,6 @@ Tutorials & Guides
    :caption: Table of Contents
    :maxdepth: 2
 
-   tutorials/quickstart
-   tutorials/a_deeper_look
-   tutorials/building_blocks
-   tutorials/configuration
-   tutorials/using_text
+   tutorials/index
+   guides/index
+   faq/index

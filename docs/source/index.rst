@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Manim Community Overview
-========================
+Manim Community Edition
+=======================
 
 Animating technical concepts is traditionally pretty tedious since it can be
 difficult to make the animations precise enough to convey them accurately.
@@ -13,17 +13,38 @@ making it convenient to specify exactly how each one should run. Take a look
 at the :doc:`Example Gallery <../examples>` for some inspiration on how to
 create beautiful images and videos with Manim.
 
+First Steps
+-----------
+
+TODO: discuss where to find information on installation and the first tutorial
+
+Finding Help
+------------
+
+TODO
+
+Navigating the Documentation
+----------------------------
+
+TODO
+
+Sharing Your Work
+-----------------
+
 We'd love to hear from you and see your manimations
 `on Twitter <https://twitter.com/manim_community>`_, `Reddit <https://www.reddit.com/r/manim/>`_,
 or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a scientific
 context, instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
 
+Index
+-----
+
 .. toctree::
    :maxdepth: 2
 
    installation
-   tutorials
+   tutorials_guides
    examples
    changelog
    reference
