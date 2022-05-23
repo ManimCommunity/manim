@@ -43,14 +43,12 @@ Index
 .. toctree::
    :maxdepth: 2
 
+   examples
    installation
    tutorials_guides
-   examples
-   changelog
    reference
    plugins
-   reporting_bugs
-   internals
+   changelog
    contributing
    conduct
 

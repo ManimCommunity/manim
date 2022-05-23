@@ -1,5 +1,5 @@
-Internal structure
-==================
+Where can I learn more about Manim's internal structure?
+========================================================
 
 Efforts to document the internal structure of Manim is ongoing on our
 `wiki <https://github.com/ManimCommunity/manim/wiki/Developer-documentation-(WIP)>`_.
