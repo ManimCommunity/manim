@@ -1,5 +1,5 @@
-Tutorials
-============
+Tutorials & Guides
+==================
 
 .. toctree::
    :caption: Table of Contents
