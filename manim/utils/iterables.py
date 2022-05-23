@@ -182,10 +182,12 @@ def make_even(iterable_1: Iterable, iterable_2: Iterable) -> tuple[list, list]:
         # ([1, 1, 1, 2, 2], [3, 4, 5, 6, 7])
     """
     list_1, list_2 = list(iterable_1), list(iterable_2)
-    length = max(len(list_1), len(list_2))
+    len_list_1 = len(list_1)
+    len_list_2 = len(list_2)
+    length = max(len_list_1, len_list_2)
     return (
-        [list_1[(n * len(list_1)) // length] for n in range(length)],
-        [list_2[(n * len(list_2)) // length] for n in range(length)],
+        [list_1[(n * len_list_1) // length] for n in range(length)],
+        [list_2[(n * len_list_2) // length] for n in range(length)],
     )
 
 
