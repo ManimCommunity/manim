@@ -12,7 +12,7 @@ or a post in the [r/manim subreddit](https://reddit.com/r/manim).
 If this is not the case, please take a moment to properly prepare your question:
 the better you manage to explain what exactly it is you are struggling with,
 the more efficient people will be able to help you. Regardless of the platform
-you choose in the next step, StackOverflow has a good guide on 
+you choose in the next step, StackOverflow has a good guide on
 [asking good questions](https://stackoverflow.com/help/how-to-ask).
 
 As soon as you have a good idea of what exactly you want to ask, pick one of the
@@ -23,7 +23,7 @@ following communication channels:
   and post your question there. If you are comfortable with using Discord, try to search
   for your problem using the search function of our server; perhaps people have been
   talking about it before!
-- We are also monitoring questions on 
+- We are also monitoring questions on
   [StackOverflow](https://stackoverflow.com/questions/tagged/manim) that are tagged
   with `manim`.
 - Many people are also active in our [r/manim subreddit](https://reddit.com/r/manim),
@@ -32,7 +32,7 @@ following communication channels:
 - And finally, you can also start a new [discussion on GitHub](https://github.com/ManimCommunity/manim/discussions)
   if you dislike all other options.
 
-In all of these channels, please make sure to abide by Manim's 
+In all of these channels, please make sure to abide by Manim's
 {doc}`Code of Conduct </conduct>` -- in short, be *excellent* to one another:
 be friendly and patient, considerate, and respectful.
 

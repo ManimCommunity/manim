@@ -368,7 +368,7 @@ class CoordinateSystem:
         y_label: float | str | Mobject = "y",
     ) -> VGroup:
         """Defines labels for the x_axis and y_axis of the graph.
-        
+
         For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
