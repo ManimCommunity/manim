@@ -45,6 +45,7 @@ class Homotopy(Animation):
     kwargs
         Further keyword arguments passed to the parent class.
     """
+
     def __init__(
         self,
         homotopy: Callable[[float, float, float, float], tuple[float, float, float]],

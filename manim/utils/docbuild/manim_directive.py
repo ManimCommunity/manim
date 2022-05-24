@@ -100,13 +100,14 @@ class SkipManimNode(nodes.Admonition, nodes.Element):
 
     Skips rendering the manim directive and outputs a placeholder instead.
     """
+
     pass
 
 
 def visit(self, node, name=""):
     self.visit_admonition(node, name)
     if not isinstance(node[0], nodes.title):
-        node.insert(0, nodes.title('skip-manim', 'Example Placeholder'))
+        node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
 
 
 def depart(self, node):
@@ -155,7 +156,7 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        # Rendering is skipped if the tag skip-manim is present, 
+        # Rendering is skipped if the tag skip-manim is present,
         # or if we are making the pot-files
         should_skip = (
             "skip-manim" in self.state.document.settings.env.app.builder.tags.tags
@@ -170,7 +171,8 @@ class ManimDirective(Directive):
                         "",
                         ".. code-block:: python",
                         "",
-                    ] + ["    " + line for line in self.content]
+                    ]
+                    + ["    " + line for line in self.content]
                 ),
                 self.content_offset,
                 node,
