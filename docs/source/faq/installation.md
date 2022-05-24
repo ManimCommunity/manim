@@ -9,4 +9,3 @@
 ## Why does Manim say that "there are no scenes inside that module"?
 
 ## ManimPango fails to install
-
