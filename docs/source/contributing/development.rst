@@ -154,11 +154,6 @@ Develop your contribution
       Use the :mod:`manim directive for Sphinx <manim.utils.docbuild.manim_directive>` to add examples
       to the documentation!
 
-      .. autosummary::
-         :toctree: ../reference
-
-         manim.utils.docbuild.manim_directive
-
 As far as development on your local machine goes, these are the main steps you
 should follow.
 
@@ -282,7 +277,7 @@ Further useful guidelines
 
 
 You can find examples for the ``docs`` in several places:
-the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials>`,
+the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials/index>`,
 and :doc:`Reference Classes <../reference>`.
 
 In case you are contributing, please have a look at this flowchart:
