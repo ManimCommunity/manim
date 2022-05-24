@@ -1008,6 +1008,22 @@ class Scene:
             All other keywords are passed to the renderer.
 
         """
+        # Make sure this is running on the main thread
+        if threading.current_thread().name != "MainThread":
+            self.queue.put(
+                (
+                    "play",
+                    args,
+                    kwargs
+                    | {
+                        "subcaption": subcaption,
+                        "subcaption_duration": subcaption_duration,
+                        "subcaption_offset": subcaption_offset,
+                    },
+                )
+            )
+            return
+
         start_time = self.renderer.time
         self.renderer.play(self, *args, **kwargs)
         run_time = self.renderer.time - start_time
