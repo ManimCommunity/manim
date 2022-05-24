@@ -37,7 +37,6 @@ Contributing can be confusing, so here are a few guides:
 .. toctree::
    :maxdepth: 2
 
-   contributing/reporting_bugs
    contributing/development
    contributing/docstrings
    contributing/references

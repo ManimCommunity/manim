@@ -16,12 +16,35 @@ create beautiful images and videos with Manim.
 First Steps
 -----------
 
-TODO: discuss where to find information on installation and the first tutorial
+Are you new to Manim and are looking for where to get started? Then you are
+in the right place!
+
+- The :doc:`Installation <installation>` section has the latest and
+  up-to-date installation instructions for Windows, MacOS, and Linux.
+  You can also find information on Manim's docker images and (online)
+  notebook environments there.
+- Want to try the library before installing it? Take a look at our
+  interactive online playground at https://try.manim.community in form
+  of a Jupyter notebook.
+- In our :doc:`Tutorials <tutorials/index>` section you will find a
+  collection of resources that will teach you how to use Manim.
+
 
 Finding Help
 ------------
 
-TODO
+Are you struggling with installing or using Manim? Don't worry, we've all been
+there. Here are some good resources to help you out:
+
+- Perhaps your problem is one that occurs frequently, then chances are it is
+  addressed in our :doc:`collection of FAQs <faq/index>`.
+- If you are looking for information on some specific class, look for it
+  in the :doc:`reference manual <reference>` and/or use the search feature
+  of the documentation.
+- Still no luck? Then you are welcome to ask the community for help, together
+  we usually manage to find a solution for your problem! Consult the
+  :doc:`FAQ page on getting help <faq/help>` for instructions.
+
 
 Navigating the Documentation
 ----------------------------
