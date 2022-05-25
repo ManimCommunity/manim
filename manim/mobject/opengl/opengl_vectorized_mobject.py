@@ -1311,7 +1311,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         # The following two lines will compute which bezier curves of the given mobject need to be processed.
         # The residue basically indicates de proportion of the selected bezier curve that have to be selected.
-        # Ex : if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
+        # Ex: if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
         lower_index, lower_residue = integer_interpolate(0, num_quadratics, a)
         upper_index, upper_residue = integer_interpolate(0, num_quadratics, b)
 
