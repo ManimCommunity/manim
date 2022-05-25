@@ -1,5 +1,5 @@
 furo
 myst-parser
-sphinx==4.1.2
+sphinx
 sphinx-copybutton
 sphinxext-opengraph
