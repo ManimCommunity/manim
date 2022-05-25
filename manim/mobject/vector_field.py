@@ -183,9 +183,6 @@ class VectorField(VGroup):
         coordinate_system
             The coordinate system to fit the vector field to.
 
-        dim
-            The dimension of the vector field. Should be 2 or 3.
-
         """
         self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
 
@@ -626,17 +623,6 @@ class ArrowVectorField(VectorField):
         else:
             vect.set_color(self.pos_to_color(point))
         return vect
-
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
-        mat = np.eye(3)
-        for i, ax in enumerate(coordinate_system.get_axes()):
-            mat[i, :] = ax.get_unit_vector()
-        mat = mat.T
-        for vec in self.submobjects:
-            start_pos = vec.get_start()
-            center_to_start = vec.get_center() - start_pos
-            vec.move_to(coordinate_system.coords_to_point(*start_pos) + center_to_start)
-            vec.apply_matrix(mat, about_point=vec.get_start())
 
 
 class StreamLines(VectorField):
@@ -1079,10 +1065,5 @@ class StreamLines(VectorField):
                     ),
                 )
         return AnimationGroup(*animations)
-
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
-        for line in self.submobjects:
-            line.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
-
 
 # TODO: Variant of StreamLines that is able to respond to changes in the vector field function
