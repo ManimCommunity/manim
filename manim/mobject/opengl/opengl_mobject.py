@@ -2243,6 +2243,7 @@ class OpenGLMobject:
     # Alignment
 
     def align_data_and_family(self, mobject):
+        self.null_point_align(mobject)
         self.align_family(mobject)
         self.align_data(mobject)
 
@@ -2262,6 +2263,26 @@ class OpenGLMobject:
                     mob1.data[key] = resize_preserving_order(arr1, len(arr2))
                 elif len(arr1) > len(arr2):
                     mob2.data[key] = resize_preserving_order(arr2, len(arr1))
+    
+    def null_point_align_family(self, mobject):
+        for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
+            mob1.null_point_align(mob2)
+
+    def null_point_align(self, mobject: "OpenGLMobject"):
+        """If a :class:`~.OpenGLMobject` with points is being aligned to
+        one without, treat both as groups, and push
+        the one with points into its own submobjects
+        list.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+        """
+        for m1, m2 in (self, mobject), (mobject, self):
+            if (not m1.has_points()) and m2.has_points():
+                m2.push_self_into_submobjects()
+        return self
 
     def align_points(self, mobject):
         max_len = max(self.get_num_points(), mobject.get_num_points())
