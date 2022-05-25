@@ -25,7 +25,7 @@ class MyAwesomeScene(Scene):
         # your animation code
 ```
 then double check whether you have spelled `construct` correctly.
-If the method containing your code is not called `construct` (or 
+If the method containing your code is not called `construct` (or
 if you are not calling a different, custom method from `construct`),
 Manim will not call your method and simply output a black frame.
 
@@ -115,7 +115,7 @@ This is an issue with `dvisvgm`, the tool shipped with LaTeX that
 transforms LaTeX output to a `.svg` file that
 Manim can parse.
 
-First, make sure your ``dvisvgm`` version is at least 2.4 by 
+First, make sure your ``dvisvgm`` version is at least 2.4 by
 checking the output of
 
 ```bash
@@ -184,5 +184,5 @@ If you do not have the necessary library on your system, please refer to your
 operating system's documentation to find out where you can get it and how you
 have to install it.
 
-If you are unable to solve your problem, check out the 
+If you are unable to solve your problem, check out the
 [dvisvgm FAQ](https://dvisvgm.de/FAQ/).
