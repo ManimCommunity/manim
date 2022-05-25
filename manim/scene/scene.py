@@ -1010,16 +1010,18 @@ class Scene:
         """
         # Make sure this is running on the main thread
         if threading.current_thread().name != "MainThread":
+            kwargs.update(
+                {
+                    "subcaption": subcaption,
+                    "subcaption_duration": subcaption_duration,
+                    "subcaption_offset": subcaption_offset,
+                }
+            )
             self.queue.put(
                 (
                     "play",
                     args,
-                    kwargs
-                    | {
-                        "subcaption": subcaption,
-                        "subcaption_duration": subcaption_duration,
-                        "subcaption_offset": subcaption_offset,
-                    },
+                    kwargs,
                 )
             )
             return
