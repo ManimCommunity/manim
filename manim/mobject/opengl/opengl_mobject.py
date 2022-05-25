@@ -2348,9 +2348,13 @@ class OpenGLMobject:
                 continue
 
             if key in ("points", "bounding_box"):
-                self.data[key] = path_func(mobject1.data[key], mobject2.data[key], alpha)
+                self.data[key] = path_func(
+                    mobject1.data[key], mobject2.data[key], alpha
+                )
             else:
-                self.data[key][:] = interpolate(mobject1.data[key], mobject2.data[key], alpha)
+                self.data[key][:] = interpolate(
+                    mobject1.data[key], mobject2.data[key], alpha
+                )
 
         for key in self.uniforms:
             if key != "fixed_orientation_center":

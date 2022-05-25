@@ -1328,12 +1328,16 @@ class OpenGLVMobject(OpenGLMobject):
             )
         else:
             self.append_points(
-                partial_quadratic_bezier_points(bezier_triplets[lower_index], lower_residue, 1),
+                partial_quadratic_bezier_points(
+                    bezier_triplets[lower_index], lower_residue, 1
+                ),
             )
             for quad in bezier_triplets[lower_index + 1 : upper_index]:
                 self.append_points(quad)
             self.append_points(
-                partial_quadratic_bezier_points(bezier_triplets[upper_index], 0, upper_residue),
+                partial_quadratic_bezier_points(
+                    bezier_triplets[upper_index], 0, upper_residue
+                ),
             )
         return self
 
