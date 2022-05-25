@@ -1066,4 +1066,5 @@ class StreamLines(VectorField):
                 )
         return AnimationGroup(*animations)
 
+
 # TODO: Variant of StreamLines that is able to respond to changes in the vector field function
