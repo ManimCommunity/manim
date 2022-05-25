@@ -21,6 +21,7 @@ If you are using the usual pattern to write a `Scene`, i.e.,
 ```python
 class MyAwesomeScene(Scene):
     def construct(self):
+        ...
         # your animation code
 ```
 then double check whether you have spelled `construct` correctly.
@@ -100,16 +101,10 @@ that only concerns `Thing`. A version without `CONFIG` could look like this:
 ```python
 class Thing(VMobject):
     def __init__(
-        self,
-        stroke_color=RED,
-        fill_opacity=0.7,
-        my_awesome_argument=42,
-        **kwargs
+        self, stroke_color=RED, fill_opacity=0.7, my_awesome_argument=42, **kwargs
     ):
         self.my_awesome_argument = my_awesome_argument
-        super().__init__(
-            stroke_color=stroke_color, fill_opacity=fill_opacity, **kwargs
-        )
+        super().__init__(stroke_color=stroke_color, fill_opacity=fill_opacity, **kwargs)
 ```
 
 ---
