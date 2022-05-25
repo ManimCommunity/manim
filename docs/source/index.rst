@@ -49,7 +49,29 @@ there. Here are some good resources to help you out:
 Navigating the Documentation
 ----------------------------
 
-TODO
+Here are some short summaries for all of the sections in this documentation:
+
+- The :doc:`Example Gallery </examples>` is a collection of examples (rendered videos
+  and images together with the code they were generated from) that show a few different,
+  simple things that you can do with Manim.
+- The :doc:`Installation </installation>` section has information on installing Manim.
+- In :doc:`Tutorials & Guides </tutorials_guides>` you can find learning resources: proper
+  tutorials that guide you through the process of creating a video are in
+  the :doc:`Tutorial </tutorials/index>` section; guides on specific topics are in the
+  :doc:`Guides </guides/index>` section, and the answers to frequently asked questions
+  can be found in the :doc:`FAQ </faq/index>` section.
+- The :doc:`Reference Manual </reference>` contains a comprehensive list of all of Manim's
+  (documented) modules, classes, and functions. If you are somewhat familiar with Manim's
+  module structure feel free to browse the manual directly. If you are searching for
+  something specific, feel free to use the documentation's search feature in the sidebar.
+  Many classes and methods come with their own illustrated examples too!
+- The :doc:`Plugins </plugins>` page documents how to install, write, and distribute
+  plugins (that is, separate Python packages that extend the feature set of the core library).
+- Changes between versions are documented in our :doc:`Changelog </changelog>`.
+- If you are looking into contributing to the development of Manim, you can find information
+  on how to get involved in our :doc:`Contributing </contributing>` section.
+- And finally, the :doc:`Code of Conduct </conduct>` page has a formal description of
+  the rules you should abide by when interacting within our community.
 
 Sharing Your Work
 -----------------
