@@ -79,7 +79,7 @@ installed packages. Check whether `manim` or `manimgl` appear in that list.
 
 Similarly, you can use `python -m pip install <package name>` and
 `python -m pip uninstall <package name>` to install and uninstall
-packages from that list, respectively. 
+packages from that list, respectively.
 
 ---
 
@@ -91,7 +91,7 @@ however, (YouTube) videos can't be updated easily (without uploading a new one, 
 when some step in the installation process changes, and so there are many
 **severely outdated** resources out there.
 
-This is why we strongly recommend following our 
+This is why we strongly recommend following our
 {doc}`written installation guide </installation>` to guide you through the process.
 In case you prefer using a video guide regardless, please check whether the
 creator whose guide you have been watching has made a more recent version available,
@@ -103,7 +103,7 @@ likely lead to being suggested to follow our written guide.
 ## Why does ManimPango fail to install when running `pip install manim`?
 
 This most likely means that pip was not able to use our pre-built wheels
-of the `manimpango` dependency. Let us know (via 
+of the `manimpango` dependency. Let us know (via
 [Discord](https://www.manim.community/discord/) or by opening a
 [new issue on GitHub](https://github.com/ManimCommunity/ManimPango/issues/new))
 which architecture you would like to see supported, and we'll see what we
