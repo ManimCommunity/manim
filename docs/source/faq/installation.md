@@ -121,7 +121,7 @@ of [ManimPango's README](https://github.com/ManimCommunity/ManimPango).
 Regardless of whether `X` says `python` or `manim`, this means that the executable you
 are trying to run is not located in one of the directories your system is looking
 for them (specified by the `PATH` variable). Take a look at the instructions
-{doc}`in the installation guide for Windows </installation/windwos>`, or
+{doc}`in the installation guide for Windows </installation/windows>`, or
 [this StackExchange answer](https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121)
 to get help with editing the `PATH` variable manually.
 

@@ -86,8 +86,8 @@ You just wrote your first Manim scene from scratch.
 If you get an error
 message instead, you do not see a video, or if the video output does not
 look like the preceding animation, it is likely that Manim has not been
-installed correctly. Please refer to the :doc:`../installation/troubleshooting`
-page for more information.
+installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
+for help with the most common issues.
 
 
 ***********
