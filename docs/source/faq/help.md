@@ -36,6 +36,7 @@ In all of these channels, please make sure to abide by Manim's
 {doc}`Code of Conduct </conduct>` -- in short, be *excellent* to one another:
 be friendly and patient, considerate, and respectful.
 
+---
 
 ## What should I do if nobody answers my question?
 
@@ -61,6 +62,7 @@ because nobody knows the answer, or because your question is not clear enough,
 or it could be that everyone who can help you with your problem is busy doing
 other things.
 
+---
 
 ## The library does not behave as documented, or something broke in a new release. What should I do?
 
@@ -99,5 +101,5 @@ our `#manim-dev` channels in [our Discord](https://manim.community/discord/).
 4. This is mentioned in the bug report template as well, but it is very important:
    if you report that some code raises an error, make sure to include the full
    terminal output, from the command you used to run the library up to and including
-   the last line including the error message. Read carefully: if the message mentions
+   the last line with the error message. Read carefully: if the message mentions
    that there is another relevant log file, include this other file as well!
