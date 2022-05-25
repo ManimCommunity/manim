@@ -2263,12 +2263,12 @@ class OpenGLMobject:
                     mob1.data[key] = resize_preserving_order(arr1, len(arr2))
                 elif len(arr1) > len(arr2):
                     mob2.data[key] = resize_preserving_order(arr2, len(arr1))
-    
+
     def null_point_align_family(self, mobject):
         for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
             mob1.null_point_align(mob2)
 
-    def null_point_align(self, mobject: "OpenGLMobject"):
+    def null_point_align(self, mobject: OpenGLMobject):
         """If a :class:`~.OpenGLMobject` with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
@@ -2369,9 +2369,13 @@ class OpenGLMobject:
                 continue
 
             if key in ("points", "bounding_box"):
-                self.data[key] = path_func(mobject1.data[key], mobject2.data[key], alpha)
+                self.data[key] = path_func(
+                    mobject1.data[key], mobject2.data[key], alpha
+                )
             else:
-                self.data[key][:] = interpolate(mobject1.data[key], mobject2.data[key], alpha)
+                self.data[key][:] = interpolate(
+                    mobject1.data[key], mobject2.data[key], alpha
+                )
 
         for key in self.uniforms:
             if key != "fixed_orientation_center":
