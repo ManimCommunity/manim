@@ -20,7 +20,7 @@ Are you new to Manim and are looking for where to get started? Then you are
 in the right place!
 
 .. note::
-   
+
    Please be aware that there are different, incompatible versions
    of Manim available. Check our :ref:`installation FAQ <different-versions>`
    to learn more!
