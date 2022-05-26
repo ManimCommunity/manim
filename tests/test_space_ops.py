@@ -63,6 +63,12 @@ def test_angle_of_vector():
     assert angle_of_vector(np.zeros(3)) == 0.0
 
 
+def test_angle_of_vector_vectorized():
+    vec = np.random.randn(4, 10)
+    ref = [np.angle(complex(*v[:2])) for v in vec.T]
+    assert np.array_equiv(ref, angle_of_vector(vec))
+
+
 def test_center_of_mass():
     assert np.all(center_of_mass([[0, 0, 0], [1, 2, 3]]) == np.array([0.5, 1.0, 1.5]))
 
