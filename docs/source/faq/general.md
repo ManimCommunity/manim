@@ -186,3 +186,12 @@ have to install it.
 
 If you are unable to solve your problem, check out the
 [dvisvgm FAQ](https://dvisvgm.de/FAQ/).
+
+---
+
+## Where can I find more resources for learning Manim?
+
+In our [Discord server](https://manim.community/discord), we have the community maintained
+`#beginner-resources` channel in which links to helpful learning resources are collected.
+You are welcome to join our Discord and take a look yourself! If you have found some
+guides or tutorials yourself that are not on our list yet, feel free to add them!
