@@ -15,8 +15,8 @@ Python, or via Docker).
 
    Note that there are several different versions of Manim. The
    instructions on this website are **only** for the *community edition*.
-   Find out more about the :doc:`differences between Manim
-   versions <faq/installation>` if you are unsure which
+   Find out more about the :ref:`differences between Manim
+   versions <different-versions>` if you are unsure which
    version you should install.
 
 #. :ref:`Installing Manim to your system's Python <local-installation>`
