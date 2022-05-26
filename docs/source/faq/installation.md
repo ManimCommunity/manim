@@ -29,8 +29,11 @@ To summarize:
   its documentation [here](https://3b1b.github.io/manim/index.html); on PyPI the
   package name is [`manimgl`](https://pypi.org/project/manimgl/).
 - [ManimCairo](https://github.com/3b1b/manim/tree/cairo-backend) is the name that
-  is sometimes used for the old, pre-OpenGL version of `manimgl`. It is not available
-  via PyPI.
+  is sometimes used for the old, pre-OpenGL version of `manimgl`. The latest version
+  of it is available [on PyPI as `manimlib`](https://pypi.org/project/manimgl/),
+  but note that if you intend to use it to compile some old project of Grant,
+  you will likely have to install the exact version from the time the project
+  was created from source.
 
 ---
 
@@ -135,24 +138,19 @@ and `pip` becomes `python -m pip`.
 ## I have tried using Chocolatey (`choco install manimce`) to install Manim, but it failed!
 
 Make sure that you were running the command with administrator permissions,
-otherwise there can be problems. Otherwise, the issue likely is that Python
-has not been added to your `PATH` variable properly. Try running the following
-commands in your terminal:
+otherwise there can be problems. If this is not the issue, read Chocolatey's
+output carefully, it should mention a `.log` file containing information why
+the process failed.
 
-1. `py --version`
-2. `python --version`
-3. `py3 --version`
-4. `python3 --version`
+You are welcome to take this file (and any other input you feel might be
+relevant) and submit it to Manim's community to ask for help with
+your problem. See the {doc}`FAQ on getting help </faq/help>` for instructions.
 
-At the very least, `py --version` and `python --version` should return
-a version. If neither of these commands are recognized, this means that
-Python was (probably) installed on your system, but was definitively not
-added to your `PATH`. Try restarting your PC, and otherwise follow the
-steps above to manually add the installed Python to your `PATH` variable.
+---
 
-If, on the other hand, any of these commands opened the Windows store,
-this is likely interfering with the process. You can remove these
-aliases by following these steps:
+## On Windows, when typing `python` or `python3` the Windows store is opened, can I fix this?
+
+Yes: you can remove these aliases with these steps:
 
 1. Go to the Windows Setting.
 2. Under *Apps and Features* you will find application execution aliases.
