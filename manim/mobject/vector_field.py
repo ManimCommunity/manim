@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from manim.mobject.graphing.coordinate_systems import CoordinateSystem
-
 __all__ = [
     "VectorField",
     "ArrowVectorField",
@@ -21,13 +19,14 @@ from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
+from manim.mobject.graphing.coordinate_systems import CoordinateSystem
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..constants import ORIGIN, OUT, RIGHT, UP
+from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
