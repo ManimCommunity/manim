@@ -1,5 +1,6 @@
 # FAQ: Installation
 
+(different-versions)=
 ## Why are there different versions of Manim?
 
 Manim was originally created by Grant Sanderson as a personal project and for use
@@ -60,7 +61,7 @@ for which version of the code it was written for:
   reading a file to be rendered with ManimGL.
 - And if the import reads `from manimlib.imports import *`, or perhaps even
   `from big_ol_pile_of_manim_imports import *` you are reading a snippet that is
-  supposed to be rendered with a very early version of ManimCairo.
+  supposed to be rendered with an early, or very early version of ManimCairo, respectively.
 
 ---
 

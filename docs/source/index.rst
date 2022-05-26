@@ -19,6 +19,12 @@ First Steps
 Are you new to Manim and are looking for where to get started? Then you are
 in the right place!
 
+.. note::
+   
+   Please be aware that there are different, incompatible versions
+   of Manim available. Check our :ref:`installation FAQ <different-versions>`
+   to learn more!
+
 - The :doc:`Installation <installation>` section has the latest and
   up-to-date installation instructions for Windows, MacOS, and Linux.
   You can also find information on Manim's docker images and (online)
