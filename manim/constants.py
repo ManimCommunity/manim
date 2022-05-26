@@ -96,7 +96,6 @@ NO_SCENE_MESSAGE: str = """
 """
 
 
-
 # Pango stuff
 NORMAL: str = "NORMAL"
 ITALIC: str = "ITALIC"
