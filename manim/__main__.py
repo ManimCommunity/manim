@@ -34,7 +34,7 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
             "NOTE: The subcommand `manim render` is called if no subcommand "\
             "is specified. "\
             "Run 'manim render --help' if you would like to know what the "\
-            "`-ql` or `-p` flags do, for example."
+            "'-ql' or '-p' flags do, for example."
 
 )
 @click.option(
