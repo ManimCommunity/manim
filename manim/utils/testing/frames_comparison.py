@@ -92,7 +92,7 @@ def frames_comparison(
             # This modify the test_name so the it is defined by the parametrization arguments too.
             # Ex : if "length" is parametrized from 0 to 20, the kwargs will be with once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                map(lambda tup: f"{str(tup[0])}:{str(tup[1])}", kwargs.items()),
+                map(lambda tup: f"_{str(tup[0])}[{str(tup[1])}]", kwargs.items()),
             )
 
             config_tests = _config_test(last_frame)
