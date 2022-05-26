@@ -359,9 +359,9 @@ class NumberLine(Line):
             A list of points with respect to the scene's coordinate system.
         """
         numbers = self.scaling.inverse_function(numbers)
-        alphas = np.vstack(
-            (numbers - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
-        )
+        alphas = (numbers - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        if isinstance(alphas, np.ndarray):
+            alphas = np.vstack(alphas)
         val = interpolate(self.get_start(), self.get_end(), alphas)
         return val
 

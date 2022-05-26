@@ -707,19 +707,23 @@ class CoordinateSystem:
         if x_range is not None:
             t_range[: len(x_range)] = x_range
 
-        # For axes, the third coordinate of x_range indicates
-        # tick frequency.  But for functions, it indicates a
-        # sample frequency
         if x_range is None or len(x_range) < 3:
             # if t_range has a defined step size, increase the number of sample points per tick
             t_range[2] /= self.num_sampled_graph_points_per_tick
-
-        graph = self.plot_parametric_curve(
-            lambda t: [t, function(t), 0],
-            use_vectorized=use_vectorized,
+        # For axes, the third coordinate of x_range indicates
+        # tick frequency.  But for functions, it indicates a
+        # sample frequency
+        graph = ParametricFunction(
+            lambda t: self.coords_to_point(
+                t, function(t), use_vectorized=use_vectorized
+            ),
             t_range=t_range,
+            scaling=self.x_axis.scaling,
+            use_vectorized=use_vectorized,
             **kwargs,
         )
+
+        graph.underlying_function = function
         return graph
 
     def plot_implicit_curve(
@@ -1349,6 +1353,7 @@ class CoordinateSystem:
         graph: ParametricFunction,
         y_intercept: float = 0,
         samples: int = 50,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Plots an antiderivative graph.
@@ -1361,6 +1366,8 @@ class CoordinateSystem:
             The y-value at which the graph intercepts the y-axis.
         samples
             The number of points to take the area under the graph.
+        use_vectorized
+            Whether to use the vectorized version of the antiderivative.
         kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
@@ -1392,12 +1399,12 @@ class CoordinateSystem:
         """
 
         def antideriv(x):
-            x_vals = np.linspace(0, x, samples)
+            x_vals = np.linspace(0, x, samples, axis=1 if use_vectorized else 0)
             f_vec = np.vectorize(graph.underlying_function)
             y_vals = f_vec(x_vals)
             return np.trapz(y_vals, x_vals) + y_intercept
 
-        return self.plot(antideriv, **kwargs)
+        return self.plot(antideriv, use_vectorized=use_vectorized, **kwargs)
 
     def get_secant_slope_group(
         self,
