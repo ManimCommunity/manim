@@ -34,8 +34,8 @@ in the right place!
   of a Jupyter notebook.
 - In our :doc:`Tutorials <tutorials/index>` section you will find a
   collection of resources that will teach you how to use Manim. In particular,
-  the :docs:`tutorials/quickstart` tutorial teaches you Manim's basics,
-  and in :docs:`tutorials/building_blocks` the classes used to compose
+  the :doc:`tutorials/quickstart` tutorial teaches you Manim's basics,
+  and in :doc:`tutorials/building_blocks` the classes used to compose
   your animations are described in more detail.
 
 
