@@ -344,6 +344,27 @@ class NumberLine(Line):
         val = interpolate(self.get_start(), self.get_end(), alpha)
         return val
 
+    def number_to_point_array(self, numbers: np.ndarray) -> np.ndarray:
+        """Accepts a list of values along the number line and returns a list of
+        points with respect to the scene.
+
+        Parameters
+        ----------
+        numbers
+            The values to be transformed into coordinates.
+
+        Returns
+        -------
+        np.ndarray
+            A list of points with respect to the scene's coordinate system.
+        """
+        numbers = self.scaling.inverse_function(numbers)
+        alphas = np.vstack(
+            (numbers - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        )
+        val = interpolate(self.get_start(), self.get_end(), alphas)
+        return val
+
     def point_to_number(self, point: Sequence[float]) -> float:
         """Accepts a point with respect to the scene and returns
         a float along the number line.

@@ -139,7 +139,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords):
+    def coords_to_point(self, *coords, use_vectorized=False):
         raise NotImplementedError()
 
     def point_to_coords(self, point):
@@ -628,6 +628,7 @@ class CoordinateSystem:
         self,
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
+        use_vectorized: bool = False,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -638,6 +639,9 @@ class CoordinateSystem:
             The function used to construct the :class:`~.ParametricFunction`.
         x_range
             The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
+        use_vectorized
+            Whether to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape [y_0,y_1,...]
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -699,23 +703,23 @@ class CoordinateSystem:
         """
 
         t_range = np.array(self.x_range, dtype=float)
+
         if x_range is not None:
             t_range[: len(x_range)] = x_range
 
-        if x_range is None or len(x_range) < 3:
-            # if t_range has a defined step size, increase the number of sample points per tick
-            t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
+        if x_range is None or len(x_range) < 3:
+            # if t_range has a defined step size, increase the number of sample points per tick
+            t_range[2] /= self.num_sampled_graph_points_per_tick
 
-        graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)),
+        graph = self.plot_parametric_curve(
+            lambda t: [t, function(t), 0],
+            use_vectorized=use_vectorized,
             t_range=t_range,
-            scaling=self.x_axis.scaling,
             **kwargs,
         )
-        graph.underlying_function = function
         return graph
 
     def plot_implicit_curve(
@@ -766,10 +770,14 @@ class CoordinateSystem:
         )
         return graph
 
-    def plot_parametric_curve(self, function, **kwargs):
+    def plot_parametric_curve(self, function, use_vectorized=False, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
+            lambda t: self.coords_to_point(
+                *function(t)[:dim], use_vectorized=use_vectorized
+            ),
+            use_vectorized=use_vectorized,
+            **kwargs,
         )
         graph.underlying_function = function
         return graph
@@ -1828,13 +1836,18 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
-    def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
+    def coords_to_point(
+        self, *coords: Sequence[float], use_vectorized=False
+    ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
         Parameters
         ----------
         coords
             The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
+
+        use_vectorized
+            If True, uses the vectorized version of the function.
 
         Returns
         -------
@@ -1864,6 +1877,18 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
+
+        if use_vectorized:
+            results = np.sum(
+                [
+                    axis.number_to_point_array(coord_arr)
+                    for axis, coord_arr in zip(self.axes, coords)
+                ],
+                axis=0,
+            )
+            results = (results - origin).T
+            return results
+
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
