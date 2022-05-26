@@ -33,7 +33,10 @@ in the right place!
   interactive online playground at https://try.manim.community in form
   of a Jupyter notebook.
 - In our :doc:`Tutorials <tutorials/index>` section you will find a
-  collection of resources that will teach you how to use Manim.
+  collection of resources that will teach you how to use Manim. In particular,
+  the :docs:`tutorials/quickstart` tutorial teaches you Manim's basics,
+  and in :docs:`tutorials/building_blocks` the classes used to compose
+  your animations are described in more detail.
 
 
 Finding Help
