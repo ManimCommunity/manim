@@ -376,7 +376,17 @@ class NumberLine(Line):
         -------
         float
             A float representing a value along the number line.
+
+        Examples
+        --------
+        >>> number_line.point_to_number((0,0,0))
+        0
+        >>> number_line.point_to_number((1,0,0))
+        1
+        >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
+        array([ 0.5,  1. ,  1.5])
         """
+        point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
         proportion = np.dot(point - start, unit_vect) / np.dot(end - start, unit_vect)

@@ -100,3 +100,24 @@ def test_number_to_point():
         np.round(expected, 4),
         f"Expected {expected} but got {vec_3} with input as ndarray",
     )
+
+
+def test_point_to_number():
+    line = NumberLine()
+    points = [
+        [1.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+        [3.0, 0.0, 0.0],
+        [4.0, 0.0, 0.0],
+        [5.0, 0.0, 0.0],
+    ]
+    points_np = np.array(points)
+    expected = [1, 2, 3, 4, 5]
+
+    num_1 = [line.point_to_number(point) for point in points]
+    num_2 = line.point_to_number(points)
+    num_3 = line.point_to_number(points_np)
+
+    np.testing.assert_equal(np.round(num_1, 4), np.round(expected, 4))
+    np.testing.assert_equal(np.round(num_2, 4), np.round(expected, 4))
+    np.testing.assert_equal(np.round(num_3, 4), np.round(expected, 4))
