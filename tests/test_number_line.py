@@ -66,3 +66,37 @@ def test_add_labels():
     assert (
         actual_label_length == expected_label_length
     ), f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
+
+
+def test_number_to_point():
+    line = NumberLine()
+    numbers = [1, 2, 3, 4, 5]
+    numbers_np = np.array(numbers)
+    expected = np.array(
+        [
+            [1.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [3.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [5.0, 0.0, 0.0],
+        ]
+    )
+    vec_1 = np.array([line.number_to_point(x) for x in numbers])
+    vec_2 = line.number_to_point(numbers)
+    vec_3 = line.number_to_point(numbers_np)
+
+    np.testing.assert_equal(
+        np.round(vec_1, 4),
+        np.round(expected, 4),
+        f"Expected {expected} but got {vec_1} with input as scalar",
+    )
+    np.testing.assert_equal(
+        np.round(vec_2, 4),
+        np.round(expected, 4),
+        f"Expected {expected} but got {vec_2} with input as params",
+    )
+    np.testing.assert_equal(
+        np.round(vec_2, 4),
+        np.round(expected, 4),
+        f"Expected {expected} but got {vec_3} with input as ndarray",
+    )
