@@ -95,7 +95,6 @@ NO_SCENE_MESSAGE: str = """
    There are no scenes inside that module
 """
 
-
 # Pango stuff
 NORMAL: str = "NORMAL"
 ITALIC: str = "ITALIC"
