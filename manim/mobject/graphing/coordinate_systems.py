@@ -641,7 +641,7 @@ class CoordinateSystem:
             The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
         use_vectorized
             Whether to pass in the generated t value array to the function. Only use this if your function supports it.
-            Output should be a numpy array of shape [y_0,y_1,...]
+            Output should be a numpy array of shape ``[y_0,y_1,...]``
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
@@ -714,9 +714,7 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(
-                t, function(t), use_vectorized=use_vectorized
-            ),
+            lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
             scaling=self.x_axis.scaling,
             use_vectorized=use_vectorized,
@@ -777,9 +775,7 @@ class CoordinateSystem:
     def plot_parametric_curve(self, function, use_vectorized=False, **kwargs):
         dim = self.dimension
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(
-                *function(t)[:dim], use_vectorized=use_vectorized
-            ),
+            lambda t: self.coords_to_point(*function(t)[:dim]),
             use_vectorized=use_vectorized,
             **kwargs,
         )
@@ -1843,23 +1839,22 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
-    def coords_to_point(
-        self, *coords: Sequence[float], use_vectorized=False
-    ) -> np.ndarray:
+    def coords_to_point(self, *coords: Sequence[float] | np.ndarray) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
         Parameters
         ----------
         coords
             The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
-
-        use_vectorized
-            If True, uses the vectorized version of the function.
+            also accepts a list of coordinates
+            ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``
+            ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``
 
         Returns
         -------
         np.ndarray
             A point with respect to the scene's coordinate system.
+            The shape of the array will be similar to the shape of the input.
 
         Examples
         --------
@@ -1885,21 +1880,36 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
 
-        if use_vectorized:
-            results = np.sum(
-                [
-                    axis.number_to_point_array(coord_arr)
-                    for axis, coord_arr in zip(self.axes, coords)
-                ],
-                axis=0,
-            )
-            results = (results - origin).T
-            return results
+        coords = np.asarray(coords)
 
-        result = np.array(origin)
-        for axis, coord in zip(self.get_axes(), coords):
-            result += axis.number_to_point(coord) - origin
-        return result
+        # if called like coords_to_point(1, 2, 3), then coords is a 1x3 array
+        transposed = False
+        if coords.ndim == 1:
+            # original implementation of coords_to_point for performance in the legacy case
+            result = np.array(origin)
+            for axis, number in zip(self.get_axes(), coords):
+                result += axis.number_to_point(number) - origin
+            return result
+        # if called like coords_to_point([1, 2, 3],[4, 5, 6]), then it shall be used as [1,4], [2,5], [3,6] and return the points as ([x_0,x_1],[y_0,y_1],[z_0,z_1])
+        elif coords.ndim == 2:
+            coords = coords.T
+            transposed = True
+        # if called like coords_to_point(np.array([[1, 2, 3],[4,5,6]])), reduce dimension by 1
+        elif coords.ndim == 3:
+            coords = np.squeeze(coords)
+        # else the coords is a Nx1, Nx2, Nx3 array so we do not need to modify the array
+
+        points = origin + np.sum(
+            [
+                axis.number_to_point(number) - origin
+                for number, axis in zip(coords.T, self.get_axes())
+            ],
+            axis=0,
+        )
+        # if called with single coord, then return a point instead of a list of points
+        if transposed:
+            return points.T
+        return points
 
     def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.

@@ -340,6 +340,7 @@ class NumberLine(Line):
 
         Examples
         --------
+        >>> number_line = NumberLine(x_min=-2, x_max=3)
         >>> number_line.number_to_point(0)
         array([0., 0., 0.])
         >>> number_line.number_to_point(1)
@@ -350,17 +351,11 @@ class NumberLine(Line):
                [ 3.,  0.,  0.]])
         """
         number = np.asarray(number)
-        scalar = False
-        if number.ndim == 0:
-            scalar = True
-            number = number[np.newaxis]
+        scalar = number.ndim == 0
         number = self.scaling.inverse_function(number)
-        alphas = np.vstack(
-            (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
-        )
+        alphas = (number - self.x_range[0]) / (self.x_range[1] - self.x_range[0])
+        alphas = float(alphas) if scalar else np.vstack(alphas)
         val = interpolate(self.get_start(), self.get_end(), alphas)
-        if scalar:
-            return np.squeeze(val)
         return val
 
     def point_to_number(self, point: Sequence[float]) -> float:
@@ -379,6 +374,7 @@ class NumberLine(Line):
 
         Examples
         --------
+        >>> number_line = NumberLine(x_min=-2, x_max=3)
         >>> number_line.point_to_number((0,0,0))
         0
         >>> number_line.point_to_number((1,0,0))

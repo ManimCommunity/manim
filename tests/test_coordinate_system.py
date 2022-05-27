@@ -110,6 +110,41 @@ def test_coords_to_point():
     assert np.array_equal(c2p_coord, (1.7143, 1.5, 0))
 
 
+def test_coords_to_point_vectorized():
+    plane = NumberPlane(x_range=[2, 4])
+
+    origin = plane.x_axis.number_to_point(
+        plane._origin_shift([plane.x_axis.x_min, plane.x_axis.x_max]),
+    )
+
+    def ref_func(*coords):
+        result = np.array(origin)
+        for axis, number in zip(plane.get_axes(), coords):
+            result += axis.number_to_point(number) - origin
+        return result
+
+    coords = [[1], [1, 2], [2, 2], [3, 4]]
+
+    print(f"\n\nTesting coords_to_point {coords}")
+    expected = np.round([ref_func(*coord) for coord in coords], 4)
+    actual1 = np.round([plane.coords_to_point(*coord) for coord in coords], 4)
+    coords[0] = [
+        1,
+        0,
+    ]  # Extend the first coord because you can't vectorize items with different dimensions
+    actual2 = np.round(
+        plane.coords_to_point(coords), 4
+    )  # Test [x_0,y_0,x_1], [y_1,x_1,y_1], ...
+    actual3 = np.round(
+        plane.coords_to_point(*np.array(coords).T), 4
+    )  # Test [x_0,x_1,...], [y_0,y_1,...], ...
+    print(actual3)
+
+    np.testing.assert_array_equal(expected, actual1)
+    np.testing.assert_array_equal(expected, actual2)
+    np.testing.assert_array_equal(expected, actual3.T)
+
+
 def test_input_to_graph_point():
     ax = Axes()
     curve = ax.plot(lambda x: np.cos(x))
