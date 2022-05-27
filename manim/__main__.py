@@ -12,7 +12,7 @@ from .cli.init.commands import init
 from .cli.new.group import new
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
-from .constants import DEFAULT_RENDER_NOTE, EPILOG
+from .constants import EPILOG
 
 
 def exit_early(ctx, param, value):
