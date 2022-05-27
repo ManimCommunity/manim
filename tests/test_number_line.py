@@ -118,6 +118,6 @@ def test_point_to_number():
     num_2 = line.point_to_number(points)
     num_3 = line.point_to_number(points_np)
 
-    np.testing.assert_equal(np.round(num_1, 4), np.round(expected, 4))
-    np.testing.assert_equal(np.round(num_2, 4), np.round(expected, 4))
-    np.testing.assert_equal(np.round(num_3, 4), np.round(expected, 4))
+    np.testing.assert_array_equal(np.round(num_1, 4), np.round(expected, 4))
+    np.testing.assert_array_equal(np.round(num_2, 4), np.round(expected, 4))
+    np.testing.assert_array_equal(np.round(num_3, 4), np.round(expected, 4))

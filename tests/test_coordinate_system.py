@@ -102,6 +102,19 @@ def test_point_to_coords():
     assert np.array_equal(coords, (7.0833, 2.6667))
 
 
+def test_point_to_coords_vectorized():
+    ax = Axes(x_range=[0, 10, 2])
+    circ = Circle(radius=0.5).shift(UR * 2)
+    points = np.array(
+        [circ.get_right(), circ.get_left(), circ.get_bottom(), circ.get_top()]
+    )
+    # get the coordinates of the circle with respect to the axes
+    expected = [np.around(ax.point_to_coords(point), decimals=4) for point in points]
+    actual = np.around(ax.point_to_coords(points), decimals=4)
+
+    np.testing.assert_array_equal(expected, actual)
+
+
 def test_coords_to_point():
     ax = Axes()
 

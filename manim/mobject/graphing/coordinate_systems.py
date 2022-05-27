@@ -1911,18 +1911,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             return points.T
         return points
 
-    def point_to_coords(self, point: Sequence[float]) -> tuple[float]:
+    def point_to_coords(self, point: Sequence[float]) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Parameters
         ----------
         point
             The point, i.e. ``RIGHT`` or ``[0, 1, 0]``.
+            Also accepts a list of points as ``[RIGHT, [0, 1, 0]]``.
 
         Returns
         -------
-        Tuple[float]
-            The coordinates on the axes, i.e. ``(4.0, 7.0)``.
+        np.ndarray[float]
+            The coordinates on the axes, i.e. ``[4.0, 7.0]``.
+            Or a list of coordinates if `point` is a list of points.
 
         Examples
         --------
@@ -1943,7 +1945,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
         """
-        return tuple(axis.point_to_number(point) for axis in self.get_axes())
+        point = np.asarray(point)
+        result = np.asarray([axis.point_to_number(point) for axis in self.get_axes()])
+        if point.ndim == 2:
+            return result.T
+        return result
 
     def get_axes(self) -> VGroup:
         """Gets the axes.
