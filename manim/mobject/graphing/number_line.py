@@ -340,15 +340,17 @@ class NumberLine(Line):
 
         Examples
         --------
-        >>> number_line = NumberLine(x_min=-2, x_max=3)
-        >>> number_line.number_to_point(0)
-        array([0., 0., 0.])
-        >>> number_line.number_to_point(1)
-        array([1., 0., 0.])
-        >>> number_line.number_to_point([1,2,3])
-        array([[ 1.,  0.,  0.],
-               [ 2.,  0.,  0.],
-               [ 3.,  0.,  0.]])
+
+            >>> from manim import NumberLine
+            >>> number_line = NumberLine()
+            >>> number_line.number_to_point(0)
+            array([0., 0., 0.])
+            >>> number_line.number_to_point(1)
+            array([1., 0., 0.])
+            >>> number_line.number_to_point([1,2,3])
+            array([[1., 0., 0.],
+                   [2., 0., 0.],
+                   [3., 0., 0.]])
         """
         number = np.asarray(number)
         scalar = number.ndim == 0
@@ -374,13 +376,16 @@ class NumberLine(Line):
 
         Examples
         --------
-        >>> number_line = NumberLine(x_min=-2, x_max=3)
-        >>> number_line.point_to_number((0,0,0))
-        0
-        >>> number_line.point_to_number((1,0,0))
-        1
-        >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
-        array([ 0.5,  1. ,  1.5])
+
+            >>> from manim import NumberLine
+            >>> number_line = NumberLine()
+            >>> number_line.point_to_number((0,0,0))
+            0.0
+            >>> number_line.point_to_number((1,0,0))
+            1.0
+            >>> number_line.point_to_number([[0.5,0,0],[1,0,0],[1.5,0,0]])
+            array([0.5, 1. , 1.5])
+
         """
         point = np.asarray(point)
         start, end = self.get_start_and_end()

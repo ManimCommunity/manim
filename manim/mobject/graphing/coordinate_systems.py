@@ -139,7 +139,7 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords, use_vectorized=False):
+    def coords_to_point(self, *coords):
         raise NotImplementedError()
 
     def point_to_coords(self, point):
@@ -703,7 +703,6 @@ class CoordinateSystem:
         """
 
         t_range = np.array(self.x_range, dtype=float)
-
         if x_range is not None:
             t_range[: len(x_range)] = x_range
 
@@ -713,6 +712,7 @@ class CoordinateSystem:
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
+
         graph = ParametricFunction(
             lambda t: self.coords_to_point(t, function(t)),
             t_range=t_range,
@@ -720,7 +720,6 @@ class CoordinateSystem:
             use_vectorized=use_vectorized,
             **kwargs,
         )
-
         graph.underlying_function = function
         return graph
 
@@ -1846,8 +1845,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         ----------
         coords
             The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.
-            also accepts a list of coordinates
+
+            Also accepts a list of coordinates
+
             ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``
+
             ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``
 
         Returns
@@ -1858,6 +1860,26 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         Examples
         --------
+
+        .. code-block:: python
+
+            from manim import Axes
+            import numpy as np
+
+            ax = Axes()
+            np.around(ax.coords_to_point(1, 0, 0), 2)
+            # array([0.86, 0.  , 0.  ])
+            np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
+            # array([[0.  , 0.75, 0.  ],
+            #        [0.86, 0.75, 0.  ],
+            #        [0.86, 0.  , 0.  ]])
+            np.around(
+                ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
+            )  # Transposed version of the above
+            # array([[0.  , 0.86, 0.86],
+            #        [0.75, 0.75, 0.  ],
+            #        [0.  , 0.  , 0.  ]])
+
         .. manim:: CoordsToPointExample
             :save_last_frame:
 
@@ -1928,6 +1950,20 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         Examples
         --------
+
+        .. code-block:: python
+
+            from manim import Axes, RIGHT
+            import numpy as np
+
+            ax = Axes(x_range=[0, 10, 2])
+            np.around(ax.point_to_coords(RIGHT), 2)
+            # array([5.83, 0.  ])
+            np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
+            # array([[5.  , 0.  ],
+            #       [5.83, 0.  ]])
+
+
         .. manim:: PointToCoordsExample
             :save_last_frame:
 

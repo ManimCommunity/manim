@@ -32,8 +32,8 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         Whether to interpolate between the points of the function after they have been created.
         (Will have odd behaviour with a low number of points)
     use_vectorized
-        Whether to pass in the generated t value array to the function. Only use this if your function supports it.
-        Output should be a numpy array of shape [[x_0,x_1,...],[y_0,y_1,...],[z_0,z_1,...]] but z can also be 0.
+        Whether to pass in the generated t value array to the function as ``[t_0,t_1,...]``. Only use this if your function supports it.
+        Output should be a numpy array of shape ``[[x_0,x_1,...],[y_0,y_1,...],[z_0,z_1,...]]`` but z can also be 0 if the Axes is 2D
     discontinuities
         Values of t at which the function experiences discontinuity.
     dt
