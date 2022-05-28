@@ -102,7 +102,7 @@ def remove_invisible_chars(mobject):
         mobject = mobject.code
     mobject_without_dots = VGroup()
     if mobject[0].__class__ == VGroup:
-        for i in range(mobject.__len__()):
+        for i in range(len(mobject)):
             mobject_without_dots.add(VGroup())
             mobject_without_dots[i].add(*(k for k in mobject[i] if k.__class__ != Dot))
     else:
@@ -155,7 +155,7 @@ class Paragraph(VGroup):
         lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
-        self.lines = [list(self.chars), [self.alignment] * self.chars.__len__()]
+        self.lines = [list(self.chars), [self.alignment] * len(self.chars)]
         self.lines_initial_positions = [line.get_center() for line in self.lines[0]]
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
@@ -178,11 +178,11 @@ class Paragraph(VGroup):
         """
         char_index_counter = 0
         chars = self.get_group_class()()
-        for line_no in range(lines_str_list.__len__()):
+        for line_no in range(len(lines_str_list)):
             line_str = lines_str_list[line_no]
             # Count all the characters in line_str
             # Spaces may or may not count as characters
-            char_count = line_str.__len__()
+            char_count = len(line_str)
             if not self.consider_spaces_as_chars:
                 for blank in (" ", "\n", "\t"):
                     char_count -= line_str.count(blank)
@@ -207,7 +207,7 @@ class Paragraph(VGroup):
         alignment : :class:`str`
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(0, self.lines[0].__len__()):
+        for line_no in range(len(self.lines[0])):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -226,8 +226,8 @@ class Paragraph(VGroup):
 
     def _set_all_lines_to_initial_positions(self):
         """Set all lines to their initial positions."""
-        self.lines[1] = [None for _ in range(self.lines[0].__len__())]
-        for line_no in range(0, self.lines[0].__len__()):
+        self.lines[1] = [None] * len(self.lines[0])
+        for line_no in range(len(self.lines[0])):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
@@ -531,7 +531,7 @@ class Text(SVGMobject):
     def _gen_chars(self):
         chars = self.get_group_class()()
         submobjects_char_index = 0
-        for char_index in range(self.text.__len__()):
+        for char_index in range(len(self.text)):
             if self.text[char_index] in (" ", "\t", "\n"):
                 space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
