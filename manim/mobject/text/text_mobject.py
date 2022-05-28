@@ -79,12 +79,12 @@ DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
 
 
-def remove_invisible_chars(mobject):
+def remove_invisible_chars(mobject: SVGMobject) -> SVGMobject:
     """Function to remove unwanted invisible characters from some mobjects.
 
     Parameters
     ----------
-    mobject : :class:`~.SVGMobject`
+    mobject
         Any SVGMobject from which we want to remove unwanted invisible characters.
 
     Returns
@@ -123,10 +123,10 @@ class Paragraph(VGroup):
 
     Parameters
     ----------
-    line_spacing : :class:`float`, optional
-        Represents the spacing between lines. Default to -1, which means auto.
-    alignment : :class:`str`, optional
-        Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
+    line_spacing
+        Represents the spacing between lines. Defaults to -1, which means auto.
+    alignment
+        Defines the alignment of paragraph. Defaults to None. Possible values are "left", "right" or "center".
 
     Examples
     --------
@@ -144,7 +144,13 @@ class Paragraph(VGroup):
 
     """
 
-    def __init__(self, *text, line_spacing=-1, alignment=None, **kwargs):
+    def __init__(
+        self,
+        *text: Sequence[str],
+        line_spacing: float = -1,
+        alignment: Optional[str] = None,
+        **kwargs,
+    ) -> None:
         self.line_spacing = line_spacing
         self.alignment = alignment
         self.consider_spaces_as_chars = kwargs.get("disable_ligatures", False)
@@ -162,13 +168,12 @@ class Paragraph(VGroup):
         if self.alignment:
             self._set_all_lines_alignments(self.alignment)
 
-    def _gen_chars(self, lines_str_list):
-        """Function to convert a list of plain strings to a 2d-VGroup of chars.
-        "2d-VGroup" means "VGroup of VGroups".
+    def _gen_chars(self, lines_str_list: list) -> VGroup:
+        """Function to convert a list of plain strings to a VGroup of VGroups of chars.
 
         Parameters
         ----------
-        lines_str_list : :class:`list`
+        lines_str_list
             List of plain text strings.
 
         Returns
@@ -199,32 +204,32 @@ class Paragraph(VGroup):
                 char_index_counter += 1
         return chars
 
-    def _set_all_lines_alignments(self, alignment):
+    def _set_all_lines_alignments(self, alignment: str) -> Paragraph:
         """Function to set all line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
         for line_no in range(len(self.lines[0])):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_line_alignment(self, alignment, line_no):
+    def _set_line_alignment(self, alignment: str, line_no: int) -> Paragraph:
         """Function to set one line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_all_lines_to_initial_positions(self):
+    def _set_all_lines_to_initial_positions(self) -> Paragraph:
         """Set all lines to their initial positions."""
         self.lines[1] = [None] * len(self.lines[0])
         for line_no in range(len(self.lines[0])):
@@ -233,26 +238,26 @@ class Paragraph(VGroup):
             )
         return self
 
-    def _set_line_to_initial_position(self, line_no):
+    def _set_line_to_initial_position(self, line_no: int) -> Paragraph:
         """Function to set one line to initial positions.
 
         Parameters
         ----------
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self.lines[1][line_no] = None
         self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
-    def _change_alignment_for_a_line(self, alignment, line_no):
+    def _change_alignment_for_a_line(self, alignment: str, line_no: int) -> None:
         """Function to change one line's alignment to a specific value.
 
         Parameters
         ----------
-        alignment : :class:`str`
+        alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
-        line_no : :class:`int`
+        line_no
             Defines the line number for which we want to set given alignment.
         """
         self.lines[1][line_no] = alignment
@@ -290,13 +295,13 @@ class Text(SVGMobject):
 
     Parameters
     ----------
-    text : :class:`str`
-        The text that need to created as mobject.
+    text
+        The text that needs to be created as a mobject.
 
     Returns
     -------
     :class:`Text`
-        The mobject like :class:`.VGroup`.
+        The mobject-like :class:`.VGroup`.
 
     Examples
     ---------
@@ -417,7 +422,7 @@ class Text(SVGMobject):
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
-    ):
+    ) -> None:
 
         self.line_spacing = line_spacing
         self.font = font
@@ -886,23 +891,23 @@ class MarkupText(SVGMobject):
     Parameters
     ----------
 
-    text : :class:`str`
-        The text that need to created as mobject.
-    fill_opacity : :class:`int`
-        The fill opacity with 1 meaning opaque and 0 meaning transparent.
-    stroke_width : :class:`int`
+    text
+        The text that needs to be created as mobject.
+    fill_opacity
+        The fill opacity, with 1 meaning opaque and 0 meaning transparent.
+    stroke_width
         Stroke width.
-    font_size : :class:`float`
+    font_size
         Font size.
-    line_spacing : :class:`int`
+    line_spacing
         Line spacing.
-    font : :class:`str`
+    font
         Global font setting for the entire text. Local overrides are possible.
-    slant : :class:`str`
+    slant
         Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible.
-    weight : :class:`str`
+    weight
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
-    gradient: :class:`tuple`
+    gradient
         Global gradient setting. Local overrides are possible.
 
 
@@ -1098,7 +1103,7 @@ class MarkupText(SVGMobject):
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
         **kwargs,
-    ):
+    ) -> None:
 
         self.text = text
         self.line_spacing = line_spacing
@@ -1376,7 +1381,7 @@ def register_font(font_file: str | Path):
 
     Parameters
     ----------
-    font_file :
+    font_file
         The font file to add.
 
     Examples
