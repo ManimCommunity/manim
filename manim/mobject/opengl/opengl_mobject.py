@@ -12,7 +12,7 @@ import moderngl
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
@@ -49,6 +49,8 @@ if TYPE_CHECKING:
     Updater = Union[TimeBasedUpdater, NonTimeUpdater]
     ManimColor = Union[str, Color]
 
+logger.setLevel("DEBUG")
+
 
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -84,8 +86,8 @@ class OpenGLMobject:
 
     def __init__(
         self,
-        color: ManimColor = WHITE,
-        opacity: float = 1,
+        color: ManimColor | Iterable[ManimColor] | None = WHITE,
+        opacity: float | Iterable[float] = 1,
         dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
@@ -106,11 +108,11 @@ class OpenGLMobject:
         should_render: bool = True,
         **kwargs,
     ):
+        logger.debug("M  __init__")
         # getattr in case data/uniforms are already defined in parent classes.
         self.data = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
-        self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
@@ -145,6 +147,7 @@ class OpenGLMobject:
         # self.init_event_listners()
         self.init_points()
         self.color = color
+        self.opacity = opacity
         self.init_colors()
 
         self.shader_indices = None
@@ -228,14 +231,13 @@ class OpenGLMobject:
     def init_data(self):
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
+        logger.debug("M  init_data")
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
 
     def init_colors(self):
-        """Initializes the colors.
-
-        Gets called upon creation"""
+        logger.debug("M  init_colors")
         self.set_color(self.color, self.opacity)
 
     def init_points(self):
@@ -1995,6 +1997,7 @@ class OpenGLMobject:
         self
             The :class:`~.OpenGLMobject` itself.
         """
+        self.color = color
         max_len = 0
         if color is not None:
             rgbs = np.array([color_to_rgb(c) for c in listify(color)])
@@ -2037,8 +2040,6 @@ class OpenGLMobject:
         opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ):
-        self.color = color
-
         self.set_rgba_array_by_color(color, opacity, recurse=False)
         # Recurse to submobjects differently from how set_rgba_array_by_color
         # in case they implement set_color differently

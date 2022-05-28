@@ -7,7 +7,7 @@ from functools import reduce, wraps
 import moderngl
 import numpy as np
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
@@ -104,10 +104,9 @@ class OpenGLVMobject(OpenGLMobject):
         triangulation_locked: bool = False,
         **kwargs,
     ):
+        logger.debug("VM __init__")
         self.data = {}
         self.fill_opacity = fill_opacity
-        self.stroke_opacity = stroke_opacity
-        self.stroke_width = stroke_width
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
@@ -134,6 +133,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
+        self.stroke_opacity = stroke_opacity
+        self._stroke_width = stroke_width
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
@@ -152,22 +153,26 @@ class OpenGLVMobject(OpenGLMobject):
         return OpenGLVGroup
 
     def init_data(self):
+        logger.debug("VM init_data")
         super().init_data()
         self.data.pop("rgbas")
         self.fill_rgba = np.zeros((1, 4))
         self.stroke_rgba = np.zeros((1, 4))
+        self.stroke_width = np.zeros((1, 1))
         self.unit_normal = np.zeros((1, 3))
         # stroke_width belongs to self.data, but is defined through init_colors+set_stroke
 
     # Colors
     def init_colors(self):
+        logger.debug("VM init_colors")
+        super().init_colors()
         self.set_fill(
             color=self.fill_color or self.color,
             opacity=self.fill_opacity,
         )
         self.set_stroke(
             color=self.stroke_color or self.color,
-            width=self.stroke_width,
+            width=self._stroke_width,
             opacity=self.stroke_opacity,
             background=self.draw_stroke_behind_fill,
         )
@@ -317,84 +322,88 @@ class OpenGLVMobject(OpenGLMobject):
                 sm1.match_style(sm2)
         return self
 
-    def set_color(self, color, opacity=None, recurse=True):
-        if opacity is not None:
-            self.opacity = opacity
-
+    def set_color(
+        self,
+        color: ManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float] | None = None,
+        recurse: bool = True,
+    ):
         self.set_fill(color, opacity=opacity, recurse=recurse)
         self.set_stroke(color, opacity=opacity, recurse=recurse)
         return self
 
-    def set_opacity(self, opacity, recurse=True):
+    def set_opacity(
+        self, opacity: float | Iterable[float] | None, recurse: bool = True
+    ):
         self.set_fill(opacity=opacity, recurse=recurse)
         self.set_stroke(opacity=opacity, recurse=recurse)
         return self
 
-    def fade(self, darkness=0.5, recurse=True):
-        factor = 1.0 - darkness
-        self.set_fill(
-            opacity=factor * self.get_fill_opacity(),
-            recurse=False,
-        )
-        self.set_stroke(
-            opacity=factor * self.get_stroke_opacity(),
-            recurse=False,
-        )
-        super().fade(darkness, recurse)
+    def fade(self, darkness: float = 0.5, recurse: bool = True):
+        mobs = self.get_family() if recurse else [self]
+        for mob in mobs:
+            factor = 1.0 - darkness
+            mob.set_fill(
+                opacity=factor * mob.get_fill_opacity(),
+                recurse=False,
+            )
+            mob.set_stroke(
+                opacity=factor * mob.get_stroke_opacity(),
+                recurse=False,
+            )
         return self
 
-    def get_fill_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.fill_rgba]
+    def get_fill_colors(self) -> list[str]:
+        return [rgb_to_hex(rgba[:3]) for rgba in self.fill_rgba]
 
-    def get_fill_opacities(self):
+    def get_fill_opacities(self) -> npt.NDArray[np.floating]:
         return self.fill_rgba[:, 3]
 
-    def get_stroke_colors(self):
-        return [Color(rgb_to_hex(rgba[:3])) for rgba in self.stroke_rgba]
+    def get_stroke_colors(self) -> list[str]:
+        return [rgb_to_hex(rgba[:3]) for rgba in self.stroke_rgba]
 
-    def get_stroke_opacities(self):
+    def get_stroke_opacities(self) -> npt.NDArray[np.floating]:
         return self.stroke_rgba[:, 3]
 
-    def get_stroke_widths(self):
-        return self.stroke_width
+    def get_stroke_widths(self) -> npt.NDArray[np.floating]:
+        return self.stroke_width[:, 0]
 
     # TODO, it's weird for these to return the first of various lists
     # rather than the full information
-    def get_fill_color(self):
+    def get_fill_color(self) -> str:
         """
         If there are multiple colors (for gradient)
         this returns the first one
         """
         return self.get_fill_colors()[0]
 
-    def get_fill_opacity(self):
+    def get_fill_opacity(self) -> float:
         """
         If there are multiple opacities, this returns the
         first
         """
         return self.get_fill_opacities()[0]
 
-    def get_stroke_color(self):
+    def get_stroke_color(self) -> str:
         return self.get_stroke_colors()[0]
 
-    def get_stroke_width(self):
+    def get_stroke_width(self) -> float | npt.NDArray:
         return self.get_stroke_widths()[0]
 
-    def get_stroke_opacity(self):
+    def get_stroke_opacity(self) -> float:
         return self.get_stroke_opacities()[0]
 
-    def get_color(self):
-        if self.has_stroke():
-            return self.get_stroke_color()
-        return self.get_fill_color()
+    def get_color(self) -> str:
+        if self.has_fill():
+            return self.get_fill_color()
+        return self.get_stroke_color()
 
-    def get_colors(self):
-        if self.has_stroke():
-            return self.get_stroke_colors()
-        return self.get_fill_colors()
+    def get_colors(self) -> list[str]:
+        if self.has_fill():
+            return self.get_fill_colors()
+        return self.get_stroke_colors()
 
     stroke_color = property(get_stroke_color, set_stroke)
-    color = property(get_color, set_color)
     fill_color = property(get_fill_color, set_fill)
 
     def has_stroke(self):

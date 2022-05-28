@@ -609,6 +609,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def init_colors(self, propagate_colors=False):
         if config.renderer == "opengl":
+            super().init_colors()
             self.set_style(
                 fill_color=self.fill_color or self.color,
                 fill_opacity=self.fill_opacity,
