@@ -74,8 +74,8 @@ def test_line_intersection():
         line_intersection(
             [[0, 0, 0], [3, 3, 0]],
             [[0, 3, 0], [3, 0, 0]],
-        )
-        == np.array([1.5, 1.5, 0.0])
+        ),
+        np.array([1.5, 1.5, 0.0]),
     )
     with pytest.raises(ValueError):
         line_intersection(  # parallel lines
