@@ -1332,8 +1332,9 @@ class OpenGLVMobject(OpenGLMobject):
                     bezier_triplets[lower_index], lower_residue, 1
                 ),
             )
-            for quad in bezier_triplets[lower_index + 1 : upper_index]:
-                self.append_points(quad)
+            # TODO: replace by smooth_bezier_remap(triplets[li+1:ui], num_quadratics-2) -> [points; len(ui-li+1)]
+            for triplet in bezier_triplets[lower_index + 1 : upper_index]:
+                self.append_points(triplet)
             self.append_points(
                 partial_quadratic_bezier_points(
                     bezier_triplets[upper_index], 0, upper_residue
