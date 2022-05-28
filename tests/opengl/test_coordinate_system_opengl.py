@@ -21,8 +21,8 @@ def test_initial_config(using_opengl_renderer):
     assert cs.y_range[2] == 1.0
 
     ax = Axes()
-    assert np.allclose(ax.get_center(), ORIGIN)
-    assert np.allclose(ax.y_axis_config["label_direction"], LEFT)
+    np.testing.assert_allclose(ax.get_center(), ORIGIN)
+    np.testing.assert_allclose(ax.y_axis_config["label_direction"], LEFT)
 
     with tempconfig({"frame_x_radius": 100, "frame_y_radius": 200}):
         cs = CS()
