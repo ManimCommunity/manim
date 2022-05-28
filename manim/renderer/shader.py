@@ -385,7 +385,10 @@ class Shader:
 
     def set_uniform(self, name, value):
         try:
-            self.shader_program[name] = value
+            if isinstance(value, np.ndarray):
+                self.shader_program[name] = tuple(value)
+            else:
+                self.shader_program[name] = value
         except KeyError:
             pass
 

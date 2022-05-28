@@ -31,15 +31,15 @@ def test_background_color(using_opengl_renderer):
 
 def test_set_color(using_opengl_renderer):
     m = OpenGLMobject()
-    assert m.color.hex == "#fff"
+    assert m.color == "#FFFFFF"
     np.alltrue(m.rgbas == np.array((0.0, 0.0, 0.0, 1.0)))
 
     m.set_color(BLACK)
-    assert m.color.hex == "#000"
+    assert m.color == "#000000"
     np.alltrue(m.rgbas == np.array((1.0, 1.0, 1.0, 1.0)))
 
     m.set_color(PURE_GREEN, opacity=0.5)
-    assert m.color.hex == "#0f0"
+    assert m.color == "#00FF00"
     np.alltrue(m.rgbas == np.array((0.0, 1.0, 0.0, 0.5)))
 
     m = OpenGLVMobject()
@@ -88,9 +88,9 @@ def test_set_stroke_color(using_opengl_renderer):
 
 def test_set_fill(using_opengl_renderer):
     m = OpenGLMobject()
-    assert m.color.hex == "#fff"
+    assert m.color == "#FFFFFF"
     m.set_color(BLACK)
-    assert m.color.hex == "#000"
+    assert m.color == "#000000"
 
     m = OpenGLVMobject()
     assert m.color.hex == "#fff"

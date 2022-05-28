@@ -6,7 +6,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
@@ -18,6 +18,7 @@ from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.color import Colors
 from manim.utils.config_ops import _Data, _Uniforms
+from manim.utils.deprecation import deprecated
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
@@ -37,6 +38,16 @@ from manim.utils.space_ops import (
     normalize,
     rotation_matrix_transpose,
 )
+
+if TYPE_CHECKING:
+    from typing import Callable, Iterable, Sequence, Union
+
+    import numpy.typing as npt
+
+    TimeBasedUpdater = Callable[["OpenGLMobject", float], None]
+    NonTimeUpdater = Callable[["OpenGLMobject"], None]
+    Updater = Union[TimeBasedUpdater, NonTimeUpdater]
+    ManimColor = Union[str, Color]
 
 
 class OpenGLMobject:
@@ -73,26 +84,26 @@ class OpenGLMobject:
 
     def __init__(
         self,
-        color=WHITE,
-        opacity=1,
-        dim=3,  # TODO, get rid of this
+        color: ManimColor = WHITE,
+        opacity: float = 1,
+        dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
-        gloss=0.0,
+        gloss: float = 0.0,
         # Positive shadow up to 1 makes a side opposite the light darker
-        shadow=0.0,
+        shadow: float = 0.0,
         # For shaders
         render_primitive=moderngl.TRIANGLES,
         texture_paths=None,
-        depth_test=False,
+        depth_test: bool = False,
         # If true, the mobject will not get rotated according to camera position
-        is_fixed_in_frame=False,
-        is_fixed_orientation=False,
+        is_fixed_in_frame: bool = False,
+        is_fixed_orientation: bool = False,
         # Must match in attributes of vert shader
         # Event listener
-        listen_to_events=False,
-        model_matrix=None,
-        should_render=True,
+        listen_to_events: bool = False,
+        model_matrix: bool = None,
+        should_render: bool = True,
         **kwargs,
     ):
         # getattr in case data/uniforms are already defined in parent classes.
@@ -113,7 +124,7 @@ class OpenGLMobject:
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = float(is_fixed_in_frame)
         self.is_fixed_orientation = float(is_fixed_orientation)
-        self.fixed_orientation_center = (0, 0, 0)
+        self.fixed_orientation_center = np.asarray((0, 0, 0))
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
@@ -133,7 +144,7 @@ class OpenGLMobject:
         self.init_updaters()
         # self.init_event_listners()
         self.init_points()
-        self.color = Color(color) if color else None
+        self.color = color
         self.init_colors()
 
         self.shader_indices = None
@@ -1335,7 +1346,7 @@ class OpenGLMobject:
 
         self.refresh_has_updater_status()
         if call_updater:
-            self.update()
+            self.update(dt=0)
         return self
 
     def remove_updater(self, update_function):
@@ -1869,37 +1880,140 @@ class OpenGLMobject:
         return self
 
     # Color functions
+    def set_rgba_array(
+        self, rgba_array: npt.ArrayLike, name: str = "rgbas", recurse: bool = False
+    ) -> OpenGLMobject:
+        """Set the rgba array of the :class:`~.OpenGLMobject` to ``rgba_array``.
 
-    def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
-        if color is not None:
-            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
-        if opacity is not None:
-            opacities = listify(opacity)
+        Parameters
+        ----------
+        rgba_array
+            The rgba array to set. Must be of shape ``(n, 4)``. [[r, g, b, a], ...] where ``n`` should be the number of points in the :class:`~.OpenGLMobject`.
 
-        # Color only
-        if color is not None and opacity is None:
-            for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(
-                    mob.data[name] if name in mob.data else np.empty((1, 3)), len(rgbs)
-                )
-                mob.data[name][:, :3] = rgbs
+            .. warning::
 
-        # Opacity only
-        if color is None and opacity is not None:
-            for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(
-                    mob.data[name] if name in mob.data else np.empty((1, 3)),
-                    len(opacities),
-                )
-                mob.data[name][:, 3] = opacities
+                This function should only be used internally please use :meth:`~.OpenGLMobject.set_color` instead.
 
-        # Color and opacity
-        if color is not None and opacity is not None:
-            rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
-            for mob in self.get_family(recurse):
-                mob.data[name] = rgbas.copy()
+        name
+            The name of the rgba array. Default is ``rgbas``. This is used to differ between stroke and fill rgbas in the case of a :class:`~.OpenGLVMobject`.
+
+        recurse
+            Whether to set the rgba array of all submobjects. Default is ``True``.
+
+        Returns
+        -------
+        self
+            The :class:`~.OpenGLMobject` itself.
+
+        Examples
+        --------
+
+            >>> m = OpenGLVMobject()
+            >>> m.set_rgba_array([[1, 0, 0, 1], [0, 1, 0, 1]])
+            >>> m.rgbas
+            array([[1, 0, 0, 1], [0, 1, 0, 1]])
+        """
+        for mob in self.get_family(recurse):
+            mob.data[name] = np.asarray(rgba_array)
+            # mob.data.update(name, rgba_array)
         return self
 
+    def set_color_by_rgba_func(
+        self,
+        func: Callable[[npt.NDArray[np.floating]], Sequence[float]],
+        recurse: bool = True,
+    ):
+        """Setting the rgba values by a generating function.
+
+        Parameters
+        ----------
+        func
+            The function which takes in a point and returns a rgba array of the form ``[r, g, b, a]``.
+
+        recurse
+            Whether to set the rgba array of all submobjects. Default is ``True``.
+
+        Returns
+        -------
+        self
+            The :class:`~.OpenGLMobject` itself.
+        """
+        for mob in self.get_family(recurse):
+            rgba_array = [func(point) for point in mob.points]
+            mob.set_rgba_array(rgba_array)
+        return self
+
+    def set_color_by_rgb_func(
+        self,
+        func: Callable[[npt.NDArray[np.floating]], Sequence[float]],
+        opacity: float = 1,
+        recurse=True,
+    ):
+        """Setting the rgba values by a generating function. (RGB ONLY see :meth:`~.set_color_by_rgba_func` for RGBA)
+
+        Parameters
+        ----------
+        func
+            The function which takes in a point and returns a rgba array of the form ``[r, g, b]``.
+        opacity
+            The opacity of the color. Default is ``1``. Becomes the alpha element of the rgba array.
+        recurse
+            Whether to set the rgba array of all submobjects. Default is ``True``.
+
+        Returns
+        -------
+        self
+            The :class:`~.OpenGLMobject` itself.
+        """
+        for mob in self.get_family(recurse):
+            rgb_array = [[*func(point), opacity] for point in mob.points]
+            mob.set_rgba_array(rgb_array)
+        return self
+
+    def set_rgba_array_by_color(
+        self,
+        color: ManimColor | Iterable[ManimColor] | None = None,
+        opacity: float | Iterable[float] | None = None,
+        name: str = "rgbas",
+        recurse: bool = True,
+    ):
+        """Set the rgba array of the :class:`~.OpenGLMobject` to the rgba values of the color.
+
+        Parameters
+        ----------
+        color
+            The color to set. Default is ``None``.
+        opacity
+            The opacity of the color. Default is ``None``. Becomes the alpha element of the rgba array.
+        name
+            The name of the rgba array. Default is ``rgbas``. This is used to differ between stroke and fill rgbas in the case of a :class:`~.OpenGLVMobject`.
+        recurse
+            Whether to set the rgba array of all submobjects. Default is ``True``.
+
+        Returns
+        -------
+        self
+            The :class:`~.OpenGLMobject` itself.
+        """
+        max_len = 0
+        if color is not None:
+            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
+            max_len = len(rgbs)
+        if opacity is not None:
+            opacities = np.array(listify(opacity))
+            max_len = max(max_len, len(opacities))
+
+        for mob in self.get_family(recurse):
+            if max_len > len(mob.data[name]):
+                mob.data[name] = resize_array(mob.data[name], max_len)
+            size = len(mob.data[name])
+            if color is not None:
+                mob.data[name][:, :3] = resize_array(rgbs, size)
+            if opacity is not None:
+                mob.data[name][:, 3] = resize_array(opacities, size)
+        return self
+
+    @deprecated(message="Use set_rgba_array instead")
     def set_rgba_array_direct(self, rgbas: np.ndarray, name="rgbas", recurse=True):
         """Directly set rgba data from `rgbas` and optionally do the same recursively
         with submobjects. This can be used if the `rgbas` have already been generated
@@ -1917,21 +2031,26 @@ class OpenGLMobject:
         for mob in self.get_family(recurse):
             mob.data[name] = rgbas.copy()
 
-    def set_color(self, color, opacity=None, recurse=True):
-        self.set_rgba_array(color, opacity, recurse=False)
-        # Recurse to submobjects differently from how set_rgba_array
+    def set_color(
+        self,
+        color: ManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float] | None = None,
+        recurse: bool = True,
+    ):
+        self.color = color
+
+        self.set_rgba_array_by_color(color, opacity, recurse=False)
+        # Recurse to submobjects differently from how set_rgba_array_by_color
         # in case they implement set_color differently
-        if color is not None:
-            self.color = Color(color)
-        if opacity is not None:
-            self.opacity = opacity
         if recurse:
             for submob in self.submobjects:
                 submob.set_color(color, recurse=True)
         return self
 
-    def set_opacity(self, opacity, recurse=True):
-        self.set_rgba_array(color=None, opacity=opacity, recurse=False)
+    def set_opacity(
+        self, opacity: float | Iterable[float] | None, recurse: bool = True
+    ):
+        self.set_rgba_array_by_color(color=None, opacity=opacity, recurse=False)
         if recurse:
             for submob in self.submobjects:
                 submob.set_opacity(opacity, recurse=True)
@@ -2318,7 +2437,15 @@ class OpenGLMobject:
 
     # Interpolate
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path()):
+    def interpolate(
+        self,
+        mobject1: OpenGLMobject,
+        mobject2: OpenGLMobject,
+        alpha: float,
+        path_func: Callable[
+            [npt.NDArray, npt.NDArray, float], npt.NDArray
+        ] = straight_path,
+    ):
         """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 
@@ -2354,20 +2481,9 @@ class OpenGLMobject:
 
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
-            if key != "fixed_orientation_center":
-                self.uniforms[key] = interpolate(
-                    mobject1.uniforms[key],
-                    mobject2.uniforms[key],
-                    alpha,
-                )
-            else:
-                self.uniforms["fixed_orientation_center"] = tuple(
-                    interpolate(
-                        np.array(mobject1.uniforms["fixed_orientation_center"]),
-                        np.array(mobject2.uniforms["fixed_orientation_center"]),
-                        alpha,
-                    )
-                )
+            self.uniforms[key] = interpolate(
+                mobject1.uniforms[key], mobject2.uniforms[key], alpha
+            )
         return self
 
     def pointwise_become_partial(self, mobject, a, b):
@@ -2502,7 +2618,7 @@ class OpenGLMobject:
     @affects_shader_info_id
     def fix_orientation(self):
         self.is_fixed_orientation = 1.0
-        self.fixed_orientation_center = tuple(self.get_center())
+        self.fixed_orientation_center = np.asarray(self.get_center())
         self.depth_test = True
         return self
 
@@ -2514,7 +2630,7 @@ class OpenGLMobject:
     @affects_shader_info_id
     def unfix_orientation(self):
         self.is_fixed_orientation = 0.0
-        self.fixed_orientation_center = (0, 0, 0)
+        self.fixed_orientation_center = np.asarray((0, 0, 0))
         self.depth_test = False
         return self
 
