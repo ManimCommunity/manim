@@ -94,6 +94,7 @@ sphinxcontrib-programoutput = "^0.17"
 data-science-types = "^0.2.23"
 psutil-wheels = {version = "5.8.0", python = ">=3.10"}
 psutil = {version = "^5.8.0", python = "<3.10"}
+myst-parser = "^0.17.2"
 
 
 [tool.poetry.urls]

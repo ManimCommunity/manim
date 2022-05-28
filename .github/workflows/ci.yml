@@ -57,7 +57,7 @@ jobs:
 
       - name: Run doctests in rst files
         run: |
-          cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+          cd docs && poetry run make doctest O=-tskip-manim
 
 
   test:
