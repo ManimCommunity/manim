@@ -271,7 +271,7 @@ def test_vmobject_same_points_become():
     a = Square()
     b = Circle()
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -279,7 +279,7 @@ def test_vmobject_same_num_submobjects_become():
     a = Square()
     b = RegularPolygon(n=6)
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -287,11 +287,11 @@ def test_vmobject_different_num_points_and_submobjects_become():
     a = Square()
     b = VGroup(Circle(), Square())
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
 def test_vmobject_point_at_angle():
     a = Circle()
     p = a.point_at_angle(4 * PI)
-    assert np.array_equal(a.points[0], p)
+    np.testing.assert_array_equal(a.points[0], p)
