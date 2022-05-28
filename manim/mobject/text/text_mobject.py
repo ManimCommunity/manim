@@ -144,14 +144,14 @@ class Paragraph(VGroup):
 
     """
 
-    def __init__(self, *text, line_spacing=-1, alignment=None, **config):
+    def __init__(self, *text, line_spacing=-1, alignment=None, **kwargs):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        self.consider_spaces_as_chars = config.get("disable_ligatures", False)
+        self.consider_spaces_as_chars = kwargs.get("disable_ligatures", False)
         super().__init__()
 
         lines_str = "\n".join(list(text))
-        self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
+        self.lines_text = Text(lines_str, line_spacing=line_spacing, **kwargs)
         lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
