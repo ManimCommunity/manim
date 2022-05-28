@@ -22,6 +22,30 @@ if TYPE_CHECKING:
 
 
 class Homotopy(Animation):
+    """A Homotopy.
+
+    This is an animation transforming the points of a mobject according
+    to the specified transformation function. With the parameter :math:`t`
+    moving from 0 to 1 throughout the animation and :math:`(x, y, z)`
+    describing the coordinates of the point of a mobject,
+    the function passed to the ``homotopy`` keyword argument should
+    transform the tuple :math:`(x, y, z, t)` to :math:`(x', y', z')`,
+    the coordinates the original point is transformed to at time :math:`t`.
+
+    Parameters
+    ----------
+    homotopy
+        A function mapping :math:`(x, y, z, t)` to :math:`(x', y', z')`.
+    mobject
+        The mobject transformed under the given homotopy.
+    run_time
+        The run time of the animation.
+    apply_function_kwargs
+        Keyword arguments propagated to :meth:`.Mobject.apply_function`.
+    kwargs
+        Further keyword arguments passed to the parent class.
+    """
+
     def __init__(
         self,
         homotopy: Callable[[float, float, float, float], tuple[float, float, float]],
@@ -30,10 +54,6 @@ class Homotopy(Animation):
         apply_function_kwargs: dict[str, Any] | None = None,
         **kwargs,
     ) -> None:
-        """
-        Homotopy is a function from
-        (x, y, z, t) to (x', y', z')
-        """
         self.homotopy = homotopy
         self.apply_function_kwargs = (
             apply_function_kwargs if apply_function_kwargs is not None else {}
