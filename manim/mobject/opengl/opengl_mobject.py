@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 import moderngl
 import numpy as np
 from colour import Color
+from pyglet.libs.win32.constants import NameDisplay
 
 from manim import config, logger
 from manim.constants import *
@@ -48,6 +49,7 @@ if True:
     NonTimeUpdater = Callable[["OpenGLMobject"], None]
     Updater = Union[TimeBasedUpdater, NonTimeUpdater]
     ManimColor = Union[str, Color]
+    Array = npt.NDArray[np.float64]
 
 
 class OpenGLMobject:
@@ -78,9 +80,7 @@ class OpenGLMobject:
 
     is_fixed_in_frame = _Uniforms()
     is_fixed_orientation = _Uniforms()
-    fixed_orientation_center: np.ndarray[
-        np.float64
-    ] = _Uniforms()  # for fixed orientation reference
+    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
     gloss = _Uniforms()
     shadow = _Uniforms()
     reflectiveness = _Uniforms()
@@ -122,7 +122,7 @@ class OpenGLMobject:
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
         listen_to_events: bool = False,
-        model_matrix: npt.NDArray | None = None,  # TODO: Does not exist in manimgl
+        model_matrix: Array | None = None,  # TODO: Does not exist in manimgl
         should_render: bool = True,
         **kwargs: Any,
     ):
@@ -272,7 +272,7 @@ class OpenGLMobject:
         Subclasses can inherit and overwrite this method to extend `self.data`."""
         logger.debug("M  init_data")
         # In case parent class already has data defined
-        self.data: dict[str, npt.NDArray] = getattr(self, "data", {})
+        self.data: dict[str, Array] = getattr(self, "data", {})
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((0, 3))
         self.rgbas = np.zeros((0, 4))
@@ -518,20 +518,24 @@ class OpenGLMobject:
         return self.length_over_dim(2)
 
     @depth.setter
-    def depth(self, value) -> None:
+    def depth(self, value: float) -> None:
         self.rescale_to_fit(value, 2, stretch=False)
 
     """
     Point functions, only these methods should directly affect the points
     """
 
-    def resize_points(self, new_length, resize_func=resize_array):
+    def resize_points(
+        self, new_length: int, resize_func: Callable[[Array, int], Array] = resize_array
+    ) -> OpenGLMobject:
         if new_length != len(self.points):
             self.points = resize_func(self.points, new_length)
         self.refresh_bounding_box()
         return self
 
-    def set_points(self, points):
+    # TODO: Why exactly are we not only using the last case ?
+    def set_points(self, points: npt.ArrayLike) -> OpenGLMobject:
+        # TODO: ArrayLike doesn't have __len__ implemented
         if len(points) == len(self.points):
             self.points[:] = points
         elif isinstance(points, np.ndarray):
@@ -541,52 +545,24 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def apply_over_attr_arrays(self, func):
-        for attr in self.get_array_attrs():
-            setattr(self, attr, func(getattr(self, attr)))
-        return self
-
-    def append_points(self, new_points):
+    def append_points(self, new_points: npt.ArrayLike) -> OpenGLMobject:
         self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
         return self
 
-    def reverse_points(self):
+    def reverse_points(self) -> OpenGLMobject:
         for mob in self.get_family():
             for key in mob.data:
                 mob.data[key] = mob.data[key][::-1]
         return self
 
-    def get_midpoint(self) -> np.ndarray:
-        """Get coordinates of the middle of the path that forms the  :class:`~.OpenGLMobject`.
-
-        Examples
-        --------
-
-        .. manim:: AngleMidPoint
-            :save_last_frame:
-
-            class AngleMidPoint(Scene):
-                def construct(self):
-                    line1 = Line(ORIGIN, 2*RIGHT)
-                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
-
-                    a = Angle(line1, line2, radius=1.5, other_angle=False)
-                    d = Dot(a.get_midpoint()).set_color(RED)
-
-                    self.add(line1, line2, a, d)
-                    self.wait()
-
-        """
-        return self.point_from_proportion(0.5)
-
     def apply_points_function(
         self,
-        func,
-        about_point=None,
-        about_edge=ORIGIN,
-        works_on_bounding_box=False,
-    ):
+        func: Callable[[Array], Array],
+        about_point: Array | None = None,
+        about_edge: Array = ORIGIN,
+        works_on_bounding_box: bool = False,
+    ) -> OpenGLMobject:
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
 
@@ -610,9 +586,11 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    # Others related to points
+    """
+    Other Functions related to points
+    """
 
-    def match_points(self, mobject):
+    def match_points(self, mobject: OpenGLMobject) -> None:
         """Edit points, positions, and submobjects to be identical
         to another :class:`~.OpenGLMobject`, while keeping the style unchanged.
 
@@ -631,28 +609,28 @@ class OpenGLMobject:
         """
         self.set_points(mobject.points)
 
-    def clear_points(self):
+    def clear_points(self) -> None:
         self.resize_points(0)
 
-    def get_num_points(self):
+    def get_num_points(self) -> int:
         return len(self.points)
 
-    def get_all_points(self):
+    def get_all_points(self) -> Array:
         if self.submobjects:
             return np.vstack([sm.points for sm in self.get_family()])
         else:
             return self.points
 
-    def has_points(self):
+    def has_points(self) -> bool:
         return self.get_num_points() > 0
 
-    def get_bounding_box(self):
+    def get_bounding_box(self) -> Array:
         if self.needs_new_bounding_box:
             self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
         return self.bounding_box
 
-    def compute_bounding_box(self):
+    def compute_bounding_box(self) -> Array:
         all_points = np.vstack(
             [
                 self.points,
@@ -672,7 +650,9 @@ class OpenGLMobject:
             mids = (mins + maxs) / 2
             return np.array([mins, mids, maxs])
 
-    def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
+    def refresh_bounding_box(
+        self, recurse_down: bool = False, recurse_up: bool = True
+    ) -> OpenGLMobject:
         for mob in self.get_family(recurse_down):
             mob.needs_new_bounding_box = True
         if recurse_up:
@@ -680,13 +660,61 @@ class OpenGLMobject:
                 parent.refresh_bounding_box()
         return self
 
-    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+    def are_points_touching(self, points: Array, buff: float = 0) -> bool:
         bb = self.get_bounding_box()
         mins = bb[0] - buff
         maxs = bb[2] + buff
-        return (point >= mins).all() and (point <= maxs).all()
+        return ((points >= mins) * (points <= maxs)).all(1)
 
-    # Family matters
+    def is_point_touching(self, point: Array, buff: float = MED_SMALL_BUFF):
+        return self.are_points_touching(np.array(point, ndmin=2), buff)
+
+    def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
+        bb1 = self.get_bounding_box()
+        bb2 = mobject.get_bounding_box()
+        return not any(
+            (
+                (
+                    bb2[2] < bb1[0] - buff
+                ).any(),  # E.g. Right of mobject is left of self's left
+                (
+                    bb2[0] > bb1[2] + buff
+                ).any(),  # E.g. Left of mobject is right of self's right
+            )
+        )
+
+    # TODO: fix error get_array_attrs not found
+    def apply_over_attr_arrays(self, func):
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
+
+    def get_midpoint(self) -> Array:
+        """Get coordinates of the middle of the path that forms the  :class:`~.OpenGLMobject`.
+
+        Examples
+        --------
+
+        .. manim:: AngleMidPoint
+            :save_last_frame:
+
+            class AngleMidPoint(Scene):
+                def construct(self):
+                    line1 = Line(ORIGIN, 2*RIGHT)
+                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
+
+                    a = Angle(line1, line2, radius=1.5, other_angle=False)
+                    d = Dot(a.get_midpoint()).set_color(RED)
+
+                    self.add(line1, line2, a, d)
+                    self.wait()
+
+        """
+        return self.point_from_proportion(0.5)
+
+    """
+    Function which operate on the family
+    """
 
     def __getitem__(self, value):
         if isinstance(value, slice):
@@ -703,7 +731,7 @@ class OpenGLMobject:
     def split(self):
         return self.submobjects
 
-    def assemble_family(self):
+    def assemble_family(self) -> OpenGLMobject:
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *uniq_chain(*sub_families)]
         self.refresh_has_updater_status()
@@ -712,14 +740,36 @@ class OpenGLMobject:
             parent.assemble_family()
         return self
 
-    def get_family(self, recurse=True):
+    def get_family(self, recurse: bool = True) -> list[OpenGLMobject]:
         if recurse and hasattr(self, "family"):
             return self.family
         else:
             return [self]
 
-    def family_members_with_points(self):
+    def family_members_with_points(self) -> list[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
+
+    # TODO update Documentation
+    def get_ancestors(self, extended: bool = False) -> list[OpenGLMobject]:
+        """
+        Returns parents, grandparents, etc.
+        Order of result should be from higher members of the hierarchy down.
+
+        If extended is set to true, it includes the ancestors of all family members,
+        e.g. any other parents of a submobject
+        """
+        ancestors = []
+        to_process = list(self.get_family(recurse=extended))
+        excluded = set(to_process)
+        while to_process:
+            for p in to_process.pop().parents:
+                if p not in excluded:
+                    ancestors.append(p)
+                    to_process.append(p)
+        # Ensure mobjects highest in the hierarchy show up first
+        ancestors.reverse()
+        # Remove list redundancies while preserving order
+        return list(dict.fromkeys(ancestors))
 
     def add(
         self, *mobjects: OpenGLMobject, update_parent: bool = False
@@ -799,7 +849,10 @@ class OpenGLMobject:
         return self
 
     def remove(
-        self, *mobjects: OpenGLMobject, update_parent: bool = False
+        self,
+        *mobjects: OpenGLMobject,
+        update_parent: bool = False,
+        reassemble: bool = True,
     ) -> OpenGLMobject:
         """Remove :attr:`submobjects`.
 
@@ -822,6 +875,7 @@ class OpenGLMobject:
         :meth:`add`
 
         """
+        # TODO: Why exactly is there an update parent? it seems pretty random
         if update_parent:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
@@ -882,7 +936,9 @@ class OpenGLMobject:
         self.submobjects = list_update(mobjects, self.submobjects)
         return self
 
-    def replace_submobject(self, index, new_submob):
+    def replace_submobject(
+        self, index: int, new_submob: OpenGLMobject
+    ) -> OpenGLMobject:
         old_submob = self.submobjects[index]
         if self in old_submob.parents:
             old_submob.parents.remove(self)
@@ -890,32 +946,15 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    def invert(self, recursive=False):
-        """Inverts the list of :attr:`submobjects`.
-
-        Parameters
-        ----------
-        recursive
-            If ``True``, all submobject lists of this mobject's family are inverted.
-
-        Examples
-        --------
-
-        .. manim:: InvertSumobjectsExample
-
-            class InvertSumobjectsExample(Scene):
-                def construct(self):
-                    s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
-                    s2 = s.copy()
-                    s2.invert()
-                    s2.shift(DOWN)
-                    self.play(Write(s), Write(s2))
-        """
-        if recursive:
-            for submob in self.submobjects:
-                submob.invert(recursive=True)
-        list.reverse(self.submobjects)
+    def insert_submobject(self, index: int, new_submob: OpenGLMobject) -> OpenGLMobject:
+        self.submobjects.insert(index, new_submob)
         self.assemble_family()
+        return self
+
+    def set_submobjects(self, submobject_list: list[OpenGLMobject]) -> OpenGLMobject:
+        self.remove(*self.submobjects, reassemble=False)
+        self.add(*submobject_list)
+        return self
 
     # Submobject organization
 
@@ -1971,7 +2010,7 @@ class OpenGLMobject:
 
     def set_color_by_rgba_func(
         self,
-        func: Callable[[npt.NDArray[np.floating]], Sequence[float]],
+        func: Callable[[Array[np.floating]], Sequence[float]],
         recurse: bool = True,
     ):
         """Setting the rgba values by a generating function.
@@ -1996,7 +2035,7 @@ class OpenGLMobject:
 
     def set_color_by_rgb_func(
         self,
-        func: Callable[[npt.NDArray[np.floating]], Sequence[float]],
+        func: Callable[[Array[np.floating]], Sequence[float]],
         opacity: float = 1,
         recurse=True,
     ):
@@ -2315,7 +2354,7 @@ class OpenGLMobject:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
-    def point_from_proportion(self, alpha):
+    def point_from_proportion(self, alpha) -> Array:
         points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
@@ -2492,9 +2531,7 @@ class OpenGLMobject:
         mobject1: OpenGLMobject,
         mobject2: OpenGLMobject,
         alpha: float,
-        path_func: Callable[
-            [npt.NDArray, npt.NDArray, float], npt.NDArray
-        ] = straight_path,
+        path_func: Callable[[Array, Array, float], Array] = straight_path,
     ):
         """Turns this :class:`~.OpenGLMobject` into an interpolation between ``mobject1``
         and ``mobject2``.
