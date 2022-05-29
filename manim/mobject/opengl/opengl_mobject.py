@@ -113,29 +113,52 @@ class OpenGLMobject:
         color: ManimColor | Iterable[ManimColor] = WHITE,
         opacity: float | Iterable[float] = 1,
         dim: int = 3,  # TODO, get rid of this
-        # Lighting parameters
-        # ...
-        # Larger reflectiveness makes things brighter when facing the light
         reflectiveness: float = 0.0,
-        # Positive shadow up to 1 makes a side opposite the light darker
         shadow: float = 0.0,
-        # Positive gloss up to 1 makes it reflect the light.
         gloss: float = 0.0,
-        # For shaders
         render_primitive: int = moderngl.TRIANGLES,
         texture_paths: list[str] | None = None,
         depth_test: bool = False,
-        # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame: bool = False,
         is_fixed_orientation: bool = False,
-        # Must match in attributes of vert shader
-        # Event listener
         listen_to_events: bool = False,
-        model_matrix: npt.NDArray[float]
-        | None = None,  # TODO: Does not exist in manimgl
+        model_matrix: npt.NDArray | None = None,  # TODO: Does not exist in manimgl
         should_render: bool = True,
         **kwargs: Any,
     ):
+        """The base class for everything that can be rendered in manim
+
+        Parameters
+        ----------
+        color
+            The color of the object. Can be a single color or a list of colors.
+        opacity
+            The opacity of the object. Can be a single opacity or a list of opacities.
+        dim
+            The dimension of the object. (3 for 3D, 2 for 2D)
+        reflectiveness
+            The reflectiveness of the object. 1 is fully reflective, 0 is not reflective. Larger values make the object brighter when facing the light.
+        shadow
+            The shadow of the object. 1 is fully shadowed, 0 is not shadowed. Larger values make the object darker when facing opposite the light.
+        gloss
+            The gloss of the object. 1 is fully glossed, 0 is not glossed. Larger values make the object reflect the light.
+        render_primitive
+            The primitive to render the object with. Can be one of the following: ``moderngl.TRIANGLES``, ``moderngl.LINES``, ``moderngl.POINTS``, ``moderngl.LINE_STRIP``, ``moderngl.LINE_LOOP``, ``moderngl.TRIANGLE_STRIP``, ``moderngl.TRIANGLE_FAN``. and so on
+        texture_paths
+            The texture paths of the object.
+        depth_test
+            Whether to enable depth testing.
+        is_fixed_in_frame
+            Whether the object should be fixed in the frame.
+        is_fixed_orientation
+            Whether the object should be fixed in orientation. If true, the object will not be rotated according to camera orientation.
+        listen_to_events
+            Whether the object should listen to events.
+        model_matrix
+            The model matrix of the object.
+        should_render
+            Whether the object should be rendered.
+        """
         logger.debug("M  __init__")
         # getattr in case data/uniforms are already defined in parent classes.
 
@@ -249,7 +272,7 @@ class OpenGLMobject:
         Subclasses can inherit and overwrite this method to extend `self.data`."""
         logger.debug("M  init_data")
         # In case parent class already has data defined
-        self.data: dict[str, npt.NDArray[float]] = getattr(self, "data", {})
+        self.data: dict[str, npt.NDArray] = getattr(self, "data", {})
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((0, 3))
         self.rgbas = np.zeros((0, 4))
@@ -262,8 +285,10 @@ class OpenGLMobject:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
-        subclasses."""
-        # Typically implemented in subclass, unless purposefully left blank
+        subclasses.
+
+        Typically implemented in a subclass, unless purposefully left empty.
+        """
         pass
 
     def set(self, **kwargs: dict[str, Any]) -> OpenGLMobject:
