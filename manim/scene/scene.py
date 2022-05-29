@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
 __all__ = ["Scene"]
 
 import copy

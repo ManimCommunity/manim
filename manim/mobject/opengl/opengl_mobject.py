@@ -6,7 +6,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 import moderngl
 import numpy as np
@@ -78,9 +78,35 @@ class OpenGLMobject:
 
     is_fixed_in_frame = _Uniforms()
     is_fixed_orientation = _Uniforms()
-    fixed_orientation_center = _Uniforms()  # for fixed orientation reference
+    fixed_orientation_center: np.ndarray[
+        np.float64
+    ] = _Uniforms()  # for fixed orientation reference
     gloss = _Uniforms()
     shadow = _Uniforms()
+    reflectiveness = _Uniforms()
+
+    def init_constructor(self: OpenGLMobject) -> None:
+        """Initializes the object."""
+        self._submobjects: list[OpenGLMobject] = []
+        self.parents: list[OpenGLMobject] = []
+        self.parent: None | (
+            OpenGLMobject
+        ) = None  # TODO: Does not exist in manimgl anymore
+        self.family: list[OpenGLMobject] = [self]
+        self.locked_data_keys: set[str] = set()
+        self.needs_new_bounding_box = True
+        self.saved_state = None
+        self.target = None
+
+        self.init_data()
+        self.init_updaters()
+        # self.init_event_listners()
+        self.init_points()
+        self.init_colors()
+        # self.init_shader_data() # Unclear usage of function on line 1748 in manimgl
+
+        if self.depth_test:
+            self.apply_depth_test()
 
     def __init__(
         self: OpenGLMobject,
@@ -88,10 +114,13 @@ class OpenGLMobject:
         opacity: float | Iterable[float] = 1,
         dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
-        # Positive gloss up to 1 makes it reflect the light.
-        gloss: float = 0.0,
+        # ...
+        # Larger reflectiveness makes things brighter when facing the light
+        reflectiveness: float = 0.0,
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow: float = 0.0,
+        # Positive gloss up to 1 makes it reflect the light.
+        gloss: float = 0.0,
         # For shaders
         render_primitive: int = moderngl.TRIANGLES,
         texture_paths: list[str] | None = None,
@@ -102,59 +131,39 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events: bool = False,
-        model_matrix: bool | None = None,  # TODO: Does not exist in manimgl
+        model_matrix: npt.NDArray[float]
+        | None = None,  # TODO: Does not exist in manimgl
         should_render: bool = True,
         **kwargs: Any,
     ):
         logger.debug("M  __init__")
         # getattr in case data/uniforms are already defined in parent classes.
-        self.data: dict[str, npt.NDArray] = getattr(self, "data", {})
-        self.uniforms = getattr(self, "uniforms", {})
 
+        self.color = color
+        self.opacity = opacity
         self.dim = dim  # TODO, get rid of this
-        # Lighting parameters
-        # Positive gloss up to 1 makes it reflect the light.
-        self.gloss = gloss
-        # Positive shadow up to 1 makes a side opposite the light darker
-        self.shadow = shadow
-        # For shaders
+
+        # For Shaders
         self.render_primitive = render_primitive
         self.texture_paths = texture_paths
         self.depth_test = depth_test
-        # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = float(is_fixed_in_frame)
-        self.is_fixed_orientation = float(is_fixed_orientation)
-        self.fixed_orientation_center = np.asarray((0, 0, 0))
-        # Must match in attributes of vert shader
-        # Event listener
         self.listen_to_events = listen_to_events
-
-        self._submobjects: list[OpenGLMobject] = []
-        self.parents: list[OpenGLMobject] = []
-        self.parent: None | (
-            OpenGLMobject
-        ) = None  # TODO: Does not exist in manimgl anymore
-        self.family: list[OpenGLMobject] = [self]
-        self.locked_data_keys: set[str] = set()
-        self.needs_new_bounding_box = True
+        self.shader_indices = None
         if model_matrix is None:
             self.model_matrix = np.eye(4)
         else:
             self.model_matrix = model_matrix
 
-        self.init_data()
-        self.init_updaters()
-        # self.init_event_listners()
-        self.init_points()
-        self.color = color
-        self.opacity = opacity
-        self.init_colors()
+        # Init Uniforms
+        self.uniforms = getattr(self, "uniforms", {})
+        self.is_fixed_in_frame = float(is_fixed_in_frame)
+        self.is_fixed_orientation = float(is_fixed_orientation)
+        self.fixed_orientation_center = np.asarray((0, 0, 0))
+        self.gloss = gloss
+        self.shadow = shadow
+        self.reflectiveness = reflectiveness
 
-        self.shader_indices = None
-
-        if self.depth_test:
-            self.apply_depth_test()
-
+        self.init_constructor()
         self.should_render = should_render
 
     @classmethod
@@ -227,7 +236,7 @@ class OpenGLMobject:
                     self.add(Text("Changing default values is easy!"))
 
                     # we revert the colour back to the default to prevent a bug in the docs.
-                    Text.set_default(color=WHITE)
+                    Tex -> Nonet.set_default(color=WHITE)
 
         """
         if kwargs:
@@ -235,21 +244,21 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    def init_data(self):
+    def init_data(self) -> None:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
         logger.debug("M  init_data")
-        self.data: dict[str, npt.NDArray[np.floating]] = {
-            "points": np.zeros((0, 3), dtype=np.float32),
-            "bounding_box": np.zeros((0, 3), dtype=np.float32),
-            "rgbas": np.zeros((0, 4), dtype=np.float32),
-        }
+        # In case parent class already has data defined
+        self.data: dict[str, npt.NDArray[float]] = getattr(self, "data", {})
+        self.points = np.zeros((0, 3))
+        self.bounding_box = np.zeros((0, 3))
+        self.rgbas = np.zeros((0, 4))
 
-    def init_colors(self):
+    def init_colors(self) -> None:
         logger.debug("M  init_colors")
         self.set_color(self.color, self.opacity)
 
-    def init_points(self):
+    def init_points(self) -> None:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -257,7 +266,7 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set(self, **kwargs) -> OpenGLMobject:
+    def set(self, **kwargs: dict[str, Any]) -> OpenGLMobject:
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -291,12 +300,12 @@ class OpenGLMobject:
 
         return self
 
-    def set_data(self, data):
+    def set_data(self, data: dict[str, Any]) -> OpenGLMobject:
         for key in data:
             self.data[key] = data[key].copy()
         return self
 
-    def set_uniforms(self, uniforms: dict):
+    def set_uniforms(self, uniforms: dict[str, Any]) -> OpenGLMobject:
         for key, value in uniforms.items():
             if isinstance(value, np.ndarray):
                 value = value.copy()
@@ -304,7 +313,7 @@ class OpenGLMobject:
         return self
 
     @property
-    def animate(self):
+    def animate(self) -> _AnimationBuilder:
         """Used to animate the application of a method.
 
         .. warning::
@@ -392,7 +401,7 @@ class OpenGLMobject:
         return _AnimationBuilder(self)
 
     @property
-    def width(self):
+    def width(self) -> float:
         """The width of the mobject.
 
         Returns
@@ -426,11 +435,11 @@ class OpenGLMobject:
 
     # Only these methods should directly affect points
     @width.setter
-    def width(self, value):
+    def width(self, value: float) -> None:
         self.rescale_to_fit(value, 0, stretch=False)
 
     @property
-    def height(self):
+    def height(self) -> float:
         """The height of the mobject.
 
         Returns
@@ -463,11 +472,11 @@ class OpenGLMobject:
         return self.length_over_dim(1)
 
     @height.setter
-    def height(self, value):
+    def height(self, value: float) -> None:
         self.rescale_to_fit(value, 1, stretch=False)
 
     @property
-    def depth(self):
+    def depth(self) -> float:
         """The depth of the mobject.
 
         Returns
@@ -484,8 +493,12 @@ class OpenGLMobject:
         return self.length_over_dim(2)
 
     @depth.setter
-    def depth(self, value):
+    def depth(self, value) -> None:
         self.rescale_to_fit(value, 2, stretch=False)
+
+    """
+    Point functions, only these methods should directly affect the points
+    """
 
     def resize_points(self, new_length, resize_func=resize_array):
         if new_length != len(self.points):
@@ -1316,11 +1329,11 @@ class OpenGLMobject:
 
     # Updating
 
-    def init_updaters(self):
-        self.time_based_updaters = []
-        self.non_time_updaters = []
-        self.has_updaters = False
-        self.updating_suspended = False
+    def init_updaters(self) -> None:
+        self.time_based_updaters: list[TimeBasedUpdater] = []
+        self.non_time_updaters: list[NonTimeUpdater] = []
+        self.has_updaters: bool = False
+        self.updating_suspended: bool = False
 
     def update(self, dt=0, recurse=True):
         if not self.has_updaters or self.updating_suspended:
@@ -2509,6 +2522,10 @@ class OpenGLMobject:
         """
         pass  # To implement in subclass
 
+    def replicate(self, n: int) -> OpenGLGroup:
+        group_class = self.get_group_class()
+        return group_class(*(self.copy() for _ in range(n)))
+
     def become(
         self,
         mobject: OpenGLMobject,
@@ -2706,9 +2723,9 @@ class OpenGLMobject:
 
     # For shader data
 
-    # def refresh_shader_wrapper_id(self):
-    #     self.shader_wrapper.refresh_id()
-    #     return self
+    def refresh_shader_wrapper_id(self):
+        self.shader_wrapper.refresh_id()
+        return self
 
     def get_shader_wrapper(self):
         from manim.renderer.shader_wrapper import ShaderWrapper
@@ -2833,8 +2850,9 @@ class OpenGLPoint(OpenGLMobject):
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
+# TODO ADD TYPES
 class _AnimationBuilder:
-    def __init__(self, mobject):
+    def __init__(self, mobject: OpenGLMobject):
         self.mobject = mobject
         self.mobject.generate_target()
 

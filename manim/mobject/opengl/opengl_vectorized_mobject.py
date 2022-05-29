@@ -44,7 +44,7 @@ from typing import TYPE_CHECKING
 from colour import Color
 
 if TYPE_CHECKING:
-    from typing import Callable, Iterable, Sequence, Union
+    from typing import Callable, Iterable, List, Optional, Sequence, Tuple, Union
 
     import numpy.typing as npt
 
@@ -133,7 +133,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
         self.orientation = 1
-        self.stroke_opacity = stroke_opacity
+        self._stroke_opacity = stroke_opacity
         self._stroke_width = stroke_width
         super().__init__(**kwargs)
         self.refresh_unit_normal()
@@ -173,7 +173,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_stroke(
             color=self.stroke_color or self.color,
             width=self._stroke_width,
-            opacity=self.stroke_opacity,
+            opacity=self._stroke_opacity,
             background=self.draw_stroke_behind_fill,
         )
         self.set_gloss(self.gloss)
@@ -393,6 +393,9 @@ class OpenGLVMobject(OpenGLMobject):
     def get_stroke_opacity(self) -> float:
         return self.get_stroke_opacities()[0]
 
+    def set_stroke_opacity(self, opacity) -> None:
+        return self.set_stroke(opacity=opacity)
+
     def get_color(self) -> str:
         if self.has_fill():
             return self.get_fill_color()
@@ -405,6 +408,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     stroke_color = property(get_stroke_color, set_stroke)
     fill_color = property(get_fill_color, set_fill)
+    stroke_opacity = property(get_stroke_opacity, set_stroke_opacity)
 
     def has_stroke(self):
         return self.get_stroke_widths().any() and self.get_stroke_opacities().any()
