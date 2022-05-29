@@ -6,7 +6,7 @@ import random
 import sys
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
