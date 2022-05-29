@@ -49,8 +49,6 @@ if TYPE_CHECKING:
     Updater = Union[TimeBasedUpdater, NonTimeUpdater]
     ManimColor = Union[str, Color]
 
-logger.setLevel("DEBUG")
-
 
 class OpenGLMobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -488,7 +486,7 @@ class OpenGLMobject:
         elif isinstance(points, np.ndarray):
             self.points = points.copy()
         else:
-            self.points = np.array(points)
+            self.points = np.asarray(points)
         self.refresh_bounding_box()
         return self
 
@@ -2479,7 +2477,9 @@ class OpenGLMobject:
                 func = path_func
             else:
                 func = interpolate
-
+            # print(key)
+            # print(func(mobject1.data[key], mobject2.data[key], alpha))
+            # print(self.data[key])
             self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
         for key in self.uniforms:
             self.uniforms[key] = interpolate(
@@ -2734,11 +2734,11 @@ class OpenGLMobject:
         # or the length of the array
         d_len = len(self.data[data_key])
         if d_len != 1 and d_len != len(array):
-            self.data[data_key] = resize_with_interpolation(
+            return resize_with_interpolation(
                 self.data[data_key],
                 len(array),
             )
-        return self
+        return self.data[data_key]
 
     def get_resized_shader_data_array(self, length):
         # If possible, try to populate an existing array, rather
@@ -2750,8 +2750,8 @@ class OpenGLMobject:
     def read_data_to_shader(self, shader_data, shader_data_key, data_key):
         if data_key in self.locked_data_keys:
             return
-        self.check_data_alignment(shader_data, data_key)
-        shader_data[shader_data_key] = self.data[data_key]
+        data = self.check_data_alignment(shader_data, data_key)
+        shader_data[shader_data_key] = data
 
     def get_shader_data(self):
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
