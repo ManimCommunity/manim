@@ -39,8 +39,8 @@ from manim.utils.space_ops import (
     rotation_matrix_transpose,
 )
 
-if TYPE_CHECKING:
-    from typing import Callable, Iterable, Sequence, Union
+if True:
+    from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 
     import numpy.typing as npt
 
@@ -66,8 +66,8 @@ class OpenGLMobject:
 
     """
 
-    shader_dtype = [
-        ("point", np.float32, (3,)),
+    shader_dtype: list[tuple[str, npt.DTypeLike, tuple[int]]] = [
+        ("point", np.float32, (3,))
     ]
     shader_folder = ""
 
@@ -83,8 +83,8 @@ class OpenGLMobject:
     shadow = _Uniforms()
 
     def __init__(
-        self,
-        color: ManimColor | Iterable[ManimColor] | None = WHITE,
+        self: OpenGLMobject,
+        color: ManimColor | Iterable[ManimColor] = WHITE,
         opacity: float | Iterable[float] = 1,
         dim: int = 3,  # TODO, get rid of this
         # Lighting parameters
@@ -93,8 +93,8 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow: float = 0.0,
         # For shaders
-        render_primitive=moderngl.TRIANGLES,
-        texture_paths=None,
+        render_primitive: int = moderngl.TRIANGLES,
+        texture_paths: list[str] | None = None,
         depth_test: bool = False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame: bool = False,
@@ -102,13 +102,13 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events: bool = False,
-        model_matrix: bool = None,
+        model_matrix: bool | None = None,  # TODO: Does not exist in manimgl
         should_render: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         logger.debug("M  __init__")
         # getattr in case data/uniforms are already defined in parent classes.
-        self.data = getattr(self, "data", {})
+        self.data: dict[str, npt.NDArray] = getattr(self, "data", {})
         self.uniforms = getattr(self, "uniforms", {})
 
         self.dim = dim  # TODO, get rid of this
@@ -129,11 +129,13 @@ class OpenGLMobject:
         # Event listener
         self.listen_to_events = listen_to_events
 
-        self._submobjects = []
-        self.parents = []
-        self.parent = None
-        self.family = [self]
-        self.locked_data_keys = set()
+        self._submobjects: list[OpenGLMobject] = []
+        self.parents: list[OpenGLMobject] = []
+        self.parent: None | (
+            OpenGLMobject
+        ) = None  # TODO: Does not exist in manimgl anymore
+        self.family: list[OpenGLMobject] = [self]
+        self.locked_data_keys: set[str] = set()
         self.needs_new_bounding_box = True
         if model_matrix is None:
             self.model_matrix = np.eye(4)
@@ -172,8 +174,15 @@ class OpenGLMobject:
     def __isub__(self, other):
         raise NotImplementedError
 
-    def __add__(self, mobject):
-        raise NotImplementedError
+    # TODO TEST
+    def __add__(self, other: OpenGLMobject) -> OpenGLMobject:
+        assert isinstance(other, OpenGLMobject)
+        return self.get_group_class()(self, other)
+
+    # TODO TEST
+    def __mul__(self, other: int) -> OpenGLMobject:
+        assert isinstance(other, int)
+        return self.replicate(other)
 
     def __iadd__(self, mobject):
         raise NotImplementedError
@@ -230,9 +239,11 @@ class OpenGLMobject:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`."""
         logger.debug("M  init_data")
-        self.points = np.zeros((0, 3))
-        self.bounding_box = np.zeros((3, 3))
-        self.rgbas = np.zeros((1, 4))
+        self.data: dict[str, npt.NDArray[np.floating]] = {
+            "points": np.zeros((0, 3), dtype=np.float32),
+            "bounding_box": np.zeros((0, 3), dtype=np.float32),
+            "rgbas": np.zeros((0, 4), dtype=np.float32),
+        }
 
     def init_colors(self):
         logger.debug("M  init_colors")
@@ -285,9 +296,11 @@ class OpenGLMobject:
             self.data[key] = data[key].copy()
         return self
 
-    def set_uniforms(self, uniforms):
-        for key in uniforms:
-            self.uniforms[key] = uniforms[key]  # Copy?
+    def set_uniforms(self, uniforms: dict):
+        for key, value in uniforms.items():
+            if isinstance(value, np.ndarray):
+                value = value.copy()
+            self.uniforms[key] = value
         return self
 
     @property
