@@ -12,7 +12,8 @@ RUN apt-get update -qq \
         freeglut3-dev \
         pkg-config \
         make \
-        wget
+        wget \
+        ghostscript
 
 # setup a minimal texlive installation
 COPY docker/texlive-profile.txt /tmp/
@@ -26,6 +27,7 @@ RUN wget -O /tmp/install-tl-unx.tar.gz http://mirror.ctan.org/systems/texlive/tl
         fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin \
         mathastext microtype ms physics preview ragged2e relsize rsfs \
         setspace standalone tipa wasy wasysym xcolor xetex xkeyval
+ENV LIBGS=/usr/lib/x86_64-linux-gnu/libgs.so.9
 
 # clone and build manim
 COPY . /opt/manim
