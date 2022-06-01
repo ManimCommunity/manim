@@ -1,17 +1,55 @@
 import numpy as np
 
+from typing import Callable, Dict
 from manim.scene.scene import Scene
 
 from ..animation.animation import Animation
 from ..mobject.mobject import _AnimationBuilder
 
 
-class ControlSpeed(Animation):
+class ChangeSpeed(Animation):
+    """
+    Modifies the speed of passed animation. :class:`AnimationGroup` with
+    different ``lag_ratio`` can also be used which combines multiple
+    animations into one.
+
+    Parameters
+    ----------
+    anim : :class:`Animation` | :class:`_AnimationBuilder`
+        Animation of which the speed is to be modified.
+    speedinfo : Dict[float, float]
+        Contains nodes (percentage of run_time) and its corresponding speed factor.
+    rate_func : Callable[[float], float]
+        Overrides `rate_func` of passed animation, applied before changing speed.
+
+    Examples
+    --------
+
+    .. manim::SpeedModiferExample
+
+        class SpeedModifierExample(Scene):
+        def construct(self):
+            a = Dot().shift(LEFT * 4)
+            b = Dot().shift(LEFT * -4)
+            self.add(a, b)
+            self.play(
+                ChangeSpeed(
+                    anim=AnimationGroup(
+                        a.animate(run_time=2).shift(RIGHT * 8),
+                        b.animate(run_time=1).shift(LEFT * 8),
+                    ),
+                    speedinfo={0: 0.5, 1: 1},
+                    rate_func=linear,
+                )
+            )
+
+    """
+
     def __init__(
         self,
         anim: Animation | _AnimationBuilder,
-        speedinfo,
-        rate_func=None,
+        speedinfo: Dict[float, float],
+        rate_func: Callable[[float], float] = None,
         **kwargs,
     ) -> None:
         self.anim = anim.build() if type(anim) is _AnimationBuilder else anim
@@ -34,14 +72,7 @@ class ControlSpeed(Animation):
         self.conditions = []
 
         # To the total time
-        prevnode = 0
-        m = self.speedinfo[0]
-        total_time = 0
-        for node, n in list(self.speedinfo.items())[1:]:
-            dur = node - prevnode
-            total_time += dur * self.f_inv_1(m, n)
-            prevnode = node
-            m = n
+        total_time = self.get_total_time()
 
         prevnode = 0
         m = self.speedinfo[0]
@@ -76,6 +107,17 @@ class ControlSpeed(Animation):
             run_time=total_time * self.anim.run_time,
             **kwargs,
         )
+
+    def get_total_time(self) -> float:
+        prevnode = 0
+        m = self.speedinfo[0]
+        total_time = 0
+        for node, n in list(self.speedinfo.items())[1:]:
+            dur = node - prevnode
+            total_time += dur * self.f_inv_1(m, n)
+            prevnode = node
+            m = n
+        return total_time
 
     def interpolate(self, alpha: float) -> None:
         return self.anim.interpolate(alpha)
