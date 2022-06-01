@@ -1,26 +1,26 @@
-from cgi import test
-from cloup import constrained_params
 import numpy as np
 
 from manim.scene.scene import Scene
 
-from ..utils.rate_functions import linear
-from ..utils.iterables import remove_list_redundancies
 from ..animation.animation import Animation
-from ..mobject.mobject import _AnimationBuilder, Group, Mobject
-from ..mobject.opengl.opengl_mobject import OpenGLGroup
-from .._config import config
+from ..mobject.mobject import _AnimationBuilder
 
 
-class ChangeSpeed(Animation):
+class ControlSpeed(Animation):
     def __init__(
         self,
         anim: Animation | _AnimationBuilder,
         speedinfo,
+        rate_func=None,
         **kwargs,
     ) -> None:
         self.anim = anim.build() if type(anim) is _AnimationBuilder else anim
+        self.rate_func = self.anim.rate_func if rate_func is None else rate_func
+
+        # Vertical parabola, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
         self.speed_modifier = lambda x, m, n: (n * n - m * m) * x * x / 4 + m * x
+
+        # f-1(1), returns x where f(x) = 1 for the `speed_modifier` function
         self.f_inv_1 = lambda m, n: 2 / (m + n)
 
         if 0 not in speedinfo:
@@ -33,6 +33,7 @@ class ChangeSpeed(Animation):
         self.functions = []
         self.conditions = []
 
+        # To the total time
         prevnode = 0
         m = self.speedinfo[0]
         total_time = 0
@@ -45,36 +46,34 @@ class ChangeSpeed(Animation):
         prevnode = 0
         m = self.speedinfo[0]
         curr_time = 0
-        offset = 0
         for node, n in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
             self.conditions.append(
-                lambda x, offset=offset, m=m, n=n, dur=dur: offset / total_time
+                lambda x, curr_time=curr_time, m=m, n=n, dur=dur: curr_time / total_time
                 <= x
-                <= (offset + self.f_inv_1(m, n) * dur) / total_time
+                <= (curr_time + self.f_inv_1(m, n) * dur) / total_time
             )
             self.functions.append(
-                lambda x, dur=dur, m=m, n=n, prevnode=prevnode, total_time=total_time, offset=offset: self.speed_modifier(
-                    (total_time * x - offset) / dur, m, n
+                lambda x, dur=dur, m=m, n=n, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
+                    (total_time * x - curr_time) / dur, m, n
                 )
                 * dur
                 + prevnode
             )
-            offset += self.f_inv_1(m, n) * dur
-            curr_time += dur * self.f_inv_1(m, n)
+            curr_time += self.f_inv_1(m, n) * dur
             prevnode = node
             m = n
 
-        def test(x):
-            return np.piecewise(
-                x, [condition(x) for condition in self.conditions], self.functions
-            )
-
-        self.anim.rate_func = test
+        self.anim.rate_func = lambda x: np.piecewise(
+            self.rate_func(x),
+            [condition(self.rate_func(x)) for condition in self.conditions],
+            self.functions,
+        )
 
         super().__init__(
-            anim.mobject,
-            run_time=total_time,
+            self.anim.mobject,
+            rate_func=self.rate_func,
+            run_time=total_time * self.anim.run_time,
             **kwargs,
         )
 
