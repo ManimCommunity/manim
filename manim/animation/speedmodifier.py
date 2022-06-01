@@ -28,37 +28,53 @@ class ChangeSpeed(Animation):
         if 1 not in speedinfo:
             speedinfo[1] = sorted(speedinfo.items())[-1][1]
 
-        prevnode = 0
-        m = speedinfo[0]
-
         self.speedinfo = dict(sorted(speedinfo.items()))
         self.run_time = 0
         self.functions = []
         self.conditions = []
 
+        prevnode = 0
+        m = self.speedinfo[0]
+        total_time = 0
+        for node, n in list(self.speedinfo.items())[1:]:
+            dur = node - prevnode
+            total_time += dur * self.f_inv_1(m, n)
+            prevnode = node
+            m = n
+
+        prevnode = 0
+        m = self.speedinfo[0]
+        curr_time = 0
+        offset = 0
         for node, n in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
             self.conditions.append(
-                lambda x, prevnode=prevnode, node=node: prevnode <= x <= node
+                lambda x, offset=offset, m=m, n=n, dur=dur: offset / total_time
+                <= x
+                <= (offset + self.f_inv_1(m, n) * dur) / total_time
             )
             self.functions.append(
-                lambda x, dur=dur, m=m, n=n, prevnode=prevnode: self.speed_modifier(
-                    self.f_inv_1(m, n) * (x - prevnode) / dur, m, n
+                lambda x, dur=dur, m=m, n=n, prevnode=prevnode, total_time=total_time, offset=offset: self.speed_modifier(
+                    (total_time * x - offset) / dur, m, n
                 )
                 * dur
                 + prevnode
             )
-            self.run_time += dur * self.f_inv_1(m, n)
+            offset += self.f_inv_1(m, n) * dur
+            curr_time += dur * self.f_inv_1(m, n)
             prevnode = node
             m = n
 
-        self.anim.rate_func = lambda x: np.piecewise(
-            x, [condition(x) for condition in self.conditions], self.functions
-        )
+        def test(x):
+            return np.piecewise(
+                x, [condition(x) for condition in self.conditions], self.functions
+            )
+
+        self.anim.rate_func = test
 
         super().__init__(
             anim.mobject,
-            run_time=self.run_time,
+            run_time=total_time,
             **kwargs,
         )
 
