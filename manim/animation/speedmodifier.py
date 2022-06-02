@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Callable, Dict
+
 import numpy as np
 
 from typing import Callable, Dict
@@ -90,8 +94,8 @@ class ChangeSpeed(Animation):
     def __init__(
         self,
         anim: Animation | _AnimationBuilder,
-        speedinfo: Dict[float, float],
-        rate_func: Callable[[float], float] = None,
+        speedinfo: dict[float, float],
+        rate_func: Callable[[float], float] | None = None,
         **kwargs,
     ) -> None:
         self.anim = prepare_animation(anim)
