@@ -156,10 +156,10 @@ class ChangeSpeed(Animation):
             self.t = newx
             return newx
 
-        self.anim.rate_func = func
+        self.anim.set_rate_func(func)
 
         super().__init__(
-            self.anim.group,
+            self.anim.mobject,
             rate_func=self.rate_func,
             run_time=total_time * self.anim.run_time,
             **kwargs,
@@ -191,6 +191,9 @@ class ChangeSpeed(Animation):
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         self.anim.clean_up_from_scene(scene)
+
+    def _setup_scene(self, scene) -> None:
+        self.anim._setup_scene(scene)
 
 
 class ChangedWait(Wait):

@@ -14,7 +14,7 @@ from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
-from ..utils.rate_functions import linear
+from ..utils.rate_functions import smooth
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
@@ -33,13 +33,13 @@ class AnimationGroup(Animation):
         *animations: Animation,
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
         run_time: float | None = None,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: Callable[[float], float] = smooth,
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
-        for anim in self.animations:
-            anim.rate_func = rate_func
+        if rate_func is not None:
+            self.set_rate_func(rate_func)
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
@@ -118,6 +118,10 @@ class AnimationGroup(Animation):
             else:
                 sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
             anim.interpolate(sub_alpha)
+
+    def set_rate_func(self, rate_func) -> None:
+        for anim in self.animations:
+            anim.set_rate_func(rate_func)
 
 
 class Succession(AnimationGroup):
