@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Dict
+from typing import Callable
 
 import numpy as np
 
@@ -11,7 +11,6 @@ from ..mobject.mobject import _AnimationBuilder
 
 
 class ChangeSpeed(Animation):
-
     """
     Modifies the speed of passed animation. :class:`AnimationGroup` with
     different ``lag_ratio`` can also be used which combines multiple
@@ -200,7 +199,6 @@ class ChangeSpeed(Animation):
 
 
 class ChangedWait(Wait):
-
     """
     Wait animation but follows `rate_func`
     """
