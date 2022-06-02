@@ -4,7 +4,6 @@ from typing import Callable, Dict
 
 import numpy as np
 
-from typing import Callable, Dict
 from manim.scene.scene import Scene
 
 from ..animation.animation import Animation, Wait, prepare_animation
