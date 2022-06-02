@@ -37,10 +37,10 @@ class ChangeSpeed(Animation):
                 self.play(
                     ChangeSpeed(
                         anim=AnimationGroup(
-                            a.animate(run_time=2).shift(RIGHT * 8),
-                            b.animate(run_time=1).shift(LEFT * 8),
+                            a.animate().shift(RIGHT * 8),
+                            b.animate().shift(LEFT * 8),
                         ),
-                        speedinfo={0: 0.5, 1: 1},
+                        speedinfo={0.3: 1, 0.4: 0.1, 0.6: 0.1, 1: 1},
                         rate_func=linear,
                     )
                 )
