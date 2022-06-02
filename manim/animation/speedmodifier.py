@@ -3,15 +3,17 @@ import numpy as np
 from typing import Callable, Dict
 from manim.scene.scene import Scene
 
-from ..animation.animation import Animation
+from ..animation.animation import Animation, Wait
 from ..mobject.mobject import _AnimationBuilder
 
 
 class ChangeSpeed(Animation):
+
     """
     Modifies the speed of passed animation. :class:`AnimationGroup` with
     different ``lag_ratio`` can also be used which combines multiple
-    animations into one.
+    animations into one. `run_time` of the animation is changed to modify
+    the speed.
 
     Parameters
     ----------
@@ -45,6 +47,9 @@ class ChangeSpeed(Animation):
 
     """
 
+    t = 0
+    dt = 0
+
     def __init__(
         self,
         anim: Animation | _AnimationBuilder,
@@ -53,6 +58,14 @@ class ChangeSpeed(Animation):
         **kwargs,
     ) -> None:
         self.anim = anim.build() if type(anim) is _AnimationBuilder else anim
+        if type(anim) is Wait:
+            self.anim = ChangedWait(
+                run_time=anim.run_time,
+                stop_condition=anim.stop_condition,
+                frozen_frame=anim.is_static_wait,
+                **kwargs,
+            )
+
         self.rate_func = self.anim.rate_func if rate_func is None else rate_func
 
         # Vertical parabola, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
@@ -67,7 +80,6 @@ class ChangeSpeed(Animation):
             speedinfo[1] = sorted(speedinfo.items())[-1][1]
 
         self.speedinfo = dict(sorted(speedinfo.items()))
-        self.run_time = 0
         self.functions = []
         self.conditions = []
 
@@ -95,11 +107,17 @@ class ChangeSpeed(Animation):
             prevnode = node
             m = n
 
-        self.anim.rate_func = lambda x: np.piecewise(
-            self.rate_func(x),
-            [condition(self.rate_func(x)) for condition in self.conditions],
-            self.functions,
-        )
+        def func(x):
+            newx = np.piecewise(
+                self.rate_func(x),
+                [condition(self.rate_func(x)) for condition in self.conditions],
+                self.functions,
+            )
+            ChangeSpeed.dt = (newx - self.t) * self.anim.run_time
+            self.t = newx
+            return newx
+
+        self.anim.rate_func = func
 
         super().__init__(
             self.anim.mobject,
@@ -117,6 +135,7 @@ class ChangeSpeed(Animation):
             total_time += dur * self.f_inv_1(m, n)
             prevnode = node
             m = n
+        # print(total_time)
         return total_time
 
     def interpolate(self, alpha: float) -> None:
@@ -140,3 +159,22 @@ class ChangeSpeed(Animation):
         if self.remover:
             self.anim.remover = self.remover
         self.anim.clean_up_from_scene(scene)
+
+
+class ChangedWait(Wait):
+    def __init__(
+        self,
+        run_time: float = 1,
+        stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
+        **kwargs,
+    ):
+        super().__init__(
+            run_time=run_time,
+            stop_condition=stop_condition,
+            frozen_frame=frozen_frame,
+            **kwargs,
+        )
+
+    def interpolate(self, alpha: float) -> None:
+        self.get_sub_alpha(alpha, 0, 0)
