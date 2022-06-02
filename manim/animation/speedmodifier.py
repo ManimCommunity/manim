@@ -3,7 +3,7 @@ import numpy as np
 from typing import Callable, Dict
 from manim.scene.scene import Scene
 
-from ..animation.animation import Animation, Wait
+from ..animation.animation import Animation, Wait, prepare_animation
 from ..mobject.mobject import _AnimationBuilder
 
 
@@ -12,8 +12,8 @@ class ChangeSpeed(Animation):
     """
     Modifies the speed of passed animation. :class:`AnimationGroup` with
     different ``lag_ratio`` can also be used which combines multiple
-    animations into one. `run_time` of the animation is changed to modify
-    the speed.
+    animations into one. `run_time` of the passed animation is changed to
+    modify the speed.
 
     Parameters
     ----------
@@ -30,20 +30,57 @@ class ChangeSpeed(Animation):
     .. manim::SpeedModiferExample
 
         class SpeedModifierExample(Scene):
-        def construct(self):
-            a = Dot().shift(LEFT * 4)
-            b = Dot().shift(LEFT * -4)
-            self.add(a, b)
-            self.play(
-                ChangeSpeed(
-                    anim=AnimationGroup(
-                        a.animate(run_time=2).shift(RIGHT * 8),
-                        b.animate(run_time=1).shift(LEFT * 8),
-                    ),
-                    speedinfo={0: 0.5, 1: 1},
-                    rate_func=linear,
+            def construct(self):
+                a = Dot().shift(LEFT * 4)
+                b = Dot().shift(RIGHT * 4)
+                self.add(a, b)
+                self.play(
+                    ChangeSpeed(
+                        anim=AnimationGroup(
+                            a.animate(run_time=2).shift(RIGHT * 8),
+                            b.animate(run_time=1).shift(LEFT * 8),
+                        ),
+                        speedinfo={0: 0.5, 1: 1},
+                        rate_func=linear,
+                    )
                 )
-            )
+
+    .. manim::SpeedModiferUpdaterExample
+
+        class SpeedModifierUpdaterExample(Scene):
+            def construct(self):
+                a = Dot().shift(LEFT * 4)
+                self.add(a)
+
+                a.add_updater(lambda x, dt: x.shift(RIGHT * 4 * ChangeSpeed.dt))
+                self.play(
+                    ChangeSpeed(
+                        Wait(2),
+                        speedinfo={0.4: 1, 0.5: 0.2, 0.8: 0.2, 1: 1},
+                        rate_func=linear,
+                    )
+                )
+
+    .. manim::SpeedModiferUpdaterExample2
+
+        class SpeedModifierUpdaterExample2(Scene):
+            def construct(self):
+                a = Dot().shift(LEFT * 4)
+                self.add(a)
+
+                slowmode = False
+                a.add_updater(
+                    lambda x, dt: x.shift(RIGHT * 4 * (ChangeSpeed.dt if slowmode else dt))
+                )
+                self.wait()
+                slowmode = True
+                self.play(
+                    ChangeSpeed(
+                        Wait(),
+                        speedinfo={1: 0},
+                        rate_func=linear,
+                    )
+                )
 
     """
 
@@ -57,7 +94,7 @@ class ChangeSpeed(Animation):
         rate_func: Callable[[float], float] = None,
         **kwargs,
     ) -> None:
-        self.anim = anim.build() if type(anim) is _AnimationBuilder else anim
+        self.anim = prepare_animation(anim)
         if type(anim) is Wait:
             self.anim = ChangedWait(
                 run_time=anim.run_time,
@@ -68,10 +105,12 @@ class ChangeSpeed(Animation):
 
         self.rate_func = self.anim.rate_func if rate_func is None else rate_func
 
-        # Vertical parabola, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
+        # A function where, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
+        # m being initial speed, n being final speed
+        # Following function obtained when conditions applied to vertical parabola
         self.speed_modifier = lambda x, m, n: (n * n - m * m) * x * x / 4 + m * x
 
-        # f-1(1), returns x where f(x) = 1 for the `speed_modifier` function
+        # f-1(1), returns x for which f(x) = 1 in `speed_modifier` function
         self.f_inv_1 = lambda m, n: 2 / (m + n)
 
         if 0 not in speedinfo:
@@ -120,7 +159,7 @@ class ChangeSpeed(Animation):
         self.anim.rate_func = func
 
         super().__init__(
-            self.anim.mobject,
+            self.anim.group,
             rate_func=self.rate_func,
             run_time=total_time * self.anim.run_time,
             **kwargs,
@@ -139,29 +178,27 @@ class ChangeSpeed(Animation):
         return total_time
 
     def interpolate(self, alpha: float) -> None:
-        return self.anim.interpolate(alpha)
+        self.anim.interpolate(alpha)
 
     def update_mobjects(self, dt: float) -> None:
         self.anim.update_mobjects(dt)
 
     def finish(self) -> None:
         self.anim.finish()
-        if self.suspend_mobject_updating:
-            self.anim.mobject.resume_updating()
 
     def begin(self) -> None:
-        if self.suspend_mobject_updating:
-            self.mobject.suspend_updating()
         self.anim.begin()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
-        self._on_finish(scene)
-        if self.remover:
-            self.anim.remover = self.remover
         self.anim.clean_up_from_scene(scene)
 
 
 class ChangedWait(Wait):
+
+    """
+    Wait animation but follows `rate_func`
+    """
+
     def __init__(
         self,
         run_time: float = 1,

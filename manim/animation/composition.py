@@ -38,6 +38,8 @@ class AnimationGroup(Animation):
         **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
+        for anim in self.animations:
+            anim.rate_func = rate_func
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
