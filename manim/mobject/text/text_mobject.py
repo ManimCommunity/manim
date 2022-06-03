@@ -187,10 +187,14 @@ class Paragraph(VGroup):
             line_str = lines_str_list[line_no]
             # Count all the characters in line_str
             # Spaces may or may not count as characters
-            char_count = len(line_str)
-            if not self.consider_spaces_as_chars:
-                for blank in (" ", "\n", "\t"):
-                    char_count -= line_str.count(blank)
+            if self.consider_spaces_as_chars:
+                char_count = len(line_str)
+            else:
+                char_count = 0
+                for char in line_str:
+                    if not char.isspace():
+                        char_count += 1
+
             chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
@@ -537,7 +541,7 @@ class Text(SVGMobject):
         chars = self.get_group_class()()
         submobjects_char_index = 0
         for char_index in range(len(self.text)):
-            if self.text[char_index] in (" ", "\t", "\n"):
+            if self.text[char_index].isspace():
                 space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
