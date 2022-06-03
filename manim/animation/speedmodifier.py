@@ -4,9 +4,8 @@ from typing import Callable
 
 from numpy import piecewise
 
-from ..animation.composition import AnimationGroup
-
 from ..animation.animation import Animation, Wait, prepare_animation
+from ..animation.composition import AnimationGroup
 from ..mobject.mobject import _AnimationBuilder
 from ..scene.scene import Scene
 from ..utils.rate_functions import linear
