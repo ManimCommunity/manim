@@ -8,7 +8,7 @@ from manim.utils.simple_functions import get_parameters
 
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
-from ..mobject.mobject import _AnimationBuilder, Mobject, Updater
+from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
 from ..scene.scene import Scene
 from ..utils.rate_functions import linear
 
@@ -193,7 +193,7 @@ class ChangeSpeed(Animation):
         self,
         mobject: Mobject,
         update_function: Updater,
-        index: Optional[int] = None,
+        index: int | None = None,
         call_updater: bool = False,
     ):
         parameters = get_parameters(update_function)
