@@ -54,8 +54,7 @@ if TYPE_CHECKING:
 
 
 class CoordinateSystem:
-    r"""
-    Abstract class for Axes and NumberPlane
+    r"""Abstract base class for Axes and NumberPlane.
 
     Examples
     --------
@@ -193,11 +192,11 @@ class CoordinateSystem:
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
     def c2p(self, *coords):
-        """Abbreviation for coords_to_point"""
+        """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
     def p2c(self, point):
-        """Abbreviation for point_to_coords"""
+        """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
     def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
@@ -368,7 +367,9 @@ class CoordinateSystem:
         x_label: float | str | Mobject = "x",
         y_label: float | str | Mobject = "y",
     ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
+        """Defines labels for the x_axis and y_axis of the graph.
+
+        For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
         Parameters
@@ -438,7 +439,7 @@ class CoordinateSystem:
             ax = Axes(x_range=[0, 7])
             x_pos = [x for x in range(1, 8)]
 
-            # strings are automatically converted into a `Tex` mobject.
+            # strings are automatically converted into a Tex mobject.
             x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
@@ -1610,10 +1611,10 @@ class CoordinateSystem:
 
         Examples
         --------
-        .. manim:: T_labelExample
+        .. manim:: TLabelExample
             :save_last_frame:
 
-            class T_labelExample(Scene):
+            class TLabelExample(Scene):
                 def construct(self):
                     # defines the axes and linear function
                     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)

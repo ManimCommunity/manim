@@ -74,7 +74,7 @@ class QuuzAll:
         pass
 
 
-doc_admonition = "\n\n.. admonition:: Deprecated\n  :class: attention\n\n  "
+doc_admonition = "\n\n.. attention:: Deprecated\n  "
 
 
 def test_deprecate_class_no_args(warn_caplog_manim):

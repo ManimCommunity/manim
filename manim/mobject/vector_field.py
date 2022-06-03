@@ -19,6 +19,7 @@ from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
+from manim.mobject.graphing.coordinate_systems import CoordinateSystem
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from .. import config
@@ -167,6 +168,22 @@ class VectorField(VGroup):
 
         """
         return lambda p: func(p * scalar)
+
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+        """Scale the vector field to fit a coordinate system.
+
+        This method is useful when the vector field is defined in a coordinate system
+        different from the one used to display the vector field.
+
+        This method can only be used once because it transforms the origin of each vector.
+
+        Parameters
+        ----------
+        coordinate_system
+            The coordinate system to fit the vector field to.
+
+        """
+        self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
 
     def nudge(
         self,
