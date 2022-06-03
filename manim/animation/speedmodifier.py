@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Optional
 
 from numpy import piecewise
 
+from manim.utils.simple_functions import get_parameters
+
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
-from ..mobject.mobject import _AnimationBuilder
+from ..mobject.mobject import _AnimationBuilder, Mobject, Updater
 from ..scene.scene import Scene
 from ..utils.rate_functions import linear
 
@@ -55,7 +57,7 @@ class ChangeSpeed(Animation):
                 a = Dot().shift(LEFT * 4)
                 self.add(a)
 
-                a.add_updater(lambda x, dt: x.shift(RIGHT * 4 * ChangeSpeed.dt))
+                ChangeSpeed.add_updater(a, lambda x, dt: x.shift(RIGHT * 4 * dt))
                 self.play(
                     ChangeSpeed(
                         Wait(2),
@@ -70,12 +72,8 @@ class ChangeSpeed(Animation):
                 a = Dot().shift(LEFT * 4)
                 self.add(a)
 
-                slowmode = False
-                a.add_updater(
-                    lambda x, dt: x.shift(RIGHT * 4 * (ChangeSpeed.dt if slowmode else dt))
-                )
+                ChangeSpeed.add_updater(a, lambda x, dt: x.shift(RIGHT * 4 * dt))
                 self.wait()
-                slowmode = True
                 self.play(
                     ChangeSpeed(
                         Wait(),
@@ -87,6 +85,7 @@ class ChangeSpeed(Animation):
 
     t = 0
     dt = 0
+    changed = False
 
     def __init__(
         self,
@@ -96,7 +95,7 @@ class ChangeSpeed(Animation):
         **kwargs,
     ) -> None:
 
-        self.anim = prepare_animation(anim)
+        self.anim = self.setup(anim)
         if issubclass(type(anim), AnimationGroup):
             self.anim = AnimationGroup(
                 *map(self.setup, anim.animations),
@@ -175,7 +174,7 @@ class ChangeSpeed(Animation):
                 stop_condition=anim.stop_condition,
                 frozen_frame=anim.is_static_wait,
             )
-        return anim
+        return prepare_animation(anim)
 
     def get_total_time(self) -> float:
         prevnode = 0
@@ -189,6 +188,26 @@ class ChangeSpeed(Animation):
         # print(total_time)
         return total_time
 
+    @classmethod
+    def add_updater(
+        self,
+        mobject: Mobject,
+        update_function: Updater,
+        index: Optional[int] = None,
+        call_updater: bool = False,
+    ):
+        parameters = get_parameters(update_function)
+        if "dt" in parameters:
+            mobject.add_updater(
+                lambda m, dt: update_function(
+                    m, ChangeSpeed.dt if ChangeSpeed.changed else dt
+                ),
+                index=index,
+                call_updater=call_updater,
+            )
+        else:
+            mobject.add_updater(update_function, index=index, call_updater=call_updater)
+
     def interpolate(self, alpha: float) -> None:
         self.anim.interpolate(alpha)
 
@@ -196,9 +215,11 @@ class ChangeSpeed(Animation):
         self.anim.update_mobjects(dt)
 
     def finish(self) -> None:
+        ChangeSpeed.changed = False
         self.anim.finish()
 
     def begin(self) -> None:
+        ChangeSpeed.changed = True
         self.anim.begin()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
