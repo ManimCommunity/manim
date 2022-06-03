@@ -14,7 +14,7 @@ from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
-from ..utils.rate_functions import smooth
+from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
@@ -33,13 +33,12 @@ class AnimationGroup(Animation):
         *animations: Animation,
         group: Group | VGroup | OpenGLGroup | OpenGLVGroup = None,
         run_time: float | None = None,
-        rate_func: Callable[[float], float] = smooth,
+        rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
-        if rate_func is not None:
-            self.set_rate_func(rate_func)
+        self.rate_func = rate_func
         self.group = group
         if self.group is None:
             mobjects = remove_list_redundancies(
@@ -49,7 +48,9 @@ class AnimationGroup(Animation):
                 self.group = OpenGLGroup(*mobjects)
             else:
                 self.group = Group(*mobjects)
-        super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
+        super().__init__(
+            self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
+        )
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
@@ -110,7 +111,7 @@ class AnimationGroup(Animation):
         # times might not correspond to actual times,
         # e.g. of the surrounding scene.  Instead they'd
         # be a rescaled version.  But that's okay!
-        time = alpha * self.max_end_time
+        time = self.rate_func(alpha) * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
             anim_time = end_time - start_time
             if anim_time == 0:
@@ -118,10 +119,6 @@ class AnimationGroup(Animation):
             else:
                 sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
             anim.interpolate(sub_alpha)
-
-    def set_rate_func(self, rate_func) -> None:
-        for anim in self.animations:
-            anim.set_rate_func(rate_func)
 
 
 class Succession(AnimationGroup):

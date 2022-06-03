@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Callable
 
-import numpy as np
+from numpy import piecewise
 
-from manim.scene.scene import Scene
+from ..animation.composition import AnimationGroup
 
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..mobject.mobject import _AnimationBuilder
+from ..scene.scene import Scene
+from ..utils.rate_functions import linear
 
 
 class ChangeSpeed(Animation):
@@ -38,9 +40,9 @@ class ChangeSpeed(Animation):
                 self.add(a, b)
                 self.play(
                     ChangeSpeed(
-                        anim=AnimationGroup(
-                            a.animate().shift(RIGHT * 8),
-                            b.animate().shift(LEFT * 8),
+                        AnimationGroup(
+                            a.animate(run_time=1).shift(RIGHT * 8),
+                            b.animate(run_time=1).shift(LEFT * 8),
                         ),
                         speedinfo={0.3: 1, 0.4: 0.1, 0.6: 0.1, 1: 1},
                         rate_func=linear,
@@ -59,7 +61,6 @@ class ChangeSpeed(Animation):
                     ChangeSpeed(
                         Wait(2),
                         speedinfo={0.4: 1, 0.5: 0.2, 0.8: 0.2, 1: 1},
-                        rate_func=linear,
                     )
                 )
 
@@ -80,7 +81,6 @@ class ChangeSpeed(Animation):
                     ChangeSpeed(
                         Wait(),
                         speedinfo={1: 0},
-                        rate_func=linear,
                     )
                 )
 
@@ -96,13 +96,15 @@ class ChangeSpeed(Animation):
         rate_func: Callable[[float], float] | None = None,
         **kwargs,
     ) -> None:
+
         self.anim = prepare_animation(anim)
-        if type(anim) is Wait:
-            self.anim = ChangedWait(
+        if issubclass(type(anim), AnimationGroup):
+            self.anim = AnimationGroup(
+                *map(self.setup, anim.animations),
+                group=anim.group,
                 run_time=anim.run_time,
-                stop_condition=anim.stop_condition,
-                frozen_frame=anim.is_static_wait,
-                **kwargs,
+                rate_func=anim.rate_func,
+                lag_ratio=anim.lag_ratio,
             )
 
         self.rate_func = self.anim.rate_func if rate_func is None else rate_func
@@ -149,7 +151,7 @@ class ChangeSpeed(Animation):
             m = n
 
         def func(x):
-            newx = np.piecewise(
+            newx = piecewise(
                 self.rate_func(x),
                 [condition(self.rate_func(x)) for condition in self.conditions],
                 self.functions,
@@ -166,6 +168,15 @@ class ChangeSpeed(Animation):
             run_time=total_time * self.anim.run_time,
             **kwargs,
         )
+
+    def setup(self, anim):
+        if type(anim) is Wait:
+            return ChangedWait(
+                run_time=anim.run_time,
+                stop_condition=anim.stop_condition,
+                frozen_frame=anim.is_static_wait,
+            )
+        return anim
 
     def get_total_time(self) -> float:
         prevnode = 0
@@ -208,10 +219,12 @@ class ChangedWait(Wait):
         run_time: float = 1,
         stop_condition: Callable[[], bool] | None = None,
         frozen_frame: bool | None = None,
+        rate_func: Callable[[float], float] = linear,
         **kwargs,
     ):
         super().__init__(
             run_time=run_time,
+            rate_func=rate_func,
             stop_condition=stop_condition,
             frozen_frame=frozen_frame,
             **kwargs,
