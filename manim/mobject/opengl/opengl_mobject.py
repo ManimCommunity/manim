@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 import moderngl
 import numpy as np
 from colour import Color
-from pyglet.libs.win32.constants import NameDisplay
 
 from manim import config, logger
 from manim.constants import *
@@ -966,9 +965,20 @@ class OpenGLMobject:
         self.add(*submobject_list)
         return self
 
+    def digest_mobject_attrs(self):
+        """
+        Ensures all attributes which are mobjects are included
+        in the submobjects list.
+        """
+        mobject_attrs = [
+            x for x in list(self.__dict__.values()) if isinstance(x, OpenGLMobject)
+        ]
+        self.set_submobjects(list_update(self.submobjects, mobject_attrs))
+        return self
+
     # Submobject organization
 
-    def arrange(self, direction=RIGHT, center=True, **kwargs):
+    def arrange(self, direction: Array = RIGHT, center: bool = True, **kwargs):
         """Sorts :class:`~.OpenGLMobject` next to each other on screen.
 
         Examples
@@ -992,6 +1002,7 @@ class OpenGLMobject:
             self.center()
         return self
 
+    # TODO: Needs test
     def arrange_in_grid(
         self,
         rows: int | None = None,
@@ -1094,9 +1105,10 @@ class OpenGLMobject:
 
 
         """
+        # TODO: Why is there a local import here ?
         from manim.mobject.geometry.line import Line
 
-        mobs = self.submobjects.copy()
+        mobs = self.submobjects
         start_pos = self.get_center()
 
         # get cols / rows values if given (implicitly)
