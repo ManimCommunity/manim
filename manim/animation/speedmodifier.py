@@ -110,11 +110,22 @@ class ChangeSpeed(Animation):
         # A function where, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
         # m being initial speed, n being final speed
         # Following function obtained when conditions applied to vertical parabola
-        self.speed_modifier = lambda x, m, n: (n * n - m * m) * x * x / 4 + m * x
+        self.speed_modifier = (
+            lambda x, initial_speed, final_speed: (
+                final_speed**2 - initial_speed**2
+            )
+            * x**2
+            / 4
+            + initial_speed * x
+        )
 
         # f-1(1), returns x for which f(x) = 1 in `speed_modifier` function
-        self.f_inv_1 = lambda m, n: 2 / (m + n)
+        self.f_inv_1 = lambda initial_speed, final_speed: 2 / (
+            initial_speed + final_speed
+        )
 
+        # if speed factors for the starting node (0) and the final node (1) are
+        # not set, set them to 1 and the penultimate factor, respectively
         if 0 not in speedinfo:
             speedinfo[0] = 1
         if 1 not in speedinfo:
@@ -124,8 +135,8 @@ class ChangeSpeed(Animation):
         self.functions = []
         self.conditions = []
 
-        # To the total time
-        total_time = self.get_total_time()
+        # Get the time taken by amimation if `run_time` is assumed to be 1
+        scaled_total_time = self.get_scaled_total_time()
 
         prevnode = 0
         m = self.speedinfo[0]
@@ -133,13 +144,14 @@ class ChangeSpeed(Animation):
         for node, n in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
             self.conditions.append(
-                lambda x, curr_time=curr_time, m=m, n=n, dur=dur: curr_time / total_time
+                lambda x, curr_time=curr_time, m=m, n=n, dur=dur: curr_time
+                / scaled_total_time
                 <= x
-                <= (curr_time + self.f_inv_1(m, n) * dur) / total_time
+                <= (curr_time + self.f_inv_1(m, n) * dur) / scaled_total_time
             )
             self.functions.append(
                 lambda x, dur=dur, m=m, n=n, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
-                    (total_time * x - curr_time) / dur, m, n
+                    (scaled_total_time * x - curr_time) / dur, m, n
                 )
                 * dur
                 + prevnode
@@ -148,22 +160,22 @@ class ChangeSpeed(Animation):
             prevnode = node
             m = n
 
-        def func(x):
-            newx = piecewise(
-                self.rate_func(x),
-                [condition(self.rate_func(x)) for condition in self.conditions],
+        def func(t):
+            new_t = piecewise(
+                self.rate_func(t),
+                [condition(self.rate_func(t)) for condition in self.conditions],
                 self.functions,
             )
-            ChangeSpeed.dt = (newx - self.t) * self.anim.run_time
-            self.t = newx
-            return newx
+            ChangeSpeed.dt = (new_t - self.t) * self.anim.run_time
+            self.t = new_t
+            return new_t
 
         self.anim.set_rate_func(func)
 
         super().__init__(
             self.anim.mobject,
             rate_func=self.rate_func,
-            run_time=total_time * self.anim.run_time,
+            run_time=scaled_total_time * self.anim.run_time,
             **kwargs,
         )
 
@@ -176,16 +188,16 @@ class ChangeSpeed(Animation):
             )
         return prepare_animation(anim)
 
-    def get_total_time(self) -> float:
+    # Time taken by the animation if `run_time` is assumed to be 1
+    def get_scaled_total_time(self) -> float:
         prevnode = 0
-        m = self.speedinfo[0]
+        init_speed = self.speedinfo[0]
         total_time = 0
-        for node, n in list(self.speedinfo.items())[1:]:
+        for node, final_speed in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
-            total_time += dur * self.f_inv_1(m, n)
+            total_time += dur * self.f_inv_1(init_speed, final_speed)
             prevnode = node
-            m = n
-        # print(total_time)
+            init_speed = final_speed
         return total_time
 
     @classmethod
