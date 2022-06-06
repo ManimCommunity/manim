@@ -91,7 +91,7 @@ def frames_comparison(
             # Kwargs contains the eventual parametrization arguments.
             # This modifies the test_name so that it is defined by the parametrization
             # arguments too.
-            # Example: if "length" is parametrized from 0 to 20, the kwargs 
+            # Example: if "length" is parametrized from 0 to 20, the kwargs
             # will be once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
                 [f"{str(tup[0])}:{str(tup[1])}" for tup in kwargs.items()],

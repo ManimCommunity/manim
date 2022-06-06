@@ -131,7 +131,9 @@ else:
                 if config.renderer == "opengl":
                     # Check if the imported mobjects extend the OpenGLMobject class
                     # meaning ConvertToOpenGL did its job
-                    if "OpenGLMobject" in [parent_class.__name__ for parent_class in Group.mro()]:
+                    if "OpenGLMobject" in [
+                        parent_class.__name__ for parent_class in Group.mro()
+                    ]:
                         from manim.renderer.opengl_renderer import OpenGLRenderer
 
                         renderer = OpenGLRenderer()
