@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
-from colour import Color
 
 from manim import config, logger
 from manim.constants import *
@@ -54,10 +53,12 @@ if True:
     )
 
     import numpy.typing as npt
+    from colour import Color
 
     TimeBasedUpdater = Callable[["OpenGLMobject", float], None]
     NonTimeUpdater = Callable[["OpenGLMobject"], None]
     Updater = Union[TimeBasedUpdater, NonTimeUpdater]
+
     ManimColor = Union[str, Color]
     Array = npt.NDArray[np.float64]
 
@@ -1352,7 +1353,7 @@ class OpenGLMobject:
         list.reverse(self.submobjects)
 
     # Copying and serialization
-    @staticmethod
+    # @staticmethod
     def stash_mobject_pointers(func: Callable):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
@@ -1379,17 +1380,17 @@ class OpenGLMobject:
         return self
 
     def deepcopy(self):
-        parents = self.parents
-        self.parents = []
-        result = copy.deepcopy(self)
-        self.parents = parents
-        return result
+        # parents = self.parents
+        # self.parents = []
+        # result = copy.deepcopy(self)
+        # self.parents = parents
+        # return result
 
-        # try:
-        #     # Often faster than deepcopy
-        #     return pickle.loads(pickle.dumps(self))
-        # except AttributeError:
-        #     return copy.deepcopy(self)
+        try:
+            # Often faster than deepcopy
+            return pickle.loads(pickle.dumps(self))
+        except AttributeError:
+            return copy.deepcopy(self)
 
     @stash_mobject_pointers
     def copy(self, shallow: bool = False):
