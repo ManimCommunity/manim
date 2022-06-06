@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numpy as np
+import numpy.testing as nt
 import pytest
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -49,3 +51,57 @@ def test_opengl_mobject_remove(using_opengl_renderer):
     assert len(obj.submobjects) == 10
 
     assert obj.remove(OpenGLMobject()) is obj
+
+
+def test_opengl_mobject_arrange_in_grid(using_opengl_renderer):
+    """Test OpenGLMobject.arrange_in_grid()."""
+    from manim import Rectangle, VGroup
+
+    boxes = VGroup(*[Rectangle(height=0.5, width=0.5) for _ in range(24)])
+
+    boxes.arrange_in_grid(
+        buff=(0.25, 0.5),
+        col_alignments="lccccr",
+        row_alignments="uccd",
+        col_widths=[1, *[None] * 4, 1],
+        row_heights=[1, None, None, 1],
+        flow_order="dr",
+    )
+
+    solution = np.array(
+        [
+            [-2.375, 2.0, 0.0],
+            [-2.375, 0.5, 0.0],
+            [-2.375, -0.5, 0.0],
+            [-2.375, -2.0, 0.0],
+            [-1.125, 2.0, 0.0],
+            [-1.125, 0.5, 0.0],
+            [-1.125, -0.5, 0.0],
+            [-1.125, -2.0, 0.0],
+            [-0.375, 2.0, 0.0],
+            [-0.375, 0.5, 0.0],
+            [-0.375, -0.5, 0.0],
+            [-0.375, -2.0, 0.0],
+            [0.375, 2.0, 0.0],
+            [0.375, 0.5, 0.0],
+            [0.375, -0.5, 0.0],
+            [0.375, -2.0, 0.0],
+            [1.125, 2.0, 0.0],
+            [1.125, 0.5, 0.0],
+            [1.125, -0.5, 0.0],
+            [1.125, -2.0, 0.0],
+            [2.375, 2.0, 0.0],
+            [2.375, 0.5, 0.0],
+            [2.375, -0.5, 0.0],
+            [2.375, -2.0, 0.0],
+        ]
+    )
+
+    for expected, rect in zip(solution, boxes):
+        c = rect.get_center()
+        nt.assert_array_equal(expected, c)
+
+
+# for rect in boxes:
+#     c = rect.get_center()
+#     print(f"{c!s}")
