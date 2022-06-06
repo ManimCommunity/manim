@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import itertools as it
+import pickle
 import random
 import sys
 from functools import partialmethod, wraps
@@ -1259,19 +1260,45 @@ class OpenGLMobject:
             grid.set_height(height)
         return grid
 
-    def duplicate(self, n: int):
-        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
-        return self.get_group_class()(*[self.copy() for _ in range(n)])
+    def _arrange_to_fit_dim(self, length: float, dim: int, about_edge: Array = ORIGIN):
+        ref_point = self.get_bounding_box_point(about_edge)
+        n_submobs = len(self.submobjects)
+        if n_submobs <= 1:
+            return
+        total_length = sum(sm.length_over_dim(dim) for sm in self.submobjects)
+        buff = (length - total_length) / (n_submobs - 1)
+        vect = np.zeros(self.dim)
+        vect[dim] = 1
+        x = 0
+        for submob in self.submobjects:
+            submob.set_coord(x, dim, -vect)
+            x += submob.length_over_dim(dim) + buff
+        self.move_to(ref_point, about_edge)
+        return self
 
-    def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
+    def arrange_to_fit_width(self, width: float, about_edge: Array = ORIGIN):
+        return self._arrange_to_fit_dim(width, 0, about_edge)
+
+    def arrange_to_fit_height(self, height: float, about_edge: Array = ORIGIN):
+        return self._arrange_to_fit_dim(height, 1, about_edge)
+
+    def arrange_to_fit_depth(self, depth: float, about_edge: Array = ORIGIN):
+        return self._arrange_to_fit_dim(depth, 2, about_edge)
+
+    def sort(
+        self,
+        point_to_num_func: Callable[[Array], float] = lambda p: p[0],
+        submob_func: Callable[[OpenGLMobject], float] | None = None,
+    ):
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is not None:
             self.submobjects.sort(key=submob_func)
         else:
             self.submobjects.sort(key=lambda m: point_to_num_func(m.get_center()))
+        self.assemble_family()
         return self
 
-    def shuffle(self, recurse=False):
+    def shuffle(self, recurse: bool = False):
         """Shuffles the order of :attr:`submobjects`
 
         Examples
@@ -1293,6 +1320,10 @@ class OpenGLMobject:
         random.shuffle(self.submobjects)
         self.assemble_family()
         return self
+
+    def duplicate(self, n: int):
+        """Returns an :class:`~.OpenGLVGroup` containing ``n`` copies of the mobject."""
+        return self.get_group_class()(*[self.copy() for _ in range(n)])
 
     def invert(self, recursive=False):
         """Inverts the list of :attr:`submobjects`.
@@ -1320,8 +1351,47 @@ class OpenGLMobject:
                 submob.invert(recursive=True)
         list.reverse(self.submobjects)
 
-    # Copying
+    # Copying and serialization
+    @staticmethod
+    def stash_mobject_pointers(func: Callable):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            uncopied_attrs = ["parents", "target", "saved_state"]
+            stash = {}
+            for attr in uncopied_attrs:
+                if hasattr(self, attr):
+                    value = getattr(self, attr)
+                    stash[attr] = value
+                    null_value = [] if isinstance(value, list) else None
+                    setattr(self, attr, null_value)
+            result = func(self, *args, **kwargs)
+            self.__dict__.update(stash)
+            return result
 
+        return wrapper
+
+    @stash_mobject_pointers
+    def serialize(self):
+        return pickle.dumps(self)
+
+    def deserialize(self, data: bytes):
+        self.become(pickle.loads(data))
+        return self
+
+    def deepcopy(self):
+        parents = self.parents
+        self.parents = []
+        result = copy.deepcopy(self)
+        self.parents = parents
+        return result
+
+        # try:
+        #     # Often faster than deepcopy
+        #     return pickle.loads(pickle.dumps(self))
+        # except AttributeError:
+        #     return copy.deepcopy(self)
+
+    @stash_mobject_pointers
     def copy(self, shallow: bool = False):
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
@@ -1379,13 +1449,6 @@ class OpenGLMobject:
             # if isinstance(value, ShaderWrapper):
             #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
-
-    def deepcopy(self):
-        parents = self.parents
-        self.parents = []
-        result = copy.deepcopy(self)
-        self.parents = parents
-        return result
 
     def generate_target(self, use_deepcopy: bool = False):
         self.target = None  # Prevent exponential explosion
