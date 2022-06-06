@@ -25,7 +25,7 @@ jobs:
         run: |
           import os
           ref_tag = os.getenv('tag_act').split('/')[-1]
-          print(f"::set-output name=tag_name::{ref_tag[1:]}")
+          print(f"::set-output name=tag_name::{ref_tag}")
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -35,7 +35,7 @@ jobs:
           tags: |
             manimcommunity/manim:stable
             manimcommunity/manim:latest
-            manimcommunity/manim:v${{ steps.create_release.outputs.tag_name }}
+            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
 
   docker-amd64:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
         run: |
           import os
           ref_tag = os.getenv('tag_act').split('/')[-1]
-          print(f"::set-output name=tag_name::{ref_tag[1:]}")
+          print(f"::set-output name=tag_name::{ref_tag}")
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -67,4 +67,4 @@ jobs:
           tags: |
             manimcommunity/manim:stable
             manimcommunity/manim:latest
-            manimcommunity/manim:v${{ steps.create_release.outputs.tag_name }}
+            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
