@@ -41,7 +41,17 @@ from manim.utils.space_ops import (
 )
 
 if True:
-    from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
+    from typing import (
+        Any,
+        Callable,
+        Iterable,
+        List,
+        Optional,
+        Sequence,
+        Tuple,
+        Type,
+        Union,
+    )
 
     import numpy.typing as npt
 
@@ -190,7 +200,7 @@ class OpenGLMobject:
         self.should_render = should_render
 
     @classmethod
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls: type[OpenGLMobject], **kwargs):
         super().__init_subclass__(**kwargs)
         cls._original__init__ = cls.__init__
 
