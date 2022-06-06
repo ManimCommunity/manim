@@ -15,8 +15,8 @@ Python, or via Docker).
 
    Note that there are several different versions of Manim. The
    instructions on this website are **only** for the *community edition*.
-   Find out more about the :doc:`differences between Manim
-   versions <installation/versions>` if you are unsure which
+   Find out more about the :ref:`differences between Manim
+   versions <different-versions>` if you are unsure which
    version you should install.
 
 #. :ref:`Installing Manim to your system's Python <local-installation>`
@@ -54,18 +54,14 @@ Manim requires Python version ``3.7`` or above to run.
    installation/windows
    installation/macos
    installation/linux
-   installation/troubleshooting
 
 Once Manim is installed locally, you can proceed to our
 :doc:`quickstart guide <tutorials/quickstart>` which walks you
 through rendering a first simple scene.
 
 As mentioned above, do not worry if there are errors or other
-problems: consult our :doc:`troubleshooting
-guide <installation/troubleshooting>` for help, or get in touch
-with the community via `GitHub discussions
-<https://github.com/ManimCommunity/manim/discussions>`__ or
-`Discord <https://www.manim.community/discord/>`__.
+problems: consult our :doc:`FAQ section </faq/index>` for help
+(including instructions for how to ask Manim's community for help).
 
 
 

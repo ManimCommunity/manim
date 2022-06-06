@@ -29,7 +29,10 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     default="render",
     no_args_is_help=True,
     help="Animation engine for explanatory math videos.",
-    epilog="See 'manim <command>' to read about a specific subcommand.\n\n" + EPILOG,
+    epilog="See 'manim <command>' to read about a specific subcommand.\n\n"
+    "Note: the subcommand 'manim render' is called if no other subcommand "
+    "is specified. Run 'manim render --help' if you would like to know what the "
+    f"'-ql' or '-p' flags do, for example.\n\n{EPILOG}",
 )
 @click.option(
     "--version",

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
+from PIL.Image import Resampling
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 from manim.utils.images import get_full_raster_image_path
@@ -20,7 +21,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         width: float = None,
         height: float = None,
         image_mode: str = "RGBA",
-        resampling_algorithm: int = Image.BICUBIC,
+        resampling_algorithm: int = Resampling.BICUBIC,
         opacity: float = 1,
         gloss: float = 0,
         shadow: float = 0,
