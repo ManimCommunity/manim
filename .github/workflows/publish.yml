@@ -8,31 +8,13 @@ on:
     types: [released]
 
 jobs:
-  docker-arm64:
-    runs-on: [self-hosted, linux, ARM64, docker-installed]
-    if: github.event_name != 'release'
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          file: docker/Dockerfile
-          tags: |
-            manimcommunity/manim:latest
-
-  docker-amd64:
+  docker-latest:
     runs-on: ubuntu-latest
     if: github.event_name != 'release'
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -43,17 +25,21 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
+          platforms: linux/arm64,linux/amd64
           push: true
           file: docker/Dockerfile
           tags: |
             manimcommunity/manim:latest
 
-  docker-arm64-release:
-    runs-on: [self-hosted, linux, ARM64, docker-installed]
+  docker-release:
+    runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -74,41 +60,9 @@ jobs:
           print(f"::set-output name=tag_name::{ref_tag}")
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
-          push: true
-          file: docker/Dockerfile
-          tags: |
-            manimcommunity/manim:stable
-            manimcommunity/manim:latest
-            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
-
-  docker-amd64-release:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Get Version
-        id: create_release
-        shell: python
-        env:
-          tag_act: ${{ github.ref }}
-        run: |
-          import os
-          ref_tag = os.getenv('tag_act').split('/')[-1]
-          print(f"::set-output name=tag_name::{ref_tag}")
-
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
+          platforms: linux/arm64,linux/amd64
           push: true
           file: docker/Dockerfile
           tags: |
