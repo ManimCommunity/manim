@@ -22,7 +22,7 @@ def test_opengl_vmobject_point_from_propotion(using_opengl_renderer):
 
     # Total length of 6, so halfway along the object
     # would be at length 3, which lands in the first, long line.
-    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+    np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         obj.point_from_proportion(2)
