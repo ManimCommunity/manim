@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Callable, Optional
+import types
+from typing import Callable
 
 from numpy import piecewise
 
@@ -10,7 +11,6 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..mobject.mobject import Mobject, Updater, _AnimationBuilder
 from ..scene.scene import Scene
-from ..utils.rate_functions import linear
 
 
 class ChangeSpeed(Animation):
@@ -97,7 +97,7 @@ class ChangeSpeed(Animation):
 
         self.anim = self.setup(anim)
         if issubclass(type(anim), AnimationGroup):
-            self.anim = AnimationGroup(
+            self.anim = type(anim)(
                 *map(self.setup, anim.animations),
                 group=anim.group,
                 run_time=anim.run_time,
@@ -181,10 +181,8 @@ class ChangeSpeed(Animation):
 
     def setup(self, anim):
         if type(anim) is Wait:
-            return ChangedWait(
-                run_time=anim.run_time,
-                stop_condition=anim.stop_condition,
-                frozen_frame=anim.is_static_wait,
+            anim.interpolate = types.MethodType(
+                lambda self, alpha: self.rate_func(alpha), anim
             )
         return prepare_animation(anim)
 
@@ -239,28 +237,3 @@ class ChangeSpeed(Animation):
 
     def _setup_scene(self, scene) -> None:
         self.anim._setup_scene(scene)
-
-
-class ChangedWait(Wait):
-    """
-    Wait animation but follows `rate_func`
-    """
-
-    def __init__(
-        self,
-        run_time: float = 1,
-        stop_condition: Callable[[], bool] | None = None,
-        frozen_frame: bool | None = None,
-        rate_func: Callable[[float], float] = linear,
-        **kwargs,
-    ):
-        super().__init__(
-            run_time=run_time,
-            rate_func=rate_func,
-            stop_condition=stop_condition,
-            frozen_frame=frozen_frame,
-            **kwargs,
-        )
-
-    def interpolate(self, alpha: float) -> None:
-        self.get_sub_alpha(alpha, 0, 0)
