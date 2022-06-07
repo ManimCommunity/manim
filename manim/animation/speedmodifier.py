@@ -62,6 +62,7 @@ class ChangeSpeed(Animation):
                     ChangeSpeed(
                         Wait(2),
                         speedinfo={0.4: 1, 0.5: 0.2, 0.8: 0.2, 1: 1},
+                        affects_speed_updaters=True,
                     )
                 )
 
@@ -78,6 +79,7 @@ class ChangeSpeed(Animation):
                     ChangeSpeed(
                         Wait(),
                         speedinfo={1: 0},
+                        affects_speed_updaters=True,
                     )
                 )
 
