@@ -83,19 +83,18 @@ class ChangeSpeed(Animation):
 
     """
 
-    t = 0
     dt = 0
-    changed = False
+    is_changing_dt = False
 
     def __init__(
         self,
         anim: Animation | _AnimationBuilder,
         speedinfo: dict[float, float],
         rate_func: Callable[[float], float] | None = None,
+        affects_speed_updaters: bool = False,
         **kwargs,
     ) -> None:
 
-        self.anim = self.setup(anim)
         if issubclass(type(anim), AnimationGroup):
             self.anim = type(anim)(
                 *map(self.setup, anim.animations),
@@ -104,6 +103,16 @@ class ChangeSpeed(Animation):
                 rate_func=anim.rate_func,
                 lag_ratio=anim.lag_ratio,
             )
+        else:
+            self.anim = self.setup(anim)
+
+        if affects_speed_updaters:
+            assert (
+                ChangeSpeed.is_changing_dt is False
+            ), "Only one animation at a time can play that changes speed (dt) for ChangedSpeed updaters"
+            ChangeSpeed.is_changing_dt = True
+            self.t = 0
+        self.affects_speed_updaters = affects_speed_updaters
 
         self.rate_func = self.anim.rate_func if rate_func is None else rate_func
 
@@ -161,13 +170,16 @@ class ChangeSpeed(Animation):
             m = n
 
         def func(t):
+            if t == 1:
+                ChangeSpeed.is_changing_dt = False
             new_t = piecewise(
                 self.rate_func(t),
                 [condition(self.rate_func(t)) for condition in self.conditions],
                 self.functions,
             )
-            ChangeSpeed.dt = (new_t - self.t) * self.anim.run_time
-            self.t = new_t
+            if self.affects_speed_updaters:
+                ChangeSpeed.dt = (new_t - self.t) * self.anim.run_time
+                self.t = new_t
             return new_t
 
         self.anim.set_rate_func(func)
@@ -210,7 +222,7 @@ class ChangeSpeed(Animation):
         if "dt" in parameters:
             mobject.add_updater(
                 lambda m, dt: update_function(
-                    m, ChangeSpeed.dt if ChangeSpeed.changed else dt
+                    m, ChangeSpeed.dt if ChangeSpeed.is_changing_dt else dt
                 ),
                 index=index,
                 call_updater=call_updater,
@@ -225,11 +237,10 @@ class ChangeSpeed(Animation):
         self.anim.update_mobjects(dt)
 
     def finish(self) -> None:
-        ChangeSpeed.changed = False
+        ChangeSpeed.is_changing_dt = False
         self.anim.finish()
 
     def begin(self) -> None:
-        ChangeSpeed.changed = True
         self.anim.begin()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
