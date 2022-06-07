@@ -82,4 +82,4 @@ def test_shift_family(using_opengl_renderer):
     positions_after = {m: m.get_center().copy() for m in family}
 
     for m in family:
-        assert np.allclose(positions_before[m] + RIGHT, positions_after[m])
+        np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])
