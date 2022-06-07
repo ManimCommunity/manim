@@ -21,7 +21,7 @@ def test_vmobject_point_from_propotion():
 
     # Total length of 6, so halfway along the object
     # would be at length 3, which lands in the first, long line.
-    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+    np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         obj.point_from_proportion(2)
@@ -271,7 +271,7 @@ def test_vmobject_same_points_become():
     a = Square()
     b = Circle()
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -279,7 +279,7 @@ def test_vmobject_same_num_submobjects_become():
     a = Square()
     b = RegularPolygon(n=6)
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
@@ -287,11 +287,11 @@ def test_vmobject_different_num_points_and_submobjects_become():
     a = Square()
     b = VGroup(Circle(), Square())
     a.become(b)
-    assert np.array_equal(a.points, b.points)
+    np.testing.assert_array_equal(a.points, b.points)
     assert len(a.submobjects) == len(b.submobjects)
 
 
 def test_vmobject_point_at_angle():
     a = Circle()
     p = a.point_at_angle(4 * PI)
-    assert np.array_equal(a.points[0], p)
+    np.testing.assert_array_equal(a.points[0], p)
