@@ -5,7 +5,7 @@
 Yes. Unfortunately, at this point, the official online documentation does
 not contain the relevant base classes like `OpenGLMobject` and `OpenGLVMobject`
 or specific OpenGL classes like `OpenGLSurface`, but documentation for some of
-them is available in form of docstrings 
+them is available in form of docstrings
 [in the source code](https://github.com/ManimCommunity/manim/tree/main/manim/mobject/opengl).
 
 Furthermore, [this user guide by *aquabeam*](https://www.aquabeam.me/manim/opengl_guide/)
