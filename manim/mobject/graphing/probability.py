@@ -283,9 +283,9 @@ class BarChart(Axes):
             (x_axis_config,), (kwargs.pop("x_axis_config", None),)
         )
 
-        self.bars: VGroup
-        self.x_labels: VGroup
-        self.bar_labels: VGroup
+        self.bars: VGroup = VGroup()
+        self.x_labels: VGroup | None = None
+        self.bar_labels: VGroup | None = None
 
         super().__init__(
             x_range=x_range,
@@ -387,8 +387,6 @@ class BarChart(Axes):
         return bar
 
     def _add_bars(self) -> None:
-        self.bars = VGroup()
-
         for i, value in enumerate(self.values):
             temp_bar = self._create_bar(bar_number=i, value=value)
             self.bars.add(temp_bar)
