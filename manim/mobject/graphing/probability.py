@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, Sequence, Type
+from typing import Iterable, Sequence
 
 import numpy as np
 from colour import Color
@@ -237,11 +237,11 @@ class BarChart(Axes):
 
     def __init__(
         self,
-        values: Iterable[float],
+        values: Sequence[float],
         bar_names: Iterable[str] | None = None,
         y_range: Sequence[float] | None = None,
         x_length: float | None = None,
-        y_length: float | None = config.frame_height - 4,
+        y_length: float | None = None,
         bar_colors: str
         | Iterable[str]
         | None = [
@@ -256,6 +256,8 @@ class BarChart(Axes):
         bar_stroke_width: float = 3,
         **kwargs,
     ):
+
+        y_length = y_length if y_length is not None else config.frame_height - 4
 
         self.values = values
         self.bar_names = bar_names
@@ -272,6 +274,7 @@ class BarChart(Axes):
                 max(0, max(self.values)),
                 round(max(self.values) / y_length, 2),
             ]
+
         elif len(y_range) == 2:
             y_range = [*y_range, round(max(self.values) / y_length, 2)]
 
@@ -399,7 +402,7 @@ class BarChart(Axes):
         color: Color | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
-        label_constructor: Type[VMobject] = Tex,
+        label_constructor: type[VMobject] = Tex,
     ):
         """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
         labels after creation.
