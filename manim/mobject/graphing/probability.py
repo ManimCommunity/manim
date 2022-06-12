@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Type
 
 import numpy as np
 from colour import Color
@@ -388,8 +388,8 @@ class BarChart(Axes):
 
     def _add_bars(self) -> None:
         for i, value in enumerate(self.values):
-            temp_bar = self._create_bar(bar_number=i, value=value)
-            self.bars.add(temp_bar)
+            tmp_bar = self._create_bar(bar_number=i, value=value)
+            self.bars.add(tmp_bar)
 
         self._update_colors()
         self.add_to_back(self.bars)
@@ -399,7 +399,7 @@ class BarChart(Axes):
         color: Color | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
-        label_constructor: VMobject = Tex,
+        label_constructor: Type[VMobject] = Tex,
     ):
         """Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the
         labels after creation.
