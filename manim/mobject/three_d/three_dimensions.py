@@ -687,6 +687,7 @@ class Cylinder(Surface):
         self._rotate_to_direction()
 
     def get_direction(self):
+        """Returns the direction of the central axis of the cylinder."""
         return self.direction
 
 

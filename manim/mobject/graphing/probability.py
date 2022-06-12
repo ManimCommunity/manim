@@ -318,7 +318,7 @@ class BarChart(Axes):
             self.bars.set_color_by_gradient(*self.bar_colors)
 
     def _add_x_axis_labels(self):
-        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
+        """Essentially :meth`:~.NumberLine.add_labels`, but differs in that
         the direction of the label with respect to the x_axis changes to UP or DOWN
         depending on the value.
 

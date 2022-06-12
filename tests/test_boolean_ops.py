@@ -55,4 +55,4 @@ def test_vmobject_to_skia_path_and_inverse(test_input):
 
     new_vmobject = a._convert_skia_path_to_vmobject(path)
     # for some reason there is an extra 4 points in new vmobject than original
-    assert np.where(np.isclose(new_vmobject.points[:-4], test_input.points))
+    np.testing.assert_allclose(new_vmobject.points[:-4], test_input.points)

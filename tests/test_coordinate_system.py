@@ -21,8 +21,8 @@ def test_initial_config():
     assert cs.y_range[2] == 1.0
 
     ax = Axes()
-    assert np.allclose(ax.get_center(), ORIGIN)
-    assert np.allclose(ax.y_axis_config["label_direction"], LEFT)
+    np.testing.assert_allclose(ax.get_center(), ORIGIN)
+    np.testing.assert_allclose(ax.y_axis_config["label_direction"], LEFT)
 
     with tempconfig({"frame_x_radius": 100, "frame_y_radius": 200}):
         cs = CS()
@@ -99,7 +99,7 @@ def test_point_to_coords():
 
     # get the coordinates of the circle with respect to the axes
     coords = np.around(ax.point_to_coords(circ.get_right()), decimals=4)
-    assert np.array_equal(coords, (7.0833, 2.6667))
+    np.testing.assert_array_equal(coords, (7.0833, 2.6667))
 
 
 def test_coords_to_point():
@@ -107,7 +107,7 @@ def test_coords_to_point():
 
     # a point with respect to the axes
     c2p_coord = np.around(ax.coords_to_point(2, 2), decimals=4)
-    assert np.array_equal(c2p_coord, (1.7143, 1.5, 0))
+    np.testing.assert_array_equal(c2p_coord, (1.7143, 1.5, 0))
 
 
 def test_input_to_graph_point():
@@ -119,8 +119,8 @@ def test_input_to_graph_point():
 
     # move a square to PI on the cosine curve.
     position = np.around(ax.input_to_graph_point(x=PI, graph=curve), decimals=4)
-    assert np.array_equal(position, (2.6928, -0.75, 0))
+    np.testing.assert_array_equal(position, (2.6928, -0.75, 0))
 
     # test the line_graph implementation
     position = np.around(ax.input_to_graph_point(x=PI, graph=line_graph), decimals=4)
-    assert np.array_equal(position, (2.6928, 1.2876, 0))
+    np.testing.assert_array_equal(position, (2.6928, 1.2876, 0))
