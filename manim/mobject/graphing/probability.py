@@ -29,6 +29,7 @@ from manim.utils.color import (
     color_gradient,
 )
 from manim.utils.iterables import tuplify
+from manim import logger
 
 EPSILON = 0.0001
 
@@ -238,13 +239,11 @@ class BarChart(Axes):
     def __init__(
         self,
         values: Sequence[float],
-        bar_names: Iterable[str] | None = None,
+        bar_names: Sequence[str] | None = None,
         y_range: Sequence[float] | None = None,
         x_length: float | None = None,
         y_length: float | None = None,
-        bar_colors: str
-        | Iterable[str]
-        | None = [
+        bar_colors: Iterable[str] = [
             "#003f5c",
             "#58508d",
             "#bc5090",
@@ -256,6 +255,13 @@ class BarChart(Axes):
         bar_stroke_width: float = 3,
         **kwargs,
     ):
+
+        if isinstance(bar_colors, str):
+            #
+            logger.warning(
+                "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
+            )
+            bar_colors = list(bar_colors)
 
         y_length = y_length if y_length is not None else config.frame_height - 4
 
@@ -315,10 +321,8 @@ class BarChart(Axes):
         Primarily used when the bars are initialized with ``self._add_bars``
         or updated via ``self.change_bar_values``.
         """
-        if isinstance(self.bar_colors, str):
-            self.bars.set_color_by_gradient(self.bar_colors)
-        else:
-            self.bars.set_color_by_gradient(*self.bar_colors)
+
+        self.bars.set_color_by_gradient(*self.bar_colors)
 
     def _add_x_axis_labels(self):
         """Essentially :meth`:~.NumberLine.add_labels`, but differs in that
