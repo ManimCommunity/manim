@@ -10,7 +10,7 @@ from typing import Iterable, Sequence
 import numpy as np
 from colour import Color
 
-from manim import config
+from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
@@ -29,7 +29,6 @@ from manim.utils.color import (
     color_gradient,
 )
 from manim.utils.iterables import tuplify
-from manim import logger
 
 EPSILON = 0.0001
 
