@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, Sequence, MutableSequence
+from typing import Iterable, MutableSequence, Sequence
 
 import numpy as np
 from colour import Color
