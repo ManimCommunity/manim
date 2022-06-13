@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, MutableSequence
 
 import numpy as np
 from colour import Color
@@ -193,9 +193,9 @@ class BarChart(Axes):
     Parameters
     ----------
     values
-        An iterable of values that determines the height of each bar. Accepts negative values.
+        A sequence of values that determines the height of each bar. Accepts negative values.
     bar_names
-        An iterable of names for each bar. Does not have to match the length of ``values``.
+        A sequence of names for each bar. Does not have to match the length of ``values``.
     y_range
         The y_axis range of values. If ``None``, the range will be calculated based on the
         min/max of ``values`` and the step will be calculated based on ``y_length``.
@@ -205,7 +205,7 @@ class BarChart(Axes):
     y_length
         The length of the y-axis.
     bar_colors
-        The color for the bars. Accepts a single color or an iterable of colors.
+        The color for the bars. Accepts a sequence of colors (can contain just one item).
         If the length of``bar_colors`` does not match that of ``values``,
         intermediate colors will be automatically determined.
     bar_width
@@ -238,7 +238,7 @@ class BarChart(Axes):
 
     def __init__(
         self,
-        values: Sequence[float],
+        values: MutableSequence[float],
         bar_names: Sequence[str] | None = None,
         y_range: Sequence[float] | None = None,
         x_length: float | None = None,
@@ -257,7 +257,6 @@ class BarChart(Axes):
     ):
 
         if isinstance(bar_colors, str):
-            #
             logger.warning(
                 "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
             )
@@ -496,7 +495,8 @@ class BarChart(Axes):
                 bar_lim = bar.get_top()
                 aligned_edge = UP
 
-            try:
+            # check if the bar has height
+            if chart_val != 0:
                 quotient = value / chart_val
                 if quotient < 0:
 
@@ -511,7 +511,7 @@ class BarChart(Axes):
 
                 bar.stretch_to_fit_height(abs(quotient) * bar.height)
 
-            except ZeroDivisionError:
+            else:
                 # create a new bar since the current one has a height of zero (doesn't exist)
                 temp_bar = self._create_bar(i, value)
                 self.bars.remove(bar)
