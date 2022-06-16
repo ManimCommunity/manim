@@ -184,3 +184,18 @@ def test_TransformWithPathArcCenters(scene):
             path_arc_centers=ORIGIN,
         )
     )
+
+
+@frames_comparison(last_frame=False)
+def test_TransformWithConflictingPaths(scene):
+    dots_start = VGroup(*[Dot(LEFT, color=BLUE), Dot(3 * RIGHT, color=RED)])
+    dots_end = VGroup(*[Dot(LEFT + 2 * DOWN, color=BLUE), Dot(2 * UP, color=RED)])
+    scene.play(
+        Transform(
+            dots_start,
+            dots_end,
+            path_func=clockwise_path(),
+            path_arc=2 * PI,
+            path_arc_centers=ORIGIN,
+        )
+    )
