@@ -34,7 +34,7 @@ Manim will not call your method and simply output a black frame.
 ## What are the default measurements for Manim's scene?
 
 The scene measures 8 units in height and has a default ratio of 16:9,
-which means that it measures :math:`8 \cdot 16 / 9 = 14 + 2/9` units in width.
+which means that it measures {math}`8 \cdot 16 / 9 = 14 + 2/9` units in width.
 The origin is in the center of the scene, which means that, for example, the
 upper left corner of the scene has coordinates `[-7-1/9, 4, 0]`.
 
