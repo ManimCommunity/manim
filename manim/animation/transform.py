@@ -46,6 +46,35 @@ if TYPE_CHECKING:
 
 
 class Transform(Animation):
+    """A Transform transforms a Mobject into a target Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The Mobject to be transformed. The Mobject will be mutated into the target.
+    target_mobject
+        The Mobject that will be transformed into. Will become invisible and replaced by mobject.
+    path_func
+        A function defining the path that the mobject will take to target_mobject,
+        see `manim.utils.paths`.
+    path_arc
+        The arc (in radians) that the mobject will take to reach target if using a circular path
+        arc, see `path_arc_centers`.
+    path_arc_axis
+        The axis to rotate along if using a circular path arc, see `path_arc_centers`.
+    path_arc_centers
+        The center of the circle used in the Transform's radial path.
+
+        If this is set and path_func is not set, then a path_along_circles path will be generated
+        using the path_arc parameters and stored in path_func. If path_func is set, this and the
+        other path_arc fields are set as attributes, but a path_func is not generated.
+    replace_mobject_with_target_in_scene
+        Defines which object is replaced when the Transform is complete.
+
+        If set to True, the mobject will be removed from the scene and the target_mobject will
+        replace it. Otherwise, the target_mobject will be removed and the mobject will replace it.
+    """
+
     def __init__(
         self,
         mobject: Mobject | None,
