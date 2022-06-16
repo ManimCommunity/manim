@@ -31,7 +31,7 @@ Manim will not call your method and simply output a black frame.
 
 ---
 
-### What are the default measurements for Manim's scene?
+## What are the default measurements for Manim's scene?
 
 The scene measures 8 units in height and has a default ratio of 16:9,
 which means that it measures :math:`8 \cdot 16 / 9 = 14 + 2/9` units in width.
@@ -40,7 +40,7 @@ upper left corner of the scene has coordinates `[-7-1/9, 4, 0]`.
 
 ---
 
-### How do I find out which keyword arguments I can pass when creating a `Mobject`?
+## How do I find out which keyword arguments I can pass when creating a `Mobject`?
 
 Let us consider some specific example, like the {class}`.Circle` class. When looking
 at its documentation page, only two specific keyword arguments are listed
