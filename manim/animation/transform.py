@@ -61,14 +61,15 @@ class Transform(Animation):
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
 
-        if self.path_arc_centers is not None:
+        if path_func is not None:
+            self.path_func: Callable = path_func
+        elif self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
                 self.path_arc_centers,
                 self.path_arc_axis,
             )
 
-        self.path_func: Callable | None = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
