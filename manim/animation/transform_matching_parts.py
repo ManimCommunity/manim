@@ -153,7 +153,9 @@ class TransformMatchingAbstractBase(AnimationGroup):
         return shape_map
 
     def clean_up_from_scene(self, scene: Scene) -> None:
+        # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
+            # Skip interpolating FadeIn because fade_target is not a source.
             if not isinstance(anim, FadeIn):
                 anim.interpolate(0)
         scene.remove(self.mobject)
