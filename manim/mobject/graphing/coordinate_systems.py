@@ -1363,7 +1363,9 @@ class CoordinateSystem:
         samples
             The number of points to take the area under the graph.
         use_vectorized
-            Whether to use the vectorized version of the antiderivative.
+            Whether to use the vectorized version of the antiderivative. This means
+            to pass in the generated t value array to the function. Only use this if your function supports it.
+            Output should be a numpy array of shape ``[y_0,y_1,...]``
         kwargs
             Any valid keyword argument of :class:`~.ParametricFunction`.
 
