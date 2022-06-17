@@ -132,7 +132,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         else:
             anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs),
+                FadeIn(fade_target, target_position=fade_target, **kwargs),
             )
 
         super().__init__(*anims)
@@ -154,7 +154,8 @@ class TransformMatchingAbstractBase(AnimationGroup):
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:
-            anim.interpolate(0)
+            if not isinstance(anim, FadeIn):
+                anim.interpolate(0)
         scene.remove(self.mobject)
         scene.remove(self.to_remove)
         scene.add(self.to_add)
