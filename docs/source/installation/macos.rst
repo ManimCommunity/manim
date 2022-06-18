@@ -34,7 +34,7 @@ are required, namely:
 
 .. code-block:: bash
 
-   brew install cmake pango scipy
+   brew install pango scipy
 
 After all required dependencies are installed, simply run:
 
