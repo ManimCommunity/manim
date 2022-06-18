@@ -91,6 +91,7 @@ class Transform(Animation):
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
 
+        # path_func is a property a few lines below so it doesn't need to be set in any case
         if path_func is not None:
             self.path_func: Callable = path_func
         elif self.path_arc_centers is not None:
