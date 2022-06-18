@@ -281,7 +281,7 @@ Are you sure you want to continue? (y/n)""",
         ctx.invoke(write)
         from_path = Path.cwd() / "manim.cfg"
         to_path = directory_path / "manim.cfg"
-        
+
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")
