@@ -18,22 +18,42 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
+    from ..mobject.mobject import Mobject, VMobject
 
 
 class Homotopy(Animation):
+    """A Homotopy.
+
+    This is an animation transforming the points of a mobject according
+    to the specified transformation function. With the parameter :math:`t`
+    moving from 0 to 1 throughout the animation and :math:`(x, y, z)`
+    describing the coordinates of the point of a mobject,
+    the function passed to the ``homotopy`` keyword argument should
+    transform the tuple :math:`(x, y, z, t)` to :math:`(x', y', z')`,
+    the coordinates the original point is transformed to at time :math:`t`.
+
+    Parameters
+    ----------
+    homotopy
+        A function mapping :math:`(x, y, z, t)` to :math:`(x', y', z')`.
+    mobject
+        The mobject transformed under the given homotopy.
+    run_time
+        The run time of the animation.
+    apply_function_kwargs
+        Keyword arguments propagated to :meth:`.Mobject.apply_function`.
+    kwargs
+        Further keyword arguments passed to the parent class.
+    """
+
     def __init__(
         self,
         homotopy: Callable[[float, float, float, float], tuple[float, float, float]],
         mobject: Mobject,
         run_time: float = 3,
         apply_function_kwargs: dict[str, Any] | None = None,
-        **kwargs
+        **kwargs,
     ) -> None:
-        """
-        Homotopy is a function from
-        (x, y, z, t) to (x', y', z')
-        """
         self.homotopy = homotopy
         self.apply_function_kwargs = (
             apply_function_kwargs if apply_function_kwargs is not None else {}
@@ -94,7 +114,7 @@ class PhaseFlow(Animation):
         virtual_time: float = 1,
         suspend_mobject_updating: bool = False,
         rate_func: Callable[[float], float] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
@@ -102,7 +122,7 @@ class PhaseFlow(Animation):
             mobject,
             suspend_mobject_updating=suspend_mobject_updating,
             rate_func=rate_func,
-            **kwargs
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -135,7 +155,7 @@ class MoveAlongPath(Animation):
         mobject: Mobject,
         path: VMobject,
         suspend_mobject_updating: bool | None = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.path = path
         super().__init__(

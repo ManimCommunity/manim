@@ -6,11 +6,9 @@ from __future__ import annotations
 __all__ = ["print_family", "index_labels"]
 
 
-from colour import Color
-
 from manim.mobject.mobject import Mobject
+from manim.mobject.text.numbers import Integer
 
-from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
 
@@ -27,7 +25,7 @@ def index_labels(
     label_height: float = 0.15,
     background_stroke_width=5,
     background_stroke_color=BLACK,
-    **kwargs
+    **kwargs,
 ):
     r"""Returns a :class:`~.VGroup` of :class:`~.Integer` mobjects
     that shows the index of each submobject.

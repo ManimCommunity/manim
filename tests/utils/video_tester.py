@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 import os
-import pathlib
 from functools import wraps
+from pathlib import Path
 
 from manim import get_video_metadata
 
@@ -25,10 +25,7 @@ def check_video_data(path_control_data, path_video_gen):
         meta -> metadata
     """
     # movie file specification
-    path_sec_gen = os.path.join(
-        pathlib.Path(path_video_gen).parent.absolute(),
-        "sections",
-    )
+    path_sec_gen = Path(path_video_gen).parent.absolute() / "sections"
     control_data = load_control_data(path_control_data)
     movie_meta_gen = get_video_metadata(path_video_gen)
     movie_meta_exp = control_data["movie_metadata"]
@@ -51,8 +48,8 @@ def check_video_data(path_control_data, path_video_gen):
         raise AssertionError(f"Sections don't match:\n{mismatch}")
 
     # sections index file
-    scene_name = "".join(os.path.basename(path_video_gen).split(".")[:-1])
-    path_sec_index_gen = os.path.join(path_sec_gen, f"{scene_name}.json")
+    scene_name = Path(path_video_gen).stem
+    path_sec_index_gen = path_sec_gen / f"{scene_name}.json"
     sec_index_gen = get_section_index(path_sec_index_gen)
     sec_index_exp = control_data["section_index"]
 

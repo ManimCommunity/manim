@@ -9,13 +9,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import click
+import cloup
 
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import copy_template_files
 
 
-@click.command(
+@cloup.command(
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
     short_help="""Sets up a new project in current working directory with default settings.\n

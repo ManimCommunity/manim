@@ -42,6 +42,11 @@ from typing import Callable, Iterable, Optional, Tuple, Type, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.geometry.arc import Circle, Dot
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Rectangle
+from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
@@ -50,9 +55,7 @@ from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
-from ..mobject.geometry import Circle, Dot, Line, Rectangle
 from ..mobject.mobject import Mobject
-from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
@@ -339,10 +342,6 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
         )
 
 
-# TODO Decide what to do with this class:
-#   Remove?
-#   Deprecate?
-#   Keep and add docs?
 @deprecated(
     since="v0.15.0",
     until="v0.16.0",
@@ -536,10 +535,12 @@ class Wiggle(Animation):
     def get_scale_about_point(self) -> np.ndarray:
         if self.scale_about_point is None:
             return self.mobject.get_center()
+        return self.scale_about_point
 
     def get_rotate_about_point(self) -> np.ndarray:
         if self.rotate_about_point is None:
             return self.mobject.get_center()
+        return self.rotate_about_point
 
     def interpolate_submobject(
         self,

@@ -46,8 +46,25 @@ def bezier(
         function describing the bezier curve.
     """
     n = len(points) - 1
+
+    # Cubic Bezier curve
+    if n == 3:
+        return (
+            lambda t: (1 - t) ** 3 * points[0]
+            + 3 * t * (1 - t) ** 2 * points[1]
+            + 3 * (1 - t) * t**2 * points[2]
+            + t**3 * points[3]
+        )
+    # Quadratic Bezier curve
+    if n == 2:
+        return (
+            lambda t: (1 - t) ** 2 * points[0]
+            + 2 * t * (1 - t) * points[1]
+            + t**2 * points[2]
+        )
+
     return lambda t: sum(
-        ((1 - t) ** (n - k)) * (t ** k) * choose(n, k) * point
+        ((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point
         for k, point in enumerate(points)
     )
 
@@ -461,7 +478,7 @@ def proportions_along_bezier_curve_for_point(
 
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
-    roots = np.array([r.real for r in roots])
+    roots = np.array([r.real for r in roots if 0 <= r.real <= 1])
     return roots
 
 

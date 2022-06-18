@@ -369,7 +369,7 @@ class NamedShaderExample(Scene):
         shader = Shader(self.renderer.context, "manim_coords")
         shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
 
-        view_matrix = self.camera.get_view_matrix()
+        view_matrix = self.camera.formatted_view_matrix
         shader.set_uniform("u_model_view_matrix", view_matrix)
         shader.set_uniform(
             "u_projection_matrix",

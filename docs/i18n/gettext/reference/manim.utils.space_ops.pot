@@ -27,6 +27,7 @@ msgstr ""
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.compass_directions:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.complex_to_R3:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.earclip_triangulation:0
+#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.find_intersection:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.get_unit_normal:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.get_winding_number:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:0
@@ -35,7 +36,6 @@ msgstr ""
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.normalize:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.normalize_along_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.perpendicular_bisector:0
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_conjugate:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_from_angle_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_mult:0
@@ -72,7 +72,6 @@ msgstr ""
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.normalize:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.normalize_along_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.perpendicular_bisector:0
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_conjugate:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_from_angle_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_mult:0
@@ -110,7 +109,6 @@ msgstr ""
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.midpoint:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.normalize_along_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.perpendicular_bisector:0
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_conjugate:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_from_angle_axis:0
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_mult:0
@@ -209,7 +207,7 @@ msgid "A list of indices giving a triangulation of a polygon."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.find_intersection:1
-msgid "Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1.  (Or array of intersections from arrays of such points/directions). For 3d values, it returns the point on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
+msgid "Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1 (or array of intersections from arrays of such points/directions). For 3d values, it returns the point on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.get_unit_normal:1
@@ -229,15 +227,15 @@ msgid "The normal of the two vectors."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:1
-msgid "Returns intersection point of two lines, each defined with a pair of vectors determining the end points."
+msgid "Returns the intersection point of two lines, each defined by a pair of distinct points lying on the line."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:4
-msgid "The first line."
+msgid "A list of two points that determine the first line."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:5
-msgid "The second line."
+msgid "A list of two points that determine the second line."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:7
@@ -250,7 +248,7 @@ msgid "Raises"
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.line_intersection:10
-msgid "Error is produced if the two lines don't intersect with each other"
+msgid "Error is produced if the two lines don't intersect with each other     or if the coordinates don't lie on the xy-plane."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.midpoint:1
@@ -299,22 +297,6 @@ msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.perpendicular_bisector:10
 msgid "A list of two numpy array points that correspond to the ends of the perpendicular bisector"
-msgstr ""
-
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:1
-msgid "Projects a vector along a point."
-msgstr ""
-
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:3
-msgid "The point to be project from."
-msgstr ""
-
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:4
-msgid "The vector which has to projected."
-msgstr ""
-
-#: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.project_along_vector:6
-msgid "A dot product of the point and vector."
 msgstr ""
 
 #: ../../../manim/utils/space_ops.py:docstring of manim.utils.space_ops.quaternion_conjugate:1

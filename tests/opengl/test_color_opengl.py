@@ -4,8 +4,8 @@ import numpy as np
 from colour import Color
 
 from manim import BLACK, BLUE, GREEN, PURE_BLUE, PURE_GREEN, PURE_RED, Scene
-from manim.mobject.opengl_mobject import OpenGLMobject
-from manim.mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 
 def test_import_color(using_opengl_renderer):
@@ -18,15 +18,21 @@ def test_background_color(using_opengl_renderer):
     S = Scene()
     S.renderer.background_color = "#ff0000"
     S.renderer.update_frame(S)
-    assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 0, 0, 255]))
+    np.testing.assert_array_equal(
+        S.renderer.get_frame()[0, 0], np.array([255, 0, 0, 255])
+    )
 
     S.renderer.background_color = "#436f80"
     S.renderer.update_frame(S)
-    assert np.all(S.renderer.get_frame()[0, 0] == np.array([67, 111, 128, 255]))
+    np.testing.assert_array_equal(
+        S.renderer.get_frame()[0, 0], np.array([67, 111, 128, 255])
+    )
 
     S.renderer.background_color = "#fff"
     S.renderer.update_frame(S)
-    assert np.all(S.renderer.get_frame()[0, 0] == np.array([255, 255, 255, 255]))
+    np.testing.assert_array_equal(
+        S.renderer.get_frame()[0, 0], np.array([255, 255, 255, 255])
+    )
 
 
 def test_set_color(using_opengl_renderer):

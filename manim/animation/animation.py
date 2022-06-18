@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+
 from .. import config, logger
-from ..mobject import mobject, opengl_mobject
+from ..mobject import mobject
 from ..mobject.mobject import Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
+from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import smooth
 
 __all__ = ["Animation", "Wait", "override_animation"]
@@ -47,6 +49,13 @@ class Animation:
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
+
+
+    reverse_rate_function
+        Reverses the rate function of the animation. Setting ``reverse_rate_function``
+        does not have any effect on ``remover`` or ``introducer``. These need to be
+        set explicitly if an introducer-animation should be turned into a remover one
+        and vice versa.
     name
         The name of the animation. This gets displayed while rendering the animation.
         Defaults to <class-name>(<Mobject-name>).
@@ -121,6 +130,7 @@ class Animation:
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
+        reverse_rate_function: bool = False,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -132,6 +142,7 @@ class Animation:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
+        self.reverse_rate_function: bool = reverse_rate_function
         self.name: str | None = name
         self.remover: bool = remover
         self.introducer: bool = introducer
@@ -231,7 +242,10 @@ class Animation:
         """
         if scene is None:
             return
-        if self.is_introducer():
+        if (
+            self.is_introducer()
+            and self.mobject not in scene.get_mobject_family_members()
+        ):
             scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject:
@@ -356,7 +370,10 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return self.rate_func(value - lower)
+        if self.reverse_rate_function:
+            return self.rate_func(1 - (value - lower))
+        else:
+            return self.rate_func(value - lower)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> Animation:
@@ -449,12 +466,12 @@ class Animation:
         return self.remover
 
     def is_introducer(self) -> bool:
-        """Test if a the animation is a remover.
+        """Test if a the animation is an introducer.
 
         Returns
         -------
         bool
-            ``True`` if the animation is a remover, ``False`` otherwise.
+            ``True`` if the animation is an introducer, ``False`` otherwise.
         """
         return self.introducer
 
@@ -501,12 +518,41 @@ def prepare_animation(
 
 
 class Wait(Animation):
+    """A "no operation" animation.
+
+    Parameters
+    ----------
+    run_time
+        The amount of time that should pass.
+    stop_condition
+        A function without positional arguments that evaluates to a boolean.
+        The function is evaluated after every new frame has been rendered.
+        Playing the animation only stops after the return value is truthy.
+        Overrides the specified ``run_time``.
+    frozen_frame
+        Controls whether or not the wait animation is static, i.e., corresponds
+        to a frozen frame. If ``False`` is passed, the render loop still
+        progresses through the animation as usual and (among other things)
+        continues to call updater functions. If ``None`` (the default value),
+        the :meth:`.Scene.play` call tries to determine whether the Wait call
+        can be static or not itself via :meth:`.Scene.should_mobjects_update`.
+    kwargs
+        Keyword arguments to be passed to the parent class, :class:`.Animation`.
+    """
+
     def __init__(
-        self, run_time: float = 1, stop_condition=None, **kwargs
-    ):  # what is stop_condition?
+        self,
+        run_time: float = 1,
+        stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
+        **kwargs,
+    ):
+        if stop_condition and frozen_frame:
+            raise ValueError("A static Wait animation cannot have a stop condition.")
+
         self.duration: float = run_time
         self.stop_condition = stop_condition
-        self.is_static_wait: bool = False
+        self.is_static_wait: bool = frozen_frame
         super().__init__(None, run_time=run_time, **kwargs)
         # quick fix to work in opengl setting:
         self.mobject.shader_wrapper_list = []

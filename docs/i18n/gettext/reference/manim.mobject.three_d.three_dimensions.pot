@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:2
+msgid "three\\_dimensions"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions:1
+msgid "Three-dimensional mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "An arrow made out of a cylindrical line and a conical tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A circular cone."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A cylinder, defined by its height, radius and direction,"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A spherical dot."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A cylindrical line, for use in ThreeDScene."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A cuboid."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "A mobject representing a three-dimensional sphere."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.rst:40:<autosummary>:1
+msgid "Creates a Parametric Surface using a checkerboard pattern."
+msgstr ""
+
+

@@ -7,16 +7,18 @@ from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
+
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
@@ -33,7 +35,7 @@ class AnimationGroup(Animation):
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
@@ -176,7 +178,7 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -188,7 +190,7 @@ class LaggedStartMap(LaggedStart):
         mobject: Mobject,
         arg_creator: Callable[[Mobject], str] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         args_list = []
         for submob in mobject:

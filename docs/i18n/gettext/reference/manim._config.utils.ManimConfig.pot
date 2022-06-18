@@ -288,6 +288,11 @@ msgid "Main output directory."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.media_embed:1
+msgid "Embed videos in Jupyter notebook"
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.media_width:1
 msgid "Media width in Jupyter notebook"
 msgstr ""
@@ -491,7 +496,6 @@ msgstr ""
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_file:0
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.digest_parser:0
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.get_dir:0
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:0
 msgid "Returns"
 msgstr ""
 
@@ -669,7 +673,7 @@ msgstr ""
 msgid "The object to copy values from."
 msgstr ""
 
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:12
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.update:11
 msgid "If ``obj`` is a dict but contains keys that do not belong to any     config options."
 msgstr ""
 

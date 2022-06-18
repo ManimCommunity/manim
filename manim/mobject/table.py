@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""Mobjects representing tables.
 
 Examples
@@ -55,6 +53,8 @@ Examples
             self.add(g1, g2)
 """
 
+from __future__ import annotations
+
 __all__ = [
     "Table",
     "MathTable",
@@ -69,15 +69,18 @@ from typing import Callable, Iterable, Sequence
 
 from colour import Color
 
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon
+from manim.mobject.geometry.shape_matchers import BackgroundRectangle
+from manim.mobject.text.numbers import DecimalNumber, Integer
+from manim.mobject.text.tex_mobject import MathTex
+from manim.mobject.text.text_mobject import Paragraph
+
 from .. import config
+from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
-from ..animation.creation import *
-from ..constants import *
-from ..mobject.geometry import Line, Polygon
-from ..mobject.numbers import DecimalNumber, Integer
-from ..mobject.shape_matchers import BackgroundRectangle
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.text_mobject import Paragraph
+from ..animation.creation import Create, Write
+from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, YELLOW
 
@@ -894,11 +897,11 @@ class Table(VGroup):
 
     def create(
         self,
-        run_time: float = 1,
         lag_ratio: float = 1,
-        line_animation: Callable[[VGroup], None] = Create,
-        label_animation: Callable[[VGroup], None] = Write,
-        element_animation: Callable[[VGroup], None] = Create,
+        line_animation: Callable[[VMobject | VGroup], Animation] = Create,
+        label_animation: Callable[[VMobject | VGroup], Animation] = Write,
+        element_animation: Callable[[VMobject | VGroup], Animation] = Create,
+        entry_animation=FadeIn,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
@@ -939,27 +942,31 @@ class Table(VGroup):
                     self.play(table.create())
                     self.wait()
         """
-        if len(self.get_labels()) > 0:
-            animations = [
-                line_animation(
-                    VGroup(self.vertical_lines, self.horizontal_lines),
-                    run_time=run_time,
-                    **kwargs,
-                ),
-                label_animation(self.get_labels(), run_time=run_time, **kwargs),
-                element_animation(
-                    self.elements_without_labels, run_time=run_time, **kwargs
-                ),
+        animations: Sequence[Animation] = [
+            line_animation(
+                VGroup(self.vertical_lines, self.horizontal_lines),
+                **kwargs,
+            ),
+            element_animation(self.elements_without_labels.set_z_index(2), **kwargs),
+        ]
+
+        if self.get_labels():
+            animations += [
+                label_animation(self.get_labels(), **kwargs),
             ]
-        else:
-            animations = [
-                line_animation(
-                    VGroup(self.vertical_lines, self.horizontal_lines),
-                    run_time=run_time,
-                    **kwargs,
-                ),
-                element_animation(self.elements, run_time=run_time, **kwargs),
-            ]
+
+        if self.get_entries():
+            for entry in self.elements_without_labels:
+                try:
+                    animations += [
+                        entry_animation(
+                            entry.background_rectangle,
+                            **kwargs,
+                        )
+                    ]
+                except AttributeError:
+                    continue
+
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
     def scale(self, scale_factor: float, **kwargs):
@@ -972,7 +979,7 @@ class Table(VGroup):
 
 
 class MathTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with LaTeX.
+    """A specialized :class:`~.Table` mobject for use with LaTeX.
 
     Examples
     --------
@@ -1019,7 +1026,7 @@ class MathTable(Table):
 
 
 class MobjectTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Mobject`.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.Mobject`.
 
     Examples
     --------
@@ -1069,7 +1076,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.Integer`.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------
@@ -1118,7 +1125,7 @@ class IntegerTable(Table):
 
 
 class DecimalTable(Table):
-    """A specialized :class:`~.Table` mobject for use with with :class:`~.DecimalNumber` to display decimal entries.
+    """A specialized :class:`~.Table` mobject for use with :class:`~.DecimalNumber` to display decimal entries.
 
     Examples
     --------

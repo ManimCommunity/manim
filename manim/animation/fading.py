@@ -20,10 +20,9 @@ __all__ = [
     "FadeIn",
 ]
 
-
 import numpy as np
 
-from manim.mobject.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
@@ -55,7 +54,7 @@ class _Fade(Transform):
         shift: np.ndarray | None = None,
         target_position: np.ndarray | Mobject | None = None,
         scale: float = 1,
-        **kwargs
+        **kwargs,
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
