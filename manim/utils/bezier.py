@@ -478,7 +478,7 @@ def proportions_along_bezier_curve_for_point(
 
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
-    roots = np.array([r.real for r in roots])
+    roots = np.array([r.real for r in roots if 0 <= r.real <= 1])
     return roots
 
 
