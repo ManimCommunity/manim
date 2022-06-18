@@ -262,7 +262,7 @@ def show():
 @click.pass_context
 def export(ctx, directory):
     directory_path = Path(directory)
-    if directory_path.absolute == Path(Path.cwd()).absolute:
+    if directory_path.absolute == Path.cwd().absolute:
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
