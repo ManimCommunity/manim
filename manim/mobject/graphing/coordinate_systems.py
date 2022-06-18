@@ -56,8 +56,7 @@ if TYPE_CHECKING:
 
 
 class CoordinateSystem:
-    r"""
-    Abstract class for Axes and NumberPlane
+    r"""Abstract base class for Axes and NumberPlane.
 
     Examples
     --------
@@ -195,11 +194,11 @@ class CoordinateSystem:
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
     def c2p(self, *coords):
-        """Abbreviation for coords_to_point"""
+        """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
     def p2c(self, point):
-        """Abbreviation for point_to_coords"""
+        """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
     def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
@@ -370,7 +369,9 @@ class CoordinateSystem:
         x_label: float | str | Mobject = "x",
         y_label: float | str | Mobject = "y",
     ) -> VGroup:
-        """Defines labels for the x_axis and y_axis of the graph. For increased control over the position of the labels,
+        """Defines labels for the x_axis and y_axis of the graph.
+
+        For increased control over the position of the labels,
         use :meth:`get_x_axis_label` and :meth:`get_y_axis_label`.
 
         Parameters
@@ -440,7 +441,7 @@ class CoordinateSystem:
             ax = Axes(x_range=[0, 7])
             x_pos = [x for x in range(1, 8)]
 
-            # strings are automatically converted into a `Tex` mobject.
+            # strings are automatically converted into a Tex mobject.
             x_vals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             x_dict = dict(zip(x_pos, x_vals))
             ax.add_coordinates(x_dict)
@@ -1696,10 +1697,10 @@ class CoordinateSystem:
 
         Examples
         --------
-        .. manim:: T_labelExample
+        .. manim:: TLabelExample
             :save_last_frame:
 
-            class T_labelExample(Scene):
+            class TLabelExample(Scene):
                 def construct(self):
                     # defines the axes and linear function
                     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
@@ -2314,8 +2315,8 @@ class NumberPlane(Axes):
 
 
     .. note::
-        If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the ``unit_size`` to 1.
+        If :attr:`x_length` or :attr:`y_length` are not defined, they are automatically calculated such that
+        one unit on each axis is one Manim unit long.
 
     Examples
     --------
@@ -2325,8 +2326,6 @@ class NumberPlane(Axes):
         class NumberPlaneExample(Scene):
             def construct(self):
                 number_plane = NumberPlane(
-                    x_range=[-10, 10, 1],
-                    y_range=[-10, 10, 1],
                     background_line_style={
                         "stroke_color": TEAL,
                         "stroke_width": 4,
@@ -2334,6 +2333,27 @@ class NumberPlane(Axes):
                     }
                 )
                 self.add(number_plane)
+
+    .. manim:: NumberPlaneScaled
+        :save_last_frame:
+
+        class NumberPlaneScaled(Scene):
+            def construct(self):
+                number_plane = NumberPlane(
+                    x_range=(-4, 11, 1),
+                    y_range=(-3, 3, 1),
+                    x_length=5,
+                    y_length=2,
+                ).move_to(LEFT*3)
+
+                number_plane_scaled_y = NumberPlane(
+                    x_range=(-4, 11, 1),
+                    x_length=5,
+                    y_length=4,
+                ).move_to(RIGHT*3)
+
+                self.add(number_plane)
+                self.add(number_plane_scaled_y)
     """
 
     def __init__(

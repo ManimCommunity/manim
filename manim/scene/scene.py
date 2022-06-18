@@ -305,7 +305,7 @@ class Scene:
     ) -> None:
         """Create separation here; the last section gets finished and a new one gets created.
         ``skip_animations`` skips the rendering of all animations in this section.
-        Refer to :doc:`the documentation</tutorials/a_deeper_look>` on how to use sections.
+        Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
         self.renderer.file_writer.next_section(name, type, skip_animations)
 
@@ -1008,6 +1008,24 @@ class Scene:
             All other keywords are passed to the renderer.
 
         """
+        # Make sure this is running on the main thread
+        if threading.current_thread().name != "MainThread":
+            kwargs.update(
+                {
+                    "subcaption": subcaption,
+                    "subcaption_duration": subcaption_duration,
+                    "subcaption_offset": subcaption_offset,
+                }
+            )
+            self.queue.put(
+                (
+                    "play",
+                    args,
+                    kwargs,
+                )
+            )
+            return
+
         start_time = self.renderer.time
         self.renderer.play(self, *args, **kwargs)
         run_time = self.renderer.time - start_time
