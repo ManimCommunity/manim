@@ -68,6 +68,30 @@ def test_get_y_axis_label(scene):
 
 
 @frames_comparison
+def test_axis_tip_default_width_height(scene):
+    ax = Axes(
+        x_range=(0, 4),
+        y_range=(0, 4),
+        axis_config={"include_numbers": True, "include_tip": True},
+    )
+
+    scene.add(ax)
+
+
+@frames_comparison
+def test_axis_tip_custom_width_height(scene):
+    ax = Axes(
+        x_range=(0, 4),
+        y_range=(0, 4),
+        axis_config={"include_numbers": True, "include_tip": True},
+        x_axis_config={"tip_width": 1, "tip_height": 0.1},
+        y_axis_config={"tip_width": 0.1, "tip_height": 1},
+    )
+
+    scene.add(ax)
+
+
+@frames_comparison
 def test_plot_derivative_graph(scene):
     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 

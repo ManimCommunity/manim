@@ -7,16 +7,18 @@ from typing import TYPE_CHECKING, Callable, Sequence
 
 import numpy as np
 
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup
+
 from .._config import config
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
+
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]

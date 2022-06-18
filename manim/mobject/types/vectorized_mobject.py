@@ -20,10 +20,15 @@ import colour
 import numpy as np
 from PIL.Image import Image
 
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.three_d.three_d_utils import (
+    get_3d_vmob_gradient_start_and_end_points,
+)
+
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
@@ -36,8 +41,6 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.deprecation import deprecated
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.space_ops import rotate_vector, shoelace_direction
-from ..opengl_compatibility import ConvertToOpenGL
-from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -159,8 +162,8 @@ class VMobject(Mobject):
         one color was passed in, a second slightly light color
         will automatically be added for the gradient
         """
-        colors = list(tuplify(color))
-        opacities = list(tuplify(opacity))
+        colors = [c if (c is not None) else BLACK for c in tuplify(color)]
+        opacities = [o if (o is not None) else 0 for o in tuplify(opacity)]
         rgbas = np.array(
             [color_to_rgba(c, o) for c, o in zip(*make_even(colors, opacities))],
         )
@@ -174,9 +177,7 @@ class VMobject(Mobject):
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else BLACK
-        passed_opacity = opacity if (opacity is not None) else 0
-        rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
+        rgbas = self.generate_rgbas_array(color, opacity)
         if not hasattr(self, array_name):
             setattr(self, array_name, rgbas)
             return self
@@ -588,10 +589,6 @@ class VMobject(Mobject):
     def set_points(self, points):
         self.points = np.array(points)
         return self
-
-    @deprecated(since="0.11.0", replacement="self.points")
-    def get_points(self):
-        return np.array(self.points)
 
     def set_anchors_and_handles(
         self,
@@ -1105,7 +1102,7 @@ class VMobject(Mobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+        norms = np.linalg.norm(diffs, axis=1)
 
         return norms
 
@@ -1334,7 +1331,7 @@ class VMobject(Mobject):
         return self.points[0 :: self.n_points_per_cubic_curve]
 
     def get_end_anchors(self) -> np.ndarray:
-        """Return the starting anchors of the bezier curves.
+        """Return the end anchors of the bezier curves.
 
         Returns
         -------
@@ -2205,7 +2202,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import Tex
+            from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)

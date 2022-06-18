@@ -1,0 +1,80 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.scale.LogBase.rst:2
+msgid "LogBase"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.scale.LogBase.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.scale.LogBase``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:1
+msgid "Bases: :py:class:`manim.mobject.graphing.scale._ScaleBase`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:1
+msgid "Scale for logarithmic graphs/functions."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:0
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:0
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:0
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.inverse_function:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:3
+msgid "The base of the log, by default 10."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:4
+msgid "For use with :class:`~.Axes`: Whetherer or not to include ``LaTeX`` axis labels, by default True."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase:9
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.scale.LogBase.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:1:<autosummary>:1
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:1
+msgid "Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:1:<autosummary>:1
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:1
+msgid "Produces custom :class:`~.Integer` labels in the form of ``10^2``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:1:<autosummary>:1
+msgid "Inverse of ``function``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.function:0
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:0
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.inverse_function:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:3
+msgid "The iterable of values used to create the labels. Determines the exponent."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:4
+msgid "The number of decimal places to include in the exponent"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/scale.py:docstring of manim.mobject.graphing.scale.LogBase.get_custom_labels:5
+msgid "Additional arguments to be passed to :class:`~.Integer`."
+msgstr ""
+
+

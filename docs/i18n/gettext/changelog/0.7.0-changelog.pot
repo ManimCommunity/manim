@@ -240,7 +240,7 @@ msgid "Breaking changes"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:92
-msgid "`#1521 <https://github.com/ManimCommunity/manim/pull/1521>`__: Improve :class:`~.Animation` docs"
+msgid ":pr:`1521`: Improve :class:`~.Animation` docs"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:91
@@ -252,7 +252,7 @@ msgid "Unify the signature of ``get_all_mobjects``. Now it always returns a sequ
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:95
-msgid "`#1470 <https://github.com/ManimCommunity/manim/pull/1470>`__: Drop support for Python 3.6"
+msgid ":pr:`1470`: Drop support for Python 3.6"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:95
@@ -264,11 +264,11 @@ msgid "Highlights"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:100
-msgid "`#1447 <https://github.com/ManimCommunity/manim/pull/1447>`__: Added :class:`~.PolarPlane` for polar coordinates."
+msgid ":pr:`1447`: Added :class:`~.PolarPlane` for polar coordinates."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:109
-msgid "`#1490 <https://github.com/ManimCommunity/manim/pull/1490>`__: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`"
+msgid ":pr:`1490`: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:104
@@ -296,7 +296,7 @@ msgid "Add :class:`~.Star`."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:112
-msgid "`#1462 <https://github.com/ManimCommunity/manim/pull/1462>`__: OpenGL: Added :class:`~.Shader`, :class:`~.Mesh`, and :class:`~.FullScreenQuad`"
+msgid ":pr:`1462`: OpenGL: Added :class:`~.Shader`, :class:`~.Mesh`, and :class:`~.FullScreenQuad`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:112
@@ -304,7 +304,7 @@ msgid "Add Shader and Mesh objects"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:117
-msgid "`#1418 <https://github.com/ManimCommunity/manim/pull/1418>`__: Added project management commands"
+msgid ":pr:`1418`: Added project management commands"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:115
@@ -324,7 +324,7 @@ msgid "Deprecated classes and functions"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:123
-msgid "`#1598 <https://github.com/ManimCommunity/manim/pull/1598>`__: Update examples to use :class:`~.Axes` and deprecate :class:`~.GraphScene`"
+msgid ":pr:`1598`: Update examples to use :class:`~.Axes` and deprecate :class:`~.GraphScene`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:123
@@ -332,7 +332,7 @@ msgid ":class:`~.GraphScene` has been deprecated and its functionality has been 
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:126
-msgid "`#1454 <https://github.com/ManimCommunity/manim/pull/1454>`__: Fading module enhancements"
+msgid ":pr:`1454`: Fading module enhancements"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:126
@@ -340,7 +340,7 @@ msgid "Moved functionality of all Fading classes to :class:`~.FadeIn` and :class
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:128
-msgid "`#1375 <https://github.com/ManimCommunity/manim/pull/1375>`__: Deleted the deprecated ``ShowCreation`` in favor of :class:`~.Create`"
+msgid ":pr:`1375`: Deleted the deprecated ``ShowCreation`` in favor of :class:`~.Create`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:132
@@ -348,15 +348,15 @@ msgid "New features"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:134
-msgid "`#1566 <https://github.com/ManimCommunity/manim/pull/1566>`__: Added the ability to add gridlines to a :class:`~.Rectangle`"
+msgid ":pr:`1566`: Added the ability to add gridlines to a :class:`~.Rectangle`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:137
-msgid "`#1548 <https://github.com/ManimCommunity/manim/pull/1548>`__: Added :class:`~.ArcBrace`, a subclass of :class:`~.Brace`."
+msgid ":pr:`1548`: Added :class:`~.ArcBrace`, a subclass of :class:`~.Brace`."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:141
-msgid "`#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)"
+msgid ":pr:`1559`: Update VGroup to support item assignment (#1530)"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:141
@@ -364,15 +364,15 @@ msgid "Support indexed item-assignment for VGroup"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:143
-msgid "`#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation"
+msgid ":pr:`1518`: Allow fading multiple Mobjects in one Animation"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:146
-msgid "`#1422 <https://github.com/ManimCommunity/manim/pull/1422>`__: Added :func:`~.override_animation` decorator"
+msgid ":pr:`1422`: Added :func:`~.override_animation` decorator"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:154
-msgid "`#1504 <https://github.com/ManimCommunity/manim/pull/1504>`__: Color module enhancements"
+msgid ":pr:`1504`: Color module enhancements"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:150
@@ -396,11 +396,11 @@ msgid "Replaced color example in the docs. It can now be used as a quick referen
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:156
-msgid "`#1272 <https://github.com/ManimCommunity/manim/pull/1272>`__: Implement metaclass approach in geometry module to make mobjects compatible with cairo and opengl rendering"
+msgid ":pr:`1272`: Implement metaclass approach in geometry module to make mobjects compatible with cairo and opengl rendering"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:160
-msgid "`#1404 <https://github.com/ManimCommunity/manim/pull/1404>`__: Added two deprecation decorators"
+msgid ":pr:`1404`: Added two deprecation decorators"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:160
@@ -412,19 +412,19 @@ msgid "Enhancements"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:165
-msgid "`#1572 <https://github.com/ManimCommunity/manim/pull/1572>`__: OpenGL compatibility via metaclass: :class:`~.TracedPath`, :class:`~.ParametricFunction`, :class:`~.Brace`, :class:`~.VGroup`"
+msgid ":pr:`1572`: OpenGL compatibility via metaclass: :class:`~.TracedPath`, :class:`~.ParametricFunction`, :class:`~.Brace`, :class:`~.VGroup`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:168
-msgid "`#1472 <https://github.com/ManimCommunity/manim/pull/1472>`__: Porting methods from :class:`~.GraphScene` to :class:`~.CoordinateSystem`"
+msgid ":pr:`1472`: Porting methods from :class:`~.GraphScene` to :class:`~.CoordinateSystem`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:171
-msgid "`#1589 <https://github.com/ManimCommunity/manim/pull/1589>`__: OpenGL compatibility via metaclass: :class:`~.ValueTracker`"
+msgid ":pr:`1589`: OpenGL compatibility via metaclass: :class:`~.ValueTracker`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:175
-msgid "`#1564 <https://github.com/ManimCommunity/manim/pull/1564>`__: Add extra notes for TeX compilation errors"
+msgid ":pr:`1564`: Add extra notes for TeX compilation errors"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:175
@@ -432,11 +432,11 @@ msgid "Add hint to use custom ``TexTemplate`` on TeX compilation errors"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:177
-msgid "`#1584 <https://github.com/ManimCommunity/manim/pull/1584>`__: Added a check for ``0`` in :meth:`~.round_corners`"
+msgid ":pr:`1584`: Added a check for ``0`` in :meth:`~.round_corners`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:181
-msgid "`#1586 <https://github.com/ManimCommunity/manim/pull/1586>`__: Add OpenGLMobject support to all ``isinstance`` occurrences"
+msgid ":pr:`1586`: Add OpenGLMobject support to all ``isinstance`` occurrences"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:181
@@ -444,11 +444,11 @@ msgid "This PR increases the support for OpenGL in the remaining animation class
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:183
-msgid "`#1577 <https://github.com/ManimCommunity/manim/pull/1577>`__: Added new metaclass ConvertToOpenGL (replacing MetaVMobject), restore IntelliSense"
+msgid ":pr:`1577`: Added new metaclass ConvertToOpenGL (replacing MetaVMobject), restore IntelliSense"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:187
-msgid "`#1562 <https://github.com/ManimCommunity/manim/pull/1562>`__: Improved VectorField's Nudge Accuracy Per Step"
+msgid ":pr:`1562`: Improved VectorField's Nudge Accuracy Per Step"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:187
@@ -456,11 +456,11 @@ msgid "Implemented the Runge-Kutta algorithm in VectorField's nudge function. Th
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:189
-msgid "`#1480 <https://github.com/ManimCommunity/manim/pull/1480>`__: Add logging info to tex errors"
+msgid ":pr:`1480`: Add logging info to tex errors"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:194
-msgid "`#1567 <https://github.com/ManimCommunity/manim/pull/1567>`__: Compatibility Fixes with ManimPango v0.3.0"
+msgid ":pr:`1567`: Compatibility Fixes with ManimPango v0.3.0"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:193
@@ -472,19 +472,19 @@ msgid "Show errors from Pango when Markup isn't correct"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:196
-msgid "`#1512 <https://github.com/ManimCommunity/manim/pull/1512>`__: OpenGL compatibility via metaclass: graph"
+msgid ":pr:`1512`: OpenGL compatibility via metaclass: graph"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:199
-msgid "`#1511 <https://github.com/ManimCommunity/manim/pull/1511>`__: OpenGL compatibility via metaclass: svg_mobject, text_mobject, tex_mobject"
+msgid ":pr:`1511`: OpenGL compatibility via metaclass: svg_mobject, text_mobject, tex_mobject"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:202
-msgid "`#1502 <https://github.com/ManimCommunity/manim/pull/1502>`__: Added ``center`` parameter to :class:`~.Sphere` and ``point`` parameter to :class:`~.Dot3D`"
+msgid ":pr:`1502`: Added ``center`` parameter to :class:`~.Sphere` and ``point`` parameter to :class:`~.Dot3D`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:206
-msgid "`#1486 <https://github.com/ManimCommunity/manim/pull/1486>`__: Update of ``rate_functions``"
+msgid ":pr:`1486`: Update of ``rate_functions``"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:206
@@ -492,11 +492,11 @@ msgid "Changed the picture for the non standard rate functions."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:208
-msgid "`#1495 <https://github.com/ManimCommunity/manim/pull/1495>`__: Ported value_tracker to OpenGL"
+msgid ":pr:`1495`: Ported value_tracker to OpenGL"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:212
-msgid "`#1382 <https://github.com/ManimCommunity/manim/pull/1382>`__: Expand documentation, testing, and functionality of ValueTrackers; remove ExponentialValueTracker"
+msgid ":pr:`1382`: Expand documentation, testing, and functionality of ValueTrackers; remove ExponentialValueTracker"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:212
@@ -504,7 +504,7 @@ msgid "Added more documentation and inline operators to ValueTracker and Complex
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:214
-msgid "`#1475 <https://github.com/ManimCommunity/manim/pull/1475>`__: Add SVG elliptical arc support"
+msgid ":pr:`1475`: Add SVG elliptical arc support"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:218
@@ -512,11 +512,11 @@ msgid "Fixed bugs"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:220
-msgid "`#1574 <https://github.com/ManimCommunity/manim/pull/1574>`__: Fixed error when processing SVG with omitted elliptical arc command"
+msgid ":pr:`1574`: Fixed error when processing SVG with omitted elliptical arc command"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:226
-msgid "`#1596 <https://github.com/ManimCommunity/manim/pull/1596>`__: Fix indexing for non-whitespace tex arg separator"
+msgid ":pr:`1596`: Fix indexing for non-whitespace tex arg separator"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:224
@@ -528,19 +528,19 @@ msgid "Fix issue when setting the arg_separator of a Tex object as a non-whitesp
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:228
-msgid "`#1588 <https://github.com/ManimCommunity/manim/pull/1588>`__: Fixed multiple animations being saved in the same file"
+msgid ":pr:`1588`: Fixed multiple animations being saved in the same file"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:231
-msgid "`#1571 <https://github.com/ManimCommunity/manim/pull/1571>`__: Fix tests after introducing parallelization"
+msgid ":pr:`1571`: Fix tests after introducing parallelization"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:234
-msgid "`#1545 <https://github.com/ManimCommunity/manim/pull/1545>`__: Fix outdated parameters for :class:`LinearTransformationScene` and add an example + typing."
+msgid ":pr:`1545`: Fix outdated parameters for :class:`LinearTransformationScene` and add an example + typing."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:239
-msgid "`#1513 <https://github.com/ManimCommunity/manim/pull/1513>`__: Fixed rotation of gradients while rotating a VMobject"
+msgid ":pr:`1513`: Fixed rotation of gradients while rotating a VMobject"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:238
@@ -552,15 +552,15 @@ msgid "Added ``rotate_sheen_direction()`` method in VMobject"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:241
-msgid "`#1570 <https://github.com/ManimCommunity/manim/pull/1570>`__: Output errors to stderr"
+msgid ":pr:`1570`: Output errors to stderr"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:244
-msgid "`#1560 <https://github.com/ManimCommunity/manim/pull/1560>`__: Declare ``*.npz`` ``*.wav`` ``*.png`` as binary in ``.gitattributes``"
+msgid ":pr:`1560`: Declare ``*.npz`` ``*.wav`` ``*.png`` as binary in ``.gitattributes``"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:248
-msgid "`#1211 <https://github.com/ManimCommunity/manim/pull/1211>`__: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene"
+msgid ":pr:`1211`: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:248
@@ -568,15 +568,15 @@ msgid "Refactored internal scene-caching mechanism and fixed bug when an inconsi
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:250
-msgid "`#1527 <https://github.com/ManimCommunity/manim/pull/1527>`__: Improved handling of substring isolation within sqrt, and fixed a bug with transform_mismatch for the matching shape transforms"
+msgid ":pr:`1527`: Improved handling of substring isolation within sqrt, and fixed a bug with transform_mismatch for the matching shape transforms"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:253
-msgid "`#1526 <https://github.com/ManimCommunity/manim/pull/1526>`__: Fix fading"
+msgid ":pr:`1526`: Fix fading"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:256
-msgid "`#1523 <https://github.com/ManimCommunity/manim/pull/1523>`__: Fix multiple FadeIn / Out only working on VMobjects"
+msgid ":pr:`1523`: Fix multiple FadeIn / Out only working on VMobjects"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:260
@@ -584,15 +584,15 @@ msgid "Documentation-related changes"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:262
-msgid "`#1599 <https://github.com/ManimCommunity/manim/pull/1599>`__: Added example for :class:`~.Annulus`"
+msgid ":pr:`1599`: Added example for :class:`~.Annulus`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:265
-msgid "`#1415 <https://github.com/ManimCommunity/manim/pull/1415>`__: New example for gallery and some docs refinements"
+msgid ":pr:`1415`: New example for gallery and some docs refinements"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:271
-msgid "`#1509 <https://github.com/ManimCommunity/manim/pull/1509>`__: Copyedited Documentation"
+msgid ":pr:`1509`: Copyedited Documentation"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:269
@@ -600,7 +600,7 @@ msgid "Added a link to Manim Community GitHub page in ``for_dev.rst``. Fixed :me
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:274
-msgid "`#1384 <https://github.com/ManimCommunity/manim/pull/1384>`__: Added typings to space_ops.py"
+msgid ":pr:`1384`: Added typings to space_ops.py"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:274
@@ -608,67 +608,67 @@ msgid "Added Typehints to most of the functions"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:276
-msgid "`#1500 <https://github.com/ManimCommunity/manim/pull/1500>`__: Example for :meth:`~.apply_complex_function`"
+msgid ":pr:`1500`: Example for :meth:`~.apply_complex_function`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:279
-msgid "`#1551 <https://github.com/ManimCommunity/manim/pull/1551>`__: Fixed the typo for Admonitions"
+msgid ":pr:`1551`: Fixed the typo for Admonitions"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:282
-msgid "`#1550 <https://github.com/ManimCommunity/manim/pull/1550>`__: Restructuring of Contribution Section"
+msgid ":pr:`1550`: Restructuring of Contribution Section"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:285
-msgid "`#1541 <https://github.com/ManimCommunity/manim/pull/1541>`__: Fixing broken links and other minor doc things"
+msgid ":pr:`1541`: Fixing broken links and other minor doc things"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:288
-msgid "`#1516 <https://github.com/ManimCommunity/manim/pull/1516>`__: Update docs to use ``t_range`` instead of ``t_min`` and ``t_max`` in :class:`~.ParametricFunction`"
+msgid ":pr:`1516`: Update docs to use ``t_range`` instead of ``t_min`` and ``t_max`` in :class:`~.ParametricFunction`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:291
-msgid "`#1508 <https://github.com/ManimCommunity/manim/pull/1508>`__: Update troubleshooting docs"
+msgid ":pr:`1508`: Update troubleshooting docs"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:294
-msgid "`#1485 <https://github.com/ManimCommunity/manim/pull/1485>`__: Added :class:`~.Title` example for the docs"
+msgid ":pr:`1485`: Added :class:`~.Title` example for the docs"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:297
-msgid "`#1439 <https://github.com/ManimCommunity/manim/pull/1439>`__: Cleaning ``Sequence`` typehints"
+msgid ":pr:`1439`: Cleaning ``Sequence`` typehints"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:300
-msgid "`#1440 <https://github.com/ManimCommunity/manim/pull/1440>`__: Added Scoop installation docs (Windows)"
+msgid ":pr:`1440`: Added Scoop installation docs (Windows)"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:303
-msgid "`#1452 <https://github.com/ManimCommunity/manim/pull/1452>`__: Refine typehints at :class:`~.Angle`"
+msgid ":pr:`1452`: Refine typehints at :class:`~.Angle`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:306
-msgid "`#1458 <https://github.com/ManimCommunity/manim/pull/1458>`__: Refine docs of :class:`~.Text` ( add ``disable_ligatures=True`` for t2c)"
+msgid ":pr:`1458`: Refine docs of :class:`~.Text` ( add ``disable_ligatures=True`` for t2c)"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:309
-msgid "`#1449 <https://github.com/ManimCommunity/manim/pull/1449>`__: Added :class:`~.PointCloudDot` example"
+msgid ":pr:`1449`: Added :class:`~.PointCloudDot` example"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:312
-msgid "`#1473 <https://github.com/ManimCommunity/manim/pull/1473>`__: Added easy example for :meth:`~.arrange_in_grid`"
+msgid ":pr:`1473`: Added easy example for :meth:`~.arrange_in_grid`"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:315
-msgid "`#1402 <https://github.com/ManimCommunity/manim/pull/1402>`__: Added typestring parser checker"
+msgid ":pr:`1402`: Added typestring parser checker"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:318
-msgid "`#1451 <https://github.com/ManimCommunity/manim/pull/1451>`__: Reduce complexity of AngleExample"
+msgid ":pr:`1451`: Reduce complexity of AngleExample"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:322
-msgid "`#1441 <https://github.com/ManimCommunity/manim/pull/1441>`__: Add inheritance diagrams to reference page"
+msgid ":pr:`1441`: Add inheritance diagrams to reference page"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:322
@@ -676,11 +676,11 @@ msgid "Added inheritance diagrams to the reference page as a quick navigation me
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:324
-msgid "`#1457 <https://github.com/ManimCommunity/manim/pull/1457>`__: Fixing broken doc links"
+msgid ":pr:`1457`: Fixing broken doc links"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:327
-msgid "`#1445 <https://github.com/ManimCommunity/manim/pull/1445>`__: Remove $ from tutorial commands"
+msgid ":pr:`1445`: Remove $ from tutorial commands"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:331
@@ -688,7 +688,7 @@ msgid "Changes concerning the testing system"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:333
-msgid "`#1556 <https://github.com/ManimCommunity/manim/pull/1556>`__: Try pytest-xdist for parallelization in tests"
+msgid ":pr:`1556`: Try pytest-xdist for parallelization in tests"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:337
@@ -696,7 +696,7 @@ msgid "Changes to our development infrastructure"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:340
-msgid "`#1505 <https://github.com/ManimCommunity/manim/pull/1505>`__: Add docs reference to PR template"
+msgid ":pr:`1505`: Add docs reference to PR template"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:340
@@ -704,27 +704,27 @@ msgid "Added documentation link to the Pull Request Template."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:342
-msgid "`#1499 <https://github.com/ManimCommunity/manim/pull/1499>`__: Updated Discord links in the docs to point towards a standardized redirect"
+msgid ":pr:`1499`: Updated Discord links in the docs to point towards a standardized redirect"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:345
-msgid "`#1461 <https://github.com/ManimCommunity/manim/pull/1461>`__: Build the docs - Logging"
+msgid ":pr:`1461`: Build the docs - Logging"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:348
-msgid "`#1481 <https://github.com/ManimCommunity/manim/pull/1481>`__: pyproject.toml: poetry_core -> poetry-core"
+msgid ":pr:`1481`: pyproject.toml: poetry_core -> poetry-core"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:351
-msgid "`#1477 <https://github.com/ManimCommunity/manim/pull/1477>`__: Update RDT sphinx package to version 3.5.3"
+msgid ":pr:`1477`: Update RDT sphinx package to version 3.5.3"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:354
-msgid "`#1460 <https://github.com/ManimCommunity/manim/pull/1460>`__: Create CONTRIBUTING.md"
+msgid ":pr:`1460`: Create CONTRIBUTING.md"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:358
-msgid "`#1453 <https://github.com/ManimCommunity/manim/pull/1453>`__: manim_directive: fix image links in docs - Windows"
+msgid ":pr:`1453`: manim_directive: fix image links in docs - Windows"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:358
@@ -736,11 +736,11 @@ msgid "Code quality improvements and similar refactors"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:363
-msgid "`#1465 <https://github.com/ManimCommunity/manim/pull/1465>`__: Added typings and description to some functions in :mod:`~.coordinate_systems`."
+msgid ":pr:`1465`: Added typings and description to some functions in :mod:`~.coordinate_systems`."
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:367
-msgid "`#1552 <https://github.com/ManimCommunity/manim/pull/1552>`__: Removed unwanted parameters in geometry"
+msgid ":pr:`1552`: Removed unwanted parameters in geometry"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:367
@@ -748,31 +748,31 @@ msgid "Removed ``anchors_span_full_range``, ``close_new_points``, ``anchors_span
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:369
-msgid "`#1597 <https://github.com/ManimCommunity/manim/pull/1597>`__: Removed hilite_me and insert_line_numbers_in_html from global name space"
+msgid ":pr:`1597`: Removed hilite_me and insert_line_numbers_in_html from global name space"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:372
-msgid "`#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests"
+msgid ":pr:`1535`: Update dependencies and fix tests"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:375
-msgid "`#1544 <https://github.com/ManimCommunity/manim/pull/1544>`__: Adding spell checker as a pre-commit hook"
+msgid ":pr:`1544`: Adding spell checker as a pre-commit hook"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:378
-msgid "`#1542 <https://github.com/ManimCommunity/manim/pull/1542>`__: Swapping a pango markup link in docs"
+msgid ":pr:`1542`: Swapping a pango markup link in docs"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:381
-msgid "`#1531 <https://github.com/ManimCommunity/manim/pull/1531>`__: Don't use deprecated methods in deprecation.py"
+msgid ":pr:`1531`: Don't use deprecated methods in deprecation.py"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:384
-msgid "`#1492 <https://github.com/ManimCommunity/manim/pull/1492>`__: Remove stray print statements introduced in #1404"
+msgid ":pr:`1492`: Remove stray print statements introduced in #1404"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:387
-msgid "`#1471 <https://github.com/ManimCommunity/manim/pull/1471>`__: Fix Some Warnings from lgtm"
+msgid ":pr:`1471`: Fix Some Warnings from lgtm"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:391
@@ -780,7 +780,7 @@ msgid "Changes that needed to be reverted again"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:393
-msgid "`#1606 <https://github.com/ManimCommunity/manim/pull/1606>`__: Bring back ``DARK_BLUE``"
+msgid ":pr:`1606`: Bring back ``DARK_BLUE``"
 msgstr ""
 
 #: ../../source/changelog/0.7.0-changelog.rst:397

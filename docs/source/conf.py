@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020-2021, The Manim Community Dev Team"
+copyright = "2020-2022, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
@@ -35,7 +35,6 @@ author = "The Manim Community Dev Team"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "recommonmark",
     "sphinx_copybutton",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
@@ -47,6 +46,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
+    "myst_parser",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
@@ -71,7 +71,7 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # This pattern also affects html_static_path and html_extra_path.
 html_extra_path = ["robots.txt"]
 
-exclude_patterns: list = []
+exclude_patterns: list[str] = []
 
 # -- Options for internationalization ----------------------------------------
 # Set the destination directory of the localized po files
@@ -134,8 +134,8 @@ html_css_files = ["custom.css"]
 
 # external links
 extlinks = {
-    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "issue "),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "pull request "),
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#"),
 }
 
 # opengraph settings

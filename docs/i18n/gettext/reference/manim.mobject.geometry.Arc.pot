@@ -6,66 +6,70 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:2
-msgid "Arc"
+#: ../../source/reference/manim.mobject.geometry.arc.rst:2
+msgid "arc"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:4
-msgid "Qualified name: ``manim.mobject.geometry.Arc``"
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc:1
+msgid "Mobjects that are curved."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
-msgid "Bases: :py:class:`manim.mobject.geometry.TipableVMobject`"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:1
-msgid "A circular arc."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:4
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc:4
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:0
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:5
-msgid "A simple arc of angle Pi."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:15
+msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:14
-msgid "Methods"
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A dot with bigger radius and bold stroke to annotate scenes."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1
-msgid "Initializes :attr:`points` and therefore the shape."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:0
+msgid "param inner_radius"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:26:<autosummary>:1
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.get_arc_center:1
-msgid "Looks at the normals to the first two anchors, and finds their intersection points"
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "The inside radius of the Annular Sector."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:28
-msgid "Attributes"
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "Region between two concentric :class:`Circles <.Circle>`."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "Used to animate the application of any method of :code:`self`."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A circular arc."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "The depth of the mobject."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "Inherits from Arc and additionally takes 2 points between which the arc is spanned."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "The height of the mobject."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A generalized polygon allowing for points to be connected with arcs."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc.generate_points:1:<autosummary>:1
-msgid "The width of the mobject."
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A circle."
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arc:0
-msgid "Parameters"
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:0
+msgid "Example"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A circle with a very small radius."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A circular shape; oval, circle."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.rst:50:<autosummary>:1
+msgid "A :class:`Dot` containing a label in its center."
 msgstr ""
 
 

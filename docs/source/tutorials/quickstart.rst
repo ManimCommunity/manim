@@ -86,8 +86,8 @@ You just wrote your first Manim scene from scratch.
 If you get an error
 message instead, you do not see a video, or if the video output does not
 look like the preceding animation, it is likely that Manim has not been
-installed correctly. Please refer to the :doc:`../installation/troubleshooting`
-page for more information.
+installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
+for help with the most common issues.
 
 
 ***********
@@ -355,7 +355,7 @@ You're done!
 With a working installation of Manim and this sample project under your belt,
 you're ready to start creating animations of your own.  To learn
 more about what Manim is doing under the hood, move on to the next tutorial:
-:doc:`a_deeper_look`.  For an overview of
+:doc:`output_and_config`.  For an overview of
 Manim's features, as well as its configuration and other settings, check out the
-other :doc:`../tutorials`.  For a list of all available features, refer to the
+other :doc:`Tutorials <../tutorials/index>`.  For a list of all available features, refer to the
 :doc:`../reference` page.

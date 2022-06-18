@@ -27,7 +27,7 @@ msgid "This can be used to group multiple :class:`~.VMobject` instances together
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:7
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:12
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:11
 msgid "Examples"
 msgstr ""
 
@@ -57,6 +57,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 
@@ -70,10 +74,6 @@ msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:3
 msgid "List of VMobject to add"
-msgstr ""
-
-#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
-msgid "Returns"
 msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0

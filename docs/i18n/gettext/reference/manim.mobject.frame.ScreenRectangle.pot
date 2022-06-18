@@ -15,7 +15,7 @@ msgid "Qualified name: ``manim.mobject.frame.ScreenRectangle``"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle:1
-msgid "Bases: :py:class:`manim.mobject.geometry.Rectangle`"
+msgid "Bases: :py:class:`manim.mobject.geometry.polygram.Rectangle`"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.frame.ScreenRectangle.rst:14
@@ -37,6 +37,10 @@ msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
 msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
 msgstr ""
 
 #: ../../../manim/mobject/frame.py:docstring of manim.mobject.frame.ScreenRectangle.aspect_ratio:1:<autosummary>:1

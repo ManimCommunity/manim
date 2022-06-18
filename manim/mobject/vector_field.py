@@ -17,20 +17,22 @@ import numpy as np
 from colour import Color
 from PIL import Image
 
+from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.mobject.geometry.line import Vector
+from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
 from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..animation.update import UpdateFromAlphaFunc
 from ..constants import OUT, RIGHT, UP
-from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
-from .types.opengl_vectorized_mobject import OpenGLVMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
@@ -166,6 +168,22 @@ class VectorField(VGroup):
 
         """
         return lambda p: func(p * scalar)
+
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+        """Scale the vector field to fit a coordinate system.
+
+        This method is useful when the vector field is defined in a coordinate system
+        different from the one used to display the vector field.
+
+        This method can only be used once because it transforms the origin of each vector.
+
+        Parameters
+        ----------
+        coordinate_system
+            The coordinate system to fit the vector field to.
+
+        """
+        self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
 
     def nudge(
         self,
@@ -574,8 +592,12 @@ class ArrowVectorField(VectorField):
         x_range = np.arange(*self.x_range)
         y_range = np.arange(*self.y_range)
         z_range = np.arange(*self.z_range)
-        for x, y, z in it.product(x_range, y_range, z_range):
-            self.add(self.get_vector(x * RIGHT + y * UP + z * OUT))
+        self.add(
+            *[
+                self.get_vector(x * RIGHT + y * UP + z * OUT)
+                for x, y, z in it.product(x_range, y_range, z_range)
+            ]
+        )
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
@@ -593,7 +615,7 @@ class ArrowVectorField(VectorField):
             Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
-        output = np.array(self.func(point))
+        output = np.asarray(self.func(point))
         norm = np.linalg.norm(output)
         if norm != 0:
             output *= self.length_func(norm) / norm

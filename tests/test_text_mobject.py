@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import pytest
 from colour import Color
 
-from manim.mobject.svg.text_mobject import MarkupText, Text
-from manim.mobject.types.vectorized_mobject import VMobject
-from manim.utils.color import RED
+from manim.mobject.text.text_mobject import MarkupText, Text
 
 
 def test_font_size():

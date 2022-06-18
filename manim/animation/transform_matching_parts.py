@@ -8,10 +8,11 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+
 from .._config import config
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
@@ -244,11 +245,17 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
         class MatchingEquationParts(Scene):
             def construct(self):
-                eq1 = MathTex("{{a^2}} + {{b^2}} = {{c^2}}")
-                eq2 = MathTex("{{a^2}} = {{c^2}} - {{b^2}}")
+                variables = VGroup(MathTex("a"), MathTex("b"), MathTex("c")).arrange_submobjects().shift(UP)
+
+                eq1 = MathTex("{{x}}^2", "+", "{{y}}^2", "=", "{{z}}^2")
+                eq2 = MathTex("{{a}}^2", "+", "{{b}}^2", "=", "{{c}}^2")
+                eq3 = MathTex("{{a}}^2", "=", "{{c}}^2", "-", "{{b}}^2")
+
                 self.add(eq1)
                 self.wait(0.5)
-                self.play(TransformMatchingTex(eq1, eq2))
+                self.play(TransformMatchingTex(Group(eq1, variables), eq2))
+                self.wait(0.5)
+                self.play(TransformMatchingTex(eq2, eq3))
                 self.wait(0.5)
 
     """
@@ -262,8 +269,6 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         key_map: dict | None = None,
         **kwargs,
     ):
-        assert hasattr(mobject, "tex_string")
-        assert hasattr(target_mobject, "tex_string")
         super().__init__(
             mobject,
             target_mobject,
@@ -275,7 +280,15 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        return mobject.submobjects
+        if isinstance(mobject, (Group, VGroup, OpenGLGroup, OpenGLVGroup)):
+            return [
+                p
+                for s in mobject.submobjects
+                for p in TransformMatchingTex.get_mobject_parts(s)
+            ]
+        else:
+            assert hasattr(mobject, "tex_string")
+            return mobject.submobjects
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:

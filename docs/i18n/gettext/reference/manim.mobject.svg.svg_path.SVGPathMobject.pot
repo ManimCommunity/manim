@@ -62,6 +62,10 @@ msgid "The depth of the mobject."
 msgstr ""
 
 #: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
 msgid "The height of the mobject."
 msgstr ""
 

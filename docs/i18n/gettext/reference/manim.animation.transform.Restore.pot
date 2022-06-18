@@ -18,12 +18,28 @@ msgstr ""
 msgid "Bases: :py:class:`manim.animation.transform.ApplyMethod`"
 msgstr ""
 
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:1
+msgid "Transforms a mobject to its last saved state."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:3
+msgid "To save the state of a mobject, use the :meth:`~.Mobject.save_state` method."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:6
+msgid "Examples"
+msgstr ""
+
 #: ../../source/reference/manim.animation.transform.Restore.rst:14
 msgid "Methods"
 msgstr ""
 
 #: ../../source/reference/manim.animation.transform.Restore.rst:21
 msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.Restore:0
+msgid "Parameters"
 msgstr ""
 
 
