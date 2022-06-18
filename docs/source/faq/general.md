@@ -31,6 +31,44 @@ Manim will not call your method and simply output a black frame.
 
 ---
 
+## What are the default measurements for Manim's scene?
+
+The scene measures 8 units in height and has a default ratio of 16:9,
+which means that it measures {math}`8 \cdot 16 / 9 = 14 + 2/9` units in width.
+The origin is in the center of the scene, which means that, for example, the
+upper left corner of the scene has coordinates `[-7-1/9, 4, 0]`.
+
+---
+
+## How do I find out which keyword arguments I can pass when creating a `Mobject`?
+
+Let us consider some specific example, like the {class}`.Circle` class. When looking
+at its documentation page, only two specific keyword arguments are listed
+(`radius`, and `color`). Besides these concrete arguments, there is also a
+catchall `**kwargs` argument which captures all other arguments that are passed
+to `Circle`, and passes them on to the base class of {class}`.Circle`, {class}`.Arc`.
+
+The same holds for {class}`.Arc`: some arguments are explicitly documented, and
+there is again a catchall `**kwargs` argument that passes unprocessed arguments
+to the next base class -- and so on.
+
+The most important keyword arguments relevant to styling your mobjects are the
+ones that are documented for the base classes {class}`.VMobject` and
+{class}`.Mobject`.
+
+---
+
+## Can Manim render a video with transparent background?
+
+Yes: simply pass the CLI flag `-t` (or its long form `--transparent`).
+Note that the default video file format does not support transparency,
+which is why Manim will output a `.mov` instead of a `.mp4` when
+rendering with a transparent background. Other movie file formats
+that support transparency can be obtained by passing
+`--format=webm` or `--format=gif`.
+
+---
+
 ## I have watched a video where a creator ran command X, but it does not work for me. Why?
 
 The video you have been watching is likely outdated. If you want to follow
