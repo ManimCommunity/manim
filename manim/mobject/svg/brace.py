@@ -219,7 +219,7 @@ class BraceText(BraceLabel):
             text,
             brace_direction=brace_direction,
             label_constructor=label_constructor,
-            **kwargs
+            **kwargs,
         )
 
 
