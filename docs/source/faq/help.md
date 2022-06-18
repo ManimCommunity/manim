@@ -88,10 +88,12 @@ our `#manim-dev` channels in [our Discord](https://manim.community/discord/).
 
 2. Choose the correct category for your report when
    [creating a new issue](https://github.com/ManimCommunity/manim/issues/new/choose).
-   We have dedicated issue templates for *bug reports*, *feature requests*,
-   *installation issues*, and *suggestions*. If your report falls into one of these
+   We have dedicated issue templates for *bug reports*, *feature requests*, and
+   *installation issues*. If your report falls into one of these
    categories, read the issue template carefully! Instructions are given in the
-   `<!-- ... -->` sections of the text field.
+   `<!-- ... -->` sections of the text field. If you want to suggest a new feature
+   without concrete implementation details, see
+   {ref}`the instructions given in this answer <creating-suggestions>`.
 
 3. For bug reports: prepare a minimal example that can be used to illustrate the
    issue. Examples with hundreds of lines are very inefficient and tedious to debug.
@@ -103,3 +105,17 @@ our `#manim-dev` channels in [our Discord](https://manim.community/discord/).
    terminal output, from the command you used to run the library up to and including
    the last line with the error message. Read carefully: if the message mentions
    that there is another relevant log file, include this other file as well!
+
+---
+
+(creating-suggestions)=
+## I have an idea for a really cool feature that should be implemented, where should I share my idea?
+
+New suggestions and proposals should be made by
+[creating a new discussion](https://github.com/ManimCommunity/manim/discussions/new?category=suggestions-and-proposals)
+in the [*Suggestions and Proposals* category](https://github.com/ManimCommunity/manim/discussions/categories/suggestions-and-proposals)
+in our GitHub repository. Once the raw idea has been formed into a more concrete,
+implementable proposal that is supported by the community, and someone has expressed
+interest in working on the new feature, a corresponding
+[issue](https://github.com/ManimCommunity/manim/issues) will be created. Do **not** create
+issues for suggesting new features directly, they will be closed down.
