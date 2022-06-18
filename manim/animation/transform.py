@@ -360,6 +360,11 @@ class _MethodAnimation(MoveToTarget):
         self.methods = methods
         super().__init__(mobject)
 
+    def finish(self) -> None:
+        for method, method_args, method_kwargs in self.methods:
+            method.__func__(self.mobject, *method_args, **method_kwargs)
+        super().finish()
+
 
 class ApplyMethod(Transform):
     """Animates a mobject by applying a method.

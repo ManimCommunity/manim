@@ -26,6 +26,7 @@ from .render_options import render_options
 
 @cloup.command(
     context_settings=None,
+    no_args_is_help=True,
     epilog=EPILOG,
 )
 @click.argument("file", type=Path, required=True)

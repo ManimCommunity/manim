@@ -305,7 +305,7 @@ class BarChart(Axes):
         self.y_axis.add_numbers()
 
     def _add_x_axis_labels(self):
-        """Essentially ``:meth:~.NumberLine.add_labels``, but differs in that
+        """Essentially :meth`:~.NumberLine.add_labels`, but differs in that
         the direction of the label with respect to the x_axis changes to UP or DOWN
         depending on the value.
 

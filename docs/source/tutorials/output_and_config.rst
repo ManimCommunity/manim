@@ -1,5 +1,5 @@
-A deeper look
-=============
+Manim's Output Settings
+=======================
 
 This document will focus on understanding manim's output files and some of the
 main command-line flags available.
@@ -296,4 +296,5 @@ same folder as the .mp4 files, and with the same name, but a different file
 extension.
 
 This was a quick review of some of the most frequent command-line flags.  For a
-thorough review of all flags available, see :doc:`configuration`.
+thorough review of all flags available, see the
+:doc:`thematic guide on Manim's configuration system </guides/configuration>`.
