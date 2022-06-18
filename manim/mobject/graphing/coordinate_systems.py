@@ -1841,7 +1841,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         axis.shift(-axis.number_to_point(self._origin_shift([axis.x_min, axis.x_max])))
         return axis
 
-    def coords_to_point(self, *coords: Sequence[float] | Sequence[Sequence[float]] | np.ndarray) -> np.ndarray:
+    def coords_to_point(
+        self, *coords: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
 
         Parameters
