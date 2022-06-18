@@ -277,12 +277,11 @@ Are you sure you want to continue? (y/n)""",
         if not directory_path.is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
             directory_path.mkdir(parents=True)
-        with open(
-            directory_path.joinpath("manim.cfg"), "w"
-        ) as outpath:  # this is not used?
-            ctx.invoke(write)
-            from_path = Path.cwd() / "manim.cfg"
-            to_path = directory_path / "manim.cfg"
+
+        ctx.invoke(write)
+        from_path = Path.cwd() / "manim.cfg"
+        to_path = directory_path / "manim.cfg"
+        
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")
