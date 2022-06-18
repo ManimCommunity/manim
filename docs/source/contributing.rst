@@ -6,7 +6,7 @@ Contributing
    contributions implementing new features will not be accepted in this period.
    Other contributions unrelated to cleaning up the codebase may also take a longer
    period of time to be reviewed. This guide may quickly become outdated quickly; we
-   highly recommend joining our `Discord server <https://www.manim.community/discord/>`_
+   highly recommend joining our `Discord server <https://www.manim.community/discord/>`__
    to discuss any potential contributions and keep up to date with the latest developments.
 
 Thank you for your interest in contributing to Manim! However you have decided to contribute
@@ -26,6 +26,9 @@ some are detailed below:
 *  Testing (graphical, unit & video)
 *  Website design and development
 *  Translating documentation and docstrings
+
+To get an overview of what our community is currently working on, check out
+`our development project board <https://github.com/orgs/ManimCommunity/projects/7/views/1>`__.
 
 .. note::
    Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.

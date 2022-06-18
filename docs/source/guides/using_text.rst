@@ -1,6 +1,6 @@
-##########
-Using Text
-##########
+###########################
+Rendering Text and Formulas
+###########################
 
 There are two different ways by which you can render **Text** in videos:
 

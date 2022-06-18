@@ -10,7 +10,9 @@ from manim import BackgroundRectangle, Circle, Sector
 
 
 def test_get_arc_center():
-    assert np.all(Sector(arc_center=[1, 2, 0]).get_arc_center() == [1, 2, 0])
+    np.testing.assert_array_equal(
+        Sector(arc_center=[1, 2, 0]).get_arc_center(), [1, 2, 0]
+    )
 
 
 def test_BackgroundRectangle(caplog):

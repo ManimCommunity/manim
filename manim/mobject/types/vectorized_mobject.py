@@ -1102,7 +1102,7 @@ class VMobject(Mobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+        norms = np.linalg.norm(diffs, axis=1)
 
         return norms
 
@@ -1331,7 +1331,7 @@ class VMobject(Mobject):
         return self.points[0 :: self.n_points_per_cubic_curve]
 
     def get_end_anchors(self) -> np.ndarray:
-        """Return the starting anchors of the bezier curves.
+        """Return the end anchors of the bezier curves.
 
         Returns
         -------
