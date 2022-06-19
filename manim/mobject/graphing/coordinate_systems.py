@@ -1957,15 +1957,14 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         .. code-block:: python
 
-            from manim import Axes, RIGHT
-            import numpy as np
-
-            ax = Axes(x_range=[0, 10, 2])
-            np.around(ax.point_to_coords(RIGHT), 2)
-            # array([5.83, 0.  ])
-            np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
-            # array([[5.  , 0.  ],
-            #       [5.83, 0.  ]])
+            >>> from manim import Axes, RIGHT
+            >>> import numpy as np
+            >>> ax = Axes(x_range=[0, 10, 2])
+            >>> np.around(ax.point_to_coords(RIGHT), 2)
+            array([5.83, 0.  ])
+            >>> np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
+            array([[5.  , 0.  ],
+                  [5.83, 0.  ]])
 
 
         .. manim:: PointToCoordsExample
