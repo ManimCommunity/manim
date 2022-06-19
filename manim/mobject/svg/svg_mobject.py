@@ -136,11 +136,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         possible_paths = [
             config.get_dir("assets_dir") / self.file_name,
-            config.get_dir("assets_dir") / self.file_name + ".svg",
-            config.get_dir("assets_dir") / self.file_name + ".xdv",
+            config.get_dir("assets_dir") / self.file_name.with_suffix(".svg"),
+            config.get_dir("assets_dir") / self.file_name.with_suffix(".xdv"),
             self.file_path,
-            self.file_path / ".svg",
-            self.file_path / ".xdv",
+            self.file_path.with_suffix(".svg"),
+            self.file_path.with_suffix(".xdv"),
         ]
         for path in possible_paths:
             if path.exists():
