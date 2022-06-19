@@ -1878,7 +1878,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                    [0.86, 0.75, 0.  ],
                    [0.86, 0.  , 0.  ]])
             >>> np.around(
-            ...    ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
+            ...     ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
             ... )  # Transposed version of the above
             array([[0.  , 0.86, 0.86],
                    [0.75, 0.75, 0.  ],
