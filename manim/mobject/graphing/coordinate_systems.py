@@ -642,7 +642,7 @@ class CoordinateSystem:
             The range of the curve along the axes. ``x_range = [x_min, x_max, x_step]``.
         use_vectorized
             Whether to pass in the generated t value array to the function. Only use this if your function supports it.
-            Output should be a numpy array of shape ``[y_0,y_1,...]``
+            Output should be a numpy array of shape ``[y_0, y_1, ...]``
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
