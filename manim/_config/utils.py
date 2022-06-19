@@ -151,7 +151,7 @@ class ManimConfig(MutableMapping):
     Examples
     --------
     We use a copy of the global configuration object in the following
-    examples for the sake of demonstration; you can skip these lines 
+    examples for the sake of demonstration; you can skip these lines
     and just import ``config`` directly if you actually want to modify
     the configuration:
 
