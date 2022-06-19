@@ -102,12 +102,60 @@ def test_point_to_coords():
     np.testing.assert_array_equal(coords, (7.0833, 2.6667))
 
 
+def test_point_to_coords_vectorized():
+    ax = Axes(x_range=[0, 10, 2])
+    circ = Circle(radius=0.5).shift(UR * 2)
+    points = np.array(
+        [circ.get_right(), circ.get_left(), circ.get_bottom(), circ.get_top()]
+    )
+    # get the coordinates of the circle with respect to the axes
+    expected = [np.around(ax.point_to_coords(point), decimals=4) for point in points]
+    actual = np.around(ax.point_to_coords(points), decimals=4)
+
+    np.testing.assert_array_equal(expected, actual)
+
+
 def test_coords_to_point():
     ax = Axes()
 
     # a point with respect to the axes
     c2p_coord = np.around(ax.coords_to_point(2, 2), decimals=4)
     np.testing.assert_array_equal(c2p_coord, (1.7143, 1.5, 0))
+
+
+def test_coords_to_point_vectorized():
+    plane = NumberPlane(x_range=[2, 4])
+
+    origin = plane.x_axis.number_to_point(
+        plane._origin_shift([plane.x_axis.x_min, plane.x_axis.x_max]),
+    )
+
+    def ref_func(*coords):
+        result = np.array(origin)
+        for axis, number in zip(plane.get_axes(), coords):
+            result += axis.number_to_point(number) - origin
+        return result
+
+    coords = [[1], [1, 2], [2, 2], [3, 4]]
+
+    print(f"\n\nTesting coords_to_point {coords}")
+    expected = np.round([ref_func(*coord) for coord in coords], 4)
+    actual1 = np.round([plane.coords_to_point(*coord) for coord in coords], 4)
+    coords[0] = [
+        1,
+        0,
+    ]  # Extend the first coord because you can't vectorize items with different dimensions
+    actual2 = np.round(
+        plane.coords_to_point(coords), 4
+    )  # Test [x_0,y_0,z_0], [x_1,y_1,z_1], ...
+    actual3 = np.round(
+        plane.coords_to_point(*np.array(coords).T), 4
+    )  # Test [x_0,x_1,...], [y_0,y_1,...], ...
+    print(actual3)
+
+    np.testing.assert_array_equal(expected, actual1)
+    np.testing.assert_array_equal(expected, actual2)
+    np.testing.assert_array_equal(expected, actual3.T)
 
 
 def test_input_to_graph_point():
