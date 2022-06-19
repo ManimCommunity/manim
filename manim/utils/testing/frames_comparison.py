@@ -94,7 +94,7 @@ def frames_comparison(
             # Example: if "length" is parametrized from 0 to 20, the kwargs
             # will be once with {"length" : 1}, etc.
             test_name_with_param = test_name + "_".join(
-                [f"{str(tup[0])}:{str(tup[1])}" for tup in kwargs.items()],
+                f"_{str(tup[0])}[{str(tup[1])}]" for tup in kwargs.items()
             )
 
             config_tests = _config_test(last_frame)
