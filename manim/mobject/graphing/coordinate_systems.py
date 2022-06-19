@@ -1868,22 +1868,21 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         .. code-block:: python
 
-            from manim import Axes
-            import numpy as np
-
-            ax = Axes()
-            np.around(ax.coords_to_point(1, 0, 0), 2)
-            # array([0.86, 0.  , 0.  ])
-            np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
-            # array([[0.  , 0.75, 0.  ],
-            #        [0.86, 0.75, 0.  ],
-            #        [0.86, 0.  , 0.  ]])
-            np.around(
-                ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
-            )  # Transposed version of the above
-            # array([[0.  , 0.86, 0.86],
-            #        [0.75, 0.75, 0.  ],
-            #        [0.  , 0.  , 0.  ]])
+            >>> from manim import Axes
+            >>> import numpy as np
+            >>> ax = Axes()
+            >>> np.around(ax.coords_to_point(1, 0, 0), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax.coords_to_point([[0, 1], [1, 1], [1, 0]]), 2)
+            array([[0.  , 0.75, 0.  ],
+                   [0.86, 0.75, 0.  ],
+                   [0.86, 0.  , 0.  ]])
+            >>> np.around(
+            ...    ax.coords_to_point([0, 1, 1], [1, 1, 0]), 2
+            ... )  # Transposed version of the above
+            array([[0.  , 0.86, 0.86],
+                   [0.75, 0.75, 0.  ],
+                   [0.  , 0.  , 0.  ]])
 
         .. manim:: CoordsToPointExample
             :save_last_frame:
