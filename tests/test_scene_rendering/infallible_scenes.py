@@ -8,11 +8,11 @@ class Wait1(Scene):
         self.wait()
 
 
-class Wait3(Scene):
+class Wait2(Scene):
     def construct(self):
         self.add(Square())
 
 
-class Wait2(Scene):
+class Wait3(Scene):
     def construct(self):
         self.wait(2)
