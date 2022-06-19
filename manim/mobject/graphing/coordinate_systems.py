@@ -1964,7 +1964,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             array([5.83, 0.  ])
             >>> np.around(ax.point_to_coords([[0, 0, 1], [1, 0, 0]]), 2)
             array([[5.  , 0.  ],
-                  [5.83, 0.  ]])
+                   [5.83, 0.  ]])
 
 
         .. manim:: PointToCoordsExample
