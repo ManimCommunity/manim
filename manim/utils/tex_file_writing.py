@@ -79,8 +79,8 @@ def generate_tex_file(expression, environment=None, tex_template=None):
         output = tex_template.get_texcode_for_expression(expression)
 
     tex_dir = config.get_dir("tex_dir")
-    if not Path(tex_dir).exists():
-        Path(tex_dir).mkdir()
+    if not tex_dir.exists():
+        tex_dir.mkdir()
 
     result = Path(tex_dir) / (tex_hash(output) + ".tex")
     if not result.exists():
