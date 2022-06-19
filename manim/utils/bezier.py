@@ -22,6 +22,7 @@ __all__ = [
 
 import typing
 from functools import reduce
+from typing import Iterable
 
 import numpy as np
 from scipy import linalg
@@ -117,6 +118,56 @@ def partial_quadratic_bezier_points(points, a, b):
     end_prop = (b - a) / (1.0 - a)
     h1 = (1 - end_prop) * h0 + end_prop * h1_prime
     return [h0, h1, h2]
+
+
+def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
+    """
+    Split a quadratic bezier curve into two quadratic beziers at t
+
+    Parameters
+    ----------
+    points : np.array
+        The control points of the bezier curve
+        has shape [a1, h1, b1]
+
+    t : float
+        The t-value at which to split the bezier curve
+
+    Returns
+    -------
+        returns the two beziers as a list of tuples
+        has the shape [a1, h1, b1], [a2, h2, b2]
+    """
+    a1, h1, a2 = points
+    s1 = interpolate(a1, h1, t)
+    s2 = interpolate(h1, a2, t)
+    p = interpolate(s1, s2, t)
+
+    return np.array([a1, s1, p, p, s2, a2])
+
+
+def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
+    """Subdivide a quadratic bezier n times
+
+    Parameters
+    ----------
+    points : np.array
+        The control points of the bezier curve in form [a1, h1, b1]
+
+    n : int
+        The number of times to subdivide the bezier curve
+
+    Returns
+    -------
+        returns the new points for the bezier curve in the form [a1, h1, b1, a2, h2, b2, ...]
+    """
+    beziers = []
+    current = points
+    for i in range(n, 0, -1):
+        tmp = split_quadratic_bezier(current, 1 / i)
+        beziers.append(tmp[:3])
+        current = tmp[3:]
+    return np.asarray(beziers).reshape(-1, 3)
 
 
 # Linear interpolation variants
