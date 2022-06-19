@@ -1866,7 +1866,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         --------
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import Axes
             >>> import numpy as np
@@ -1955,7 +1955,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         --------
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import Axes, RIGHT
             >>> import numpy as np
