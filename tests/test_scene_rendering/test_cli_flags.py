@@ -9,7 +9,7 @@ from click.testing import CliRunner
 from PIL import Image
 
 from manim import capture, get_video_metadata
-from manim.__main__ import main, __version__
+from manim.__main__ import __version__, main
 from manim.utils.file_ops import add_version_before_extension
 
 from ..utils.video_tester import video_comparison
