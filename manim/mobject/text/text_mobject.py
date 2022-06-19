@@ -752,13 +752,13 @@ class Text(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        if not dir_name.is_dir():
+            dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
+        file_name = dir_name / (hash_name + ".svg")
 
-        if os.path.exists(file_name):
-            svg_file = file_name
+        if file_name.exists():
+            svg_file = str(file_name.resolve())
         else:
             settings = self._text2settings(color)
             width = config["pixel_width"]
@@ -769,7 +769,7 @@ class Text(SVGMobject):
                 size,
                 line_spacing,
                 self.disable_ligatures,
-                file_name,
+                str(file_name.resolve()),
                 START_X,
                 START_Y,
                 width,
@@ -1245,12 +1245,12 @@ class MarkupText(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        if not dir_name.exists():
+            dir_name.mkdir(parents=True)
         hash_name = self._text2hash(color)
-        file_name = os.path.join(dir_name, hash_name) + ".svg"
-        if os.path.exists(file_name):
-            svg_file = file_name
+        file_name = dir_name / (hash_name + ".svg")
+        if file_name.exists():
+            svg_file = str(file_name.resolve())
         else:
             final_text = (
                 f'<span foreground="{color}">{self.text}</span>'
@@ -1266,7 +1266,7 @@ class MarkupText(SVGMobject):
                 size,
                 line_spacing,
                 self.disable_ligatures,
-                file_name,
+                str(file_name.resolve()),
                 START_X,
                 START_Y,
                 600,  # width
