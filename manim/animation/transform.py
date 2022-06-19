@@ -46,6 +46,36 @@ if TYPE_CHECKING:
 
 
 class Transform(Animation):
+    """A Transform transforms a Mobject into a target Mobject.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`.Mobject` to be transformed. It will be mutated to become the ``target_mobject``.
+    target_mobject
+        The target of the transformation.
+    path_func
+        A function defining the path that the points of the ``mobject`` are being moved
+        along until they match the points of the ``target_mobject``, see :mod:`.utils.paths`.
+    path_arc
+        The arc angle (in radians) that the points of ``mobject`` will follow to reach
+        the points of the target if using a circular path arc, see ``path_arc_centers``.
+    path_arc_axis
+        The axis to rotate along if using a circular path arc, see ``path_arc_centers``.
+    path_arc_centers
+        The center of the circular arcs along which the points of ``mobject`` are
+        moved by the transformation.
+
+        If this is set and ``path_func`` is not set, then a ``path_along_circles`` path will be generated
+        using the ``path_arc`` parameters and stored in ``path_func``. If ``path_func`` is set, this and the
+        other ``path_arc`` fields are set as attributes, but a ``path_func`` is not generated from it.
+    replace_mobject_with_target_in_scene
+        Controls which mobject is replaced when the transformation is complete.
+
+        If set to True, ``mobject`` will be removed from the scene and ``target_mobject`` will
+        replace it. Otherwise, ``target_mobject`` is never added and ``mobject`` just takes its shape.
+    """
+
     def __init__(
         self,
         mobject: Mobject | None,
@@ -61,14 +91,16 @@ class Transform(Animation):
         self.path_arc_centers: np.ndarray = path_arc_centers
         self.path_arc: float = path_arc
 
-        if self.path_arc_centers is not None:
+        # path_func is a property a few lines below so it doesn't need to be set in any case
+        if path_func is not None:
+            self.path_func: Callable = path_func
+        elif self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
                 self.path_arc_centers,
                 self.path_arc_axis,
             )
 
-        self.path_func: Callable | None = path_func
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
