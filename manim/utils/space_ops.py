@@ -301,7 +301,7 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     return np.array([axis_x, axis_y, axis_z]).T
 
 
-def angle_of_vector(vector: Sequence[float]) -> float:
+def angle_of_vector(vector: Sequence[float] | np.ndarray) -> float:
     """Returns polar coordinate theta when vector is projected on xy plane.
 
     Parameters
@@ -314,6 +314,13 @@ def angle_of_vector(vector: Sequence[float]) -> float:
     float
         The angle of the vector projected.
     """
+    if isinstance(vector, np.ndarray) and len(vector.shape) > 1:
+        if vector.shape[0] < 2:
+            raise ValueError("Vector must have the correct dimensions. (2, n)")
+        c_vec = np.empty(vector.shape[1], dtype=np.complex128)
+        c_vec.real = vector[0]
+        c_vec.imag = vector[1]
+        return np.angle(c_vec)
     return np.angle(complex(*vector[:2]))
 
 
