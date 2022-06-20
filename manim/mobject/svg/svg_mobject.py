@@ -9,6 +9,7 @@ import os
 import re
 import string
 import warnings
+from pathlib import Path
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
@@ -46,7 +47,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
     Parameters
     --------
-    file_name : :class:`str`
+    file_name : :class:`str` or :class:`pathlib.Path`
         The file's path name. When possible, the full path is preferred but a
         relative path may be used as well. Relative paths are relative to the
         directory specified by the `--assets_dir` command line argument.
@@ -87,7 +88,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     ):
 
         self.def_map = {}
-        self.file_name = file_name or self.file_name
+        self.file_name = Path(file_name)
         self._ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
@@ -124,28 +125,28 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.file_name is None:
             raise Exception("Must specify file for SVGMobject")
 
-        if os.path.exists(self.file_name):
+        if self.file_name.exists():
             self.file_path = self.file_name
             return
 
-        relative = os.path.join(os.getcwd(), self.file_name)
-        if os.path.exists(relative):
+        relative = Path.cwd() / self.file_name
+        if relative.exists():
             self.file_path = relative
             return
 
         possible_paths = [
-            os.path.join(config.get_dir("assets_dir"), self.file_name),
-            os.path.join(config.get_dir("assets_dir"), self.file_name + ".svg"),
-            os.path.join(config.get_dir("assets_dir"), self.file_name + ".xdv"),
-            self.file_name,
-            self.file_name + ".svg",
-            self.file_name + ".xdv",
+            config.get_dir("assets_dir") / self.file_name,
+            config.get_dir("assets_dir") / self.file_name.with_suffix(".svg"),
+            config.get_dir("assets_dir") / self.file_name.with_suffix(".xdv"),
+            self.file_path,
+            self.file_path.with_suffix(".svg"),
+            self.file_path.with_suffix(".xdv"),
         ]
         for path in possible_paths:
-            if os.path.exists(path):
+            if path.exists():
                 self.file_path = path
                 return
-        error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
+        error = f"From: {Path.cwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
         raise OSError(error)
 
     def generate_points(self):
@@ -153,7 +154,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         the SVGMobject's points from XML tags, populating self.mobjects, and
         any submobjects within self.mobjects.
         """
-        doc = minidom_parse(self.file_path)
+        doc = minidom_parse(str(self.file_path))
         for node in doc.childNodes:
             if not isinstance(node, MinidomElement) or node.tagName != "svg":
                 continue
