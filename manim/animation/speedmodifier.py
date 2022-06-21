@@ -121,18 +121,14 @@ class ChangeSpeed(Animation):
         # A function where, f(0) = 0, f'(0) = initial speed, f'( f-1(1) ) = final speed
         # Following function obtained when conditions applied to vertical parabola
         self.speed_modifier = (
-            lambda x, init_speed, final_speed: (
-                final_speed**2 - init_speed**2
-            )
+            lambda x, init_speed, final_speed: (final_speed**2 - init_speed**2)
             * x**2
             / 4
             + init_speed * x
         )
 
         # f-1(1), returns x for which f(x) = 1 in `speed_modifier` function
-        self.f_inv_1 = lambda init_speed, final_speed: 2 / (
-            init_speed + final_speed
-        )
+        self.f_inv_1 = lambda init_speed, final_speed: 2 / (init_speed + final_speed)
 
         # if speed factors for the starting node (0) and the final node (1) are
         # not set, set them to 1 and the penultimate factor, respectively
@@ -157,7 +153,8 @@ class ChangeSpeed(Animation):
                 lambda x, curr_time=curr_time, init_speed=init_speed, final_speed=final_speed, dur=dur: curr_time
                 / scaled_total_time
                 <= x
-                <= (curr_time + self.f_inv_1(init_speed, final_speed) * dur) / scaled_total_time
+                <= (curr_time + self.f_inv_1(init_speed, final_speed) * dur)
+                / scaled_total_time
             )
             self.functions.append(
                 lambda x, dur=dur, init_speed=init_speed, final_speed=final_speed, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
