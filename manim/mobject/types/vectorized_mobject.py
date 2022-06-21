@@ -649,6 +649,9 @@ class VMobject(Mobject):
         # TODO, check the len(self.points) % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
 
+    def add_cubic_bezier_curves(self, curves):
+        self.append_points(curves.flatten())
+
     def add_cubic_bezier_curve_to(
         self,
         handle1: np.ndarray,
