@@ -118,21 +118,20 @@ class ChangeSpeed(Animation):
 
         self.rate_func = self.anim.rate_func if rate_func is None else rate_func
 
-        # A function where, f(0) = 0, f'(0) = m, f'( f-1(1) ) = n
-        # m being initial speed, n being final speed
+        # A function where, f(0) = 0, f'(0) = initial speed, f'( f-1(1) ) = final speed
         # Following function obtained when conditions applied to vertical parabola
         self.speed_modifier = (
-            lambda x, initial_speed, final_speed: (
-                final_speed**2 - initial_speed**2
+            lambda x, init_speed, final_speed: (
+                final_speed**2 - init_speed**2
             )
             * x**2
             / 4
-            + initial_speed * x
+            + init_speed * x
         )
 
         # f-1(1), returns x for which f(x) = 1 in `speed_modifier` function
-        self.f_inv_1 = lambda initial_speed, final_speed: 2 / (
-            initial_speed + final_speed
+        self.f_inv_1 = lambda init_speed, final_speed: 2 / (
+            init_speed + final_speed
         )
 
         # if speed factors for the starting node (0) and the final node (1) are
@@ -150,26 +149,26 @@ class ChangeSpeed(Animation):
         scaled_total_time = self.get_scaled_total_time()
 
         prevnode = 0
-        m = self.speedinfo[0]
+        init_speed = self.speedinfo[0]
         curr_time = 0
-        for node, n in list(self.speedinfo.items())[1:]:
+        for node, final_speed in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
             self.conditions.append(
-                lambda x, curr_time=curr_time, m=m, n=n, dur=dur: curr_time
+                lambda x, curr_time=curr_time, init_speed=init_speed, final_speed=final_speed, dur=dur: curr_time
                 / scaled_total_time
                 <= x
-                <= (curr_time + self.f_inv_1(m, n) * dur) / scaled_total_time
+                <= (curr_time + self.f_inv_1(init_speed, final_speed) * dur) / scaled_total_time
             )
             self.functions.append(
-                lambda x, dur=dur, m=m, n=n, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
-                    (scaled_total_time * x - curr_time) / dur, m, n
+                lambda x, dur=dur, init_speed=init_speed, final_speed=final_speed, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
+                    (scaled_total_time * x - curr_time) / dur, init_speed, final_speed
                 )
                 * dur
                 + prevnode
             )
-            curr_time += self.f_inv_1(m, n) * dur
+            curr_time += self.f_inv_1(init_speed, final_speed) * dur
             prevnode = node
-            m = n
+            init_speed = final_speed
 
         def func(t):
             if t == 1:
@@ -223,8 +222,8 @@ class ChangeSpeed(Animation):
         parameters = get_parameters(update_function)
         if "dt" in parameters:
             mobject.add_updater(
-                lambda m, dt: update_function(
-                    m, ChangeSpeed.dt if ChangeSpeed.is_changing_dt else dt
+                lambda mob, dt: update_function(
+                    mob, ChangeSpeed.dt if ChangeSpeed.is_changing_dt else dt
                 ),
                 index=index,
                 call_updater=call_updater,
