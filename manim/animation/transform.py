@@ -60,7 +60,7 @@ class Transform(Animation):
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
         the points of the target if using a circular path arc, see ``path_arc_centers``.
-        See also :meth:`~.utils.paths.path_along_arc`.
+        See also :func:`manim.utils.paths.path_along_arc`.
     path_arc_axis
         The axis to rotate along if using a circular path arc, see ``path_arc_centers``.
     path_arc_centers
