@@ -124,17 +124,18 @@ class TransformMatchingAbstractBase(AnimationGroup):
             fade_target.add(target_map[key])
         fade_target_copy = fade_target.copy()
 
-        if transform_mismatches:
-            if "replace_mobject_with_target_in_scene" not in kwargs:
-                kwargs["replace_mobject_with_target_in_scene"] = True
-            anims.append(Transform(fade_source, fade_target, **kwargs))
-        elif fade_transform_mismatches:
-            anims.append(FadeTransformPieces(fade_source, fade_target, **kwargs))
-        else:
-            anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
-            anims.append(
-                FadeIn(fade_target_copy, target_position=fade_target, **kwargs),
-            )
+        if len(fade_source.submobjects) > 0 and len(fade_target.submobjects) > 0:
+            if transform_mismatches:
+                if "replace_mobject_with_target_in_scene" not in kwargs:
+                    kwargs["replace_mobject_with_target_in_scene"] = True
+                anims.append(Transform(fade_source, fade_target, **kwargs))
+            elif fade_transform_mismatches:
+                anims.append(FadeTransformPieces(fade_source, fade_target, **kwargs))
+            else:
+                anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
+                anims.append(
+                    FadeIn(fade_target_copy, target_position=fade_target, **kwargs),
+                )
 
         super().__init__(*anims)
 
