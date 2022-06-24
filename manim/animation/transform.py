@@ -60,6 +60,7 @@ class Transform(Animation):
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
         the points of the target if using a circular path arc, see ``path_arc_centers``.
+        See also :meth:`~.utils.paths.path_along_arc`.
     path_arc_axis
         The axis to rotate along if using a circular path arc, see ``path_arc_centers``.
     path_arc_centers
@@ -74,6 +75,49 @@ class Transform(Animation):
 
         If set to True, ``mobject`` will be removed from the scene and ``target_mobject`` will
         replace it. Otherwise, ``target_mobject`` is never added and ``mobject`` just takes its shape.
+
+    Examples
+    --------
+
+    .. manim :: TransformPathArc
+
+        class TransformPathArc(Scene):
+            def construct(self):
+                def make_arc_path(start, end, arc_angle):
+                    points = []
+                    p_fn = path_along_arc(arc_angle)
+                    # alpha animates between 0.0 and 1.0, where 0.0
+                    # is the beginning of the animation and 1.0 is the end.
+                    for alpha in range(0, 100):
+                        points.append(p_fn(start, end, alpha / 100.0))
+                    path = VMobject(stroke_color=YELLOW)
+                    path.set_points_smoothly(points)
+                    return path
+
+                left = Circle(stroke_color=BLUE_E, fill_opacity=1.0, radius=0.5).move_to(LEFT * 2)
+                colors = [TEAL_A, TEAL_B, TEAL_C, TEAL_D, TEAL_E, GREEN_A]
+                # Positive angles move clockwise, negative angles move counter-clockwise.
+                examples = [-90, 0, 30, 90, 180, 270]
+                arcs, circles, text, anims = [], [], [], []
+                for idx in range(0, len(examples)):
+                    left_c = left.copy().shift((3 - idx) * UP)
+                    left_c.fill_color = colors[idx]
+                    right_c = left_c.copy().shift(4 * RIGHT)
+                    path_arc = make_arc_path(left_c.get_center(), right_c.get_center(),
+                                             arc_angle=examples[idx] * DEGREES)
+                    desc = Text('%d°' % examples[idx]).next_to(left_c, LEFT)
+                    arcs.append(path_arc)
+                    circles.append(left_c)
+                    text.append(desc)
+                    anims.append(
+                        Transform(left_c, right_c, path_arc=examples[idx] * DEGREES)
+                    )
+
+                self.add(*arcs)
+                self.add(*text)
+                self.add(*circles)
+                self.play(*anims, run_time=2)
+                self.wait()
     """
 
     def __init__(
