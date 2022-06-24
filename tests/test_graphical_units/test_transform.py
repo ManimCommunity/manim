@@ -200,15 +200,14 @@ def test_TransformWithConflictingPaths(scene):
         )
     )
 
+
 @frames_comparison(last_frame=False)
 def test_FadeTransformPieces(scene):
     src = VGroup(Square(), Circle().shift(LEFT + UP))
-    src.shift(3*LEFT)
+    src.shift(3 * LEFT)
 
     target = VGroup(Circle(), Triangle().shift(RIGHT + DOWN))
-    target.shift(3*RIGHT)
+    target.shift(3 * RIGHT)
 
     scene.add(src)
-    scene.play(
-        FadeTransformPieces(src, target)
-    )
+    scene.play(FadeTransformPieces(src, target))

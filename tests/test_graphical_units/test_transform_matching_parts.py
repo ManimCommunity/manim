@@ -26,6 +26,7 @@ def test_TransformMatchingDisplaysCorrect(scene):
     # Shift to make sure object isn't duplicated if moved
     scene.play(circle.animate.shift(DOWN))
 
+
 @frames_comparison(last_frame=False)
 def test_TransformMatchingTex(scene):
     start = MathTex("A", "+", "B", "=", "C")
@@ -33,6 +34,7 @@ def test_TransformMatchingTex(scene):
 
     scene.add(start)
     scene.play(TransformMatchingTex(start, end))
+
 
 @frames_comparison(last_frame=False)
 def test_TransformMatchingTex_FadeTransformMismatches(scene):
@@ -42,13 +44,15 @@ def test_TransformMatchingTex_FadeTransformMismatches(scene):
     scene.add(start)
     scene.play(TransformMatchingTex(start, end, fade_transform_mismatches=True))
 
+
 @frames_comparison(last_frame=False)
 def test_TransformMatchingTex_TransformMismatches(scene):
     start = MathTex("A", "+", "B", "=", "C")
     end = MathTex("C", "=", "B", "-", "A")
 
     scene.add(start)
-    scene.play(TransformMatchingTex(start, end, transform_mismatches =True))
+    scene.play(TransformMatchingTex(start, end, transform_mismatches=True))
+
 
 @frames_comparison(last_frame=False)
 def test_TransformMatchingTex_FadeTransformMismatches_NothingToFade(scene):

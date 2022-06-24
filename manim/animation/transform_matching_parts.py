@@ -132,7 +132,9 @@ class TransformMatchingAbstractBase(AnimationGroup):
             elif fade_transform_mismatches:
                 anims.append(FadeTransformPieces(fade_source, fade_target, **kwargs))
             else:
-                anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
+                anims.append(
+                    FadeOut(fade_source, target_position=fade_target, **kwargs)
+                )
                 anims.append(
                     FadeIn(fade_target_copy, target_position=fade_target, **kwargs),
                 )
