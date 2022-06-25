@@ -556,7 +556,7 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
 
         def update_edges(graph):
             for (u, v), edge in graph.edges.items():
-                edge.put_start_and_end_on(graph[u].get_center(), graph[v].get_center())
+                edge._set_start_and_end_attrs(graph[u], graph[v])
 
         self.add_updater(update_edges)
 
