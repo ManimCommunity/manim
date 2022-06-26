@@ -394,6 +394,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 edges = []
                 partitions = []
                 c=0
+                layers = [2,3,3,2]         # the number of neurons on each layer
+
                 for i in layers:
                     partitions.append([j for j in range(c+1, c+i+1)])
                     c += i
@@ -404,8 +406,8 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                                 edges.append((k+1, j+last+1))
 
                 vertices = np.arange(1, int(np.sum(layers))+1)
-                layers = [2,3,3,2] # the number of neurons on each layer
-                graph = Graph(vertices, edges, layout='partite', partitions=partitions, layout_scale=3, vertex_config={'radius':0.2})
+
+                graph = Graph(vertices, edges, layout='partite', partitions=partitions, layout_scale=3, vertex_config={'radius':0.20})
                 self.add(graph)
 
     The custom tree layout can be used to show the graph
