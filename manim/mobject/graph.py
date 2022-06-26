@@ -381,13 +381,13 @@ class Graph(VMobject, metaclass=ConvertToOpenGL):
                 G.add_edges_from([(0, 2), (0,3), (1, 2)])
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
                 self.play(Create(graph))
-                
+
     The representation of a linear artificial neural network is facilitated
     by the use of the partite layout and defining partitions for each layer.
-    
+
     .. manim:: LinearNN
         :save_last_frame:
-        
+
         class LinearNN(Scene):
 
             def construct(self):
