@@ -14,20 +14,19 @@ from ..scene.scene import Scene
 
 
 class ChangeSpeed(Animation):
-    """
-    Modifies the speed of passed animation. :class:`AnimationGroup` with
+    """Modifies the speed of passed animation. :class:`AnimationGroup` with
     different ``lag_ratio`` can also be used which combines multiple
-    animations into one. `run_time` of the passed animation is changed to
+    animations into one. The ``run_time`` of the passed animation is changed to
     modify the speed.
 
     Parameters
     ----------
-    anim : :class:`Animation` | :class:`_AnimationBuilder`
+    anim
         Animation of which the speed is to be modified.
-    speedinfo : Dict[float, float]
-        Contains nodes (percentage of run_time) and its corresponding speed factor.
-    rate_func : Callable[[float], float]
-        Overrides `rate_func` of passed animation, applied before changing speed.
+    speedinfo
+        Contains nodes (percentage of ``run_time``) and its corresponding speed factor.
+    rate_func
+        Overrides ``rate_func`` of passed animation, applied before changing speed.
 
     Examples
     --------
@@ -111,7 +110,7 @@ class ChangeSpeed(Animation):
         if affects_speed_updaters:
             assert (
                 ChangeSpeed.is_changing_dt is False
-            ), "Only one animation at a time can play that changes speed (dt) for ChangedSpeed updaters"
+            ), "Only one animation at a time can play that changes speed (dt) for ChangeSpeed updaters"
             ChangeSpeed.is_changing_dt = True
             self.t = 0
         self.affects_speed_updaters = affects_speed_updaters
@@ -120,11 +119,8 @@ class ChangeSpeed(Animation):
 
         # A function where, f(0) = 0, f'(0) = initial speed, f'( f-1(1) ) = final speed
         # Following function obtained when conditions applied to vertical parabola
-        self.speed_modifier = (
-            lambda x, init_speed, final_speed: (final_speed**2 - init_speed**2)
-            * x**2
-            / 4
-            + init_speed * x
+        self.speed_modifier = lambda x, init_speed, final_speed: (
+            (final_speed**2 - init_speed**2) * x**2 / 4 + init_speed * x
         )
 
         # f-1(1), returns x for which f(x) = 1 in `speed_modifier` function
@@ -196,8 +192,8 @@ class ChangeSpeed(Animation):
             )
         return prepare_animation(anim)
 
-    # Time taken by the animation if `run_time` is assumed to be 1
     def get_scaled_total_time(self) -> float:
+        """The time taken by the animation under the assumption that the ``run_time`` is 1."""
         prevnode = 0
         init_speed = self.speedinfo[0]
         total_time = 0
