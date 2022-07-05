@@ -153,11 +153,11 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
 
     Parameters
     ----------
-    points : np.array
-        The control points of the bezier curve in form [a1, h1, b1]
+    points
+        The control points of the Bézier curve in form ``[a1, h1, b1]``
 
-    n : int
-        The number of times to subdivide the bezier curve
+    n
+        The number of times to subdivide the Bézier curve
 
     Returns
     -------
