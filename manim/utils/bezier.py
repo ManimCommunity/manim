@@ -207,6 +207,32 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
                 self.add(MultiBezier(subdivide_bezier(shape.points, n)).shift(2 * DOWN))
                 self.add(Tex(f"{n=}").shift(DOWN * 2))
 
+    .. manim:: BezierSubdivision
+        class BezierSubdivision(Scene):
+            def construct(self):
+                a1, h1, a2 = Dot([-3, -1, 0]), Dot([0, 2, 0]), Dot([3, -1, 0])
+
+                def update():
+                    return VGroup(
+                        *[
+                            VGroup(
+                                MultiBezier(
+                                    subdivide_bezier(
+                                        np.array(
+                                            [a1.get_center(), h1.get_center(), a2.get_center()]
+                                        ),
+                                        i,
+                                    )
+                                ),
+                                Tex(f"n={i}"),
+                            ).arrange(DOWN)
+                            for i in range(1, 5)
+                        ]
+                    ).arrange_in_grid(n_rows=2, n_cols=2)
+
+                beziers = always_redraw(update)
+
+                self.add(beziers)
     """
     beziers = []
     current = points
