@@ -33,7 +33,7 @@ class ChangeSpeed(Animation):
     Examples
     --------
 
-    .. manim::SpeedModiferExample
+    .. manim:: SpeedModifierExample
 
         class SpeedModifierExample(Scene):
             def construct(self):
@@ -51,7 +51,7 @@ class ChangeSpeed(Animation):
                     )
                 )
 
-    .. manim::SpeedModiferUpdaterExample
+    .. manim:: SpeedModifierUpdaterExample
 
         class SpeedModifierUpdaterExample(Scene):
             def construct(self):
@@ -67,7 +67,7 @@ class ChangeSpeed(Animation):
                     )
                 )
 
-    .. manim::SpeedModiferUpdaterExample2
+    .. manim:: SpeedModifierUpdaterExample2
 
         class SpeedModifierUpdaterExample2(Scene):
             def construct(self):
