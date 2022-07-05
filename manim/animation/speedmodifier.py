@@ -14,10 +14,10 @@ from ..scene.scene import Scene
 
 
 class ChangeSpeed(Animation):
-    """Modifies the speed of passed animation. :class:`AnimationGroup` with
-    different ``lag_ratio`` can also be used which combines multiple
-    animations into one. The ``run_time`` of the passed animation is changed to
-    modify the speed.
+    """Modifies the speed of passed animation.
+    :class:`AnimationGroup` with different ``lag_ratio`` can also be used
+    which combines multiple animations into one.
+    The ``run_time`` of the passed animation is changed to modify the speed.
 
     Parameters
     ----------
@@ -92,7 +92,7 @@ class ChangeSpeed(Animation):
         anim: Animation | _AnimationBuilder,
         speedinfo: dict[float, float],
         rate_func: Callable[[float], float] | None = None,
-        affects_speed_updaters: bool = False,
+        affects_speed_updaters: bool = True,
         **kwargs,
     ) -> None:
 
@@ -234,6 +234,10 @@ class ChangeSpeed(Animation):
         index: int | None = None,
         call_updater: bool = False,
     ):
+        """This static method can be used to apply speed change to updaters.
+        This updater will follow speed and rate function of any ``ChangeSpeed``
+        animation that is playing with ``affects_speed_updaters=True``.
+        """
         parameters = get_parameters(update_function)
         if "dt" in parameters:
             mobject.add_updater(
