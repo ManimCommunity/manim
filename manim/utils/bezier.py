@@ -134,8 +134,8 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
 
     Returns
     -------
-        returns the two beziers as a list of tuples
-        has the shape [a1, h1, b1], [a2, h2, b2]
+        The two Bézier curves as a list of tuples,
+        has the shape ``[a1, h1, b1], [a2, h2, b2]``
     """
     a1, h1, a2 = points
     s1 = interpolate(a1, h1, t)
