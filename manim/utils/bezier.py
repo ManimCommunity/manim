@@ -146,7 +146,7 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
 
 
 def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
-    """Subdivide a quadratic Bézier curve ``n`` times.
+    """Subdivide a quadratic Bézier curve into ``n`` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
     arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
@@ -157,11 +157,56 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
         The control points of the Bézier curve in form ``[a1, h1, b1]``
 
     n
-        The number of times to subdivide the Bézier curve
+        The number of curves to subdivide the Bézier curve into
 
     Returns
     -------
         The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
+
+    Example
+    -------
+    .. manim:: SubdivideBezierExample
+
+        class MultiBezier(OpenGLVMobject):
+            def __init__(self, points, **kwargs):
+                super().__init__(**kwargs)
+                self.points = np.asarray(points)
+                self.group = VGroup()
+                self.add(self.group)
+                self.update_attachments()
+
+            def update_attachments(self):
+                new_group = VGroup()
+                for triplet in self.get_bezier_tuples():
+                    for p, c in zip(triplet, (GREEN, RED, BLUE)):
+                        new_group.add(Circle(radius=DEFAULT_DOT_RADIUS).set_color(c).move_to(p))
+                    for p1, p2, c in zip(triplet[:-1], triplet[1:], (GREEN, BLUE)):
+                        new_group.add(Line(p1, p2, color=c))
+                self.group.become(new_group)
+
+        class SubdivideBezierExample(Scene):
+            def construct(self):
+                a1, h1, a2 = [-3, -1, 0], [0, 2, 0], [3, -1, 0]
+                shape: VMobject = MultiBezier([a1, h1, a2]).shift(UP)
+                n = 3
+
+                self.add(shape)
+                self.add(
+                    *[
+                        VGroup(
+                            Dot(shape.point_from_proportion(i / n), color=RED),
+                            MathTex(
+                                r"\frac{" + str(i) + "}{" + str(n) + "}"
+                            )  # Please use f-strings instead for a usecase that doesn't have {}
+                            .move_to(shape.point_from_proportion(i / n))
+                            .shift(DOWN),
+                        )
+                        for i in range(1, n)
+                    ]
+                )
+                self.add(MultiBezier(subdivide_bezier(shape.points, n)).shift(2 * DOWN))
+                self.add(Tex(f"{n=}").shift(DOWN * 2))
+
     """
     beziers = []
     current = points
