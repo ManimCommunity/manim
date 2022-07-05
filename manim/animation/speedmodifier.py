@@ -145,20 +145,42 @@ class ChangeSpeed(Animation):
         curr_time = 0
         for node, final_speed in list(self.speedinfo.items())[1:]:
             dur = node - prevnode
-            self.conditions.append(
-                lambda x, curr_time=curr_time, init_speed=init_speed, final_speed=final_speed, dur=dur: curr_time
-                / scaled_total_time
-                <= x
-                <= (curr_time + self.f_inv_1(init_speed, final_speed) * dur)
-                / scaled_total_time
-            )
-            self.functions.append(
-                lambda x, dur=dur, init_speed=init_speed, final_speed=final_speed, prevnode=prevnode, curr_time=curr_time: self.speed_modifier(
-                    (scaled_total_time * x - curr_time) / dur, init_speed, final_speed
+
+            def condition(
+                t,
+                curr_time=curr_time,
+                init_speed=init_speed,
+                final_speed=final_speed,
+                dur=dur,
+            ):
+                lower_bound = curr_time / scaled_total_time
+                upper_bound = (
+                    curr_time + self.f_inv_1(init_speed, final_speed) * dur
+                ) / scaled_total_time
+                return lower_bound <= t <= upper_bound
+
+            self.conditions.append(condition)
+
+            def function(
+                t,
+                curr_time=curr_time,
+                init_speed=init_speed,
+                final_speed=final_speed,
+                dur=dur,
+                prevnode=prevnode,
+            ):
+                return (
+                    self.speed_modifier(
+                        (scaled_total_time * t - curr_time) / dur,
+                        init_speed,
+                        final_speed,
+                    )
+                    * dur
+                    + prevnode
                 )
-                * dur
-                + prevnode
-            )
+
+            self.functions.append(function)
+
             curr_time += self.f_inv_1(init_speed, final_speed) * dur
             prevnode = node
             init_speed = final_speed
