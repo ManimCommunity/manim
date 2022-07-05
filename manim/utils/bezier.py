@@ -130,7 +130,7 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
         has shape ``[a1, h1, b1]``
 
     t
-        The t-value at which to split the bezier curve
+        The ``t``-value at which to split the Bézier curve
 
     Returns
     -------
