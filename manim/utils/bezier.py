@@ -121,8 +121,7 @@ def partial_quadratic_bezier_points(points, a, b):
 
 
 def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
-    """
-    Split a quadratic bezier curve into two quadratic beziers at t
+    """Split a quadratic Bézier curve at argument ``t`` into two quadratic curves.
 
     Parameters
     ----------
