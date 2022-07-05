@@ -196,7 +196,7 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
                         VGroup(
                             Dot(shape.point_from_proportion(i / n), color=RED),
                             MathTex(
-                                r"\frac{" + str(i) + "}{" + str(n) + "}"
+                                "\\frac{" + str(i) + "}{" + str(n) + "}"
                             )  # Please use f-strings instead for a usecase that doesn't have {}
                             .move_to(shape.point_from_proportion(i / n))
                             .shift(DOWN),
