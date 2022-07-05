@@ -147,9 +147,9 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
 
 def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     """Subdivide a quadratic Bézier curve ``n`` times.
-    
+
     The points at which the curve is split are located at the
-    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`. 
+    arguments :math:`t = i/n` for :math:`i = 1, ..., n-1`.
 
     Parameters
     ----------
