@@ -161,7 +161,7 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
 
     Returns
     -------
-        returns the new points for the bezier curve in the form [a1, h1, b1, a2, h2, b2, ...]
+        The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
     """
     beziers = []
     current = points
