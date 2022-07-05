@@ -162,6 +162,9 @@ def subdivide_quadratic_bezier(points: Iterable[float], n: int) -> np.ndarray:
     Returns
     -------
         The new points for the Bézier curve in the form ``[a1, h1, b1, a2, h2, b2, ...]``
+
+    .. image:: /_static/bezier_subdivision_example.png
+
     """
     beziers = []
     current = points
