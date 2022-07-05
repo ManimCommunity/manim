@@ -1,3 +1,5 @@
+"""Utilities for modifying the speed at which animations are played."""
+
 from __future__ import annotations
 
 import types
