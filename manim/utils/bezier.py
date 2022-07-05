@@ -125,7 +125,7 @@ def split_quadratic_bezier(points: Iterable[float], t: float) -> np.ndarray:
 
     Parameters
     ----------
-    points : np.array
+    points
         The control points of the bezier curve
         has shape [a1, h1, b1]
 
