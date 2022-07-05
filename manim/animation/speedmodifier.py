@@ -235,8 +235,29 @@ class ChangeSpeed(Animation):
         call_updater: bool = False,
     ):
         """This static method can be used to apply speed change to updaters.
-        This updater will follow speed and rate function of any ``ChangeSpeed``
-        animation that is playing with ``affects_speed_updaters=True``.
+
+        This updater will follow speed and rate function of any :class:`.ChangeSpeed`
+        animation that is playing with ``affects_speed_updaters=True``. By default,
+        updater functions added via the usual :meth:`.Mobject.add_updater` method
+        do not respect the change of animation speed.
+
+        Parameters
+        ----------
+        mobject
+            The mobject to which the updater should be attached.
+        update_function
+            The function that is called whenever a new frame is rendered.
+        index
+            The position in the list of the mobject's updaters at which the
+            function should be inserted.
+        call_updater
+            If ``True``, calls the update function when attaching it to the
+            mobject.
+
+        See also
+        --------
+        :class:`.ChangeSpeed`
+        :meth:`.Mobject.add_updater`
         """
         parameters = get_parameters(update_function)
         if "dt" in parameters:
