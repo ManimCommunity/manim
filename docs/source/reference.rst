@@ -26,6 +26,7 @@ Animations
    manim.animation.numbers
    manim.animation.rotation
    manim.animation.specialized
+   manim.animation.speedmodifier
    manim.animation.transform
    manim.animation.transform_matching_parts
    manim.animation.updaters.mobject_update_utils
