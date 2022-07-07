@@ -215,22 +215,3 @@ New releases
 
 * :pr:`2863`: Prepared new release,  ``v0.16.0``
 
-
-Unclassified changes
---------------------
-
-* :pr:`2735`: Bump pyjwt from 2.3.0 to 2.4.0
-
-
-* :pr:`2755`: Fixed docstring of  :meth:`.VMobject.get_end_anchors`
-
-* :pr:`2770`: Fixed bug in :meth:`.VMobject.proportion_from_point` that caused proportions greater than 1 to be returned
-
-
-* :pr:`2771`: Add documentation and testing for Transform's path_func behavior
-
-
-* :pr:`2826`: Fix TransformMatchingAbstractBase Mobject leaks
-
-
-* :pr:`2855`: polish: Add implicit docker.io/ URL base
