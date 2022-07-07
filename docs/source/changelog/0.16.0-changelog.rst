@@ -1,0 +1,215 @@
+*******
+v0.16.0
+*******
+
+:Date: July 07, 2022
+
+Contributors
+============
+
+A total of 36 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Baroudi Aymen +
+* Benjamin Hackl
+* Charalampos Georgiou +
+* Ejar +
+* Francesco Frassinelli +
+* Francisco Manríquez Novoa +
+* Jacob Evan Shreve +
+* Jaime Santos +
+* Jonathan Alpert
+* Lingren Kong +
+* Naveen M K
+* Noam Zaks
+* Pedro Lamkowski +
+* Raghav Goel
+* Simeon Widdis
+* Sparsh Goenka
+* TornaxO7 +
+* Tristan Schulz +
+* WillSoltas
+* ad_chaos
+* conor-oneill-2 +
+* fcrozatier +
+* mooncaker816 +
+* niklebedenko +
+* nyabkun +
+* quark67
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Darylgolden
+* Francesco Frassinelli
+* Francisco Manríquez Novoa
+* Jan-Hendrik Müller
+* Jonathan Alpert
+* Naveen M K
+* Pedro Lamkowski
+* Philipp Imhof
+* Raghav Goel
+* Ryan McCauley
+* Sparsh Goenka
+* TornaxO7
+* Tristan Schulz
+* ad_chaos
+* hickmott99
+
+Pull requests merged
+====================
+
+A total of 41 pull requests were merged for this release.
+
+Highlights
+----------
+
+* :pr:`2749`: Added :class:`.ChangeSpeed`, an animation wrapper that allows to smoothly change the speed at which an animation is played
+   Animation speed can be finely controlled to make effects such as slow-mo.
+
+Enhancements
+------------
+
+* :pr:`2707`: Fixed Missing `get_nth_curve_length_pieces` in `OpenGLVMobject`
+   - Removed duplicate definition of `get_curve_functions_with_lengths` in `OpenGLVMobject`
+   - Added definition of `get_nth_curve_length_pieces` to `OpenGLVMobject`
+
+* :pr:`2715`: fix(constants.py,image_mobject.py,opengl_image_mobject.py): Update de…
+   Changed Image.<filter constant> to Resampling.<filter constant> as mentioned in the pillow deprecation message! (Introduces missing typehints from the pillow library 🤔)
+
+* :pr:`2720`: docs: Fixed typo in docstring
+   Fixes [this open issue](https://github.com/ManimCommunity/manim/issues/2718)
+   There was a typo in the docstring which caused an error in how it was displayed.
+
+* :pr:`2728`: enhancement(vector_field): added fit_to_coordinate_system
+   - added fit_to_coordinate_system to VectorField
+
+* :pr:`2730`: Added note to let users find documentation of default CLI subcommand easier
+
+
+* :pr:`2739`: Add vectorized plotting functionality to improve performance
+
+
+* :pr:`2746`: Installed ghostscript in the docker image
+
+
+* :pr:`2841`: addition(bezier.py): adding subdivide_quadratic_bezier and split_quad…
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2704`: Updating of old URL (Pango Markup formatting page)
+
+
+* :pr:`2726`: Edited note on :class:`.NumberPlane` length and added another example
+   Edit note to indicate how x_length and y_length are determined if not set explicitly.
+   Change first example to illustrate the above.
+   Add example for case when lengths are set explicitly.
+
+* :pr:`2732`: Refactored structure of documentation; added :doc:`FAQ section <faq/index>`
+
+
+* :pr:`2740`: Fixed documentation of :meth:`.Cylinder.get_direction`
+
+
+* :pr:`2757`: Added missing ``__init__.py`` file in `docbuild` module
+
+
+* :pr:`2760`: Remove cmake from the macos installation section
+
+
+* :pr:`2767`: Added more questions and answers to FAQ section, new OpenGL FAQ
+
+
+* :pr:`2828`: Removed suggestion issue template, added FAQ answer regarding proposing new features
+
+
+* :pr:`2851`: New example to graph.py documentation 
+   - Added an example to the mobject.graph doc using the partite layout to render an linear neural network
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2743`: Replace assert with np.testing assertions
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2751`: Fixed flake C417 and improved a comment
+
+
+* :pr:`2753`: Fixed multiplatform builds for docker images in pipeline
+
+
+* :pr:`2825`: Bump notebook from 6.4.11 to 6.4.12
+
+
+Unclassified changes
+--------------------
+
+* :pr:`2661`: Added Axes Tip Resize Functionality according to Axes documentation
+   This change enables users to specify the x- and y-axis tip_width and tip_height configs of arrow tips used in Axes and NumberLine creation. This functionality was previously unavailable but was documented in the Axes and NumberLine classes. This fix retains same the tip anchor location as before.
+
+   This change also includes two unit tests that test the new arrow tip resize functionality and the default width/height if none are specified.
+
+* :pr:`2687`: Migrate from os.path to pathlib in SVGMobject and other locations
+   This pull request changes a number of instances of OS.path to Pathlib objects and functions. In addition, this PR modifies the SVGMobject constructor to accept both a Pathlib object or a string variable pathname its constructor.
+
+* :pr:`2700`: CI: update python versions
+
+
+* :pr:`2701`: CI: add a workflow to publish docker image after release
+
+
+* :pr:`2703`: Default to utf-8 when reading files in :class:`.Code`
+
+
+* :pr:`2709`: Matrix brackets
+   Improves how brackets look for the `Matrix` class.
+
+* :pr:`2716`: Updating the order of the reference manuals
+   It only changes the of the tutorial in the documentation
+
+* :pr:`2721`: fix: fixed bad text slicing for Paragraph's lines
+
+
+* :pr:`2722`: Fix typo in table documentation
+
+
+* :pr:`2725`: Fix Code mobject wrong indentation
+
+
+* :pr:`2727`: Slight performance improvement for :class:`.ArrowVectorField` and Bezier curve computation
+   - changed to list_comprehension for get_vector and used *vecs in add to avoid multiple calls of self.add
+   - changed implementation of bezier in bezier.py to also return explicit cubic and quadratic bezier functions instead of the general bezier function
+   - removed duplicate len calls in make_even in iterables.py
+
+* :pr:`2734`: Fix OpenGL segfaulting when running self.play or self.wait
+
+
+* :pr:`2735`: Bump pyjwt from 2.3.0 to 2.4.0
+
+
+* :pr:`2748`: Bump pillow from 9.1.0 to 9.1.1
+
+
+* :pr:`2755`: Fixed docstring of  :meth:`.VMobject.get_end_anchors`
+
+
+* :pr:`2770`: Fixed bug in :meth:`.VMobject.proportion_from_point` that caused proportions greater than 1 to be returned
+
+
+* :pr:`2771`: Add documentation and testing for Transform's path_func behavior
+
+
+* :pr:`2826`: Fix TransformMatchingAbstractBase Mobject leaks
+
+
+* :pr:`2855`: polish: Add implicit docker.io/ URL base
+
+
